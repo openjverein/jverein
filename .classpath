@@ -8,7 +8,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/javax.mail-1.5.6.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/hibiscus"/>
 	<classpathentry kind="lib" path="lib/activation.jar"/>
-	<classpathentry kind="lib" path="/Users/heiner/git/hibiscus/lib/obantoo-bin-2.1.12.jar" sourcepath="/hibiscus/lib.src/hbci4java-2.5.12-src.zip"/>
 	<classpathentry kind="lib" path="lib/bsh-core-2.0b4.jar"/>
 	<classpathentry kind="lib" path="/hibiscus/lib/itextpdf-5.3.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/csvjdbc.jar"/>
@@ -16,7 +15,6 @@
 	<classpathentry kind="lib" path="lib/jollyday-0.4.7.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/snakeyaml-1.13.jar"/>
-	<classpathentry kind="lib" path="/jameica/lib/swt/win64/swt.jar" sourcepath="/jameica/lib.src/swt/linux/swt.src.zip"/>
 	<classpathentry kind="lib" path="lib/junit-4.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/ez-vcard-0.9.5.jar"/>
 	<classpathentry kind="lib" path="lib/javase-3.1.0.jar"/>
@@ -24,5 +22,7 @@
 	<classpathentry kind="lib" path="/jameica/lib/de_willuhn_ds/de_willuhn_ds.jar"/>
 	<classpathentry kind="lib" path="lib/commons-validator-1.5.1.jar"/>
 	<classpathentry kind="lib" path="/hibiscus/lib/super-csv-2.4.0.jar"/>
+	<classpathentry kind="lib" path="/hibiscus/lib/obantoo-bin-2.1.12.jar"/>
+	<classpathentry kind="lib" path="/Users/schlevoigt/devel/Privat/Java/libraries/swt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
