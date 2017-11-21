@@ -185,7 +185,7 @@ public class ProjektSaldoControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("projektsaldo", "", Einstellungen
-          .getEinstellung().getDateinamenmuster(), "PDF").get());
+          .getEinstellung().getDateinamenmuster(), "pdf").get());
 
       final String s = fd.open();
 

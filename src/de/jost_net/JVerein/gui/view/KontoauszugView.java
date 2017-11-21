@@ -16,8 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.util.Date;
-
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.willuhn.jameica.gui.AbstractView;

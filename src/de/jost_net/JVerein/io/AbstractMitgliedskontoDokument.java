@@ -69,7 +69,7 @@ public abstract class AbstractMitgliedskontoDokument
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
       case DRUCK:
-        file = getDateiAuswahl("PDF");
+        file = getDateiAuswahl("pdf");
         formularaufbereitung = new FormularAufbereitung(file);
         break;
       case EMAIL:
@@ -93,7 +93,7 @@ public abstract class AbstractMitgliedskontoDokument
           formularaufbereitung = new FormularAufbereitung(f);
           aufbereitenFormular(mk, formularaufbereitung, formular);
           formularaufbereitung.closeFormular();
-          zos.putNextEntry(new ZipEntry(getDateiname(mk) + ".PDF"));
+          zos.putNextEntry(new ZipEntry(getDateiname(mk) + ".pdf"));
           FileInputStream in = new FileInputStream(f);
           // buffer size
           byte[] b = new byte[1024];

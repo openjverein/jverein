@@ -86,17 +86,17 @@ public class Kontoauszug
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("kontoauszug", "", Einstellungen
-        .getEinstellung().getDateinamenmuster(), "PDF").get());
-    fd.setFilterExtensions(new String[] { "*.PDF" });
+        .getEinstellung().getDateinamenmuster(), "pdf").get());
+    fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
     if (s == null || s.length() == 0)
     {
       return;
     }
-    if (!s.endsWith(".PDF"))
+    if (!s.toLowerCase().endsWith(".pdf"))
     {
-      s = s + ".PDF";
+      s = s + ".pdf";
     }
     file = new File(s);
     settings.setAttribute("lastdir", file.getParent());

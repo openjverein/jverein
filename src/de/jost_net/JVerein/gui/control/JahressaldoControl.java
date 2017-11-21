@@ -171,7 +171,7 @@ public class JahressaldoControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("jahressaldo", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
 
       final String s = fd.open();
 

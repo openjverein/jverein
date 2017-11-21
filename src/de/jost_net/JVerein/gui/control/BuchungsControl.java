@@ -1201,7 +1201,7 @@ public class BuchungsControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("buchungen", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
 
       final String s = fd.open();
 
@@ -1321,7 +1321,7 @@ public class BuchungsControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("buchungsjournal", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
 
       final String s = fd.open();
 

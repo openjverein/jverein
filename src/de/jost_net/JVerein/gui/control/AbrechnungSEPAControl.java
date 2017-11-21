@@ -439,12 +439,12 @@ public class AbrechnungSEPAControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("abbuchungFRST", "", Einstellungen
-          .getEinstellung().getDateinamenmuster(), "PDF").get());
+          .getEinstellung().getDateinamenmuster(), "pdf").get());
       pdffileFRST = fd.open();
       // Wir merken uns noch das Verzeichnis fürs nächste mal
       File fiFRST = new File(pdffileFRST);
       fd.setFileName(new Dateiname("abbuchungRCUR", "", Einstellungen
-          .getEinstellung().getDateinamenmuster(), "PDF").get());
+          .getEinstellung().getDateinamenmuster(), "pdf").get());
       pdffileRCUR = fd.open();
       // Wir merken uns noch das Verzeichnis fürs nächste mal
       settings.setAttribute("lastdir.pdf", fiFRST.getParent());

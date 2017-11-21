@@ -3590,7 +3590,7 @@ public class MitgliedControl extends AbstractControl
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
-    fd.setFilterExtensions(new String[] { "*.PDF" });
+    fd.setFilterExtensions(new String[] { "*.pdf" });
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)
@@ -3598,7 +3598,7 @@ public class MitgliedControl extends AbstractControl
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("statistik", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+        Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
 
     String s = fd.open();
 
@@ -3608,7 +3608,7 @@ public class MitgliedControl extends AbstractControl
     }
     if (!s.toUpperCase().endsWith("PDF"))
     {
-      s = s + ".PDF";
+      s = s + ".pdf";
     }
 
     final File file = new File(s);
