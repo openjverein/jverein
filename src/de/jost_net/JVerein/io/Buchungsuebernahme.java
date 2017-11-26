@@ -20,6 +20,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.schlevoigt.JVerein.util.Misc;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.BuchungUebernahmeProtokollDialog;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -169,7 +171,7 @@ public class Buchungsuebernahme
         {
           zweck = zweck.substring(0, 500);
         }
-        b.setZweck(zweck);
+        b.setZweck(Misc.getBuchungsZweckKorrektur(zweck, true));
         b.setDatum(u.getDatum());
         b.setArt(u.getArt());
         b.setKommentar(u.getKommentar());
