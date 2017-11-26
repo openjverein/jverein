@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.navigation;
 
+import com.schlevoigt.JVerein.gui.action.BuchungsTexteKorrigierenAction;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AboutAction;
 import de.jost_net.JVerein.gui.action.AbrechnungSEPAAction;
@@ -199,10 +201,12 @@ public class MyExtension implements Extension
           new BuchungsListeAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Hibiscus-Buchungen",
           new BuchungsuebernahmeAction(), "hibiscus-icon-64x64.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
-          new ProjektSaldoAction(), "euro-sign.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
+          new BuchungsTexteKorrigierenAction(), "preferences-system-windows.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",
           new BuchungsklasseSaldoAction(), "euro-sign.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
+          new ProjektSaldoAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahressaldo",
           new JahressaldoAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
