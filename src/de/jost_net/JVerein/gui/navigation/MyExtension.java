@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.navigation;
 
+import com.schlevoigt.JVerein.gui.action.BuchungsTexteKorrigierenAction;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AboutAction;
 import de.jost_net.JVerein.gui.action.AbrechnungSEPAAction;
@@ -201,6 +203,8 @@ public class MyExtension implements Extension
           new BuchungsuebernahmeAction(), "hibiscus-icon-64x64.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Projekte",
           new ProjektSaldoAction(), "projects.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
+          new BuchungsTexteKorrigierenAction(), "preferences-system-windows.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassen",
           new BuchungsklasseSaldoAction(), "summe.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahressaldo",
