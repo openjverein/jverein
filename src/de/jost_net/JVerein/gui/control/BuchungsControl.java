@@ -989,8 +989,8 @@ public class BuchungsControl extends AbstractControl
       // return o.toString();
       // }
       // }, false, Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
-      buchungsList.addColumn("Auszugsnummer", "auszugsnummer");
-      buchungsList.addColumn("Blatt", "blattnummer");
+//      buchungsList.addColumn("Auszugsnummer", "auszugsnummer");
+//      buchungsList.addColumn("Blatt", "blattnummer");
 
       buchungsList.addColumn("Name", "name");
       buchungsList.addColumn("Verwendungszweck", "zweck", new Formatter()

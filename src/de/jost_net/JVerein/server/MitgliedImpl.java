@@ -1178,8 +1178,12 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     if (fieldName.equals("idint"))
     {
       return new Integer(getID());
+    } 
+    if (fieldName.equals("anzahlDokumente"))
+    {
+      return super.getAttribute("DOK");
     }
-    if (fieldName.equals("namevorname"))
+    else if (fieldName.equals("vornamename"))
     {
       return Adressaufbereitung.getNameVorname(this);
     }
