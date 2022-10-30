@@ -35,6 +35,11 @@ public class MitgliedskontoIstLoesenAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
+  	if (context == null || !(context instanceof MitgliedskontoNode))
+    {
+      throw new ApplicationException("Keine Istbuchung ausgewählt");
+    }
+  	
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
     d.setTitle("Istbuchung vom Mitgliedskonto lösen");
     d.setText("Wollen Sie die Istbuchung wirklich vom Mitgliedskonto lösen?");

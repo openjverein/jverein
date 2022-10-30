@@ -35,6 +35,11 @@ public class MitgliedskontoDetailSollNeuAction implements Action
   {
     MitgliedskontoNode mkn = null;
     Mitgliedskonto mk = null;
+    
+    if (context == null || !(context instanceof MitgliedskontoNode))
+    {
+      throw new ApplicationException("Kein Mitgliedskonto ausgewählt");
+    }
 
     if (context != null && (context instanceof MitgliedskontoNode))
     {
