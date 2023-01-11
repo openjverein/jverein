@@ -2,9 +2,13 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="junit/src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="src" path="/jameica"/>
-	<classpathentry kind="lib" path="lib/nc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/nc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.mail-1.6.2.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/hibiscus"/>
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
