@@ -52,6 +52,14 @@ public class BuchungQuery {
   private Boolean hasMitglied;
   
   private HashMap<String, String> sortValues = new HashMap<String, String>();
+  
+  private static final int ORDER_UMSATZID = 0;
+  private static final int ORDER_DATUM = 1;
+  private static final int ORDER_DATUM_AUSZUGSNUMMER_BLATTNUMMER = 2;
+  private static final int ORDER_DATUM_NAME = 3;
+  private static final int ORDER_ID = 4;
+  private static final int ORDER_DATUM_ID = 5;
+  private int order = ORDER_UMSATZID;
 
   private void SortHashMap() {
 	  sortValues.put("ORDER_ID","order by id");
@@ -102,6 +110,28 @@ public class BuchungQuery {
     if ( value != null ) {
     	ordername = value;
     }
+  }
+  
+  public void setOrderID()
+  {
+    order = ORDER_ID;
+  }
+  
+  public void setOrderDatum()
+  {
+    order = ORDER_DATUM;
+  }
+  public void setOrderDatumID()
+  {
+    order = ORDER_DATUM_ID;
+  }
+  public void setOrderDatumAuszugsnummerBlattnummer()
+  {
+    order = ORDER_DATUM_AUSZUGSNUMMER_BLATTNUMMER;
+  }
+  public void setOrderDatumName()
+  {
+    order = ORDER_DATUM_NAME;
   }
   
   public Boolean getHasMitglied()
@@ -214,6 +244,40 @@ public class BuchungQuery {
       ttext = "%" + ttext + "%";
       it.addFilter("(upper(name) like ? or upper(zweck) like ? or upper(kommentar) like ?) ", ttext,
           ttext, ttext);
+    }
+    
+    switch (order)
+    {
+      case ORDER_UMSATZID:
+      {
+        it.setOrder("ORDER BY umsatzid DESC");
+        break;
+      }
+      case ORDER_DATUM:
+      {
+        it.setOrder("ORDER BY datum");
+        break;
+      }
+      case ORDER_DATUM_AUSZUGSNUMMER_BLATTNUMMER:
+      {
+        it.setOrder("ORDER BY datum, auszugsnummer, blattnummer, id");
+        break;
+      }
+      case ORDER_DATUM_NAME:
+      {
+        it.setOrder("ORDER BY datum, name, id");
+        break;
+      }
+      case ORDER_ID:
+      {
+        it.setOrder("ORDER BY id");
+        break;
+      }
+      case ORDER_DATUM_ID:
+      {
+        it.setOrder("ORDER BY datum, id");
+        break;
+      }
     }
 
     // 20220823: sbuer: Neue Sortierfelder
