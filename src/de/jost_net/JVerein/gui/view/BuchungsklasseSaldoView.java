@@ -26,6 +26,9 @@ import java.util.Collections;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsklasseSaldoControl;
+import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.util.Geschaeftsjahr;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
@@ -36,134 +39,124 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsklasseSaldoView extends AbstractView
-{
+public class BuchungsklasseSaldoView extends AbstractView {
 
-  private class QuickAccessAction implements Action
-  {
+	private class QuickAccessAction implements Action {
 
-    private BuchungsklasseSaldoControl control;
+		private BuchungsklasseSaldoControl control;
 
-    private Date von;
+		private Date von;
 
-    private Date bis;
+		private Date bis;
 
-    QuickAccessAction(BuchungsklasseSaldoControl control, Date von, Date bis)
-    {
-      this.control = control;
-      this.von = von;
-      this.bis = bis;
-    }
+		QuickAccessAction(BuchungsklasseSaldoControl control, Date von, Date bis) {
+			this.control = control;
+			this.von = von;
+			this.bis = bis;
+		}
 
-    @Override
-    public void handleAction(Object context) throws ApplicationException
-    {
-      control.getDatumvon().setValue(von);
-      control.getDatumbis().setValue(bis);
-      control.getSaldoList();
-    }
-  }
+		@Override
+		public void handleAction(Object context) throws ApplicationException {
+			control.getDatumvon().setValue(von);
+			control.getDatumbis().setValue(bis);
+			control.getSaldoList();
+		}
+	}
 
-  private Integer getYearBounds(String fun) throws Exception
-  {
-    String sql = "select " + fun + "(datum) as val from buchung";
+	private Integer getYearBounds(String fun) throws Exception {
+		String sql = "select " + fun + "(datum) as val from buchung";
 
-    DBService service = Einstellungen.getDBService();
-    Date earliest = (Date) service.execute(sql,
-        Collections.emptyList().toArray(), new ResultSetExtractor()
-        {
+		DBService service = Einstellungen.getDBService();
+		Date earliest = (Date) service.execute(sql, Collections.emptyList().toArray(), new ResultSetExtractor() {
 
-          @Override
-          public Object extract(ResultSet rs)
-              throws RemoteException, SQLException
-          {
-            rs.next();
-            return rs.getDate("val");
-          }
-        });
+			@Override
+			public Object extract(ResultSet rs) throws RemoteException, SQLException {
+				rs.next();
+				return rs.getDate("val");
+			}
+		});
 
-    Calendar calendar = new GregorianCalendar();
-    calendar.setTime(earliest);
-    return calendar.get(Calendar.YEAR);
-  }
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(earliest);
+		return calendar.get(Calendar.YEAR);
+	}
 
-  public Date deltaDaysFromNow(Integer delta)
-  {
-    Date now = new Date();
-    Calendar calendar = new GregorianCalendar();
-    calendar.setTime(now);
+	public Date deltaDaysFromNow(Integer delta) {
+		Date now = new Date();
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(now);
 
-    // add 5 days to calendar instance
-    calendar.add(Calendar.DAY_OF_MONTH, delta);
+		// add 5 days to calendar instance
+		calendar.add(Calendar.DAY_OF_MONTH, delta);
 
-    // get the date instance
-    return calendar.getTime();
-  }
+		// get the date instance
+		return calendar.getTime();
+	}
 
-  public Date genYearStartDate(Integer year)
-  {
-    Calendar calendarStart = Calendar.getInstance();
-    calendarStart.set(Calendar.YEAR, year);
-    calendarStart.set(Calendar.MONTH, 0);
-    calendarStart.set(Calendar.DAY_OF_MONTH, 1);
-    return calendarStart.getTime();
-  }
+	public Date genYearStartDate(Integer year) {
+		Calendar calendarStart = Calendar.getInstance();
+		calendarStart.set(Calendar.YEAR, year);
+		calendarStart.set(Calendar.MONTH, 0);
+		calendarStart.set(Calendar.DAY_OF_MONTH, 1);
+		return calendarStart.getTime();
+	}
 
-  public Date genYearEndDate(Integer year)
-  {
-    Calendar calendarStart = Calendar.getInstance();
-    calendarStart.set(Calendar.YEAR, year);
-    calendarStart.set(Calendar.MONTH, 11);
-    calendarStart.set(Calendar.DAY_OF_MONTH, 31);
-    return calendarStart.getTime();
-  }
+	public Date genYearEndDate(Integer year) {
+		Calendar calendarStart = Calendar.getInstance();
+		calendarStart.set(Calendar.YEAR, year);
+		calendarStart.set(Calendar.MONTH, 11);
+		calendarStart.set(Calendar.DAY_OF_MONTH, 31);
+		return calendarStart.getTime();
+	}
 
-  @Override
-  public void bind() throws Exception
-  {
-    GUI.getView().setTitle("Buchungsklassen-Saldo");
+	@Override
+	public void bind() throws Exception {
+		GUI.getView().setTitle("Buchungsklassen-Saldo");
 
-    final BuchungsklasseSaldoControl control = new BuchungsklasseSaldoControl(
-        this);
+		final BuchungsklasseSaldoControl control = new BuchungsklasseSaldoControl(this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Zeitraum");
-    group.addLabelPair("von", control.getDatumvon());
-    group.addLabelPair("bis", control.getDatumbis());
+		LabelGroup group = new LabelGroup(getParent(), "Zeitraum");
+		group.addLabelPair("von", control.getDatumvon());
+		group.addLabelPair("bis", control.getDatumbis());
 
-    LabelGroup quickGroup = new LabelGroup(getParent(), "Schnellzugriff");
-    ButtonArea quickBtns = new ButtonArea();
-    for (Integer i = getYearBounds("min"); i < getYearBounds("max") + 1; i++)
-    {
-      quickBtns.addButton(i.toString(), new QuickAccessAction(control,
-          genYearStartDate(i), genYearEndDate(i)), null, false);
-    }
+		LabelGroup quickGroup = new LabelGroup(getParent(), "Schnellzugriff");
+		ButtonArea quickBtns = new ButtonArea();
 
-    quickBtns.addButton("Letzte 30 Tage",
-        new QuickAccessAction(control, deltaDaysFromNow(-30), new Date()));
-    quickBtns.addButton("Letzte 90 Tage",
-        new QuickAccessAction(control, deltaDaysFromNow(-90), new Date()));
-    quickGroup.addPart(quickBtns);
+		DBIterator<Buchung> list = Einstellungen.getDBService().createList(Buchung.class);
+		if (list != null && list.hasNext()) {
+			Integer minYearBounds = getYearBounds("min");
+			Integer maxYearBounds = getYearBounds("max");
 
-    ButtonArea buttons = new ButtonArea();
-    Button button = new Button("suchen", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        control.getSaldoList();
-      }
-    }, null, true, "search.png");
-    buttons.addButton(button);
-    buttons.paint(this.getParent());
+			for (Integer i = minYearBounds; i < maxYearBounds + 1; i++) {
+				quickBtns.addButton(i.toString(),
+						new QuickAccessAction(control, genYearStartDate(i), genYearEndDate(i)), null, false);
+			}
 
-    LabelGroup group2 = new LabelGroup(getParent(), "Saldo", true);
-    group2.addPart(control.getSaldoList());
+			quickBtns.addButton("Letzte 30 Tage", new QuickAccessAction(control, deltaDaysFromNow(-30), new Date()));
+			quickBtns.addButton("Letzte 90 Tage", new QuickAccessAction(control, deltaDaysFromNow(-90), new Date()));
+			quickGroup.addPart(quickBtns);
 
-    ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.JAHRESSALDO, false, "question-circle.png");
-    buttons2.addButton(control.getStartAuswertungCSVButton());
-    buttons2.addButton(control.getStartAuswertungButton());
-    buttons2.paint(this.getParent());
-  }
+			ButtonArea buttons = new ButtonArea();
+			Button button = new Button("suchen", new Action() {
+				@Override
+				public void handleAction(Object context) throws ApplicationException {
+					control.getSaldoList();
+				}
+			}, null, true, "search.png");
+			buttons.addButton(button);
+			buttons.paint(this.getParent());
+
+			LabelGroup group2 = new LabelGroup(getParent(), "Saldo", true);
+			group2.addPart(control.getSaldoList());
+
+			ButtonArea buttons2 = new ButtonArea();
+			buttons2.addButton("Hilfe", new DokumentationAction(), DokumentationUtil.JAHRESSALDO, false,
+					"question-circle.png");
+			buttons2.addButton(control.getStartAuswertungCSVButton());
+			buttons2.addButton(control.getStartAuswertungButton());
+			buttons2.paint(this.getParent());
+		} else {
+			throw new ApplicationException("Abbruch! Es existiert noch keine Buchung");
+		}
+	}
 }
