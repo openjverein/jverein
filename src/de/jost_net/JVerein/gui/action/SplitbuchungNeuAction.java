@@ -39,7 +39,7 @@ public class SplitbuchungNeuAction implements Action {
       buch.setMitgliedskonto(master.getMitgliedskonto());
       buch.setName(master.getName());
       buch.setProjekt(master.getProjekt());
-      buch.setSplitId(new Long(master.getID()));
+      buch.setSplitId(Long.valueOf(master.getID()));
       buch.setUmsatzid(master.getUmsatzid());
       buch.setBelegnummer(master.getBelegnummer());
       buch.setZweck(master.getZweck());

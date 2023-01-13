@@ -15,6 +15,7 @@
 package de.jost_net.JVerein.io;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -41,7 +42,7 @@ public class SplitbuchungsContainer {
     if (b.getSplitId() != null) {
       b = (Buchung) Einstellungen.getDBService().createObject(Buchung.class, b.getSplitId() + "");
     } else {
-      b.setSplitId(new Long(b.getID()));
+      b.setSplitId(Long.valueOf(b.getID()));
       SplitbuchungsContainer.add(b);
     }
     DBIterator<Buchung> it = Einstellungen.getDBService().createList(Buchung.class);
@@ -61,7 +62,7 @@ public class SplitbuchungsContainer {
       b2.setKonto(b.getKonto());
       b2.setMitgliedskonto(b.getMitgliedskonto());
       b2.setName(b.getName());
-      b2.setSplitId(new Long(b.getID()));
+      b2.setSplitId(Long.valueOf(b.getID()));
       b2.setUmsatzid(b.getUmsatzid());
       b2.setBelegnummer(b.getBelegnummer());
       b2.setZweck(b.getZweck());
@@ -100,7 +101,7 @@ public class SplitbuchungsContainer {
     BigDecimal summe = new BigDecimal(0).setScale(2);
     for (Buchung b : splitbuchungen) {
       if (b.getSplitTyp().equals(typ) && !b.isToDelete()) {
-        summe = summe.add(new BigDecimal(b.getBetrag()).setScale(2, BigDecimal.ROUND_HALF_UP));
+        summe = summe.add(new BigDecimal(b.getBetrag()).setScale(2, RoundingMode.HALF_UP));
       }
     }
     return summe;

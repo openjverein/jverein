@@ -316,8 +316,8 @@ public class QIFBuchungsImportControl extends AbstractControl
       qifImportPosList.addItem(importPos);
     }
 
-    anzahlBuchungen.setValue(new Integer(anzahl));
-    endSaldo.setValue(new Double(saldo));
+    anzahlBuchungen.setValue(Integer.valueOf(anzahl));
+    endSaldo.setValue(Double.valueOf(saldo));
   }
 
   private GenericIterator getIterator() throws RemoteException

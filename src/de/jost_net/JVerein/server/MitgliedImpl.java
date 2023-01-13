@@ -574,7 +574,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     Integer vers = (Integer) getAttribute("mandatversion");
     if (vers == null)
     {
-      vers = new Integer(0);
+      vers = Integer.valueOf(0);
     }
     return vers;
   }
@@ -1026,7 +1026,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     Double d = (Double) getAttribute("individuellerbeitrag");
     if (d == null)
     {
-      return new Double(0);
+      return Double.valueOf(0);
     }
     return d;
   }
@@ -1176,7 +1176,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   {
     if (fieldName.equals("idint"))
     {
-      return new Integer(getID());
+      return Integer.valueOf(getID());
     }
     if (fieldName.equals("namevorname"))
     {

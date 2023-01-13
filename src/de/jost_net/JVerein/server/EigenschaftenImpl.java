@@ -101,7 +101,7 @@ public class EigenschaftenImpl extends AbstractDBObject implements
   @Override
   public void setMitglied(String mitglied) throws RemoteException
   {
-    setAttribute("mitglied", new Integer(mitglied));
+    setAttribute("mitglied", Integer.valueOf(mitglied));
   }
 
   @Override

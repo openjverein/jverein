@@ -163,7 +163,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
       l = (Long) o;
     }
     if (o instanceof Integer) {
-      l = new Long((Integer) o);
+      l = Long.valueOf((Integer) o);
     }
     if (l == null) {
       return null; // Kein Konto zugeordnet
@@ -177,7 +177,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
     if (konto == null) {
       throw new RemoteException("Konto fehlt!");
     }
-    setAttribute("konto", new Long(konto.getID()));
+    setAttribute("konto", Long.valueOf(konto.getID()));
   }
 
   @Override
@@ -239,7 +239,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
 
   @Override
   public void setBetrag(double d) throws RemoteException {
-    setAttribute("betrag", new Double(d));
+    setAttribute("betrag", Double.valueOf(d));
   }
 
   @Override
@@ -324,7 +324,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
 
   @Override
   public void setAbrechnungslauf(Abrechnungslauf abrechnungslauf) throws RemoteException {
-    setAttribute("abrechnungslauf", new Long(abrechnungslauf.getID()));
+    setAttribute("abrechnungslauf", Long.valueOf(abrechnungslauf.getID()));
   }
 
   @Override
@@ -345,7 +345,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
   @Override
   public void setMitgliedskonto(Mitgliedskonto mitgliedskonto) throws RemoteException {
     if (mitgliedskonto != null) {
-      setAttribute("mitgliedskonto", new Long(mitgliedskonto.getID()));
+      setAttribute("mitgliedskonto", Long.valueOf(mitgliedskonto.getID()));
     } else {
       setAttribute("mitgliedskonto", null);
     }
@@ -369,7 +369,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
   @Override
   public void setProjekt(Projekt projekt) throws RemoteException {
     if (projekt != null) {
-      setAttribute("projekt", new Long(projekt.getID()));
+      setAttribute("projekt", Long.valueOf(projekt.getID()));
     } else {
       setAttribute("projekt", null);
     }
@@ -468,7 +468,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
   public Object getAttribute(String fieldName) throws RemoteException {
     if ("id-int".equals(fieldName)) {
       try {
-        return new Long(getID());
+        return Long.valueOf(getID());
       } catch (Exception e) {
         Logger.error("unable to parse id: " + getID());
         return getID();

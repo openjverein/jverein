@@ -131,7 +131,7 @@ public class MitgliedskontoauswahlInput
             buchungen[0].setBetrag(konto.getBetrag());
             buchungen[0].setDatum(new Date());
             buchungen[0]
-                .setBuchungsart(new Long(konto.getBuchungsart().getID()));
+                .setBuchungsart(Long.valueOf(konto.getBuchungsart().getID()));
           }
         }
         else if (event.data instanceof Mitglied)

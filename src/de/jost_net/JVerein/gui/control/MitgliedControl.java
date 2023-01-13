@@ -1483,7 +1483,7 @@ public class MitgliedControl extends AbstractControl
           Mitglied m = (Mitglied) zahler.getValue();
           if (m.getID() != null)
           {
-            getMitglied().setZahlerID(new Long(m.getID()));
+            getMitglied().setZahlerID(Long.valueOf(m.getID()));
           }
           else
           {
@@ -3096,7 +3096,7 @@ public class MitgliedControl extends AbstractControl
       if (adresstyp != null)
       {
         Adresstyp at = (Adresstyp) getAdresstyp().getValue();
-        m.setAdresstyp(new Integer(at.getID()));
+        m.setAdresstyp(Integer.valueOf(at.getID()));
       }
       else
       {
@@ -3111,7 +3111,7 @@ public class MitgliedControl extends AbstractControl
         try
         {
           Beitragsgruppe bg = (Beitragsgruppe) o;
-          m.setBeitragsgruppe(new Integer(bg.getID()));
+          m.setBeitragsgruppe(Integer.valueOf(bg.getID()));
           if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
           {
             m.setZahlerID(null);
@@ -3291,8 +3291,8 @@ public class MitgliedControl extends AbstractControl
             zf = (Zusatzfelder) Einstellungen.getDBService()
                 .createObject(Zusatzfelder.class, null);
           }
-          zf.setMitglied(new Integer(m.getID()));
-          zf.setFelddefinition(new Integer(fd.getID()));
+          zf.setMitglied(Integer.valueOf(m.getID()));
+          zf.setFelddefinition(Integer.valueOf(fd.getID()));
           switch (fd.getDatentyp())
           {
             case Datentyp.ZEICHENFOLGE:

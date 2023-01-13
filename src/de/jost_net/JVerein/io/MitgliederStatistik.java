@@ -319,7 +319,7 @@ public class MitgliederStatistik
     if (bg != null)
     {
       list.addFilter("beitragsgruppe = ?",
-          new Object[] { new Integer(bg.getID()) });
+          new Object[] { Integer.valueOf(bg.getID()) });
     }
     if (geschlecht != null && (geschlecht.equals(GeschlechtInput.MAENNLICH)
         || geschlecht.equals(GeschlechtInput.WEIBLICH)))

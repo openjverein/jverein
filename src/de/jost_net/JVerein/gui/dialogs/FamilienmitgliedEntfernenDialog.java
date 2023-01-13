@@ -97,7 +97,7 @@ public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
           }
           Beitragsgruppe bg = (Beitragsgruppe) control.getBeitragsgruppe(false)
               .getValue();
-          m.setBeitragsgruppe(new Integer(bg.getID()));
+          m.setBeitragsgruppe(Integer.valueOf(bg.getID()));
           // m.setKontoinhaber((String) control.getKontoinhaber().getValue());
           m.setZahlerID(null);
           m.setLetzteAenderung();

@@ -74,7 +74,7 @@ public class AbrechnungslaufImpl extends AbstractDBObject implements
   @Override
   public Integer getNr() throws RemoteException
   {
-    return new Integer(getID());
+    return Integer.valueOf(getID());
   }
 
   @Override

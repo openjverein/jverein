@@ -671,7 +671,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung {
   public double getSpendenbescheinigungminbetrag() throws RemoteException {
     Double d = (Double) getAttribute("spendenbescheinigungminbetrag");
     if (d == null) {
-      d = new Double(0);
+      d = Double.valueOf(0);
     }
     return (d);
   }
@@ -1364,7 +1364,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung {
   public Integer getSEPADatumOffset() throws RemoteException {
     Integer offset = (Integer) getAttribute("sepadatumoffset");
     if (offset == null) {
-      offset = new Integer(0);
+      offset = Integer.valueOf(0);
     }
     return offset;
   }

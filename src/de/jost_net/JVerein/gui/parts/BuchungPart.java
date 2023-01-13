@@ -93,7 +93,7 @@ public class BuchungPart implements Part {
         LabelGroup grDokument = new LabelGroup(scrolled.getComposite(), "Dokumente");
         BuchungDokument budo = (BuchungDokument) Einstellungen.getDBService()
             .createObject(BuchungDokument.class, null);
-        budo.setReferenz(new Long(bu.getID()));
+        budo.setReferenz(Long.valueOf(bu.getID()));
         DokumentControl dcontrol = new DokumentControl(view, "buchungen", !buchungabgeschlossen);
         grDokument.addPart(dcontrol.getDokumenteList(budo));
         ButtonArea butts = new ButtonArea();

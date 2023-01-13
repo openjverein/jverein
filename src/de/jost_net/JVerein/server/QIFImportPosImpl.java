@@ -61,7 +61,7 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
   {
     if (null == head)
       throw new RemoteException("QIFImportHead fehlt!");
-    setAttribute(COL_HEADID, new Integer(head.getID()));
+    setAttribute(COL_HEADID, Integer.valueOf(head.getID()));
   }
 
   @Override
@@ -153,7 +153,7 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
   {
     if (null != buchungsart)
     {
-      setAttribute(COL_BUCHART, new Integer(buchungsart.getID()));
+      setAttribute(COL_BUCHART, Integer.valueOf(buchungsart.getID()));
     }
     else
     {
@@ -178,7 +178,7 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
     Integer buchartId = (Integer) getAttribute(COL_BUCHART);
     if (null == buchartId)
       return null;
-    return new Long(buchartId.longValue());
+    return Long.valueOf(buchartId.longValue());
   }
 
   @Override
@@ -302,7 +302,7 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
 
   public Double getSaldo()
   {
-    return new Double(saldo);
+    return Double.valueOf(saldo);
   }
 
 }

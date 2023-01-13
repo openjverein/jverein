@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
-import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPA_hbci4java;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.Bankarbeitstage;

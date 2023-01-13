@@ -262,7 +262,7 @@ public class LehrgangControl extends AbstractControl
     {
       Lehrgang l = getLehrgang();
       Lehrgangsart la = (Lehrgangsart) getLehrgangsart().getValue();
-      l.setLehrgangsart(new Integer(la.getID()));
+      l.setLehrgangsart(Integer.valueOf(la.getID()));
       l.setVon((Date) getVon().getValue());
       l.setBis((Date) getBis().getValue());
       l.setVeranstalter((String) getVeranstalter().getValue());

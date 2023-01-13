@@ -58,7 +58,7 @@ public class ArbeitseinsatzAction implements Action
             throw new ApplicationException(
                 "Neues Mitglied bitte erst speichern. Dann können Arbeitseinsätze aufgenommen werden.");
           }
-          aeins.setMitglied(new Integer(m.getID()).intValue());
+          aeins.setMitglied(Integer.valueOf(m.getID()).intValue());
         }
       }
       catch (RemoteException e)

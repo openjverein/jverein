@@ -89,7 +89,7 @@ public class ZusatzbetragAbrechnungslaufImpl extends AbstractDBObject implements
   public void setAbrechnungslauf(Abrechnungslauf abrechnungslauf)
       throws RemoteException
   {
-    setAttribute("abrechnungslauf", new Integer(abrechnungslauf.getID()));
+    setAttribute("abrechnungslauf", Integer.valueOf(abrechnungslauf.getID()));
   }
 
   @Override
@@ -101,7 +101,7 @@ public class ZusatzbetragAbrechnungslaufImpl extends AbstractDBObject implements
   @Override
   public void setZusatzbetrag(Zusatzbetrag zusatzbetrag) throws RemoteException
   {
-    setAttribute("zusatzbetrag", new Integer(zusatzbetrag.getID()));
+    setAttribute("zusatzbetrag", Integer.valueOf(zusatzbetrag.getID()));
   }
 
   @Override

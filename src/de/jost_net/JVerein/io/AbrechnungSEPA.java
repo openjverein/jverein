@@ -19,6 +19,7 @@ package de.jost_net.JVerein.io;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -273,17 +274,17 @@ public class AbrechnungSEPA
         {
           list.addFilter(
               "(zahlungsrhytmus = ? or zahlungsrhytmus = ? or zahlungsrhytmus = ?)",
-              new Object[] { new Integer(Zahlungsrhythmus.HALBJAEHRLICH),
-                  new Integer(Zahlungsrhythmus.VIERTELJAEHRLICH),
-                  new Integer(Zahlungsrhythmus.MONATLICH) });
+              new Object[] { Integer.valueOf(Zahlungsrhythmus.HALBJAEHRLICH),
+                  Integer.valueOf(Zahlungsrhythmus.VIERTELJAEHRLICH),
+                  Integer.valueOf(Zahlungsrhythmus.MONATLICH) });
         }
         if (param.abbuchungsmodus == Abrechnungsmodi.JAVIMO)
         {
           list.addFilter(
               "(zahlungsrhytmus = ? or zahlungsrhytmus = ? or zahlungsrhytmus = ?)",
-              new Object[] { new Integer(Zahlungsrhythmus.JAEHRLICH),
-                  new Integer(Zahlungsrhythmus.VIERTELJAEHRLICH),
-                  new Integer(Zahlungsrhythmus.MONATLICH) });
+              new Object[] { Integer.valueOf(Zahlungsrhythmus.JAEHRLICH),
+                  Integer.valueOf(Zahlungsrhythmus.VIERTELJAEHRLICH),
+                  Integer.valueOf(Zahlungsrhythmus.MONATLICH) });
         }
         if (param.abbuchungsmodus == Abrechnungsmodi.VIMO)
         {
@@ -426,7 +427,7 @@ public class AbrechnungSEPA
         zahler.setPersonId(m.getID());
         zahler.setPersonTyp(JVereinZahlerTyp.MITGLIED);
         zahler.setBetrag(
-            new BigDecimal(betr).setScale(2, BigDecimal.ROUND_HALF_UP));
+            new BigDecimal(betr).setScale(2, RoundingMode.HALF_UP));
         new BIC(m.getBic()); // Prüfung des BIC
         zahler.setBic(m.getBic());
         new IBAN(m.getIban()); // Prüfung der IBAN
@@ -522,7 +523,7 @@ public class AbrechnungSEPA
             zahler.setPersonId(m.getID());
             zahler.setPersonTyp(JVereinZahlerTyp.MITGLIED);
             zahler.setBetrag(new BigDecimal(z.getBetrag()).setScale(2,
-                BigDecimal.ROUND_HALF_UP));
+                RoundingMode.HALF_UP));
             new BIC(m.getBic());
             new IBAN(m.getIban());
             zahler.setBic(m.getBic());
@@ -601,7 +602,7 @@ public class AbrechnungSEPA
         zahler.setPersonId(kt.getID());
         zahler.setPersonTyp(JVereinZahlerTyp.KURSTEILNEHMER);
         zahler.setBetrag(new BigDecimal(kt.getBetrag()).setScale(2,
-            BigDecimal.ROUND_HALF_UP));
+            RoundingMode.HALF_UP));
         new BIC(kt.getBic());
         new IBAN(kt.getIban());
         zahler.setBic(kt.getBic());
@@ -802,7 +803,7 @@ public class AbrechnungSEPA
       }
       if (buchungsart != null)
       {
-        buchung.setBuchungsart(new Long(buchungsart.getID()));
+        buchung.setBuchungsart(Long.valueOf(buchungsart.getID()));
       }
       buchung.store();
     }

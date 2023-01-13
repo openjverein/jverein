@@ -59,7 +59,7 @@ public class WiedervorlageAction implements Action
             throw new ApplicationException(
                 "Neues Mitglied bitte erst speichern. Dann können Wiedervorlagen aufgenommen werden.");
           }
-          w.setMitglied(new Integer(m.getID()).intValue());
+          w.setMitglied(Integer.valueOf(m.getID()).intValue());
         }
       }
       catch (RemoteException e)
