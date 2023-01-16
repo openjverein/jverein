@@ -52,6 +52,10 @@ public interface Buchung extends DBObject {
 
     public double getBetrag() throws RemoteException;
 
+	public String getIban() throws RemoteException;
+
+	public void setIban(String iban) throws RemoteException;
+
     public void setBetrag(double betrag) throws RemoteException;
 
     public String getZweck() throws RemoteException;

@@ -100,7 +100,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
     Jahresabschluss ja = getJahresabschluss();
     if (ja != null) {
       throw new ApplicationException(
-          "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
+        "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
     }
 
     /* Pr?fung des Projektes */
@@ -109,13 +109,13 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
       Date startDatum = projekt.getStartDatum();
       Date endeDatum = projekt.getEndeDatum();
 
-      if (startDatum != null && !Einstellungen.NODATE.equals(startDatum)
-          && startDatum.after(getDatum())) {
+      if (startDatum != null && !Einstellungen.NODATE.equals(startDatum) &&
+        startDatum.after(getDatum())) {
         throw new ApplicationException("Buchungsdatum liegt vor dem Projektbeginn!");
       }
 
-      if (endeDatum != null && !Einstellungen.NODATE.equals(endeDatum)
-          && endeDatum.before(getDatum())) {
+      if (endeDatum != null && !Einstellungen.NODATE.equals(endeDatum) &&
+        endeDatum.before(getDatum())) {
         throw new ApplicationException("Buchungsdatum liegt nach dem Projektende!");
       }
     }
@@ -131,7 +131,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
   }
 
   @Override
-  protected Class<?> getForeignObject(String field) {
+  protected Class < ? > getForeignObject(String field) {
     if ("mitgliedskonto".equals(field)) {
       return Mitgliedskonto.class;
     } else if ("abrechnungslauf".equals(field)) {
@@ -227,6 +227,18 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
   @Override
   public void setName(String name) throws RemoteException {
     setAttribute("name", name);
+  }
+
+  @Override
+  public void setIban(String iban) throws RemoteException
+  {
+    setAttribute("iban", iban);
+  }
+
+  @Override
+  public String getIban() throws RemoteException
+  {
+    return (String) getAttribute("iban");
   }
 
   @Override
@@ -384,30 +396,27 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
   public void setSpendenbescheinigungId(Long spendenbescheinigung) throws RemoteException {
     setAttribute("spendenbescheinigung", spendenbescheinigung);
   }
-  
+
   @Override
-  public int getDependencyId() throws RemoteException
-  {
+  public int getDependencyId() throws RemoteException {
     Integer dependencyid = (Integer) getAttribute("dependencyid");
     if (dependencyid == null) {
       return -1;
-    }
-    else {
+    } else {
       return dependencyid.intValue();
     }
   }
 
   @Override
-  public void setDependencyId(int dependencyid) throws RemoteException
-  {
+  public void setDependencyId(int dependencyid) throws RemoteException {
     setAttribute("dependencyid", dependencyid);
   }
 
   @Override
-  public Map<String, Object> getMap(Map<String, Object> inma) throws RemoteException {
-    Map<String, Object> map = null;
+  public Map < String, Object > getMap(Map < String, Object > inma) throws RemoteException {
+    Map < String, Object > map = null;
     if (inma == null) {
-      map = new HashMap<>();
+      map = new HashMap < > ();
     } else {
       map = inma;
     }
@@ -415,7 +424,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
       //
     }
     map.put(BuchungVar.ABRECHNUNGSLAUF.getName(),
-        (this.getAbrechnungslauf() != null ? this.getAbrechnungslauf().getDatum() : ""));
+      (this.getAbrechnungslauf() != null ? this.getAbrechnungslauf().getDatum() : ""));
     map.put(BuchungVar.ART.getName(), StringTool.toNotNullString(this.getArt()));
     map.put(BuchungVar.AUSZUGSNUMMER.getName(), this.getAuszugsnummer());
     map.put(BuchungVar.BETRAG.getName(), this.getBetrag());
@@ -427,9 +436,9 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
       map.put(BuchungVar.BUCHUNGSARTNUMMER.getName(), this.getBuchungsart().getNummer());
       if (this.getBuchungsart().getBuchungsklasse() != null) {
         map.put(BuchungVar.BUCHUNGSKLASSEBEZEICHNUNG.getName(),
-            this.getBuchungsart().getBuchungsklasse().getBezeichnung());
+          this.getBuchungsart().getBuchungsklasse().getBezeichnung());
         map.put(BuchungVar.BUCHUNGSKLASSENUMMER.getName(),
-            this.getBuchungsart().getBuchungsklasse().getNummer());
+          this.getBuchungsart().getBuchungsklasse().getNummer());
       } else {
         map.put(BuchungVar.BUCHUNGSKLASSEBEZEICHNUNG.getName(), "");
         map.put(BuchungVar.BUCHUNGSKLASSENUMMER.getName(), "");
@@ -451,14 +460,14 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
 
     map.put(BuchungVar.DATUM.getName(), this.getDatum());
     map.put(BuchungVar.JAHRESABSCHLUSS.getName(),
-        this.getJahresabschluss() != null ? this.getJahresabschluss().getBis() : "");
+      this.getJahresabschluss() != null ? this.getJahresabschluss().getBis() : "");
     map.put(BuchungVar.KOMMENTAR.getName(), StringTool.toNotNullString(this.getKommentar()));
     map.put(BuchungVar.KONTONUMMER.getName(),
-        this.getKonto() != null ? this.getKonto().getNummer() : "");
+      this.getKonto() != null ? this.getKonto().getNummer() : "");
     map.put(BuchungVar.MITGLIEDSKONTO.getName(),
-        this.getMitgliedskonto() != null
-            ? Adressaufbereitung.getNameVorname(this.getMitgliedskonto().getMitglied())
-            : "");
+      this.getMitgliedskonto() != null ?
+      Adressaufbereitung.getNameVorname(this.getMitgliedskonto().getMitglied()) :
+      "");
     map.put(BuchungVar.NAME.getName(), this.getName());
     map.put(BuchungVar.ZWECK1.getName(), StringTool.toNotNullString(this.getZweck()));
     return map;
@@ -497,9 +506,13 @@ public class BuchungImpl extends AbstractDBObject implements Buchung {
 
   @Override
   public Jahresabschluss getJahresabschluss() throws RemoteException {
-    DBIterator<Jahresabschluss> it = Einstellungen.getDBService().createList(Jahresabschluss.class);
-    it.addFilter("von <= ?", new Object[] {getDatum()});
-    it.addFilter("bis >= ?", new Object[] {getDatum()});
+    DBIterator < Jahresabschluss > it = Einstellungen.getDBService().createList(Jahresabschluss.class);
+    it.addFilter("von <= ?", new Object[] {
+      getDatum()
+    });
+    it.addFilter("bis >= ?", new Object[] {
+      getDatum()
+    });
     if (it.hasNext()) {
       Jahresabschluss ja = it.next();
       return ja;

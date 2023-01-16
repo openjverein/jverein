@@ -42,6 +42,7 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.action.BuchungMitgliedskontoZuordnungAutomatischAction;
 import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -717,7 +718,7 @@ public class BuchungsControl extends AbstractControl {
     }
     Date d = null;
     try {
-      d = new JVDateFormatTTMMJJJJ().parse(settings.getString("bisdatum", "31.12.2006"));
+      d = new JVDateFormatTTMMJJJJ().parse(settings.getString("bisdatum", "31.12.2030"));
     } catch (ParseException e) {
       //
     }
@@ -759,6 +760,13 @@ public class BuchungsControl extends AbstractControl {
         starteAuswertung(false);
       }
     }, null, true, "file-pdf.png"); // "true" defines this button as the default
+    return b;
+  }
+
+  public Button getStarteBuchungMitgliedskontoZuordnungAutomatischButton()
+  {
+    Button b = new Button("Zuordnung", new BuchungMitgliedskontoZuordnungAutomatischAction(getVondatum(), getBisdatum()), null, false,
+            "user-friends.png");
     return b;
   }
 
@@ -1023,6 +1031,7 @@ public class BuchungsControl extends AbstractControl {
       buchungsList.addColumn("Blatt", "blattnummer");
 
       buchungsList.addColumn("Name", "name");
+      buchungsList.addColumn("IBAN oder Kontonummer", "iban");
       buchungsList.addColumn("Verwendungszweck", "zweck", new Formatter() {
         @Override
         public String format(Object value) {
