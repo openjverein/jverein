@@ -141,6 +141,8 @@ public class EinstellungControl extends AbstractControl {
 
   private TextInput rechnungtextbar;
 
+  private IntegerInput rechnungzaehlerlaenge;
+
   private CheckboxInput externemitgliedsnummer;
 
   private SelectInput arbeitsstundenmodel;
@@ -645,6 +647,13 @@ public class EinstellungControl extends AbstractControl {
     }
     rechnungtextbar = new TextInput(Einstellungen.getEinstellung().getRechnungTextBar(), 100);
     return rechnungtextbar;
+  }
+
+  public IntegerInput getRechnungZaehlerLaenge() throws RemoteException {
+    if (null == rechnungzaehlerlaenge) {
+      rechnungzaehlerlaenge = new IntegerInput(Einstellungen.getEinstellung().getRechnungZaehlerLaenge());
+    }
+    return rechnungzaehlerlaenge;
   }
 
   public CheckboxInput getExterneMitgliedsnummer() throws RemoteException {
@@ -1617,6 +1626,9 @@ public class EinstellungControl extends AbstractControl {
       e.setRechnungTextAbbuchung((String) rechnungtextabbuchung.getValue());
       e.setRechnungTextUeberweisung((String) rechnungtextueberweisung.getValue());
       e.setRechnungTextBar((String) rechnungtextbar.getValue());
+      Integer length = (Integer) rechnungzaehlerlaenge.getValue();
+      e.setRechnungZaehlerLaenge(length);
+      
       e.store();
       Einstellungen.setEinstellung(e);
 

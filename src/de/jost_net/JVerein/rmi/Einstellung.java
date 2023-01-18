@@ -194,6 +194,10 @@ public interface Einstellung extends DBObject, IBankverbindung {
 
     public String getRechnungTextBar() throws RemoteException;
 
+    public int getRechnungZaehlerLaenge() throws RemoteException;
+
+    public void setRechnungZaehlerLaenge(int rechnungzaehlerlaenge) throws RemoteException;
+
     public void setLehrgaenge(Boolean lehrgaenge) throws RemoteException;
 
     public Boolean getExterneMitgliedsnummer() throws RemoteException;

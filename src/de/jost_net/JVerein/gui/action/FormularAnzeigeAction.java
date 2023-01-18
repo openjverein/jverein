@@ -80,10 +80,11 @@ public class FormularAnzeigeAction implements Action
       map = new AllgemeineMap().getMap(map);
 
       // Get current counter
-      map.put(AllgemeineVar.ZAEHLER.getName(), formular.getZaehler().toString());
-      
+      map.put(AllgemeineVar.ZAEHLER.getName(),
+          formular.getZaehler().toString());
+
       map.put(FormularfeldControl.EMPFAENGER,
-          "Herr\nDr. Willi Wichtig1\nTestgasse 1\n12345 Testenhausen1");
+          "Herr\nDr. Willi Wichtig\nTestgasse 1\n12345 Testenhausen");
       map.put(FormularfeldControl.BUCHUNGSDATUM, new Date());
       map.put(FormularfeldControl.ZAHLUNGSGRUND,
           "Zahlungsgrund1 Zahlungsgrund2");
@@ -94,15 +95,15 @@ public class FormularAnzeigeAction implements Action
       map.put(FormularfeldControl.EXTERNEMITGLIEDSNUMMER, "9999");
       map.put(FormularfeldControl.ANREDE, "Herrn");
       map.put(FormularfeldControl.TITEL, "Dr.");
-      map.put(FormularfeldControl.NAME, "Wichtig2");
+      map.put(FormularfeldControl.NAME, "Wichtig");
       map.put(FormularfeldControl.VORNAME, "Willi");
       map.put(FormularfeldControl.ADRESSIERUNGSZUSATZ, "Hinterhaus");
       map.put(FormularfeldControl.STRASSE, "Testgasse 1");
       map.put(FormularfeldControl.PLZ, "12345");
-      map.put(FormularfeldControl.ORT, "Testenhausen2");
+      map.put(FormularfeldControl.ORT, "Testenhausen");
       map.put(FormularfeldControl.ZAHLUNGSRHYTMUS, "jährlich");
       map.put(FormularfeldControl.ZAHLUNGSRHYTHMUS, "jährlich");
-      map.put(FormularfeldControl.KONTOINHABER, "Wichtig3");
+      map.put(FormularfeldControl.KONTOINHABER, "Wichtig");
       map.put(FormularfeldControl.GEBURTSDATUM, new Date());
       map.put(FormularfeldControl.GESCHLECHT, GeschlechtInput.MAENNLICH);
       map.put(FormularfeldControl.TELEFONPRIVAT, "01234/56789");
@@ -280,7 +281,7 @@ public class FormularAnzeigeAction implements Action
       betrag.add(160.1d);
       differenz.add(155.1d);
       ist.add(5d);
-      
+
       map.put(FormularfeldControl.BUCHUNGSDATUM, buda.toArray());
       map.put(FormularfeldControl.ZAHLUNGSGRUND, zg.toArray());
       map.put(FormularfeldControl.ZAHLUNGSGRUND1, zg1.toArray());

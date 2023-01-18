@@ -33,6 +33,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
+import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -100,6 +101,9 @@ public class FormularAufbereitung
       
       // Get current counter
       Integer zaehler = formular.getZaehler();
+      // Get settings and length of counter
+      Einstellung e = Einstellungen.getEinstellung();
+      Integer zaehlerLaenge = e.getRechnungZaehlerLaenge();
 
       for (int i = 1; i <= numOfPages; i++)
       {
@@ -125,8 +129,8 @@ public class FormularAufbereitung
             zaehler++;
             // Prevent multiple increases by next page
             increased = true;
-            // Set new value to field
-            map.put(AllgemeineVar.ZAEHLER.getName(), StringTool.lpad(zaehler.toString(), 6, "0"));
+            // Set new value to field with leading zero to get the defined length
+            map.put(AllgemeineVar.ZAEHLER.getName(), StringTool.lpad(zaehler.toString(), zaehlerLaenge, "0"));
           }
           
           goFormularfeld(contentByte, f, map.get(f.getName()));

@@ -227,6 +227,7 @@
 			<column name="rechnungtextabbuchung" type="VARCHAR(100)" />
 			<column name="rechnungtextueberweisung" type="VARCHAR(100)" />
 			<column name="rechnungtextbar" type="VARCHAR(100)" />
+			<column name="rechnungzaehlerlaenge" type="INT(10)" />
 			<column name="externemitgliedsnummer" type="BIT" />
 			<column name="beitragsmodel" type="INT(10)" />
 			<column name="dateinamenmuster" type="VARCHAR(50)" />
