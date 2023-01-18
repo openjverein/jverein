@@ -28,7 +28,8 @@ public enum AllgemeineVar
   TAGESDATUMTT("tagesdatumtt"), //
   TAGESDATUMMM("tagesdatummm"), //
   TAGESDATUMJJJJ("tagesdatumjjjj"), //
-  VORMONAT("vormonat"), VORJAHR("vorjahr"); //
+  VORMONAT("vormonat"), VORJAHR("vorjahr"),
+  ZAEHLER("zaehler"); //
 
   private String name;
 

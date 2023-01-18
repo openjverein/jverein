@@ -25,6 +25,7 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.MitgliedskontoVar;
@@ -77,8 +78,12 @@ public class FormularAnzeigeAction implements Action
       map = new LastschriftMap().getMap(ls, map);
 
       map = new AllgemeineMap().getMap(map);
+
+      // Get current counter
+      map.put(AllgemeineVar.ZAEHLER.getName(), formular.getZaehler().toString());
+      
       map.put(FormularfeldControl.EMPFAENGER,
-          "Herr\nDr. Willi Wichtig\nTestgasse 1\n12345 Testenhausen");
+          "Herr\nDr. Willi Wichtig1\nTestgasse 1\n12345 Testenhausen1");
       map.put(FormularfeldControl.BUCHUNGSDATUM, new Date());
       map.put(FormularfeldControl.ZAHLUNGSGRUND,
           "Zahlungsgrund1 Zahlungsgrund2");
@@ -89,15 +94,15 @@ public class FormularAnzeigeAction implements Action
       map.put(FormularfeldControl.EXTERNEMITGLIEDSNUMMER, "9999");
       map.put(FormularfeldControl.ANREDE, "Herrn");
       map.put(FormularfeldControl.TITEL, "Dr.");
-      map.put(FormularfeldControl.NAME, "Wichtig");
+      map.put(FormularfeldControl.NAME, "Wichtig2");
       map.put(FormularfeldControl.VORNAME, "Willi");
       map.put(FormularfeldControl.ADRESSIERUNGSZUSATZ, "Hinterhaus");
       map.put(FormularfeldControl.STRASSE, "Testgasse 1");
       map.put(FormularfeldControl.PLZ, "12345");
-      map.put(FormularfeldControl.ORT, "Testenhausen");
+      map.put(FormularfeldControl.ORT, "Testenhausen2");
       map.put(FormularfeldControl.ZAHLUNGSRHYTMUS, "jährlich");
       map.put(FormularfeldControl.ZAHLUNGSRHYTHMUS, "jährlich");
-      map.put(FormularfeldControl.KONTOINHABER, "Wichtig");
+      map.put(FormularfeldControl.KONTOINHABER, "Wichtig3");
       map.put(FormularfeldControl.GEBURTSDATUM, new Date());
       map.put(FormularfeldControl.GESCHLECHT, GeschlechtInput.MAENNLICH);
       map.put(FormularfeldControl.TELEFONPRIVAT, "01234/56789");
@@ -213,19 +218,22 @@ public class FormularAnzeigeAction implements Action
       bl_daten.append("13.02.2008");
       bl_daten.append(newLineStr);
       bl_daten.append("12.11.2008");
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_DATEN.getName(), bl_daten.toString());
+      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_DATEN.getName(),
+          bl_daten.toString());
 
       StringBuilder bl_art = new StringBuilder();
       bl_art.append("Beitrag");
       bl_art.append(newLineStr);
       bl_art.append("Spende");
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_ART.getName(), bl_art.toString());
+      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_ART.getName(),
+          bl_art.toString());
 
       StringBuilder bl_verzicht = new StringBuilder();
       bl_verzicht.append("nein");
       bl_verzicht.append(newLineStr);
       bl_verzicht.append("ja");
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_VERZICHT.getName(), bl_verzicht.toString());
+      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_VERZICHT.getName(),
+          bl_verzicht.toString());
 
       StringBuilder bl_betrag = new StringBuilder();
       str = Einstellungen.DECIMALFORMAT.format(15.0);
@@ -233,7 +241,8 @@ public class FormularAnzeigeAction implements Action
       bl_betrag.append(newLineStr);
       str = Einstellungen.DECIMALFORMAT.format(1234.96);
       bl_betrag.append(StringTool.lpad(str, colBetragLen));
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_BETRAG.getName(), bl_betrag.toString());
+      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_BETRAG.getName(),
+          bl_betrag.toString());
 
       map.put(SpendenbescheinigungVar.BEZEICHNUNGSACHZUWENDUNG.getName(),
           "gebrauchter Tisch");
@@ -271,6 +280,7 @@ public class FormularAnzeigeAction implements Action
       betrag.add(160.1d);
       differenz.add(155.1d);
       ist.add(5d);
+      
       map.put(FormularfeldControl.BUCHUNGSDATUM, buda.toArray());
       map.put(FormularfeldControl.ZAHLUNGSGRUND, zg.toArray());
       map.put(FormularfeldControl.ZAHLUNGSGRUND1, zg1.toArray());
@@ -282,6 +292,7 @@ public class FormularAnzeigeAction implements Action
       map.put(MitgliedskontoVar.IST.getName(), ist.toArray());
       map.put(MitgliedskontoVar.DIFFERENZ.getName(), differenz.toArray());
       map.put(MitgliedskontoVar.SUMME_OFFEN.getName(), 700);
+
       FormularAufbereitung fab = new FormularAufbereitung(file);
       fab.writeForm(formular, map);
       fab.showFormular();

@@ -55,6 +55,8 @@ public class FormularControl extends AbstractControl
   private FileInput datei;
 
   private Formular formular;
+  
+  private TextInput zaehler;
 
   public FormularControl(AbstractView view)
   {
@@ -107,6 +109,16 @@ public class FormularControl extends AbstractControl
     return datei;
   }
 
+  public TextInput getZaehler() throws RemoteException
+  {
+    if (zaehler != null)
+    {
+      return zaehler;
+    }
+    zaehler = new TextInput(getFormular().getZaehler().toString(), 10);
+    return zaehler;
+  }
+
   /**
    * This method stores the project using the current values.
    */
@@ -116,10 +128,11 @@ public class FormularControl extends AbstractControl
     {
       Formular f = getFormular();
       f.setBezeichnung((String) getBezeichnung(true).getValue());
+      
       FormularArt fa = (FormularArt) getArt().getValue();
       f.setArt(fa);
+      
       String dat = (String) getDatei().getValue();
-
       if (dat.length() > 0)
       {
         FileInputStream fis = new FileInputStream(dat);
@@ -128,6 +141,9 @@ public class FormularControl extends AbstractControl
         fis.close();
         f.setInhalt(b);
       }
+      
+      f.setZaehler(Integer.valueOf(getZaehler().getValue().toString()));
+      
       f.store();
       GUI.getStatusBar().setSuccessText("Formular gespeichert");
     }
@@ -164,6 +180,7 @@ public class FormularControl extends AbstractControl
     formularList.addColumn("Bezeichnung", "bezeichnung");
     formularList.addColumn("Art", "art", new FormularartFormatter(), false,
         Column.ALIGN_LEFT);
+    formularList.addColumn("Zähler", "zaehler");
     formularList.setRememberColWidths(true);
     formularList.setContextMenu(new FormularMenu(this));
     formularList.setRememberOrder(true);

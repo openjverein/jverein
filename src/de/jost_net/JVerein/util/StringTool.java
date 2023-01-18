@@ -74,7 +74,7 @@ public class StringTool
 
   /**
    * Formatiert eine Zeichenkette so, dass sie eine feste Länge (len) bekommt,
-   * wobei Leerzeichen am Anfang der Zeichenkette angehängt werden.
+   * wobei Zeichen am Anfang der Zeichenkette angehängt werden.
    * 
    * @param string
    *          Die zu formatierende Zeichenkette

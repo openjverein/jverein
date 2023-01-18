@@ -37,4 +37,7 @@ public interface Formular extends DBObject
 
   public void setArt(FormularArt formularArtEnum) throws RemoteException;
 
+  public Integer getZaehler() throws RemoteException;
+
+  public void setZaehler(Integer zaehler) throws RemoteException;
 }

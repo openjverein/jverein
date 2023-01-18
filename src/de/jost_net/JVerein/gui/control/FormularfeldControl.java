@@ -144,6 +144,8 @@ public class FormularfeldControl extends AbstractControl
 
   public static final String KUENDIGUNG = "Kündigung";
 
+  public static final String ZAEHLER = "Fortlaufende Nummer des Formulars";
+
   public FormularfeldControl(AbstractView view, Formular formular)
   {
     super(view);
