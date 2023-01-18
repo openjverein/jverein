@@ -34,6 +34,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.FileInput;
+import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
@@ -56,7 +57,7 @@ public class FormularControl extends AbstractControl
 
   private Formular formular;
   
-  private TextInput zaehler;
+  private IntegerInput zaehler;
 
   public FormularControl(AbstractView view)
   {
@@ -109,13 +110,13 @@ public class FormularControl extends AbstractControl
     return datei;
   }
 
-  public TextInput getZaehler() throws RemoteException
+  public IntegerInput getZaehler() throws RemoteException
   {
     if (zaehler != null)
     {
       return zaehler;
     }
-    zaehler = new TextInput(getFormular().getZaehler().toString(), 10);
+    zaehler = new IntegerInput(getFormular().getZaehler());
     return zaehler;
   }
 
@@ -142,7 +143,7 @@ public class FormularControl extends AbstractControl
         f.setInhalt(b);
       }
       
-      f.setZaehler(Integer.valueOf(getZaehler().getValue().toString()));
+      f.setZaehler((int) getZaehler().getValue());
       
       f.store();
       GUI.getStatusBar().setSuccessText("Formular gespeichert");

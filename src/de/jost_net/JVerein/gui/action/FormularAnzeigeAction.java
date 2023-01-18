@@ -81,7 +81,7 @@ public class FormularAnzeigeAction implements Action
 
       // Get current counter
       map.put(AllgemeineVar.ZAEHLER.getName(),
-          formular.getZaehler().toString());
+          formular.getZaehler());
 
       map.put(FormularfeldControl.EMPFAENGER,
           "Herr\nDr. Willi Wichtig\nTestgasse 1\n12345 Testenhausen");
