@@ -1,30 +1,30 @@
 JVerein ist eine Open-Source-Vereinsverwaltung mit einer Anbindung an die ebenfalls unter Open-Source-Lizenz stehende Homebankingsoftware Hibiscus.
-Die Implementierung erfolgt mit Java. Der Ablauf auf vielen Plattformen ist damit gewÃ¤hrleistet. Als GUI-Framework kommt Jameica zum Einsatz.
+Die Implementierung erfolgt mit Java. Der Ablauf auf vielen Plattformen ist damit gewährleistet. Als GUI-Framework kommt Jameica zum Einsatz.
 
 Mitmachen?
 ----------
 
 Perfekt! Das Entwickler-Forum unter https://jverein-forum.de ist dazu die erste Anlaufstelle.
-Das Entwickler-Forum ist nach Anmeldung und Freischaltung durch Heiner Jostkleigrewe verfÃ¼gbar.
+Das Entwickler-Forum ist nach Anmeldung und Freischaltung durch Heiner Jostkleigrewe verfügbar.
 
 Um in die openjverein Organisation aufgenommen zu werden erstellt bitte ein issue.
 
 Sourcen
 -------
 
-JVerein nutzt die Homebankingsoftware Hibiscus und das GUI-Framework Jameica. FÃ¼r die Entwicklung mÃ¼ssen daher deren GIT-Repositorys eingebunden werden:
+JVerein nutzt die Homebankingsoftware Hibiscus und das GUI-Framework Jameica. für die Entwicklung müssen daher deren GIT-Repositorys eingebunden werden:
 
    https://github.com/willuhn/jameica.git
    https://github.com/willuhn/hibiscus.git
 
-Das GIT-Repository von JVerein kann dann Ã¼ber https://github.com/openjverein/jverein verwendet werden.
+Das GIT-Repository von JVerein kann dann über https://github.com/openjverein/jverein verwendet werden.
 
-Das JVerein Repo sollte am Besten geforkt werden. Ãœber "Request Merge" kÃ¶nnen Ã„nderungen ins JVerein Repo zurÃ¼ck gespielt werden.
+Das JVerein Repo sollte am Besten geforkt werden. Ãœber "Request Merge" können Ã„nderungen ins JVerein Repo zurück gespielt werden.
 
 Entwicklungsumgebung
 --------------------
 
-FÃ¼r die JVerein Entwicklung werden benÃ¶tigt
+für die JVerein Entwicklung werden benötigt
 
 - Eclipse
 - JDK 1.7
@@ -45,4 +45,4 @@ Kontakt
 - Web: https://openjverein.github.io/
 - eMail:
     - Heiner Jostkleigrewe heiner(at)jost-net.de
-    - Philipp SchÃ¶nberger mail(at)phschoen.de
+    - Philipp Schönberger mail(at)phschoen.de
