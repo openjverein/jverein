@@ -270,7 +270,7 @@ public class FormularAnzeigeAction implements Action
       
       double steuer = 19.0d;
       steuersatz.add(steuer);
-      steuerbetrag.add(200.0d * ((100.0d - steuer) / 100));
+      steuerbetrag.add(200.0d * ((100.0d - steuer) / 100.0d));
       
       betrag.add(150.10d);
       ist.add(0d);
