@@ -49,6 +49,8 @@ public class MitgliedskontoMap
     ArrayList<Date> buda = new ArrayList<>();
     ArrayList<String> zg = new ArrayList<>();
     ArrayList<String> zg1 = new ArrayList<>();
+    ArrayList<Double> steuersatz = new ArrayList<>();
+    ArrayList<Double> steuerbetrag = new ArrayList<>();
     ArrayList<Double> betrag = new ArrayList<>();
     ArrayList<Double> ist = new ArrayList<>();
     ArrayList<Double> differenz = new ArrayList<>();
@@ -60,7 +62,9 @@ public class MitgliedskontoMap
       buda.add(mkto.getDatum());
       zg.add(mkto.getZweck1());
       zg1.add(mkto.getZweck1());
-      betrag.add(new Double(mkto.getBetrag()));
+      steuersatz.add(Double.valueOf(mkto.getSteuersatz()));
+      steuerbetrag.add(Double.valueOf(mkto.getSteuerbetrag()));
+      betrag.add(Double.valueOf(mkto.getBetrag()));
       ist.add(mkto.getIstSumme());
       suist += mkto.getIstSumme();
       differenz.add(mkto.getBetrag() - mkto.getIstSumme());
@@ -82,6 +86,8 @@ public class MitgliedskontoMap
     map.put(MitgliedskontoVar.BUCHUNGSDATUM.getName(), buda.toArray());
     map.put(MitgliedskontoVar.ZAHLUNGSGRUND.getName(), zg.toArray());
     map.put(MitgliedskontoVar.ZAHLUNGSGRUND1.getName(), zg1.toArray());
+    map.put(MitgliedskontoVar.STEUERSATZ.getName(), steuersatz.toArray());
+    map.put(MitgliedskontoVar.STEUERBETRAG.getName(), steuerbetrag.toArray());
     map.put(MitgliedskontoVar.BETRAG.getName(), betrag.toArray());
     map.put(MitgliedskontoVar.IST.getName(), ist.toArray());
     map.put(MitgliedskontoVar.DIFFERENZ.getName(), differenz.toArray());
@@ -106,6 +112,8 @@ public class MitgliedskontoMap
     map.put(MitgliedskontoVar.BUCHUNGSDATUM.getName(), mk.getDatum());
     map.put(MitgliedskontoVar.ZAHLUNGSGRUND.getName(), mk.getZweck1());
     map.put(MitgliedskontoVar.ZAHLUNGSGRUND1.getName(), mk.getZweck1());
+    map.put(MitgliedskontoVar.STEUERSATZ.getName(), mk.getSteuersatz());
+    map.put(MitgliedskontoVar.STEUERBETRAG.getName(), mk.getSteuerbetrag());
     map.put(MitgliedskontoVar.BETRAG.getName(), mk.getBetrag());
     map.put(MitgliedskontoVar.IST.getName(), mk.getIstSumme());
     map.put(MitgliedskontoVar.DIFFERENZ.getName(),

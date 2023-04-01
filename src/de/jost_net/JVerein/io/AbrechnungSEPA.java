@@ -810,6 +810,15 @@ public class AbrechnungSEPA
           .createObject(Mitgliedskonto.class, null);
       mk.setAbrechnungslauf(abrl);
       mk.setZahlungsweg(mitglied.getZahlungsweg());
+      if (buchungsart.getSteuersatz() != 0.0d) {
+        mk.setSteuersatz(buchungsart.getSteuersatz());
+        mk.setSteuerbetrag(betrag * ((100.0d - buchungsart.getSteuersatz()) / 100));
+      } 
+      else 
+      {
+        mk.setSteuersatz(666d);
+        mk.setSteuerbetrag(999d);
+      }
       mk.setBetrag(betrag);
       mk.setDatum(datum);
       mk.setMitglied(mitglied);
