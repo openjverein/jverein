@@ -258,6 +258,8 @@ public class FormularAnzeigeAction implements Action
       ArrayList<Date> buda = new ArrayList<>();
       ArrayList<String> zg = new ArrayList<>();
       ArrayList<String> zg1 = new ArrayList<>();
+      ArrayList<Double> steuersatz = new ArrayList<>();
+      ArrayList<Double> steuerbetrag = new ArrayList<>();
       ArrayList<Double> betrag = new ArrayList<>();
       ArrayList<Double> ist = new ArrayList<>();
       ArrayList<Double> differenz = new ArrayList<>();
@@ -265,6 +267,11 @@ public class FormularAnzeigeAction implements Action
       buda.add(new Date());
       zg.add("Testverwendungszweck");
       zg1.add("Testverwendungszweck");
+      
+      double steuer = 19.0d;
+      steuersatz.add(steuer);
+      steuerbetrag.add(200.0d * ((100.0d - steuer) / 100));
+      
       betrag.add(150.10d);
       ist.add(0d);
       differenz.add(-150.10d);
@@ -289,6 +296,8 @@ public class FormularAnzeigeAction implements Action
       map.put(MitgliedskontoVar.BUCHUNGSDATUM.getName(), buda.toArray());
       map.put(MitgliedskontoVar.ZAHLUNGSGRUND.getName(), zg.toArray());
       map.put(MitgliedskontoVar.ZAHLUNGSGRUND1.getName(), zg1.toArray());
+      map.put(MitgliedskontoVar.STEUERSATZ.getName(), steuersatz.toArray());
+      map.put(MitgliedskontoVar.STEUERBETRAG.getName(), steuerbetrag.toArray());
       map.put(MitgliedskontoVar.BETRAG.getName(), betrag.toArray());
       map.put(MitgliedskontoVar.IST.getName(), ist.toArray());
       map.put(MitgliedskontoVar.DIFFERENZ.getName(), differenz.toArray());

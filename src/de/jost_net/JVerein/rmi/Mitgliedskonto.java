@@ -44,6 +44,14 @@ public interface Mitgliedskonto extends DBObject
 
   public void setZahlungsweg(Integer zahlungsweg) throws RemoteException;
 
+  public Double getSteuersatz() throws RemoteException;
+
+  public void setSteuersatz(Double betrag) throws RemoteException;
+
+  public Double getSteuerbetrag() throws RemoteException;
+
+  public void setSteuerbetrag(Double betrag) throws RemoteException;
+
   public void setBetrag(Double betrag) throws RemoteException;
 
   public Double getBetrag() throws RemoteException;

@@ -277,7 +277,7 @@ public class AbrechnungslaufControl extends AbstractControl
 
     CurrencyFormatter cf = new CurrencyFormatter("EUR",
         Einstellungen.DECIMALFORMAT);
-    String s = String.format("Anzahl: %s; Summe %s", data.anzahl.toString(),
+    String s = String.format("Anzahl: %s; Summe: %s", data.anzahl.toString(),
         cf.format(data.summe));
     statistikbuchungen = new LabelInput(s);
     statistikbuchungen.setName("Buchungen");
@@ -323,7 +323,7 @@ public class AbrechnungslaufControl extends AbstractControl
 
     CurrencyFormatter cf = new CurrencyFormatter("EUR",
         Einstellungen.DECIMALFORMAT);
-    String s = String.format("Anzahl: %s; Summe %s", data.anzahl.toString(),
+    String s = String.format("Anzahl: %s; Summe: %s", data.anzahl.toString(),
         cf.format(data.summe));
     statistiklastschriften = new LabelInput(s);
     statistiklastschriften.setName("Lastschriften");

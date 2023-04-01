@@ -22,6 +22,8 @@ public enum MitgliedskontoVar
   ZAHLUNGSGRUND1("mitgliedskonto_zahlungsgrund1"), //
   ZAHLUNGSGRUND2("mitgliedskonto_zahlungsgrund2"), //
   BUCHUNGSDATUM("mitgliedskonto_buchungsdatum"), //
+  STEUERSATZ("mitgliedskonto_steuersatz"), //
+  STEUERBETRAG("mitgliedskonto_steuerbetrag"), //
   BETRAG("mitgliedskonto_betrag"), //
   IST("mitgliedskonto_ist"), //
   DIFFERENZ("mitgliedskonto_differenz"), //
