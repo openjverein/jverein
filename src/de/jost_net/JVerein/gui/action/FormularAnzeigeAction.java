@@ -257,33 +257,49 @@ public class FormularAnzeigeAction implements Action
       ArrayList<Double> betrag = new ArrayList<>();
       ArrayList<Double> ist = new ArrayList<>();
       ArrayList<Double> differenz = new ArrayList<>();
+      
       // Buchung 1
       buda.add(new Date());
       zg.add("Testverwendungszweck");
       zg1.add("Testverwendungszweck");
-      
+
+      double nettogesamt = 0;
+      double steuerbetraggesamt = 0;
       double steuer = 7d;
       steuersatz.add(steuer);
       double netto = 200d / (1d + (steuer / 100d));
+      nettogesamt += netto;
       nettobetrag.add(netto);
       steuerbetrag.add(200d - netto);
-      
-      betrag.add(150.10d);
+      steuerbetraggesamt += (200d - netto);
+      betrag.add(200d);
       ist.add(0d);
-      differenz.add(-150.10d);
+      differenz.add(-200d);
+      
       // Buchung 2
       buda.add(new Date());
       zg.add("2. Verwendungszweck");
       zg1.add("2. Verwendungszweck");
-      betrag.add(10d);
-      ist.add(5d);
-      differenz.add(-5d);
+      steuer = 19d;
+      steuersatz.add(steuer);
+      netto = 49.99d / (1d + (steuer / 100d));
+      nettogesamt += netto;
+      nettobetrag.add(netto);
+      steuerbetrag.add(49.99d - netto);
+      steuerbetraggesamt += (49.99d - netto);
+      betrag.add(49.99d);
+      ist.add(10d);
+      differenz.add(-39.99d);
+      
       // Summe
       zg1.add("Summe");
       zg.add("Summe");
-      betrag.add(160.1d);
-      differenz.add(155.1d);
-      ist.add(5d);
+      nettobetrag.add(nettogesamt);
+      steuerbetrag.add(steuerbetraggesamt);
+      betrag.add(249.99d);
+      differenz.add(239.99d);
+      ist.add(10d);
+
       map.put(FormularfeldControl.BUCHUNGSDATUM, buda.toArray());
       map.put(FormularfeldControl.ZAHLUNGSGRUND, zg.toArray());
       map.put(FormularfeldControl.ZAHLUNGSGRUND1, zg1.toArray());
