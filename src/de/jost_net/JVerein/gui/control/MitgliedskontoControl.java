@@ -48,7 +48,6 @@ import de.jost_net.JVerein.keys.Ausgabesortierung;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
-import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -522,16 +521,15 @@ public class MitgliedskontoControl extends AbstractControl
       Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
       mkto.setZahlungsweg(zw.getKey());
       mkto.setZweck1((String) getZweck1().getValue());
-      
+
       double steuersatz = 0d;
       if (getBuchungsart().getValue() != null)
       {
         mkto.setBuchungsart((Buchungsart) getBuchungsart().getValue());
-        // Get DB object of Buchungsart by id from input
         Buchungsart bart = mkto.getBuchungsart();
         steuersatz = bart.getSteuersatz();
       }
-      // Update steuersatz value
+      // Update taxes and netto amount
       mkto.setSteuersatz(steuersatz);
       double netto = ((Double) getBetrag().getValue() / (1d + (steuersatz / 100d)));
       mkto.setNettobetrag(netto);
