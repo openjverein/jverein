@@ -190,6 +190,23 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   }
 
   @Override
+  public Double getNettobetrag() throws RemoteException
+  {
+    Double d = (Double) getAttribute("nettobetrag");
+    if (d == null)
+    {
+      return 0.0d;
+    }
+    return d;
+  }
+
+  @Override
+  public void setNettobetrag(Double d) throws RemoteException
+  {
+    setAttribute("nettobetrag", d);
+  }
+
+  @Override
   public Double getSteuersatz() throws RemoteException
   {
     Double d = (Double) getAttribute("steuersatz");

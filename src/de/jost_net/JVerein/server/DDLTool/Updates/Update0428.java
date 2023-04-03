@@ -30,6 +30,9 @@ public class Update0428 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
+    // Add tax
+    execute(addColumn("mitgliedskonto",
+        new Column("nettobetrag", COLTYPE.DOUBLE, 0, "0", false, false)));
     // Add tax rate
     execute(addColumn("mitgliedskonto",
         new Column("steuersatz", COLTYPE.DOUBLE, 0, "0", false, false)));
