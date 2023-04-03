@@ -262,10 +262,11 @@ public class FormularAnzeigeAction implements Action
       zg.add("Testverwendungszweck");
       zg1.add("Testverwendungszweck");
       
-      double steuer = 19.0d;
-      nettobetrag.add(200d * ((100d - steuer) / 100.0d));
+      double steuer = 7d;
       steuersatz.add(steuer);
-      steuerbetrag.add(200d * (steuer / 100d));
+      double netto = 200d / (1d + (steuer / 100d));
+      nettobetrag.add(netto);
+      steuerbetrag.add(200d - netto);
       
       betrag.add(150.10d);
       ist.add(0d);

@@ -811,11 +811,12 @@ public class AbrechnungSEPA
       mk.setAbrechnungslauf(abrl);
       mk.setZahlungsweg(mitglied.getZahlungsweg());
       // Set bill amount without taxes
-      mk.setNettobetrag(betrag * ((100d - buchungsart.getSteuersatz()) / 100d));
+      double nettobetrag = betrag / (1d + (buchungsart.getSteuersatz() / 100d));
+      mk.setNettobetrag(nettobetrag);
       // Set tax rate
       mk.setSteuersatz(buchungsart.getSteuersatz());
       // Set taxes by tax rate and bill amount
-      mk.setSteuerbetrag(betrag * (buchungsart.getSteuersatz() / 100d));
+      mk.setSteuerbetrag(betrag - nettobetrag);
       mk.setBetrag(betrag);
       mk.setDatum(datum);
       mk.setMitglied(mitglied);
