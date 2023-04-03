@@ -49,6 +49,7 @@ public class MitgliedskontoMap
     ArrayList<Date> buda = new ArrayList<>();
     ArrayList<String> zg = new ArrayList<>();
     ArrayList<String> zg1 = new ArrayList<>();
+    ArrayList<Double> nettobetrag = new ArrayList<>();
     ArrayList<Double> steuersatz = new ArrayList<>();
     ArrayList<Double> steuerbetrag = new ArrayList<>();
     ArrayList<Double> betrag = new ArrayList<>();
@@ -62,6 +63,7 @@ public class MitgliedskontoMap
       buda.add(mkto.getDatum());
       zg.add(mkto.getZweck1());
       zg1.add(mkto.getZweck1());
+      nettobetrag.add(Double.valueOf(mkto.getNettobetrag()));
       steuersatz.add(Double.valueOf(mkto.getSteuersatz()));
       steuerbetrag.add(Double.valueOf(mkto.getSteuerbetrag()));
       betrag.add(Double.valueOf(mkto.getBetrag()));
@@ -86,6 +88,7 @@ public class MitgliedskontoMap
     map.put(MitgliedskontoVar.BUCHUNGSDATUM.getName(), buda.toArray());
     map.put(MitgliedskontoVar.ZAHLUNGSGRUND.getName(), zg.toArray());
     map.put(MitgliedskontoVar.ZAHLUNGSGRUND1.getName(), zg1.toArray());
+    map.put(MitgliedskontoVar.NETTOBETRAG.getName(), nettobetrag.toArray());
     map.put(MitgliedskontoVar.STEUERSATZ.getName(), steuersatz.toArray());
     map.put(MitgliedskontoVar.STEUERBETRAG.getName(), steuerbetrag.toArray());
     map.put(MitgliedskontoVar.BETRAG.getName(), betrag.toArray());
@@ -112,6 +115,7 @@ public class MitgliedskontoMap
     map.put(MitgliedskontoVar.BUCHUNGSDATUM.getName(), mk.getDatum());
     map.put(MitgliedskontoVar.ZAHLUNGSGRUND.getName(), mk.getZweck1());
     map.put(MitgliedskontoVar.ZAHLUNGSGRUND1.getName(), mk.getZweck1());
+    map.put(MitgliedskontoVar.NETTOBETRAG.getName(), mk.getNettobetrag());
     map.put(MitgliedskontoVar.STEUERSATZ.getName(), mk.getSteuersatz());
     map.put(MitgliedskontoVar.STEUERBETRAG.getName(), mk.getSteuerbetrag());
     map.put(MitgliedskontoVar.BETRAG.getName(), mk.getBetrag());

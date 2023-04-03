@@ -158,6 +158,8 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
 
       SollbuchungsList.addColumn("Mitglied", "mitglied");
       SollbuchungsList.addColumn("Zweck", "zweck1");
+      SollbuchungsList.addColumn("Nettobetrag", "nettobetrag",
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       SollbuchungsList.addColumn("Steuersatz", "steuersatz",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       SollbuchungsList.addColumn("Steuerbetrag", "steuerbetrag",
