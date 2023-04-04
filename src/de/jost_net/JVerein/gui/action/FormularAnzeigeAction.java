@@ -263,15 +263,11 @@ public class FormularAnzeigeAction implements Action
       zg.add("Testverwendungszweck");
       zg1.add("Testverwendungszweck");
 
-      double nettogesamt = 0;
-      double steuerbetraggesamt = 0;
       double steuer = 7d;
       steuersatz.add(steuer);
       double netto = 200d / (1d + (steuer / 100d));
-      nettogesamt += netto;
       nettobetrag.add(netto);
       steuerbetrag.add(200d - netto);
-      steuerbetraggesamt += (200d - netto);
       betrag.add(200d);
       ist.add(0d);
       differenz.add(-200d);
@@ -283,19 +279,15 @@ public class FormularAnzeigeAction implements Action
       steuer = 19d;
       steuersatz.add(steuer);
       netto = 49.99d / (1d + (steuer / 100d));
-      nettogesamt += netto;
       nettobetrag.add(netto);
       steuerbetrag.add(49.99d - netto);
-      steuerbetraggesamt += (49.99d - netto);
       betrag.add(49.99d);
       ist.add(10d);
       differenz.add(-39.99d);
       
       // Summe
-      zg1.add("Summe");
-      zg.add("Summe");
-      nettobetrag.add(nettogesamt);
-      steuerbetrag.add(steuerbetraggesamt);
+      zg1.add("Rechnungssumme inkl. USt.");
+      zg.add("Rechnungssumme inkl. USt.");
       betrag.add(249.99d);
       differenz.add(239.99d);
       ist.add(10d);
