@@ -75,8 +75,8 @@ public class MitgliedskontoMap
     }
     if (buda.size() > 1)
     {
-      zg1.add("Summe");
-      zg.add("Summe");
+      zg1.add("Rechnungssumme inkl. USt.");
+      zg.add("Rechnungssumme inkl. USt.");
       betrag.add(summe);
       differenz.add(saldo);
       ist.add(suist);
