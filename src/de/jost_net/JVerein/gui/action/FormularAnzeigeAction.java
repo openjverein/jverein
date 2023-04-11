@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -46,6 +47,7 @@ import de.jost_net.JVerein.util.JVDateFormatTT;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import jonelo.NumericalChameleon.SpokenNumbers.GermanNumber;
@@ -254,19 +256,22 @@ public class FormularAnzeigeAction implements Action
       ArrayList<String> zg = new ArrayList<>();
       ArrayList<String> zg1 = new ArrayList<>();
       ArrayList<Double> nettobetrag = new ArrayList<>();
-      ArrayList<Double> steuersatz = new ArrayList<>();
+      ArrayList<String> steuersatz = new ArrayList<>();
       ArrayList<Double> steuerbetrag = new ArrayList<>();
       ArrayList<Double> betrag = new ArrayList<>();
       ArrayList<Double> ist = new ArrayList<>();
       ArrayList<Double> differenz = new ArrayList<>();
-      
+
       // Buchung 1
       buda.add(new Date());
       zg.add("Testverwendungszweck");
       zg1.add("Testverwendungszweck");
+      
+      DecimalFormat format = new DecimalFormat("0");
+      CurrencyFormatter formatter = new CurrencyFormatter("%",format);
 
       double steuer = 7d;
-      steuersatz.add(steuer);
+      steuersatz.add("("+formatter.format(steuer)+")");
       double netto = 200d / (1d + (steuer / 100d));
       nettobetrag.add(netto);
       steuerbetrag.add(200d - netto);
@@ -279,7 +284,7 @@ public class FormularAnzeigeAction implements Action
       zg.add("2. Verwendungszweck");
       zg1.add("2. Verwendungszweck");
       steuer = 19d;
-      steuersatz.add(steuer);
+      steuersatz.add("("+formatter.format(steuer)+")");
       netto = 49.99d / (1d + (steuer / 100d));
       nettobetrag.add(netto);
       steuerbetrag.add(49.99d - netto);
@@ -290,8 +295,8 @@ public class FormularAnzeigeAction implements Action
       // Summe
       if (Einstellungen.getEinstellung().getOptiert())
       {
-        zg1.add("Rechnungssumme inkl. USt.");
-        zg.add("Rechnungssumme inkl. USt.");
+        zg1.add("Rechnungsbetrag inkl. USt.");
+        zg.add("Rechnungsbetrag inkl. USt.");
       }
       else
       {
