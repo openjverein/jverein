@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,6 +25,9 @@ import java.util.Map;
 
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
+import de.willuhn.jameica.gui.formatter.DateFormatter;
 
 public class MitgliedskontoMap
 {
@@ -50,11 +54,14 @@ public class MitgliedskontoMap
     ArrayList<String> zg = new ArrayList<>();
     ArrayList<String> zg1 = new ArrayList<>();
     ArrayList<Double> nettobetrag = new ArrayList<>();
-    ArrayList<Double> steuersatz = new ArrayList<>();
+    ArrayList<String> steuersatz = new ArrayList<>();
     ArrayList<Double> steuerbetrag = new ArrayList<>();
     ArrayList<Double> betrag = new ArrayList<>();
     ArrayList<Double> ist = new ArrayList<>();
     ArrayList<Double> differenz = new ArrayList<>();
+    
+    DecimalFormat format = new DecimalFormat("0");
+    CurrencyFormatter formatter = new CurrencyFormatter("%",format);
     double summe = 0;
     double saldo = 0;
     double suist = 0;
@@ -64,7 +71,7 @@ public class MitgliedskontoMap
       zg.add(mkto.getZweck1());
       zg1.add(mkto.getZweck1());
       nettobetrag.add(Double.valueOf(mkto.getNettobetrag()));
-      steuersatz.add(Double.valueOf(mkto.getSteuersatz()));
+      steuersatz.add("("+formatter.format(Double.valueOf(mkto.getSteuersatz()))+")");
       steuerbetrag.add(Double.valueOf(mkto.getSteuerbetrag()));
       betrag.add(Double.valueOf(mkto.getBetrag()));
       ist.add(mkto.getIstSumme());
@@ -75,8 +82,8 @@ public class MitgliedskontoMap
     }
     if (buda.size() > 1)
     {
-      zg1.add("Rechnungssumme inkl. USt.");
-      zg.add("Rechnungssumme inkl. USt.");
+      zg1.add("Rechnungsbetrag inkl. USt.");
+      zg.add("Rechnungsbetrag inkl. USt.");
       betrag.add(summe);
       differenz.add(saldo);
       ist.add(suist);
