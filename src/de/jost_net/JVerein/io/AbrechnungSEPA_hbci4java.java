@@ -235,8 +235,8 @@ public class AbrechnungSEPA_hbci4java {
 	        {
 	          Logger.error("Generieren der SEPA-XML FRST fehlgeschlagen!", e);
 	        }
-		    Logger.info("Genieren der SEPA-XML FRST erfolgreich : " + param.sepafileFRST);
-		    monitor.log("Genieren der SEPA-XML FRST erfolgreich : " + param.sepafileFRST);
+		    Logger.info("Generieren der SEPA-XML FRST erfolgreich : " + param.sepafileFRST);
+		    monitor.log("Generieren der SEPA-XML FRST erfolgreich : " + param.sepafileFRST);
 	    }
 	    
 	    // Lastschrift Datei RCUR erzeugen: Aber nur wenn auch welche gezaehlt wurden	    
@@ -252,8 +252,8 @@ public class AbrechnungSEPA_hbci4java {
 	        {
 	          Logger.error("Generieren der SEPA-XML RCUR fehlgeschlagen!", e);
 	        }
-		    Logger.info("Genieren der SEPA-XML RCUR erfolgreich : " + param.sepafileRCUR);
-		    monitor.log("Genieren der SEPA-XML RCUR erfolgreich : " + param.sepafileRCUR);
+		    Logger.info("Generieren der SEPA-XML RCUR erfolgreich : " + param.sepafileRCUR);
+		    monitor.log("Generieren der SEPA-XML RCUR erfolgreich : " + param.sepafileRCUR);
 	    }	    
 	   
 
