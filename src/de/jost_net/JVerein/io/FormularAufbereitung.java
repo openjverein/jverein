@@ -33,6 +33,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
+import de.jost_net.JVerein.Variable.MitgliedskontoVar;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
@@ -43,6 +44,8 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.internal.action.Program;
 import de.willuhn.jameica.messaging.StatusBarMessage;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.logging.Level;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FormularAufbereitung
@@ -262,6 +265,11 @@ public class FormularAufbereitung
           stringVal.append((String) ostr);
           stringVal.append("\n");
         }
+        
+        // Format Strings with percent numbers and closing bracket e.g. taxes
+        if (((String) o[0]).contains("%)")) {
+          buendig = rechts;
+        }
       }
       if (o[0] instanceof Date)
       {
@@ -285,6 +293,11 @@ public class FormularAufbereitung
     if (val instanceof String)
     {
       stringVal = new StringBuilder((String) val);
+
+      // Format Strings with percent numbers and closing bracket e.g. taxes
+      if (((String) val).contains("%)")) {
+        buendig = rechts;
+      }
     }
     if (val instanceof Double)
     {
