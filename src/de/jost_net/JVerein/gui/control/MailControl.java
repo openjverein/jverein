@@ -472,6 +472,8 @@ public class MailControl extends AbstractControl
               // Nachricht wurde erfolgreich versendet; speicher Versand-Datum
               // persistent.
               empf.setVersand(new Timestamp(new Date().getTime()));
+              // Fix null value in colum mail for mailempfaenger
+              empf.setMail(getMail());
               empf.store();
               // aktualisiere TablePart getEmpfaenger() (zeige neues
               // Versand-Datum)
