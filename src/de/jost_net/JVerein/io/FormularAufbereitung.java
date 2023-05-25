@@ -142,6 +142,7 @@ public class FormularAufbereitung
       
       // Set counter to form (not yet saved to the DB)
       formular.setZaehler(zaehler);
+      formular.setZaehlerToFormLink(zaehler);
     }
     catch (IOException e)
     {

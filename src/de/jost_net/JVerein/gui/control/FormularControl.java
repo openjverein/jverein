@@ -23,10 +23,13 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.FormularAction;
+import de.jost_net.JVerein.gui.formatter.FormularLinkFormatter;
 import de.jost_net.JVerein.gui.formatter.FormularartFormatter;
+import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.menu.FormularMenu;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -56,8 +59,10 @@ public class FormularControl extends AbstractControl
   private FileInput datei;
 
   private Formular formular;
-  
+
   private IntegerInput zaehler;
+
+  private SelectInput formLink;
 
   public FormularControl(AbstractView view)
   {
@@ -120,6 +125,36 @@ public class FormularControl extends AbstractControl
     return zaehler;
   }
 
+  public SelectInput getFormLink() throws RemoteException
+  {
+    if (formLink != null)
+    {
+      return formLink;
+    }
+
+    Integer currentFormId = getFormular().getFormLink();
+    if (currentFormId != 0)
+    {
+      formLink = new FormularInput(null, currentFormId.toString());
+    }
+    else
+    {
+      formLink = new FormularInput(null);
+    }
+
+    // Deactivate the select box if it has linked forms
+    if (getFormular().hasFormLinks())
+    {
+      formLink.setPleaseChoose("Verknüpft");
+      formLink.setEnabled(false);
+    }
+    else
+    {
+      formLink.setPleaseChoose("Keine");
+    }
+    return formLink;
+  }
+
   /**
    * This method stores the project using the current values.
    */
@@ -129,10 +164,10 @@ public class FormularControl extends AbstractControl
     {
       Formular f = getFormular();
       f.setBezeichnung((String) getBezeichnung(true).getValue());
-      
+
       FormularArt fa = (FormularArt) getArt().getValue();
       f.setArt(fa);
-      
+
       String dat = (String) getDatei().getValue();
       if (dat.length() > 0)
       {
@@ -142,9 +177,21 @@ public class FormularControl extends AbstractControl
         fis.close();
         f.setInhalt(b);
       }
-      
-      f.setZaehler((int) getZaehler().getValue());
-      
+
+      int newZaehler = (int) getZaehler().getValue();
+      f.setZaehler(newZaehler);
+      f.setZaehlerToFormLink(newZaehler);
+
+      Formular fl = (Formular) getFormLink().getValue();
+      if (fl != null)
+      {
+        f.setFormLink(Integer.valueOf(fl.getID()));
+      }
+      else
+      {
+        f.setFormLink(null);
+      }
+
       f.store();
       GUI.getStatusBar().setSuccessText("Formular gespeichert");
     }
@@ -182,6 +229,8 @@ public class FormularControl extends AbstractControl
     formularList.addColumn("Art", "art", new FormularartFormatter(), false,
         Column.ALIGN_LEFT);
     formularList.addColumn("Zähler", "zaehler");
+    formularList.addColumn("Verknüpft mit", "formLink",
+        new FormularLinkFormatter());
     formularList.setRememberColWidths(true);
     formularList.setContextMenu(new FormularMenu(this));
     formularList.setRememberOrder(true);

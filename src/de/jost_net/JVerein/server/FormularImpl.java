@@ -174,4 +174,59 @@ public class FormularImpl extends AbstractDBObject implements Formular
     setAttribute("zaehler", zaehler);
   }
 
+  @Override
+  public void setZaehlerToFormLink(int zaehler) throws RemoteException
+  {
+    DBIterator<Formular> formList = getLinked();
+    while (formList.hasNext())
+    {
+      Formular form = formList.next();
+      form.setZaehler(zaehler);
+      try
+      {
+        form.store();
+      }
+      catch (RemoteException e)
+      {
+        e.printStackTrace();
+      }
+      catch (ApplicationException e)
+      {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  @Override
+  public Integer getFormLink() throws RemoteException
+  {
+    Long formId = (Long) getAttribute("formLink");
+    if (formId == null) {
+      return 0;
+    }
+    
+    return (Integer) Math.toIntExact((formId));
+  }
+
+  @Override
+  public void setFormLink(Integer formLink) throws RemoteException
+  {
+    setAttribute("formLink", formLink);
+  }
+  
+  public DBIterator<Formular> getLinked() throws RemoteException
+  {
+    DBIterator<Formular> formList = Einstellungen.getDBService().createList(Formular.class);
+    formList.addFilter("formLink = ?", this.getID());
+    
+    return formList;
+  }
+
+  public boolean hasFormLinks() throws RemoteException
+  {
+    DBIterator<Formular> formList = getLinked();
+    
+    return Boolean.valueOf(formList.size() > 0);
+  }
+
 }
