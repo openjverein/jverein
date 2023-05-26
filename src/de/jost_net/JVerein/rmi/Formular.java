@@ -48,7 +48,7 @@ public interface Formular extends DBObject
   
   public boolean hasFormLinks() throws RemoteException;
   
-  public DBIterator<Formular> getLinked() throws RemoteException;
+  public DBIterator<Formular> getLinked(Boolean withoutMaster) throws RemoteException;
 
   public void setZaehlerToFormLink(int zaehler) throws RemoteException;
 }

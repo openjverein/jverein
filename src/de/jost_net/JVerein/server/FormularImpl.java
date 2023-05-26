@@ -177,7 +177,7 @@ public class FormularImpl extends AbstractDBObject implements Formular
   @Override
   public void setZaehlerToFormLink(int zaehler) throws RemoteException
   {
-    DBIterator<Formular> formList = getLinked();
+    DBIterator<Formular> formList = getLinked(false);
     while (formList.hasNext())
     {
       Formular form = formList.next();
@@ -214,17 +214,21 @@ public class FormularImpl extends AbstractDBObject implements Formular
     setAttribute("formLink", formLink);
   }
   
-  public DBIterator<Formular> getLinked() throws RemoteException
+  public DBIterator<Formular> getLinked(Boolean withoutMaster) throws RemoteException
   {
     DBIterator<Formular> formList = Einstellungen.getDBService().createList(Formular.class);
-    formList.addFilter("formLink = ?", this.getID());
+    if (withoutMaster.booleanValue() == true) {
+      formList.addFilter("formLink = ?", Integer.parseInt(this.getID()));
+    } else {
+      formList.addFilter("formLink = ? OR id = ?", Integer.parseInt(this.getID()), this.getFormLink());
+    }
     
     return formList;
   }
 
   public boolean hasFormLinks() throws RemoteException
   {
-    DBIterator<Formular> formList = getLinked();
+    DBIterator<Formular> formList = getLinked(true);
     
     return Boolean.valueOf(formList.size() > 0);
   }
