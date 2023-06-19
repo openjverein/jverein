@@ -242,7 +242,7 @@ public class BuchungsControl extends AbstractControl {
         List<Object> arg_list = new ArrayList<Object>();
         String sql = "SELECT max(belegnummer) FROM buchung";
         if (Einstellungen.getEinstellung().getBelegnummerProJahr()
-            && Einstellungen.getEinstellung().getBelegnummerProKonto()) {
+            || Einstellungen.getEinstellung().getBelegnummerProKonto()) {
           sql += " WHERE ";
         }
         if (Einstellungen.getEinstellung().getBelegnummerProJahr()) {
