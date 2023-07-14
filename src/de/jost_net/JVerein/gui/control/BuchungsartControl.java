@@ -268,7 +268,7 @@ public class BuchungsartControl extends AbstractControl
         break;
     }
 
-    buchungsklasse.setPleaseChoose("Bitte auswï¿½hlen");
+    buchungsklasse.setPleaseChoose("Bitte auswählen");
     return buchungsklasse;
   }
 
@@ -469,7 +469,7 @@ public class BuchungsartControl extends AbstractControl
   private void starteAuswertung() throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wï¿½hlen.");
+    fd.setText("Ausgabedatei wählen.");
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)
