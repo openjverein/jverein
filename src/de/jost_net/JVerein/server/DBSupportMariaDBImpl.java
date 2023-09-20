@@ -29,7 +29,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Implementierung des Datenbank-Supports fuer MySQL.
+ * Implementierung des Datenbank-Supports fuer MariaDB.
  */
 public class DBSupportMariaDBImpl extends AbstractDBSupportImpl
 {
