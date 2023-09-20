@@ -65,7 +65,7 @@ public class DBSupportMariaDBImpl extends AbstractDBSupportImpl
     return JVereinDBService.SETTINGS
         .getString(
             "database.driver.mysql.jdbcurl",
-            "jdbc:mysql://localhost:3306/jverein?useUnicode=Yes&characterEncoding=ISO8859_1")
+            "jdbc:mariadb://localhost:3306/jverein?useUnicode=Yes&characterEncoding=ISO8859_1")
         .trim();
   }
 
