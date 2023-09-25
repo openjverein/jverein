@@ -111,7 +111,7 @@ public class EigenschaftControl extends AbstractControl
       {
         if (o != null)
         {
-          ei.setEigenschaftGruppe(new Integer(o.getID()));
+          ei.setEigenschaftGruppe(Integer.valueOf(o.getID()));
         }
         else
         {

@@ -248,7 +248,7 @@ public abstract class AbstractAdresseDetailView extends AbstractView
 
       MitgliedDokument mido = (MitgliedDokument) Einstellungen.getDBService()
           .createObject(MitgliedDokument.class, null);
-      mido.setReferenz(new Long(control.getMitglied().getID()));
+      mido.setReferenz( Long.valueOf(control.getMitglied().getID()));
       DokumentControl dcontrol = new DokumentControl(this, "mitglieder", true);
       cont.addPart(dcontrol.getDokumenteList(mido));
       ButtonArea butts = new ButtonArea();

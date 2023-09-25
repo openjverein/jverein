@@ -451,7 +451,7 @@ public class ArbeitseinsatzControl extends AbstractControl
             zb.setFaelligkeit(new Date());
             zb.setStartdatum(new Date());
             zb.setIntervall(IntervallZusatzzahlung.KEIN);
-            zb.setMitglied(new Integer((String) z.getAttribute("mitgliedid")));
+            zb.setMitglied(Integer.valueOf((String) z.getAttribute("mitgliedid")));
             zb.store();
           }
           GUI.getStatusBar().setSuccessText("Liste Arbeitseinsätze gestartet");

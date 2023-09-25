@@ -204,7 +204,7 @@ public class BuchungsartControl extends AbstractControl
       GenericObject o = (GenericObject) getBuchungsklasse().getValue();
       if (o != null)
       {
-        b.setBuchungsklasse(new Integer(o.getID()));
+        b.setBuchungsklasse(Integer.valueOf(o.getID()));
       }
       else
       {

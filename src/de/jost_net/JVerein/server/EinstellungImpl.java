@@ -831,7 +831,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     Double d = (Double) getAttribute("spendenbescheinigungminbetrag");
     if (d == null)
     {
-      d = new Double(0);
+      d = Double.valueOf(0);
     }
     return (d);
   }
@@ -1326,7 +1326,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     {
       DBIterator<Felddefinition> it = Einstellungen.getDBService()
           .createList(Felddefinition.class);
-      hasZus = new Boolean(it.size() > 0);
+      hasZus = Boolean.valueOf(it.size() > 0);
     }
     return hasZus;
   }
@@ -1653,7 +1653,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     Integer offset = (Integer) getAttribute("sepadatumoffset");
     if (offset == null)
     {
-      offset = new Integer(0);
+      offset =  Integer.valueOf(0);
     }
     return offset;
   }

@@ -159,7 +159,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public void setBetrag(double d) throws RemoteException
   {
-    setAttribute("betrag", new Double(d));
+    setAttribute("betrag", Double.valueOf(d));
   }
 
   @Override
@@ -176,7 +176,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public void setBetragMonatlich(double d) throws RemoteException
   {
-    setAttribute("betragmonatlich", new Double(d));
+    setAttribute("betragmonatlich", Double.valueOf(d));
   }
 
   @Override
@@ -193,7 +193,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public void setBetragVierteljaehrlich(double d) throws RemoteException
   {
-    setAttribute("betragvierteljaehrlich", new Double(d));
+    setAttribute("betragvierteljaehrlich", Double.valueOf(d));
   }
 
   @Override
@@ -210,7 +210,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public void setBetragHalbjaehrlich(double d) throws RemoteException
   {
-    setAttribute("betraghalbjaehrlich", new Double(d));
+    setAttribute("betraghalbjaehrlich", Double.valueOf(d));
   }
 
   @Override
@@ -227,7 +227,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public void setBetragJaehrlich(double d) throws RemoteException
   {
-    setAttribute("betragjaehrlich", new Double(d));
+    setAttribute("betragjaehrlich", Double.valueOf(d));
   }
 
   @Override
@@ -236,7 +236,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
     Integer i = (Integer) getAttribute("beitragsart");
     if (i == null)
     {
-      i = new Integer("0");
+      i = Integer.valueOf("0");
     }
     return ArtBeitragsart.getByKey(i);
   }
@@ -262,7 +262,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   public void setArbeitseinsatzStunden(double arbeitseinsatzStunden)
       throws RemoteException
   {
-    setAttribute("arbeitseinsatzstunden", new Double(arbeitseinsatzStunden));
+    setAttribute("arbeitseinsatzstunden", Double.valueOf(arbeitseinsatzStunden));
   }
 
   @Override
@@ -292,7 +292,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   public void setArbeitseinsatzBetrag(double arbeitseinsatzBetrag)
       throws RemoteException
   {
-    setAttribute("arbeitseinsatzbetrag", new Double(arbeitseinsatzBetrag));
+    setAttribute("arbeitseinsatzbetrag", Double.valueOf(arbeitseinsatzBetrag));
   }
 
   @Override

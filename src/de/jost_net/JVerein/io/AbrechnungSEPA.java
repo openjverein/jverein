@@ -273,17 +273,17 @@ public class AbrechnungSEPA
         {
           list.addFilter(
               "(zahlungsrhytmus = ? or zahlungsrhytmus = ? or zahlungsrhytmus = ?)",
-              new Object[] { new Integer(Zahlungsrhythmus.HALBJAEHRLICH),
-                  new Integer(Zahlungsrhythmus.VIERTELJAEHRLICH),
-                  new Integer(Zahlungsrhythmus.MONATLICH) });
+              new Object[] { Integer.valueOf(Zahlungsrhythmus.HALBJAEHRLICH),
+            		  Integer.valueOf(Zahlungsrhythmus.VIERTELJAEHRLICH),
+            		  Integer.valueOf(Zahlungsrhythmus.MONATLICH) });
         }
         if (param.abbuchungsmodus == Abrechnungsmodi.JAVIMO)
         {
           list.addFilter(
               "(zahlungsrhytmus = ? or zahlungsrhytmus = ? or zahlungsrhytmus = ?)",
-              new Object[] { new Integer(Zahlungsrhythmus.JAEHRLICH),
-                  new Integer(Zahlungsrhythmus.VIERTELJAEHRLICH),
-                  new Integer(Zahlungsrhythmus.MONATLICH) });
+              new Object[] { Integer.valueOf(Zahlungsrhythmus.JAEHRLICH),
+            	  Integer.valueOf(Zahlungsrhythmus.VIERTELJAEHRLICH),
+                  Integer.valueOf(Zahlungsrhythmus.MONATLICH) });
         }
         if (param.abbuchungsmodus == Abrechnungsmodi.VIMO)
         {
@@ -802,7 +802,7 @@ public class AbrechnungSEPA
       }
       if (buchungsart != null)
       {
-        buchung.setBuchungsart(new Long(buchungsart.getID()));
+        buchung.setBuchungsart(Long.valueOf(buchungsart.getID()));
       }
       buchung.store();
     }

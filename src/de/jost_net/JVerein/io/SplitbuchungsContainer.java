@@ -45,7 +45,7 @@ public class SplitbuchungsContainer
     }
     else
     {
-      b.setSplitId(new Long(b.getID()));
+      b.setSplitId( Long.valueOf(b.getID()));
       SplitbuchungsContainer.add(b);
     }
     DBIterator<Buchung> it = Einstellungen.getDBService()
@@ -68,7 +68,7 @@ public class SplitbuchungsContainer
       b2.setKonto(b.getKonto());
       b2.setMitgliedskonto(b.getMitgliedskonto());
       b2.setName(b.getName());
-      b2.setSplitId(new Long(b.getID()));
+      b2.setSplitId( Long.valueOf(b.getID()));
       b2.setUmsatzid(b.getUmsatzid());
       b2.setZweck(b.getZweck());
       b2.setSplitTyp(SplitbuchungTyp.GEGEN);

@@ -290,8 +290,8 @@ public class BuchungsHeaderControl extends AbstractControl
 
     private String formatWert(double wert)
     {
-      if (wert != 0d)
-        return wertFormater.format(new Double(wert));
+      if (wert != 0.0d)
+        return wertFormater.format(Double.valueOf(wert));
       return "\\";
     }
 

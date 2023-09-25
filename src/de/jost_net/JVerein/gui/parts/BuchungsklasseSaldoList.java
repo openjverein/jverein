@@ -117,13 +117,12 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
     Double einnahmen;
     Double ausgaben;
     Double umbuchungen;
-    Double suBukEinnahmen = new Double(0);
-    Double suBukAusgaben = new Double(0);
-    Double suBukUmbuchungen = new Double(0);
-    Double suEinnahmen = new Double(0);
-    Double suAusgaben = new Double(0);
-    Double suUmbuchungen = new Double(0);
-
+    Double suBukEinnahmen = Double.valueOf(0.0d);
+    Double suBukAusgaben = Double.valueOf(0.0d);
+    Double suBukUmbuchungen = Double.valueOf(0.0d);
+    Double suEinnahmen = Double.valueOf(0.0d);
+    Double suAusgaben = Double.valueOf(0.0d);
+    Double suUmbuchungen = Double.valueOf(0.0d);
     ResultSetExtractor rsd = new ResultSetExtractor()
     {
       @Override
@@ -131,9 +130,9 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
       {
         if (!rs.next())
         {
-          return new Double(0);
+          return Double.valueOf(0);
         }
-        return new Double(rs.getDouble(1));
+        return Double.valueOf(rs.getDouble(1));
       }
     };
     ResultSetExtractor rsi = new ResultSetExtractor()
@@ -163,9 +162,9 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
       buchungsartenIt.addFilter("buchungsklasse = ?",
           new Object[] { buchungsklasse.getID() });
       buchungsartenIt.setOrder("order by nummer");
-      suBukEinnahmen = new Double(0);
-      suBukAusgaben = new Double(0);
-      suBukUmbuchungen = new Double(0);
+      suBukEinnahmen = Double.valueOf(0);
+      suBukAusgaben = Double.valueOf(0);
+      suBukUmbuchungen = Double.valueOf(0);
       boolean ausgabe = false;
 
       while (buchungsartenIt.hasNext())

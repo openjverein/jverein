@@ -60,7 +60,7 @@ public class MitgliedskontoMap
       buda.add(mkto.getDatum());
       zg.add(mkto.getZweck1());
       zg1.add(mkto.getZweck1());
-      betrag.add(new Double(mkto.getBetrag()));
+      betrag.add(Double.valueOf(mkto.getBetrag()));
       ist.add(mkto.getIstSumme());
       suist += mkto.getIstSumme();
       differenz.add(mkto.getBetrag() - mkto.getIstSumme());
@@ -85,8 +85,8 @@ public class MitgliedskontoMap
     map.put(MitgliedskontoVar.BETRAG.getName(), betrag.toArray());
     map.put(MitgliedskontoVar.IST.getName(), ist.toArray());
     map.put(MitgliedskontoVar.DIFFERENZ.getName(), differenz.toArray());
-    map.put(MitgliedskontoVar.STAND.getName(), new Double(-1 * saldo));
-    map.put(MitgliedskontoVar.SUMME_OFFEN.getName(), new Double(saldo));
+    map.put(MitgliedskontoVar.STAND.getName(), Double.valueOf(-1 * saldo));
+    map.put(MitgliedskontoVar.SUMME_OFFEN.getName(), Double.valueOf(saldo));
     return map;
   }
 

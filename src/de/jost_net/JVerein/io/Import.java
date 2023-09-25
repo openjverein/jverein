@@ -121,7 +121,7 @@ public class Import
       {
         bestehendeBeitragsgruppen.put(
             this.getResultFrom(results, InternalColumns.BEITRAGSART),
-            new Double(this.getResultFrom(results, InternalColumns.BEITRAG)
+            Double.valueOf(this.getResultFrom(results, InternalColumns.BEITRAG)
                 .replace(',', '.')));
       }
     }
@@ -170,7 +170,7 @@ public class Import
     b.setBetrag(beitrag);
     b.store();
 
-    return (new Integer(b.getID())).intValue();
+    return (Integer.valueOf(b.getID())).intValue();
   }
 
   /**
@@ -257,11 +257,11 @@ public class Import
       if (parts[2].length() == 2)
       {
         Date curDate = new Date(System.currentTimeMillis());
-        // only the last two digets of the year
+        // only the last two digits of the year
         String year = curDate.toString()
             .substring(curDate.toString().lastIndexOf(" ") + 2);
         // compare them an than decide
-        if ((new Integer(year)).compareTo(new Integer(parts[2])) < 0)
+        if ((Integer.valueOf(year)).compareTo(Integer.valueOf(parts[2])) < 0)
         {
           parts[2] = "19" + parts[2];
         }
@@ -666,7 +666,7 @@ public class Import
         InternalColumns.ZAHLUNGSTERMIN);
     if (zahlungstermin != null && zahlungstermin.length() > 0)
     {
-      m.setZahlungstermin(new Integer(zahlungstermin));
+      m.setZahlungstermin(Integer.valueOf(zahlungstermin));
     }
 
     if (zahlart.equalsIgnoreCase("l") || zahlart.equalsIgnoreCase("lastschrift")
@@ -798,7 +798,7 @@ public class Import
       /* Check if remaining string matches the supported format */
       if (individuellerBeitrag.matches("[0-9]+(\\.[0-9]+)?"))
       {
-        Double beitrag = new Double(individuellerBeitrag);
+        Double beitrag = Double.valueOf(individuellerBeitrag);
         if (beitrag > 0)
         {
           m.setIndividuellerBeitrag(beitrag);
@@ -854,12 +854,12 @@ public class Import
         progMonitor.log(String.format(
             "Zahlungsrythmus bei: %s ist entweder leer oder besteht nicht nur aus Zahlen, setze auf 12 Monate",
             Adressaufbereitung.getNameVorname(m)));
-        m.setZahlungsrhythmus(new Integer(12));
+        m.setZahlungsrhythmus(Integer.valueOf(12));
       }
     }
     else
     { // Default value
-      m.setZahlungsrhythmus(new Integer(12));
+      m.setZahlungsrhythmus(Integer.valueOf(12));
     }
 
     String adresstyp = getResultFrom(results, InternalColumns.ADRESSTYP);
@@ -874,12 +874,12 @@ public class Import
         progMonitor.log(String.format(
             "Adresstyp bei: %s ist entweder leer oder besteht nicht nur aus Zahlen, setze auf 1 (Mitglied)",
             Adressaufbereitung.getNameVorname(m)));
-        m.setAdresstyp(new Integer(1));
+        m.setAdresstyp(Integer.valueOf(1));
       }
     }
     else
     { // Default value
-      m.setAdresstyp(new Integer(1));
+      m.setAdresstyp(Integer.valueOf(1));
     }
 
     m.setVermerk1(getResultFrom(results, InternalColumns.VERMERKA));
@@ -921,8 +921,8 @@ public class Import
       final Felddefinition f)
       throws RemoteException, SQLException, ApplicationException
   {
-    zusatzfeld.setMitglied(new Integer(curMitglied.getID()));
-    zusatzfeld.setFelddefinition(new Integer(f.getID()));
+    zusatzfeld.setMitglied(Integer.valueOf(curMitglied.getID()));
+    zusatzfeld.setFelddefinition(Integer.valueOf(f.getID()));
     String inhalt = results.getString(colMap.get(f.getName()));
 
     switch (f.getDatentyp())
