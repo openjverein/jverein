@@ -18,17 +18,19 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.rmi.RemoteException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.datatype.DatatypeConfigurationException;
+import java.util.Properties;
 
 import com.itextpdf.text.DocumentException;
 
@@ -70,6 +72,7 @@ import de.jost_net.OBanToo.StringLatin.Zeichen;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.internal.action.Program;
+import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.hbci.io.SepaLastschriftMerger;
 import de.willuhn.jameica.hbci.rmi.SepaLastSequenceType;
 import de.willuhn.jameica.hbci.rmi.SepaLastType;
@@ -80,10 +83,14 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
+import org.apache.commons.lang.StringUtils;
+import org.kapott.hbci.GV.SepaUtil;
+import org.kapott.hbci.GV.generators.ISEPAGenerator;
+import org.kapott.hbci.GV.generators.SEPAGeneratorFactory;
 
 public class AbrechnungSEPA
 {
-  private Calendar sepagueltigkeit;
+  private final Calendar sepagueltigkeit;
 
   private int counter = 0;
 
@@ -111,7 +118,7 @@ public class AbrechnungSEPA
 
     sepagueltigkeit = Calendar.getInstance();
     sepagueltigkeit.add(Calendar.MONTH, -36);
-    JVereinBasislastschrift lastschrift = new JVereinBasislastschrift();
+    Basislastschrift lastschrift = new Basislastschrift();
     // Vorbereitung: Allgemeine Informationen einstellen
     lastschrift.setBIC(Einstellungen.getEinstellung().getBic());
     lastschrift
@@ -136,10 +143,23 @@ public class AbrechnungSEPA
 
     monitor.log(counter + " abgerechnete Fälle");
 
-    lastschrift.setMessageID(abrl.getID());
-    lastschrift.write(param.sepafileFRST, param.sepafileRCUR);
+    lastschrift.setMessageID(abrl.getID() + "-RCUR");
+    if (param.kompakteabbuchung || param.sepaprint)
+    {
+      // Für kompakte Abbuchung wird erst in write die Zahlerliste gefüllt. Das für die
+      // PDF-Erzeugung benötigte Datum wird auch erst in write gesetzt
+      File temp_file = Files.createTempFile("jv", ".xml").toFile();
+      lastschrift.write(temp_file);
+      temp_file.delete();
+    }
 
     ArrayList<Zahler> z = lastschrift.getZahler();
+    if (param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
+    {
+      writeSepaFile(param, lastschrift, z);
+      monitor.log(String.format("SEPA-Datei %s geschrieben.", param.sepafileRCUR.getAbsolutePath()));
+    }
+
     BigDecimal summemitgliedskonto = new BigDecimal("0");
     for (Zahler za : z)
     {
@@ -227,16 +247,16 @@ public class AbrechnungSEPA
     if (param.abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
     {
       buchenHibiscus(param, z);
+      monitor.log("Hibiscus-Lastschrift erzeugt.");
     }
-    monitor.setPercentComplete(100);
-    if (param.sepaprint)
+    if (param.pdffileRCUR != null)
     {
-      ausdruckenSEPA(lastschrift, param.pdffileFRST, param.pdffileRCUR);
+      ausdruckenSEPA(lastschrift, param.pdffileRCUR);
     }
   }
 
   private void abrechnenMitglieder(AbrechnungSEPAParam param,
-      JVereinBasislastschrift lastschrift, ProgressMonitor monitor,
+      Basislastschrift lastschrift, ProgressMonitor monitor,
       Abrechnungslauf abrl, Konto konto) throws Exception
   {
     if (param.abbuchungsmodus != Abrechnungsmodi.KEINBEITRAG)
@@ -322,7 +342,7 @@ public class AbrechnungSEPA
         monitor.setStatus((int) ((double) count / (double) list.size() * 100d));
         Mitglied m = (Mitglied) list.next();
 
-        JVereinZahler z = abrechnungMitgliederSub(param, lastschrift, monitor,
+        JVereinZahler z = abrechnungMitgliederSub(param, monitor,
             abrl, konto, m, m.getBeitragsgruppe(), true);
 
         DBIterator<SekundaereBeitragsgruppe> sekundaer = Einstellungen
@@ -332,8 +352,7 @@ public class AbrechnungSEPA
         {
           SekundaereBeitragsgruppe sb = (SekundaereBeitragsgruppe) sekundaer
               .next();
-          JVereinZahler z2 = abrechnungMitgliederSub(param, lastschrift,
-              monitor, abrl, konto, m, sb.getBeitragsgruppe(), false);
+          JVereinZahler z2 = abrechnungMitgliederSub(param, monitor, abrl, konto, m, sb.getBeitragsgruppe(), false);
           if (z2 != null)
           {
             if (z != null)
@@ -354,8 +373,7 @@ public class AbrechnungSEPA
     }
   }
 
-  private JVereinZahler abrechnungMitgliederSub(AbrechnungSEPAParam param,
-      JVereinBasislastschrift lastschrift, ProgressMonitor monitor,
+  private JVereinZahler abrechnungMitgliederSub(AbrechnungSEPAParam param, ProgressMonitor monitor,
       Abrechnungslauf abrl, Konto konto, Mitglied m, Beitragsgruppe bg,
       boolean primaer) throws RemoteException, ApplicationException
   {
@@ -413,8 +431,7 @@ public class AbrechnungSEPA
     }
 
     writeMitgliedskonto(m,
-        m.getMandatSequence().getTxt().equals("FRST") ? param.faelligkeit1
-            : param.faelligkeit2,
+        param.faelligkeit,
         primaer ? vzweck : bg.getBezeichnung(), betr, abrl,
         m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT, konto,
         bg.getBuchungsart());
@@ -433,9 +450,8 @@ public class AbrechnungSEPA
         zahler.setIban(m.getIban());
         zahler.setMandatid(m.getMandatID());
         zahler.setMandatdatum(m.getMandatDatum());
-        zahler.setMandatsequence(m.getMandatSequence());
-        zahler.setFaelligkeit(param.faelligkeit1, param.faelligkeit2,
-            m.getMandatSequence().getCode());
+        zahler.setMandatsequence(MandatSequence.RCUR);
+        zahler.setFaelligkeit(param.faelligkeit);
         if (primaer)
         {
           zahler.setVerwendungszweck(getVerwendungszweck2(m) + " " + vzweck);
@@ -476,7 +492,7 @@ public class AbrechnungSEPA
   }
 
   private void abbuchenZusatzbetraege(AbrechnungSEPAParam param,
-      JVereinBasislastschrift lastschrift, Abrechnungslauf abrl, Konto konto,
+      Basislastschrift lastschrift, Abrechnungslauf abrl, Konto konto,
       ProgressMonitor monitor)
       throws NumberFormatException, IOException, ApplicationException
   {
@@ -529,9 +545,8 @@ public class AbrechnungSEPA
             zahler.setIban(m.getIban());
             zahler.setMandatid(m.getMandatID());
             zahler.setMandatdatum(m.getMandatDatum());
-            zahler.setMandatsequence(m.getMandatSequence());
-            zahler.setFaelligkeit(param.faelligkeit1, param.faelligkeit2,
-                m.getMandatSequence().getCode());
+            zahler.setMandatsequence(MandatSequence.RCUR);
+            zahler.setFaelligkeit(param.faelligkeit);
             zahler.setName(m.getKontoinhaber(1));
             zahler.setVerwendungszweck(vzweck);
             lastschrift.add(zahler);
@@ -575,8 +590,7 @@ public class AbrechnungSEPA
           throw e;
         }
         writeMitgliedskonto(m,
-            m.getMandatSequence().getTxt().equals("FRST") ? param.faelligkeit1
-                : param.faelligkeit2,
+            param.faelligkeit,
             vzweck, z.getBetrag(), abrl,
             m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT, konto,
             z.getBuchungsart());
@@ -585,7 +599,7 @@ public class AbrechnungSEPA
   }
 
   private void abbuchenKursteilnehmer(AbrechnungSEPAParam param,
-      JVereinBasislastschrift lastschrift)
+      Basislastschrift lastschrift)
       throws ApplicationException, IOException
   {
     DBIterator<Kursteilnehmer> list = Einstellungen.getDBService()
@@ -608,8 +622,8 @@ public class AbrechnungSEPA
         zahler.setIban(kt.getIban());
         zahler.setMandatid(kt.getMandatID());
         zahler.setMandatdatum(kt.getMandatDatum());
-        zahler.setMandatsequence(MandatSequence.FRST);
-        zahler.setFaelligkeit(param.faelligkeit1);
+        zahler.setMandatsequence(MandatSequence.RCUR);
+        zahler.setFaelligkeit(param.faelligkeit);
         zahler.setName(kt.getName());
         zahler.setVerwendungszweck(kt.getVZweck1());
         lastschrift.add(zahler);
@@ -623,11 +637,10 @@ public class AbrechnungSEPA
     }
   }
 
-  private void ausdruckenSEPA(final JVereinBasislastschrift lastschrift,
-      final String pdfFRST, final String pdfRCUR)
+  private void ausdruckenSEPA(final Basislastschrift lastschrift, final String pdf_fn)
       throws IOException, DocumentException, SEPAException
   {
-    new Basislastschrift2Pdf(lastschrift.getLastschriftFRST(), pdfFRST);
+    new Basislastschrift2Pdf(lastschrift, pdf_fn);
     GUI.getDisplay().asyncExec(new Runnable()
     {
 
@@ -636,7 +649,7 @@ public class AbrechnungSEPA
       {
         try
         {
-          new Program().handleAction(new File(pdfFRST));
+          new Program().handleAction(new File(pdf_fn));
         }
         catch (ApplicationException ae)
         {
@@ -645,24 +658,48 @@ public class AbrechnungSEPA
         }
       }
     });
-    new Basislastschrift2Pdf(lastschrift.getLastschriftRCUR(), pdfRCUR);
-    GUI.getDisplay().asyncExec(new Runnable()
-    {
+  }
 
-      @Override
-      public void run()
-      {
-        try
-        {
-          new Program().handleAction(new File(pdfRCUR));
-        }
-        catch (ApplicationException ae)
-        {
-          Application.getMessagingFactory().sendMessage(new StatusBarMessage(
-              ae.getLocalizedMessage(), StatusBarMessage.TYPE_ERROR));
-        }
-      }
-    });
+  private void writeSepaFile(AbrechnungSEPAParam param, Basislastschrift lastschrift, ArrayList<Zahler> alle_zahler) throws Exception
+  {
+    if (alle_zahler.isEmpty()) {
+      return;
+    }
+    Properties ls_properties = new Properties();
+    ls_properties.setProperty("src.bic", lastschrift.getBIC());
+    ls_properties.setProperty("src.iban", lastschrift.getIBAN());
+    ls_properties.setProperty("src.name", lastschrift.getName());
+    long epochtime = Calendar.getInstance().getTimeInMillis();
+    String epochtime_string = Long.toString(epochtime);
+    DateFormat ISO_DATE = new SimpleDateFormat(SepaUtil.DATE_FORMAT);
+    ls_properties.setProperty("sepaid", epochtime_string);
+    ls_properties.setProperty("pmtinfid", epochtime_string);
+    ls_properties.setProperty("sequencetype", "RCUR");
+    ls_properties.setProperty("targetdate", param.stichtag != null ? ISO_DATE.format(param.stichtag) : SepaUtil.DATE_UNDEFINED);
+    ls_properties.setProperty("type", "CORE");
+    ls_properties.setProperty("batchbook", "");
+    int counter = 0;
+    String creditorid = lastschrift.getGlaeubigerID();
+    for (Zahler zahler : alle_zahler)
+    {
+      ls_properties.setProperty(SepaUtil.insertIndex("dst.bic", counter),       StringUtils.trimToEmpty(zahler.getBic()));
+      ls_properties.setProperty(SepaUtil.insertIndex("dst.iban", counter),      StringUtils.trimToEmpty(zahler.getIban()));
+      ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),      StringUtils.trimToEmpty(zahler.getName()));
+      ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),     zahler.getBetrag().toString());
+      ls_properties.setProperty(SepaUtil.insertIndex("btg.curr", counter),      HBCIProperties.CURRENCY_DEFAULT_DE);
+      ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),         StringUtils.trimToEmpty(zahler.getVerwendungszweck()));
+      ls_properties.setProperty(SepaUtil.insertIndex("endtoendid", counter),    "NOTPROVIDED");
+      ls_properties.setProperty(SepaUtil.insertIndex("creditorid", counter),    creditorid);
+      ls_properties.setProperty(SepaUtil.insertIndex("mandateid", counter),     StringUtils.trimToEmpty(zahler.getMandatid()));
+      ls_properties.setProperty(SepaUtil.insertIndex("manddateofsig", counter), ISO_DATE.format(zahler.getMandatdatum()));
+      ls_properties.setProperty(SepaUtil.insertIndex("purposecode", counter),   "OHTR");
+      counter += 1;
+    }
+    final OutputStream os = Files.newOutputStream(param.sepafileRCUR.toPath());
+    System.setProperty("sepa.pain.formatted", "true");
+    ISEPAGenerator sepagenerator = SEPAGeneratorFactory.get("LastSEPA", param.sepaVersion);
+    sepagenerator.generate(ls_properties, os, true);
+    os.close();
   }
 
   private void buchenHibiscus(AbrechnungSEPAParam param, ArrayList<Zahler> z)
@@ -745,8 +782,7 @@ public class AbrechnungSEPA
         .createObject(Abrechnungslauf.class, null);
     abrl.setDatum(new Date());
     abrl.setAbbuchungsausgabe(param.abbuchungsausgabe.getKey());
-    abrl.setFaelligkeit(param.faelligkeit1);
-    abrl.setFaelligkeit2(param.faelligkeit2);
+    abrl.setFaelligkeit(param.faelligkeit);
     abrl.setDtausdruck(param.sepaprint);
     abrl.setEingabedatum(param.vondatum);
     abrl.setAustrittsdatum(param.bisdatum);
@@ -846,28 +882,20 @@ public class AbrechnungSEPA
   }
 
   private boolean checkSEPA(Mitglied m, ProgressMonitor monitor)
-      throws RemoteException, ApplicationException
+      throws RemoteException
   {
     if (m.getZahlungsweg() == null
         || m.getZahlungsweg() != Zahlungsweg.BASISLASTSCHRIFT)
     {
       return true;
     }
-    if (m.getLetzteLastschrift() != null
-        && m.getLetzteLastschrift().before(sepagueltigkeit.getTime()))
+    Date letzte_lastschrift = m.getLetzteLastschrift();
+    if (letzte_lastschrift != null
+        && letzte_lastschrift.before(sepagueltigkeit.getTime()))
     {
       monitor.log(Adressaufbereitung.getNameVorname(m)
           + ": Letzte Lastschrift ist älter als 36 Monate.");
       return false;
-    }
-    if (m.getMandatSequence().equals(MandatSequence.FRST)
-        && m.getLetzteLastschrift() != null)
-    {
-      Mitglied m1 = (Mitglied) Einstellungen.getDBService()
-          .createObject(Mitglied.class, m.getID());
-      m1.setMandatSequence(MandatSequence.RCUR);
-      m1.store();
-      m.setMandatSequence(MandatSequence.RCUR);
     }
     if (m.getMandatDatum() == Einstellungen.NODATE)
     {
@@ -876,102 +904,6 @@ public class AbrechnungSEPA
       return false;
     }
     return true;
-  }
-
-}
-
-class JVereinBasislastschrift
-{
-  private Basislastschrift lastschriftFRST;
-
-  private Basislastschrift lastschriftRCUR;
-
-  public JVereinBasislastschrift()
-  {
-    lastschriftFRST = new Basislastschrift();
-    lastschriftRCUR = new Basislastschrift();
-  }
-
-  public void setBIC(String bic) throws SEPAException
-  {
-    lastschriftFRST.setBIC(bic);
-    lastschriftRCUR.setBIC(bic);
-  }
-
-  public void setGlaeubigerID(String glaeubigerid)
-      throws RemoteException, SEPAException
-  {
-    lastschriftFRST.setGlaeubigerID(glaeubigerid);
-    lastschriftRCUR.setGlaeubigerID(glaeubigerid);
-  }
-
-  public void setIBAN(String iban) throws SEPAException
-  {
-    lastschriftFRST.setIBAN(iban);
-    lastschriftRCUR.setIBAN(iban);
-  }
-
-  public void setKomprimiert(boolean kompakt) throws SEPAException
-  {
-    lastschriftFRST.setKomprimiert(kompakt);
-    lastschriftRCUR.setKomprimiert(kompakt);
-  }
-
-  public void setName(String name) throws SEPAException
-  {
-    lastschriftFRST.setName(name);
-    lastschriftRCUR.setName(name);
-  }
-
-  public void setMessageID(String id) throws SEPAException
-  {
-    lastschriftFRST.setMessageID(id + "-FRST");
-    lastschriftRCUR.setMessageID(id + "-RCUR");
-  }
-
-  public void write(File frst, File rcur)
-      throws DatatypeConfigurationException, SEPAException, JAXBException
-  {
-    lastschriftFRST.write(frst);
-    lastschriftRCUR.write(rcur);
-  }
-
-  public void add(Zahler zahler) throws SEPAException
-  {
-    if (zahler.getMandatsequence().equals(MandatSequence.FRST))
-    {
-      lastschriftFRST.add(zahler);
-    }
-    else if (zahler.getMandatsequence().equals(MandatSequence.RCUR))
-    {
-      lastschriftRCUR.add(zahler);
-    }
-    else
-      throw new SEPAException("Ungültige Sequenz");
-  }
-
-  public Basislastschrift getLastschriftFRST()
-  {
-    return lastschriftFRST;
-  }
-
-  public Basislastschrift getLastschriftRCUR()
-  {
-    return lastschriftRCUR;
-  }
-
-  public ArrayList<Zahler> getZahler()
-  {
-    ArrayList<Zahler> ret = new ArrayList<>();
-    for (Zahler z : lastschriftFRST.getZahler())
-    {
-      ret.add(z);
-    }
-    for (Zahler z : lastschriftRCUR.getZahler())
-    {
-      ret.add(z);
-    }
-    return ret;
   }
 
 }
