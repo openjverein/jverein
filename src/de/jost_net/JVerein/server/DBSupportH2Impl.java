@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.util.HashMap;
 
 import de.jost_net.JVerein.JVereinPlugin;
+import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -137,6 +138,9 @@ public class DBSupportH2Impl extends AbstractDBSupportImpl
     String url = "jdbc:h2:" + Application.getPluginLoader()
         .getPlugin(JVereinPlugin.class).getResources().getWorkPath()
         + "/h2db/jverein";
+    if (JVereinDBService.SETTINGS.getBoolean("database.driver.h2.auto_server", false)) {
+      url += ";AUTO_SERVER=TRUE";
+    }
 
     // if (JVereinDBService.SETTINGS.getBoolean("database.driver.h2.encryption",
     // true))
