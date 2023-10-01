@@ -15,7 +15,7 @@ Um in die OpenJVerein-Organisation aufgenommen zu werden, erstellt bitte ein [Is
 Lizenz
 ------
 
-JVerein steht unter der [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html).
+OpenJVerein steht unter der [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html).
 
 Kontakt
 -------
