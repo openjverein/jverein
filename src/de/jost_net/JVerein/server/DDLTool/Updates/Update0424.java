@@ -41,7 +41,7 @@ public class Update0424 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    // Add tax rate
+    // Add formular link
     execute(addColumn("formular",
         new Column("formLink", COLTYPE.BIGINT, 0, "NULL", false, false)));
   }
