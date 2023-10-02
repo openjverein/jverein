@@ -52,6 +52,8 @@ public class JVereinUpdateProvider
 
   public static final String MYSQL = DBSupportMySqlImpl.class.getName();
 
+  public static final String MARIADB = DBSupportMariaDBImpl.class.getName();
+
   public static final String H2 = DBSupportH2Impl.class.getName();
 
   public JVereinUpdateProvider(Connection conn, ProgressMonitor progressmonitor)
@@ -7238,7 +7240,7 @@ public class JVereinUpdateProvider
       return "ALTER TABLE " + table + " ALTER COLUMN " + column + " " + type
           + ";\n";
     }
-    if (driver.equals(MYSQL) && _driver.equals(MYSQL))
+    if ((driver.equals(MARIADB) && _driver.equals(MARIADB)) || (driver.equals(MYSQL) && _driver.equals(MYSQL)))
     {
       return "ALTER TABLE " + table + " MODIFY COLUMN " + column + " " + type
           + ";\n";

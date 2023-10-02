@@ -7,6 +7,7 @@ import java.sql.Statement;
 
 import de.jost_net.JVerein.server.DBSupportH2Impl;
 import de.jost_net.JVerein.server.DBSupportMySqlImpl;
+import de.jost_net.JVerein.server.DBSupportMariaDBImpl;
 import de.willuhn.logging.Logger;
 import de.willuhn.sql.ScriptExecutor;
 import de.willuhn.util.ApplicationException;
@@ -22,11 +23,13 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
 
   public static final String MYSQL = DBSupportMySqlImpl.class.getName();
 
+  public static final String MARIADB = DBSupportMariaDBImpl.class.getName();
+
   public static final String H2 = DBSupportH2Impl.class.getName();
 
   public enum DRIVER
   {
-    H2, MYSQL
+    H2, MYSQL, MARIADB
   }
 
   public enum COLTYPE
@@ -62,6 +65,10 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     if (driver.endsWith("DBSupportMySqlImpl"))
     {
       drv = DRIVER.MYSQL;
+    }
+    if (driver.endsWith("DBSupportMariaDBImpl"))
+    {
+      drv = DRIVER.MARIADB;
     }
     this.monitor = monitor;
   }
@@ -150,6 +157,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
             "PRIMARY KEY (" + table.getPrimaryKey()[0].getName() + "));\n");
         break;
       case MYSQL:
+      case MARIADB:
         sb.append("CREATE TABLE " + table.getName() + "(");
         for (Column c : table.getColumns())
         {
@@ -189,6 +197,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
             + getType(col) + ";\n";
       }
       case MYSQL:
+      case MARIADB:
       {
         return "ALTER TABLE " + table + " MODIFY COLUMN " + col.getName() + " "
             + getType(col) + ";\n";
@@ -205,6 +214,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
         return "ALTER TABLE " + table + " ALTER COLUMN " + col.getName()
             + " SET NULL\n";
       case MYSQL:
+      case MARIADB:
         return "ALTER TABLE " + table + " MODIFY COLUMN " + col.getName() + " "
             + getType(col) + ";\n";
     }
@@ -221,6 +231,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
             + " RENAME TO " + colnew.getName() + ";\n";
       }
       case MYSQL:
+      case MARIADB:
       {
         return "ALTER TABLE " + table + " CHANGE " + columnold + " "
             + colnew.getName() + " " + getType(colnew) + ";\n";
@@ -252,6 +263,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
             ret += "BOOLEAN";
             break;
           case MYSQL:
+          case MARIADB:
             ret += "BIT(1)";
             break;
         }
@@ -301,6 +313,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
             + ";\n";
       }
       case MYSQL:
+      case MARIADB:
       {
         return "ALTER TABLE " + table + " ADD CONSTRAINT " + " FOREIGN KEY "
             + constraintname + "(" + column + ") REFERENCES " + reftable + " ("
