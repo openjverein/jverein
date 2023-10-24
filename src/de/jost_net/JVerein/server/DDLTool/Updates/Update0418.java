@@ -44,7 +44,6 @@ public class Update0418 extends AbstractDDLUpdate
     if (getDriver()==DRIVER.H2) {
       execute("CREATE USER readonly PASSWORD 'jverein'; GRANT SELECT ON SCHEMA PUBLIC TO readonly", false);
     }
-    setNewVersion(nr);
 
     HashMap<String, String> auswahl_moeglichkeiten = new HashMap<String, String>();
     auswahl_moeglichkeiten.put("Buchungsnummer", "id");
