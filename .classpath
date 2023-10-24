@@ -13,6 +13,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/nc-1.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.mail-1.6.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/hbci4j-core-3.1.70.jar"/>
 	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/obantoo-bin-2.1.12.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsh-core-2.0b4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/csvjdbc-1.0.40.jar"/>

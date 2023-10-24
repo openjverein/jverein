@@ -1,9 +1,9 @@
-<<<<<<< HEAD
+.idea/
 /bin
 /releases
 /nbproject/private/
 /.DS_Store
-=======
+
 # Node rules:
 ## Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
@@ -20,4 +20,3 @@ _book
 *.epub
 *.mobi
 *.pdf
->>>>>>> branch 'master' of https://github.com/jverein/jverein.git

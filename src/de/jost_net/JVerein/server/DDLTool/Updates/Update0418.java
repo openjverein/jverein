@@ -1,18 +1,15 @@
 /**********************************************************************
- * Copyright (c) by Vinzent Rudolf
- * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without 
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See 
+ * the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If
- * not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
  * 
- * vinzent.rudolf@web.de | www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
@@ -32,13 +29,23 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class Update0418 extends AbstractDDLUpdate {
-  public Update0418(String driver, ProgressMonitor monitor, Connection conn) {
+import java.sql.Connection;
+
+public class Update0418 extends AbstractDDLUpdate
+{
+  public Update0418(String driver, ProgressMonitor monitor, Connection conn)
+  {
     super(driver, monitor, conn);
   }
 
   @Override
   public void run() throws ApplicationException {
+
+    if (getDriver()==DRIVER.H2) {
+      execute("CREATE USER readonly PASSWORD 'jverein'; GRANT SELECT ON SCHEMA PUBLIC TO readonly", false);
+    }
+    setNewVersion(nr);
+
     HashMap<String, String> auswahl_moeglichkeiten = new HashMap<String, String>();
     auswahl_moeglichkeiten.put("Buchungsnummer", "id");
     auswahl_moeglichkeiten.put("Name", "name");
@@ -49,17 +56,17 @@ public class Update0418 extends AbstractDDLUpdate {
     AuswahlDialog d = new AuswahlDialog(ListDialog.POSITION_CENTER,
         new ArrayList<String>(auswahl_moeglichkeiten.keySet()), "Belegnummern Import", "");
     d.setText(
-        "In der neueste jVerein Version besteht die Möglichkeit manuelle Belegnummern anstatt "
+        "In der neueste jVerein Version besteht die Mï¿½glichkeit manuelle Belegnummern anstatt "
             + "der Buchungsnummer aus der Datenbank zu verwenden.\n\nFalls du bisher schon Belegnummern verwendet hast, "
-            + "kannst du im folgenden Dialog auswählen, aus welchem bisherigen Buchungsfeld diese importiert werden sollen. "
-            + "Falls du dieses Feature nicht nutzen möchtest, wähle \"Buchungsnummer\" aus.\n\n");
+            + "kannst du im folgenden Dialog auswï¿½hlen, aus welchem bisherigen Buchungsfeld diese importiert werden sollen. "
+            + "Falls du dieses Feature nicht nutzen mï¿½chtest, wï¿½hle \"Buchungsnummer\" aus.\n\n");
     d.setSize(400, 300);
 
     try {
       String choice = (String) d.open();
       String feld = auswahl_moeglichkeiten.get(choice);
 
-      // neue Felder hinzufügen und dabei VersionsNr erst einmal nicht verändern!
+      // neue Felder hinzufï¿½gen und dabei VersionsNr erst einmal nicht verï¿½ndern!
       execute(addColumn("einstellung",
           new Column("verwendebelegnummer", COLTYPE.BOOLEAN, 0, "FALSE", false, false)), false);
       execute(
@@ -87,8 +94,8 @@ public class Update0418 extends AbstractDDLUpdate {
             break;
           case "Name":
           case "Verwendungszweck":
-            // Falls ein String als Grundlage für den Import verwendet werden soll, werden die
-            // Zahlen bis zur ersten "Nichtzahl" für die Belegnummer verwendet!
+            // Falls ein String als Grundlage fï¿½r den Import verwendet werden soll, werden die
+            // Zahlen bis zur ersten "Nichtzahl" fï¿½r die Belegnummer verwendet!
             String value = res.getString(feld);
             int endIndex = 0;
             if (value != null) {
@@ -107,7 +114,7 @@ public class Update0418 extends AbstractDDLUpdate {
         res.updateLong("belegnummer", belegnummer);
         res.updateRow();
       }
-
+    
       // Falls alles geklappt hat, neue Versionsnummer setzen!
       setNewVersion(nr);
 
@@ -115,7 +122,7 @@ public class Update0418 extends AbstractDDLUpdate {
       Logger.error(oce.getMessage());
       throw new ApplicationException("user canceled import of Belegnummern");
     } catch (Exception e) {
-      // Falls irgendein Fehler aufgetreten ist, die neuen Spalten wieder löschen!
+      // Falls irgendein Fehler aufgetreten ist, die neuen Spalten wieder lï¿½schen!
       execute(dropColumn("einstellung", "verwendebelegnummer"), false);
       execute(dropColumn("einstellung", "belegnummer_pro_konto"), false);
       execute(dropColumn("einstellung", "belegnummer_pro_jahr"), false);
