@@ -2,7 +2,7 @@
 /bin
 /releases
 /nbproject/private/
-/.DS_Store
+.DS_Store
 
 # Node rules:
 ## Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
