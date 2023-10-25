@@ -143,7 +143,7 @@ public class BuchungsControl extends AbstractControl {
 
   private TextAreaInput kommentar;
 
-  // Definition für beide Auswahlvarianten (SelectInput und
+  // Definition fÃ¼r beide Auswahlvarianten (SelectInput und
   // BuchungsartSearchInput)
   private AbstractInput buchungsart;
 
@@ -213,7 +213,7 @@ public class BuchungsControl extends AbstractControl {
         getNewLastBelegnummer = true;
       }
 
-      // Falls neues Datum nicht innerhalb des aktuellen Geschäftsjahres liegt, Belegnummer neu
+      // Falls neues Datum nicht innerhalb des aktuellen GeschÃ¤ftsjahres liegt, Belegnummer neu
       // auslesen
       if (!(NewDate.compareTo(LastBeginnGeschaeftsjahr) >= 0
           && NewDate.compareTo(LastEndeGeschaeftsjahr) <= 0)
@@ -235,7 +235,7 @@ public class BuchungsControl extends AbstractControl {
         List<Object> arg_list = new ArrayList<Object>();
         String sql = "SELECT max(belegnummer) FROM buchung";
         if (Einstellungen.getEinstellung().getBelegnummerProJahr()
-            && Einstellungen.getEinstellung().getBelegnummerProKonto()) {
+            || Einstellungen.getEinstellung().getBelegnummerProKonto()) {
           sql += " WHERE ";
         }
         if (Einstellungen.getEinstellung().getBelegnummerProJahr()) {
@@ -400,7 +400,7 @@ public class BuchungsControl extends AbstractControl {
     Date d = getBuchung().getDatum();
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
-    this.datum.setText("Bitte Datum wählen");
+    this.datum.setText("Bitte Datum wÃ¤hlen");
     return datum;
   }
 
@@ -511,7 +511,7 @@ public class BuchungsControl extends AbstractControl {
     projekt = new SelectInput(list, getBuchung().getProjekt());
     projekt.setValue(getBuchung().getProjekt());
     projekt.setAttribute("bezeichnung");
-    projekt.setPleaseChoose("Bitte auswählen");
+    projekt.setPleaseChoose("Bitte auswÃ¤hlen");
     return projekt;
   }
 
@@ -526,7 +526,7 @@ public class BuchungsControl extends AbstractControl {
   }
 
   public Button getSammelueberweisungButton() {
-    sammelueberweisungButton = new Button("Sammelüberweisung", new Action() {
+    sammelueberweisungButton = new Button("SammelÃ¼berweisung", new Action() {
 
       @Override
       public void handleAction(Object context) {
@@ -579,7 +579,7 @@ public class BuchungsControl extends AbstractControl {
     suchprojekt = new SelectInput(projektliste, null);
     suchprojekt.addListener(new FilterListener());
     suchprojekt.setAttribute("bezeichnung");
-    suchprojekt.setPleaseChoose("keine Einschränkung");
+    suchprojekt.setPleaseChoose("keine EinschrÃ¤nkung");
     return suchprojekt;
   }
 
@@ -647,7 +647,7 @@ public class BuchungsControl extends AbstractControl {
     }
     this.vondatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.vondatum.setTitle("Anfangsdatum");
-    this.vondatum.setText("Bitte Anfangsdatum wählen");
+    this.vondatum.setText("Bitte Anfangsdatum wÃ¤hlen");
     this.vondatum.addListener(new FilterListener());
     this.vondatum.setMandatory(true);
     return vondatum;
@@ -665,7 +665,7 @@ public class BuchungsControl extends AbstractControl {
     }
     this.bisdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.bisdatum.setTitle("Anfangsdatum");
-    this.bisdatum.setText("Bitte Anfangsdatum wählen");
+    this.bisdatum.setText("Bitte Anfangsdatum wÃ¤hlen");
     this.bisdatum.addListener(new FilterListener());
     this.bisdatum.setMandatory(true);
     return bisdatum;
@@ -744,7 +744,7 @@ public class BuchungsControl extends AbstractControl {
       } else {
         SplitbuchungsContainer.add(b);
         refreshSplitbuchungen();
-        GUI.getStatusBar().setSuccessText("Buchung übernommen");
+        GUI.getStatusBar().setSuccessText("Buchung Ã¼bernommen");
       }
     } catch (RemoteException ex) {
       final String meldung = "Fehler beim Speichern der Buchung.";
@@ -769,7 +769,7 @@ public class BuchungsControl extends AbstractControl {
         mk.setBetrag(b.getBetrag());
         mk.setDatum(b.getDatum());
         mk.setMitglied(mitglied);
-        mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+        mk.setZahlungsweg(Zahlungsweg.ÃœBERWEISUNG);
         mk.setZweck1(b.getZweck());
         mk.store();
         mitgliedskonto.setValue(mk);
@@ -826,7 +826,7 @@ public class BuchungsControl extends AbstractControl {
       Long id = new Long(projekt.getID());
       return id;
     } catch (RemoteException ex) {
-      final String meldung = "Gewähltes Projekt kann nicht ermittelt werden";
+      final String meldung = "GewÃ¤hltes Projekt kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -840,7 +840,7 @@ public class BuchungsControl extends AbstractControl {
       Long id = new Long(buchungsArt.getID());
       return id;
     } catch (RemoteException ex) {
-      final String meldung = "Gewählte Buchungsart kann nicht ermittelt werden";
+      final String meldung = "GewÃ¤hlte Buchungsart kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -1094,7 +1094,7 @@ public class BuchungsControl extends AbstractControl {
       }
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
 
       String path = settings.getString("lastdir", System.getProperty("user.home"));
       if (path != null && path.length() > 0) {
@@ -1124,7 +1124,7 @@ public class BuchungsControl extends AbstractControl {
       final List<Buchung> buchungen = query.get();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
 
       String path = settings.getString("lastdir", System.getProperty("user.home"));
       if (path != null && path.length() > 0) {
@@ -1181,13 +1181,13 @@ public class BuchungsControl extends AbstractControl {
       BuchungsjournalSortDialog djs = new BuchungsjournalSortDialog(
           BuchungsjournalSortDialog.POSITION_CENTER);
       
-      // 20220823: sbuer: Statische Variablen fuer neue Sortiermöglichkeiten
+      // 20220823: sbuer: Statische Variablen fuer neue SortiermÃ¶glichkeiten
       String sort = djs.open();
       query.setOrdername(sort);
 
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
 
       String path = settings.getString("lastdir", System.getProperty("user.home"));
       if (path != null && path.length() > 0) {
@@ -1324,7 +1324,7 @@ public class BuchungsControl extends AbstractControl {
         }
       }
     } catch (RemoteException e) {
-      throw new ApplicationException("Status der aktuellen Buchung kann nicht geprüft werden.", e);
+      throw new ApplicationException("Status der aktuellen Buchung kann nicht geprÃ¼ft werden.", e);
     }
     return false;
   }
