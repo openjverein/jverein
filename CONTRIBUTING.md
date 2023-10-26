@@ -1,19 +1,19 @@
 Sourcen
 -------
 
-OpenJVerein nutzt die Homebankingsoftware Hibiscus und das GUI-Framework Jameica. FÃ¼r die Entwicklung mÃ¼ssen daher deren Git-Repositories eingebunden werden:
+OpenJVerein nutzt die Homebankingsoftware Hibiscus und das GUI-Framework Jameica. Für die Entwicklung müssen daher deren Git-Repositories eingebunden werden:
 
 https://github.com/willuhn/jameica.git
 https://github.com/willuhn/hibiscus.git
 
-Das Git-Repository von OpenJVerein kann dann Ã¼ber https://github.com/openjverein/jverein verwendet werden.
+Das Git-Repository von OpenJVerein kann dann über https://github.com/openjverein/jverein verwendet werden.
 
-Das OpenJVerein-Repository sollte am Besten geforkt werden. Um die Ã„nderungen zu Ã¼bernehmen, erstellt bitte einen Pull-Request.
+Das OpenJVerein-Repository sollte am Besten geforkt werden. Um die Änderungen zu übernehmen, erstellt bitte einen Pull-Request.
 
 Entwicklungsumgebung
 --------------------
 
-FÃ¼r die OpenJVerein-Entwicklung werden benÃ¶tigt
+Für die OpenJVerein-Entwicklung werden benötigt
 
 - Eclipse/IntelliJ IDEA
 - JDK 1.7

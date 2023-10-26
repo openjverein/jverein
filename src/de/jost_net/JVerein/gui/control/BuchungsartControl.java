@@ -151,7 +151,7 @@ public class BuchungsartControl extends AbstractControl
     spende.addListener(new Listener()
     {
       // Listener enabled / disabled Steuer Felder falls eine Spende ausgewählt wurde
-      // (Steuer und Spende schlieÃŸen sich aus)
+      // (Steuer und Spende schließen sich aus)
       @Override
       public void handleEvent(Event event)
       {

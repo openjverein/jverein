@@ -146,8 +146,8 @@ public class AbrechnungSEPAControl extends AbstractControl
       return stichtag;
     }
     this.stichtag = new DateInput(null, new JVDateFormatTTMMJJJJ());
-    this.stichtag.setTitle("Stichtag fÃ¼r die Abrechnung");
-    this.stichtag.setText("Bitte Stichtag fÃ¼r die Abrechnung wÃ¤hlen");
+    this.stichtag.setTitle("Stichtag für die Abrechnung");
+    this.stichtag.setText("Bitte Stichtag für die Abrechnung wählen");
     this.stichtag.setComment("*)");
     return stichtag;
   }
@@ -164,9 +164,9 @@ public class AbrechnungSEPAControl extends AbstractControl
         1 + Einstellungen.getEinstellung().getSEPADatumOffset());
     this.faelligkeit = new DateInput(cal.getTime(),
         new JVDateFormatTTMMJJJJ());
-    this.faelligkeit.setTitle("FÃ¤lligkeit SEPA-Lastschrift");
+    this.faelligkeit.setTitle("Fälligkeit SEPA-Lastschrift");
     this.faelligkeit.setText(
-        "Bitte FÃ¤lligkeitsdatum der SEPA-Lastschrift wÃ¤hlen");
+        "Bitte Fälligkeitsdatum der SEPA-Lastschrift wählen");
     return faelligkeit;
   }
 
@@ -178,7 +178,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     this.vondatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
     this.vondatum.setTitle("Anfangsdatum Abrechnung");
-    this.vondatum.setText("Bitte Anfangsdatum der Abrechnung wÃ¤hlen");
+    this.vondatum.setText("Bitte Anfangsdatum der Abrechnung wählen");
     this.vondatum.setEnabled(false);
     return vondatum;
   }
@@ -192,7 +192,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.bisdatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
     this.bisdatum.setTitle("Enddatum Abrechnung");
     this.bisdatum
-        .setText("Bitte maximales Austrittsdatum fÃ¼r die Abrechnung wÃ¤hlen");
+        .setText("Bitte maximales Austrittsdatum für die Abrechnung wählen");
     this.bisdatum.setEnabled(false);
     return bisdatum;
   }
@@ -316,13 +316,13 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     if (faelligkeit.getValue() == null)
     {
-      throw new ApplicationException("FÃ¤lligkeitsdatum fehlt");
+      throw new ApplicationException("Fälligkeitsdatum fehlt");
     }
     Date f = (Date) faelligkeit.getValue();
     if (f.before(new Date()))
     {
       throw new ApplicationException(
-          "FÃ¤lligkeit muss in der Zukunft liegen");
+          "Fälligkeit muss in der Zukunft liegen");
     }
     Date vondatum = null;
     if (stichtag.getValue() == null)
@@ -347,7 +347,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     if (aa == Abrechnungsausgabe.SEPA_DATEI)
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("SEPA-Ausgabedatei wÃ¤hlen.");
+      fd.setText("SEPA-Ausgabedatei wählen.");
       String path = settings.getString("lastdir.sepa",
           System.getProperty("user.home"));
       if (path != null && path.length() > 0)
@@ -359,10 +359,10 @@ public class AbrechnungSEPAControl extends AbstractControl
       String file = fd.open();
       if (file == null || file.length() == 0)
       {
-        throw new ApplicationException("keine Datei ausgewÃ¤hlt!");
+        throw new ApplicationException("keine Datei ausgewählt!");
       }
       sepafilercur = new File(file);
-      // Wir merken uns noch das Verzeichnis fÃ¼rs nÃ¤chste mal
+      // Wir merken uns noch das Verzeichnis fürs nächste mal
       settings.setAttribute("lastdir.sepa", sepafilercur.getParent());
       try
       {
@@ -375,13 +375,13 @@ public class AbrechnungSEPAControl extends AbstractControl
       }
     }
 
-    // PDF-Datei fÃ¼r Basislastschrift2PDF
+    // PDF-Datei für Basislastschrift2PDF
     String pdffileRCUR = null;
     final Boolean pdfprintb = (Boolean) sepaprint.getValue();
     if (pdfprintb)
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("PDF-Ausgabedatei wÃ¤hlen");
+      fd.setText("PDF-Ausgabedatei wählen");
 
       String path = settings.getString("lastdir.pdf",
           System.getProperty("user.home"));
@@ -393,7 +393,7 @@ public class AbrechnungSEPAControl extends AbstractControl
           Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
       pdffileRCUR = fd.open();
       File file = new File(pdffileRCUR);
-      // Wir merken uns noch das Verzeichnis fÃ¼rs nÃ¤chste mal
+      // Wir merken uns noch das Verzeichnis fürs nächste mal
       settings.setAttribute("lastdir.pdf", file.getParent());
     }
 
@@ -423,9 +423,9 @@ public class AbrechnungSEPAControl extends AbstractControl
             monitor.setStatus(ProgressMonitor.STATUS_DONE);
             if (abupar.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
             {
-              GUI.getStatusBar().setSuccessText(String.format("Abrechnung durchgefÃ¼hrt, SEPA-Datei %s geschrieben.", abupar.sepafileRCUR.getAbsolutePath()));
+              GUI.getStatusBar().setSuccessText(String.format("Abrechnung durchgeführt, SEPA-Datei %s geschrieben.", abupar.sepafileRCUR.getAbsolutePath()));
             } else {
-              GUI.getStatusBar().setSuccessText("Abrechnung durchgefÃ¼hrt, Hibiscus-Lastschrift geschrieben.");
+              GUI.getStatusBar().setSuccessText("Abrechnung durchgeführt, Hibiscus-Lastschrift geschrieben.");
             }
           }
           catch (ApplicationException ae)
