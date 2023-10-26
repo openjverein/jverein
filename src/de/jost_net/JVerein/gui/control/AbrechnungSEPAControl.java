@@ -390,7 +390,7 @@ public class AbrechnungSEPAControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("abbuchungRCUR", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
       pdffileRCUR = fd.open();
       File file = new File(pdffileRCUR);
       // Wir merken uns noch das Verzeichnis fürs nächste mal

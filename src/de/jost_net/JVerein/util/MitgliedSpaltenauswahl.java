@@ -18,6 +18,8 @@ package de.jost_net.JVerein.util;
 
 import java.rmi.RemoteException;
 
+import com.schlevoigt.JVerein.gui.formatter.AnzahlDokumenteFormatter;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.BeitragsgruppeFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
@@ -50,6 +52,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     {
       //
     }
+    add("Dok", "anzahlDokumente", false, new AnzahlDokumenteFormatter(), Column.ALIGN_RIGHT, true);
     add("Anrede", "anrede", false, true);
     add("Titel", "titel", false, true);
     add("Name", "name", true, true);

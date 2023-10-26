@@ -63,7 +63,7 @@ public class MitgliedQuery
     final DBService service = Einstellungen.getDBService();
     ArrayList<Object> bedingungen = new ArrayList<>();
 
-    sql = "select distinct mitglied.*, ucase(name), ucase(vorname) ";
+    sql = "select distinct mitglied.*, (select count(*) from mitglieddokument where mitglied.ID = mitglieddokument.referenz) as DOK, ucase(name), ucase(vorname) ";
     String sort = (String) control.getSortierung().getValue();
     if (sort.equals("Geburtstagsliste"))
     {

@@ -16,8 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.util.Date;
-
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -41,10 +39,10 @@ public class KontoauszugView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.KONTOAUSZUG, false, "question-circle.png");
-    buttons.addButton(control.getStartKontoauszugButton(this.getCurrentObject(),
-        (Date) control.getVondatum("kontoauszug").getValue(),
-        (Date) control.getBisdatum("kontoauszug").getValue()));
+        DokumentationUtil.KONTOAUSZUG, false, "help-browser.png");
+    buttons.addButton(control.getStartKontoauszugButton(
+        this.getCurrentObject(), control.getVondatum("kontoauszug"),
+            control.getBisdatum("kontoauszug")));
     buttons.paint(this.getParent());
   }
 }

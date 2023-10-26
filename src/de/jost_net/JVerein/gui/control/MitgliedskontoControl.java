@@ -905,7 +905,7 @@ public class MitgliedskontoControl extends AbstractControl
   }
 
   public Button getStartKontoauszugButton(final Object currentObject,
-      final Date von, final Date bis)
+      final DateInput von, final DateInput bis)
   {
     Button button = new Button("starten", new Action()
     {
@@ -915,7 +915,7 @@ public class MitgliedskontoControl extends AbstractControl
       {
         try
         {
-          new Kontoauszug(currentObject, von, bis);
+          new Kontoauszug(currentObject, (Date) von.getValue(), (Date) bis.getValue());
         }
         catch (Exception e)
         {

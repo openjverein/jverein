@@ -20,6 +20,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.schlevoigt.JVerein.util.Misc;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.BuchungUebernahmeProtokollDialog;
@@ -47,20 +49,20 @@ public class Buchungsuebernahme {
 
   private void uebernahme() {
     try {
-      Logger.info("Buchungsübernahme zu JVerein gestartet");
+      Logger.info("Buchungsï¿½bernahme zu JVerein gestartet");
 
       // Protokollliste initialisieren
       buchungen = new ArrayList<>();
-      // Über alle Hibiscus-Konten (aus JVerein-Sicht) iterieren
+      // ï¿½ber alle Hibiscus-Konten (aus JVerein-Sicht) iterieren
       DBIterator<Konto> hibkto = Einstellungen.getDBService().createList(Konto.class);
       hibkto.addFilter("hibiscusid > 0");
       while (hibkto.hasNext()) {
         Konto kto = (Konto) hibkto.next();
         leseHibiscus(kto);
       }
-      Logger.info("Buchungsübernahme zu JVerein abgeschlossen");
+      Logger.info("Buchungsï¿½bernahme zu JVerein abgeschlossen");
     } catch (Exception e) {
-      Logger.error("Buchungsübernahme zu JVerein fehlerhaft", e);
+      Logger.error("Buchungsï¿½bernahme zu JVerein fehlerhaft", e);
     }
     try {
       BuchungUebernahmeProtokollDialog bup =
@@ -139,10 +141,7 @@ public class Buchungsuebernahme {
             zweck += "\r\n" + s.trim();
           }
         }
-        if (zweck != null && zweck.length() > 500) {
-          zweck = zweck.substring(0, 500);
-        }
-        b.setZweck(zweck);
+        b.setZweck(Misc.getBuchungsZweckKorrektur(zweck, true));
         b.setDatum(u.getDatum());
         b.setArt(u.getArt());
         b.setKommentar(u.getKommentar());

@@ -396,7 +396,7 @@ public class SpendenbescheinigungControl extends AbstractControl {
     Button b = new Button("PDF (Standard)", new Action() {
 
       /**
-       * Diese Action verwendet die "SpendenbescheinigungPrintAction" für die Aufbereitung des
+       * Diese Action verwendet die "SpendenbescheinigungPrintAction" fï¿½r die Aufbereitung des
        * Dokumentes. Als Rahmen ist der Dialog zur Dateiauswahl und die Anzeige des Dokumentes um
        * die Generierung gesetzt.
        */
@@ -409,7 +409,7 @@ public class SpendenbescheinigungControl extends AbstractControl {
             return;
           }
           FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-          fd.setText("Ausgabedatei wählen.");
+          fd.setText("Ausgabedatei wï¿½hlen.");
           String path = Einstellungen.getEinstellung().getSpendenbescheinigungverzeichnis();
           if (path != null && path.length() > 0) {
             fd.setFilterPath(path);
@@ -429,7 +429,8 @@ public class SpendenbescheinigungControl extends AbstractControl {
           if (s == null || s.length() == 0) {
             return;
           }
-          if (!s.endsWith(".pdf")) {
+          if (!s.toLowerCase().endsWith(".pdf"))
+          {
             s = s + ".pdf";
           }
           final File file = new File(s);
@@ -473,7 +474,7 @@ public class SpendenbescheinigungControl extends AbstractControl {
       return;
     }
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
+    fd.setText("Ausgabedatei wï¿½hlen.");
     String path = Einstellungen.getEinstellung().getSpendenbescheinigungverzeichnis();
     if (path != null && path.length() > 0) {
       fd.setFilterPath(path);
@@ -493,7 +494,8 @@ public class SpendenbescheinigungControl extends AbstractControl {
     if (s == null || s.length() == 0) {
       return;
     }
-    if (!s.endsWith(".pdf")) {
+    if (!s.toLowerCase().endsWith(".pdf"))
+    {
       s = s + ".pdf";
     }
     final File file = new File(s);

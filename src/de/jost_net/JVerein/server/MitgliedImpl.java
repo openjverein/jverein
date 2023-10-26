@@ -141,18 +141,18 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       if (cal1.before(cal2))
       {
         throw new ApplicationException(
-            "Ist das Mitglied wirklich älter als 150 Jahre?");
+            "Ist das Mitglied wirklich ï¿½lter als 150 Jahre?");
       }
     }
     if (getPersonenart().equals("n") && getGeschlecht() == null)
     {
-      throw new ApplicationException("Bitte Geschlecht auswählen");
+      throw new ApplicationException("Bitte Geschlecht auswï¿½hlen");
     }
     if (getEmail() != null && getEmail().length() > 0)
     {
       if (!EmailValidator.isValid(getEmail()))
       {
-        throw new ApplicationException("Ungültige Email-Adresse.");
+        throw new ApplicationException("Ungï¿½ltige Email-Adresse.");
       }
     }
 
@@ -198,7 +198,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       }
       catch (SEPAException e)
       {
-        if (!e.getMessage().startsWith("Ungültiges Land"))
+        if (!e.getMessage().startsWith("Ungï¿½ltiges Land"))
         {
           throw new ApplicationException(e.getMessage());
         }
@@ -207,17 +207,17 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     if (getZahlungsrhythmus() == null)
     {
       throw new ApplicationException(
-          "Ungültiger Zahlungsrhytmus: " + getZahlungsrhythmus());
+          "Ungï¿½ltiger Zahlungsrhytmus: " + getZahlungsrhythmus());
     }
     if (getSterbetag() != null && getAustritt() == null)
     {
       throw new ApplicationException(
-          "Bei verstorbenem Mitglied muss das Austrittsdatum gefüllt sein!");
+          "Bei verstorbenem Mitglied muss das Austrittsdatum gefï¿½llt sein!");
     }
     if (getAustritt() != null || getKuendigung() != null)
     {
       // Person ist ausgetreten
-      // Hat das Mitglied für andere gezahlt?
+      // Hat das Mitglied fï¿½r andere gezahlt?
       if (getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ZAHLER)
       {
         // ja
@@ -228,7 +228,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
         if (famang.hasNext())
         {
           throw new ApplicationException(
-              "Dieses Mitglied zahlt noch für andere Mitglieder. Zunächst Beitragsart der Angehörigen ändern!");
+              "Dieses Mitglied zahlt noch fï¿½r andere Mitglieder. Zunï¿½chst Beitragsart der Angehï¿½rigen ï¿½ndern!");
         }
       }
     }
@@ -237,12 +237,12 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
             .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
         && getZahlerID() == null)
     {
-      throw new ApplicationException("Bitte Zahler auswählen!");
+      throw new ApplicationException("Bitte Zahler auswï¿½hlen!");
     }
   }
 
   /***
-   * Prüfe die externe Mitgliedsnummer. Ist es ein Mitgliedssatz und ist in den
+   * Prï¿½fe die externe Mitgliedsnummer. Ist es ein Mitgliedssatz und ist in den
    * Einstellungen die externe Mitgliedsnummer aktiviert, dann muss eine
    * vorhanden sein und diese muss eindeutig sein.
    * 
@@ -271,7 +271,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       Mitglied mitglied = (Mitglied) mitglieder.next();
       throw new ApplicationException(
-          "Die externe Mitgliedsnummer wird bereits verwendet für Mitglied : "
+          "Die externe Mitgliedsnummer wird bereits verwendet fï¿½r Mitglied : "
               + mitglied.getAttribute("namevorname"));
     }
 
@@ -1152,8 +1152,12 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     if (fieldName.equals("idint"))
     {
       return Integer.valueOf(getID());
+    } 
+    else if (fieldName.equals("anzahlDokumente"))
+    {
+      return super.getAttribute("DOK");
     }
-    if (fieldName.equals("namevorname"))
+    else if (fieldName.equals("namevorname"))
     {
       return Adressaufbereitung.getNameVorname(this);
     }

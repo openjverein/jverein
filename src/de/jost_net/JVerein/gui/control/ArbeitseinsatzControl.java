@@ -249,17 +249,17 @@ public class ArbeitseinsatzControl extends AbstractControl
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("arbeitseinsaetze", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
-    fd.setFilterExtensions(new String[] { "*.PDF" });
+        Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
+    fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
     if (s == null || s.length() == 0)
     {
       return;
     }
-    if (!s.endsWith(".PDF"))
+    if (!s.toLowerCase().endsWith(".pdf"))
     {
-      s = s + ".PDF";
+      s = s + ".pdf";
     }
     final File file = new File(s);
     final GenericIterator<ArbeitseinsatzZeile> it = getIterator();

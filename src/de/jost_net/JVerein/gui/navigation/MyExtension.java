@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.navigation;
 
+import com.schlevoigt.JVerein.gui.action.BuchungsTexteKorrigierenAction;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AboutAction;
 import de.jost_net.JVerein.gui.action.AbrechnungSEPAAction;
@@ -137,15 +139,15 @@ public class MyExtension implements Extension
           new MitgliedskontoMahnungAction(), "file-invoice.png"));
       if (Einstellungen.getEinstellung().getArbeitseinsatz())
       {
-        jverein.addChild(new MyItem(jverein, "Arbeitseinsätze prüfen",
+        jverein.addChild(new MyItem(jverein, "Arbeitseinsï¿½tze prï¿½fen",
             new ArbeitseinsatzUeberpruefungAction(), "screwdriver.png"));
       }
 
       if (Einstellungen.getEinstellung().getZusatzbetrag())
       {
-        jverein.addChild(new MyItem(jverein, "Zusatzbeträge",
+        jverein.addChild(new MyItem(jverein, "Zusatzbetrï¿½ge",
             new ZusatzbetraegeListeAction(), "euro-sign.png"));
-        jverein.addChild(new MyItem(jverein, "Zusatzbeträge importieren",
+        jverein.addChild(new MyItem(jverein, "Zusatzbetrï¿½ge importieren",
             new ZusatzbetraegeImportAction(), "file-import.png"));
       }
       if (Einstellungen.getEinstellung().getWiedervorlage())
@@ -155,7 +157,7 @@ public class MyExtension implements Extension
       }
       if (Einstellungen.getEinstellung().getLehrgaenge())
       {
-        jverein.addChild(new MyItem(jverein, "Lehrgänge",
+        jverein.addChild(new MyItem(jverein, "Lehrgï¿½nge",
             new LehrgaengeListeAction(), "chalkboard-teacher.png"));
       }
       jverein.addChild(new MyItem(jverein, "Spendenbescheinigungen",
@@ -167,7 +169,7 @@ public class MyExtension implements Extension
           new AuswertungMitgliedAction(), "receipt.png"));
       auswertung.addChild(new MyItem(auswertung, "Adressen",
           new AuswertungAdressenAction(), "receipt.png"));
-      auswertung.addChild(new MyItem(auswertung, "Jubiläen",
+      auswertung.addChild(new MyItem(auswertung, "Jubilï¿½en",
           new JubilaeenAction(), "file.png"));
       if (Einstellungen.getEinstellung().getKursteilnehmer())
       {
@@ -176,7 +178,7 @@ public class MyExtension implements Extension
       }
       auswertung.addChild(new MyItem(auswertung, "Statistik",
           new StatistikMitgliedAction(), "chart-line.png"));
-      auswertung.addChild(new MyItem(auswertung, "Statistik Jahrgänge",
+      auswertung.addChild(new MyItem(auswertung, "Statistik Jahrgï¿½nge",
           new StatistikJahrgaengeAction(), "chart-line.png"));
 
       jverein.addChild(auswertung);
@@ -190,10 +192,10 @@ public class MyExtension implements Extension
       jverein.addChild(mail);
 
       NavigationItem buchfuehrung = null;
-      buchfuehrung = new MyItem(buchfuehrung, "Buchführung", null);
+      buchfuehrung = new MyItem(buchfuehrung, "Buchfï¿½hrung", null);
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Konten",
           new KontoListAction(), "list.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbestände",
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbestï¿½nde",
           new AnfangsbestandListAction(), "square.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
           new BuchungsListeAction(), "euro-sign.png"));
@@ -201,11 +203,13 @@ public class MyExtension implements Extension
           new BuchungsuebernahmeAction(), "hibiscus-icon-64x64.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Projekte",
           new ProjektSaldoAction(), "exchange-alt.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
+          new BuchungsTexteKorrigierenAction(), "preferences-system-windows.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassen",
           new BuchungsklasseSaldoAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahressaldo",
           new JahressaldoAction(), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlï¿½sse",
           new JahresabschlussListAction(), "euro-sign.png"));
       jverein.addChild(buchfuehrung);
 
@@ -240,7 +244,7 @@ public class MyExtension implements Extension
               new AdministrationEinstellungenSpendenbescheinigungenAction(),
               "wrench.png"));
       administrationEinstellungen.addChild(new MyItem(
-          administrationEinstellungen, "Buchführung",
+          administrationEinstellungen, "Buchfï¿½hrung",
           new AdministrationEinstellungenBuchfuehrungAction(), "wrench.png"));
       administrationEinstellungen
           .addChild(new MyItem(administrationEinstellungen, "Rechnungen",
@@ -258,7 +262,7 @@ public class MyExtension implements Extension
 
       NavigationItem einstellungenbuchfuehrung = null;
       einstellungenbuchfuehrung = new MyItem(einstellungenbuchfuehrung,
-          "Buchführung", null);
+          "Buchfï¿½hrung", null);
       einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
           "Buchungsklassen", new BuchungsklasseListAction(), "ellipsis-v.png"));
       einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
@@ -288,7 +292,7 @@ public class MyExtension implements Extension
         administration.addChild(new MyItem(administration, "Lesefelder",
             new LesefelddefinitionenAction(null), "list.png"));
       }
-      // TODO deaktiviert für Versionsbau
+      // TODO deaktiviert fï¿½r Versionsbau
       // if (Einstellungen.getEinstellung().getInventar())
       // {
       // administration.addChild(new MyItem(administration,
@@ -321,10 +325,10 @@ public class MyExtension implements Extension
       jverein.addChild(administration);
       jverein.addChild(new MyItem(jverein, "Dokumentation",
           new DokumentationAction(), "question-circle.png"));
-      jverein.addChild(new MyItem(jverein, "Spende für JVerein",
+      jverein.addChild(new MyItem(jverein, "Spende fï¿½r JVerein",
           new SpendenAction(), "coins.png"));
       jverein.addChild(
-          new MyItem(jverein, "Über", new AboutAction(), "gtk-info.png"));
+          new MyItem(jverein, "ï¿½ber", new AboutAction(), "gtk-info.png"));
     }
     catch (Exception e)
     {

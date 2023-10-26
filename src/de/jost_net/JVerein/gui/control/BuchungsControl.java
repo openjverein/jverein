@@ -1027,8 +1027,8 @@ public class BuchungsControl extends AbstractControl {
       // return o.toString();
       // }
       // }, false, Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
-      buchungsList.addColumn("Auszugsnummer", "auszugsnummer");
-      buchungsList.addColumn("Blatt", "blattnummer");
+//      buchungsList.addColumn("Auszugsnummer", "auszugsnummer");
+//      buchungsList.addColumn("Blatt", "blattnummer");
 
       buchungsList.addColumn("Name", "name");
       buchungsList.addColumn("IBAN oder Kontonummer", "iban");
@@ -1195,7 +1195,7 @@ public class BuchungsControl extends AbstractControl {
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("buchungen", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
 
       final String s = fd.open();
 
@@ -1297,7 +1297,7 @@ public class BuchungsControl extends AbstractControl {
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("buchungsjournal", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
 
       final String s = fd.open();
 

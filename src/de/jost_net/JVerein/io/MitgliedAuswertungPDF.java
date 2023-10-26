@@ -315,7 +315,7 @@ public class MitgliedAuswertungPDF implements IAuswertung
   @Override
   public String getDateiendung()
   {
-    return "PDF";
+    return "pdf";
   }
 
   @Override

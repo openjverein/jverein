@@ -216,7 +216,7 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("abrechnungslauf", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
 
       final String s = fd.open();
 
