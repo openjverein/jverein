@@ -111,7 +111,7 @@ public class AbrechnungSEPA
         || Einstellungen.getEinstellung().getGlaeubigerID().length() == 0)
     {
       throw new ApplicationException(
-          "Glï¿½ubiger-ID fehlt. Gfls. unter https://extranet.bundesbank.de/scp/ oder http://www.oenb.at/idakilz/cid?lang=de beantragen und unter Administration|Einstellungen|Allgemein eintragen.\n"
+          "Gläubiger-ID fehlt. Gfls. unter https://extranet.bundesbank.de/scp/ oder http://www.oenb.at/idakilz/cid?lang=de beantragen und unter Administration|Einstellungen|Allgemein eintragen.\n"
               + "Zu Testzwecken kann DE98ZZZ09999999999 eingesetzt werden.");
     }
 
@@ -142,13 +142,13 @@ public class AbrechnungSEPA
       abbuchenKursteilnehmer(param, lastschrift);
     }
 
-    monitor.log(counter + " abgerechnete Fï¿½lle");
+    monitor.log(counter + " abgerechnete Fälle");
 
     lastschrift.setMessageID(abrl.getID() + "-RCUR");
     if (param.kompakteabbuchung || param.sepaprint)
     {
-      // Fï¿½r kompakte Abbuchung wird erst in write die Zahlerliste gefï¿½llt. Das fï¿½r die
-      // PDF-Erzeugung benï¿½tigte Datum wird auch erst in write gesetzt
+      // Für kompakte Abbuchung wird erst in write die Zahlerliste gefüllt. Das für die
+      // PDF-Erzeugung benötigte Datum wird auch erst in write gesetzt
       File temp_file = Files.createTempFile("jv", ".xml").toFile();
       lastschrift.write(temp_file);
       temp_file.delete();
@@ -239,7 +239,7 @@ public class AbrechnungSEPA
       ls.store();
     }
 
-    // Gegenbuchung fï¿½r das Mitgliedskonto schreiben
+    // Gegenbuchung für das Mitgliedskonto schreiben
     if (!summemitgliedskonto.equals(new BigDecimal("0")))
     {
       writeMitgliedskonto(null, new Date(), "Gegenbuchung",
@@ -274,14 +274,14 @@ public class AbrechnungSEPA
       list.addFilter("(austritt is null or austritt > ?)",
           new Object[] { new java.sql.Date(param.stichtag.getTime()) });
       // Bei Abbuchungen im Laufe des Jahres werden nur die Mitglieder
-      // berï¿½cksichtigt, die bis zu einem bestimmten Zeitpunkt ausgetreten sind.
+      // berücksichtigt, die bis zu einem bestimmten Zeitpunkt ausgetreten sind.
       if (param.bisdatum != null)
       {
         list.addFilter("(austritt <= ?)",
             new Object[] { new java.sql.Date(param.bisdatum.getTime()) });
       }
       // Bei Abbuchungen im Laufe des Jahres werden nur die Mitglieder
-      // berï¿½cksichtigt, die ab einem bestimmten Zeitpunkt eingetreten sind.
+      // berücksichtigt, die ab einem bestimmten Zeitpunkt eingetreten sind.
       if (param.vondatum != null)
       {
         list.addFilter("eingabedatum >= ?",
@@ -336,7 +336,7 @@ public class AbrechnungSEPA
 
       list.setOrder("ORDER BY name, vorname");
 
-      // Sï¿½tze im Resultset
+      // Sätze im Resultset
       int count = 0;
       while (list.hasNext())
       {
@@ -445,9 +445,9 @@ public class AbrechnungSEPA
         zahler.setPersonTyp(JVereinZahlerTyp.MITGLIED);
         zahler.setBetrag(
             new BigDecimal(betr).setScale(2, RoundingMode.HALF_UP));
-        new BIC(m.getBic()); // Prï¿½fung des BIC
+        new BIC(m.getBic()); // Prüfung des BIC
         zahler.setBic(m.getBic());
-        new IBAN(m.getIban()); // Prï¿½fung der IBAN
+        new IBAN(m.getIban()); // Prüfung der IBAN
         zahler.setIban(m.getIban());
         zahler.setMandatid(m.getMandatID());
         zahler.setMandatdatum(m.getMandatDatum());
@@ -708,7 +708,7 @@ public class AbrechnungSEPA
   {
     if (z.size() == 0)
     {
-      // Wenn keine Buchungen vorhanden sind, wird nichts an Hibiscus ï¿½bergeben.
+      // Wenn keine Buchungen vorhanden sind, wird nichts an Hibiscus übergeben.
       return;
     }
     try
@@ -846,7 +846,7 @@ public class AbrechnungSEPA
   }
 
   /**
-   * Ist das Abbuchungskonto in der Buchfï¿½hrung eingerichtet?
+   * Ist das Abbuchungskonto in der Buchführung eingerichtet?
    * 
    * @throws SEPAException
    */
@@ -869,7 +869,7 @@ public class AbrechnungSEPA
       return (Konto) it.next();
     }
     throw new ApplicationException(String.format(
-        "Weder Konto %s noch Konto %s ist in der Buchfï¿½hrung eingerichtet. Menu: Buchfï¿½hrung | Konten",
+        "Weder Konto %s noch Konto %s ist in der Buchführung eingerichtet. Menu: Buchführung | Konten",
         Einstellungen.getEinstellung().getIban(), iban.getKonto()));
   }
 
@@ -895,7 +895,7 @@ public class AbrechnungSEPA
         && letzte_lastschrift.before(sepagueltigkeit.getTime()))
     {
       monitor.log(Adressaufbereitung.getNameVorname(m)
-          + ": Letzte Lastschrift ist ï¿½lter als 36 Monate.");
+          + ": Letzte Lastschrift ist älter als 36 Monate.");
       return false;
     }
     if (m.getMandatDatum() == Einstellungen.NODATE)

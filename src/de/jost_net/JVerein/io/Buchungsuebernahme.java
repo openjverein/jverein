@@ -49,20 +49,20 @@ public class Buchungsuebernahme {
 
   private void uebernahme() {
     try {
-      Logger.info("Buchungsï¿½bernahme zu JVerein gestartet");
+      Logger.info("Buchungsübernahme zu JVerein gestartet");
 
       // Protokollliste initialisieren
       buchungen = new ArrayList<>();
-      // ï¿½ber alle Hibiscus-Konten (aus JVerein-Sicht) iterieren
+      // über alle Hibiscus-Konten (aus JVerein-Sicht) iterieren
       DBIterator<Konto> hibkto = Einstellungen.getDBService().createList(Konto.class);
       hibkto.addFilter("hibiscusid > 0");
       while (hibkto.hasNext()) {
         Konto kto = (Konto) hibkto.next();
         leseHibiscus(kto);
       }
-      Logger.info("Buchungsï¿½bernahme zu JVerein abgeschlossen");
+      Logger.info("Buchungsübernahme zu JVerein abgeschlossen");
     } catch (Exception e) {
-      Logger.error("Buchungsï¿½bernahme zu JVerein fehlerhaft", e);
+      Logger.error("Buchungsübernahme zu JVerein fehlerhaft", e);
     }
     try {
       BuchungUebernahmeProtokollDialog bup =
