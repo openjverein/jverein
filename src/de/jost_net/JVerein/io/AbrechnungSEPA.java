@@ -815,10 +815,21 @@ public class AbrechnungSEPA
       mk.setDatum(datum);
       mk.setMitglied(mitglied);
       mk.setZweck1(zweck1);
+      
+      double steuersatz = 0d;
       if (buchungsart != null)
       {
         mk.setBuchungsart(buchungsart);
+        Buchungsart bart = mk.getBuchungsart();
+        steuersatz = bart.getSteuersatz();
       }
+
+      // Update taxes and netto amount
+      mk.setSteuersatz(steuersatz);
+      double netto = (betrag / (1d + (steuersatz / 100d)));
+      mk.setNettobetrag(netto);
+      mk.setSteuerbetrag(betrag - netto);      
+      
       mk.store();
     }
     if (haben)
