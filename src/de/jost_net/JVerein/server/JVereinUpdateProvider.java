@@ -479,7 +479,7 @@ public class JVereinUpdateProvider
     sb.append(
         "ALTER TABLE buchung ADD CONSTRAINT fkBuchung1 FOREIGN KEY (buchungsart) REFERENCES buchungsart (id) DEFERRABLE;\n");
     sb.append(
-        "ALTER TABLE buchung ADD CONSTRAINT fkBuchung2 FOREIGN KEY (konto)       REFERENCES konto (id) DEFERRABLE;\n");
+        "ALTER TABLE buchung ADD CONSTRAINT fkBuchung2 FOREIGN KEY (konto) REFERENCES konto (id) DEFERRABLE;\n");
     sb.append("CREATE TABLE anfangsbestand (");
     sb.append("id IDENTITY(1),");
     sb.append("konto INTEGER,");
@@ -681,7 +681,7 @@ public class JVereinUpdateProvider
     sb.append(
         "ALTER TABLE buchung ADD CONSTRAINT fkBuchung1 FOREIGN KEY (buchungsart) REFERENCES buchungsart (id);\n");
     sb.append(
-        "ALTER TABLE buchung ADD CONSTRAINT fkBuchung2 FOREIGN KEY (konto)       REFERENCES konto (id);\n");
+        "ALTER TABLE buchung ADD CONSTRAINT fkBuchung2 FOREIGN KEY (konto) REFERENCES konto (id);\n");
     sb.append("CREATE TABLE anfangsbestand (");
     sb.append("id INTEGER AUTO_INCREMENT,");
     sb.append("konto INTEGER,");
@@ -703,7 +703,8 @@ public class JVereinUpdateProvider
     sb.append("PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
     sb.append("INSERT INTO version VALUES (1,15);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 15);
   }
@@ -733,7 +734,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(" )  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 16);
   }
@@ -773,7 +775,8 @@ public class JVereinUpdateProvider
     sb.append(")  ENGINE=InnoDB;\n");
     sb.append(
         "ALTER TABLE formularfeld ADD CONSTRAINT fkFormularfeld1 FOREIGN KEY (formular) REFERENCES formular (id) ON DELETE CASCADE ON UPDATE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 17);
   }
@@ -787,7 +790,8 @@ public class JVereinUpdateProvider
         "alter table buchung alter column  kommentar varchar(1000);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table buchung modify column  kommentar varchar(1000);\n");
 
     execute(conn, statements, 18);
@@ -802,7 +806,8 @@ public class JVereinUpdateProvider
         "alter table formularfeld add fontstyle integer;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table formularfeld add fontstyle integer;\n");
 
     execute(conn, statements, 19);
@@ -853,7 +858,8 @@ public class JVereinUpdateProvider
     sb.append(")  ENGINE=InnoDB;\n");
     sb.append(
         "ALTER TABLE spendenbescheinigung ADD CONSTRAINT fkSpendenbescheinigung1 FOREIGN KEY (formular) REFERENCES formular (id) ON DELETE RESTRICT;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 20);
   }
@@ -867,7 +873,8 @@ public class JVereinUpdateProvider
         "CREATE UNIQUE INDEX ixFormular1 ON formular(bezeichnung);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "CREATE UNIQUE INDEX ixFormular1 ON formular(bezeichnung);\n");
 
     execute(conn, statements, 21);
@@ -902,7 +909,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id), ");
     sb.append(" PRIMARY KEY (id)");
     sb.append(" )  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 22);
   }
@@ -916,7 +924,8 @@ public class JVereinUpdateProvider
         "CREATE INDEX ixAbrechnung1 ON abrechnung(mitglied);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "CREATE INDEX ixAbrechnung1 ON abrechnung(mitglied);\n");
 
     execute(conn, statements, 23);
@@ -931,7 +940,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE abrechnung ADD CONSTRAINT fkAbrechnung1 FOREIGN KEY (mitglied) REFERENCES mitglied (id) ON DELETE RESTRICT;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE abrechnung ADD CONSTRAINT fkAbrechnung1 FOREIGN KEY (mitglied) REFERENCES mitglied (id) ON DELETE RESTRICT;\n");
 
     execute(conn, statements, 24);
@@ -946,7 +956,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE stammdaten ADD altersjubilaeen varchar(50);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE stammdaten ADD altersjubilaeen varchar(50);\n");
 
     execute(conn, statements, 25);
@@ -961,7 +972,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE mitglied ADD adressierungszusatz varchar(40) before strasse;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE mitglied ADD adressierungszusatz varchar(40) after vorname;\n");
 
     execute(conn, statements, 26);
@@ -976,7 +988,8 @@ public class JVereinUpdateProvider
         "UPDATE mitglied SET adressierungszusatz = '' WHERE adressierungszusatz is null;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "UPDATE mitglied SET adressierungszusatz = '' WHERE adressierungszusatz is null;\n");
 
     execute(conn, statements, 27);
@@ -1029,7 +1042,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(" )  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 28);
   }
@@ -1043,7 +1057,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE buchung ADD auszugsnummer integer before name;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE buchung ADD auszugsnummer integer after konto;\n");
 
     execute(conn, statements, 29);
@@ -1058,7 +1073,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE buchung ADD blattnummer integer before name;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE buchung ADD blattnummer integer after auszugsnummer;\n");
 
     execute(conn, statements, 30);
@@ -1073,7 +1089,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE mitglied ALTER COLUMN telefonprivat varchar(20);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE mitglied MODIFY COLUMN telefonprivat varchar(20);\n");
 
     execute(conn, statements, 31);
@@ -1088,7 +1105,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE mitglied ALTER COLUMN telefondienstlich varchar(20);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE mitglied MODIFY COLUMN telefondienstlich varchar(20);\n");
 
     execute(conn, statements, 32);
@@ -1103,7 +1121,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE mitglied ALTER COLUMN handy varchar(20);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE mitglied MODIFY COLUMN handy varchar(20);\n");
 
     execute(conn, statements, 33);
@@ -1118,7 +1137,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE spendenbescheinigung ADD ersatzaufwendungen char(5);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE spendenbescheinigung ADD ersatzaufwendungen char(5);\n");
 
     execute(conn, statements, 34);
@@ -1156,7 +1176,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(" )  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 35);
   }
@@ -1173,7 +1194,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("drop table report;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 36);
   }
@@ -1206,7 +1228,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 37);
   }
@@ -1225,7 +1248,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD lehrgaenge char(5) after kursteilnehmer;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 38);
   }
@@ -1262,7 +1286,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 39);
   }
@@ -1281,7 +1306,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE lehrgang ADD CONSTRAINT fkLehrgang1 FOREIGN KEY (mitglied) REFERENCES mitglied (id) ON DELETE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 40);
   }
@@ -1300,7 +1326,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE lehrgang ADD CONSTRAINT fkLehrgang2 FOREIGN KEY (lehrgangsart) REFERENCES lehrgangsart (id) ON DELETE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 41);
   }
@@ -1317,7 +1344,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE lehrgang DROP FOREIGN KEY fkLehrgang1;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 42);
   }
@@ -1334,7 +1362,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE lehrgang DROP FOREIGN KEY fkLehrgang2;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 43);
   }
@@ -1353,7 +1382,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE lehrgang ADD CONSTRAINT fkLehrgang1 FOREIGN KEY (mitglied) REFERENCES mitglied (id) ON DELETE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 44);
   }
@@ -1372,7 +1402,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE lehrgang ADD CONSTRAINT fkLehrgang2 FOREIGN KEY (lehrgangsart) REFERENCES lehrgangsart (id) ON DELETE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 45);
   }
@@ -1389,7 +1420,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE formular MODIFY COLUMN inhalt LONGBLOB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 46);
   }
@@ -1408,7 +1440,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD juristischepersonen char(5) after lehrgaenge;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 47);
   }
@@ -1426,7 +1459,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE mitglied ADD personenart char(1) after externemitgliedsnummer;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 48);
   }
@@ -1443,7 +1477,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("update mitglied set personenart = 'n';\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 49);
   }
@@ -1460,7 +1495,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("alter table mitglied modify column vorname varchar(40) null;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 50);
   }
@@ -1477,7 +1513,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE zusatzfelder DROP FOREIGN KEY fkZusatzfelder1;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 51);
   }
@@ -1496,7 +1533,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE zusatzfelder ADD CONSTRAINT fkzusatzfelder1 FOREIGN KEY (mitglied) REFERENCES mitglied (id) ON DELETE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 52);
   }
@@ -1515,7 +1553,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD aktuellegeburtstagevorher integer default 3 after juristischepersonen;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 53);
   }
@@ -1534,7 +1573,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD aktuellegeburtstagenachher integer default 7 after aktuellegeburtstagevorher;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 54);
   }
@@ -1564,7 +1604,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (nummer),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 55);
   }
@@ -1583,7 +1624,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append("ALTER TABLE `buchungsart` add COLUMN buchungsklasse INTEGER;\n");
     sb.append("CREATE INDEX buchungsart_2 on buchungsart(buchungsklasse);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 56);
   }
@@ -1602,7 +1644,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE buchungsart ADD CONSTRAINT fkBuchungsart2 FOREIGN KEY (buchungsklasse) REFERENCES buchungsklasse (id);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 57);
   }
@@ -1621,7 +1664,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD updateinterval integer default 30;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 58);
   }
@@ -1640,7 +1684,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD updatediaginfos char(5)default 'true';\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 59);
   }
@@ -1657,7 +1702,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD updatelastcheck date;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 60);
   }
@@ -1675,7 +1721,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "alter table `anfangsbestand` change BETRAG `betrag` double default NULL;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 61);
   }
@@ -1692,7 +1739,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD smtp_server varchar(50);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 62);
   }
@@ -1709,7 +1757,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD smtp_port char(5);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 63);
   }
@@ -1726,7 +1775,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD smtp_auth_user varchar(50);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 64);
   }
@@ -1743,7 +1793,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD smtp_auth_pwd varchar(50);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 65);
   }
@@ -1760,7 +1811,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD smtp_from_address varchar(50);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 66);
   }
@@ -1777,7 +1829,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD smtp_ssl char(5);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 67);
   }
@@ -1802,7 +1855,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 68);
   }
@@ -1834,7 +1888,8 @@ public class JVereinUpdateProvider
     sb.append(")  ENGINE=InnoDB;\n");
     sb.append(
         "ALTER TABLE eigenschaft ADD CONSTRAINT fkEigenschaft1 FOREIGN KEY (eigenschaftgruppe) REFERENCES eigenschaftgruppe (id);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 69);
   }
@@ -1848,7 +1903,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE mitglied ALTER COLUMN anrede varchar(40);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE mitglied MODIFY COLUMN anrede varchar(40);\n");
 
     execute(conn, statements, 70);
@@ -1863,7 +1919,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE mitglied ALTER COLUMN titel varchar(40);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE mitglied MODIFY COLUMN titel varchar(40);\n");
 
     execute(conn, statements, 71);
@@ -1941,7 +1998,8 @@ public class JVereinUpdateProvider
         "alter table eigenschaften alter column  eigenschaft integer not null;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table eigenschaften modify column  eigenschaft integer not null;\n");
 
     execute(conn, statements, 74);
@@ -1956,7 +2014,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 75);
   }
@@ -1970,7 +2029,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 76);
   }
@@ -1984,7 +2044,8 @@ public class JVereinUpdateProvider
         "CREATE UNIQUE INDEX ixEigenschaft1 ON eigenschaft(bezeichnung);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "CREATE UNIQUE INDEX ixEigenschaft1 ON eigenschaft(bezeichnung);\n");
 
     execute(conn, statements, 77);
@@ -1999,7 +2060,8 @@ public class JVereinUpdateProvider
         "CREATE UNIQUE INDEX ixEigenschaftGruppe1 ON eigenschaftgruppe(bezeichnung);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "CREATE UNIQUE INDEX ixEigenschaftGruppe1 ON eigenschaftgruppe(bezeichnung);\n");
 
     execute(conn, statements, 78);
@@ -2016,7 +2078,8 @@ public class JVereinUpdateProvider
             + "ALTER TABLE einstellung DROP COLUMN updatelastcheck;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung DROP COLUMN updateinterval, "
             + "DROP COLUMN updatediaginfos, DROP COLUMN updatelastcheck;\n");
 
@@ -2037,7 +2100,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE felddefinition ADD datentyp integer default 1 after label;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 80);
   }
@@ -2054,7 +2118,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE zusatzfelder ADD felddatum DATE NULL;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 81);
   }
@@ -2071,7 +2136,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE zusatzfelder ADD feldganzzahl integer NULL;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 82);
   }
@@ -2088,7 +2154,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE zusatzfelder ADD feldgleitkommazahl DOUBLE null;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 83);
   }
@@ -2105,7 +2172,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE zusatzfelder ADD feldwaehrung DECIMAL(15,2);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 84);
   }
@@ -2122,7 +2190,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE zusatzfelder ADD feldjanein CHAR(5) NULL;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 85);
   }
@@ -2139,7 +2208,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD zahlungsweg INT DEFAULT 1;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 86);
   }
@@ -2156,7 +2226,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD zahlungsrhytmus INT DEFAULT 12;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 87);
   }
@@ -2186,7 +2257,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (betreff),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(" )  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 88);
   }
@@ -2219,7 +2291,8 @@ public class JVereinUpdateProvider
     sb.append("UNIQUE (betreff),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 89);
   }
@@ -2249,7 +2322,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id), ");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 90);
   }
 
@@ -2267,7 +2341,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE mailempfaenger ADD CONSTRAINT fkMailEmpfaenger1 FOREIGN KEY (mail) REFERENCES mail (id) ON DELETE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 91);
   }
@@ -2286,7 +2361,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE mailempfaenger ADD CONSTRAINT fkMailEmpfaenger2 FOREIGN KEY (mitglied) REFERENCES mitglied (id);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 92);
   }
@@ -2316,7 +2392,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(" )  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 93);
   }
@@ -2335,7 +2412,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE mailanhang ADD CONSTRAINT fkMailAnhang1 FOREIGN KEY (mail) REFERENCES mail (id) ON DELETE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 94);
   }
@@ -2354,7 +2432,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "DELETE eigenschaften from eigenschaften left join mitglied on mitglied.id = eigenschaften.mitglied;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 95);
 
     statements = new HashMap<String, String>();
@@ -2368,7 +2447,7 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE eigenschaften ADD CONSTRAINT fkEigenschaften1 FOREIGN KEY (mitglied) REFERENCES mitglied (id) on delete cascade;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 95);
   }
@@ -2410,7 +2489,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id), ");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 96);
   }
@@ -2450,7 +2530,8 @@ public class JVereinUpdateProvider
     sb.append(" INDEX(mitglied), ");
     sb.append(" PRIMARY KEY (id)");
     sb.append(" )  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 97);
   }
@@ -2469,7 +2550,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE mitgliedskonto ADD CONSTRAINT fkMitgliedskonto1 FOREIGN KEY (abrechnungslauf) REFERENCES abrechnungslauf (id) on delete cascade;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 98);
   }
@@ -2488,7 +2570,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE mitgliedskonto ADD CONSTRAINT fkMitgliedskonto2 FOREIGN KEY (mitglied) REFERENCES mitglied (id) on delete cascade;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 99);
   }
@@ -2507,7 +2590,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD mitgliedskonto char(5) after juristischepersonen;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 100);
   }
@@ -2520,7 +2604,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(),
         "alter table buchung add mitgliedskonto integer;\n");
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table buchung add mitgliedskonto integer;\n");
 
     execute(conn, statements, 101);
@@ -2540,7 +2625,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE buchung ADD CONSTRAINT fkBuchung3 FOREIGN KEY (mitgliedskonto) REFERENCES mitgliedskonto (id)  ON DELETE CASCADE  ;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 102);
   }
@@ -2553,7 +2639,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(),
         "alter table buchung add abrechnungslauf integer;\n");
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table buchung add abrechnungslauf integer;\n");
 
     execute(conn, statements, 103);
@@ -2573,7 +2660,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE buchung ADD CONSTRAINT fkBuchung4 FOREIGN KEY (abrechnungslauf) REFERENCES abrechnungslauf (id) ON DELETE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 104);
   }
@@ -2592,7 +2680,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD manuellezahlungen char(5) after mitgliedskonto;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 105);
   }
@@ -2611,7 +2700,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD rechnungen13 char(5) after manuellezahlungen;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 106);
   }
@@ -2630,7 +2720,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD rechnungtextabbuchung varchar(100) after rechnungen13;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 107);
   }
@@ -2649,7 +2740,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD rechnungtextueberweisung varchar(100) after rechnungtextabbuchung;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 108);
   }
@@ -2668,7 +2760,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD rechnungtextbar varchar(100) after rechnungtextueberweisung;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 109);
   }
@@ -2688,12 +2781,13 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE buchung DROP FOREIGN KEY fkBuchung3;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     // Update fuer MySQL
     sb.append(
         "ALTER TABLE buchung ADD CONSTRAINT fkBuchung3 FOREIGN KEY (mitgliedskonto) REFERENCES mitgliedskonto (id);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 110);
   }
@@ -2707,7 +2801,8 @@ public class JVereinUpdateProvider
         "alter table buchungsart alter column  bezeichnung varchar(50);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table buchungsart modify column  bezeichnung varchar(50);\n");
 
     execute(conn, statements, 111);
@@ -2738,7 +2833,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (mitglied), ");
     sb.append(" PRIMARY KEY (id)");
     sb.append(" )  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 112);
   }
@@ -2757,7 +2853,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE mitgliedfoto ADD CONSTRAINT fkMitgliedfoto1 FOREIGN KEY (mitglied) REFERENCES mitglied (id) ON DELETE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 113);
   }
@@ -2776,7 +2873,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD mitgliedfoto char(5) after mitgliedskonto;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 114);
   }
@@ -2793,7 +2891,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE eigenschaftgruppe ADD pflicht char(5);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 115);
   }
@@ -2807,7 +2906,8 @@ public class JVereinUpdateProvider
         "alter table mail alter column  txt varchar(10000);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mail modify column  txt varchar(10000);\n");
 
     execute(conn, statements, 116);
@@ -2822,7 +2922,8 @@ public class JVereinUpdateProvider
         "alter table mailvorlage alter column  txt varchar(10000);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mailvorlage modify column  txt varchar(10000);\n");
 
     execute(conn, statements, 117);
@@ -2837,7 +2938,8 @@ public class JVereinUpdateProvider
         "alter table konto alter column  bezeichnung varchar(255);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table konto modify column  bezeichnung varchar(255);\n");
 
     execute(conn, statements, 118);
@@ -2857,7 +2959,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD auslandsadressen char(5) after mitgliedfoto;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 119);
   }
@@ -2875,7 +2978,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE mitglied ADD staat varchar(50) after ort;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 120);
   }
@@ -2892,7 +2996,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE mitglied ADD sterbetag date after kuendigung;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 121);
   }
@@ -2909,7 +3014,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung DROP rechnungen13;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 122);
   }
@@ -2926,7 +3032,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung DROP manuellezahlungen;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 123);
   }
@@ -2943,7 +3050,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung DROP rechnungfuerabbuchung;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 124);
   }
@@ -2960,7 +3068,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung DROP rechnungfuerueberweisung;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 125);
   }
@@ -2977,7 +3086,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung DROP rechnungfuerbarzahlung;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 126);
   }
@@ -2994,7 +3104,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("DROP TABLE abrechnung;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 127);
   }
@@ -3011,7 +3122,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("DROP TABLE manuellerzahlungseingang;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 128);
   }
@@ -3030,7 +3142,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD arbeitseinsatz char(5) after auslandsadressen;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 129);
   }
@@ -3047,7 +3160,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE beitragsgruppe ADD arbeitseinsatzstunden double;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 130);
   }
@@ -3064,7 +3178,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE beitragsgruppe ADD arbeitseinsatzbetrag double;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 131);
   }
@@ -3097,7 +3212,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 132);
   }
@@ -3111,7 +3227,8 @@ public class JVereinUpdateProvider
         "alter table formularfeld alter column  name varchar(30);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table formularfeld modify column  name varchar(30);\n");
 
     execute(conn, statements, 133);
@@ -3129,7 +3246,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE eigenschaftgruppe ADD max1 char(5);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 134);
   }
@@ -3162,7 +3280,8 @@ public class JVereinUpdateProvider
     sb.append(")  ENGINE=InnoDB;\n");
     sb.append(
         "ALTER TABLE buchungdokument ADD CONSTRAINT fkBuchungDokument1 FOREIGN KEY (buchung) REFERENCES buchung (id);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 135);
   }
@@ -3179,7 +3298,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("drop table buchungdokument;");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 136);
   }
 
@@ -3215,7 +3335,8 @@ public class JVereinUpdateProvider
     sb.append(")  ENGINE=InnoDB;\n");
     sb.append(
         "ALTER TABLE buchungdokument ADD CONSTRAINT fkBuchungDokument1 FOREIGN KEY (referenz) REFERENCES buchung (id);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 137);
   }
@@ -3252,7 +3373,8 @@ public class JVereinUpdateProvider
     sb.append(")  ENGINE=InnoDB;\n");
     sb.append(
         "ALTER TABLE mitglieddokument ADD CONSTRAINT fkMitgliedDokument1 FOREIGN KEY (referenz) REFERENCES mitglied (id);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 138);
   }
@@ -3266,7 +3388,8 @@ public class JVereinUpdateProvider
         "alter table buchung add splitid integer;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table buchung add splitid integer;\n");
 
     execute(conn, statements, 139);
@@ -3286,7 +3409,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD dokumentenspeicherung char(5) after arbeitseinsatz;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 140);
   }
@@ -3304,7 +3428,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD name varchar(30) first;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 141);
   }
@@ -3322,7 +3447,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD blz varchar(8) after name;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 142);
   }
@@ -3340,7 +3466,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD konto varchar(10) after blz;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 143);
   }
@@ -3357,7 +3484,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD altersgruppen varchar(50);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 144);
   }
@@ -3374,7 +3502,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD jubilaeen varchar(50);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 145);
   }
@@ -3391,7 +3520,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD altersjubilaeen varchar(50);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 146);
   }
@@ -3408,7 +3538,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("UPDATE einstellung SET name = (SELECT name from stammdaten);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 147);
   }
@@ -3425,7 +3556,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("UPDATE einstellung SET blz = (SELECT blz from stammdaten);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 148);
   }
@@ -3444,7 +3576,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "UPDATE einstellung SET konto = (SELECT konto from stammdaten);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 149);
   }
@@ -3463,7 +3596,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "UPDATE einstellung SET altersgruppen = (SELECT altersgruppen from stammdaten);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 150);
   }
@@ -3482,7 +3616,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "UPDATE einstellung SET jubilaeen = (SELECT jubilaeen from stammdaten);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 151);
   }
@@ -3501,7 +3636,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "UPDATE einstellung SET altersjubilaeen = (SELECT altersjubilaeen from stammdaten);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 152);
   }
@@ -3531,7 +3667,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (bezeichnung),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(" )  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 153);
   }
@@ -3544,7 +3681,8 @@ public class JVereinUpdateProvider
     sb.append("INSERT into adresstyp VALUES (1, 'Mitglied', 1);\n");
     sb.append("INSERT into adresstyp VALUES (2, 'Spender/in', 2);\n");
     statements.put(DBSupportH2Impl.class.getName(), sb.toString());
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 154);
   }
 
@@ -3562,7 +3700,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE mitglied ADD adresstyp integer default 1 not null after externemitgliedsnummer;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 155);
   }
@@ -3574,7 +3713,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append("UPDATE mitglied set adresstyp = 1;\n");
     statements.put(DBSupportH2Impl.class.getName(), sb.toString());
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 156);
   }
 
@@ -3587,7 +3727,8 @@ public class JVereinUpdateProvider
         "CREATE INDEX ixMitglied_1 ON mitglied(adresstyp);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "CREATE INDEX ixMitglied_1 ON mitglied(adresstyp);\n");
 
     execute(conn, statements, 157);
@@ -3607,7 +3748,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE mitglied ADD CONSTRAINT fkMitglied2 FOREIGN KEY (adresstyp) REFERENCES adresstyp (id);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 158);
   }
@@ -3621,7 +3763,8 @@ public class JVereinUpdateProvider
         "alter table mitglied alter column  adresstyp integer not null;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied modify column  adresstyp integer not null;\n");
 
     execute(conn, statements, 159);
@@ -3639,7 +3782,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD delaytime integer;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 160);
   }
@@ -3656,7 +3800,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD zusatzadressen char(5);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 161);
   }
@@ -3670,7 +3815,8 @@ public class JVereinUpdateProvider
     sb.append("ALTER TABLE mitglied ADD letzteaenderung date;\n");
     statements.put(DBSupportH2Impl.class.getName(), sb.toString());
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 162);
   }
@@ -3684,7 +3830,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE mailempfaenger DROP COLUMN adresse;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE mailempfaenger DROP COLUMN adresse;\n");
 
     execute(conn, statements, 163);
@@ -3702,7 +3849,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("drop table stammdaten;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 164);
   }
@@ -3715,7 +3863,8 @@ public class JVereinUpdateProvider
     String sql = "alter table buchungsart add spende char(5) ;\n";
     statements.put(DBSupportH2Impl.class.getName(), sql);
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 165);
   }
@@ -3728,7 +3877,8 @@ public class JVereinUpdateProvider
     String sql = "alter table buchung add spendenbescheinigung integer ;\n";
     statements.put(DBSupportH2Impl.class.getName(), sql);
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 166);
   }
@@ -3741,7 +3891,8 @@ public class JVereinUpdateProvider
     String sql = "CREATE INDEX ixBuchung1 ON buchung(spendenbescheinigung);\n";
     statements.put(DBSupportH2Impl.class.getName(), sql);
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
     execute(conn, statements, 167);
   }
 
@@ -3753,7 +3904,8 @@ public class JVereinUpdateProvider
     String sql = "ALTER TABLE buchung ADD CONSTRAINT fkBuchung5 FOREIGN KEY (spendenbescheinigung) REFERENCES spendenbescheinigung (id);\n";
     statements.put(DBSupportH2Impl.class.getName(), sql);
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 168);
   }
@@ -3766,7 +3918,8 @@ public class JVereinUpdateProvider
     String sql = "alter table spendenbescheinigung add mitglied integer ;\n";
     statements.put(DBSupportH2Impl.class.getName(), sql);
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 169);
   }
@@ -3779,7 +3932,8 @@ public class JVereinUpdateProvider
     String sql = "CREATE INDEX ixSpendenbescheinigung2 ON spendenbescheinigung(mitglied);\n";
     statements.put(DBSupportH2Impl.class.getName(), sql);
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
     execute(conn, statements, 170);
   }
 
@@ -3791,7 +3945,8 @@ public class JVereinUpdateProvider
     String sql = "ALTER TABLE spendenbescheinigung ADD CONSTRAINT fkSpendenbescheinigung2 FOREIGN KEY (mitglied) REFERENCES mitglied (id);\n";
     statements.put(DBSupportH2Impl.class.getName(), sql);
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 171);
   }
@@ -3808,7 +3963,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD strasse char(30) after name;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 172);
   }
@@ -3825,7 +3981,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD plz char(5) after strasse;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 173);
   }
@@ -3842,7 +3999,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD ort char(30) after plz;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 174);
   }
@@ -3859,7 +4017,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD finanzamt char(30) after ort;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 175);
   }
@@ -3878,7 +4037,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD steuernummer char(30) after finanzamt;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 176);
   }
@@ -3896,7 +4056,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD bescheiddatum date after steuernummer;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 177);
   }
@@ -3914,7 +4075,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD vorlaeufig char(5) after bescheiddatum;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 178);
   }
@@ -3933,7 +4095,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD beguenstigterzweck char(30) after vorlaeufig;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 179);
   }
@@ -3952,7 +4115,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD mitgliedsbeitraege char(5) after beguenstigterzweck;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 180);
   }
@@ -3971,7 +4135,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD vorlaeufigab date after vorlaeufig;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 181);
   }
@@ -3990,7 +4155,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE spendenbescheinigung ADD spendenart int default 1 not null after id;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 182);
   }
@@ -4001,7 +4167,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     String sql = "ALTER TABLE spendenbescheinigung ADD bezeichnungsachzuwendung varchar(100);\n";
     statements.put(DBSupportH2Impl.class.getName(), sql);
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
     execute(conn, statements, 183);
   }
 
@@ -4011,7 +4178,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     String sql = "ALTER TABLE spendenbescheinigung ADD herkunftspende int;\n";
     statements.put(DBSupportH2Impl.class.getName(), sql);
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
     execute(conn, statements, 184);
   }
 
@@ -4021,7 +4189,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     String sql = "ALTER TABLE spendenbescheinigung ADD unterlagenwertermittlung char(5);\n";
     statements.put(DBSupportH2Impl.class.getName(), sql);
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
     execute(conn, statements, 185);
   }
 
@@ -4035,7 +4204,8 @@ public class JVereinUpdateProvider
             + "ALTER TABLE einstellung DROP COLUMN aktuellegeburtstagenachher;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung DROP COLUMN aktuellegeburtstagevorher, "
             + "DROP COLUMN aktuellegeburtstagenachher;\n");
 
@@ -4049,7 +4219,8 @@ public class JVereinUpdateProvider
     // Update fuer H2
     statements.put(DBSupportH2Impl.class.getName(), "-- nothing to do;\n");
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE `mail`  DROP INDEX `betreff`;\n");
 
     execute(conn, statements, 187);
@@ -4061,7 +4232,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     String sql = "ALTER TABLE beitragsgruppe ADD buchungsart integer;\n";
     statements.put(DBSupportH2Impl.class.getName(), sql);
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
     execute(conn, statements, 188);
   }
 
@@ -4073,7 +4245,8 @@ public class JVereinUpdateProvider
     String sql = "ALTER TABLE beitragsgruppe ADD CONSTRAINT fkBeitragsgruppe1 FOREIGN KEY (buchungsart) REFERENCES buchungsart(id);\n";
     statements.put(DBSupportH2Impl.class.getName(), sql);
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 189);
   }
@@ -4090,7 +4263,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD smtp_starttls char(5);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 190);
   }
@@ -4104,7 +4278,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE formularfeld ALTER COLUMN name varchar(60);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE formularfeld MODIFY COLUMN name varchar(60);\n");
 
     execute(conn, statements, 191);
@@ -4119,7 +4294,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 192);
   }
@@ -4144,7 +4320,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 193);
   }
@@ -4178,7 +4355,8 @@ public class JVereinUpdateProvider
     sb.append(" janein char(5), ");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 194);
   }
@@ -4197,7 +4375,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE auswertungpos ADD CONSTRAINT fkAuswertungpos1 FOREIGN KEY (auswertung) REFERENCES auswertung (id) ON DELETE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 195);
   }
@@ -4209,7 +4388,8 @@ public class JVereinUpdateProvider
 
     String sql = "drop table auswertungpos\n;" + "drop table auswertung;\n";
     statements.put(DBSupportH2Impl.class.getName(), sql);
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 196);
   }
@@ -4228,7 +4408,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD individuellebeitraege char(5) after dokumentenspeicherung;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 197);
   }
@@ -4242,7 +4423,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE mitglied ADD individuellerbeitrag DOUBLE before zahlerid;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE mitglied ADD individuellerbeitrag DOUBLE after beitragsgruppe;\n");
 
     execute(conn, statements, 198);
@@ -4257,7 +4439,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE zusatzabbuchung ADD buchungstext2 VARCHAR(27) before betrag;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE zusatzabbuchung ADD buchungstext2 VARCHAR(27) after buchungstext;\n");
 
     execute(conn, statements, 199);
@@ -4378,7 +4561,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 200);
   }
@@ -4392,7 +4576,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 201);
   }
@@ -4406,7 +4591,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE arbeitseinsatz ADD CONSTRAINT fkArbeitseinsatz1 FOREIGN KEY (mitglied) REFERENCES mitglied (id) ON DELETE CASCADE;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE arbeitseinsatz ADD CONSTRAINT fkArbeitseinsatz1 FOREIGN KEY (mitglied) REFERENCES mitglied (id) ON DELETE CASCADE;\n");
 
     execute(conn, statements, 202);
@@ -4458,7 +4644,8 @@ public class JVereinUpdateProvider
       execute(conn, statements, 203, true);
       // MySQL
       statements = new HashMap<String, String[]>();
-      statements.put(DBSupportMySqlImpl.class.getName(), new String[] {
+      String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+      statements.put(classname, new String[] {
           "ALTER TABLE `" + b.getTabelle() + "` ADD COLUMN `" + b.getSpalte()
               + "_b` BIT(1) AFTER `" + b.getSpalte() + "`;\n",
           "UPDATE `" + b.getTabelle() + "` SET `" + b.getSpalte()
@@ -4506,7 +4693,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 204);
   }
@@ -4520,7 +4708,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE eigenschaften ADD CONSTRAINT fkEigenschaften2 FOREIGN KEY (eigenschaft) REFERENCES eigenschaft (id) ON DELETE CASCADE;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE eigenschaften ADD CONSTRAINT fkEigenschaften2 FOREIGN KEY (eigenschaft) REFERENCES eigenschaft (id) ON DELETE CASCADE;\n");
 
     execute(conn, statements, 205);
@@ -4540,7 +4729,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD sterbedatum bit(1) after eintrittsdatumpflicht;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 206);
   }
@@ -4554,7 +4744,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 207);
   }
@@ -4568,7 +4759,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 208);
   }
@@ -4587,7 +4779,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD dtaustextschluessel char(2) after zahlungsrhytmus;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 209);
   }
@@ -4599,7 +4792,8 @@ public class JVereinUpdateProvider
     // Update fuer H2
     String sql = "UPDATE einstellung SET dtaustextschluessel = '05' WHERE dtaustextschluessel IS NULL";
     statements.put(DBSupportH2Impl.class.getName(), sql);
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 210);
   }
@@ -4611,7 +4805,8 @@ public class JVereinUpdateProvider
 
     String sql = "ALTER TABLE buchung ADD verzicht BOOLEAN";
     statements.put(DBSupportH2Impl.class.getName(), sql);
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 211);
   }
@@ -4623,7 +4818,8 @@ public class JVereinUpdateProvider
 
     String sql = "ALTER TABLE spendenbescheinigung ADD autocreate BOOLEAN default false";
     statements.put(DBSupportH2Impl.class.getName(), sql);
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 212);
   }
@@ -4634,7 +4830,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(),
         "ALTER TABLE einstellung ADD namelang VARCHAR(100) before strasse;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung ADD namelang VARCHAR(100) after name;\n");
     execute(conn, statements, 213);
   }
@@ -4645,7 +4842,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(),
         "ALTER TABLE einstellung ADD dateinamenmusterspende VARCHAR(50) before beginngeschaeftsjahr;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung ADD dateinamenmusterspende VARCHAR(50) after dateinamenmuster;\n");
     execute(conn, statements, 214);
   }
@@ -4656,7 +4854,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(),
         "ALTER TABLE einstellung ADD spendenbescheinigungminbetrag DOUBLE before beginngeschaeftsjahr;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung ADD spendenbescheinigungminbetrag DOUBLE after dateinamenmusterspende;\n");
     execute(conn, statements, 215);
   }
@@ -4667,7 +4866,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(),
         "ALTER TABLE einstellung ADD spendenbescheinigungverzeichnis VARCHAR(200) before beginngeschaeftsjahr;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung ADD spendenbescheinigungverzeichnis VARCHAR(200) after spendenbescheinigungminbetrag;\n");
     execute(conn, statements, 216);
   }
@@ -4678,7 +4878,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(),
         "ALTER TABLE einstellung ADD spendenbescheinigungprintbuchungsart BOOLEAN DEFAULT FALSE before beginngeschaeftsjahr;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung ADD spendenbescheinigungprintbuchungsart BOOLEAN DEFAULT FALSE after spendenbescheinigungverzeichnis;\n");
     execute(conn, statements, 217);
   }
@@ -4689,7 +4890,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(),
         "ALTER TABLE einstellung ALTER COLUMN strasse VARCHAR(50);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung MODIFY COLUMN strasse VARCHAR(50);\n");
     execute(conn, statements, 218);
   }
@@ -4700,7 +4902,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(),
         "ALTER TABLE einstellung ALTER COLUMN ort VARCHAR(50);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung MODIFY COLUMN ort VARCHAR(50);\n");
     execute(conn, statements, 219);
   }
@@ -4711,7 +4914,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(),
         "ALTER TABLE einstellung ALTER COLUMN beguenstigterzweck VARCHAR(100);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung MODIFY COLUMN beguenstigterzweck VARCHAR(100);\n");
     execute(conn, statements, 220);
   }
@@ -4722,7 +4926,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(),
         "ALTER TABLE formularfeld ADD seite INTEGER DEFAULT 1 before x;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE formularfeld ADD Seite INTEGER DEFAULT 1 after name;\n");
     execute(conn, statements, 221);
   }
@@ -4733,7 +4938,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(),
         "UPDATE einstellung SET namelang = name;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "UPDATE einstellung SET namelang = name;\n");
     execute(conn, statements, 222);
   }
@@ -4744,7 +4950,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(),
         "UPDATE einstellung SET spendenbescheinigungminbetrag = 0;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "UPDATE einstellung SET spendenbescheinigungminbetrag = 0;\n");
     execute(conn, statements, 223);
   }
@@ -4755,7 +4962,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(),
         "UPDATE formularfeld SET seite = 1;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "UPDATE formularfeld SET seite = 1;\n");
     execute(conn, statements, 224);
   }
@@ -4783,7 +4991,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(" )  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 225);
   }
@@ -4801,7 +5010,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append("ALTER TABLE formularfeld ");
     sb.append("  CHANGE COLUMN `Seite` `seite` INT(10) NULL;");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 226);
   }
 
@@ -4827,7 +5037,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 227);
   }
@@ -4840,7 +5051,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(),
         "alter table buchung add projekt integer;\n");
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table buchung add projekt integer;\n");
 
     execute(conn, statements, 228);
@@ -4860,7 +5072,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE buchung ADD CONSTRAINT fkBuchung6 FOREIGN KEY (projekt) REFERENCES projekt (id) ;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 229);
   }
@@ -4874,7 +5087,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE formularfeld ALTER COLUMN font varchar(50);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE formularfeld MODIFY COLUMN font varchar(50);\n");
 
     execute(conn, statements, 230);
@@ -4913,7 +5127,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE zusatzbetragabrechnungslauf ADD CONSTRAINT fkZusatzbetragabrechnungslauf1 FOREIGN KEY (abrechnungslauf) REFERENCES abrechnungslauf (id) ON DELETE CASCADE ON UPDATE CASCADE;\n");
     sb.append(
         "ALTER TABLE zusatzbetragabrechnungslauf ADD CONSTRAINT fkZusatzbetragabrechnungslauf2 FOREIGN KEY (zusatzbetrag) REFERENCES zusatzabbuchung (id) ON DELETE CASCADE ON UPDATE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 231);
   }
@@ -4932,7 +5147,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD uselesefelder char(5) after mitgliedfoto;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 232);
   }
@@ -4949,7 +5165,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE mailempfaenger ADD versand TIMESTAMP;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 233);
   }
@@ -4963,7 +5180,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE buchung ALTER COLUMN zweck varchar(500);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE buchung MODIFY COLUMN zweck varchar(500);\n");
 
     execute(conn, statements, 234);
@@ -4978,7 +5196,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 235);
   }
@@ -4992,7 +5211,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE buchung DROP COLUMN zweck2;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE buchung DROP COLUMN zweck2;\n");
 
     execute(conn, statements, 236);
@@ -5007,7 +5227,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE mitgliedskonto ALTER COLUMN zweck1 varchar(500);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE mitgliedskonto MODIFY COLUMN zweck1 varchar(500);\n");
 
     execute(conn, statements, 237);
@@ -5022,7 +5243,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 238);
   }
@@ -5036,7 +5258,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE mitgliedskonto DROP COLUMN zweck2;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE mitgliedskonto DROP COLUMN zweck2;\n");
 
     execute(conn, statements, 239);
@@ -5051,7 +5274,8 @@ public class JVereinUpdateProvider
         "update formularfeld set name = replace(name, '.','_');\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "update formularfeld set name = replace(name, '.','_');\n");
 
     execute(conn, statements, 240);
@@ -5071,7 +5295,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD defaultland char(2) after dtaustextschluessel;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 241);
   }
@@ -5090,7 +5315,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE mailempfaenger DROP FOREIGN KEY fkMailEmpfaenger2;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 242);
   }
@@ -5109,7 +5335,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE mailempfaenger ADD CONSTRAINT fkMailempfaenger2 FOREIGN KEY (mitglied) REFERENCES mitglied (id) ON DELETE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 243);
   }
@@ -5126,7 +5353,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE eigenschaft DROP INDEX ixEigenschaft1;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 244);
   }
@@ -5140,7 +5368,8 @@ public class JVereinUpdateProvider
         "CREATE UNIQUE INDEX ixEigenschaft1 ON eigenschaft(bezeichnung, eigenschaftgruppe);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "CREATE UNIQUE INDEX ixEigenschaft1 ON eigenschaft(bezeichnung, eigenschaftgruppe);\n");
 
     execute(conn, statements, 245);
@@ -5159,7 +5388,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD bic varchar(11) after mitgliedsbeitraege;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 246);
   }
@@ -5176,7 +5406,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD iban varchar(22) after bic;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 247);
   }
@@ -5195,7 +5426,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD glaeubigerid varchar(35) after iban;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 248);
   }
@@ -5214,7 +5446,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE einstellung ADD smtp_from_anzeigename varchar(50) after smtp_from_address;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 249);
   }
@@ -5232,7 +5465,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE mitglied ADD bic varchar(11) after zahlungsrhytmus;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 250);
   }
@@ -5249,7 +5483,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE mitglied ADD iban varchar(22) after bic;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 251);
   }
@@ -5281,7 +5516,8 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (blz),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 252);
   }
@@ -5307,7 +5543,8 @@ public class JVereinUpdateProvider
 
     sb.append("-- Nothing to do");
     statements.put(DBSupportH2Impl.class.getName(), sb.toString());
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 254);
   }
 
@@ -5341,7 +5578,8 @@ public class JVereinUpdateProvider
     sb.append(" ibansample varchar(33) not null,");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 255);
   }
@@ -5354,7 +5592,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append("-- Nothing to do");
     statements.put(DBSupportH2Impl.class.getName(), sb.toString());
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 256);
   }
 
@@ -5366,7 +5605,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append("-- Nothing to do");
     statements.put(DBSupportH2Impl.class.getName(), sb.toString());
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 257);
   }
 
@@ -5378,7 +5618,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append("-- Nothing to do");
     statements.put(DBSupportH2Impl.class.getName(), sb.toString());
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 258);
   }
 
@@ -5390,7 +5631,8 @@ public class JVereinUpdateProvider
 
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(), sqlUpdateH2);
-    statements.put(DBSupportMySqlImpl.class.getName(), sqlUpdateMySql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sqlUpdateMySql);
     execute(conn, statements, 259);
   }
 
@@ -5406,7 +5648,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE kursteilnehmer ADD bic varchar(11) after name;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 260);
   }
@@ -5423,7 +5666,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE kursteilnehmer ADD iban varchar(22) after bic;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 261);
   }
@@ -5437,7 +5681,8 @@ public class JVereinUpdateProvider
         "alter table einstellung alter column konto varchar(12);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table einstellung modify column  konto varchar(12);\n");
 
     execute(conn, statements, 262);
@@ -5452,7 +5697,8 @@ public class JVereinUpdateProvider
         "alter table mitglied alter column konto varchar(12);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied modify column  konto varchar(12);\n");
 
     execute(conn, statements, 263);
@@ -5467,7 +5713,8 @@ public class JVereinUpdateProvider
         "alter table kursteilnehmer alter column konto varchar(12);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table kursteilnehmer modify column  konto varchar(12);\n");
 
     execute(conn, statements, 264);
@@ -5482,7 +5729,8 @@ public class JVereinUpdateProvider
         "alter table anfangsbestand alter column konto varchar(12);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table kursteilnehmer modify column  konto varchar(12);\n");
 
     execute(conn, statements, 265);
@@ -5500,7 +5748,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE bank ADD land varchar(2) after bezeichnung;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 266);
   }
@@ -5513,7 +5762,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append("-- Nothing to do");
     statements.put(DBSupportH2Impl.class.getName(), sb.toString());
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 267);
   }
 
@@ -5525,7 +5775,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append("-- Nothing to do");
     statements.put(DBSupportH2Impl.class.getName(), sb.toString());
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 268);
   }
 
@@ -5538,7 +5789,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE adresstyp ADD bezeichnungplural varchar(30) before jvereinid;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE adresstyp ADD bezeichnungplural varchar(30) after bezeichnung;\n");
 
     execute(conn, statements, 269);
@@ -5552,7 +5804,8 @@ public class JVereinUpdateProvider
     // Update fuer H2
     statements.put(DBSupportH2Impl.class.getName(), sql);
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 270);
   }
@@ -5565,7 +5818,8 @@ public class JVereinUpdateProvider
     // Update fuer H2
     statements.put(DBSupportH2Impl.class.getName(), sql);
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 271);
   }
@@ -5578,7 +5832,8 @@ public class JVereinUpdateProvider
     // Update fuer H2
     statements.put(DBSupportH2Impl.class.getName(), sql);
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 272);
   }
@@ -5591,7 +5846,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append("-- Nothing to do");
     statements.put(DBSupportH2Impl.class.getName(), sb.toString());
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 274);
   }
 
@@ -5603,7 +5859,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append("-- Nothing to do");
     statements.put(DBSupportH2Impl.class.getName(), sb.toString());
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 274);
   }
 
@@ -5616,7 +5873,8 @@ public class JVereinUpdateProvider
         "alter table mitglied alter column konto varchar(16);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied modify column  konto varchar(16);\n");
 
     execute(conn, statements, 275);
@@ -5631,7 +5889,8 @@ public class JVereinUpdateProvider
         "alter table einstellung alter column iban varchar(34);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table einstellung modify column  iban varchar(34);\n");
 
     execute(conn, statements, 276);
@@ -5645,7 +5904,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(),
         "alter table mitglied alter column iban varchar(34);\n");
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied modify column  iban varchar(34);\n");
     execute(conn, statements, 277);
   }
@@ -5658,7 +5918,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(),
         "alter table kursteilnehmer alter column iban varchar(34);\n");
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table kursteilnehmer modify column  iban varchar(34);\n");
     execute(conn, statements, 278);
   }
@@ -5700,7 +5961,8 @@ public class JVereinUpdateProvider
         "alter table spendenbescheinigung modify column zeile6 varchar(80);\n");
     sb.append(
         "alter table spendenbescheinigung modify column zeile7 varchar(80);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
     execute(conn, statements, 279);
   }
 
@@ -5713,7 +5975,8 @@ public class JVereinUpdateProvider
         "alter table mitglied add mandatdatum date before bic;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied add mandatdatum date after zahlungsrhytmus;\n");
 
     execute(conn, statements, 280);
@@ -5729,7 +5992,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 281);
   }
@@ -5743,7 +6007,8 @@ public class JVereinUpdateProvider
         "alter table kursteilnehmer add mandatdatum date before bic;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table kursteilnehmer add mandatdatum date after vzweck2;\n");
 
     execute(conn, statements, 282);
@@ -5758,7 +6023,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE einstellung DROP COLUMN mitgliedskonto;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung DROP COLUMN mitgliedskonto;\n");
 
     execute(conn, statements, 283);
@@ -5773,7 +6039,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE einstellung DROP COLUMN dtaustextschluessel;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung DROP COLUMN dtaustextschluessel;\n");
 
     execute(conn, statements, 284);
@@ -5793,7 +6060,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE kursteilnehmer ADD strasse varchar(40) after name;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 285);
   }
@@ -5812,7 +6080,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE kursteilnehmer ADD plz varchar(10) after strasse;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 286);
   }
@@ -5830,7 +6099,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE kursteilnehmer ADD ort varchar(40) after plz;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 287);
   }
@@ -5844,7 +6114,8 @@ public class JVereinUpdateProvider
         "alter table kursteilnehmer alter column vzweck1 varchar(140);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table kursteilnehmer modify column  vzweck1 varchar(140);\n");
 
     execute(conn, statements, 288);
@@ -5858,7 +6129,8 @@ public class JVereinUpdateProvider
     // Update fuer H2
     statements.put(DBSupportH2Impl.class.getName(), sql);
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 289);
   }
@@ -5875,7 +6147,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE kursteilnehmer DROP vzweck2;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 290);
   }
@@ -5889,7 +6162,8 @@ public class JVereinUpdateProvider
         "alter table kursteilnehmer alter column name varchar(40);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table kursteilnehmer modify column  name varchar(40);\n");
 
     execute(conn, statements, 291);
@@ -5909,7 +6183,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE abrechnungslauf ADD faelligkeit date after modus;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 292);
   }
@@ -5976,7 +6251,8 @@ public class JVereinUpdateProvider
     sb.append(" KEY(kursteilnehmer),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(")  ENGINE=InnoDB;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 293);
   }
@@ -5995,7 +6271,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE lastschrift ADD CONSTRAINT fkLastschrift1 FOREIGN KEY (abrechnungslauf) REFERENCES abrechnungslauf (id) ON DELETE CASCADE;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 294);
   }
@@ -6014,7 +6291,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE lastschrift ADD CONSTRAINT fkLastschrift2 FOREIGN KEY (mitglied) REFERENCES mitglied (id) ON DELETE RESTRICT;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 295);
   }
@@ -6033,7 +6311,8 @@ public class JVereinUpdateProvider
     sb = new StringBuilder();
     sb.append(
         "ALTER TABLE lastschrift ADD CONSTRAINT fkLastschrift3 FOREIGN KEY (kursteilnehmer) REFERENCES kursteilnehmer (id) ON DELETE RESTRICT;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 296);
   }
@@ -6047,7 +6326,8 @@ public class JVereinUpdateProvider
         "alter table mitglied add column ktoipersonenart char(1) before geburtsdatum;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied add column ktoipersonenart char(1) after kontoinhaber;\n");
 
     execute(conn, statements, 297);
@@ -6062,7 +6342,8 @@ public class JVereinUpdateProvider
         "alter table mitglied add column ktoianrede varchar(10) before geburtsdatum;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied add column ktoianrede varchar(10) after ktoipersonenart;\n");
 
     execute(conn, statements, 298);
@@ -6077,7 +6358,8 @@ public class JVereinUpdateProvider
         "alter table mitglied add column ktoititel varchar(10) before geburtsdatum;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied add column ktoititel varchar(10) after ktoianrede;\n");
 
     execute(conn, statements, 299);
@@ -6092,7 +6374,8 @@ public class JVereinUpdateProvider
         "alter table mitglied add column ktoiname varchar(40) before geburtsdatum;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied add column ktoiname varchar(40) after ktoititel;\n");
 
     execute(conn, statements, 300);
@@ -6107,7 +6390,8 @@ public class JVereinUpdateProvider
         "alter table mitglied add column ktoivorname varchar(40) before geburtsdatum;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied add column ktoivorname varchar(40) after ktoiname;\n");
 
     execute(conn, statements, 301);
@@ -6122,7 +6406,8 @@ public class JVereinUpdateProvider
         "alter table mitglied add column ktoistrasse varchar(40) before geburtsdatum;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied add column ktoistrasse varchar(40) after ktoivorname;\n");
 
     execute(conn, statements, 302);
@@ -6137,7 +6422,8 @@ public class JVereinUpdateProvider
         "alter table mitglied add column ktoiadressierungszusatz varchar(40) before geburtsdatum;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied add column ktoiadressierungszusatz varchar(40) after ktoistrasse;\n");
 
     execute(conn, statements, 303);
@@ -6152,7 +6438,8 @@ public class JVereinUpdateProvider
         "alter table mitglied add column ktoiplz varchar(10) before geburtsdatum;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied add column ktoiplz varchar(10) after ktoiadressierungszusatz;\n");
 
     execute(conn, statements, 304);
@@ -6167,7 +6454,8 @@ public class JVereinUpdateProvider
         "alter table mitglied add column ktoiort varchar(40) before geburtsdatum;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied add column ktoiort varchar(40) after ktoiplz;\n");
 
     execute(conn, statements, 305);
@@ -6182,7 +6470,8 @@ public class JVereinUpdateProvider
         "alter table mitglied add column ktoistaat varchar(50) before geburtsdatum;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied add column ktoistaat varchar(50) after ktoiort;\n");
 
     execute(conn, statements, 306);
@@ -6197,7 +6486,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 307);
   }
@@ -6214,7 +6504,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE mitglied DROP kontoinhaber;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 308);
   }
@@ -6226,7 +6517,8 @@ public class JVereinUpdateProvider
     Map<String, String> statements = new HashMap<String, String>();
     statements.put(DBSupportH2Impl.class.getName(),
         "ALTER TABLE einstellung ADD vorlagencsvverzeichnis VARCHAR(200) BEFORE SPENDENBESCHEINIGUNGMINBETRAG;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung ADD vorlagencsvverzeichnis VARCHAR(200) AFTER DATEINAMENMUSTERSPENDE;\n");
     execute(conn, statements, 309);
   }
@@ -6240,7 +6532,8 @@ public class JVereinUpdateProvider
         "alter table kursteilnehmer add column personenart char(1) before name;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table kursteilnehmer add column personenart char(1) after id;\n");
 
     execute(conn, statements, 310);
@@ -6255,7 +6548,8 @@ public class JVereinUpdateProvider
         "alter table kursteilnehmer add column vorname varchar(40) before strasse;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table kursteilnehmer add column vorname varchar(40) after name;\n");
 
     execute(conn, statements, 311);
@@ -6270,7 +6564,8 @@ public class JVereinUpdateProvider
         "alter table kursteilnehmer add column adressierungszusatz varchar(40) before plz;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table kursteilnehmer add column adressierungszusatz varchar(40) after strasse;\n");
 
     execute(conn, statements, 312);
@@ -6285,7 +6580,8 @@ public class JVereinUpdateProvider
         "alter table kursteilnehmer add column staat varchar(50) before vzweck1;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table kursteilnehmer add column staat varchar(50) after ort;\n");
 
     execute(conn, statements, 313);
@@ -6300,7 +6596,8 @@ public class JVereinUpdateProvider
         "alter table kursteilnehmer add column anrede varchar(10) before name;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table kursteilnehmer add column anrede varchar(10) after personenart;\n");
 
     execute(conn, statements, 314);
@@ -6315,7 +6612,8 @@ public class JVereinUpdateProvider
         "alter table kursteilnehmer add column titel varchar(10) before name;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table kursteilnehmer add column titel varchar(10) after anrede;\n");
 
     execute(conn, statements, 315);
@@ -6330,7 +6628,8 @@ public class JVereinUpdateProvider
         "alter table kursteilnehmer add column email varchar(50) before vzweck1;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table kursteilnehmer add column email varchar(50) after staat;\n");
 
     execute(conn, statements, 316);
@@ -6345,7 +6644,8 @@ public class JVereinUpdateProvider
         "alter table mitglied add column ktoiemail varchar(50) before geburtsdatum;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table mitglied add column ktoiemail varchar(50) after ktoistaat;\n");
 
     execute(conn, statements, 317);
@@ -6360,7 +6660,8 @@ public class JVereinUpdateProvider
         "alter table lastschrift add column email varchar(50) before mandatid;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table lastschrift add column email varchar(50) after staat;\n");
 
     execute(conn, statements, 318);
@@ -6378,7 +6679,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE lastschrift DROP lsname;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 319);
   }
@@ -6392,7 +6694,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 320);
   }
@@ -6406,7 +6709,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 321);
   }
@@ -6419,7 +6723,7 @@ public class JVereinUpdateProvider
       return;
     }
     Map<String, String> statements = new HashMap<String, String>();
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    statements.put(driver,
         "ALTER TABLE anfangsbestand DROP FOREIGN KEY fkAnfangsbestand1;\n"
             + "ALTER TABLE arbeitseinsatz DROP FOREIGN KEY fkArbeitseinsatz1;\n"
             + "ALTER TABLE beitragsgruppe DROP FOREIGN KEY fkBeitragsgruppe1;\n"
@@ -6594,7 +6898,8 @@ public class JVereinUpdateProvider
       return;
     }
     Map<String, String> statements = new HashMap<String, String>();
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE anfangsbestand ADD CONSTRAINT fkAnfangsbestand1 FOREIGN KEY (konto) REFERENCES konto (id);"
             + "ALTER TABLE arbeitseinsatz ADD CONSTRAINT fkArbeitseinsatz1 FOREIGN KEY (mitglied) REFERENCES mitglied (id) ON DELETE CASCADE;\n"
             + "ALTER TABLE beitragsgruppe ADD CONSTRAINT fkBeitragsgruppe1 FOREIGN KEY (buchungsart) REFERENCES buchungsart (id);\n"
@@ -6645,7 +6950,8 @@ public class JVereinUpdateProvider
         "alter table abrechnungslauf alter column zahlungsgrund varchar(140);\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "alter table abrechnungslauf modify column zahlungsgrund varchar(140);\n");
 
     execute(conn, statements, 325);
@@ -6660,7 +6966,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE buchung ADD splittyp integer before spendenbescheinigung;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE buchung ADD splittyp integer after splitid;\n");
 
     execute(conn, statements, 326);
@@ -6685,7 +6992,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE einstellung ADD arbeitsmodel integer not null default 1;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung ADD arbeitsmodel integer not null default 1;\n");
 
     execute(conn, statements, 328);
@@ -6715,7 +7023,8 @@ public class JVereinUpdateProvider
             " ALTER TABLE qifimportpos ADD CONSTRAINT fkImpKntPos1 FOREIGN KEY (headid) REFERENCES qifimporthead(id)  DEFERRABLE;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "CREATE TABLE qifimporthead( " + " id int(10) AUTO_INCREMENT, "
             + " name VARCHAR(30), " + " beschreibung VARCHAR(30), "
             + " startdate DATE, " + " startsalto DOUBLE, " + " konto int(10), "
@@ -6748,7 +7057,8 @@ public class JVereinUpdateProvider
             + " PRIMARY KEY(id) " + ");\n ");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "CREATE TABLE mitgliednextbgruppe( " + " id int(10) AUTO_INCREMENT, "
             + " mitglied int(10), " + " beitragsgruppe int(10), "
             + " bemerkung VARCHAR(30), " + " abdatum DATE, " + " UNIQUE(id), "
@@ -6766,7 +7076,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE einstellung ADD altermodel integer not null default 1;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung ADD altermodel integer not null default 1;\n");
 
     execute(conn, statements, 331);
@@ -6781,7 +7092,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE mitglied ADD mandatversion integer before bic;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE mitglied ADD mandatversion integer after mandatdatum;\n");
 
     execute(conn, statements, 332);
@@ -6796,7 +7108,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 333);
   }
@@ -6810,7 +7123,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE mitglied ADD mandatsequence VARCHAR(4) before bic;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE mitglied ADD mandatsequence VARCHAR(4) after mandatversion;\n");
 
     execute(conn, statements, 334);
@@ -6825,7 +7139,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 335);
   }
@@ -6839,7 +7154,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE lastschrift ADD mandatsequence VARCHAR(4) before bic;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE lastschrift ADD mandatsequence VARCHAR(4) after mandatdatum;\n");
 
     execute(conn, statements, 336);
@@ -6854,7 +7170,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 337);
   }
@@ -6868,7 +7185,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE abrechnungslauf ADD faelligkeit2 date before stichtag;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE abrechnungslauf ADD faelligkeit2 date after faelligkeit;\n");
 
     execute(conn, statements, 338);
@@ -6883,7 +7201,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 339);
   }
@@ -6906,7 +7225,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 341);
   }
@@ -6920,7 +7240,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE einstellung DROP COLUMN namelang;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung DROP COLUMN namelang\n");
 
     execute(conn, statements, 342);
@@ -6963,7 +7284,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE einstellung DROP COLUMN delaytime;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE einstellung DROP COLUMN delaytime;\n");
 
     execute(conn, statements, 346);
@@ -6978,7 +7300,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE qifimporthead ADD startsaldo DOUBLE before startdate;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE qifimporthead ADD startsaldo DOUBLE after beschreibung;\n");
 
     execute(conn, statements, 347);
@@ -6993,7 +7316,8 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(), sql);
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 348);
   }
@@ -7007,7 +7331,8 @@ public class JVereinUpdateProvider
         "ALTER TABLE qifimporthead DROP COLUMN startsalto;\n");
 
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(),
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname,
         "ALTER TABLE qifimporthead DROP COLUMN startsalto;\n");
 
     execute(conn, statements, 349);
@@ -7030,7 +7355,8 @@ public class JVereinUpdateProvider
     // Update fuer H2
     statements.put(DBSupportH2Impl.class.getName(), sql);
     // Update fuer MySQL
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 351);
   }
@@ -7047,7 +7373,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE zusatzabbuchung DROP buchungstext2;\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 352);
   }
@@ -7065,7 +7392,8 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append("ALTER TABLE einstellung ADD zusatzbetragausgetretene bit(1);\n");
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 353);
   }
@@ -7082,7 +7410,8 @@ public class JVereinUpdateProvider
     String statement = sb.toString();
 
     statements.put(DBSupportH2Impl.class.getName(), statement);
-    statements.put(DBSupportMySqlImpl.class.getName(), statement);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, statement);
 
     execute(conn, statements, 354);
   }
@@ -7094,7 +7423,8 @@ public class JVereinUpdateProvider
     String sql = "-- Nothing to do";
 
     statements.put(DBSupportH2Impl.class.getName(), sql);
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 355);
   }
@@ -7130,7 +7460,8 @@ public class JVereinUpdateProvider
     String statement = sb.toString();
 
     statements.put(DBSupportH2Impl.class.getName(), statement);
-    statements.put(DBSupportMySqlImpl.class.getName(), statement);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, statement);
 
     execute(conn, statements, 356);
   }
@@ -7143,7 +7474,8 @@ public class JVereinUpdateProvider
     sql += alterColumn("mitglied", "vermerk2", "VARCHAR(2000)");
 
     statements.put(DBSupportH2Impl.class.getName(), sql);
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 357);
   }
@@ -7192,7 +7524,8 @@ public class JVereinUpdateProvider
     sb.append("ALTER TABLE einstellung DROP imap_auth_pwd;\n");
     sb.append("ALTER TABLE einstellung DROP smtp_auth_pwd;\n");
     statements.put(DBSupportH2Impl.class.getName(), sb.toString());
-    statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sb.toString());
 
     execute(conn, statements, 358);
   }
@@ -7204,7 +7537,8 @@ public class JVereinUpdateProvider
     String sql = alterColumn("lastschrift", "anrede", "VARCHAR(40)");
 
     statements.put(DBSupportH2Impl.class.getName(), sql);
-    statements.put(DBSupportMySqlImpl.class.getName(), sql);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, sql);
 
     execute(conn, statements, 359);
   }
@@ -7222,7 +7556,8 @@ public class JVereinUpdateProvider
     String statement = sb.toString();
 
     statements.put(DBSupportH2Impl.class.getName(), statement);
-    statements.put(DBSupportMySqlImpl.class.getName(), statement);
+    String classname = (conn.toString().contains("org.mariadb")) ? MARIADB : MYSQL;
+    statements.put(classname, statement);
 
     execute(conn, statements, 360);
   }
@@ -7240,7 +7575,7 @@ public class JVereinUpdateProvider
       return "ALTER TABLE " + table + " ALTER COLUMN " + column + " " + type
           + ";\n";
     }
-    if ((driver.equals(MARIADB) && _driver.equals(MARIADB)) || (driver.equals(MYSQL) && _driver.equals(MYSQL)))
+    if ((driver.equals(MARIADB) || (driver.equals(MYSQL)) && _driver.equals(MYSQL)))
     {
       return "ALTER TABLE " + table + " MODIFY COLUMN " + column + " " + type
           + ";\n";
