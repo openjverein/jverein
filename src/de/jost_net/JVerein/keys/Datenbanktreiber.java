@@ -18,7 +18,7 @@ package de.jost_net.JVerein.keys;
 
 public enum Datenbanktreiber
 {
-  MYSQL("com.mysql.jdbc.Driver"), H2("org.h2.Driver");
+  MYSQL("com.mysql.jdbc.Driver"), MARIADB("org.mariadb.jdbc.Driver"), H2("org.h2.Driver");
   private String bezeichnung;
 
   Datenbanktreiber(String bezeichnung)
