@@ -403,7 +403,6 @@ public class Import
   /**
    * This method starts the import
    * 
-   * @throws SQLException
    * @throws ApplicationException
    * @throws RemoteException
    */

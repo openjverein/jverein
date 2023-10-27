@@ -27,7 +27,7 @@ public interface IOFormat
 {
   /**
    * Liefert einen sprechenden Namen fuer das Datei-Format. Zum Beispiel
-   * &quotCSV-Datei&quot;
+   * "CSV-Datei"
    * 
    * @return Sprechender Name des Datei-Formats.
    */
