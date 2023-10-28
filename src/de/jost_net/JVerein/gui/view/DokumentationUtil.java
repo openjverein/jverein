@@ -18,9 +18,9 @@ package de.jost_net.JVerein.gui.view;
 
 public class DokumentationUtil
 {
+  public static final String DOKU = "https://openjverein.gitbook.io/doku";
 
-
-  private static final String PRE = "https://doku.jverein.de/";
+  private static final String PRE = DOKU+"/";
   
   private static final String ALLGEMEIN = "allgemein/";
   
