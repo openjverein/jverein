@@ -27,22 +27,29 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 
-public class BuchungNeuAction implements Action {
+public class BuchungNeuAction implements Action
+{
   @Override
-  public void handleAction(Object context) {
+  public void handleAction(Object context)
+  {
     Buchung buch;
-    try {
-      buch = (Buchung) Einstellungen.getDBService().createObject(Buchung.class, null);
-      if (context instanceof BuchungsControl) {
+    try
+    {
+      buch = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
+          null);
+      if (context instanceof BuchungsControl)
+      {
         BuchungsControl control = (BuchungsControl) context;
         Konto konto = (Konto) control.getSuchKonto().getValue();
         if (null != konto)
           buch.setKonto(konto);
-        buch.setBelegnummer(
-            BuchungsControl.getLastBelegnummer(buch.getDatum(), buch.getKonto().getID()) + 1);
+        buch.setBelegnummer(BuchungsControl.getLastBelegnummer(buch.getDatum(),
+            buch.getKonto().getID()) + 1);
       }
       GUI.startView(BuchungView.class, buch);
-    } catch (RemoteException e) {
+    }
+    catch (RemoteException e)
+    {
       Logger.error("Fehler", e);
     }
   }

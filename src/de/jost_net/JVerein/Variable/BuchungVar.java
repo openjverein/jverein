@@ -16,7 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
-public enum BuchungVar {
+public enum BuchungVar
+{
   ABRECHNUNGSLAUF("buchung_abrechnungslauf"), //
   ART("buchung_art"), //
   AUSZUGSNUMMER("buchung_auszugsnummer"), //
@@ -41,11 +42,13 @@ public enum BuchungVar {
 
   private String name;
 
-  BuchungVar(String name) {
+  BuchungVar(String name)
+  {
     this.name = name;
   }
 
-  public String getName() {
+  public String getName()
+  {
     return name;
   }
 }

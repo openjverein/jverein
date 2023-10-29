@@ -44,7 +44,8 @@ import de.willuhn.logging.Logger;
  * 
  * @author Heiner Jostkleigrewe
  */
-public class Einstellungen {
+public class Einstellungen
+{
 
   private static DBService db;
 
@@ -55,12 +56,14 @@ public class Einstellungen {
   /**
    * Our decimal formatter.
    */
-  public final static DecimalFormat DECIMALFORMAT = new DecimalFormat("###,###.##");
+  public final static DecimalFormat DECIMALFORMAT = new DecimalFormat(
+      "###,###.##");
 
   /**
    * Int formatter.
    */
-  public final static DecimalFormat INTFORMAT = new DecimalFormat("###,###,###");
+  public final static DecimalFormat INTFORMAT = new DecimalFormat(
+      "###,###,###");
 
   /**
    * Our currency name.
@@ -73,7 +76,8 @@ public class Einstellungen {
 
   public final static String LESEFELD_PRE = "mitglied_lesefelder_";
 
-  static {
+  static
+  {
     Calendar cal = Calendar.getInstance();
     cal.set(Calendar.YEAR, 1900);
     cal.set(Calendar.MONTH, Calendar.JANUARY);
@@ -85,45 +89,62 @@ public class Einstellungen {
     NODATE.setTime(cal.getTimeInMillis());
     DECIMALFORMAT.setMinimumFractionDigits(2);
     DECIMALFORMAT.setMaximumFractionDigits(2);
-    try {
-      einstellung = (Einstellung) getDBService().createObject(Einstellung.class, "1");
-    } catch (RemoteException e) {
+    try
+    {
+      einstellung = (Einstellung) getDBService().createObject(Einstellung.class,
+          "1");
+    }
+    catch (RemoteException e)
+    {
       // Einstellungssatz existiert noch nicht. Deshalb neuen Satz anlegen
-      try {
-        einstellung = (Einstellung) getDBService().createObject(Einstellung.class, null);
+      try
+      {
+        einstellung = (Einstellung) getDBService()
+            .createObject(Einstellung.class, null);
         // Mit den folgenden Statements wird das Object initialisiert. Sofern
         // noch alte Einstellungen in den Property-Datei vorhanden sind, werden
         // diese verwendet. Ansonsten die Default-Werte.
-        einstellung.setGeburtsdatumPflicht(settings.getBoolean("geburtsdatum.pflicht", true));
-        einstellung.setEintrittsdatumPflicht(settings.getBoolean("eintrittsdatum.pflicht", true));
+        einstellung.setGeburtsdatumPflicht(
+            settings.getBoolean("geburtsdatum.pflicht", true));
+        einstellung.setEintrittsdatumPflicht(
+            settings.getBoolean("eintrittsdatum.pflicht", true));
         einstellung.setSterbedatum(settings.getBoolean("sterbedatum", false));
+        einstellung.setKommunikationsdaten(
+            settings.getBoolean("kommunikationsdaten.einblenden", true));
+        einstellung.setZusatzbetrag(
+            settings.getBoolean("zusatzabbuchung.einblenden", true));
         einstellung
-            .setKommunikationsdaten(settings.getBoolean("kommunikationsdaten.einblenden", true));
-        einstellung.setZusatzbetrag(settings.getBoolean("zusatzabbuchung.einblenden", true));
-        einstellung.setVermerke(settings.getBoolean("vermerke.einblenden", true));
-        einstellung.setWiedervorlage(settings.getBoolean("wiedervorlage.einblenden", true));
-        einstellung.setKursteilnehmer(settings.getBoolean("kursteilnehmer.einblenden", true));
+            .setVermerke(settings.getBoolean("vermerke.einblenden", true));
+        einstellung.setWiedervorlage(
+            settings.getBoolean("wiedervorlage.einblenden", true));
+        einstellung.setKursteilnehmer(
+            settings.getBoolean("kursteilnehmer.einblenden", true));
         einstellung.setExterneMitgliedsnummer(
             settings.getBoolean("externemitgliedsnummer.verwenden", false));
 
-        einstellung.setBeitragsmodel(
-            settings.getInt("beitragsmodel", Beitragsmodel.GLEICHERTERMINFUERALLE.getKey()));
-        einstellung.setArbeitsstundenmodel(
-            settings.getInt(Einstellung.COL_ARBEITS_MODEL, ArbeitsstundenModel.STANDARD));
-        einstellung.setDateinamenmuster(settings.getString("dateinamenmuster", "a$s$-d$-z$"));
-        einstellung.setBeginnGeschaeftsjahr(settings.getString("beginngeschaeftsjahr", "01.01."));
-        einstellung.setAltersModel(
-            settings.getInt(Einstellung.COL_ALTER_MODEL, Altermodel.AKTUELLES_DATUM));
-        einstellung.setSepaMandatIdSource(
-            settings.getInt(Einstellung.COL_SEPA_MANDANTID_SOURCE, SepaMandatIdSource.DBID));
-      } catch (RemoteException e1) {
+        einstellung.setBeitragsmodel(settings.getInt("beitragsmodel",
+            Beitragsmodel.GLEICHERTERMINFUERALLE.getKey()));
+        einstellung.setArbeitsstundenmodel(settings.getInt(
+            Einstellung.COL_ARBEITS_MODEL, ArbeitsstundenModel.STANDARD));
+        einstellung.setDateinamenmuster(
+            settings.getString("dateinamenmuster", "a$s$-d$-z$"));
+        einstellung.setBeginnGeschaeftsjahr(
+            settings.getString("beginngeschaeftsjahr", "01.01."));
+        einstellung.setAltersModel(settings.getInt(Einstellung.COL_ALTER_MODEL,
+            Altermodel.AKTUELLES_DATUM));
+        einstellung.setSepaMandatIdSource(settings.getInt(
+            Einstellung.COL_SEPA_MANDANTID_SOURCE, SepaMandatIdSource.DBID));
+      }
+      catch (RemoteException e1)
+      {
         Logger.error("Fehler", e1);
       }
     }
 
   }
 
-  public static HBCIDBService getHibiscusDBService() throws RemoteException {
+  public static HBCIDBService getHibiscusDBService() throws RemoteException
+  {
     return de.willuhn.jameica.hbci.Settings.getDBService();
   }
 
@@ -133,19 +154,24 @@ public class Einstellungen {
    * @return db service.
    * @throws RemoteException
    */
-  public static DBService getDBService() throws RemoteException {
+  public static DBService getDBService() throws RemoteException
+  {
     if (db != null)
       return db;
 
-    try {
+    try
+    {
       // We have to ask Jameica's ServiceFactory.
       // If we are running in Client/Server mode and we are the
       // client, the factory returns the remote dbService from the
       // Jameica server.
       // The name and class of the service is defined in plugin.xml
-      db = (DBService) Application.getServiceFactory().lookup(JVereinPlugin.class, "database");
+      db = (DBService) Application.getServiceFactory()
+          .lookup(JVereinPlugin.class, "database");
       return db;
-    } catch (Exception e) {
+    }
+    catch (Exception e)
+    {
       throw new RemoteException("error while getting database service", e);
     }
   }
@@ -157,29 +183,33 @@ public class Einstellungen {
    * @param kontonummer
    * @return true, wenn die Kombi ok ist.
    */
-  public final static boolean checkAccountCRC(String blz, String kontonummer) {
+  public final static boolean checkAccountCRC(String blz, String kontonummer)
+  {
     QueryMessage q = new QueryMessage(blz + ":" + kontonummer);
-    Application.getMessagingFactory().getMessagingQueue("hibiscus.query.accountcrc")
-        .sendSyncMessage(q);
+    Application.getMessagingFactory()
+        .getMessagingQueue("hibiscus.query.accountcrc").sendSyncMessage(q);
     Object data = q.getData();
 
     // Wenn wir keine oder eine ungueltige Antwort erhalten haben,
     // ist Hibiscus vermutlich nicht installiert. In dem Fall
     // lassen wir die Konto/BLZ-Kombination mangels besserer
     // Informationen zu
-    return (data == null || !(data instanceof Boolean)) ? true : ((Boolean) data).booleanValue();
+    return (data == null || !(data instanceof Boolean)) ? true
+        : ((Boolean) data).booleanValue();
   }
 
   /**
    * Liefert den Namen der Bank zu einer BLZ.
    * 
-   * @param blz BLZ.
+   * @param blz
+   *          BLZ.
    * @return Name der Bank oder Leerstring.
    */
-  public final static String getNameForBLZ(String blz) {
+  public final static String getNameForBLZ(String blz)
+  {
     QueryMessage q = new QueryMessage(blz);
-    Application.getMessagingFactory().getMessagingQueue("hibiscus.query.bankname")
-        .sendSyncMessage(q);
+    Application.getMessagingFactory()
+        .getMessagingQueue("hibiscus.query.bankname").sendSyncMessage(q);
     Object data = q.getData();
 
     // wenn wir nicht zurueckerhalten haben oder die Nachricht
@@ -188,29 +218,39 @@ public class Einstellungen {
     return (data == null || data.equals(blz)) ? "" : data.toString();
   }
 
-  public static Einstellung getEinstellung() {
+  public static Einstellung getEinstellung()
+  {
     return einstellung;
   }
 
-  public static void setEinstellung(Einstellung einst) {
+  public static void setEinstellung(Einstellung einst)
+  {
     einstellung = einst;
   }
 
-  public static GregorianCalendar getBeginnGeschaeftsjahr(GregorianCalendar date) {
+  public static GregorianCalendar getBeginnGeschaeftsjahr(
+      GregorianCalendar date)
+  {
     GregorianCalendar BeginnGeschaeftsjahr = new GregorianCalendar();
-    try {
-      BeginnGeschaeftsjahr
-          .setTime(new JVDateFormatTTMMJJJJ().parse(getEinstellung().getBeginnGeschaeftsjahr()
+    try
+    {
+      BeginnGeschaeftsjahr.setTime(new JVDateFormatTTMMJJJJ()
+          .parse(getEinstellung().getBeginnGeschaeftsjahr()
               + ((Integer) date.get(Calendar.YEAR)).toString()));
-      if (BeginnGeschaeftsjahr.compareTo(date) > 0) {
+      if (BeginnGeschaeftsjahr.compareTo(date) > 0)
+      {
         BeginnGeschaeftsjahr.add(Calendar.YEAR, -1);
       }
-    } catch (RemoteException e) {
+    }
+    catch (RemoteException e)
+    {
       Logger.error("Error while reading \"BeginnGeschaeftsjahr!\"", e);
       BeginnGeschaeftsjahr.set(Calendar.YEAR, date.get(Calendar.YEAR));
       BeginnGeschaeftsjahr.set(Calendar.MONTH, 1);
       BeginnGeschaeftsjahr.set(Calendar.DAY_OF_MONTH, 1);
-    } catch (ParseException e) {
+    }
+    catch (ParseException e)
+    {
       Logger.error("Error while parsing \"BeginnGeschaeftsjahr!\"", e);
       BeginnGeschaeftsjahr.set(Calendar.YEAR, date.get(Calendar.YEAR));
       BeginnGeschaeftsjahr.set(Calendar.MONTH, 1);
@@ -219,7 +259,8 @@ public class Einstellungen {
     return BeginnGeschaeftsjahr;
   }
 
-  public static GregorianCalendar getEndeGeschaeftsjahr(GregorianCalendar date) {
+  public static GregorianCalendar getEndeGeschaeftsjahr(GregorianCalendar date)
+  {
     GregorianCalendar EndeGeschaeftsjahr = getBeginnGeschaeftsjahr(date);
     EndeGeschaeftsjahr.add(Calendar.YEAR, 1);
     EndeGeschaeftsjahr.add(Calendar.DAY_OF_MONTH, -1);
@@ -231,23 +272,31 @@ public class Einstellungen {
    * 
    * @return true, wenn die Checksumme geprueft werden soll.
    */
-  public static boolean getCheckDatabase() {
+  public static boolean getCheckDatabase()
+  {
     return settings.getBoolean("checkdatabase", true);
   }
 
-  public static boolean isFirstStart() {
+  public static boolean isFirstStart()
+  {
     boolean beigen = false;
     boolean bbeitragsgruppe = false;
-    try {
+    try
+    {
       DBIterator<Einstellung> st = getDBService().createList(Einstellung.class);
-      if (st.size() > 0) {
+      if (st.size() > 0)
+      {
         beigen = true;
       }
-      DBIterator<Beitragsgruppe> bg = getDBService().createList(Beitragsgruppe.class);
-      if (bg.size() > 0) {
+      DBIterator<Beitragsgruppe> bg = getDBService()
+          .createList(Beitragsgruppe.class);
+      if (bg.size() > 0)
+      {
         bbeitragsgruppe = true;
       }
-    } catch (RemoteException e) {
+    }
+    catch (RemoteException e)
+    {
       Logger.error("Fehler", e);
     }
     return !beigen || !bbeitragsgruppe;
@@ -259,12 +308,14 @@ public class Einstellungen {
    * @return IMAP copy data
    * @throws RemoteException
    */
-  public static IMAPCopyData getImapCopyData() throws RemoteException {
-    IMAPCopyData imapCopyData =
-        new IMAPCopyData(getEinstellung().getCopyToImapFolder(), getEinstellung().getImapAuthUser(),
-            getEinstellung().getImapAuthPwd(), getEinstellung().getImapHost(),
-            getEinstellung().getImapPort(), getEinstellung().getImapSsl(),
-            getEinstellung().getImapStartTls(), getEinstellung().getImapSentFolder());
+  public static IMAPCopyData getImapCopyData() throws RemoteException
+  {
+    IMAPCopyData imapCopyData = new IMAPCopyData(
+        getEinstellung().getCopyToImapFolder(),
+        getEinstellung().getImapAuthUser(), getEinstellung().getImapAuthPwd(),
+        getEinstellung().getImapHost(), getEinstellung().getImapPort(),
+        getEinstellung().getImapSsl(), getEinstellung().getImapStartTls(),
+        getEinstellung().getImapSentFolder());
     return imapCopyData;
   }
 }

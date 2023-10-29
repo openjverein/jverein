@@ -29,21 +29,31 @@ import de.willuhn.jameica.system.OperationCanceledException;
 /**
  * Ein Dialog, ueber den man ein Konto auswaehlen kann.
  */
-public class AuswahlDialog extends AbstractDialog {
+public class AuswahlDialog extends AbstractDialog
+{
   private String text = null;
+
   private String subtitle = null;
+
   private String choosen = null;
+
   private SelectInput auswahl = null;
 
   /**
    * Dialog zur Kontenauswahl
    * 
-   * @param position          An welcher Stelle soll der Dialog angezeigt werden?
-   * @param keinkonto         Darf der Dialog auch ohne Kontenauswahl geschlossen werden?
-   * @param nurHibiscus       Es sollen nur Hibiscus-Konten angezeigt werden
-   * @param nurAktuelleKonten Es sollen nur aktuelle Konten angezeigt werden.
+   * @param position
+   *          An welcher Stelle soll der Dialog angezeigt werden?
+   * @param keinkonto
+   *          Darf der Dialog auch ohne Kontenauswahl geschlossen werden?
+   * @param nurHibiscus
+   *          Es sollen nur Hibiscus-Konten angezeigt werden
+   * @param nurAktuelleKonten
+   *          Es sollen nur aktuelle Konten angezeigt werden.
    */
-  public AuswahlDialog(int position, List<String> auswahl, String title, String subtitle) {
+  public AuswahlDialog(int position, List<String> auswahl, String title,
+      String subtitle)
+  {
     super(position);
     super.setSize(400, 300);
     this.setTitle(title);
@@ -52,16 +62,19 @@ public class AuswahlDialog extends AbstractDialog {
   }
 
   @Override
-  protected void paint(Composite parent) throws Exception {
+  protected void paint(Composite parent) throws Exception
+  {
     LabelGroup group = new LabelGroup(parent, subtitle);
     group.addText(text, true);
     group.addPart(auswahl);
 
     ButtonArea b = new ButtonArea();
-    b.addButton(i18n.tr("auswählen"), new Action() {
+    b.addButton(i18n.tr("auswählen"), new Action()
+    {
 
       @Override
-      public void handleAction(Object context) {
+      public void handleAction(Object context)
+      {
         choosen = auswahl.getText();
         close();
       }
@@ -75,17 +88,19 @@ public class AuswahlDialog extends AbstractDialog {
    * @see de.willuhn.jameica.gui.dialogs.AbstractDialog#getData()
    */
   @Override
-  protected String getData() throws Exception {
+  protected String getData() throws Exception
+  {
     return choosen;
   }
 
   /**
-   * Optionale Angabe des anzuzeigenden Textes. Wird hier kein Wert gesetzt, wird ein Standard-Text
-   * angezeigt.
+   * Optionale Angabe des anzuzeigenden Textes. Wird hier kein Wert gesetzt,
+   * wird ein Standard-Text angezeigt.
    * 
    * @param text
    */
-  public void setText(String text) {
+  public void setText(String text)
+  {
     this.text = text;
   }
 }

@@ -23,118 +23,124 @@ import java.util.Map;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.util.ApplicationException;
 
-public interface Buchung extends DBObject {
-    public void setID(String id) throws RemoteException;
+public interface Buchung extends DBObject
+{
+  public void setID(String id) throws RemoteException;
 
-    public Integer getUmsatzid() throws RemoteException;
+  public Integer getUmsatzid() throws RemoteException;
 
-    public void setUmsatzid(Integer umsatzid) throws RemoteException;
+  public void setUmsatzid(Integer umsatzid) throws RemoteException;
 
-    public Konto getKonto() throws RemoteException;
+  public Konto getKonto() throws RemoteException;
 
-    public void setKonto(Konto konto) throws RemoteException;
+  public void setKonto(Konto konto) throws RemoteException;
 
-    public Integer getAuszugsnummer() throws RemoteException;
+  public Integer getAuszugsnummer() throws RemoteException;
 
-    public void setAuszugsnummer(Integer auszugsnummer) throws RemoteException;
+  public void setAuszugsnummer(Integer auszugsnummer) throws RemoteException;
 
-    public Integer getBelegnummer() throws RemoteException;
+  public Integer getBelegnummer() throws RemoteException;
 
-    public void setBelegnummer(Integer belegnummer) throws RemoteException;
+  public void setBelegnummer(Integer belegnummer) throws RemoteException;
 
-    public Integer getBlattnummer() throws RemoteException;
+  public Integer getBlattnummer() throws RemoteException;
 
-    public void setBlattnummer(Integer blattnummer) throws RemoteException;
+  public void setBlattnummer(Integer blattnummer) throws RemoteException;
 
-    public String getName() throws RemoteException;
+  public String getName() throws RemoteException;
 
-    public void setName(String name) throws RemoteException;
+  public void setName(String name) throws RemoteException;
 
-    public double getBetrag() throws RemoteException;
+  public double getBetrag() throws RemoteException;
 
-    public void setBetrag(double betrag) throws RemoteException;
+  public void setBetrag(double betrag) throws RemoteException;
 
-    public String getZweck() throws RemoteException;
+  public String getZweck() throws RemoteException;
 
-    public void setZweck(String zweck) throws RemoteException;
+  public void setZweck(String zweck) throws RemoteException;
 
-    public Date getDatum() throws RemoteException;
+  public Date getDatum() throws RemoteException;
 
-    public void setDatum(Date datum) throws RemoteException;
+  public void setDatum(Date datum) throws RemoteException;
 
-    public String getArt() throws RemoteException;
+  public String getArt() throws RemoteException;
 
-    public void setArt(String art) throws RemoteException;
+  public void setArt(String art) throws RemoteException;
 
-    public String getKommentar() throws RemoteException;
+  public String getKommentar() throws RemoteException;
 
-    public void setKommentar(String kommentar) throws RemoteException;
+  public void setKommentar(String kommentar) throws RemoteException;
 
-    public Buchungsart getBuchungsart() throws RemoteException;
+  public Buchungsart getBuchungsart() throws RemoteException;
 
-    public Long getBuchungsartId() throws RemoteException;
+  public Long getBuchungsartId() throws RemoteException;
 
-    public void setBuchungsart(Long buchungsart) throws RemoteException;
+  public void setBuchungsart(Long buchungsart) throws RemoteException;
 
-    public Abrechnungslauf getAbrechnungslauf() throws RemoteException;
+  public Abrechnungslauf getAbrechnungslauf() throws RemoteException;
 
-    public Long getAbrechnungslaufID() throws RemoteException;
+  public Long getAbrechnungslaufID() throws RemoteException;
 
-    public void setAbrechnungslauf(Abrechnungslauf abrechnungslauf) throws RemoteException;
+  public void setAbrechnungslauf(Abrechnungslauf abrechnungslauf)
+      throws RemoteException;
 
-    public void setAbrechnungslauf(Long abrechnungslauf) throws RemoteException;
+  public void setAbrechnungslauf(Long abrechnungslauf) throws RemoteException;
 
-    public Mitgliedskonto getMitgliedskonto() throws RemoteException;
+  public Mitgliedskonto getMitgliedskonto() throws RemoteException;
 
-    public Long getMitgliedskontoID() throws RemoteException;
+  public Long getMitgliedskontoID() throws RemoteException;
 
-    public void setMitgliedskonto(Mitgliedskonto mitgliedskonto) throws RemoteException;
+  public void setMitgliedskonto(Mitgliedskonto mitgliedskonto)
+      throws RemoteException;
 
-    public void setMitgliedskontoID(Long mitgliedskonto) throws RemoteException;
+  public void setMitgliedskontoID(Long mitgliedskonto) throws RemoteException;
 
-    public Projekt getProjekt() throws RemoteException;
+  public Projekt getProjekt() throws RemoteException;
 
-    public Long getProjektID() throws RemoteException;
+  public Long getProjektID() throws RemoteException;
 
-    public void setProjekt(Projekt projekt) throws RemoteException;
+  public void setProjekt(Projekt projekt) throws RemoteException;
 
-    public void setProjektID(Long projekt) throws RemoteException;
+  public void setProjektID(Long projekt) throws RemoteException;
 
-    public Jahresabschluss getJahresabschluss() throws RemoteException;
+  public Jahresabschluss getJahresabschluss() throws RemoteException;
 
-    public Long getSplitId() throws RemoteException;
+  public Long getSplitId() throws RemoteException;
 
-    public void setSplitId(Long splitid) throws RemoteException;
+  public void setSplitId(Long splitid) throws RemoteException;
 
-    public Integer getSplitTyp() throws RemoteException;
+  public Integer getSplitTyp() throws RemoteException;
 
-    public void setSplitTyp(Integer splittyp) throws RemoteException;
+  public void setSplitTyp(Integer splittyp) throws RemoteException;
 
-    public Spendenbescheinigung getSpendenbescheinigung() throws RemoteException;
+  public Spendenbescheinigung getSpendenbescheinigung() throws RemoteException;
 
-    public void setSpendenbescheinigungId(Long spendenbescheinigung) throws RemoteException;
+  public void setSpendenbescheinigungId(Long spendenbescheinigung)
+      throws RemoteException;
 
-    public Map<String, Object> getMap(Map<String, Object> map) throws RemoteException;
+  public Map<String, Object> getMap(Map<String, Object> map)
+      throws RemoteException;
 
-    public Boolean getVerzicht() throws RemoteException;
+  public Boolean getVerzicht() throws RemoteException;
 
-    public void setVerzicht(Boolean verzicht) throws RemoteException;
+  public void setVerzicht(Boolean verzicht) throws RemoteException;
 
-    /**
-     * Soll der Datensatz in die Datenbank geschrieben werden?<br>
-     * 
-     * @param speicherung true: ja, Normalfall <br>
-     *                    false: nein, bei Splitbuchungen werden die Datensätze zunächst in einer
-     *                    ArrayList gehalten und später in die Datenbank geschrieben.
-     */
-    public void setSpeicherung(boolean speicherung) throws RemoteException;
+  /**
+   * Soll der Datensatz in die Datenbank geschrieben werden?<br>
+   * 
+   * @param speicherung
+   *          true: ja, Normalfall <br>
+   *          false: nein, bei Splitbuchungen werden die Datensätze zunächst in
+   *          einer ArrayList gehalten und später in die Datenbank geschrieben.
+   */
+  public void setSpeicherung(boolean speicherung) throws RemoteException;
 
-    public boolean getSpeicherung() throws RemoteException;
+  public boolean getSpeicherung() throws RemoteException;
 
-    public void setDelete(boolean delete) throws RemoteException;
+  public void setDelete(boolean delete) throws RemoteException;
 
-    public boolean isToDelete() throws RemoteException;
+  public boolean isToDelete() throws RemoteException;
 
-    public void plausi() throws RemoteException, ApplicationException;
+  public void plausi() throws RemoteException, ApplicationException;
 
 }

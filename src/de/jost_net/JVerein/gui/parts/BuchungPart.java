@@ -35,22 +35,27 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class BuchungPart implements Part {
+public class BuchungPart implements Part
+{
   private BuchungsControl control;
 
   private AbstractView view;
 
   private boolean buchungabgeschlossen;
 
-  public BuchungPart(BuchungsControl control, AbstractView view, boolean buchungabgeschlossen) {
+  public BuchungPart(BuchungsControl control, AbstractView view,
+      boolean buchungabgeschlossen)
+  {
     this.control = control;
     this.view = view;
     this.buchungabgeschlossen = buchungabgeschlossen;
   }
 
   @Override
-  public void paint(Composite parent) throws RemoteException {
-    String title = (control.getBuchung().getSpeicherung() ? "Buchung" : "Splitbuchung");
+  public void paint(Composite parent) throws RemoteException
+  {
+    String title = (control.getBuchung().getSpeicherung() ? "Buchung"
+        : "Splitbuchung");
     GUI.getView().setTitle(title);
 
     ScrolledContainer scrolled = new ScrolledContainer(parent, 1);
@@ -60,9 +65,12 @@ public class BuchungPart implements Part {
     SimpleContainer grKontoauszug = new SimpleContainer(cols1.getComposite());
 
     grKontoauszug.addHeadline(title);
-    if (!Einstellungen.getEinstellung().getVerwendeBelegnummer()) {
+    if (!Einstellungen.getEinstellung().getVerwendeBelegnummer())
+    {
       grKontoauszug.addLabelPair("Buchungsnummer", control.getID());
-    } else {
+    }
+    else
+    {
       grKontoauszug.addLabelPair("Belegnummer", control.getBelegnummer());
     }
     grKontoauszug.addLabelPair("Umsatz-ID", control.getUmsatzid());
@@ -87,14 +95,18 @@ public class BuchungPart implements Part {
     grSpendeninfos.addHeadline("Spendendetails");
     grSpendeninfos.addLabelPair("Erstattungsverzicht", control.getVerzicht());
 
-    if (JVereinPlugin.isArchiveServiceActive()) {
+    if (JVereinPlugin.isArchiveServiceActive())
+    {
       Buchung bu = (Buchung) control.getCurrentObject();
-      if (!bu.isNewObject()) {
-        LabelGroup grDokument = new LabelGroup(scrolled.getComposite(), "Dokumente");
+      if (!bu.isNewObject())
+      {
+        LabelGroup grDokument = new LabelGroup(scrolled.getComposite(),
+            "Dokumente");
         BuchungDokument budo = (BuchungDokument) Einstellungen.getDBService()
             .createObject(BuchungDokument.class, null);
         budo.setReferenz(new Long(bu.getID()));
-        DokumentControl dcontrol = new DokumentControl(view, "buchungen", !buchungabgeschlossen);
+        DokumentControl dcontrol = new DokumentControl(view, "buchungen",
+            !buchungabgeschlossen);
         grDokument.addPart(dcontrol.getDokumenteList(budo));
         ButtonArea butts = new ButtonArea();
         butts.addButton(dcontrol.getNeuButton(budo));

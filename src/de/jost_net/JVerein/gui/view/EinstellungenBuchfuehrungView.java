@@ -24,17 +24,20 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 
-public class EinstellungenBuchfuehrungView extends AbstractView {
+public class EinstellungenBuchfuehrungView extends AbstractView
+{
 
   @Override
-  public void bind() throws Exception {
+  public void bind() throws Exception
+  {
     GUI.getView().setTitle("Einstellungen Buchführung");
 
     final EinstellungControl control = new EinstellungControl(this);
 
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
-    cont.addLabelPair("Beginn Geschäftsjahr (TT.MM.)", control.getBeginnGeschaeftsjahr());
+    cont.addLabelPair("Beginn Geschäftsjahr (TT.MM.)",
+        control.getBeginnGeschaeftsjahr());
     cont.addInput(control.getAutoBuchunguebernahme());
     cont.addInput(control.getUnterdrueckungOhneBuchung());
     cont.addInput(control.getVerwendeBelegnummer());
@@ -42,12 +45,14 @@ public class EinstellungenBuchfuehrungView extends AbstractView {
     cont.addInput(control.getBelegnummerProJahr());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(), DokumentationUtil.EINSTELLUNGEN, false,
-        "question-circle.png");
-    buttons.addButton("speichern", new Action() {
+    buttons.addButton("Hilfe", new DokumentationAction(),
+        DokumentationUtil.EINSTELLUNGEN, false, "question-circle.png");
+    buttons.addButton("speichern", new Action()
+    {
 
       @Override
-      public void handleAction(Object context) {
+      public void handleAction(Object context)
+      {
         control.handleStoreBuchfuehrung();
       }
     }, null, true, "save.png");

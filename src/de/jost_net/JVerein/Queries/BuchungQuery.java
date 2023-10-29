@@ -32,7 +32,8 @@ import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 
-public class BuchungQuery {
+public class BuchungQuery
+{
   private Date datumvon;
 
   private Date datumbis;
@@ -50,29 +51,38 @@ public class BuchungQuery {
   private List<Buchung> ergebnis;
 
   private Boolean hasMitglied;
-  
+
   private HashMap<String, String> sortValues = new HashMap<String, String>();
 
-  private void SortHashMap() {
-	  sortValues.put("ORDER_ID","order by id");
-	  sortValues.put("ORDER_DATUM","order by datum");
-	  sortValues.put("ORDER_DATUM_NAME","order by datum, name");
-	  sortValues.put("ORDER_DATUM_ID","order by datum, id");
-	  sortValues.put("ORDER_DATUM_ID_NAME","order by datum, id, name");
-	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER","order by datum, auszugsnummer");
-	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_NAME","order by datum, auszugsnummer, name");
-	  sortValues.put("ORDER_DATUM_BLATTNUMMER","order by datum, blattnummer");
-	  sortValues.put("ORDER_DATUM_BLATTNUMMER_NAME","order by datum, blattnummer, name");
-	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_ID","order by datum, auszugsnummer, id");
-	  sortValues.put("ORDER_DATUM_BLATTNUMMER_ID","order by datum, blattnummer, id");
-	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_BLATTNUMMER_ID","order by datum, auszugsnummer, blattnummer, id");
-	  sortValues.put("DEFAULT","order by datum");
+  private void SortHashMap()
+  {
+    sortValues.put("ORDER_ID", "order by id");
+    sortValues.put("ORDER_DATUM", "order by datum");
+    sortValues.put("ORDER_DATUM_NAME", "order by datum, name");
+    sortValues.put("ORDER_DATUM_ID", "order by datum, id");
+    sortValues.put("ORDER_DATUM_ID_NAME", "order by datum, id, name");
+    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER",
+        "order by datum, auszugsnummer");
+    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_NAME",
+        "order by datum, auszugsnummer, name");
+    sortValues.put("ORDER_DATUM_BLATTNUMMER", "order by datum, blattnummer");
+    sortValues.put("ORDER_DATUM_BLATTNUMMER_NAME",
+        "order by datum, blattnummer, name");
+    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_ID",
+        "order by datum, auszugsnummer, id");
+    sortValues.put("ORDER_DATUM_BLATTNUMMER_ID",
+        "order by datum, blattnummer, id");
+    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_BLATTNUMMER_ID",
+        "order by datum, auszugsnummer, blattnummer, id");
+    sortValues.put("DEFAULT", "order by datum");
   }
-  
+
   public String ordername = null;
 
-  public BuchungQuery(Date datumvon, Date datumbis, Konto konto, Buchungsart buchungsart,
-      Projekt projekt, String text, String betrag, Boolean hasMitglied) {
+  public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
+      Buchungsart buchungsart, Projekt projekt, String text, String betrag,
+      Boolean hasMitglied)
+  {
     this.datumvon = datumvon;
     this.datumbis = datumbis;
     this.konto = konto;
@@ -82,34 +92,40 @@ public class BuchungQuery {
     this.betrag = betrag;
     this.hasMitglied = hasMitglied;
   }
-  
-  public String getOrder(String value) {
-	  SortHashMap();
-	  String newvalue = null;
-	  if ( value == null ) {
-		  return sortValues.get("DEFAULT");
-	  } else {
-		  newvalue = value.replaceAll(", ", "_");
-		  newvalue = newvalue.toUpperCase();
-		  newvalue = "ORDER_" + newvalue;
+
+  public String getOrder(String value)
+  {
+    SortHashMap();
+    String newvalue = null;
+    if (value == null)
+    {
+      return sortValues.get("DEFAULT");
+    }
+    else
+    {
+      newvalue = value.replaceAll(", ", "_");
+      newvalue = newvalue.toUpperCase();
+      newvalue = "ORDER_" + newvalue;
       return sortValues.get(newvalue);
-	  }
+    }
 
   }
-  
+
   public void setOrdername(String value)
   {
-    if ( value != null ) {
-    	ordername = value;
+    if (value != null)
+    {
+      ordername = value;
     }
   }
-  
+
   public Boolean getHasMitglied()
   {
     return hasMitglied;
   }
 
-  public void setHasMitglied(Boolean hasMitglied) {
+  public void setHasMitglied(Boolean hasMitglied)
+  {
     this.hasMitglied = hasMitglied;
   }
 
@@ -118,74 +134,99 @@ public class BuchungQuery {
     return datumvon;
   }
 
-  public Date getDatumbis() {
+  public Date getDatumbis()
+  {
     return datumbis;
   }
 
-  public Konto getKonto() {
+  public Konto getKonto()
+  {
     return konto;
   }
 
-  public Buchungsart getBuchungsart() {
+  public Buchungsart getBuchungsart()
+  {
     return buchungart;
   }
 
-  public Projekt getProjekt() {
+  public Projekt getProjekt()
+  {
     return projekt;
   }
 
-  public String getText() {
+  public String getText()
+  {
     return text;
   }
 
   @SuppressWarnings("unchecked")
-  public List<Buchung> get() throws RemoteException {
+  public List<Buchung> get() throws RemoteException
+  {
     final DBService service = Einstellungen.getDBService();
 
     DBIterator<Buchung> it = service.createList(Buchung.class);
     it.addFilter("datum >= ? ", datumvon);
     it.addFilter("datum <= ? ", datumbis);
 
-    if (konto != null) {
+    if (konto != null)
+    {
       it.addFilter("konto = ? ", konto.getID());
     }
-    if (buchungart != null) {
-      if (buchungart.getNummer() == -1) {
+    if (buchungart != null)
+    {
+      if (buchungart.getNummer() == -1)
+      {
         it.addFilter("buchungsart is null ");
-      } else if (buchungart.getNummer() >= 0) {
+      }
+      else if (buchungart.getNummer() >= 0)
+      {
         it.addFilter("buchungsart = ? ", buchungart.getID());
       }
     }
 
-    if (hasMitglied != null) {
-      if (hasMitglied) {
+    if (hasMitglied != null)
+    {
+      if (hasMitglied)
+      {
         it.addFilter("mitgliedskonto is not null");
-      } else {
+      }
+      else
+      {
         it.addFilter("mitgliedskonto is null");
       }
     }
 
-    if (projekt != null) {
-      if (projekt.getID() == null) {
+    if (projekt != null)
+    {
+      if (projekt.getID() == null)
+      {
         it.addFilter("projekt is null");
-      } else {
+      }
+      else
+      {
         it.addFilter("projekt = ?", projekt.getID());
       }
     }
 
-    if (betrag != null && betrag.length() > 0) {
-      try {
+    if (betrag != null && betrag.length() > 0)
+    {
+      try
+      {
         Suchbetrag suchbetrag = new Suchbetrag(betrag);
-        switch (suchbetrag.getSuchstrategie()) {
-          case GLEICH: {
+        switch (suchbetrag.getSuchstrategie())
+        {
+          case GLEICH:
+          {
             it.addFilter("betrag = ?", suchbetrag.getBetrag());
             break;
           }
-          case GRÖSSER: {
+          case GRÖSSER:
+          {
             it.addFilter("betrag > ?", suchbetrag.getBetrag());
             break;
           }
-          case GRÖSSERGLEICH: {
+          case GRÖSSERGLEICH:
+          {
             it.addFilter("betrag >= ?", suchbetrag.getBetrag());
             break;
           }
@@ -204,46 +245,57 @@ public class BuchungQuery {
           default:
             break;
         }
-      } catch (Exception e) {
+      }
+      catch (Exception e)
+      {
         // throw new RemoteException(e.getMessage());
       }
     }
 
-    if (text.length() > 0) {
+    if (text.length() > 0)
+    {
       String ttext = text.toUpperCase();
       ttext = "%" + ttext + "%";
-      it.addFilter("(upper(name) like ? or upper(zweck) like ? or upper(kommentar) like ?) ", ttext,
-          ttext, ttext);
+      it.addFilter(
+          "(upper(name) like ? or upper(zweck) like ? or upper(kommentar) like ?) ",
+          ttext, ttext, ttext);
     }
 
     // 20220823: sbuer: Neue Sortierfelder
     SortHashMap();
     String orderString = getOrder(ordername);
-    // System.out.println("ordervalue : " + ordername + " ,orderString : " + orderString);
+    // System.out.println("ordervalue : " + ordername + " ,orderString : " +
+    // orderString);
     it.setOrder(orderString);
-    
+
     this.ergebnis = PseudoIterator.asList(it);
     return ergebnis;
   }
 
-  public String getSubtitle() throws RemoteException {
-    String subtitle =
-        String.format("vom %s bis %s", new JVDateFormatTTMMJJJJ().format(getDatumvon()),
-            new JVDateFormatTTMMJJJJ().format(getDatumbis()));
-    if (getKonto() != null) {
-      subtitle += " "
-          + String.format("für Konto %s - %s", getKonto().getNummer(), getKonto().getBezeichnung());
+  public String getSubtitle() throws RemoteException
+  {
+    String subtitle = String.format("vom %s bis %s",
+        new JVDateFormatTTMMJJJJ().format(getDatumvon()),
+        new JVDateFormatTTMMJJJJ().format(getDatumbis()));
+    if (getKonto() != null)
+    {
+      subtitle += " " + String.format("für Konto %s - %s",
+          getKonto().getNummer(), getKonto().getBezeichnung());
     }
-    if (getProjekt() != null) {
-      subtitle += ", " + String.format("Projekt %s", getProjekt().getBezeichnung());
+    if (getProjekt() != null)
+    {
+      subtitle += ", "
+          + String.format("Projekt %s", getProjekt().getBezeichnung());
     }
-    if (getText() != null && getText().length() > 0) {
+    if (getText() != null && getText().length() > 0)
+    {
       subtitle += ", " + String.format("Text=%s", getText());
     }
     return subtitle;
   }
 
-  public int getSize() {
+  public int getSize()
+  {
     return ergebnis.size();
   }
 

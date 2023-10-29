@@ -25,12 +25,16 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 
-public class SplitbuchungNeuAction implements Action {
+public class SplitbuchungNeuAction implements Action
+{
   @Override
-  public void handleAction(Object context) {
-    try {
+  public void handleAction(Object context)
+  {
+    try
+    {
       Buchung master = SplitbuchungsContainer.getMaster();
-      Buchung buch = (Buchung) Einstellungen.getDBService().createObject(Buchung.class, null);
+      Buchung buch = (Buchung) Einstellungen.getDBService()
+          .createObject(Buchung.class, null);
       buch.setAuszugsnummer(master.getAuszugsnummer());
       buch.setBlattnummer(master.getBlattnummer());
       buch.setDatum(master.getDatum());
@@ -46,7 +50,9 @@ public class SplitbuchungNeuAction implements Action {
       buch.setSpeicherung(false);
       buch.setSplitTyp(SplitbuchungTyp.SPLIT);
       GUI.startView(BuchungView.class, buch);
-    } catch (RemoteException e) {
+    }
+    catch (RemoteException e)
+    {
       Logger.error("Fehler", e);
     }
   }
