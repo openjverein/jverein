@@ -1,48 +1,26 @@
-JVerein ist eine Open-Source-Vereinsverwaltung mit einer Anbindung an die ebenfalls unter Open-Source-Lizenz stehende Homebankingsoftware Hibiscus.
+OpenJVerein
+-----------
+
+OpenJVerein ist eine Open-Source-Vereinsverwaltung mit einer Anbindung an die ebenfalls unter Open-Source-Lizenz stehende Homebankingsoftware Hibiscus.
 Die Implementierung erfolgt mit Java. Der Ablauf auf vielen Plattformen ist damit gewährleistet. Als GUI-Framework kommt Jameica zum Einsatz.
 
 Mitmachen?
 ----------
 
-Perfekt! Das Entwickler-Forum unter https://jverein-forum.de ist dazu die erste Anlaufstelle.
-Das Entwickler-Forum ist nach Anmeldung und Freischaltung durch Heiner Jostkleigrewe verfügbar.
+Perfekt! Das [Forum](https://jverein-forum.de) und die [GitHub-Organisation](https://github.com/openjverein) sind dazu die ersten Anlaufstellen.
+Um in die OpenJVerein-Organisation aufgenommen zu werden, erstellt bitte ein [Issue](https://github.com/openjverein/jverein/issues).
 
-Um in die openjverein Organisation aufgenommen zu werden erstellt bitte ein issue.
-
-Sourcen
--------
-
-JVerein nutzt die Homebankingsoftware Hibiscus und das GUI-Framework Jameica. Für die Entwicklung müssen daher deren GIT-Repositorys eingebunden werden:
-
-   https://github.com/willuhn/jameica.git
-   https://github.com/willuhn/hibiscus.git
-
-Das GIT-Repository von JVerein kann dann über https://github.com/openjverein/jverein verwendet werden.
-
-Das JVerein Repo sollte am Besten geforkt werden. Über "Request Merge" können Änderungen ins JVerein Repo zurück gespielt werden.
-
-Entwicklungsumgebung
---------------------
-
-Für die JVerein Entwicklung werden benötigt
-
-- Eclipse
-- JDK 1.7
-
-Build und Test
---------------
-
-Build und Test sind hier beschrieben: https://www.willuhn.de/wiki/doku.php?id=develop:eclipse
+[Hier](CONTRIBUTING.md) wird die Einrichtung der Entwicklungsumgebung beschrieben.
 
 Lizenz
 ------
 
-JVerein steht unter der GPL, https://www.gnu.org/copyleft/gpl.html
+OpenJVerein steht unter der [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html).
 
 Kontakt
 -------
 
-- Web: https://openjverein.github.io/
+- Web: https://openjverein.github.io
 - eMail:
     - Heiner Jostkleigrewe heiner(at)jost-net.de
     - Philipp Schönberger mail(at)phschoen.de

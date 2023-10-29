@@ -111,7 +111,6 @@ public class SEPABugsControl extends AbstractControl
     return bugs;
   }
 
-  @SuppressWarnings("unused")
   private void plausi(List<Bug> bugs, ILastschrift ls) throws RemoteException
   {
     if (ls.getMandatDatum().equals(Einstellungen.NODATE))

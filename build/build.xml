@@ -35,10 +35,10 @@
 				<exclude name="mckoi/**" />
 				<exclude name="h2/**" />
 				<exclude name="mysql/**" />
-				<exclude name="jakarta_commons/**" />
 				<exclude name="paperclips/**" />
-				<exclude name="swt/linux65/**" />
-				<exclude name="swt/macos/**" />
+				<exclude name="swt/linux/**" />
+        <exclude name="swt/linux-arm64/**" />
+				<exclude name="swt/macos*/**" />
 				<exclude name="swt/win32/**" />
 				<exclude name="swt/win64/**" />
 			</fileset>
