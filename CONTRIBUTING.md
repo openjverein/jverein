@@ -15,9 +15,8 @@ Handbuch
 
 Das Handbuch ist im Repository https://github.com/openjverein/jverein-Book. Der Branch `master`
 wird automatisch mit GitBook synchronisiert und unter https://openjverein.gitbook.io/doku veröffentlicht.
-Für die Verwaltung existiert eine GitBook-Organisation OpenJVerein. Alle Mitglieder von
-https://github.com/openjverein sollten automatisch Zugang haben, wenn sie sich auf
-https://app.gitbook.com mit ihrem GitHub-Account anmelden.
+Für die Verwaltung existiert eine GitBook-Organisation OpenJVerein. In der Member-Ansicht von
+https://github.com/openjverein ist ein Einladungslink dafür.
 
 
 Entwicklungsumgebung
