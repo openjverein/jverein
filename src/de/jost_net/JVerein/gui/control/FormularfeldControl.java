@@ -75,7 +75,7 @@ public class FormularfeldControl extends AbstractControl
 
   private TextInput formularName;
 
-  public static final String EMPFAENGER = "EmpfÃ¤nger";
+  public static final String EMPFAENGER = "Empfänger";
 
   public static final String TAGESDATUM = "Tagesdatum";
 
@@ -142,7 +142,7 @@ public class FormularfeldControl extends AbstractControl
 
   public static final String AUSTRITT = "Austritt";
 
-  public static final String KUENDIGUNG = "KÃ¼ndigung";
+  public static final String KUENDIGUNG = "Kündigung";
 
   public FormularfeldControl(AbstractView view, Formular formular)
   {
@@ -399,7 +399,7 @@ public class FormularfeldControl extends AbstractControl
     formularfelderList.addColumn("von links", "x");
     formularfelderList.addColumn("von unten", "y");
     formularfelderList.addColumn("Font", "font");
-    formularfelderList.addColumn("FonthÃ¶he", "fontsize");
+    formularfelderList.addColumn("Fonthöhe", "fontsize");
 
     formularfelderList.setRememberColWidths(true);
     formularfelderList.setContextMenu(new FormularfeldMenu());

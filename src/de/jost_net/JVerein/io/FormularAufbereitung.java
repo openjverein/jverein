@@ -60,7 +60,7 @@ public class FormularAufbereitung
   private int buendig = links;
 
   /**
-   * √ñffnet die Datei und startet die PDF-Generierung
+   * ÷ffnet die Datei und startet die PDF-Generierung
    * 
    * @param f
    *          Die Datei, in die geschrieben werden soll
@@ -125,7 +125,7 @@ public class FormularAufbereitung
   }
 
   /**
-   * Schlie√üen des aktuellen Formulars, damit die Datei korrekt gespeichert wird
+   * Schlieﬂen des aktuellen Formulars, damit die Datei korrekt gespeichert wird
    * 
    * @throws IOException
    */
