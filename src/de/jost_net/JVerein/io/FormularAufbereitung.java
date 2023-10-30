@@ -60,7 +60,7 @@ public class FormularAufbereitung
   private int buendig = links;
 
   /**
-   * ÷ffnet die Datei und startet die PDF-Generierung
+   * √ñffnet die Datei und startet die PDF-Generierung
    * 
    * @param f
    *          Die Datei, in die geschrieben werden soll
@@ -125,7 +125,7 @@ public class FormularAufbereitung
   }
 
   /**
-   * Schlieﬂen des aktuellen Formulars, damit die Datei korrekt gespeichert wird
+   * Schlie√üen des aktuellen Formulars, damit die Datei korrekt gespeichert wird
    * 
    * @throws IOException
    */
@@ -176,6 +176,9 @@ public class FormularAufbereitung
         filename += feld.getFont().substring(9);
       }
       bf = BaseFont.createFont(filename+".ttf", BaseFont.IDENTITY_H, true);
+    } else if (feld.getFont().startsWith("PTSans")) {
+      String filename = String.format("/fonts/%s.ttf", feld.getFont());
+      bf = BaseFont.createFont(filename, BaseFont.IDENTITY_H, true);
     }
     else
     {
