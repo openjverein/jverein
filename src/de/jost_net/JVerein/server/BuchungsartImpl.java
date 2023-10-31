@@ -65,7 +65,7 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
       }
       if (getNummer() < 0)
       {
-        throw new ApplicationException("Nummer nicht gÃ¼ltig");
+        throw new ApplicationException("Nummer nicht gültig");
       }
     }
     catch (RemoteException e)

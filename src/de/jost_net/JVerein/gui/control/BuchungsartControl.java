@@ -150,7 +150,7 @@ public class BuchungsartControl extends AbstractControl
     spende = new CheckboxInput(getBuchungsart().getSpende());
     spende.addListener(new Listener()
     {
-      // Listener enabled / disabled Steuer Felder falls eine Spende ausgewÃ¤hlt wurde
+      // Listener enabled / disabled Steuer Felder falls eine Spende ausgewählt wurde
       // (Steuer und Spende schlieÃŸen sich aus)
       @Override
       public void handleEvent(Event event)
@@ -189,7 +189,7 @@ public class BuchungsartControl extends AbstractControl
     }
       steuersatz.addListener(new Listener()
     {
-      // Listener enabled / disabled Feld Buchungsart fÃ¼r Steuer falls Steuer = 0 ist
+      // Listener enabled / disabled Feld Buchungsart für Steuer falls Steuer = 0 ist
       @Override
       public void handleEvent(Event event)
       {
@@ -268,7 +268,7 @@ public class BuchungsartControl extends AbstractControl
         break;
     }
 
-    buchungsklasse.setPleaseChoose("Bitte auswï¿½hlen");
+    buchungsklasse.setPleaseChoose("Bitte auswählen");
     return buchungsklasse;
   }
 
@@ -309,7 +309,7 @@ public class BuchungsartControl extends AbstractControl
           b.setSteuerBuchungsart((String) ((Buchungsart) steuer_buchungsart.getValue()).getID());
         }
         else {
-          throw new RemoteException("Keine Buchungsart fÃ¼r Steuer hinterlegt!");
+          throw new RemoteException("Keine Buchungsart für Steuer hinterlegt!");
         }
       }
       else {
@@ -380,7 +380,7 @@ public class BuchungsartControl extends AbstractControl
           {
             return ArtBuchungsart.get((Integer) o);
           }
-          return "ungÃ¼ltig";
+          return "ungültig";
         }
       }, false, Column.ALIGN_LEFT);
       buchungsartList.addColumn("Buchungsklasse", "buchungsklasse");
@@ -398,7 +398,7 @@ public class BuchungsartControl extends AbstractControl
           {
             return SteuersatzBuchungsart.get((Double) o);
           }
-          return "ungÃ¼ltig";
+          return "ungültig";
         }
       }, false, Column.ALIGN_RIGHT);
       buchungsartList.addColumn("Steuer Buchungsart", "steuer_buchungsart", new Formatter()
@@ -421,7 +421,7 @@ public class BuchungsartControl extends AbstractControl
               return "";
             }
           }
-          return "ungÃ¼ltig";
+          return "ungültig";
         }
       }, false, Column.ALIGN_RIGHT);
       buchungsartList.setContextMenu(new BuchungsartMenu());
@@ -469,7 +469,7 @@ public class BuchungsartControl extends AbstractControl
   private void starteAuswertung() throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wï¿½hlen.");
+    fd.setText("Ausgabedatei wählen.");
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)
