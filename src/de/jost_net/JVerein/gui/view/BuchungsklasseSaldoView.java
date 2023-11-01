@@ -136,44 +136,42 @@ public class BuchungsklasseSaldoView extends AbstractView
     if (list == null || !list.hasNext())
     {
       throw new ApplicationException("Abbruch! Es existiert noch keine Buchung.");
-    } 
-    else 
-    {
-      LabelGroup quickGroup = new LabelGroup(getParent(), "Schnellzugriff");
-      ButtonArea quickBtns = new ButtonArea();
-      for (Integer i = getYearBounds("min"); i < getYearBounds("max") + 1; i++)
-      {
-        quickBtns.addButton(i.toString(), new QuickAccessAction(control,
-            genYearStartDate(i), genYearEndDate(i)), null, false);
-      }
-
-      quickBtns.addButton("Letzte 30 Tage",
-          new QuickAccessAction(control, deltaDaysFromNow(-30), new Date()));
-      quickBtns.addButton("Letzte 90 Tage",
-          new QuickAccessAction(control, deltaDaysFromNow(-90), new Date()));
-      quickGroup.addPart(quickBtns);
-
-      ButtonArea buttons = new ButtonArea();
-      Button button = new Button("suchen", new Action()
-      {
-        @Override
-        public void handleAction(Object context) throws ApplicationException
-        {
-          control.getSaldoList();
-        }
-      }, null, true, "search.png");
-      buttons.addButton(button);
-      buttons.paint(this.getParent());
-
-      LabelGroup group2 = new LabelGroup(getParent(), "Saldo", true);
-      group2.addPart(control.getSaldoList());
-
-      ButtonArea buttons2 = new ButtonArea();
-      buttons2.addButton("Hilfe", new DokumentationAction(),
-          DokumentationUtil.JAHRESSALDO, false, "question-circle.png");
-      buttons2.addButton(control.getStartAuswertungCSVButton());
-      buttons2.addButton(control.getStartAuswertungButton());
-      buttons2.paint(this.getParent());
     }
+
+    LabelGroup quickGroup = new LabelGroup(getParent(), "Schnellzugriff");
+    ButtonArea quickBtns = new ButtonArea();
+    for (Integer i = getYearBounds("min"); i < getYearBounds("max") + 1; i++)
+    {
+      quickBtns.addButton(i.toString(), new QuickAccessAction(control,
+          genYearStartDate(i), genYearEndDate(i)), null, false);
+    }
+
+    quickBtns.addButton("Letzte 30 Tage",
+        new QuickAccessAction(control, deltaDaysFromNow(-30), new Date()));
+    quickBtns.addButton("Letzte 90 Tage",
+        new QuickAccessAction(control, deltaDaysFromNow(-90), new Date()));
+    quickGroup.addPart(quickBtns);
+
+    ButtonArea buttons = new ButtonArea();
+    Button button = new Button("suchen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        control.getSaldoList();
+      }
+    }, null, true, "search.png");
+    buttons.addButton(button);
+    buttons.paint(this.getParent());
+
+    LabelGroup group2 = new LabelGroup(getParent(), "Saldo", true);
+    group2.addPart(control.getSaldoList());
+
+    ButtonArea buttons2 = new ButtonArea();
+    buttons2.addButton("Hilfe", new DokumentationAction(),
+        DokumentationUtil.JAHRESSALDO, false, "question-circle.png");
+    buttons2.addButton(control.getStartAuswertungCSVButton());
+    buttons2.addButton(control.getStartAuswertungButton());
+    buttons2.paint(this.getParent());
   }
 }
