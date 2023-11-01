@@ -26,6 +26,8 @@ import java.util.Collections;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsklasseSaldoControl;
+import de.jost_net.JVerein.rmi.Buchung;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
@@ -130,40 +132,48 @@ public class BuchungsklasseSaldoView extends AbstractView
     group.addLabelPair("von", control.getDatumvon());
     group.addLabelPair("bis", control.getDatumbis());
 
-    LabelGroup quickGroup = new LabelGroup(getParent(), "Schnellzugriff");
-    ButtonArea quickBtns = new ButtonArea();
-    for (Integer i = getYearBounds("min"); i < getYearBounds("max") + 1; i++)
+    DBIterator<Buchung> list = Einstellungen.getDBService().createList(Buchung.class);
+    if (list == null || !list.hasNext())
     {
-      quickBtns.addButton(i.toString(), new QuickAccessAction(control,
-          genYearStartDate(i), genYearEndDate(i)), null, false);
-    }
-
-    quickBtns.addButton("Letzte 30 Tage",
-        new QuickAccessAction(control, deltaDaysFromNow(-30), new Date()));
-    quickBtns.addButton("Letzte 90 Tage",
-        new QuickAccessAction(control, deltaDaysFromNow(-90), new Date()));
-    quickGroup.addPart(quickBtns);
-
-    ButtonArea buttons = new ButtonArea();
-    Button button = new Button("suchen", new Action()
+      throw new ApplicationException("Abbruch! Es existiert noch keine Buchung.");
+    } 
+    else 
     {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
+      LabelGroup quickGroup = new LabelGroup(getParent(), "Schnellzugriff");
+      ButtonArea quickBtns = new ButtonArea();
+      for (Integer i = getYearBounds("min"); i < getYearBounds("max") + 1; i++)
       {
-        control.getSaldoList();
+        quickBtns.addButton(i.toString(), new QuickAccessAction(control,
+            genYearStartDate(i), genYearEndDate(i)), null, false);
       }
-    }, null, true, "search.png");
-    buttons.addButton(button);
-    buttons.paint(this.getParent());
 
-    LabelGroup group2 = new LabelGroup(getParent(), "Saldo", true);
-    group2.addPart(control.getSaldoList());
+      quickBtns.addButton("Letzte 30 Tage",
+          new QuickAccessAction(control, deltaDaysFromNow(-30), new Date()));
+      quickBtns.addButton("Letzte 90 Tage",
+          new QuickAccessAction(control, deltaDaysFromNow(-90), new Date()));
+      quickGroup.addPart(quickBtns);
 
-    ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.JAHRESSALDO, false, "question-circle.png");
-    buttons2.addButton(control.getStartAuswertungCSVButton());
-    buttons2.addButton(control.getStartAuswertungButton());
-    buttons2.paint(this.getParent());
+      ButtonArea buttons = new ButtonArea();
+      Button button = new Button("suchen", new Action()
+      {
+        @Override
+        public void handleAction(Object context) throws ApplicationException
+        {
+          control.getSaldoList();
+        }
+      }, null, true, "search.png");
+      buttons.addButton(button);
+      buttons.paint(this.getParent());
+
+      LabelGroup group2 = new LabelGroup(getParent(), "Saldo", true);
+      group2.addPart(control.getSaldoList());
+
+      ButtonArea buttons2 = new ButtonArea();
+      buttons2.addButton("Hilfe", new DokumentationAction(),
+          DokumentationUtil.JAHRESSALDO, false, "question-circle.png");
+      buttons2.addButton(control.getStartAuswertungCSVButton());
+      buttons2.addButton(control.getStartAuswertungButton());
+      buttons2.paint(this.getParent());
+    }
   }
 }
