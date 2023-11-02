@@ -33,11 +33,5 @@
 	<classpathentry exported="true" kind="lib" path="lib/jackson-core-2.14.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/vinnie-2.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ez-vcard-0.11.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.12.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.12.0-javadoc.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-lang3-3.12.0-tests.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-validator-1.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/json-20230227.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/mariadb-java-client-3.2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
