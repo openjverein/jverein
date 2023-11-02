@@ -78,7 +78,6 @@ public class ImportDialog extends AbstractDialog<Object>
    *          Context.
    * @param type
    *          die Art der zu importierenden Objekte.
-   * @throws RemoteException
    */
   public ImportDialog(GenericObject context, Class<?> type, boolean enc,
       String helplink)

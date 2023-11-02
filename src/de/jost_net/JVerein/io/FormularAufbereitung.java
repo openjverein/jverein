@@ -176,6 +176,9 @@ public class FormularAufbereitung
         filename += feld.getFont().substring(9);
       }
       bf = BaseFont.createFont(filename+".ttf", BaseFont.IDENTITY_H, true);
+    } else if (feld.getFont().startsWith("PTSans")) {
+      String filename = String.format("/fonts/%s.ttf", feld.getFont());
+      bf = BaseFont.createFont(filename, BaseFont.IDENTITY_H, true);
     }
     else
     {
