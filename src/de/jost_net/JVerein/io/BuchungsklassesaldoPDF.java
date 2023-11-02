@@ -1,18 +1,18 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
- *  the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
- * see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this program. If
+ * not, see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
+ * heiner@jverein.de | www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
@@ -34,8 +34,7 @@ public class BuchungsklassesaldoPDF
 {
 
   public BuchungsklassesaldoPDF(ArrayList<BuchungsklasseSaldoZeile> zeile,
-      final File file, Date datumvon, Date datumbis)
-      throws ApplicationException
+      final File file, Date datumvon, Date datumbis) throws ApplicationException
   {
     try
     {
@@ -96,6 +95,22 @@ public class BuchungsklassesaldoPDF
                 Element.ALIGN_RIGHT);
             reporter.addColumn((Double) bkz.getAttribute("einnahmen"));
             reporter.addColumn("", Element.ALIGN_LEFT, 2);
+            break;
+          }
+          case BuchungsklasseSaldoZeile.STEUERHEADER:
+          {
+            reporter.addColumn(
+                (String) bkz.getAttribute("buchungsklassenbezeichnung"),
+                Element.ALIGN_LEFT, 4);
+          }
+          case BuchungsklasseSaldoZeile.STEUER:
+          {
+            reporter.addColumn(
+                (String) bkz.getAttribute("buchungsartbezeichnung"),
+                Element.ALIGN_RIGHT);
+            reporter.addColumn((Double) bkz.getAttribute("einnahmen"));
+            reporter.addColumn((Double) bkz.getAttribute("ausgaben"));
+            reporter.addColumn("", Element.ALIGN_LEFT, 1);
             break;
           }
           case BuchungsklasseSaldoZeile.NICHTZUGEORDNETEBUCHUNGEN:

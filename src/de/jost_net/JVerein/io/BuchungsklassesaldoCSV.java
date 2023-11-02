@@ -1,18 +1,18 @@
 /**********************************************************************
  * Copyright (c) by Thomas Laubrock
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
- *  the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
- * see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this program. If
+ * not, see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
+ * heiner@jverein.de | www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
@@ -118,6 +118,23 @@ public class BuchungsklassesaldoCSV
             csvzeile.put(header[0],
                 (String) bkz.getAttribute("buchungsklassenbezeichnung"));
             csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
+            break;
+          }
+          case BuchungsklasseSaldoZeile.STEUERHEADER:
+          {
+            csvzeile.put(header[0],
+                (String) bkz.getAttribute("buchungsklassenbezeichnung") + " - "
+                    + (String) bkz.getAttribute("buchungsartbezeichnung"));
+            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
+            csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
+            break;
+          }
+          case BuchungsklasseSaldoZeile.STEUER:
+          {
+            csvzeile.put(header[0],
+                (String) bkz.getAttribute("buchungsartbezeichnung"));
+            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
+            csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
             break;
           }
           case BuchungsklasseSaldoZeile.NICHTZUGEORDNETEBUCHUNGEN:

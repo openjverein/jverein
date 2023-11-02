@@ -1,18 +1,18 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
- *  the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
- * see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this program. If
+ * not, see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
+ * heiner@jverein.de | www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
@@ -33,6 +33,8 @@ public class BuchungsklasseSaldoZeile implements GenericObject
   private Buchungsart buchungsart;
 
   private String text;
+
+  private String text_buchungsart;
 
   private Double umbuchungen;
 
@@ -56,16 +58,21 @@ public class BuchungsklasseSaldoZeile implements GenericObject
 
   public static final int GESAMTGEWINNVERLUST = 6;
 
-  public static final int NICHTZUGEORDNETEBUCHUNGEN = 7;
+  public static final int STEUERHEADER = 7;
+
+  public static final int STEUER = 8;
+
+  public static final int NICHTZUGEORDNETEBUCHUNGEN = 9;
 
   private int status = UNDEFINED;
 
   public BuchungsklasseSaldoZeile(int status, Buchungsklasse buchungsklasse)
   {
-    this.buchungsklasse = buchungsklasse;
     this.status = status;
+    this.buchungsklasse = buchungsklasse;
     this.buchungsart = null;
     this.text = null;
+    this.text_buchungsart = null;
     this.umbuchungen = null;
     this.einnahmen = null;
     this.ausgaben = null;
@@ -78,6 +85,7 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     this.buchungsklasse = null;
     this.buchungsart = buchungsart;
     this.text = null;
+    this.text_buchungsart = null;
     this.umbuchungen = new Double(umbuchungen);
     this.einnahmen = new Double(einnahmen);
     this.ausgaben = new Double(ausgaben);
@@ -90,6 +98,7 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     this.buchungsklasse = null;
     this.buchungsart = null;
     this.text = text;
+    this.text_buchungsart = null;
     this.umbuchungen = new Double(umbuchungen);
     this.einnahmen = new Double(einnahmen);
     this.ausgaben = new Double(ausgaben);
@@ -101,6 +110,7 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     this.buchungsklasse = null;
     this.buchungsart = null;
     this.text = text;
+    this.text_buchungsart = null;
     this.umbuchungen = null;
     this.einnahmen = new Double(gewinnverlust);
     this.ausgaben = null;
@@ -113,10 +123,24 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     this.buchungsklasse = null;
     this.buchungsart = null;
     this.text = text;
+    this.text_buchungsart = null;
     this.umbuchungen = null;
     this.einnahmen = null;
     this.ausgaben = null;
     this.anzahlbuchungen = anzahlbuchungen;
+  }
+
+  public BuchungsklasseSaldoZeile(int status, String text,
+      String text_buchungsart, Double einnahmen, Double ausgaben)
+  {
+    this.status = status;
+    this.buchungsklasse = null;
+    this.buchungsart = null;
+    this.text = text;
+    this.text_buchungsart = text_buchungsart;
+    this.einnahmen = new Double(einnahmen);
+    this.ausgaben = new Double(ausgaben);
+    this.umbuchungen = null;
   }
 
   public int getStatus()
@@ -137,7 +161,15 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     }
     if (arg0.equals("buchungsartbezeichnung"))
     {
-      return buchungsart != null ? buchungsart.getBezeichnung() : "";
+      if (text_buchungsart != null)
+      {
+        return text_buchungsart;
+      }
+      else
+      {
+        return (buchungsart != null ? buchungsart.getBezeichnung() : "");
+
+      }
     }
     else if (arg0.equals("einnahmen"))
     {
@@ -155,8 +187,8 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     {
       return anzahlbuchungen;
     }
-    throw new RemoteException(String.format("Ungültige Spaltenbezeichung: %s",
-        arg0));
+    throw new RemoteException(
+        String.format("Ungültige Spaltenbezeichung: %s", arg0));
   }
 
   @Override
