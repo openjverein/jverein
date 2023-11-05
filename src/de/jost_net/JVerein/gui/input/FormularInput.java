@@ -51,6 +51,11 @@ public class FormularInput extends SelectInput
   {
     DBIterator<Formular> it = Einstellungen.getDBService()
         .createList(Formular.class);
+    // Add filter only if needed
+    if (mahnung == null)
+    {
+      return it;
+    }
     it.addFilter("art = ?", mahnung.getKey());
     return it;
   }

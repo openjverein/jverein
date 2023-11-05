@@ -504,5 +504,9 @@ public interface Einstellung extends DBObject, IBankverbindung
   public Boolean getAbrlAbschliessen() throws RemoteException;
 
   public void setAbrlAbschliessen(Boolean beleg) throws RemoteException;
+  
+  public int getZaehlerLaenge() throws RemoteException;
+
+  public void setZaehlerLaenge(int zaehlerlaenge) throws RemoteException;
 
 }

@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.io;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -102,6 +103,17 @@ public class Rechnungsausgabe extends AbstractMitgliedskontoDokument
       mks = getRechnungsempfaenger(mk);
     }
     aufbereitung(formular);
+    try
+    {
+      // Write updated form to DB
+      formular.store();
+      // Update all linked forms
+      formular.setZaehlerToFormLink(formular.getZaehler());
+    }
+    catch (Exception e)
+    {
+      throw new RemoteException("Fehler", e);
+    }
   }
 
 }

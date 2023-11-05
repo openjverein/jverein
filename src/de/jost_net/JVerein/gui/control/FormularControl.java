@@ -23,7 +23,9 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.FormularAction;
+import de.jost_net.JVerein.gui.formatter.FormularLinkFormatter;
 import de.jost_net.JVerein.gui.formatter.FormularartFormatter;
+import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.menu.FormularMenu;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
@@ -34,6 +36,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.FileInput;
+import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
@@ -55,6 +58,10 @@ public class FormularControl extends AbstractControl
   private FileInput datei;
 
   private Formular formular;
+
+  private IntegerInput zaehler;
+
+  private SelectInput formLink;
 
   public FormularControl(AbstractView view)
   {
@@ -107,6 +114,52 @@ public class FormularControl extends AbstractControl
     return datei;
   }
 
+  public IntegerInput getZaehler() throws RemoteException
+  {
+    if (zaehler != null)
+    {
+      return zaehler;
+    }
+    zaehler = new IntegerInput(getFormular().getZaehler());
+
+    // Deactivate the input field if form is linked to another form
+    if (getFormular().getFormLink() > 0)
+    {
+      zaehler.setEnabled(false);
+    }
+    return zaehler;
+  }
+
+  public SelectInput getFormLink() throws RemoteException
+  {
+    if (formLink != null)
+    {
+      return formLink;
+    }
+
+    Integer currentFormId = getFormular().getFormLink();
+    if (currentFormId != 0)
+    {
+      formLink = new FormularInput(null, currentFormId.toString());
+    }
+    else
+    {
+      formLink = new FormularInput(null);
+    }
+
+    // Deactivate the select box if it has linked forms
+    if (getFormular().hasFormLinks())
+    {
+      formLink.setPleaseChoose("Verknüpft");
+      formLink.setEnabled(false);
+    }
+    else
+    {
+      formLink.setPleaseChoose("Keine");
+    }
+    return formLink;
+  }
+
   /**
    * This method stores the project using the current values.
    */
@@ -119,7 +172,6 @@ public class FormularControl extends AbstractControl
       FormularArt fa = (FormularArt) getArt().getValue();
       f.setArt(fa);
       String dat = (String) getDatei().getValue();
-
       if (dat.length() > 0)
       {
         FileInputStream fis = new FileInputStream(dat);
@@ -128,6 +180,21 @@ public class FormularControl extends AbstractControl
         fis.close();
         f.setInhalt(b);
       }
+
+      int newZaehler = (int) getZaehler().getValue();
+      f.setZaehler(newZaehler);
+      f.setZaehlerToFormLink(newZaehler);
+
+      Formular fl = (Formular) getFormLink().getValue();
+      if (fl != null)
+      {
+        f.setFormLink(Integer.valueOf(fl.getID()));
+      }
+      else
+      {
+        f.setFormLink(null);
+      }
+
       f.store();
       GUI.getStatusBar().setSuccessText("Formular gespeichert");
     }
@@ -164,6 +231,9 @@ public class FormularControl extends AbstractControl
     formularList.addColumn("Bezeichnung", "bezeichnung");
     formularList.addColumn("Art", "art", new FormularartFormatter(), false,
         Column.ALIGN_LEFT);
+    formularList.addColumn("Fortlaufende Nr.", "zaehler");
+    formularList.addColumn("Verknüpft mit", "formLink",
+        new FormularLinkFormatter());
     formularList.setRememberColWidths(true);
     formularList.setContextMenu(new FormularMenu(this));
     formularList.setRememberOrder(true);

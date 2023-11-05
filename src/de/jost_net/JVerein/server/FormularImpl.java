@@ -158,4 +158,95 @@ public class FormularImpl extends AbstractDBObject implements Formular
     return super.getAttribute(fieldName);
   }
 
+  @Override
+  public int getZaehler() throws RemoteException
+  {
+    Integer counter = (Integer) getAttribute("zaehler");
+    if (counter == null)
+    {
+      return 0;
+    }
+    return (int) getAttribute("zaehler");
+  }
+
+  @Override
+  public void setZaehler(int zaehler) throws RemoteException
+  {
+    setAttribute("zaehler", zaehler);
+  }
+
+  @Override
+  public void setZaehlerToFormLink(int zaehler) throws RemoteException
+  {
+    DBIterator<Formular> formList = getLinked();
+    while (formList.hasNext())
+    {
+      Formular form = formList.next();
+      form.setZaehler(zaehler);
+      try
+      {
+        form.store();
+      }
+      catch (RemoteException e)
+      {
+        e.printStackTrace();
+      }
+      catch (ApplicationException e)
+      {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  @Override
+  public Integer getFormLink() throws RemoteException
+  {
+    Long formId = (Long) getAttribute("formLink");
+    if (formId == null)
+    {
+      return 0;
+    }
+
+    return (Integer) Math.toIntExact((formId));
+  }
+
+  @Override
+  public void setFormLink(Integer formLink) throws RemoteException
+  {
+    setAttribute("formLink", formLink);
+  }
+
+  public DBIterator<Formular> getLinked()
+      throws RemoteException
+  {
+    DBIterator<Formular> formList = Einstellungen.getDBService()
+        .createList(Formular.class);
+    // In case current form is linked to another form
+    if (this.getFormLink() > 0)
+    {
+      formList.addFilter("formLink = ? OR id = ?",
+          this.getFormLink(), this.getFormLink());
+    }
+    else
+    {
+      // In case current form isn't linked to another form
+      formList.addFilter("formLink = ?", this.getID());
+    }
+
+    return formList;
+  }
+
+  public boolean hasFormLinks() throws RemoteException
+  {
+    // Return FALSE for new forms
+    if (this.getID() == null || this.getFormLink() > 0)
+    {
+      return Boolean.FALSE;
+    }
+
+    DBIterator<Formular> formList = getLinked();
+    
+    return Boolean.valueOf(formList.size() > 0);
+  }
+
 }
