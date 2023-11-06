@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.formatter.Formatter;
+import de.willuhn.logging.Logger;
 
 public class FormularLinkFormatter implements Formatter
 {
@@ -41,7 +42,7 @@ public class FormularLinkFormatter implements Formatter
       }
       catch (RemoteException e)
       {
-        e.printStackTrace();
+        Logger.error("Fehler", e);
       }
     }
 

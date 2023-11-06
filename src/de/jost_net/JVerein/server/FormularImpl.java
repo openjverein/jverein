@@ -189,11 +189,14 @@ public class FormularImpl extends AbstractDBObject implements Formular
       }
       catch (RemoteException e)
       {
-        e.printStackTrace();
+        String fehler = "Fortlaufende Nr. kann nicht gespeichert werden. Siehe system log.";
+        Logger.error(fehler, e);
+        throw new RemoteException(fehler);
       }
       catch (ApplicationException e)
       {
-        e.printStackTrace();
+        String fehler = "Fortlaufende Nr. kann nicht gespeichert werden. Siehe system log.";
+        Logger.error(fehler, e);
       }
     }
   }
