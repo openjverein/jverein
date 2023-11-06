@@ -80,7 +80,7 @@ public class DokumentationUtil
 
   public static final String FAMILIENBEITRAG = PRE + ALLGEMEIN + "familientarife";
 
-  public static final String FELDDEFINITIONEN = PRE + FUNKTIONEN + ADMIN + "felddefinitionen";
+  public static final String FELDDEFINITIONEN = PRE + FUNKTIONEN + ADMIN + "felddefinition";
 
   public static final String LESEFELDER = PRE + FUNKTIONEN + ADMIN + "lesefelder";
 
@@ -88,7 +88,7 @@ public class DokumentationUtil
 
   public static final String EINSTELLUNGEN = PRE + FUNKTIONEN + ADMIN + "einstellungen";
 
-  public static final String IMPORT = PRE + ADMIN + "import";
+  public static final String IMPORT = PRE + FUNKTIONEN + ADMIN + "import";
 
   public static final String JUBILAEEN = PRE + FUNKTIONEN + AUSWERTUNGEN + "jubilaen";
 
