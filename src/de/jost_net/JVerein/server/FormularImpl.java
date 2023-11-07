@@ -162,11 +162,7 @@ public class FormularImpl extends AbstractDBObject implements Formular
   public int getZaehler() throws RemoteException
   {
     Integer counter = (Integer) getAttribute("zaehler");
-    if (counter == null)
-    {
-      return 0;
-    }
-    return (int) getAttribute("zaehler");
+    return counter != null ? (int) counter : 0;
   }
 
   @Override
