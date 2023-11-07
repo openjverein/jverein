@@ -1648,6 +1648,19 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
 
   @Override
+  public Boolean getKontonummerInBuchungsliste() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("kontonummer_in_buchungsliste"));
+  }
+
+  @Override
+  public void setKontonummerInBuchungsliste(Boolean kontonummer_in_buchungsliste)
+      throws RemoteException
+  {
+    setAttribute("kontonummer_in_buchungsliste", kontonummer_in_buchungsliste);
+  }
+
+  @Override
   public Integer getSEPADatumOffset() throws RemoteException
   {
     Integer offset = (Integer) getAttribute("sepadatumoffset");

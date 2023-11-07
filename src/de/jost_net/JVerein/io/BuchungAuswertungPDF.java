@@ -69,7 +69,7 @@ public class BuchungAuswertungPDF
         title = "Summenliste";
       }
 
-      if (Einstellungen.getEinstellung().getKontonummerInBuchungsliste())
+      if (Boolean.valueOf(Einstellungen.getEinstellung().getKontonummerInBuchungsliste()))
         kontonummer_in_buchungsliste = true;
 
       Reporter reporter = new Reporter(fos, title, query.getSubtitle(),
