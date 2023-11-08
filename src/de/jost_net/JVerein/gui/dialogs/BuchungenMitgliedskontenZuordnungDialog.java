@@ -212,13 +212,6 @@ public class BuchungenMitgliedskontenZuordnungDialog extends AbstractDialog<Obje
           if(useIbanInput || useMemberNumberInput || useNameInput)
           {
             DBIterator<Mitglied> mitglieder = Einstellungen.getDBService().createList(Mitglied.class);
-            mitglieder.addFilter("((eintritt <= ? and (austritt is null or austritt >= ?)) "
-                             + "or (eintritt <= ? and (austritt is null or austritt >= ?)) "
-                             + "or (eintritt > ? and austritt < ?))",
-                dateFromInput, dateFromInput, 
-                dateUntilInput, dateUntilInput,
-                dateFromInput, dateUntilInput
-            );
             mitglieder.addFilter("zahlungsweg = ?", Zahlungsweg.ÜBERWEISUNG);
 
             while(mitglieder.hasNext())
