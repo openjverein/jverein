@@ -42,12 +42,6 @@ public class SpendenbescheinigungAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !((context instanceof Spendenbescheinigung)
-        || (context instanceof Mitglied)
-        || (context instanceof MitgliedskontoNode)))
-    {
-      throw new ApplicationException("Kein Element ausgewählt");
-    }
     Spendenbescheinigung spb = null;
 
     try
