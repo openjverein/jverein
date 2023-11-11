@@ -20,9 +20,9 @@ import de.willuhn.util.ProgressMonitor;
 
 import java.sql.Connection;
 
-public class Update0419 extends AbstractDDLUpdate
+public class Update0420 extends AbstractDDLUpdate
 {
-  public Update0419(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0420(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -30,9 +30,7 @@ public class Update0419 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(alterColumn("buchungsklasse",
-        new Column("bezeichnung", COLTYPE.VARCHAR, 100, null, false, false)));
-
-    setNewVersion(nr);
+    execute(addColumn("einstellung", new Column("kontonummer_in_buchungsliste",
+        COLTYPE.BOOLEAN, 0, null, false, false)));
   }
 }

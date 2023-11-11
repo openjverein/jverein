@@ -947,9 +947,9 @@ public class EinstellungControl extends AbstractControl
       return smtp_port;
     }
     String port = Einstellungen.getEinstellung().getSmtpPort();
-    if (port != null)
+    if (port != null && port.length() > 0)
     {
-      smtp_port = new IntegerInput(new Integer(port));
+      smtp_port = new IntegerInput(Integer.valueOf(port));
     }
     else
     {
@@ -1111,9 +1111,9 @@ public class EinstellungControl extends AbstractControl
       return imapPort;
     }
     String port = Einstellungen.getEinstellung().getImapPort();
-    if (port != null)
+    if (port != null && port.length() > 0)
     {
-      imapPort = new IntegerInput(new Integer(port));
+      imapPort = new IntegerInput(Integer.valueOf(port));
     }
     else
     {
