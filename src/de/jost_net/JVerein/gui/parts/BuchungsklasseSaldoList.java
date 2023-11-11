@@ -20,8 +20,6 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,10 +28,8 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.BuchungsklasseSaldoZeile;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
-import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
-import de.jost_net.JVerein.server.BuchungsartImpl;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -184,17 +180,21 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
       while (buchungsartenSteuerIt.hasNext())
       {
         buchungsart = (Buchungsart) buchungsartenSteuerIt.next();
-        buchungsartenUStId
-            .add("or id = " + buchungsart.getSteuerBuchungsart().getID());
-        if (buchungsart.getArt() == ArtBuchungsart.EINNAHME)
+        Buchungsart steuer_buchungsart = buchungsart.getSteuerBuchungsart();
+        if (steuer_buchungsart != null)
         {
-          suBukSteuersatz.put(buchungsart.getSteuerBuchungsart().getID(),
-              buchungsart.getSteuersatz());
-        }
-        else if (buchungsart.getArt() == ArtBuchungsart.AUSGABE)
-        {
-          suBukSteuersatz.put(buchungsart.getSteuerBuchungsart().getID(),
-              -buchungsart.getSteuersatz());
+          String steuer_buchungsart_id = steuer_buchungsart.getID();
+          buchungsartenUStId.add("or id = " + steuer_buchungsart_id);
+          if (buchungsart.getArt() == ArtBuchungsart.EINNAHME)
+          {
+            suBukSteuersatz.put(steuer_buchungsart_id,
+                buchungsart.getSteuersatz());
+          }
+          else if (buchungsart.getArt() == ArtBuchungsart.AUSGABE)
+          {
+            suBukSteuersatz.put(steuer_buchungsart_id,
+                -buchungsart.getSteuersatz());
+          }
         }
       }
 

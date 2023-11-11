@@ -138,8 +138,10 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     this.buchungsart = null;
     this.text = text;
     this.text_buchungsart = text_buchungsart;
-    this.einnahmen = new Double(einnahmen);
-    this.ausgaben = new Double(ausgaben);
+    einnahmen = (einnahmen == null) ? 0 : einnahmen;
+    this.einnahmen = Double.valueOf(einnahmen);
+    ausgaben = (ausgaben == null) ? 0 : ausgaben;
+    this.ausgaben = Double.valueOf(ausgaben);
     this.umbuchungen = null;
   }
 

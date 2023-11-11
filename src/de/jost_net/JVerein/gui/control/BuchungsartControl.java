@@ -219,9 +219,9 @@ public class BuchungsartControl extends AbstractControl
     DBIterator<Buchungsart> it = Einstellungen.getDBService()
         .createList(Buchungsart.class);
     it.setOrder("ORDER BY nummer");
-    it.addFilter("ID != " + getBuchungsart().getID());
+    it.addFilter("id != " + getBuchungsart().getID());
     it.addFilter("steuersatz = 0");
-    it.addFilter("spende = false");
+    it.addFilter("spende = false OR spende IS NULL");
 
     steuer_buchungsart = new SelectInput(it, null);
     steuer_buchungsart.setValue(null);
@@ -303,16 +303,12 @@ public class BuchungsartControl extends AbstractControl
       }
       b.setSpende((Boolean) spende.getValue());
       b.setSteuersatz(((SteuersatzBuchungsart) steuersatz.getValue()).getSteuersatz());      
-      if (steuer_buchungsart.isEnabled())
+      if (steuer_buchungsart.getValue() instanceof Buchungsart) 
       {
-        if (steuer_buchungsart.getValue() instanceof Buchungsart) {
-          b.setSteuerBuchungsart((String) ((Buchungsart) steuer_buchungsart.getValue()).getID());
-        }
-        else {
-          throw new RemoteException("Keine Buchungsart für Steuer hinterlegt!");
-        }
+        b.setSteuerBuchungsart((String) ((Buchungsart) steuer_buchungsart.getValue()).getID());
       }
-      else {
+      else
+      {
         b.setSteuerBuchungsart(null);
       }
 
@@ -414,7 +410,7 @@ public class BuchungsartControl extends AbstractControl
           {
             try {
               DBIterator<Buchungsart> steuer_buchungsart = Einstellungen.getDBService().createList(Buchungsart.class);
-              steuer_buchungsart.addFilter("ID = " + (String) o);
+              steuer_buchungsart.addFilter("id = " + (String) o);
               return steuer_buchungsart.next().getNummer() + "";
               
             } catch (RemoteException e) {
