@@ -13,12 +13,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
-import java.sql.Connection;
-
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
+
+import java.sql.Connection;
 
 public class Update0420 extends AbstractDDLUpdate
 {
@@ -30,16 +30,7 @@ public class Update0420 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    // Add consecutive number
-    execute(addColumn("formular",
-        new Column("zaehler", COLTYPE.INTEGER, 10, "0", false, false)));
-    // Add consecutive number
-    execute(addColumn("einstellung",
-        new Column("zaehlerlaenge", COLTYPE.INTEGER, 10, "5", false, false)));
-    // Add formular linking
-    execute(addColumn("formular",
-        new Column("formLink", COLTYPE.BIGINT, 0, "NULL", false, false)));
-    
+    execute(addColumn("einstellung", new Column("kontonummer_in_buchungsliste",
+        COLTYPE.BOOLEAN, 0, null, false, false)));
   }
-  
 }
