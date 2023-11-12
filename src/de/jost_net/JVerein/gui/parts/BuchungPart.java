@@ -69,6 +69,7 @@ public class BuchungPart implements Part
     grKontoauszug.addLabelPair("Umsatz-ID", control.getUmsatzid());
     grKontoauszug.addLabelPair("Konto", control.getKonto(true));
     grKontoauszug.addLabelPair("Name", control.getName());
+    grKontoauszug.addLabelPair("IBAN", control.getIban());
     grKontoauszug.addLabelPair("Betrag", control.getBetrag());
     grKontoauszug.addLabelPair("Verwendungszweck", control.getZweck());
     grKontoauszug.addLabelPair("Datum", control.getDatum());

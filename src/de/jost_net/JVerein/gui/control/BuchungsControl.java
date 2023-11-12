@@ -168,6 +168,8 @@ public class BuchungsControl extends AbstractControl
 
   private BuchungQuery query;
 
+  private TextInput iban = null;
+
   public static final String BUCHUNGSART = "suchbuchungsart";
 
   public static final String PROJEKT = "suchprojekt";
@@ -1695,6 +1697,16 @@ public class BuchungsControl extends AbstractControl
     hasmitglied.addListener(new FilterListener());
 
     return hasmitglied;
+  }
+
+  public Input getIban() throws RemoteException
+  {
+    if (iban != null)
+    {
+      return iban;
+    }
+    iban = new TextInput(getBuchung().getIban(), 34);
+    return iban;
   }
 
   /**
