@@ -34,11 +34,6 @@ public class MitgliedskontoDetailAction implements Action
   {
     MitgliedskontoNode mkn = null;
     Mitgliedskonto mk = null;
-    
-    if (context == null || !(context instanceof MitgliedskontoNode))
-    {
-      throw new ApplicationException("Keine Sollbuchung ausgewählt");
-    }
 
     if (context != null && (context instanceof MitgliedskontoNode))
     {

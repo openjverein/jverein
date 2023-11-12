@@ -558,8 +558,6 @@ public class KursteilnehmerControl extends AbstractControl
 
   /**
    * Default-Werte speichern.
-   * 
-   * @throws RemoteException
    */
   public void saveDefaults()
   {

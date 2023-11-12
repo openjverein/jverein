@@ -174,6 +174,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput belegnummer_pro_jahr;
 
+  private CheckboxInput kontonummer_in_buchungsliste;
+
   private TextInput smtp_server;
 
   private IntegerInput smtp_port;
@@ -922,6 +924,17 @@ public class EinstellungControl extends AbstractControl
         .setName("Listen: Buchungsarten ohne Buchung unterdrücken");
     return unterdrueckungohnebuchung;
   }
+  
+  public CheckboxInput getKontonummerInBuchungsliste() throws RemoteException 
+  {
+    if (kontonummer_in_buchungsliste != null) 
+    {
+      return kontonummer_in_buchungsliste;
+    }
+    kontonummer_in_buchungsliste = new CheckboxInput(Einstellungen.getEinstellung().getKontonummerInBuchungsliste());
+    kontonummer_in_buchungsliste.setName("Zeige Kontonummer in Buchungsliste");
+    return kontonummer_in_buchungsliste;
+  }
 
   public CheckboxInput getVerwendeBelegnummer() throws RemoteException
   {
@@ -981,9 +994,9 @@ public class EinstellungControl extends AbstractControl
     }
 
     String port = Einstellungen.getEinstellung().getSmtpPort();
-    if (port != null)
+    if (port != null && port.length() > 0)
     {
-      smtp_port = new IntegerInput(Integer.parseInt(port));
+      smtp_port = new IntegerInput(Integer.valueOf(port));
     }
     else
     {
@@ -1147,9 +1160,9 @@ public class EinstellungControl extends AbstractControl
       return imapPort;
     }
     String port = Einstellungen.getEinstellung().getImapPort();
-    if (port != null)
+    if (port != null && port.length() > 0)
     {
-      imapPort = new IntegerInput(Integer.parseInt(port));
+      imapPort = new IntegerInput(Integer.valueOf(port));
     }
     else
     {
@@ -1927,6 +1940,9 @@ public class EinstellungControl extends AbstractControl
       e.setVerwendeBelegnummer((Boolean) verwendebelegnummer.getValue());
       e.setBelegnummerProKonto((Boolean) belegnummer_pro_konto.getValue());
       e.setBelegnummerProJahr((Boolean) belegnummer_pro_jahr.getValue());
+      e.setUnterdrueckungOhneBuchung((Boolean) unterdrueckungohnebuchung
+          .getValue());
+      e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());
       e.store();
       Einstellungen.setEinstellung(e);
 

@@ -26,6 +26,8 @@ import java.util.Collections;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsklasseSaldoControl;
+import de.jost_net.JVerein.rmi.Buchung;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
@@ -129,6 +131,12 @@ public class BuchungsklasseSaldoView extends AbstractView
     LabelGroup group = new LabelGroup(getParent(), "Zeitraum");
     group.addLabelPair("von", control.getDatumvon());
     group.addLabelPair("bis", control.getDatumbis());
+
+    DBIterator<Buchung> list = Einstellungen.getDBService().createList(Buchung.class);
+    if (list == null || !list.hasNext())
+    {
+      throw new ApplicationException("Abbruch! Es existiert noch keine Buchung.");
+    }
 
     LabelGroup quickGroup = new LabelGroup(getParent(), "Schnellzugriff");
     ButtonArea quickBtns = new ButtonArea();

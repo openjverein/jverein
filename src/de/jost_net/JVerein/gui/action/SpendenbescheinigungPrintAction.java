@@ -953,18 +953,18 @@ public class SpendenbescheinigungPrintAction implements Action
     if (isSammelbestaetigung)
     {
       rpt.add("Sammelbestätigung über "
-          + map.get(SpendenbescheinigungVar.SPENDEART.getName()), 13);
+          + map.get(SpendenbescheinigungVar.SPENDEART.getName()), 10);
     }
     else
     {
       rpt.add("Bestätigung über "
-          + map.get(SpendenbescheinigungVar.SPENDEART.getName()), 13);
+          + map.get(SpendenbescheinigungVar.SPENDEART.getName()), 10);
     }
 
-    rpt.add(
+    rpt.addLight(
         "im Sinne des § 10b des Einkommenssteuergesetzes an eine der in § 5 Abs. 1 Nr. 9 des Körperschaftssteuergesetzes "
             + "bezeichneten Körperschaften, Personenvereinigungen oder Vermögensmassen\n",
-        10);
+        9);
 
     rpt.addHeaderColumn("Name und Anschrift des Zuwendenden",
         Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
@@ -1031,26 +1031,26 @@ public class SpendenbescheinigungPrintAction implements Action
         switch (spb.getHerkunftSpende())
         {
           case HerkunftSpende.BETRIEBSVERMOEGEN:
-            rpt.add(
+            rpt.addLight(
                 "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Betriebsvermögen. "
                     + "Die Zuwendung wurde mit dem Wert der Entnahme (ggf. mit dem niedrigeren gemeinen "
                     + "Wert) und nach der Umsatzsteuer, die auf die Entnahme entfällt, bewertet.\n\n",
                 9);
             break;
           case HerkunftSpende.PRIVATVERMOEGEN:
-            rpt.add(
+            rpt.addLight(
                 "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Privatvermögen.\n\n",
                 9);
             break;
           case HerkunftSpende.KEINEANGABEN:
-            rpt.add(
+            rpt.addLight(
                 "Der Zuwendende hat trotz Aufforderung keine Angaben zur Herkunft der Sachzuwendung gemacht.\n\n",
                 9);
             break;
         }
         if (spb.getUnterlagenWertermittlung())
         {
-          rpt.add(
+          rpt.addLight(
               "Geeignete Unterlagen, die zur Wertermittlung gedient haben, z. B. Rechnung, Gutachten, liegen vor.\n\n",
               9);
         }
@@ -1116,7 +1116,7 @@ public class SpendenbescheinigungPrintAction implements Action
               .format(Einstellungen.getEinstellung().getBescheiddatum())
           + " nach § 60a AO gesondert festgestellt. Wir fördern nach unserer Satzung "
           + Einstellungen.getEinstellung().getBeguenstigterzweck();
-      rpt.add(txt, 8);
+      rpt.addLight(txt, 8);
     }
     else
     {
@@ -1137,9 +1137,9 @@ public class SpendenbescheinigungPrintAction implements Action
               .format(Einstellungen.getEinstellung().getVeranlagungBis())
           + " nach § 5 Abs. 1 Nr. 9 des Körperschaftsteuergesetzes von der Körperschaftsteuer und nach "
           + "§ 3 Nr. 6 des Gewerbesteuergesetzes von der Gewerbesteuer befreit.";
-      rpt.add(txt, 8);
+      rpt.addLight(txt, 8);
     }
-    rpt.add("\nEs wird bestätigt, dass die Zuwendung nur zur "
+    rpt.addLight("\nEs wird bestätigt, dass die Zuwendung nur zur "
         + Einstellungen.getEinstellung().getBeguenstigterzweck()
         + " verwendet wird.\n", 8);
     if (spb.getSpendenart() == Spendenart.GELDSPENDE)
@@ -1171,10 +1171,10 @@ public class SpendenbescheinigungPrintAction implements Action
     if (isSammelbestaetigung)
     {
       rpt.add(new Paragraph(" ", Reporter.getFreeSans(12)));
-      rpt.add(
+      rpt.addLight(
           "Es wird bestätigt, dass über die in der Gesamtsumme enthaltenen Zuwendungen keine weiteren Bestätigungen, weder formelle Zuwendungsbestätigungen noch Beitragsquittungen oder ähnliches ausgestellt wurden und werden.\n",
           8);
-      rpt.add(
+      rpt.addLight(
           "Ob es sich um den Verzicht auf Erstattung von Aufwendungen handelt, ist der Anlage zur Sammelbestätigung zu entnehmen.",
           8);
     }
@@ -1196,7 +1196,7 @@ public class SpendenbescheinigungPrintAction implements Action
         8);
 
     rpt.add("\nHinweis:", 8);
-    rpt.add(
+    rpt.addLight(
         "Wer vorsätzlich oder grob fahrlässig eine unrichtige Zuwendungsbestätigung erstellt "
             + "oder veranlasst, dass Zuwendungen nicht zu den in der Zuwendungsbestätigung "
             + "angegebenen steuerbegünstigten Zwecken verwendet werden, haftet für die entgangene "
@@ -1215,13 +1215,14 @@ public class SpendenbescheinigungPrintAction implements Action
       List<Buchung> buchungen = spb.getBuchungen();
 
       rpt.newPage();
-      rpt.add(getAussteller(), 13);
+      rpt.add(getAussteller(), 10);
       rpt.add(new Paragraph(" ", Reporter.getFreeSans(12)));
+      rpt.add("\n", 12);
       rpt.add("Anlage zur Sammelbestätigung vom " + (String) map
-          .get(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName()), 11);
+          .get(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName()), 8);
       rpt.add("für den Zeitraum vom "
           + (String) map.get(SpendenbescheinigungVar.SPENDENZEITRAUM.getName()),
-          11);
+          8);
 
       rpt.add(new Paragraph(" ", Reporter.getFreeSans(12)));
 
@@ -1275,20 +1276,15 @@ public class SpendenbescheinigungPrintAction implements Action
       // rpt.addColumn(sumString, Element.ALIGN_RIGHT,
       // BaseColor.LIGHT_GRAY);
 
-      rpt.closeTable();
-
-      // // Etwas Abstand
-      // rpt.add(new Paragraph(" "));
-      // // Nun noch die Legende
-      // rpt.add("Legende:", 8);
-      // rpt.add(
-      // "(a): Es handelt sich nicht um den Verzicht auf Erstattung von
-      // Aufwendungen",
-      // 8);
-      // rpt.add(
-      // "(b): Es handelt sich um den Verzicht auf Erstattung von Aufwendungen",
-      // 8);
+      rpt.closeTable();      
     }
+    
+    // Neue Seite mit Anschrift für Fenster in quer Brief
+    rpt.newPage();
+    rpt.add(new Paragraph(" ", Reporter.getFreeSans(12)));
+    rpt.add("\n\n\n\n\n", 12);
+    rpt.addUnderline(getAussteller(),8);
+    rpt.addLight((String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()),9);
 
     rpt.close();
     fos.close();

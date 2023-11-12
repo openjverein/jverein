@@ -276,6 +276,11 @@ public interface Einstellung extends DBObject, IBankverbindung
   public void setBelegnummerProJahr(Boolean belegnummer_pro_jahr)
       throws RemoteException;
 
+  public Boolean getKontonummerInBuchungsliste() throws RemoteException;
+
+  public void setKontonummerInBuchungsliste(
+          Boolean kontonummer_in_buchungsliste) throws RemoteException;
+
   public void setBeginnGeschaeftsjahr(String beginngeschaeftsjahr)
       throws RemoteException;
 

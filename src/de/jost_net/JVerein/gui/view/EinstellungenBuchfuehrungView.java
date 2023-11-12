@@ -43,6 +43,7 @@ public class EinstellungenBuchfuehrungView extends AbstractView
     cont.addInput(control.getVerwendeBelegnummer());
     cont.addInput(control.getBelegnummerProKonto());
     cont.addInput(control.getBelegnummerProJahr());
+    cont.addInput(control.getKontonummerInBuchungsliste());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
