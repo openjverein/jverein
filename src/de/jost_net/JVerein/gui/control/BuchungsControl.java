@@ -762,6 +762,7 @@ public class BuchungsControl extends AbstractControl
       b.setAuszugsnummer(getAuszugsnummerWert());
       b.setBlattnummer(getBlattnummerWert());
       b.setName((String) getName().getValue());
+      b.setIban((String) getIban().getValue());
       if (getBetrag().getValue() != null)
       {
         b.setBetrag((Double) getBetrag().getValue());
