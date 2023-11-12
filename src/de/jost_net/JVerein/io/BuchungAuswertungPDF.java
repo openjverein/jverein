@@ -50,6 +50,8 @@ public class BuchungAuswertungPDF
 
   private double summeumbuchungen = 0;
 
+  private boolean kontonummer_in_buchungsliste = false;
+
   public BuchungAuswertungPDF(ArrayList<Buchungsart> buchungsarten,
       final File file, BuchungQuery query, boolean einzel)
       throws ApplicationException
@@ -66,9 +68,18 @@ public class BuchungAuswertungPDF
       {
         title = "Summenliste";
       }
+
+      if (Boolean.valueOf(Einstellungen.getEinstellung().getKontonummerInBuchungsliste()))
+        kontonummer_in_buchungsliste = true;
+
       Reporter reporter = new Reporter(fos, title, query.getSubtitle(),
           buchungsarten.size());
-
+      if (kontonummer_in_buchungsliste)
+      {
+        reporter = new Reporter(fos, title, query.getSubtitle(),
+            buchungsarten.size(), 50, 30, 20, 20);
+      }
+        
       if (!einzel)
       {
         createTableHeaderSumme(reporter);
@@ -89,6 +100,8 @@ public class BuchungAuswertungPDF
         {
           createTableHeaderEinzel(reporter);
           reporter.addColumn("", Element.ALIGN_RIGHT);
+          if (kontonummer_in_buchungsliste)
+            reporter.addColumn("", Element.ALIGN_LEFT);
           reporter.addColumn("", Element.ALIGN_LEFT);
           reporter.addColumn("", Element.ALIGN_LEFT);
           reporter.addColumn("", Element.ALIGN_LEFT);
@@ -133,15 +146,19 @@ public class BuchungAuswertungPDF
   }
 
   private void createTableHeaderEinzel(Reporter reporter)
-      throws DocumentException
+      throws DocumentException, RemoteException
   {
     reporter.addHeaderColumn("Nummer", Element.ALIGN_CENTER, 22,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Datum", Element.ALIGN_CENTER, 28,
         BaseColor.LIGHT_GRAY);
+    if (kontonummer_in_buchungsliste)
+      reporter.addHeaderColumn("Konto", Element.ALIGN_CENTER, 34,
+          BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Auszug", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Name", Element.ALIGN_CENTER, 100,
+    reporter.addHeaderColumn("Name", Element.ALIGN_CENTER,
+        (kontonummer_in_buchungsliste) ? 86 : 100,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Zahlungsgrund", Element.ALIGN_CENTER, 100,
         BaseColor.LIGHT_GRAY);
@@ -188,6 +205,8 @@ public class BuchungAuswertungPDF
         reporter.addColumn(b.getID(), Element.ALIGN_RIGHT);
         reporter.addColumn(new JVDateFormatTTMMJJJJ().format(b.getDatum()),
             Element.ALIGN_CENTER);
+        if (kontonummer_in_buchungsliste)
+          reporter.addColumn(b.getKonto().getNummer(), Element.ALIGN_RIGHT);
         if (b.getAuszugsnummer() != null)
         {
           reporter.addColumn(
@@ -221,6 +240,8 @@ public class BuchungAuswertungPDF
     {
       reporter.addColumn("", Element.ALIGN_RIGHT);
       reporter.addColumn("", Element.ALIGN_CENTER);
+      if (kontonummer_in_buchungsliste)
+        reporter.addColumn("", Element.ALIGN_RIGHT);
       reporter.addColumn("", Element.ALIGN_LEFT);
       reporter.addColumn("", Element.ALIGN_LEFT);
       if (buchungen.size() == 0)

@@ -73,10 +73,21 @@ public class Reporter
     return FontFactory.getFont("/fonts/FreeSans.ttf", BaseFont.IDENTITY_H, size,
         Font.UNDEFINED, color);
   }
+  
+  public static Font getFreeSansUnderline(float size, BaseColor color)
+  {
+    return FontFactory.getFont("/fonts/FreeSans.ttf", BaseFont.IDENTITY_H, size,
+        Font.UNDERLINE, color);
+  }
 
   public static Font getFreeSans(float size)
   {
     return getFreeSans(size, null);
+  }
+  
+  public static Font getFreeSansUnderline(float size)
+  {
+    return getFreeSansUnderline(size, null);
   }
 
   public static Font getFreeSansBold(float size, BaseColor color)
@@ -168,6 +179,20 @@ public class Reporter
     rpt.add(p);
   }
 
+  public void addLight(String text, int size) throws DocumentException
+  {
+    Paragraph p = new Paragraph(text, getFreeSans(size));
+    p.setAlignment(Element.ALIGN_LEFT);
+    rpt.add(p);
+  }
+  
+  public void addUnderline(String text, int size) throws DocumentException
+  {
+    Paragraph p = new Paragraph(text, getFreeSansUnderline(size));
+    p.setAlignment(Element.ALIGN_LEFT);
+    rpt.add(p);
+  }
+  
   /**
    * Fuegt der Tabelle einen neuen Spaltenkopf hinzu.
    * 
