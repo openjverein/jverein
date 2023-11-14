@@ -20,9 +20,9 @@ import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class Update0421 extends AbstractDDLUpdate
+public class Update0422 extends AbstractDDLUpdate
 {
-  public Update0421(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0422(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -30,9 +30,16 @@ public class Update0421 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    // Startdatum des Projektes
-    execute(addColumn("buchung",
-        new Column("iban", COLTYPE.VARCHAR, 34, "NULL", false, false)));
-
+    // Add consecutive number
+    execute(addColumn("formular",
+        new Column("zaehler", COLTYPE.INTEGER, 10, "0", false, false)));
+    // Add consecutive number
+    execute(addColumn("einstellung",
+        new Column("zaehlerlaenge", COLTYPE.INTEGER, 10, "5", false, false)));
+    // Add formular linking
+    execute(addColumn("formular",
+        new Column("formLink", COLTYPE.BIGINT, 0, "NULL", false, false)));
+    
   }
+  
 }
