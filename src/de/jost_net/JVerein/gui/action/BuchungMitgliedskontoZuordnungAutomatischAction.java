@@ -16,52 +16,50 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
+import java.util.Date;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.MitgliedskontoDetailView;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.gui.dialogs.BuchungenMitgliedskontenZuordnungDialog;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoDetailAction implements Action
+public class BuchungMitgliedskontoZuordnungAutomatischAction implements Action
 {
+  private DateInput vondatum;
+  private DateInput bisdatum;
 
+  public BuchungMitgliedskontoZuordnungAutomatischAction(DateInput vondatum, DateInput bisdatum) {
+    this.vondatum = vondatum;
+    this.bisdatum = bisdatum;
+  }
+
+ /**
+   * @see de.willuhn.jameica.gui.Action#handleAction(java.lang.Object)
+   */
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    MitgliedskontoNode mkn = null;
-    Mitgliedskonto mk = null;
-
-    if (context != null && (context instanceof MitgliedskontoNode))
+    try
     {
-      mkn = (MitgliedskontoNode) context;
-      try
-      {
-        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-            Mitgliedskonto.class, mkn.getID());
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung eines Mitgliedskontos");
-      }
+      BuchungenMitgliedskontenZuordnungDialog d = new BuchungenMitgliedskontenZuordnungDialog((Date)vondatum.getValue(), (Date)bisdatum.getValue());
+      d.open();
     }
-    else
+    catch (OperationCanceledException oce)
     {
-      try
-      {
-        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-            Mitgliedskonto.class, null);
-      }
-      catch (Exception e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung eines neuen Mitgliedskontos", e);
-      }
+      Logger.info(oce.getMessage());
     }
-    GUI.startView(new MitgliedskontoDetailView(MitgliedskontoNode.SOLL), mk);
+    catch (ApplicationException ae)
+    {
+      throw ae;
+    }
+    catch (Exception e)
+    {
+      Logger.error("error while assign transfers to members", e);
+      GUI.getStatusBar().setErrorText("Fehler beim Zuordnen von Buchungen zu Mitgliedskonten");
+    }
   }
+
 }

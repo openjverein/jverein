@@ -168,6 +168,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput unterdrueckungohnebuchung;
 
+  private CheckboxInput kontonummer_in_buchungsliste;
+
   private TextInput smtp_server;
 
   private IntegerInput smtp_port;
@@ -915,6 +917,17 @@ public class EinstellungControl extends AbstractControl
         .setName("Listen: Buchungsarten ohne Buchung unterdrücken");
     return unterdrueckungohnebuchung;
   }
+  
+  public CheckboxInput getKontonummerInBuchungsliste() throws RemoteException 
+  {
+    if (kontonummer_in_buchungsliste != null) 
+    {
+      return kontonummer_in_buchungsliste;
+    }
+    kontonummer_in_buchungsliste = new CheckboxInput(Einstellungen.getEinstellung().getKontonummerInBuchungsliste());
+    kontonummer_in_buchungsliste.setName("Zeige Kontonummer in Buchungsliste");
+    return kontonummer_in_buchungsliste;
+  }
 
   public TextInput getSmtpServer() throws RemoteException
   {
@@ -934,9 +947,9 @@ public class EinstellungControl extends AbstractControl
       return smtp_port;
     }
     String port = Einstellungen.getEinstellung().getSmtpPort();
-    if (port != null)
+    if (port != null && port.length() > 0)
     {
-      smtp_port = new IntegerInput(new Integer(port));
+      smtp_port = new IntegerInput(Integer.valueOf(port));
     }
     else
     {
@@ -1098,9 +1111,9 @@ public class EinstellungControl extends AbstractControl
       return imapPort;
     }
     String port = Einstellungen.getEinstellung().getImapPort();
-    if (port != null)
+    if (port != null && port.length() > 0)
     {
-      imapPort = new IntegerInput(new Integer(port));
+      imapPort = new IntegerInput(Integer.valueOf(port));
     }
     else
     {
@@ -1875,6 +1888,7 @@ public class EinstellungControl extends AbstractControl
       e.setAutoBuchunguebernahme((Boolean) autobuchunguebernahme.getValue());
       e.setUnterdrueckungOhneBuchung((Boolean) unterdrueckungohnebuchung
           .getValue());
+      e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());
       e.store();
       Einstellungen.setEinstellung(e);
 

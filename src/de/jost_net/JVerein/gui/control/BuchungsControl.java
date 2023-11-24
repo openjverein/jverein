@@ -37,6 +37,7 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.action.BuchungMitgliedskontoZuordnungAutomatischAction;
 import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -166,6 +167,8 @@ public class BuchungsControl extends AbstractControl
   private Button sammelueberweisungButton;
 
   private BuchungQuery query;
+
+  private TextInput iban = null;
 
   public static final String BUCHUNGSART = "suchbuchungsart";
 
@@ -726,6 +729,13 @@ public class BuchungsControl extends AbstractControl
     return b;
   }
 
+  public Button getStarteBuchungMitgliedskontoZuordnungAutomatischButton()
+  {
+    Button b = new Button("Zuordnung", new BuchungMitgliedskontoZuordnungAutomatischAction(getVondatum(), getBisdatum()), null, false,
+            "user-friends.png");
+    return b;
+  }
+
   public Button getStartAuswertungBuchungsjournalButton()
   {
     Button b = new Button("PDF Buchungsjournal", new Action()
@@ -752,6 +762,7 @@ public class BuchungsControl extends AbstractControl
       b.setAuszugsnummer(getAuszugsnummerWert());
       b.setBlattnummer(getBlattnummerWert());
       b.setName((String) getName().getValue());
+      b.setIban((String) getIban().getValue());
       if (getBetrag().getValue() != null)
       {
         b.setBetrag((Double) getBetrag().getValue());
@@ -1007,6 +1018,7 @@ public class BuchungsControl extends AbstractControl
       buchungsList.addColumn("Blatt", "blattnummer");
 
       buchungsList.addColumn("Name", "name");
+      buchungsList.addColumn("IBAN oder Kontonummer", "iban");
       buchungsList.addColumn("Verwendungszweck", "zweck", new Formatter()
       {
         @Override
@@ -1686,6 +1698,16 @@ public class BuchungsControl extends AbstractControl
     hasmitglied.addListener(new FilterListener());
 
     return hasmitglied;
+  }
+
+  public Input getIban() throws RemoteException
+  {
+    if (iban != null)
+    {
+      return iban;
+    }
+    iban = new TextInput(getBuchung().getIban(), 34);
+    return iban;
   }
 
   /**

@@ -43,8 +43,8 @@ public class KontoauszugView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KONTOAUSZUG, false, "question-circle.png");
     buttons.addButton(control.getStartKontoauszugButton(this.getCurrentObject(),
-        (Date) control.getVondatum("kontoauszug").getValue(),
-        (Date) control.getBisdatum("kontoauszug").getValue()));
+        control.getVondatum("kontoauszugdatumvon"),
+        control.getBisdatum("kontoauszugdatumbis")));
     buttons.paint(this.getParent());
   }
 }
