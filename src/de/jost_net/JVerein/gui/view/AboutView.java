@@ -56,8 +56,8 @@ public class AboutView extends AbstractDialog<Object>
         + "Plugin für die Vereinsverwaltung unter Jameica" + "</b></p>"
         + "<br/>Lizenz: GPL [ http://www.gnu.org/copyleft/gpl.html ]"
         + "<br/><p>Copyright by Heiner Jostkleigrewe [ heiner@jverein.de ]</p>"
-        + "<p>web: http://www.jverein.de</p>"
-        + "<p>Forum: http://www.jverein.de/forum</p></form>");
+        + "<p>web: https://openjverein.github.io</p>"
+        + "<p>Forum: https://jverein-forum.de</p></form>");
 
     text.paint(parent);
 
