@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ProgressMonitor;
 
@@ -103,7 +104,7 @@ public class CSVFileHelper
       if (!headerComplete)
       {
         monitor.setStatusText(
-            "Keine Daten oder keine Kopfzeile oder Encoding falsch. Siehe http://http://www.jverein.de/administration_import.php");
+            "Keine Daten oder keine Kopfzeile oder Encoding falsch. Siehe "+DokumentationUtil.IMPORT);
         valid = false;
       }
 

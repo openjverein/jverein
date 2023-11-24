@@ -294,7 +294,7 @@ public abstract class AbstractAdresseDetailView extends AbstractView
         {
           if (inp == null)
           {
-            String errorText = "Achtung! Ungültiges Lesefeld-Skript gefunden. Diesen Fehler bitte unter www.jverein.de/forum melden!";
+            String errorText = "Achtung! Ungültiges Lesefeld-Skript gefunden. Diesen Fehler bitte unter https://github.com/openjverein/jverein/issues melden!";
             Input errorInput = new TextInput(errorText);
             errorInput.setEnabled(false);
             svc.addInput(errorInput);
