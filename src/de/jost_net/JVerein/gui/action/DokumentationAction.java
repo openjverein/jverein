@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.internal.action.Program;
@@ -44,7 +45,7 @@ public class DokumentationAction implements Action
           }
           else
           {
-            new Program().handleAction("https://doku.jverein.de");
+            new Program().handleAction(DokumentationUtil.DOKU);
           }
         }
         catch (ApplicationException ae)
