@@ -470,7 +470,7 @@ public class BuchungsControl extends AbstractControl
     Date d = getBuchung().getDatum();
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
-    this.datum.setText("Bitte Datum w√§hlen");
+    this.datum.setText("Bitte Datum w‰hlen");
     return datum;
   }
 
