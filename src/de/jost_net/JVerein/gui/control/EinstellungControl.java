@@ -1940,8 +1940,6 @@ public class EinstellungControl extends AbstractControl
       e.setVerwendeBelegnummer((Boolean) verwendebelegnummer.getValue());
       e.setBelegnummerProKonto((Boolean) belegnummer_pro_konto.getValue());
       e.setBelegnummerProJahr((Boolean) belegnummer_pro_jahr.getValue());
-      e.setUnterdrueckungOhneBuchung((Boolean) unterdrueckungohnebuchung
-          .getValue());
       e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());
       e.store();
       Einstellungen.setEinstellung(e);
