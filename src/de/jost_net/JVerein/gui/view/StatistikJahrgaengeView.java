@@ -43,7 +43,7 @@ public class StatistikJahrgaengeView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.JUBILAEEN, false, "question-circle.png");
+        DokumentationUtil.STATISTIKJAHRGAENGE, false, "question-circle.png");
     Button btnStart = new Button("Start", new StatistikJahrgaengeExportAction(),
         control.getJubeljahr(), true, "walking.png");
     if (!Einstellungen.getEinstellung().getGeburtsdatumPflicht())
