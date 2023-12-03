@@ -38,8 +38,7 @@ public class Update0424 extends AbstractDDLUpdate
         new Column("zaehlerlaenge", COLTYPE.INTEGER, 10, "5", false, false)));
     // Add formular linking
     execute(addColumn("formular",
-        new Column("formLink", COLTYPE.BIGINT, 0, "NULL", false, false)));
-    
+        new Column("formlink", COLTYPE.BIGINT, 0, "NULL", false, false)));
   }
   
 }

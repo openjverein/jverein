@@ -66,7 +66,7 @@ public class Mahnungsausgabe extends AbstractMitgliedskontoDokument
       // Write updated form to DB
       formular.store();
       // Update all linked forms
-      formular.setZaehlerToFormLink(formular.getZaehler());
+      formular.setZaehlerToFormlink(formular.getZaehler());
     }
     catch (RemoteException re) { throw re; }
     catch (Exception e)

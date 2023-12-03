@@ -109,7 +109,7 @@ public class Rechnungsausgabe extends AbstractMitgliedskontoDokument
       // Write updated form to DB
       formular.store();
       // Update all linked forms
-      formular.setZaehlerToFormLink(formular.getZaehler());
+      formular.setZaehlerToFormlink(formular.getZaehler());
     }
     catch (Exception e)
     {

@@ -42,14 +42,14 @@ public interface Formular extends DBObject
 
   public void setZaehler(int zaehler) throws RemoteException;
 
-  public Integer getFormLink() throws RemoteException;
+  public Integer getFormlink() throws RemoteException;
 
-  public void setFormLink(Integer formLink) throws RemoteException;
+  public void setFormlink(Integer formlink) throws RemoteException;
   
-  public boolean hasFormLinks() throws RemoteException;
+  public boolean hasFormlinks() throws RemoteException;
   
   public DBIterator<Formular> getLinked() throws RemoteException;
 
-  public void setZaehlerToFormLink(int zaehler) throws RemoteException;
+  public void setZaehlerToFormlink(int zaehler) throws RemoteException;
 
 }

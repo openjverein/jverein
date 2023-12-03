@@ -172,7 +172,7 @@ public class FormularImpl extends AbstractDBObject implements Formular
   }
 
   @Override
-  public void setZaehlerToFormLink(int zaehler) throws RemoteException
+  public void setZaehlerToFormlink(int zaehler) throws RemoteException
   {
     DBIterator<Formular> formList = getLinked();
     while (formList.hasNext())
@@ -198,9 +198,9 @@ public class FormularImpl extends AbstractDBObject implements Formular
   }
 
   @Override
-  public Integer getFormLink() throws RemoteException
+  public Integer getFormlink() throws RemoteException
   {
-    Long formId = (Long) getAttribute("formLink");
+    Long formId = (Long) getAttribute("formlink");
     if (formId == null)
     {
       return 0;
@@ -210,9 +210,9 @@ public class FormularImpl extends AbstractDBObject implements Formular
   }
 
   @Override
-  public void setFormLink(Integer formLink) throws RemoteException
+  public void setFormlink(Integer formlink) throws RemoteException
   {
-    setAttribute("formLink", formLink);
+    setAttribute("formlink", formlink);
   }
 
   public DBIterator<Formular> getLinked()
@@ -221,24 +221,24 @@ public class FormularImpl extends AbstractDBObject implements Formular
     DBIterator<Formular> formList = Einstellungen.getDBService()
         .createList(Formular.class);
     // In case current form is linked to another form
-    if (this.getFormLink() > 0)
+    if (this.getFormlink() > 0)
     {
-      formList.addFilter("formLink = ? OR id = ?",
-          this.getFormLink(), this.getFormLink());
+      formList.addFilter("formlink = ? OR id = ?",
+          this.getFormlink(), this.getFormlink());
     }
     else
     {
       // In case current form isn't linked to another form
-      formList.addFilter("formLink = ?", this.getID());
+      formList.addFilter("formlink = ?", this.getID());
     }
 
     return formList;
   }
 
-  public boolean hasFormLinks() throws RemoteException
+  public boolean hasFormlinks() throws RemoteException
   {
     // Return FALSE for new forms
-    if (this.getID() == null || this.getFormLink() > 0)
+    if (this.getID() == null || this.getFormlink() > 0)
     {
       return Boolean.FALSE;
     }

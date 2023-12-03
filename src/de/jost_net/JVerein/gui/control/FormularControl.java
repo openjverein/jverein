@@ -61,7 +61,7 @@ public class FormularControl extends AbstractControl
 
   private IntegerInput zaehler;
 
-  private SelectInput formLink;
+  private SelectInput formlink;
 
   public FormularControl(AbstractView view)
   {
@@ -123,41 +123,41 @@ public class FormularControl extends AbstractControl
     zaehler = new IntegerInput(getFormular().getZaehler());
 
     // Deactivate the input field if form is linked to another form
-    if (getFormular().getFormLink() > 0)
+    if (getFormular().getFormlink() > 0)
     {
       zaehler.setEnabled(false);
     }
     return zaehler;
   }
 
-  public SelectInput getFormLink() throws RemoteException
+  public SelectInput getFormlink() throws RemoteException
   {
-    if (formLink != null)
+    if (formlink != null)
     {
-      return formLink;
+      return formlink;
     }
 
-    Integer currentFormId = getFormular().getFormLink();
+    Integer currentFormId = getFormular().getFormlink();
     if (currentFormId != 0)
     {
-      formLink = new FormularInput(null, currentFormId.toString());
+      formlink = new FormularInput(null, currentFormId.toString());
     }
     else
     {
-      formLink = new FormularInput(null);
+      formlink = new FormularInput(null);
     }
 
     // Deactivate the select box if it has linked forms
-    if (getFormular().hasFormLinks())
+    if (getFormular().hasFormlinks())
     {
-      formLink.setPleaseChoose("Verknüpft");
-      formLink.setEnabled(false);
+      formlink.setPleaseChoose("Verknüpft");
+      formlink.setEnabled(false);
     }
     else
     {
-      formLink.setPleaseChoose("Keine");
+      formlink.setPleaseChoose("Keine");
     }
-    return formLink;
+    return formlink;
   }
 
   /**
@@ -183,16 +183,16 @@ public class FormularControl extends AbstractControl
 
       int newZaehler = (int) getZaehler().getValue();
       f.setZaehler(newZaehler);
-      f.setZaehlerToFormLink(newZaehler);
+      f.setZaehlerToFormlink(newZaehler);
 
-      Formular fl = (Formular) getFormLink().getValue();
+      Formular fl = (Formular) getFormlink().getValue();
       if (fl != null)
       {
-        f.setFormLink(Integer.valueOf(fl.getID()));
+        f.setFormlink(Integer.valueOf(fl.getID()));
       }
       else
       {
-        f.setFormLink(null);
+        f.setFormlink(null);
       }
 
       f.store();
@@ -232,7 +232,7 @@ public class FormularControl extends AbstractControl
     formularList.addColumn("Art", "art", new FormularartFormatter(), false,
         Column.ALIGN_LEFT);
     formularList.addColumn("Fortlaufende Nr.", "zaehler");
-    formularList.addColumn("Verknüpft mit", "formLink",
+    formularList.addColumn("Verknüpft mit", "formlink",
         new FormularLinkFormatter());
     formularList.setRememberColWidths(true);
     formularList.setContextMenu(new FormularMenu(this));
