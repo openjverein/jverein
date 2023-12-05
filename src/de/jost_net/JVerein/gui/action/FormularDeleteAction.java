@@ -18,9 +18,12 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.dialogs.SimpleDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
@@ -49,6 +52,47 @@ public class FormularDeleteAction implements Action
       Formular f = (Formular) context;
       if (f.isNewObject())
       {
+        return;
+      }
+
+      // Do not delete a form if it is linked by other forms
+      if (f.hasFormlinks())
+      {
+        SimpleDialog sd = new SimpleDialog(AbstractDialog.POSITION_CENTER);
+        sd.setTitle("Formularabhängigkeit");
+        sd.setText(String.format(
+          "Das Formular kann nicht gelöscht werden. Es ist noch mit %d Formular(en) verknüpft.",
+          f.getLinked().size()));
+        try
+        {
+          sd.open();
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return;
+      }
+      // Do not delete a form if it is linked to another
+      Integer formlink = f.getFormlink();
+      if (formlink > 0)
+      {
+        Formular fo = (Formular) Einstellungen.getDBService().createObject(
+          Formular.class, String.valueOf(formlink));
+
+        SimpleDialog sd = new SimpleDialog(AbstractDialog.POSITION_CENTER);
+        sd.setTitle("Formularabhängigkeit");
+        sd.setText(String.format(
+          "Das Formular kann nicht gelöscht werden. Es ist mit dem Formular \"%s\" verknüpft.",
+          fo.getBezeichnung()));
+        try
+        {
+          sd.open();
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler", e);
+        }
         return;
       }
 
