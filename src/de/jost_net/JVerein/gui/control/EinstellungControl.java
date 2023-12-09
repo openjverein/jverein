@@ -1012,8 +1012,8 @@ public class EinstellungControl extends AbstractControl
     {
       return smtp_auth_user;
     }
-    smtp_auth_user = new TextInput(
-        Einstellungen.getEinstellung().getSmtpAuthUser(), 50);
+    smtp_auth_user = new TextInput(Einstellungen.getEinstellung()
+        .getSmtpAuthUser(), 140);
     return smtp_auth_user;
   }
 
