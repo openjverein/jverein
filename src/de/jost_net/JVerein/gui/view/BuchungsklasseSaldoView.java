@@ -172,7 +172,7 @@ public class BuchungsklasseSaldoView extends AbstractView
 
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.JAHRESSALDO, false, "question-circle.png");
+        DokumentationUtil.BUCHUNGSKLASSEN, false, "question-circle.png");
     buttons2.addButton(control.getStartAuswertungCSVButton());
     buttons2.addButton(control.getStartAuswertungButton());
     buttons2.paint(this.getParent());

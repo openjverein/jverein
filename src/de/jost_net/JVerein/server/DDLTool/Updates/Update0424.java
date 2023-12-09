@@ -13,16 +13,16 @@
  **********************************************************************/
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
-import java.sql.Connection;
-
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class Update0422 extends AbstractDDLUpdate
+import java.sql.Connection;
+
+public class Update0424 extends AbstractDDLUpdate
 {
-  public Update0422(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0424(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -30,10 +30,11 @@ public class Update0422 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(alterColumn("lastschrift",
-        new Column("email", COLTYPE.VARCHAR, 255, null, false, false)));
-    execute(alterColumn("lastschrift",
-        new Column("iban", COLTYPE.VARCHAR, 34, null, true, false)));
-
+    execute(addColumn("buchungsart",
+      new Column("steuersatz", COLTYPE.DOUBLE, 17, "0", false, false)));
+    execute(addColumn("buchungsart",
+      new Column("steuer_buchungsart", COLTYPE.VARCHAR, 10, null, false, false)));
+    execute(addColumn("buchung",
+      new Column("dependencyid", COLTYPE.INTEGER, 10, "-1", false, false)));
   }
 }
