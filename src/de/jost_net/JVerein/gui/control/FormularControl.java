@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import org.eclipse.swt.widgets.Control;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.FormularAction;
 import de.jost_net.JVerein.gui.formatter.FormularLinkFormatter;
@@ -33,7 +31,6 @@ import de.jost_net.JVerein.gui.menu.FormularMenu;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.server.FormularImpl;
-import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
