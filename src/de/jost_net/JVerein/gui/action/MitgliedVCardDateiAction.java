@@ -75,17 +75,17 @@ public class MitgliedVCardDateiAction implements Action
           fd.setFilterPath(path);
         }
         fd.setFileName(new Dateiname("vCards", "",
-            Einstellungen.getEinstellung().getDateinamenmuster(), "VCF").get());
-        fd.setFilterExtensions(new String[] { "*.VCF" });
+            Einstellungen.getEinstellung().getDateinamenmuster(), "vcf").get());
+        fd.setFilterExtensions(new String[] { "*.vcf" });
 
         String s = fd.open();
         if (s == null || s.length() == 0)
         {
           return;
         }
-        if (!s.endsWith(".VCF"))
+        if (!s.toLowerCase().endsWith(".vcf"))
         {
-          s = s + ".VCF";
+          s = s + ".vcf";
         }
         final File file = new File(s);
         final BufferedWriter w = new BufferedWriter(

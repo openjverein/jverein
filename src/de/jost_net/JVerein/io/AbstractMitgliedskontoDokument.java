@@ -69,11 +69,11 @@ public abstract class AbstractMitgliedskontoDokument
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
       case DRUCK:
-        file = getDateiAuswahl("PDF");
+        file = getDateiAuswahl("pdf");
         formularaufbereitung = new FormularAufbereitung(file);
         break;
       case EMAIL:
-        file = getDateiAuswahl("ZIP");
+        file = getDateiAuswahl("zip");
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }
@@ -93,7 +93,7 @@ public abstract class AbstractMitgliedskontoDokument
           formularaufbereitung = new FormularAufbereitung(f);
           aufbereitenFormular(mk, formularaufbereitung, formular);
           formularaufbereitung.closeFormular();
-          zos.putNextEntry(new ZipEntry(getDateiname(mk) + ".PDF"));
+          zos.putNextEntry(new ZipEntry(getDateiname(mk) + ".pdf"));
           FileInputStream in = new FileInputStream(f);
           // buffer size
           byte[] b = new byte[1024];
@@ -139,7 +139,7 @@ public abstract class AbstractMitgliedskontoDokument
     {
       return null;
     }
-    if (!s.endsWith("." + extension))
+    if (!s.toLowerCase().endsWith("." + extension))
     {
       s = s + "." + extension;
     }

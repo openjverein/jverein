@@ -327,17 +327,17 @@ public class PreNotificationControl extends AbstractControl
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("prenotification", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
-    fd.setFilterExtensions(new String[] { "*.PDF" });
+        Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
+    fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
     if (s == null || s.length() == 0)
     {
       return;
     }
-    if (!s.endsWith(".PDF"))
+    if (!s.toLowerCase().endsWith(".pdf"))
     {
-      s = s + ".PDF";
+      s = s + ".pdf";
     }
     final File file = new File(s);
     settings.setAttribute("lastdir", file.getParent());
@@ -363,7 +363,7 @@ public class PreNotificationControl extends AbstractControl
     it.setOrder("order by name, vorname");
 
     int dateinummer = 0;
-    String postfix = ".PDF";
+    String postfix = ".pdf";
     String prefix = s.substring(0, s.length() - postfix.length());
 
     while (it.hasNext())
@@ -421,8 +421,8 @@ public class PreNotificationControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("1ctueberweisung", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "XML").get());
-      fd.setFilterExtensions(new String[] { "*.XML" });
+          Einstellungen.getEinstellung().getDateinamenmuster(), "xml").get());
+      fd.setFilterExtensions(new String[] { "*.xml" });
 
       String s = fd.open();
       if (s == null || s.length() == 0)
@@ -430,9 +430,9 @@ public class PreNotificationControl extends AbstractControl
         return;
       }
       settings.setAttribute("ausgabedateiname", s);
-      if (!s.endsWith(".XML"))
+      if (!s.toLowerCase().endsWith(".xml"))
       {
-        s = s + ".XML";
+        s = s + ".xml";
       }
       file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
