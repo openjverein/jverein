@@ -20,6 +20,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.List;
+
+import org.eclipse.swt.widgets.Control;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.FormularAction;
@@ -29,6 +32,8 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.menu.FormularMenu;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.server.FormularImpl;
+import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -137,21 +142,45 @@ public class FormularControl extends AbstractControl
       return formlink;
     }
 
-    Integer currentFormId = getFormular().getFormlink();
-    if (currentFormId != 0)
+    Formular currentForm = getFormular();
+    Integer currentlyLinkedFormId = currentForm.getFormlink();
+    // Create select box
+    if (currentlyLinkedFormId != 0)
     {
-      formlink = new FormularInput(null, currentFormId.toString());
+      formlink = new FormularInput(null, currentlyLinkedFormId.toString());
     }
     else
     {
       formlink = new FormularInput(null);
     }
 
+    // Remove current form from select list
+    if (currentForm.getID() != null)
+    {
+      @SuppressWarnings("unchecked")
+      List<SelectInput> list = formlink.getList();
+      int size = list.size();
+      for (int i=0;i<size;++i)
+      {
+        Object object = list.get(i);
+        if (object == null) continue;
+        // Cast to FormularImpl
+        FormularImpl formimpl = (FormularImpl) object;
+        // Remove current form object and stop comparing
+        if (Integer.valueOf(formimpl.getID()) == Integer.valueOf(currentForm.getID()))
+        {
+          list.remove(i);
+          formlink.setList(list);
+          break;
+        }
+      }
+    }
+
     // Deactivate the select box if it has linked forms
-    if (getFormular().hasFormlinks())
+    if (currentForm.hasFormlinks())
     {
       formlink.setPleaseChoose("Verknüpft");
-      formlink.setEnabled(false);
+      formlink.disable();
     }
     else
     {
