@@ -32,9 +32,12 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.AllgemeineVar;
+import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.internal.action.Program;
@@ -95,6 +98,13 @@ public class FormularAufbereitung
     {
       PdfReader reader = new PdfReader(formular.getInhalt());
       int numOfPages = reader.getNumberOfPages();
+      
+      // Get current counter
+      Integer zaehler = formular.getZaehler();
+      // Get settings and length of counter
+      Einstellung e = Einstellungen.getEinstellung();
+      Integer zaehlerLaenge = e.getZaehlerLaenge();
+
       for (int i = 1; i <= numOfPages; i++)
       {
         doc.setPageSize(reader.getPageSize(i));
@@ -107,12 +117,30 @@ public class FormularAufbereitung
             .createList(Formularfeld.class);
         it.addFilter("formular = ? and seite = ?",
             new Object[] { formular.getID(), i });
+        
+        Boolean increased = false;
+        
         while (it.hasNext())
         {
           Formularfeld f = (Formularfeld) it.next();
+          
+          // Increase counter if form field is zaehler
+          if (f.getName().equals(AllgemeineVar.ZAEHLER.getName()) && !increased) 
+          {
+            zaehler++;
+            // Prevent multiple increases by next page
+            increased = true;
+            // Set new value to field with leading zero to get the defined length
+            map.put(AllgemeineVar.ZAEHLER.getName(), StringTool.lpad(
+                zaehler.toString(), zaehlerLaenge, "0"));
+          }
+          
           goFormularfeld(contentByte, f, map.get(f.getName()));
         }
       }
+      
+      // Set counter to form (not yet saved to the DB)
+      formular.setZaehler(zaehler);
     }
     catch (IOException e)
     {

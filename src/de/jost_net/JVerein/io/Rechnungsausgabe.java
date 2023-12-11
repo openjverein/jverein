@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.io;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -27,6 +28,7 @@ import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.logging.Logger;
 
 public class Rechnungsausgabe extends AbstractMitgliedskontoDokument
 {
@@ -102,6 +104,19 @@ public class Rechnungsausgabe extends AbstractMitgliedskontoDokument
       mks = getRechnungsempfaenger(mk);
     }
     aufbereitung(formular);
+    try
+    {
+      // Write updated form to DB
+      formular.store();
+      // Update all linked forms
+      formular.setZaehlerToFormlink(formular.getZaehler());
+    }
+    catch (Exception e)
+    {
+      String fehler = "Formularfeld kann nicht gespeichert werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new RemoteException(fehler);
+    }
   }
 
 }

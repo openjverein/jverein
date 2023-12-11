@@ -20,9 +20,9 @@ import de.willuhn.util.ProgressMonitor;
 
 import java.sql.Connection;
 
-public class Update0424 extends AbstractDDLUpdate
+public class Update0425 extends AbstractDDLUpdate
 {
-  public Update0424(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0425(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -30,15 +30,11 @@ public class Update0424 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    // Add consecutive number
-    execute(addColumn("formular",
-        new Column("zaehler", COLTYPE.INTEGER, 10, "0", false, false)));
-    // Add consecutive number
-    execute(addColumn("einstellung",
-        new Column("zaehlerlaenge", COLTYPE.INTEGER, 10, "5", false, false)));
-    // Add formular linking
-    execute(addColumn("formular",
-        new Column("formlink", COLTYPE.BIGINT, 0, "NULL", false, false)));
+    execute(addColumn("buchungsart",
+      new Column("steuersatz", COLTYPE.DOUBLE, 17, "0", false, false)));
+    execute(addColumn("buchungsart",
+      new Column("steuer_buchungsart", COLTYPE.VARCHAR, 10, null, false, false)));
+    execute(addColumn("buchung",
+      new Column("dependencyid", COLTYPE.INTEGER, 10, "-1", false, false)));
   }
-  
 }
