@@ -743,6 +743,22 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("rechnungtextbar", rechnungtextbar);
   }
+  
+  @Override
+  public int getZaehlerLaenge() throws RemoteException 
+  {
+    try {
+      return (int) getAttribute("zaehlerlaenge");
+    } catch (NullPointerException e) {
+      return 5;
+    }
+  }
+
+  @Override
+  public void setZaehlerLaenge(int length) throws RemoteException 
+  {
+    setAttribute("zaehlerlaenge", length);
+  }
 
   @Override
   public Boolean getExterneMitgliedsnummer() throws RemoteException

@@ -40,6 +40,7 @@ public class EinstellungenRechnungenView extends AbstractView
     cont.addLabelPair("Text Überweisung",
         control.getRechnungTextUeberweisung());
     cont.addLabelPair("Text Bar", control.getRechnungTextBar());
+    cont.addLabelPair("Zählerlänge", control.getZaehlerLaenge());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

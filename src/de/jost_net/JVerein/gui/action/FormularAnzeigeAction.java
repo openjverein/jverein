@@ -25,6 +25,7 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.MitgliedskontoVar;
@@ -77,6 +78,8 @@ public class FormularAnzeigeAction implements Action
       map = new LastschriftMap().getMap(ls, map);
 
       map = new AllgemeineMap().getMap(map);
+      // Get current zaehler
+      map.put(AllgemeineVar.ZAEHLER.getName(), formular.getZaehler());
       map.put(FormularfeldControl.EMPFAENGER,
           "Herr\nDr. Willi Wichtig\nTestgasse 1\n12345 Testenhausen");
       map.put(FormularfeldControl.BUCHUNGSDATUM, new Date());

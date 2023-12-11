@@ -38,6 +38,8 @@ public class FormularDetailView extends AbstractView
     group.addLabelPair("Bezeichnung", control.getBezeichnung(true));
     group.addLabelPair("Art", control.getArt());
     group.addLabelPair("Datei", control.getDatei());
+    group.addLabelPair("Fortlaufende Nr.", control.getZaehler());
+    group.addLabelPair("Formularverknüpfung", control.getFormlink());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

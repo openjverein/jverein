@@ -523,7 +523,7 @@ public class SpendenbescheinigungControl extends AbstractControl
           {
             return;
           }
-          if (!s.endsWith(".pdf"))
+          if (!s.toLowerCase().endsWith(".pdf"))
           {
             s = s + ".pdf";
           }
@@ -613,7 +613,7 @@ public class SpendenbescheinigungControl extends AbstractControl
     {
       return;
     }
-    if (!s.endsWith(".pdf"))
+    if (!s.toLowerCase().endsWith(".pdf"))
     {
       s = s + ".pdf";
     }
