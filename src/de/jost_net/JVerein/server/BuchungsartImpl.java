@@ -67,6 +67,10 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
       {
         throw new ApplicationException("Nummer nicht gültig");
       }
+      if (getSteuersatz() > 0 && getSteuerBuchungsart() == null)
+      {
+        throw new ApplicationException("Bitte Buchungsart auswählen.");
+      }
     }
     catch (RemoteException e)
     {
