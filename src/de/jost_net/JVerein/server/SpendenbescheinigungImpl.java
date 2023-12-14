@@ -572,7 +572,7 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
       this.setSpendedatum(new Date());
       this.setSpendenart(Spendenart.GELDSPENDE);
       this.setUnterlagenWertermittlung(true);
-      this.setZeile1("Herrn");
+      this.setZeile1("Herr");
       this.setZeile2("Dr. Willi Wichtig");
       this.setZeile3("Hinterm Bahnhof 1");
       this.setZeile4("12345 Testenhausen");
@@ -584,6 +584,15 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
         + getZeile3() + newLineStr + getZeile4() + newLineStr + getZeile5()
         + newLineStr + getZeile6() + newLineStr + getZeile7() + newLineStr;
     map.put(SpendenbescheinigungVar.EMPFAENGER.getName(), empfaenger);
+    String anrede = (getZeile1().length() > 0) ? getZeile1() + " " + getZeile2() : getZeile2();
+    map.put(SpendenbescheinigungVar.ANREDE.getName(), anrede);
+    map.put(SpendenbescheinigungVar.ZEILE1.getName(), getZeile1());
+    map.put(SpendenbescheinigungVar.ZEILE2.getName(), getZeile2());
+    map.put(SpendenbescheinigungVar.ZEILE3.getName(), getZeile3());
+    map.put(SpendenbescheinigungVar.ZEILE4.getName(), getZeile4());
+    map.put(SpendenbescheinigungVar.ZEILE5.getName(), getZeile5());
+    map.put(SpendenbescheinigungVar.ZEILE6.getName(), getZeile6());
+    map.put(SpendenbescheinigungVar.ZEILE7.getName(), getZeile7());
     Double dWert = getBetrag();
     // Hier keinen String, sondern ein Double-Objekt in die Map stellen,
     // damit eine rechtsbündige Ausrichtung des Betrages in der Formular-
