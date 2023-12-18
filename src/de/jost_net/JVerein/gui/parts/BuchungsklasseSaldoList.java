@@ -46,11 +46,11 @@ import de.willuhn.util.ApplicationException;
 public class BuchungsklasseSaldoList extends TablePart implements Part
 {
 
-  private TablePart saldoList;
+	private TablePart saldoList;
 
-  private Date datumvon = null;
+	private Date datumvon = null;
 
-  private Date datumbis = null;
+	private Date datumbis = null;
 
   public BuchungsklasseSaldoList(Action action, Date datumvon, Date datumbis)
   {
@@ -176,7 +176,6 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
       buchungsartenSteuerIt.addFilter("buchungsklasse = ?",
           new Object[] { buchungsklasse.getID() });
       buchungsartenSteuerIt.addFilter("steuersatz <> 0");
-      HashSet<String> buchungsartenUStId = new HashSet<String>();
       while (buchungsartenSteuerIt.hasNext())
       {
         buchungsart = (Buchungsart) buchungsartenSteuerIt.next();
@@ -184,7 +183,6 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
         if (steuer_buchungsart != null)
         {
           String steuer_buchungsart_id = steuer_buchungsart.getID();
-          buchungsartenUStId.add("or id = " + steuer_buchungsart_id);
           if (buchungsart.getArt() == ArtBuchungsart.EINNAHME)
           {
             suBukSteuersatz.put(steuer_buchungsart_id,
@@ -286,7 +284,7 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
           "Gewinn/Verlust" + " " + buchungsklasse.getBezeichnung(),
           suBukEinnahmen + suBukAusgaben + suBukUmbuchungen));
 
-      // Buchungsklasser Übersicht Steuern ausgeben
+      // Buchungsklasse Übersicht Steuern ausgeben
       Boolean first_row = true;
       for (Double steuersatz : suBukNetto.keySet())
       {
@@ -299,6 +297,10 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
         else
         {
           string_steuersatz += " VSt.";
+        }
+        if (!suBukSteuer.containsKey(steuersatz))
+        {
+          suBukSteuer.put(steuersatz, 0.0);
         }
         if (first_row)
         {
