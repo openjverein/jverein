@@ -456,7 +456,6 @@ public class EinstellungControl extends AbstractControl
       return bic;
     }
     bic = new BICInput(Einstellungen.getEinstellung().getBic());
-    bic.setMandatory(true);
     return bic;
   }
 
@@ -467,7 +466,6 @@ public class EinstellungControl extends AbstractControl
       return iban;
     }
     iban = new IBANInput(Einstellungen.getEinstellung().getIban(), bic);
-    iban.setMandatory(true);
     return iban;
   }
 
@@ -479,7 +477,6 @@ public class EinstellungControl extends AbstractControl
     }
     glaeubigerid = new TextInput(Einstellungen.getEinstellung()
         .getGlaeubigerID(), 35);
-    glaeubigerid.setMandatory(true);
     return glaeubigerid;
   }
 

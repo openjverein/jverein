@@ -114,31 +114,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
       {
         throw new ApplicationException("Bitte Namen eingeben");
       }
-      if (getIban() == null || getIban().length() == 0)
-      {
-        throw new ApplicationException("Bitte IBAN eingeben");
-      }
-      if (getBic() == null || getBic().length() == 0)
-      {
-        throw new ApplicationException("Bitte BIC eingeben");
-      }
-
-      try
-      {
-        new IBAN(getIban());
-      }
-      catch (SEPAException e1)
-      {
-        throw new ApplicationException(e1.getMessage());
-      }
-      try
-      {
-        new BIC(getBic());
-      }
-      catch (SEPAException e1)
-      {
-        throw new ApplicationException(e1.getMessage());
-      }
+      
       try
       {
         new AltersgruppenParser(getAltersgruppen());
