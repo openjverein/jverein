@@ -1,18 +1,18 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
- *  the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
- * see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this program. If
+ * not, see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
+ * heiner@jverein.de | www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
@@ -22,7 +22,7 @@ import java.io.FileOutputStream;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
-
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -52,14 +52,23 @@ public class BuchungsjournalPDF
 
       for (Buchung b : query.get())
       {
-        reporter.addColumn(b.getID(), Element.ALIGN_RIGHT);
+        if (!Einstellungen.getEinstellung().getVerwendeBelegnummer())
+        {
+          reporter.addColumn(b.getID(), Element.ALIGN_RIGHT);
+        }
+        else
+        {
+          reporter.addColumn(b.getBelegnummer().toString(),
+              Element.ALIGN_RIGHT);
+        }
         reporter.addColumn(new JVDateFormatTTMMJJJJ().format(b.getDatum()),
             Element.ALIGN_LEFT);
         reporter.addColumn(b.getKonto().getNummer(), Element.ALIGN_RIGHT);
         if (b.getAuszugsnummer() != null)
         {
-          reporter.addColumn(b.getAuszugsnummer() + "/"
-              + (b.getBlattnummer() != null ? b.getBlattnummer() : "-"),
+          reporter.addColumn(
+              b.getAuszugsnummer() + "/"
+                  + (b.getBlattnummer() != null ? b.getBlattnummer() : "-"),
               Element.ALIGN_LEFT);
         }
         else
@@ -68,8 +77,10 @@ public class BuchungsjournalPDF
         }
         reporter.addColumn(b.getName(), Element.ALIGN_LEFT);
         reporter.addColumn(b.getZweck(), Element.ALIGN_LEFT);
-        reporter.addColumn(b.getBuchungsart() != null ? b.getBuchungsart()
-            .getBezeichnung() : "", Element.ALIGN_LEFT);
+        reporter.addColumn(
+            b.getBuchungsart() != null ? b.getBuchungsart().getBezeichnung()
+                : "",
+            Element.ALIGN_LEFT);
         reporter.addColumn(b.getBetrag());
         if (b.getBuchungsart() != null)
         {

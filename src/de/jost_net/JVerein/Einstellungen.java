@@ -1,27 +1,28 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
- *  the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
- * see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this program. If
+ * not, see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
+ * heiner@jverein.de | www.jverein.de
  **********************************************************************/
 
 package de.jost_net.JVerein;
 
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-
+import java.util.GregorianCalendar;
 import de.jost_net.JVerein.io.MailSender.IMAPCopyData;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
@@ -29,6 +30,7 @@ import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Einstellung;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.rmi.HBCIDBService;
@@ -224,6 +226,45 @@ public class Einstellungen
   public static void setEinstellung(Einstellung einst)
   {
     einstellung = einst;
+  }
+
+  public static GregorianCalendar getBeginnGeschaeftsjahr(
+      GregorianCalendar date)
+  {
+    GregorianCalendar BeginnGeschaeftsjahr = new GregorianCalendar();
+    try
+    {
+      BeginnGeschaeftsjahr.setTime(new JVDateFormatTTMMJJJJ()
+          .parse(getEinstellung().getBeginnGeschaeftsjahr()
+              + ((Integer) date.get(Calendar.YEAR)).toString()));
+      if (BeginnGeschaeftsjahr.compareTo(date) > 0)
+      {
+        BeginnGeschaeftsjahr.add(Calendar.YEAR, -1);
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Error while reading \"BeginnGeschaeftsjahr!\"", e);
+      BeginnGeschaeftsjahr.set(Calendar.YEAR, date.get(Calendar.YEAR));
+      BeginnGeschaeftsjahr.set(Calendar.MONTH, 1);
+      BeginnGeschaeftsjahr.set(Calendar.DAY_OF_MONTH, 1);
+    }
+    catch (ParseException e)
+    {
+      Logger.error("Error while parsing \"BeginnGeschaeftsjahr!\"", e);
+      BeginnGeschaeftsjahr.set(Calendar.YEAR, date.get(Calendar.YEAR));
+      BeginnGeschaeftsjahr.set(Calendar.MONTH, 1);
+      BeginnGeschaeftsjahr.set(Calendar.DAY_OF_MONTH, 1);
+    }
+    return BeginnGeschaeftsjahr;
+  }
+
+  public static GregorianCalendar getEndeGeschaeftsjahr(GregorianCalendar date)
+  {
+    GregorianCalendar EndeGeschaeftsjahr = getBeginnGeschaeftsjahr(date);
+    EndeGeschaeftsjahr.add(Calendar.YEAR, 1);
+    EndeGeschaeftsjahr.add(Calendar.DAY_OF_MONTH, -1);
+    return EndeGeschaeftsjahr;
   }
 
   /**

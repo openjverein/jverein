@@ -1,18 +1,18 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
- *  the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
- * see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this program. If
+ * not, see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
+ * heiner@jverein.de | www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
@@ -89,7 +89,7 @@ public class BuchungAuswertungPDF
       {
         if (einzel)
         {
-        	query.getOrder("ORDER_DATUM_ID");
+          query.getOrder("ORDER_DATUM_ID");
         }
         List<Buchung> liste = getBuchungenEinerBuchungsart(query.get(), bua);
         createTableContent(reporter, bua, liste, einzel);
@@ -202,7 +202,15 @@ public class BuchungAuswertungPDF
     {
       if (einzel)
       {
-        reporter.addColumn(b.getID(), Element.ALIGN_RIGHT);
+        if (!Einstellungen.getEinstellung().getVerwendeBelegnummer())
+        {
+          reporter.addColumn(b.getID(), Element.ALIGN_RIGHT);
+        }
+        else
+        {
+          reporter.addColumn(b.getBelegnummer().toString(),
+              Element.ALIGN_RIGHT);
+        }
         reporter.addColumn(new JVDateFormatTTMMJJJJ().format(b.getDatum()),
             Element.ALIGN_CENTER);
         if (kontonummer_in_buchungsliste)

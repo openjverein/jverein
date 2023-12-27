@@ -1,26 +1,29 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
- *  the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
- * see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this program. If
+ * not, see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
+ * heiner@jverein.de | www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
 
@@ -69,6 +72,8 @@ import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -115,6 +120,8 @@ public class BuchungsControl extends AbstractControl
 
   /* Controls */
   private Input id;
+
+  private IntegerInput belegnummer;
 
   private Input umsatzid;
 
@@ -178,11 +185,120 @@ public class BuchungsControl extends AbstractControl
 
   private Vector<Listener> changeKontoListener = new Vector<>();
 
+  private static GregorianCalendar LastBeginnGeschaeftsjahr;
+
+  private static GregorianCalendar LastEndeGeschaeftsjahr;
+
+  private static String LastKontoId;
+
+  private static Integer LastBelegnummer;
+
   public BuchungsControl(AbstractView view)
   {
     super(view);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
+  }
+
+  public static Integer getLastBelegnummer(Date NewDate_, String NewKontoId)
+      throws RemoteException
+  {
+    if (Einstellungen.getEinstellung().getVerwendeBelegnummer())
+    {
+      Boolean getNewLastBelegnummer = false;
+
+      // Falls kein neues Datum bisher angegeben wurde, wird implizit
+      // angenommen, dass heute als
+      // aktuelles Datum eingetragen wird
+      GregorianCalendar NewDate = new GregorianCalendar();
+      if (NewDate_ != null)
+      {
+        NewDate.setTime(NewDate_);
+      }
+
+      // Falls noch nichts initialisiert wurde, dann entsprechend alles setzen
+      if (LastBeginnGeschaeftsjahr == null || LastEndeGeschaeftsjahr == null
+          || LastKontoId == null)
+      {
+        LastBeginnGeschaeftsjahr = Einstellungen
+            .getBeginnGeschaeftsjahr(NewDate);
+        LastEndeGeschaeftsjahr = Einstellungen.getEndeGeschaeftsjahr(NewDate);
+        LastKontoId = NewKontoId;
+        getNewLastBelegnummer = true;
+      }
+
+      // Falls neues Datum nicht innerhalb des aktuellen Geschäftsjahres liegt,
+      // Belegnummer neu
+      // auslesen
+      if (!(NewDate.compareTo(LastBeginnGeschaeftsjahr) >= 0
+          && NewDate.compareTo(LastEndeGeschaeftsjahr) <= 0)
+          && Einstellungen.getEinstellung().getBelegnummerProJahr())
+      {
+        LastBeginnGeschaeftsjahr = Einstellungen
+            .getBeginnGeschaeftsjahr(NewDate);
+        LastEndeGeschaeftsjahr = Einstellungen.getEndeGeschaeftsjahr(NewDate);
+        getNewLastBelegnummer = true;
+      }
+
+      // Falls KontoId anders ist, Belegnummer neu auslesen
+      if (LastKontoId != NewKontoId
+          && Einstellungen.getEinstellung().getBelegnummerProKonto())
+      {
+        LastKontoId = NewKontoId;
+        getNewLastBelegnummer = true;
+      }
+
+      // neue max. Belegnummer auslesen
+      if (getNewLastBelegnummer)
+      {
+        // SQL Befehl zusammensetzen (je nachdem welche Einstellungen gesetzt
+        // sind)
+        List<Object> arg_list = new ArrayList<Object>();
+        String sql = "SELECT max(belegnummer) FROM buchung";
+        if (Einstellungen.getEinstellung().getBelegnummerProJahr()
+            || Einstellungen.getEinstellung().getBelegnummerProKonto())
+        {
+          sql += " WHERE ";
+        }
+        if (Einstellungen.getEinstellung().getBelegnummerProJahr())
+        {
+          sql += "datum >= ? AND datum <= ?";
+          arg_list.add(LastBeginnGeschaeftsjahr.getTime());
+          arg_list.add(LastEndeGeschaeftsjahr.getTime());
+          if (Einstellungen.getEinstellung().getBelegnummerProKonto())
+          {
+            sql += " AND ";
+          }
+        }
+        if (Einstellungen.getEinstellung().getBelegnummerProKonto())
+        {
+          sql += "konto = " + LastKontoId;
+        }
+        DBService service = Einstellungen.getDBService();
+        LastBelegnummer = (Integer) service.execute(sql, arg_list.toArray(),
+            new ResultSetExtractor()
+            {
+              @Override
+              public Object extract(ResultSet rs) throws SQLException
+              {
+                rs.next();
+                return rs.getInt(1);
+              }
+            });
+      }
+      return LastBelegnummer;
+    }
+    else
+    {
+      return -1;
+    }
+  }
+
+  public static void setNewLastBelegnummer(Integer NewLastBelegnummer,
+      Date NewDate_, String NewKontoId) throws RemoteException
+  {
+    getLastBelegnummer(NewDate_, NewKontoId);
+    LastBelegnummer = NewLastBelegnummer;
   }
 
   public Buchung getBuchung() throws RemoteException
@@ -209,6 +325,16 @@ public class BuchungsControl extends AbstractControl
     id = new TextInput(getBuchung().getID(), 10);
     id.setEnabled(false);
     return id;
+  }
+
+  public IntegerInput getBelegnummer() throws RemoteException
+  {
+    if (belegnummer != null)
+    {
+      return belegnummer;
+    }
+    belegnummer = new IntegerInput(getBuchung().getBelegnummer());
+    return belegnummer;
   }
 
   public Input getUmsatzid() throws RemoteException
@@ -773,11 +899,14 @@ public class BuchungsControl extends AbstractControl
       b.setVerzicht((Boolean) getVerzicht().getValue());
       b.setMitgliedskonto(getSelectedMitgliedsKonto(b));
       b.setKommentar((String) getKommentar().getValue());
+      b.setBelegnummer((Integer) getBelegnummer().getValue());
 
       if (b.getSpeicherung())
       {
         b.store();
         getID().setValue(b.getID());
+        setNewLastBelegnummer(b.getBelegnummer(), b.getDatum(),
+            b.getKonto().getID());
         GUI.getStatusBar().setSuccessText("Buchung gespeichert");
       }
       else
@@ -964,7 +1093,15 @@ public class BuchungsControl extends AbstractControl
     {
       buchungsList = new BuchungListTablePart(query.get(),
           new BuchungAction(false));
-      buchungsList.addColumn("Nr", "id-int");
+      if (!Einstellungen.getEinstellung().getVerwendeBelegnummer())
+      {
+        buchungsList.addColumn("Nr", "id-int");
+      }
+      else
+      {
+        buchungsList.addColumn("Nr", "belegnummer");
+      }
+
       buchungsList.addColumn("S", "splitid", new Formatter()
       {
         @Override
@@ -1074,7 +1211,15 @@ public class BuchungsControl extends AbstractControl
     {
       splitbuchungsList = new SplitbuchungListTablePart(
           SplitbuchungsContainer.get(), new BuchungAction(true));
-      splitbuchungsList.addColumn("Nr", "id-int");
+      if (!Einstellungen.getEinstellung().getVerwendeBelegnummer())
+      {
+        splitbuchungsList.addColumn("Nr", "id-int");
+      }
+      else
+      {
+        splitbuchungsList.addColumn("Nr", "belegnummer");
+      }
+
       splitbuchungsList.addColumn("Konto", "konto", new Formatter()
       {
         @Override
@@ -1324,7 +1469,7 @@ public class BuchungsControl extends AbstractControl
 
       BuchungsjournalSortDialog djs = new BuchungsjournalSortDialog(
           BuchungsjournalSortDialog.POSITION_CENTER);
-      
+
       // 20220823: sbuer: Statische Variablen fuer neue Sortiermöglichkeiten
       String sort = djs.open();
       query.setOrdername(sort);

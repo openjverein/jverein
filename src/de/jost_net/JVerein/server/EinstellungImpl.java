@@ -1,18 +1,18 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
- *  the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
- * see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this program. If
+ * not, see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
+ * heiner@jverein.de | www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
@@ -917,7 +917,12 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   @Override
   public String getSmtpPort() throws RemoteException
   {
-    return (String) getAttribute("smtp_port");
+    String ret = (String) getAttribute("smtp_port");
+    if (ret == null)
+    {
+      ret = "25";
+    }
+    return ret;
   }
 
   @Override
@@ -1661,6 +1666,45 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
       throws RemoteException
   {
     setAttribute("unterdrueckungohnebuchung", unterdrueckungohnebuchung);
+  }
+
+  @Override
+  public Boolean getVerwendeBelegnummer() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("verwendebelegnummer"));
+  }
+
+  @Override
+  public void setVerwendeBelegnummer(Boolean verwendebelegnummer)
+      throws RemoteException
+  {
+    setAttribute("verwendebelegnummer", verwendebelegnummer);
+  }
+
+  @Override
+  public Boolean getBelegnummerProKonto() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("belegnummer_pro_konto"));
+  }
+
+  @Override
+  public void setBelegnummerProKonto(Boolean belegnummer_pro_konto)
+      throws RemoteException
+  {
+    setAttribute("belegnummer_pro_konto", belegnummer_pro_konto);
+  }
+
+  @Override
+  public Boolean getBelegnummerProJahr() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("belegnummer_pro_jahr"));
+  }
+
+  @Override
+  public void setBelegnummerProJahr(Boolean belegnummer_pro_jahr)
+      throws RemoteException
+  {
+    setAttribute("belegnummer_pro_jahr", belegnummer_pro_jahr);
   }
 
   @Override

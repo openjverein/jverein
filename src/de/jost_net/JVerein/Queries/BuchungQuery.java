@@ -1,18 +1,18 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
- *  the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
- * see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this program. If
+ * not, see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
+ * heiner@jverein.de | www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.Queries;
 
@@ -51,25 +51,32 @@ public class BuchungQuery
   private List<Buchung> ergebnis;
 
   private Boolean hasMitglied;
-  
+
   private HashMap<String, String> sortValues = new HashMap<String, String>();
 
-  private void SortHashMap() {
-	  sortValues.put("ORDER_ID","order by id");
-	  sortValues.put("ORDER_DATUM","order by datum");
-	  sortValues.put("ORDER_DATUM_NAME","order by datum, name");
-	  sortValues.put("ORDER_DATUM_ID","order by datum, id");
-	  sortValues.put("ORDER_DATUM_ID_NAME","order by datum, id, name");
-	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER","order by datum, auszugsnummer");
-	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_NAME","order by datum, auszugsnummer, name");
-	  sortValues.put("ORDER_DATUM_BLATTNUMMER","order by datum, blattnummer");
-	  sortValues.put("ORDER_DATUM_BLATTNUMMER_NAME","order by datum, blattnummer, name");
-	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_ID","order by datum, auszugsnummer, id");
-	  sortValues.put("ORDER_DATUM_BLATTNUMMER_ID","order by datum, blattnummer, id");
-	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_BLATTNUMMER_ID","order by datum, auszugsnummer, blattnummer, id");
-	  sortValues.put("DEFAULT","order by datum");
+  private void SortHashMap()
+  {
+    sortValues.put("ORDER_ID", "order by id");
+    sortValues.put("ORDER_DATUM", "order by datum");
+    sortValues.put("ORDER_DATUM_NAME", "order by datum, name");
+    sortValues.put("ORDER_DATUM_ID", "order by datum, id");
+    sortValues.put("ORDER_DATUM_ID_NAME", "order by datum, id, name");
+    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER",
+        "order by datum, auszugsnummer");
+    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_NAME",
+        "order by datum, auszugsnummer, name");
+    sortValues.put("ORDER_DATUM_BLATTNUMMER", "order by datum, blattnummer");
+    sortValues.put("ORDER_DATUM_BLATTNUMMER_NAME",
+        "order by datum, blattnummer, name");
+    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_ID",
+        "order by datum, auszugsnummer, id");
+    sortValues.put("ORDER_DATUM_BLATTNUMMER_ID",
+        "order by datum, blattnummer, id");
+    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_BLATTNUMMER_ID",
+        "order by datum, auszugsnummer, blattnummer, id");
+    sortValues.put("DEFAULT", "order by datum");
   }
-  
+
   public String ordername = null;
 
   public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
@@ -85,27 +92,33 @@ public class BuchungQuery
     this.betrag = betrag;
     this.hasMitglied = hasMitglied;
   }
-  
-  public String getOrder(String value) {
-	  SortHashMap();
-	  String newvalue = null;
-	  if ( value == null ) {
-		  return sortValues.get("DEFAULT");
-	  } else {
-		  newvalue = value.replaceAll(", ", "_");
-		  newvalue = newvalue.toUpperCase();
-		  newvalue = "ORDER_" + newvalue;
-          return sortValues.get(newvalue);
-	  }
+
+  public String getOrder(String value)
+  {
+    SortHashMap();
+    String newvalue = null;
+    if (value == null)
+    {
+      return sortValues.get("DEFAULT");
+    }
+    else
+    {
+      newvalue = value.replaceAll(", ", "_");
+      newvalue = newvalue.toUpperCase();
+      newvalue = "ORDER_" + newvalue;
+      return sortValues.get(newvalue);
+    }
+
   }
-  
+
   public void setOrdername(String value)
   {
-    if ( value != null ) {
-    	ordername = value;
+    if (value != null)
+    {
+      ordername = value;
     }
   }
-  
+
   public Boolean getHasMitglied()
   {
     return hasMitglied;
@@ -251,9 +264,10 @@ public class BuchungQuery
     // 20220823: sbuer: Neue Sortierfelder
     SortHashMap();
     String orderString = getOrder(ordername);
-    // System.out.println("ordervalue : " + ordername + " ,orderString : " + orderString);
+    // System.out.println("ordervalue : " + ordername + " ,orderString : " +
+    // orderString);
     it.setOrder(orderString);
-    
+
     this.ergebnis = PseudoIterator.asList(it);
     return ergebnis;
   }
