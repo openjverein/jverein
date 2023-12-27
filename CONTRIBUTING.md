@@ -13,10 +13,7 @@ Das OpenJVerein-Repository sollte am Besten geforkt werden. Um die Änderungen z
 Handbuch
 --------
 
-Das Handbuch ist im Repository https://github.com/openjverein/jverein-Book. Der Branch `master`
-wird automatisch mit GitBook synchronisiert und unter https://openjverein.gitbook.io/doku veröffentlicht.
-Für die Verwaltung existiert eine GitBook-Organisation OpenJVerein. In der Member-Ansicht von
-https://github.com/openjverein ist ein Einladungslink dafür.
+Das Handbuch ist im Repository https://github.com/openjverein/jverein-Book. Der Branch `master` wird automatisch mit GitBook synchronisiert und unter https://openjverein.gitbook.io/doku veröffentlicht. Für die Verwaltung existiert eine GitBook-Organisation OpenJVerein. In der Member-Ansicht von https://github.com/openjverein ist ein Einladungslink dafür.
 
 
 Entwicklungsumgebung
@@ -25,7 +22,7 @@ Entwicklungsumgebung
 Für die OpenJVerein-Entwicklung werden benötigt
 
 - Eclipse/IntelliJ IDEA
-- JDK 1.7
+- Java 11+ (JDK)
 
 Build und Test
 --------------
