@@ -173,7 +173,7 @@ public class CSVBuchungsImport implements Importer
                   .format("Buchungsart %d existiert nicht in JVerein!", bart));
             }
             Buchungsart b1 = (Buchungsart) bit.next();
-            bu.setBuchungsart(new Long(b1.getID()));
+            bu.setBuchungsart(Long.valueOf(b1.getID()));
           }
           catch (SQLException e)
           {
@@ -196,6 +196,14 @@ public class CSVBuchungsImport implements Importer
           {
             throw new ApplicationException(
                 String.format("Spalte %s fehlt!", BuchungVar.ZWECK1.getName()));
+          }
+          try
+          {
+            bu.setIban(results.getString(BuchungVar.IBAN.getName()));
+          }
+          catch (SQLException e)
+          {
+            // Optionales Feld.
           }
           bu.store();
           Application.getMessagingFactory().sendMessage(new BuchungMessage(bu));
