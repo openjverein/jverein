@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.Variable;
 
 public enum SpendenbescheinigungVar {
+  ANREDE("spendenbescheinigung_anrede"), //
   EMPFAENGER("spendenbescheinigung_empfaenger"), //
   BETRAG("spendenbescheinigung_betrag"), //
   BETRAGINWORTEN("spendenbescheinigung_betraginworten"), //
@@ -34,7 +35,14 @@ public enum SpendenbescheinigungVar {
   BUCHUNGSLISTE_BETRAG("spendenbescheinigung_buchungsliste_betrag"), //
   BEZEICHNUNGSACHZUWENDUNG("spendenbescheinigung_bezeichnungsachzuwendung"), //
   HERKUNFTSACHZUWENDUNG("spendenbescheinigung_herkunftsachzuwendung"), //
-  UNTERLAGENWERTERMITTUNG("spendenbescheinigung_unterlagenwertermittlung");//
+  UNTERLAGENWERTERMITTUNG("spendenbescheinigung_unterlagenwertermittlung"), //
+  ZEILE1("spendenbescheinigung_zeile1"), //
+  ZEILE2("spendenbescheinigung_zeile2"), //
+  ZEILE3("spendenbescheinigung_zeile3"), //
+  ZEILE4("spendenbescheinigung_zeile4"), //
+  ZEILE5("spendenbescheinigung_zeile5"), //
+  ZEILE6("spendenbescheinigung_zeile6"), //
+  ZEILE7("spendenbescheinigung_zeile7"); //
 
   private String name;
 
