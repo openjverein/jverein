@@ -19,13 +19,17 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.gui.parts.KontoList;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.system.OperationCanceledException;
 
 /**
@@ -43,6 +47,10 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
   private boolean nurHibiscus;
   
   private boolean nurAktuelleKonten;
+  
+  private CheckboxInput box = null;
+  
+  private KontoList konten = null;
 
   /**
    * Dialog zur Kontenauswahl
@@ -66,10 +74,23 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
   protected void paint(Composite parent) throws Exception
   {
     LabelGroup group = new LabelGroup(parent, "Verfügbare Konten");
+    box = new CheckboxInput(nurAktuelleKonten);
+    box.addListener(new Listener()
+    {
+      public void handleEvent(Event event)
+      {
+    	  nurAktuelleKonten = (Boolean) box.getValue();
+    	  try 
+    	  { 
+    	    konten.update(nurHibiscus, nurAktuelleKonten);
+    	  } catch (Exception e) {}
+      }
+    });
+    group.addCheckbox(box, i18n.tr("Nur aktive Konten"));
 
     if (text == null || text.length() == 0)
     {
-      text = "Bitte wählen Sie das gewünschte Konto aus.";
+      text = "  Bitte wählen Sie das gewünschte Konto aus.";
     }
     group.addText(text, true);
 
@@ -92,11 +113,11 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
         close();
       }
     };
-    final KontoList konten = new de.jost_net.JVerein.gui.parts.KontoList(a,
+    konten = new de.jost_net.JVerein.gui.parts.KontoList(a,
         nurHibiscus, nurAktuelleKonten);
     konten.setContextMenu(null);
     konten.setMulti(false);
-    konten.setSummary(false);
+    konten.removeFeature(FeatureSummary.class);
     konten.paint(parent);
 
     ButtonArea b = new ButtonArea();

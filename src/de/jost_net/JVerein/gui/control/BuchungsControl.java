@@ -557,7 +557,7 @@ public class BuchungsControl extends AbstractControl
     }
     String kontoid = settings.getString("suchkontoid", "");
     suchkonto = new KontoauswahlInput().getKontoAuswahl(true, kontoid, false,
-        false);
+        true);
     suchkonto.addListener(new FilterListener());
     return suchkonto;
   }

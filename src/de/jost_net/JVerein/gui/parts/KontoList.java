@@ -64,6 +64,23 @@ public class KontoList extends TablePart implements Part
   }
 
   /**
+   * Update Konten-Liste nach neuen Kriterien.
+   * 
+   * @param onlyHibiscus, nurAktuelleKonten
+   * @throws RemoteException
+   */ 
+  public synchronized void update(boolean onlyHibiscus,
+	      boolean nurAktuelleKonten) throws RemoteException
+  {
+    super.removeAll();
+    DBIterator<Konto> i = init(onlyHibiscus, nurAktuelleKonten);
+    while (i.hasNext()) 
+    {
+      super.addItem(i.next());
+    }
+  }
+  
+  /**
    * Initialisiert die Konten-Liste.
    * 
    * @return Liste der Konten.
