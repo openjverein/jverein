@@ -294,7 +294,7 @@ public class BuchungsControl extends AbstractControl
     }
     String kontoid = getVorauswahlKontoId();
     konto = new KontoauswahlInput(getBuchung().getKonto())
-        .getKontoAuswahl(false, kontoid, false, false);
+        .getKontoAuswahl(false, kontoid, false, true);
     if (withFocus)
     {
       konto.focus();
