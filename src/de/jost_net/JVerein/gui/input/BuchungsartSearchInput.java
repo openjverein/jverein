@@ -16,9 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.input;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -35,6 +39,9 @@ import de.willuhn.logging.Logger;
  */
 public class BuchungsartSearchInput extends SearchInput
 {
+  
+  private boolean unterdrueckungunbenutztebuchungsarten = false;
+  
   @Override
   @SuppressWarnings("rawtypes")
   public List startSearch(String text)
@@ -49,7 +56,32 @@ public class BuchungsartSearchInput extends SearchInput
         result.addFilter("(UPPER(bezeichnung) like ? or nummer like ?)",
             new Object[] { text, text });
       }
-      return PseudoIterator.asList(result);
+      unterdrueckungunbenutztebuchungsarten = Boolean.valueOf
+          (Einstellungen.getEinstellung().getUnterdrueckungUnbenutzteBuchungsarten());
+      if (unterdrueckungunbenutztebuchungsarten )
+      {
+        List<Buchungsart> buas = new ArrayList<Buchungsart>();
+        Buchungsart bua;
+        BuchungQuery query;
+        Calendar cal = Calendar.getInstance();
+        Date db = cal.getTime();
+        cal.add(Calendar.YEAR, -2);
+        Date dv = cal.getTime();
+        while (result.hasNext())
+        {
+          bua = (Buchungsart) result.next();
+          query = new BuchungQuery(dv, db, null, bua, null, "", "", null);
+          if (query.get().isEmpty())
+          {
+            continue;
+          }
+          buas.add(bua);
+        }
+        return buas;
+      } else 
+      {
+        return PseudoIterator.asList(result);
+      }
     }
     catch (Exception e)
     {

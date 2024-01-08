@@ -17,6 +17,10 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -24,6 +28,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
@@ -51,6 +56,8 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   private Buchungsart buchungsart = null;
 
   private boolean ueberschr;
+  
+  private boolean unterdrueckungunbenutztebuchungsarten = false;
 
   /**
    * @param position
@@ -130,7 +137,30 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     DBIterator<Buchungsart> it = Einstellungen.getDBService()
         .createList(Buchungsart.class);
     it.setOrder("ORDER BY nummer");
-    buchungsarten = new SelectInput(it, null);
+    
+    List<Buchungsart> buas = new ArrayList<Buchungsart>();
+    Buchungsart bua;
+    BuchungQuery query;
+    Calendar cal = Calendar.getInstance();
+    Date db = cal.getTime();
+    cal.add(Calendar.YEAR, -2);
+    Date dv = cal.getTime();
+    unterdrueckungunbenutztebuchungsarten = Boolean.valueOf
+        (Einstellungen.getEinstellung().getUnterdrueckungUnbenutzteBuchungsarten());
+    while (it.hasNext())
+    {
+      bua = it.next();
+      if (unterdrueckungunbenutztebuchungsarten)
+      {
+        query = new BuchungQuery(dv, db, null, bua, null, "", "", null);
+        if (query.get().isEmpty())
+        {
+          continue;
+        }
+      }
+      buas.add(bua);
+    }
+    buchungsarten = new SelectInput(buas.toArray(), null);
     buchungsarten.setValue(null);
     buchungsarten.setAttribute("nrbezeichnung");
     buchungsarten.setPleaseChoose("Bitte Buchungsart auswählen");

@@ -22,6 +22,7 @@ import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -183,6 +184,8 @@ public class BuchungsControl extends AbstractControl
   public static final String MITGLIEDZUGEORDNET = "suchmitgliedzugeordnet";
 
   private Vector<Listener> changeKontoListener = new Vector<>();
+  
+  private boolean unterdrueckungunbenutztebuchungsarten = false;
 
   public BuchungsControl(AbstractView view)
   {
@@ -665,10 +668,29 @@ public class BuchungsControl extends AbstractControl
     b2.setBezeichnung("Ohne Buchungsart");
     b2.setArt(-1);
     liste.add(b2);
+    
+    Buchungsart bua;
+    BuchungQuery query;
+    Calendar cal = Calendar.getInstance();
+    Date db = cal.getTime();
+    cal.add(Calendar.YEAR, -2);
+    Date dv = cal.getTime();
+    unterdrueckungunbenutztebuchungsarten = Boolean.valueOf
+        (Einstellungen.getEinstellung().getUnterdrueckungUnbenutzteBuchungsarten());
     while (list.hasNext())
     {
-      liste.add(list.next());
+      bua = list.next();
+      if (unterdrueckungunbenutztebuchungsarten)
+      {
+        query = new BuchungQuery(dv, db, null, bua, null, "", "", null);
+        if (query.get().isEmpty())
+        {
+          continue;
+        }
+      }
+      liste.add(bua);
     }
+    
     int bwert = settings.getInt(BUCHUNGSART, -2);
     Buchungsart b = null;
     for (int i = 0; i < liste.size(); i++)

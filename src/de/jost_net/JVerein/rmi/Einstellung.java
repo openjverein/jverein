@@ -261,6 +261,11 @@ public interface Einstellung extends DBObject, IBankverbindung
   public void setUnterdrueckungOhneBuchung(Boolean unterdrueckungohnebuchung)
       throws RemoteException;
 
+  public Boolean getUnterdrueckungUnbenutzteBuchungsarten() throws RemoteException;
+
+  public void setUnterdrueckungUnbenutzteBuchungsarten(Boolean unterdrueckungunbenutztebuchungsarten)
+      throws RemoteException;
+
   public Boolean getKontonummerInBuchungsliste() throws RemoteException;
 
   public void setKontonummerInBuchungsliste(
