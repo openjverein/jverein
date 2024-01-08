@@ -85,6 +85,7 @@ public class BuchungAuswertungPDF
         createTableHeaderSumme(reporter);
       }
 
+      int anzahlBuchungsarten = 0;
       for (Buchungsart bua : buchungsarten)
       {
         if (einzel)
@@ -92,9 +93,13 @@ public class BuchungAuswertungPDF
         	query.getOrder("ORDER_DATUM_ID");
         }
         List<Buchung> liste = getBuchungenEinerBuchungsart(query.get(), bua);
-        createTableContent(reporter, bua, liste, einzel);
+        if (liste.size() >0)
+        {
+          createTableContent(reporter, bua, liste, einzel);
+          anzahlBuchungsarten++;
+        }
       }
-      if (buchungsarten.size() > 1)
+      if (anzahlBuchungsarten > 1)
       {
         if (einzel)
         {
