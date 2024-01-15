@@ -40,7 +40,7 @@ import de.willuhn.logging.Logger;
 public class BuchungsartSearchInput extends SearchInput
 {
   
-  private boolean unterdrueckungunbenutztebuchungsarten = false;
+  private int unterdrueckunglaenge = 0;
   
   @Override
   @SuppressWarnings("rawtypes")
@@ -56,16 +56,15 @@ public class BuchungsartSearchInput extends SearchInput
         result.addFilter("(UPPER(bezeichnung) like ? or nummer like ?)",
             new Object[] { text, text });
       }
-      unterdrueckungunbenutztebuchungsarten = Boolean.valueOf
-          (Einstellungen.getEinstellung().getUnterdrueckungUnbenutzteBuchungsarten());
-      if (unterdrueckungunbenutztebuchungsarten )
+      unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
+      if (unterdrueckunglaenge > 0 )
       {
         List<Buchungsart> buas = new ArrayList<Buchungsart>();
         Buchungsart bua;
         BuchungQuery query;
         Calendar cal = Calendar.getInstance();
         Date db = cal.getTime();
-        cal.add(Calendar.YEAR, -2);
+        cal.add(Calendar.MONTH, -unterdrueckunglaenge);
         Date dv = cal.getTime();
         while (result.hasNext())
         {

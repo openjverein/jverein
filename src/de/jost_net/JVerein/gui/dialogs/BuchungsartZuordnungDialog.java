@@ -57,7 +57,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
 
   private boolean ueberschr;
   
-  private boolean unterdrueckungunbenutztebuchungsarten = false;
+  private int unterdrueckunglaenge = 0;
 
   /**
    * @param position
@@ -139,18 +139,17 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     it.setOrder("ORDER BY nummer");
     
     List<Buchungsart> buas = new ArrayList<Buchungsart>();
+    unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
     Buchungsart bua;
     BuchungQuery query;
     Calendar cal = Calendar.getInstance();
     Date db = cal.getTime();
-    cal.add(Calendar.YEAR, -2);
+    cal.add(Calendar.MONTH, -unterdrueckunglaenge);
     Date dv = cal.getTime();
-    unterdrueckungunbenutztebuchungsarten = Boolean.valueOf
-        (Einstellungen.getEinstellung().getUnterdrueckungUnbenutzteBuchungsarten());
     while (it.hasNext())
     {
       bua = it.next();
-      if (unterdrueckungunbenutztebuchungsarten)
+      if (unterdrueckunglaenge > 0)
       {
         query = new BuchungQuery(dv, db, null, bua, null, "", "", null);
         if (query.get().isEmpty())

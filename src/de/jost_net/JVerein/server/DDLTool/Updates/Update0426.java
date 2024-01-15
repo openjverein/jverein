@@ -30,7 +30,7 @@ public class Update0426 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("einstellung", new Column("unterdrueckungunbenutztebuchungsarten",
-        COLTYPE.BOOLEAN, 0, null, false, false)));
+    execute(addColumn("einstellung", new Column("unterdrueckunglaenge",
+        COLTYPE.INTEGER, 0, null, false, false)));
   }
 }

@@ -172,7 +172,7 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput kontonummer_in_buchungsliste;
   
-  private CheckboxInput unterdrueckungunbenutztebuchungsarten;
+  private IntegerInput unterdrueckunglaenge;
 
   private TextInput smtp_server;
 
@@ -929,19 +929,15 @@ public class EinstellungControl extends AbstractControl
     return unterdrueckungohnebuchung;
   }
   
-  public CheckboxInput getUnterdrueckungUnbenutzteBuchungsarten() throws RemoteException
+  public IntegerInput getUnterdrueckungLaenge() throws RemoteException
   {
-    if (unterdrueckungunbenutztebuchungsarten != null)
+    if (null == unterdrueckunglaenge)
     {
-      return unterdrueckungunbenutztebuchungsarten;
+      unterdrueckunglaenge = new IntegerInput(
+          Einstellungen.getEinstellung().getUnterdrueckungLaenge());
     }
-    unterdrueckungunbenutztebuchungsarten = new CheckboxInput(Einstellungen
-        .getEinstellung().getUnterdrueckungUnbenutzteBuchungsarten());
-    unterdrueckungunbenutztebuchungsarten
-        .setName("Dialoge: Buchungsarten seit 2 Jahren ungenutzt unterdrücken");
-    return unterdrueckungunbenutztebuchungsarten;
-  }
-  
+    return unterdrueckunglaenge;
+  }  
   
   public CheckboxInput getKontonummerInBuchungsliste() throws RemoteException 
   {
@@ -1913,8 +1909,8 @@ public class EinstellungControl extends AbstractControl
       e.setAutoBuchunguebernahme((Boolean) autobuchunguebernahme.getValue());
       e.setUnterdrueckungOhneBuchung((Boolean) unterdrueckungohnebuchung
           .getValue());
-      e.setUnterdrueckungUnbenutzteBuchungsarten((Boolean) unterdrueckungunbenutztebuchungsarten
-          .getValue());
+      Integer ulength = (Integer) unterdrueckunglaenge.getValue();
+      e.setUnterdrueckungLaenge(ulength);
       e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());
       e.store();
       Einstellungen.setEinstellung(e);

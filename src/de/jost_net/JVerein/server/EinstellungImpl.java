@@ -1638,18 +1638,21 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("unterdrueckungohnebuchung", unterdrueckungohnebuchung);
   }
-  
+    
   @Override
-  public Boolean getUnterdrueckungUnbenutzteBuchungsarten() throws RemoteException
+  public int getUnterdrueckungLaenge() throws RemoteException 
   {
-    return Util.getBoolean(getAttribute("unterdrueckungunbenutztebuchungsarten"));
+    try {
+      return (int) getAttribute("unterdrueckunglaenge");
+    } catch (NullPointerException e) {
+      return 0;
+    }
   }
 
   @Override
-  public void setUnterdrueckungUnbenutzteBuchungsarten(Boolean unterdrueckungunbenutztebuchungsarten)
-      throws RemoteException
+  public void setUnterdrueckungLaenge(int unterdrueckunglaenge) throws RemoteException 
   {
-    setAttribute("unterdrueckungunbenutztebuchungsarten", unterdrueckungunbenutztebuchungsarten);
+    setAttribute("unterdrueckunglaenge", unterdrueckunglaenge);
   }
 
   @Override

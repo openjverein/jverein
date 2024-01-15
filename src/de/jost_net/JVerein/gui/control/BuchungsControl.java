@@ -185,7 +185,7 @@ public class BuchungsControl extends AbstractControl
 
   private Vector<Listener> changeKontoListener = new Vector<>();
   
-  private boolean unterdrueckungunbenutztebuchungsarten = false;
+  private int unterdrueckunglaenge = 0;
 
   public BuchungsControl(AbstractView view)
   {
@@ -669,18 +669,17 @@ public class BuchungsControl extends AbstractControl
     b2.setArt(-1);
     liste.add(b2);
     
+    unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
     Buchungsart bua;
     BuchungQuery query;
     Calendar cal = Calendar.getInstance();
     Date db = cal.getTime();
-    cal.add(Calendar.YEAR, -2);
+    cal.add(Calendar.MONTH, -unterdrueckunglaenge);
     Date dv = cal.getTime();
-    unterdrueckungunbenutztebuchungsarten = Boolean.valueOf
-        (Einstellungen.getEinstellung().getUnterdrueckungUnbenutzteBuchungsarten());
     while (list.hasNext())
     {
       bua = list.next();
-      if (unterdrueckungunbenutztebuchungsarten)
+      if (unterdrueckunglaenge > 0)
       {
         query = new BuchungQuery(dv, db, null, bua, null, "", "", null);
         if (query.get().isEmpty())
