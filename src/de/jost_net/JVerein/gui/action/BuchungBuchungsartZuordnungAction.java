@@ -77,32 +77,38 @@ public class BuchungBuchungsartZuordnungAction implements Action
         BuchungsartZuordnungDialog baz = new BuchungsartZuordnungDialog(
             BuchungsartZuordnungDialog.POSITION_MOUSE);
         baz.open();
-        Buchungsart ba = baz.getBuchungsart();
-        int counter = 0;
-
-        for (Buchung buchung : b)
+        if (baz.getAbort())
         {
-          boolean protect = buchung.getBuchungsart() != null
-              && !baz.getOverride();
-          if (protect)
-          {
-            counter++;
-          }
-          else
-          {
-            buchung.setBuchungsart(new Long(ba.getID()));
-            buchung.store();
-          }
-        }
-        control.getBuchungsList();
-        String protecttext = "";
-        if (counter > 0)
+          GUI.getStatusBar()
+          .setSuccessText("Buchungsarten zuordnen abgebrochen");
+        } else
         {
-          protecttext = String
-              .format(", %d Buchungen wurden nicht überschrieben. ", counter);
-        }
-        GUI.getStatusBar()
-            .setSuccessText("Buchungsarten zugeordnet" + protecttext);
+          Buchungsart ba = baz.getBuchungsart();
+          int counter = 0;
+          for (Buchung buchung : b)
+          {
+            boolean protect = buchung.getBuchungsart() != null
+                && !baz.getOverride();
+            if (protect)
+            {
+              counter++;
+            }
+            else
+            {
+              buchung.setBuchungsart(Long.valueOf(ba.getID()));
+              buchung.store();
+            }
+          }
+          control.getBuchungsList();
+          String protecttext = "";
+          if (counter > 0)
+          {
+            protecttext = String
+                .format(", %d Buchungen wurden nicht überschrieben. ", counter);
+          }
+          GUI.getStatusBar()
+              .setSuccessText("Buchungsarten zugeordnet" + protecttext);
+          }
       }
       catch (Exception e)
       {

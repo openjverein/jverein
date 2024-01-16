@@ -58,6 +58,8 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   private boolean ueberschr;
   
   private int unterdrueckunglaenge = 0;
+  
+  private boolean abort = false;
 
   /**
    * @param position
@@ -102,7 +104,8 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       @Override
       public void handleAction(Object context)
       {
-        throw new OperationCanceledException();
+        abort = true;
+        close();
       }
     });
     buttons.paint(parent);
@@ -126,6 +129,11 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   public boolean getOverride()
   {
     return ueberschr;
+  }
+  
+  public boolean getAbort()
+  {
+    return abort;
   }
 
   private SelectInput getBuchungsartAuswahl() throws RemoteException
