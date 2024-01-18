@@ -25,6 +25,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -77,11 +78,7 @@ public class BuchungBuchungsartZuordnungAction implements Action
         BuchungsartZuordnungDialog baz = new BuchungsartZuordnungDialog(
             BuchungsartZuordnungDialog.POSITION_MOUSE);
         baz.open();
-        if (baz.getAbort())
-        {
-          GUI.getStatusBar()
-          .setSuccessText("Buchungsarten zuordnen abgebrochen");
-        } else
+        if (!baz.getAbort())
         {
           Buchungsart ba = baz.getBuchungsart();
           int counter = 0;
@@ -112,9 +109,12 @@ public class BuchungBuchungsartZuordnungAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler", e);
-        GUI.getStatusBar()
-            .setErrorText("Fehler bei der Zuordnung der Buchungsart");
+        if (!e.getClass().isInstance(new OperationCanceledException()))
+        {
+          Logger.error("Fehler", e);
+          GUI.getStatusBar()
+              .setErrorText("Fehler bei der Zuordnung der Buchungsart");
+        }
         return;
       }
     }

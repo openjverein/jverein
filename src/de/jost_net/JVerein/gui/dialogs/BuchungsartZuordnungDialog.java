@@ -39,7 +39,6 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.jameica.system.OperationCanceledException;
 
 /**
  * Dialog zur Zuordnung einer Buchungsart.
@@ -98,7 +97,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         ueberschr = (Boolean) getUeberschreiben().getValue();
         close();
       }
-    }, null, true);
+    }, null, true, "check.png");
     buttons.addButton("abbrechen", new Action()
     {
       @Override
@@ -106,6 +105,13 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       {
         abort = true;
         close();
+      }
+    }, null, false, "stop-circle.png");
+    getShell().addListener(SWT.Close,new Listener()
+    {
+      public void handleEvent(Event event)
+      {
+        abort = true;
       }
     });
     buttons.paint(parent);
