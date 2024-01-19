@@ -28,6 +28,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -80,50 +81,58 @@ public class BuchungMitgliedskontoZuordnungAction implements Action
         MitgliedskontoAuswahlDialog mkaz = new MitgliedskontoAuswahlDialog(b[0]);
         Object open = mkaz.open();
         Mitgliedskonto mk = null;
-
-        if (open instanceof Mitgliedskonto)
+        
+        if (!mkaz.getAbort())
         {
-          mk = (Mitgliedskonto) open;
-        }
-        else if (open instanceof Mitglied)
-        {
-          Mitglied m = (Mitglied) open;
-          mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-              Mitgliedskonto.class, null);
-
-          Double betrag = 0d;
-          for (Buchung buchung : b)
+          if (open instanceof Mitgliedskonto)
           {
-            betrag += buchung.getBetrag();
+            mk = (Mitgliedskonto) open;
+          }
+          else if (open instanceof Mitglied)
+          {
+            Mitglied m = (Mitglied) open;
+            mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
+                Mitgliedskonto.class, null);
+  
+            Double betrag = 0d;
+            for (Buchung buchung : b)
+            {
+              betrag += buchung.getBetrag();
+            }
+  
+            mk.setBetrag(betrag);
+            mk.setDatum(b[0].getDatum());
+            mk.setMitglied(m);
+            mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+            mk.setZweck1(b[0].getZweck());
+            mk.store();
           }
 
-          mk.setBetrag(betrag);
-          mk.setDatum(b[0].getDatum());
-          mk.setMitglied(m);
-          mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
-          mk.setZweck1(b[0].getZweck());
-          mk.store();
+          for (Buchung buchung : b)
+          {
+            buchung.setMitgliedskonto(mk);
+            buchung.store();
+          }
+          control.getBuchungsList();
+          
+          if (mk == null)
+          {
+            GUI.getStatusBar().setSuccessText("Mitgliedskonto gelöscht");
+          } 
+          else
+          {
+            GUI.getStatusBar().setSuccessText("Mitgliedskonto zugeordnet");
+          }
         }
-
-        if (mk == null)
-        {
-          GUI.getStatusBar().setErrorText(
-              "Fehler bei der Ermittlung des Mitgliedskontos");
-        }
-
-        for (Buchung buchung : b)
-        {
-          buchung.setMitgliedskonto(mk);
-          buchung.store();
-        }
-        control.getBuchungsList();
-        GUI.getStatusBar().setSuccessText("Mitgliedskonto zugeordnet");
       }
       catch (Exception e)
       {
+        if (!(e instanceof OperationCanceledException))
+        {
         Logger.error("Fehler", e);
         GUI.getStatusBar().setErrorText(
             "Fehler bei der Zuordnung des Mitgliedskontos");
+        }
         return;
       }
     }

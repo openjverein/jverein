@@ -22,6 +22,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
@@ -58,6 +60,8 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
   private TablePart mitgliedlist = null;
 
   private Buchung buchung;
+  
+  private boolean abort = false;
 
   public MitgliedskontoAuswahlDialog(Buchung buchung)
   {
@@ -177,6 +181,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
         close();
       }
     }, null, false, "undo.png");
+    
     b.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_AUSWAHL, false, "question-circle.png");
 
@@ -186,9 +191,18 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
       @Override
       public void handleAction(Object context)
       {
+        abort = true;
         close();
       }
     }, null, false, "stop-circle.png");
+    
+    getShell().addListener(SWT.Close,new Listener()
+    {
+      public void handleEvent(Event event)
+      {
+        abort = true;
+      }
+    });
     b.paint(parent);
   }
 
@@ -213,5 +227,10 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
   public void setText(String text)
   {
     this.text = text;
+  }
+  
+  public boolean getAbort()
+  {
+    return abort;
   }
 }
