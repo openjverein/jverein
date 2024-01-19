@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -32,7 +33,6 @@ import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.jameica.system.OperationCanceledException;
 
 /**
  * Ein Dialog, ueber den man ein Projekt auswählen kann.
@@ -43,6 +43,8 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
   private Projekt selected = null;
 
   private SelectInput projekte = null;
+  
+  private Boolean abort = false;
 
   Buchung[] buchungen = null;
 
@@ -51,7 +53,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     super(position);
     this.buchungen = buchungen;
 
-    setTitle("Projekt auswâ€hlen");
+    setTitle("Projekt auswählen");
     setSize(450, 150);
   }
 
@@ -61,7 +63,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     LabelGroup options = new LabelGroup(parent, "Projekte");
     options.addInput(this.getProjekte());
     ButtonArea b = new ButtonArea();
-    b.addButton("weiter", new Action()
+    b.addButton("übernehmen", new Action()
     {
 
       @Override
@@ -70,14 +72,22 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
         selected = (Projekt) projekte.getValue();
         close();
       }
-    });
+    }, null, false, "check.png");
     b.addButton("abbrechen", new Action()
     {
 
       @Override
       public void handleAction(Object context)
       {
-        throw new OperationCanceledException();
+        abort = true;
+        close();
+      }
+    }, null, false, "stop-circle.png");
+    getShell().addListener(SWT.Close,new Listener()
+    {
+      public void handleEvent(Event event)
+      {
+        abort = true;
       }
     });
     b.paint(parent);
@@ -87,6 +97,11 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
   protected Projekt getData() throws Exception
   {
     return this.selected;
+  }
+  
+  public boolean getAbort()
+  {
+    return abort;
   }
 
   private SelectInput getProjekte() throws RemoteException

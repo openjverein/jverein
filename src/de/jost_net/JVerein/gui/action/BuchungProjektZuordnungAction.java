@@ -26,6 +26,7 @@ import de.jost_net.JVerein.rmi.Projekt;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -71,25 +72,31 @@ public class BuchungProjektZuordnungAction implements Action
             AbstractDialog.POSITION_CENTER, b);
         Projekt open = pad.open();
 
-        if (open == null)
+        if (!pad.getAbort())
         {
-          GUI.getStatusBar().setErrorText("Kein Projekt ausgewählt");
-          return;
+          if (open == null)
+          {
+            GUI.getStatusBar().setErrorText("Kein Projekt ausgewählt");
+            return;
+          }
+  
+          for (Buchung buchung : b)
+          {
+            buchung.setProjekt(open);
+            buchung.store();
+          }
+          control.getBuchungsList();
+          GUI.getStatusBar().setSuccessText("Projekt zugeordnet");
         }
-
-        for (Buchung buchung : b)
-        {
-          buchung.setProjekt(open);
-          buchung.store();
-        }
-        control.getBuchungsList();
-        GUI.getStatusBar().setSuccessText("Projekt zugeordnet");
       }
       catch (Exception e)
       {
-        Logger.error("Fehler", e);
-        GUI.getStatusBar().setErrorText(
-            "Fehler bei der Zuordnung des Projektes");
+        if (!(e instanceof OperationCanceledException))
+        {
+          Logger.error("Fehler", e);
+          GUI.getStatusBar().setErrorText(
+              "Fehler bei der Zuordnung des Projektes");
+        }
         return;
       }
     }
