@@ -18,6 +18,8 @@ package de.jost_net.JVerein.gui.dialogs;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -27,7 +29,6 @@ import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.jameica.system.OperationCanceledException;
 
 /**
  * Dialog zur Zuordnung der Kontoauszugsinformationen (Auszug/Blatt)
@@ -48,6 +49,8 @@ public class KontoauszugZuordnungDialog extends AbstractDialog<Object>
   private LabelInput status = null;
 
   private boolean ueberschr;
+  
+  private boolean abort = false;
 
   /**
    * @param position
@@ -98,14 +101,22 @@ public class KontoauszugZuordnungDialog extends AbstractDialog<Object>
         ueberschr = (Boolean) getUeberschreiben().getValue();
         close();
       }
-    }, null, true);
+    }, null, true, "check.png");
     buttons.addButton("abbrechen", new Action()
     {
 
       @Override
       public void handleAction(Object context)
       {
-        throw new OperationCanceledException();
+        abort = true;
+        close();
+      }
+    }, null, false, "stop-circle.png");
+    getShell().addListener(SWT.Close,new Listener()
+    {
+      public void handleEvent(Event event)
+      {
+        abort = true;
       }
     });
     buttons.paint(parent);
@@ -135,6 +146,11 @@ public class KontoauszugZuordnungDialog extends AbstractDialog<Object>
   public boolean getOverride()
   {
     return ueberschr;
+  }
+  
+  public boolean getAbort()
+  {
+    return abort;
   }
 
   private IntegerInput getAuszugsnummer()

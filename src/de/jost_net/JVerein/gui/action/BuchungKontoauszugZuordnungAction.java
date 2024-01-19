@@ -29,6 +29,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.jameica.system.OperationCanceledException;
 
 /**
  * Kontoauszugsinformationen zuordnen.
@@ -85,40 +86,46 @@ public class BuchungKontoauszugZuordnungAction implements Action
         Integer blattnummer = kaz.getBlattnummerWert();
         int counter = 0;
 
-        for (Buchung buchung : b)
+        if (!kaz.getAbort())
         {
-          boolean protect = ((buchung.getAuszugsnummer() != null && buchung
-              .getAuszugsnummer().intValue() > 0) || (buchung.getBlattnummer() != null && buchung
-              .getBlattnummer().intValue() > 0))
-              && !kaz.getOverride();
-          if (protect)
+          for (Buchung buchung : b)
           {
-            counter++;
+            boolean protect = ((buchung.getAuszugsnummer() != null && buchung
+                .getAuszugsnummer().intValue() > 0) || (buchung.getBlattnummer() != null && buchung
+                .getBlattnummer().intValue() > 0))
+                && !kaz.getOverride();
+            if (protect)
+            {
+              counter++;
+            }
+            else
+            {
+              buchung.setAuszugsnummer(auszugsnummer);
+              buchung.setBlattnummer(blattnummer);
+              buchung.store();
+              Application.getMessagingFactory().sendMessage(
+                  new BuchungMessage(buchung));
+            }
           }
-          else
+          control.getBuchungsList();
+          String protecttext = "";
+          if (counter > 0)
           {
-            buchung.setAuszugsnummer(auszugsnummer);
-            buchung.setBlattnummer(blattnummer);
-            buchung.store();
-            Application.getMessagingFactory().sendMessage(
-                new BuchungMessage(buchung));
+            protecttext = String.format(
+                ", %d Buchungen wurden nicht überschrieben. ", counter);
           }
+          GUI.getStatusBar().setSuccessText(
+              "Kontoauszugsinformationen zugeordnet" + protecttext);
         }
-        control.getBuchungsList();
-        String protecttext = "";
-        if (counter > 0)
-        {
-          protecttext = String.format(
-              ", %d Buchungen wurden nicht überschrieben. ", counter);
-        }
-        GUI.getStatusBar().setSuccessText(
-            "Kontoauszugsinformationen zugeordnet" + protecttext);
       }
       catch (Exception e)
       {
-        Logger.error("Fehler", e);
-        GUI.getStatusBar().setErrorText(
-            "Fehler bei der Zuordnung der Kontoauszugsinformationen");
+        if (!(e instanceof OperationCanceledException))
+        {
+          Logger.error("Fehler", e);
+          GUI.getStatusBar().setErrorText(
+              "Fehler bei der Zuordnung der Kontoauszugsinformationen");
+        }
         return;
       }
     }
