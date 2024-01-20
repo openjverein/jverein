@@ -76,64 +76,55 @@ public class BuchungKontoauszugZuordnungAction implements Action
       {
         return;
       }
-      try
-      {
-        KontoauszugZuordnungDialog kaz = new KontoauszugZuordnungDialog(
-            BuchungsartZuordnungDialog.POSITION_MOUSE, b[0].getAuszugsnummer(),
-            b[0].getBlattnummer());
-        kaz.open();
-        Integer auszugsnummer = kaz.getAuszugsnummerWert();
-        Integer blattnummer = kaz.getBlattnummerWert();
-        int counter = 0;
+      KontoauszugZuordnungDialog kaz = new KontoauszugZuordnungDialog(
+          BuchungsartZuordnungDialog.POSITION_MOUSE, b[0].getAuszugsnummer(),
+          b[0].getBlattnummer());
+      kaz.open();
+      Integer auszugsnummer = kaz.getAuszugsnummerWert();
+      Integer blattnummer = kaz.getBlattnummerWert();
+      int counter = 0;
 
-        if (!kaz.getAbort())
-        {
-          for (Buchung buchung : b)
-          {
-            boolean protect = ((buchung.getAuszugsnummer() != null && buchung
-                .getAuszugsnummer().intValue() > 0) || (buchung.getBlattnummer() != null && buchung
-                .getBlattnummer().intValue() > 0))
-                && !kaz.getOverride();
-            if (protect)
-            {
-              counter++;
-            }
-            else
-            {
-              buchung.setAuszugsnummer(auszugsnummer);
-              buchung.setBlattnummer(blattnummer);
-              buchung.store();
-              Application.getMessagingFactory().sendMessage(
-                  new BuchungMessage(buchung));
-            }
-          }
-          control.getBuchungsList();
-          String protecttext = "";
-          if (counter > 0)
-          {
-            protecttext = String.format(
-                ", %d Buchungen wurden nicht überschrieben. ", counter);
-          }
-          GUI.getStatusBar().setSuccessText(
-              "Kontoauszugsinformationen zugeordnet" + protecttext);
-        }
-      }
-      catch (Exception e)
+      if (!kaz.getAbort())
       {
-        if (!(e instanceof OperationCanceledException))
+        for (Buchung buchung : b)
         {
-          Logger.error("Fehler", e);
-          GUI.getStatusBar().setErrorText(
-              "Fehler bei der Zuordnung der Kontoauszugsinformationen");
+          boolean protect = ((buchung.getAuszugsnummer() != null && buchung
+              .getAuszugsnummer().intValue() > 0) || (buchung.getBlattnummer() != null && buchung
+              .getBlattnummer().intValue() > 0))
+              && !kaz.getOverride();
+          if (protect)
+          {
+            counter++;
+          }
+          else
+          {
+            buchung.setAuszugsnummer(auszugsnummer);
+            buchung.setBlattnummer(blattnummer);
+            buchung.store();
+            Application.getMessagingFactory().sendMessage(
+                new BuchungMessage(buchung));
+          }
         }
-        return;
+        control.getBuchungsList();
+        String protecttext = "";
+        if (counter > 0)
+        {
+          protecttext = String.format(
+              ", %d Buchungen wurden nicht überschrieben. ", counter);
+        }
+        GUI.getStatusBar().setSuccessText(
+            "Kontoauszugsinformationen zugeordnet" + protecttext);
       }
     }
-    catch (RemoteException e)
+    catch (OperationCanceledException oce)
     {
-      String fehler = "Fehler beim Speichern.";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler", e);
+      GUI.getStatusBar().setErrorText(
+          "Fehler bei der Zuordnung der Kontoauszugsinformationen");
     }
   }
 }

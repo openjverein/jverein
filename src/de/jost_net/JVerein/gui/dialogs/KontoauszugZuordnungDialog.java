@@ -102,6 +102,18 @@ public class KontoauszugZuordnungDialog extends AbstractDialog<Object>
         close();
       }
     }, null, true, "check.png");
+    buttons.addButton("entfernen", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        intAuszugsnummer = null;
+        intBlattnummer = null;
+        ueberschr = true;
+        close();
+      }
+    }, null, false, "undo.png");
     buttons.addButton("abbrechen", new Action()
     {
 
