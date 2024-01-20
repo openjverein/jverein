@@ -109,7 +109,7 @@ public class BuchungBuchungsartZuordnungAction implements Action
       }
       catch (Exception e)
       {
-        if (!e.getClass().isInstance(new OperationCanceledException()))
+        if (!(e instanceof OperationCanceledException))
         {
           Logger.error("Fehler", e);
           GUI.getStatusBar()
