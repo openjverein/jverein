@@ -63,7 +63,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     this.buchungen = buchungen;
 
     setTitle("Projekt auswählen");
-    setSize(400, 200);
+    setSize(400, 175);
   }
 
   @Override
