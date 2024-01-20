@@ -66,45 +66,66 @@ public class BuchungProjektZuordnungAction implements Action
       {
         return;
       }
-      try
-      {
-        ProjektAuswahlDialog pad = new ProjektAuswahlDialog(
-            AbstractDialog.POSITION_CENTER, b);
-        Projekt open = pad.open();
 
-        if (!pad.getAbort())
+      ProjektAuswahlDialog pad = new ProjektAuswahlDialog(
+          AbstractDialog.POSITION_CENTER, b);
+      Projekt open = pad.open();
+
+      if (!pad.getAbort())
+      {
+        int counter = 0;
+        if (open == null)
         {
-          if (open == null)
-          {
-            GUI.getStatusBar().setErrorText("Kein Projekt ausgewählt");
-            return;
-          }
-  
           for (Buchung buchung : b)
           {
-            buchung.setProjekt(open);
+            buchung.setProjekt(null);
             buchung.store();
           }
-          control.getBuchungsList();
-          GUI.getStatusBar().setSuccessText("Projekt zugeordnet");
         }
-      }
-      catch (Exception e)
-      {
-        if (!(e instanceof OperationCanceledException))
+        else
         {
-          Logger.error("Fehler", e);
-          GUI.getStatusBar().setErrorText(
-              "Fehler bei der Zuordnung des Projektes");
+          for (Buchung buchung : b)
+          {
+            boolean protect = buchung.getProjekt() != null
+                && !pad.getOverride();
+            if (protect)
+            {
+              counter++;
+            }
+            else
+            {
+              buchung.setProjekt(open);
+              buchung.store();
+            }
+          }
         }
-        return;
+        control.getBuchungsList();
+        String protecttext = "";
+        if (open == null)
+        {
+          GUI.getStatusBar().setSuccessText("Projekte gelöscht");
+        }
+        else
+        {
+          if (counter > 0)
+          {
+            protecttext = String
+                .format(", %d Projekte wurden nicht überschrieben. ", counter);
+          }
+          GUI.getStatusBar()
+              .setSuccessText("Projekte zugeordnet" + protecttext);
+        }
       }
     }
-    catch (RemoteException e)
+    catch (OperationCanceledException oce)
     {
-      String fehler = "Fehler beim Speichern.";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler", e);
+      GUI.getStatusBar().setErrorText(
+          "Fehler bei der Zuordnung des Projektes");
     }
   }
 }
