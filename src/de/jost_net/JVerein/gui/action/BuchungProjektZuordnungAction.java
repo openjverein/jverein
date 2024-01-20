@@ -17,8 +17,6 @@
 
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.ProjektAuswahlDialog;
 import de.jost_net.JVerein.rmi.Buchung;
