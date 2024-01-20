@@ -44,7 +44,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
 
   private SelectInput projekte = null;
   
-  private Boolean abort = false;
+  private boolean abort = false;
 
   Buchung[] buchungen = null;
 
