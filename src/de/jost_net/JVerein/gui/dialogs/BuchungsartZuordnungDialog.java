@@ -67,7 +67,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   {
     super(position);
     setTitle("Zuordnung Buchungsart");
-    setSize(400, 200);
+    setSize(400, 175);
   }
 
   @Override
@@ -98,6 +98,16 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         close();
       }
     }, null, true, "check.png");
+    buttons.addButton("entfernen", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        buchungsart = null;
+        close();
+      }
+    }, null, false, "undo.png");
     buttons.addButton("abbrechen", new Action()
     {
       @Override

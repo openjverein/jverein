@@ -79,29 +79,47 @@ public class BuchungBuchungsartZuordnungAction implements Action
       {
         Buchungsart ba = baz.getBuchungsart();
         int counter = 0;
-        for (Buchung buchung : b)
+        if (ba == null)
         {
-          boolean protect = buchung.getBuchungsart() != null
-              && !baz.getOverride();
-          if (protect)
+          for (Buchung buchung : b)
           {
-            counter++;
-          }
-          else
-          {
-            buchung.setBuchungsart(Long.valueOf(ba.getID()));
+            buchung.setBuchungsart(null);
             buchung.store();
           }
         }
-        control.getBuchungsList();
-        String protecttext = "";
-        if (counter > 0)
+        else
         {
-          protecttext = String
-              .format(", %d Buchungen wurden nicht überschrieben. ", counter);
+          for (Buchung buchung : b)
+          {
+            boolean protect = buchung.getBuchungsart() != null
+                && !baz.getOverride();
+            if (protect)
+            {
+              counter++;
+            }
+            else
+            {
+              buchung.setBuchungsart(Long.valueOf(ba.getID()));
+              buchung.store();
+            }
+          }
         }
-        GUI.getStatusBar()
-        .setSuccessText("Buchungsarten zugeordnet" + protecttext);
+        control.getBuchungsList();
+        if (ba == null)
+        {
+          GUI.getStatusBar().setSuccessText("Buchungsarten gelöscht");
+        }
+        else
+        {
+          String protecttext = "";
+          if (counter > 0)
+          {
+            protecttext = String
+                .format(", %d Buchungen wurden nicht überschrieben. ", counter);
+          }
+          GUI.getStatusBar()
+          .setSuccessText("Buchungsarten zugeordnet" + protecttext);
+        }
       }
     }
     catch (OperationCanceledException oce)
