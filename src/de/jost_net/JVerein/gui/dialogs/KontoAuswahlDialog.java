@@ -134,10 +134,10 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
         choosen = (Konto) o;
         close();
       }
-    });
+    }, null, false, "check.png");
     if (keinkonto)
     {
-      b.addButton("kein Konto", new Action()
+      b.addButton("alle Konten", new Action()
       {
 
         @Override
@@ -146,7 +146,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
           choosen = null;
           close();
         }
-      });
+      }, null, false, "list.png");
     }
     b.addButton("abbrechen", new Action()
     {
@@ -156,7 +156,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
       {
         throw new OperationCanceledException();
       }
-    });
+    }, null, false, "stop-circle.png");
     b.paint(parent);
   }
 
