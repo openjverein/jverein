@@ -107,7 +107,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         buchungsart = null;
         close();
       }
-    }, null, false, "undo.png");
+    }, null, false, "user-trash-full.png");
     buttons.addButton("Abbrechen", new Action()
     {
       @Override
