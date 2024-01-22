@@ -79,7 +79,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     group.addLabelPair("", getStatus());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("übernehmen", new Action()
+    buttons.addButton("Übernehmen", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -97,8 +97,8 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         ueberschr = (Boolean) getUeberschreiben().getValue();
         close();
       }
-    }, null, true, "check.png");
-    buttons.addButton("entfernen", new Action()
+    }, null, true, "ok.png");
+    buttons.addButton("Entfernen", new Action()
     {
 
       @Override
@@ -108,7 +108,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         close();
       }
     }, null, false, "undo.png");
-    buttons.addButton("abbrechen", new Action()
+    buttons.addButton("Abbrechen", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -116,7 +116,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         abort = true;
         close();
       }
-    }, null, false, "stop-circle.png");
+    }, null, false, "process-stop.png");
     getShell().addListener(SWT.Close,new Listener()
     {
       public void handleEvent(Event event)
