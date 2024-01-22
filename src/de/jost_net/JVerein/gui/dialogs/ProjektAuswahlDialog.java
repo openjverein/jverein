@@ -75,7 +75,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     group.addLabelPair("", getStatus());
     
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("übernehmen", new Action()
+    buttons.addButton("Übernehmen", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -90,8 +90,8 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
         ueberschr = (boolean) getUeberschreiben().getValue();
         close();
       }
-    }, null, false, "check.png");
-    buttons.addButton("entfernen", new Action()
+    }, null, false, "ok.png");
+    buttons.addButton("Entfernen", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -100,7 +100,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
         close();
       }
     }, null, false, "undo.png");
-    buttons.addButton("abbrechen", new Action()
+    buttons.addButton("Abbrechen", new Action()
     {
 
       @Override
@@ -109,7 +109,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
         abort = true;
         close();
       }
-    }, null, false, "stop-circle.png");
+    }, null, false, "process-stop.png");
     getShell().addListener(SWT.Close,new Listener()
     {
       public void handleEvent(Event event)

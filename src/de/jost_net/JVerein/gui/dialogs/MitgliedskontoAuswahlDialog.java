@@ -144,7 +144,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
 
     ButtonArea b = new ButtonArea();
 
-    b.addButton("übernehmen", new Action()
+    b.addButton("Übernehmen", new Action()
     {
 
       @Override
@@ -169,9 +169,9 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
         }
         return;
       }
-    }, null, false, "check.png");
+    }, null, false, "ok.png");
 
-    b.addButton("entfernen", new Action()
+    b.addButton("Entfernen", new Action()
     {
 
       @Override
@@ -185,7 +185,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     b.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_AUSWAHL, false, "question-circle.png");
 
-    b.addButton("abbrechen", new Action()
+    b.addButton("Abbrechen", new Action()
     {
 
       @Override
@@ -194,7 +194,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
         abort = true;
         close();
       }
-    }, null, false, "stop-circle.png");
+    }, null, false, "process-stop.png");
     
     getShell().addListener(SWT.Close,new Listener()
     {

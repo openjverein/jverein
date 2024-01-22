@@ -148,7 +148,7 @@ public class BuchungenMitgliedskontenZuordnungDialog extends AbstractDialog<Obje
       {
         throw new OperationCanceledException();
       }
-    }, null, false, "stop-circle.png");
+    }, null, false, "process-stop.png");
     group.addButtonArea(buttons);
     getShell()
         .setMinimumSize(getShell().computeSize(WINDOW_WIDTH, SWT.DEFAULT));
