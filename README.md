@@ -3,7 +3,7 @@ OpenJVerein
 
 OpenJVerein ist eine Open-Source-Vereinsverwaltung mit einer Anbindung an die ebenfalls unter Open-Source-Lizenz stehende Homebankingsoftware Hibiscus.
 Die Implementierung erfolgt mit Java. Der Ablauf auf vielen Plattformen ist damit gewährleistet. Als GUI-Framework kommt Jameica zum Einsatz.
-OpenJVerein ist ein github fork des [Jameica](https://www.willuhn.de/products/jameica/) Plugins [JVerein](https://www.jverein.de/). Die Entwicklung der Projekte findet parallel statt. Durch die Weiterentwicklung von OpenJVerein ist keine Kompatibilität zu JVerein gegeben. Wenn man sich für OpenJVerein entscheidet ist eine **Rückkehr zu JVerein nicht möglich**.
+OpenJVerein ist ein github fork des [Jameica](https://www.willuhn.de/products/jameica/) Plugins [JVerein](https://www.jverein.de/). Die Entwicklung der Projekte findet parallel statt. Durch die Weiterentwicklung von OpenJVerein ist keine Kompatibilität zu JVerein gegeben. Wenn man sich für OpenJVerein entscheidet kann eine problemlose Rückkehr zu JVerein, aufgrund der Datenbankstruktur, nicht garantiert werden.
 
 Mitmachen?
 ----------
