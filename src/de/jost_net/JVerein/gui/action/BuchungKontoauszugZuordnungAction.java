@@ -99,8 +99,6 @@ public class BuchungKontoauszugZuordnungAction implements Action
             buchung.setAuszugsnummer(auszugsnummer);
             buchung.setBlattnummer(blattnummer);
             buchung.store();
-            Application.getMessagingFactory().sendMessage(
-                new BuchungMessage(buchung));
           }
         }
         control.getBuchungsList();
