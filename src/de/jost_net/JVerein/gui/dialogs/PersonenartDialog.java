@@ -51,7 +51,7 @@ public class PersonenartDialog extends AbstractDialog<String>
     LabelGroup options = new LabelGroup(parent, "Personenart");
     options.addInput(this.getPersonenartInput());
     ButtonArea b = new ButtonArea();
-    b.addButton("weiter", new Action()
+    b.addButton("Weiter", new Action()
     {
 
       @Override
@@ -61,8 +61,8 @@ public class PersonenartDialog extends AbstractDialog<String>
         selected = s.substring(0, 1);
         close();
       }
-    });
-    b.addButton("abbrechen", new Action()
+    }, null, false, "go-next.png");
+    b.addButton("Abbrechen", new Action()
     {
 
       @Override
@@ -70,7 +70,7 @@ public class PersonenartDialog extends AbstractDialog<String>
       {
         throw new OperationCanceledException();
       }
-    });
+    }, null, false, "process-stop.png");
     b.paint(parent);
   }
 

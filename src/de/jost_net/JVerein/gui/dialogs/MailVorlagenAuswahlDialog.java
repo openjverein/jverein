@@ -53,7 +53,7 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
     control.getMailVorlageTable().paint(parent);
 
     ButtonArea b = new ButtonArea();
-    b.addButton("verwenden", new Action()
+    b.addButton("Verwenden", new Action()
     {
 
       @Override
@@ -69,8 +69,8 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
         }
         close();
       }
-    });
-    b.addButton("ohne Mail-Vorlage", new Action()
+    }, null, true, "ok.png");
+    b.addButton("Ohne Mail-Vorlage", new Action()
     {
 
       @Override
@@ -78,7 +78,7 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
       {
         close();
       }
-    });
+    }, null, true, "go-next.png");
     b.paint(parent);
   }
 

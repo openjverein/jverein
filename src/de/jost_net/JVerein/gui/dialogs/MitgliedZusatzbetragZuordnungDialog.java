@@ -67,7 +67,11 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
     part.paint(parent);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("zuordnen", new Action()
+    
+    buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part)
+        , null, false, "text-x-generic.png");
+    
+    buttons.addButton("Zuordnen", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -117,17 +121,16 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
 
         close();
       }
-    }, null, true);
-    buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part));
+    }, null, true, "ok.png");
 
-    buttons.addButton("abbrechen", new Action()
+    buttons.addButton("Abbrechen", new Action()
     {
       @Override
       public void handleAction(Object context)
       {
         throw new OperationCanceledException();
       }
-    });
+    }, null, false, "process-stop.png");
     buttons.paint(parent);
     getShell().setMinimumSize(getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT));
   }

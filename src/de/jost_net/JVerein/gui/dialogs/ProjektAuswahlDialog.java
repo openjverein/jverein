@@ -99,7 +99,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
         selected = null;
         close();
       }
-    }, null, false, "undo.png");
+    }, null, false, "user-trash-full.png");
     buttons.addButton("Abbrechen", new Action()
     {
 

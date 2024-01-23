@@ -82,7 +82,7 @@ public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
     lgBank.addLabelPair("BIC", control.getBic());
     // lgBank.addLabelPair("Kontoinhaber", control.getKontoinhaber());
     ButtonArea b = new ButtonArea();
-    b.addButton("weiter", new Action()
+    b.addButton("Weiter", new Action()
     {
 
       @Override
@@ -130,8 +130,8 @@ public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
           return;
         }
       }
-    });
-    b.addButton("abbrechen", new Action()
+    }, null, true, "go-next.png");
+    b.addButton("Abbrechen", new Action()
     {
 
       @Override
@@ -139,7 +139,7 @@ public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
       {
         throw new OperationCanceledException();
       }
-    });
+    }, null, false, "process-stop.png");
     b.paint(parent);
   }
 

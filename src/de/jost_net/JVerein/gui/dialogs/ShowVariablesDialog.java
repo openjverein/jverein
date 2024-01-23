@@ -98,7 +98,7 @@ public class ShowVariablesDialog extends AbstractDialog<Object>
       {
         close();
       }
-    });
+    }, null, true, "ok.png");
     buttons.paint(parent);
   }
 

@@ -58,14 +58,14 @@ public class ZusatzbetragVorlageDialog
   {
     this.getZusatzbetragVorlagen().paint(parent);
     ButtonArea b = new ButtonArea();
-    b.addButton("abbrechen", new Action()
+    b.addButton("Abbrechen", new Action()
     {
       @Override
       public void handleAction(Object context)
       {
         throw new OperationCanceledException();
       }
-    });
+    }, null, false, "process-stop.png");
     b.paint(parent);
   }
 

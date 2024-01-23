@@ -59,7 +59,7 @@ public class MitgliedArbeitseinsatzZuordnungDialog extends
     part.paint(parent);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("zuordnen", new Action()
+    buttons.addButton("Zuordnen", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -78,15 +78,15 @@ public class MitgliedArbeitseinsatzZuordnungDialog extends
         }
         close();
       }
-    }, null, true);
-    buttons.addButton("abbrechen", new Action()
+    }, null, true, "ok.png");
+    buttons.addButton("Abbrechen", new Action()
     {
       @Override
       public void handleAction(Object context)
       {
         throw new OperationCanceledException();
       }
-    });
+    }, null, false, "process-stop.png");
     buttons.paint(parent);
     getShell().setMinimumSize(getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT));
   }

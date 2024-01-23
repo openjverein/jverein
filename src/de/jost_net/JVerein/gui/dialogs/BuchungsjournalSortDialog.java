@@ -17,6 +17,7 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -60,7 +61,7 @@ public class BuchungsjournalSortDialog extends AbstractDialog<String>
     super(position);
 
     setTitle("Buchungsjournal-Sortierung");
-    setSize(300, 200);
+    setSize(300, 140);
   }
 
   @Override
@@ -69,22 +70,22 @@ public class BuchungsjournalSortDialog extends AbstractDialog<String>
     LabelGroup options = new LabelGroup(parent, "Ihre Auswahl");
     options.addInput(this.getSortierung());
     ButtonArea b = new ButtonArea();
-    b.addButton("weiter", new Action()
+    b.addButton("Weiter", new Action()
     {
       @Override
       public void handleAction(Object context)
       {
         close();
       }
-    });
-    b.addButton("abbrechen", new Action()
+    }, null, false, "go-next.png");
+    b.addButton("Abbrechen", new Action()
     {
       @Override
       public void handleAction(Object context)
       {
         throw new OperationCanceledException();
       }
-    });
+    }, null, false, "process-stop.png");
     b.paint(parent);
   }
 

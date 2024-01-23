@@ -117,7 +117,7 @@ public class BuchungenMitgliedskontenZuordnungVorschauDialog extends AbstractDia
       {
         close();
       }
-    }, null, false, "window-close.png");
+    }, null, false, "process-stop.png");
     b.paint(parent);
   }
 

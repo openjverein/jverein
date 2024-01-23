@@ -113,7 +113,7 @@ public class KontoauszugZuordnungDialog extends AbstractDialog<Object>
         ueberschr = true;
         close();
       }
-    }, null, false, "undo.png");
+    }, null, false, "user-trash-full.png");
     buttons.addButton("Abbrechen", new Action()
     {
 

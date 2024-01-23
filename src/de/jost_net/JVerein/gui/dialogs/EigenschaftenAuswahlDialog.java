@@ -120,7 +120,7 @@ public class EigenschaftenAuswahlDialog
         }
         close();
       }
-    });
+    }, null, true, "ok.png");
     buttons.paint(parent);
   }
 

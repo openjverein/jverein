@@ -49,7 +49,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
     super(position);
     this.control = control;
     setTitle("Mail-Empfänger");
-    setSize(1000, 450);
+    setSize(650, 450);
   }
 
   @Override
@@ -92,8 +92,46 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
         }
       }
     });
+    
+    b.addButton("Alle", new Action()
+    {
+      @Override
+      public void handleAction(Object context)
+      {
+        try
+        {
+          for (Object o : control.getMitgliedMitMail().getItems(false))
+          {
+            control.getMitgliedMitMail().setChecked(o, true);
+          }
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+    });
 
-    b.addButton("aktive Mitglieder", new Action()
+    b.addButton("Keinen", new Action()
+    {
+      @Override
+      public void handleAction(Object context)
+      {
+        try
+        {
+          for (Object o : control.getMitgliedMitMail().getItems(false))
+          {
+            control.getMitgliedMitMail().setChecked(o, false);
+          }
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+    });
+    
+    b.addButton("Aktive Mitglieder", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -118,7 +156,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
       }
     });
 
-    b.addButton("inaktive Mitglieder", new Action()
+    b.addButton("Inaktive Mitglieder", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -143,7 +181,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
       }
     });
 
-    b.addButton("alle Adressen", new Action()
+    b.addButton("Alle Adressen", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -166,7 +204,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
       }
     });
 
-    b.addButton("aktive Mitglieder und Adressen", new Action()
+    b.addButton("Aktive Mitglieder und Adressen", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -195,44 +233,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
     b.paint(parent);
 
     ButtonArea c = new ButtonArea();
-    c.addButton("alle", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        try
-        {
-          for (Object o : control.getMitgliedMitMail().getItems(false))
-          {
-            control.getMitgliedMitMail().setChecked(o, true);
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-    });
-
-    c.addButton("keinen", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        try
-        {
-          for (Object o : control.getMitgliedMitMail().getItems(false))
-          {
-            control.getMitgliedMitMail().setChecked(o, false);
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-    });
-    c.addButton("übernehmen", new Action()
+    c.addButton("Übernehmen", new Action()
     {
 
       @Override
@@ -255,16 +256,16 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
         }
         close();
       }
-    });
+    }, null, true, "ok.png");
 
-    c.addButton("abbrechen", new Action()
+    c.addButton("Abbrechen", new Action()
     {
       @Override
       public void handleAction(Object context)
       {
         throw new OperationCanceledException();
       }
-    });
+    }, null, false, "process-stop.png");
 
     c.paint(parent);
   }

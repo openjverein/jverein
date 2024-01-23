@@ -47,14 +47,14 @@ public class QRCodeImageDialog extends AbstractDialog<Object>
   {
     image.paint(parent);
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("schlieﬂen", new Action()
+    buttons.addButton("Schlieﬂen", new Action()
     {
       @Override
       public void handleAction(Object context)
       {
         close();
       }
-    });
+    }, null, true, "process-stop.png");
     buttons.paint(parent);
   }
 

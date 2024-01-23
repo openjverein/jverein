@@ -63,7 +63,7 @@ public class SammelueberweisungAuswahlDialog
   {
     this.getSammelueberweisungen().paint(parent);
     ButtonArea b = new ButtonArea();
-    b.addButton("abbrechen", new Action()
+    b.addButton("Abbrechen", new Action()
     {
 
       @Override
@@ -71,7 +71,7 @@ public class SammelueberweisungAuswahlDialog
       {
         throw new OperationCanceledException();
       }
-    });
+    }, null, false, "process-stop.png");
     b.paint(parent);
   }
 

@@ -135,7 +135,7 @@ public class ExportDialog extends AbstractDialog<Object>
       {
         close();
       }
-    }, null, false, "stop-circle.png");
+    }, null, false, "process-stop.png");
     group.addButtonArea(buttons);
 
     getShell()

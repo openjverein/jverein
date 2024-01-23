@@ -53,7 +53,7 @@ public class DokumentDialog extends AbstractDialog<AbstractDokument>
   {
     getPart().paint(parent);
     ButtonArea b = new ButtonArea();
-    b.addButton("speichern", new Action()
+    b.addButton("Speichern", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -70,15 +70,15 @@ public class DokumentDialog extends AbstractDialog<AbstractDokument>
         }
         close();
       }
-    });
-    b.addButton("abbrechen", new Action()
+    }, null, true, "ok.png");
+    b.addButton("Abbrechen", new Action()
     {
       @Override
       public void handleAction(Object context)
       {
         throw new OperationCanceledException();
       }
-    });
+    }, null, false, "process-stop.png");
     b.paint(parent);
   }
 

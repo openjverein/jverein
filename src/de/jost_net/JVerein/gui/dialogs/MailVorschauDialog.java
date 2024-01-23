@@ -157,7 +157,7 @@ public class MailVorschauDialog extends AbstractDialog<Object>
       {
         close();
       }
-    });
+    }, null, false, "process-stop.png");
     b.paint(parent);
   }
 

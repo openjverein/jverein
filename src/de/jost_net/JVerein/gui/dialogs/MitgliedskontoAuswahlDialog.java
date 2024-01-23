@@ -143,6 +143,9 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     mitgliedlist.paint(tabSollIst.getComposite());
 
     ButtonArea b = new ButtonArea();
+    
+    b.addButton("Hilfe", new DokumentationAction(),
+        DokumentationUtil.MITGLIEDSKONTO_AUSWAHL, false, "question-circle.png");
 
     b.addButton("Übernehmen", new Action()
     {
@@ -180,10 +183,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
         choosen = null;
         close();
       }
-    }, null, false, "undo.png");
-    
-    b.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIEDSKONTO_AUSWAHL, false, "question-circle.png");
+    }, null, false, "user-trash-full.png");
 
     b.addButton("Abbrechen", new Action()
     {
