@@ -44,9 +44,9 @@ public class ZusatzbetraegeMenu extends ContextMenu
         new ZusatzbetraegeNaechsteFaelligkeitAction(table),
         "calendar-alt.png"));
     addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedSingleContextMenuItem("erneut ausführen",
+    addItem(new CheckedSingleContextMenuItem("Erneut ausführen",
         new ZusatzbetraegeResetAction(table), "sync.png"));
-    addItem(new CheckedContextMenuItem("löschen...",
-        new ZusatzbetraegeDeleteAction(), "trash-alt.png"));
+    addItem(new CheckedContextMenuItem("Löschen...",
+        new ZusatzbetraegeDeleteAction(), "user-trash-full.png"));
   }
 }

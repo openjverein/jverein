@@ -46,16 +46,16 @@ public class SplitBuchungMenu extends ContextMenu
 
   public SplitBuchungMenu(BuchungsControl control)
   {
-    addItem(new CheckedSplitBuchungItem("bearbeiten", new BuchungAction(true),
+    addItem(new CheckedSplitBuchungItem("Bearbeiten", new BuchungAction(true),
         "edit.png"));
     addItem(new CheckedSplitBuchungItem("Buchungsart zuordnen",
-        new BuchungBuchungsartZuordnungAction(control), "zuordnung.png"));
+        new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedSplitBuchungItem("Mitgliedskonto zuordnen",
-        new BuchungMitgliedskontoZuordnungAction(control), "exchange-alt.png"));
+        new BuchungMitgliedskontoZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedSplitBuchungItem("Projekt zuordnen",
-        new BuchungProjektZuordnungAction(control), "exchange-alt.png"));
+        new BuchungProjektZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedSplitBuchungItem("Kontoauszug zuordnen",
-        new BuchungKontoauszugZuordnungAction(control), "zuordnung.png"));
+        new BuchungKontoauszugZuordnungAction(control), "view-refresh.png"));
     addItem(new DeleteSplitBuchungItem());
     addItem(new RestoreSplitBuchungItem());
   }
@@ -90,7 +90,7 @@ public class SplitBuchungMenu extends ContextMenu
   {
     private DeleteSplitBuchungItem()
     {
-      super("löschen...", new BuchungDeleteAction(true), "trash-alt.png");
+      super("Löschen...", new BuchungDeleteAction(true), "user-trash-full.png");
     }
 
     @Override
@@ -116,7 +116,7 @@ public class SplitBuchungMenu extends ContextMenu
   {
     private RestoreSplitBuchungItem()
     {
-      super("wiederherstellen", new Action()
+      super("Wiederherstellen", new Action()
       {
         @Override
         public void handleAction(Object context) throws ApplicationException
@@ -154,7 +154,7 @@ public class SplitBuchungMenu extends ContextMenu
             Logger.error(fehler, e);
           }
         }
-      }, "undo.png");
+      }, "edit-undo.png");
     }
 
     @Override

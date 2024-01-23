@@ -31,7 +31,7 @@ public class AnfangsbestandMenu extends ContextMenu
    */
   public AnfangsbestandMenu()
   {
-    addItem(new CheckedContextMenuItem("löschen...",
-        new AnfangsbestandDeleteAction(), "trash-alt.png"));
+    addItem(new CheckedContextMenuItem("Löschen...",
+        new AnfangsbestandDeleteAction(), "user-trash-full.png"));
   }
 }

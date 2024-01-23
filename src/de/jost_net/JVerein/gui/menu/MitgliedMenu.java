@@ -63,15 +63,15 @@ public class MitgliedMenu extends ContextMenu
    */
   public MitgliedMenu(Action detailaction) throws RemoteException
   {
-    addItem(new CheckedSingleContextMenuItem("bearbeiten", detailaction,
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten", detailaction,
         "edit.png"));
-    addItem(new CheckedSingleContextMenuItem("duplizieren",
+    addItem(new CheckedSingleContextMenuItem("Duplizieren",
         new MitgliedDuplizierenAction(), "copy.png"));
-    addItem(new CheckedContextMenuItem("in Zwischenablage kopieren",
+    addItem(new CheckedContextMenuItem("In Zwischenablage kopieren",
         new MitgliedInZwischenablageKopierenAction(), "copy.png"));
     if (detailaction instanceof AdresseDetailAction)
     {
-      addItem(new CheckedContextMenuItem("zu Mitglied umwandeln", new Action()
+      addItem(new CheckedContextMenuItem("Zu Mitglied umwandeln", new Action()
       {
 
         @Override
@@ -105,8 +105,8 @@ public class MitgliedMenu extends ContextMenu
         }
       }, "arrows-alt-h.png"));
     }
-    addItem(new CheckedSingleContextMenuItem("löschen...",
-        new MitgliedDeleteAction(), "trash-alt.png"));
+    addItem(new CheckedSingleContextMenuItem("Löschen...",
+        new MitgliedDeleteAction(), "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Mail senden ...",
         new MitgliedMailSendenAction(), "envelope-open.png"));
@@ -124,7 +124,7 @@ public class MitgliedMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Zusatzbeträge zuweisen",
         new MitgliedZusatzbetraegeZuordnungAction(), "coins.png"));
     addItem(new CheckedContextMenuItem("Kontoauszug", new KontoauszugAction(),
-        "rechnung.png"));
+        "receipt.png"));
     addItem(new CheckedSingleContextMenuItem("Spendenbescheinigung",
         new SpendenbescheinigungAction(), "file-invoice.png"));
     addItem(new CheckedContextMenuItem("Personalbogen",

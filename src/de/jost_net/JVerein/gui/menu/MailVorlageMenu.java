@@ -28,7 +28,7 @@ public class MailVorlageMenu extends ContextMenu
 
   public MailVorlageMenu()
   {
-    addItem(new CheckedContextMenuItem("löschen...",
-        new MailVorlageDeleteAction(), "trash-alt.png"));
+    addItem(new CheckedContextMenuItem("Löschen...",
+        new MailVorlageDeleteAction(), "user-trash-full.png"));
   }
 }

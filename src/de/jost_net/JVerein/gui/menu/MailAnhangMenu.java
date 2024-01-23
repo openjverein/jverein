@@ -30,9 +30,9 @@ public class MailAnhangMenu extends ContextMenu
 
   public MailAnhangMenu(MailControl control)
   {
-    addItem(new CheckedContextMenuItem("anzeigen",
+    addItem(new CheckedContextMenuItem("Anzeigen",
         new MailAnhangAnzeigeAction(), "eye.png"));
-    addItem(new CheckedContextMenuItem("entfernen",
-        new MailAnhangDeleteAction(control), "trash-alt.png"));
+    addItem(new CheckedContextMenuItem("Entfernen",
+        new MailAnhangDeleteAction(control), "user-trash-full.png"));
   }
 }

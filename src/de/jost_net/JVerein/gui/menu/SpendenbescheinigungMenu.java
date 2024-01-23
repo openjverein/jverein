@@ -41,11 +41,11 @@ public class SpendenbescheinigungMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Drucken (individuell)",
         new SpendenbescheinigungPrintAction(false), "file-pdf.png"));
     addItem(ContextMenuItem.SEPARATOR);
-    addItem(new DuplicateMenuItem("als Vorlage für neue Spende",
+    addItem(new DuplicateMenuItem("Als Vorlage für neue Spende",
         new SpendenbescheinigungDuplizierenAction(), "copy.png"));
     addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedContextMenuItem("löschen...",
-        new SpendenbescheinigungDeleteAction(), "trash-alt.png"));
+    addItem(new CheckedContextMenuItem("Löschen...",
+        new SpendenbescheinigungDeleteAction(), "user-trash-full.png"));
   }
 
   private static class DuplicateMenuItem extends CheckedContextMenuItem

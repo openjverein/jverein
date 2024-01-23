@@ -47,24 +47,24 @@ public class BuchungMenu extends ContextMenu
 
   public BuchungMenu(BuchungsControl control)
   {
-    addItem(new ContextMenuItem("neue Buchung", new BuchungNeuAction(),
+    addItem(new ContextMenuItem("Neue Buchung", new BuchungNeuAction(),
         "file.png"));
-    addItem(new CheckedSingleContextMenuItem("bearbeiten",
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new BuchungAction(false), "edit.png"));
-    addItem(new SingleBuchungItem("duplizieren", new BuchungDuplizierenAction(),
+    addItem(new SingleBuchungItem("Duplizieren", new BuchungDuplizierenAction(),
         "copy.png"));
     addItem(new SingleBuchungItem("Splitbuchung", new SplitBuchungAction(),
         "edit.png"));
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
-        new BuchungBuchungsartZuordnungAction(control), "exchange-alt.png"));
+        new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Mitgliedskonto zuordnen",
-        new BuchungMitgliedskontoZuordnungAction(control), "exchange-alt.png"));
+        new BuchungMitgliedskontoZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Projekt zuordnen",
-        new BuchungProjektZuordnungAction(control), "exchange-alt.png"));
+        new BuchungProjektZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Kontoauszug zuordnen",
-        new BuchungKontoauszugZuordnungAction(control), "exchange-alt.png"));
-    addItem(new BuchungItem("löschen...", new BuchungDeleteAction(false),
-        "trash-alt.png"));
+        new BuchungKontoauszugZuordnungAction(control), "view-refresh.png"));
+    addItem(new BuchungItem("Löschen...", new BuchungDeleteAction(false),
+        "user-trash-full.png"));
   }
 
   private static class SingleBuchungItem extends CheckedSingleContextMenuItem

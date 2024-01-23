@@ -44,7 +44,7 @@ public class MitgliedskontoMenu extends ContextMenu
    */
   public MitgliedskontoMenu()
   {
-    addItem(new MitgliedItem("neue Sollbuchung",
+    addItem(new MitgliedItem("Neue Sollbuchung",
         new MitgliedskontoDetailSollNeuAction(), "calculator.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SollItem("Sollbuchung bearbeiten",

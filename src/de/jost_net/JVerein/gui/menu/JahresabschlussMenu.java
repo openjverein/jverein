@@ -31,7 +31,7 @@ public class JahresabschlussMenu extends ContextMenu
    */
   public JahresabschlussMenu()
   {
-    addItem(new CheckedContextMenuItem("löschen...",
-        new JahresabschlussDeleteAction(), "trash-alt.png"));
+    addItem(new CheckedContextMenuItem("Löschen...",
+        new JahresabschlussDeleteAction(), "user-trash-full.png"));
   }
 }

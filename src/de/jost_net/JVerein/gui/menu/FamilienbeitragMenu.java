@@ -31,7 +31,7 @@ public class FamilienbeitragMenu extends ContextMenu
   public FamilienbeitragMenu()
   {
     addItem(new AngehoerigerItem("Aus Familienverband entfernen",
-        new FamilienmitgliedEntfernenAction(), "trash-alt.png"));
+        new FamilienmitgliedEntfernenAction(), "user-trash-full.png"));
   }
 
   private static class AngehoerigerItem extends CheckedContextMenuItem

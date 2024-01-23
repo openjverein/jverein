@@ -31,7 +31,7 @@ public class AdresstypMenu extends ContextMenu
    */
   public AdresstypMenu()
   {
-    addItem(new CheckedContextMenuItem("löschen...",
-        new AdresstypDeleteAction(), "trash-alt.png"));
+    addItem(new CheckedContextMenuItem("Löschen...",
+        new AdresstypDeleteAction(), "user-trash-full.png"));
   }
 }

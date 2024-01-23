@@ -31,7 +31,7 @@ public class ZusatzbetragVorlageMenu extends ContextMenu
    */
   public ZusatzbetragVorlageMenu()
   {
-    addItem(new CheckedContextMenuItem("löschen...",
-        new ZusatzbetragVorlageDeleteAction(), "trash-alt.png"));
+    addItem(new CheckedContextMenuItem("Löschen...",
+        new ZusatzbetragVorlageDeleteAction(), "user-trash-full.png"));
   }
 }
