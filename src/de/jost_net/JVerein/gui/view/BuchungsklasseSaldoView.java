@@ -132,8 +132,8 @@ public class BuchungsklasseSaldoView extends AbstractView
         this);
 
     LabelGroup group = new LabelGroup(getParent(), "Zeitraum");
-    group.addLabelPair("von", control.getDatumvon());
-    group.addLabelPair("bis", control.getDatumbis());
+    group.addLabelPair("Von", control.getDatumvon());
+    group.addLabelPair("Bis", control.getDatumbis());
 
     DBIterator<Buchung> list = Einstellungen.getDBService().createList(Buchung.class);
     if (list == null || !list.hasNext())
@@ -156,7 +156,7 @@ public class BuchungsklasseSaldoView extends AbstractView
     quickGroup.addPart(quickBtns);
 
     ButtonArea buttons = new ButtonArea();
-    Button button = new Button("suchen", new Action()
+    Button button = new Button("Suchen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException

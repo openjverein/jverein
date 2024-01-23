@@ -54,7 +54,7 @@ public class EinstellungenAbrechnungView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN, false, "question-circle.png");
-    buttons.addButton("speichern", new Action()
+    buttons.addButton("Speichern", new Action()
     {
 
       @Override
@@ -62,7 +62,7 @@ public class EinstellungenAbrechnungView extends AbstractView
       {
         control.handleStoreAbrechnung();
       }
-    }, null, true, "save.png");
+    }, null, true, "document-save.png");
     buttons.paint(this.getParent());
   }
 }

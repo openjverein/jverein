@@ -38,7 +38,7 @@ public class JahresabschlussListView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.JAHRESABSCHLUSS, false, "question-circle.png");
-    buttons.addButton("neu", new JahresabschlussDetailAction(), null, false,
+    buttons.addButton("Neu", new JahresabschlussDetailAction(), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

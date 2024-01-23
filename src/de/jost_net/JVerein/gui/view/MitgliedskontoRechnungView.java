@@ -41,11 +41,11 @@ public class MitgliedskontoRechnungView extends AbstractView
     cont.addHeadline("Parameter");
     if (this.getCurrentObject() == null)
     {
-      cont.addLabelPair("von Datum",
+      cont.addLabelPair("Von Datum",
           control.getVondatum(MitgliedskontoControl.TYP.RECHNUNG.name()));
-      cont.addLabelPair("bis Datum",
+      cont.addLabelPair("Bis Datum",
           control.getBisdatum(MitgliedskontoControl.TYP.RECHNUNG.name()));
-      cont.addLabelPair("ohne Abbucher", control.getOhneAbbucher());
+      cont.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
     }
     cont.addLabelPair("Formular", control.getFormular(FormularArt.RECHNUNG));
     cont.addInput(control.getAusgabeart());
@@ -63,7 +63,7 @@ public class MitgliedskontoRechnungView extends AbstractView
     buttons.addButton(new Button("Export",
         new MitgliedskontoExportAction(EXPORT_TYP.RECHNUNGEN,
             getCurrentObject()),
-        control, false, "save.png"));
+        control, false, "document-save.png"));
     buttons.addButton(control.getStartRechnungButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }

@@ -40,7 +40,7 @@ public class JahressaldoView extends AbstractView
     group.addLabelPair("Jahr", control.getSuchJahr());
 
     ButtonArea buttons = new ButtonArea();
-    Button button = new Button("suchen", new Action()
+    Button button = new Button("Suchen", new Action()
     {
 
       @Override

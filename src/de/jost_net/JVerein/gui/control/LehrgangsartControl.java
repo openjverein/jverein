@@ -97,7 +97,7 @@ public class LehrgangsartControl extends AbstractControl
       d = null;
     }
     this.von = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.von.setTitle("von/am");
+    this.von.setTitle("Von/am");
     this.von.setText("Bitte Beginn oder Tag der Veranstaltung wählen");
     return von;
   }
@@ -114,7 +114,7 @@ public class LehrgangsartControl extends AbstractControl
       d = null;
     }
     this.bis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.bis.setTitle("bis");
+    this.bis.setTitle("Bis");
     this.bis.setText("Bitte Ende der Veranstaltung wählen");
     return bis;
   }

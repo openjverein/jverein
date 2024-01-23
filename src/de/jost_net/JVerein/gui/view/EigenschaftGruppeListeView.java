@@ -39,9 +39,9 @@ public class EigenschaftGruppeListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EIGENSCHAFTGRUPPE, false, "question-circle.png");
-    buttons.addButton("löschen", new EigenschaftGruppeDeleteAction(),
-        control.getEigenschaftGruppeList(), false, "trash-alt.png");
-    buttons.addButton("neu", new EigenschaftGruppeDetailAction(true), null,
+    buttons.addButton("Löschen", new EigenschaftGruppeDeleteAction(),
+        control.getEigenschaftGruppeList(), false, "user-trash-full.png");
+    buttons.addButton("Neu", new EigenschaftGruppeDetailAction(true), null,
         false, "document-new.png");
     buttons.paint(this.getParent());
   }

@@ -38,7 +38,7 @@ public class FormularListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
-    buttons.addButton("neu", new FormularAction(), null, false,
+    buttons.addButton("Neu", new FormularAction(), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

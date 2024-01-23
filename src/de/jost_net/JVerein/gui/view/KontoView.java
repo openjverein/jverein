@@ -44,7 +44,7 @@ public class KontoView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KONTEN, false, "question-circle.png");
-    buttons.addButton("speichern", new Action()
+    buttons.addButton("Speichern", new Action()
     {
 
       @Override
@@ -52,7 +52,7 @@ public class KontoView extends AbstractView
       {
         control.handleStore();
       }
-    }, null, true, "save.png");
+    }, null, true, "document-save.png");
     buttons.paint(this.getParent());
   }
 }

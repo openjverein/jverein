@@ -38,7 +38,7 @@ public class BuchungsklasseListView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGSKLASSEN, false, "question-circle.png");
-    buttons.addButton("neu", new BuchungsklasseAction(), null, false,
+    buttons.addButton("Neu", new BuchungsklasseAction(), null, false,
         "file.png");
     buttons.paint(this.getParent());
   }

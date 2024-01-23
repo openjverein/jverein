@@ -52,7 +52,7 @@ public class BuchungsuebernahmeControl extends AbstractControl
 
   public Button getStartButton()
   {
-    Button button = new Button("starten", new Action()
+    Button button = new Button("Starten", new Action()
     {
       @Override
       public void handleAction(Object context)

@@ -40,15 +40,15 @@ public class FormularfeldView extends AbstractView
     LabelGroup group = new LabelGroup(getParent(), "Formularfeld");
     group.addLabelPair("Name", control.getName());
     group.addLabelPair("Seite", control.getSeite());
-    group.addLabelPair("von links", control.getX());
-    group.addLabelPair("von unten", control.getY());
+    group.addLabelPair("Von links", control.getX());
+    group.addLabelPair("Von unten", control.getY());
     group.addLabelPair("Font", control.getFont());
     group.addLabelPair("Font-Höhe", control.getFontsize());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
-    buttons.addButton("speichern", new Action()
+    buttons.addButton("Speichern", new Action()
     {
 
       @Override
@@ -56,7 +56,7 @@ public class FormularfeldView extends AbstractView
       {
         control.handleStore();
       }
-    }, null, true, "save.png");
+    }, null, true, "document-save.png");
     buttons.paint(this.getParent());
   }
 }

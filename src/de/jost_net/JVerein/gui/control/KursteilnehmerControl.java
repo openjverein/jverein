@@ -543,7 +543,7 @@ public class KursteilnehmerControl extends AbstractControl
 
   public Button getStartAuswertungButton()
   {
-    Button b = new Button("starten", new Action()
+    Button b = new Button("Starten", new Action()
     {
 
       @Override

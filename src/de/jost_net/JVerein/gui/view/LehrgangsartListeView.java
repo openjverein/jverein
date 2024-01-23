@@ -38,7 +38,7 @@ public class LehrgangsartListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LEHRGANG, false, "question-circle.png");
-    buttons.addButton("neu", new LehrgangsartAction(), null, false,
+    buttons.addButton("Neu", new LehrgangsartAction(), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

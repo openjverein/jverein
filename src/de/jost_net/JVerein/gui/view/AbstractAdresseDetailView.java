@@ -204,21 +204,21 @@ public abstract class AbstractAdresseDetailView extends AbstractView
       // R.M. 27.01.2013 Mitglieder sollten aus dem Dialog raus kopiert werden
       // können
       buttons
-          .addButton(new Button("duplizieren", new MitgliedDuplizierenAction(),
+          .addButton(new Button("Duplizieren", new MitgliedDuplizierenAction(),
               control.getCurrentObject(), false, "copy.png"));
     }
     buttons.addButton("Mail", new MitgliedMailSendenAction(),
         getCurrentObject(), false, "envelope-open.png");
     // buttons.addButton("neue Mail", new MailDetailAction(),
     // control.getCurrentObject(), false, "document-new.png");
-    buttons.addButton("neu", (isMitgliedDetail() ? new MitgliedDetailAction()
+    buttons.addButton("Neu", (isMitgliedDetail() ? new MitgliedDetailAction()
         : new AdresseDetailAction()), null, false, "file.png");
 
-    buttons.addButton("löschen",
+    buttons.addButton("Löschen",
         (isMitgliedDetail() ? new MitgliedDeleteAction()
             : new AdresseDeleteAction()),
-        control.getCurrentObject(), false, "trash-alt.png");
-    buttons.addButton("speichern", new Action()
+        control.getCurrentObject(), false, "user-trash-full.png");
+    buttons.addButton("Speichern", new Action()
     {
 
       @Override
@@ -234,7 +234,7 @@ public abstract class AbstractAdresseDetailView extends AbstractView
           Logger.error("Fehler", e);
         }
       }
-    }, null, true, "save.png");
+    }, null, true, "document-save.png");
     buttons.paint(parent);
   }
 

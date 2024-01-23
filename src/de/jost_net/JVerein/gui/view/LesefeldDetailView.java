@@ -93,7 +93,7 @@ public class LesefeldDetailView extends AbstractView implements Listener
         new OpenInsertVariableDialogAction(), null, false, "zuordnung.png");
     buttonArea.addButton(button);
     button = new Button("Speichern und zurück", new SaveLesefeldAction(), null,
-        false, "save.png");
+        false, "document-save.png");
     buttonArea.addButton(button);
     button = new Button("Abbrechen und zurück", new AbortEditLesefeldAction(),
         null, false, "stop-circle.png");

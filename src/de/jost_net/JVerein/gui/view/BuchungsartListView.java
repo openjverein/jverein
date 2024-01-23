@@ -43,7 +43,7 @@ public class BuchungsartListView extends AbstractView
     group.addLabelPair("Suche", control.getSuchtext());
 
     ButtonArea buttons1 = new ButtonArea();
-    Button button = new Button("suchen", new Action()
+    Button button = new Button("Suchen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
@@ -69,7 +69,7 @@ public class BuchungsartListView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGSART, false, "question-circle.png");
     buttons.addButton(control.getPDFAusgabeButton());
-    buttons.addButton("neu", new BuchungsartAction(), null, false, "file.png");
+    buttons.addButton("Neu", new BuchungsartAction(), null, false, "file.png");
     buttons.paint(this.getParent());
   }
 }

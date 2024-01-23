@@ -48,12 +48,12 @@ public class FormularfelderListeView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
     buttons.addButton("Export", new FormularfelderExportAction(),
-        getCurrentObject(), false, "save.png");
+        getCurrentObject(), false, "document-save.png");
     buttons.addButton("Import", new FormularfelderImportAction(control),
         getCurrentObject(), false, "file-import.png");
-    buttons.addButton("anzeigen", new FormularAnzeigeAction(),
+    buttons.addButton("Anzeigen", new FormularAnzeigeAction(),
         getCurrentObject(), false, "edit.png");
-    buttons.addButton("neu", new FormularfeldAction(), getCurrentObject(),
+    buttons.addButton("Neu", new FormularfeldAction(), getCurrentObject(),
         false, "document-new.png");
     buttons.paint(this.getParent());
   }

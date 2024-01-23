@@ -39,9 +39,9 @@ public class MitgliedskontoListeView extends AbstractView
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     group.addInput(control.getSuchName());
-    group.addLabelPair("von",
+    group.addLabelPair("Von",
         control.getVondatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO));
-    group.addLabelPair("bis",
+    group.addLabelPair("Bis",
         control.getBisdatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO));
     group.addLabelPair("Differenz", control.getDifferenz());
 
@@ -54,7 +54,7 @@ public class MitgliedskontoListeView extends AbstractView
         "question-circle.png");
     buttons.addButton(new Button("Export",
         new MitgliedskontoExportAction(EXPORT_TYP.MITGLIEDSKONTO, null),
-        control, false, "save.png"));
+        control, false, "document-save.png"));
     buttons.paint(this.getParent());
   }
 }

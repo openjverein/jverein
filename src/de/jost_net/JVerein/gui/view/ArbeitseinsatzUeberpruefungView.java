@@ -60,7 +60,7 @@ public class ArbeitseinsatzUeberpruefungView extends AbstractView
     group.addLabelPair("Auswertung", aui);
 
     ButtonArea buttons = new ButtonArea();
-    Button button = new Button("suchen", new Action()
+    Button button = new Button("Suchen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException

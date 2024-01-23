@@ -45,7 +45,7 @@ public class FelddefinitionDetailView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FELDDEFINITIONEN, false, "question-circle.png");
     buttons.addButton("Übersicht", new FelddefinitionenAction());
-    buttons.addButton("speichern", new Action()
+    buttons.addButton("Speichern", new Action()
     {
 
       @Override
@@ -53,7 +53,7 @@ public class FelddefinitionDetailView extends AbstractView
       {
         control.handleStore();
       }
-    }, null, true, "save.png");
+    }, null, true, "document-save.png");
     buttons.paint(this.getParent());
   }
 }

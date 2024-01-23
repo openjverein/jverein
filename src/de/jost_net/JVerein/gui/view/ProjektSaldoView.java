@@ -37,11 +37,11 @@ public class ProjektSaldoView extends AbstractView
     final ProjektSaldoControl control = new ProjektSaldoControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Zeitraum");
-    group.addLabelPair("von", control.getDatumvon());
-    group.addLabelPair("bis", control.getDatumbis());
+    group.addLabelPair("Von", control.getDatumvon());
+    group.addLabelPair("Bis", control.getDatumbis());
 
     ButtonArea buttons = new ButtonArea();
-    Button button = new Button("suchen", new Action()
+    Button button = new Button("Suchen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException

@@ -66,7 +66,7 @@ public class ZusatzbetragPart implements Part
   {
     LabelGroup group = new LabelGroup(parent, "Zusatzbetrag");
     group.addLabelPair("Startdatum", getStartdatum(true));
-    group.addLabelPair("nächste Fälligkeit", getFaelligkeit());
+    group.addLabelPair("Nächste Fälligkeit", getFaelligkeit());
     group.addLabelPair("Intervall", getIntervall());
     group.addLabelPair("Endedatum", getEndedatum());
     group.addLabelPair("Buchungstext", getBuchungstext());

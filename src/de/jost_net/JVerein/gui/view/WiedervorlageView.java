@@ -44,7 +44,7 @@ public class WiedervorlageView extends AbstractView
         DokumentationUtil.WIEDERVORLAGE, false, "question-circle.png");
     buttons.addButton("Mitglied", new MitgliedDetailAction(),
         control.getWiedervorlage().getMitglied(), false, "user-friends.png");
-    buttons.addButton("speichern", new Action()
+    buttons.addButton("Speichern", new Action()
     {
 
       @Override
@@ -52,7 +52,7 @@ public class WiedervorlageView extends AbstractView
       {
         control.handleStore();
       }
-    }, null, true, "save.png");
+    }, null, true, "document-save.png");
     buttons.paint(getParent());
   }
 }

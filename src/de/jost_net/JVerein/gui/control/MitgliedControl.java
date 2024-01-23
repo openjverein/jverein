@@ -2559,7 +2559,7 @@ public class MitgliedControl extends AbstractControl
 
   public Button getStartAuswertungButton()
   {
-    Button b = new Button("starten", new Action()
+    Button b = new Button("Starten", new Action()
     {
 
       @Override
@@ -2640,7 +2640,7 @@ public class MitgliedControl extends AbstractControl
 
   public Button getStartAdressAuswertungButton()
   {
-    Button b = new Button("starten", new Action()
+    Button b = new Button("Starten", new Action()
     {
 
       @Override
@@ -2664,7 +2664,7 @@ public class MitgliedControl extends AbstractControl
 
   public Button getStartStatistikButton()
   {
-    Button b = new Button("starten", new Action()
+    Button b = new Button("Starten", new Action()
     {
 
       @Override

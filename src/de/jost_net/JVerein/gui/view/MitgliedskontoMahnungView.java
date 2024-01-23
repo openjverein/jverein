@@ -42,9 +42,9 @@ public class MitgliedskontoMahnungView extends AbstractView
     cont.addHeadline("Parameter");
     if (this.getCurrentObject() == null)
     {
-      cont.addLabelPair("von Datum",
+      cont.addLabelPair("Von Datum",
           control.getVondatum(MitgliedskontoControl.TYP.MAHNUNG.name()));
-      cont.addLabelPair("bis Datum",
+      cont.addLabelPair("Bis Datum",
           control.getBisdatum(MitgliedskontoControl.TYP.MAHNUNG.name()));
     }
     cont.addLabelPair("Formular", control.getFormular(FormularArt.MAHNUNG));
@@ -61,7 +61,7 @@ public class MitgliedskontoMahnungView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAHNUNG, false, "question-circle.png");
     buttons.addButton(new Button("Export", new MitgliedskontoExportAction(
-        EXPORT_TYP.MAHNUNGEN, getCurrentObject()), control, false, "save.png"));
+        EXPORT_TYP.MAHNUNGEN, getCurrentObject()), control, false, "document-save.png"));
     buttons.addButton(control.getStartMahnungButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }

@@ -39,9 +39,9 @@ public class EigenschaftListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EIGENSCHAFT, false, "question-circle.png");
-    buttons.addButton("löschen", new EigenschaftDeleteAction(),
-        control.getEigenschaftList(), false, "trash-alt.png");
-    buttons.addButton("neu", new EigenschaftDetailAction(true), null, false,
+    buttons.addButton("Löschen", new EigenschaftDeleteAction(),
+        control.getEigenschaftList(), false, "user-trash-full.png");
+    buttons.addButton("Neu", new EigenschaftDetailAction(true), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

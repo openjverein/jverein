@@ -51,7 +51,7 @@ public class QIFMitgliederZuordnenView extends AbstractView
         "Ordnen Sie den externen Namen ein Mitglied aus JVerein zu.", true,
         Color.COMMENT);
     LabelGroup lblGroup = new LabelGroup(maincontainer.getComposite(), "");
-    lblGroup.addLabelPair("alle Mitglieder zeigen",
+    lblGroup.addLabelPair("Alle Mitglieder zeigen",
         detailControl.getCheckBoxAlleMitgliederZeigen());
     lblGroup.addLabelPair("JVerein Mitglied: ",
         detailControl.getMitgliederInput());
@@ -60,7 +60,7 @@ public class QIFMitgliederZuordnenView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.QIFIMPORT, false, "hquestion-circle.png");
     buttons.addButton("Zuordnung Speichern", detailControl.getSpeichernAction(),
-        null, false, "save.png");
+        null, false, "document-save.png");
     buttons.addButton("Zuordnung Entfernen",
         detailControl.getZuordnenEntfernenAction(), null, false, "eraser.png");
     buttons.paint(getParent());

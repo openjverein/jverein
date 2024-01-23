@@ -34,12 +34,12 @@ public class MitgliedNextBGruppeView extends AbstractView
     MitgliedNextBGruppeControl control = new MitgliedNextBGruppeControl(this);
 
     LabelGroup lblGroup = new LabelGroup(getParent(),
-        "neue Beitragsgruppe für Zukunft");
-    lblGroup.addLabelPair("für Mitglied", control.getMitgliedsnameInput());
-    lblGroup.addLabelPair("aktuelle Beitragsgruppe",
+        "Neue Beitragsgruppe für Zukunft");
+    lblGroup.addLabelPair("Für Mitglied", control.getMitgliedsnameInput());
+    lblGroup.addLabelPair("Aktuelle Beitragsgruppe",
         control.getBeitragsgruppeAktuellInput());
     lblGroup.addLabelPair("Ab Datum", control.getAbDatumInput());
-    lblGroup.addLabelPair("neue Beitragsgruppe",
+    lblGroup.addLabelPair("Neue Beitragsgruppe",
         control.getBeitragsgruppeInput());
     lblGroup.addLabelPair("Bemerkung", control.getBemerkungsInput());
 
@@ -47,7 +47,7 @@ public class MitgliedNextBGruppeView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIED, false, "question-circle.png");
     buttons.addButton("Speichern", control.getSpeichernAction(), null, false,
-        "save.png");
+        "document-save.png");
     buttons.paint(getParent());
   }
 }

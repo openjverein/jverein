@@ -34,8 +34,8 @@ public class AuswertungKursteilnehmerView extends AbstractView
     final KursteilnehmerControl control = new KursteilnehmerControl(this);
 
     LabelGroup grAbu = new LabelGroup(getParent(), "Abbuchungsdatum");
-    grAbu.addLabelPair("von", control.getAbbuchungsdatumvon());
-    grAbu.addLabelPair("bis", control.getAbbuchungsdatumbis());
+    grAbu.addLabelPair("Von", control.getAbbuchungsdatumvon());
+    grAbu.addLabelPair("Bis", control.getAbbuchungsdatumbis());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

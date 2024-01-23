@@ -906,7 +906,7 @@ public class MitgliedskontoControl extends AbstractControl
 
   public Button getStartRechnungButton(final Object currentObject)
   {
-    Button button = new Button("starten", new Action()
+    Button button = new Button("Starten", new Action()
     {
 
       @Override
@@ -934,7 +934,7 @@ public class MitgliedskontoControl extends AbstractControl
   public Button getStartKontoauszugButton(final Object currentObject,
       final DateInput von, final DateInput bis)
   {
-    Button button = new Button("starten", new Action()
+    Button button = new Button("Starten", new Action()
     {
 
       @Override
@@ -970,7 +970,7 @@ public class MitgliedskontoControl extends AbstractControl
 
   public Button getStartMahnungButton(final Object currentObject)
   {
-    Button button = new Button("starten", new Action()
+    Button button = new Button("Starten", new Action()
     {
 
       @Override

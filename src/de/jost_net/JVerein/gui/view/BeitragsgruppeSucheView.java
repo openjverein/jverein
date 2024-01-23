@@ -39,9 +39,9 @@ public class BeitragsgruppeSucheView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BEITRAGSGRUPPEN, false, "question-circle.png");
-    buttons.addButton("löschen", new BeitragsgruppeDeleteAction(),
-        control.getBeitragsgruppeTable(), false, "trash-alt.png");
-    buttons.addButton("neu", new BeitragsgruppeDetailAction(), null, false,
+    buttons.addButton("Löschen", new BeitragsgruppeDeleteAction(),
+        control.getBeitragsgruppeTable(), false, "user-trash-full.png");
+    buttons.addButton("Neu", new BeitragsgruppeDetailAction(), null, false,
         "file.png");
     buttons.paint(this.getParent());
   }

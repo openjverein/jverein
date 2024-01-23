@@ -66,7 +66,7 @@ public class KursteilnehmerSucheView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
-    buttons.addButton("neu", new KursteilnehmerDetailAction(), null, false,
+    buttons.addButton("Neu", new KursteilnehmerDetailAction(), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

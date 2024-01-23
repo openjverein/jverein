@@ -81,7 +81,7 @@ public class QIFBuchungsImportView extends AbstractView
         false, "file-import.png");
     buttons.addButton("Import löschen",
         control.getAktuellenImportLoeschenAction(), null, false,
-        "trash-alt.png");
+        "user-trash-full.png");
     buttons.addButton("Imports löschen", control.getAlleImportsLoeschenAction(),
         null, false, "list-remove.png");
     buttons.addButton("Buchungsarten zuordnen", new QIFBuchungsartAction(),

@@ -124,7 +124,7 @@ public class MitgliedMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Zusatzbeträge zuweisen",
         new MitgliedZusatzbetraegeZuordnungAction(), "coins.png"));
     addItem(new CheckedContextMenuItem("Kontoauszug", new KontoauszugAction(),
-        "receipt.png"));
+        "file-invoice.png"));
     addItem(new CheckedSingleContextMenuItem("Spendenbescheinigung",
         new SpendenbescheinigungAction(), "file-invoice.png"));
     addItem(new CheckedContextMenuItem("Personalbogen",

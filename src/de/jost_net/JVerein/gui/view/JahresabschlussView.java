@@ -35,8 +35,8 @@ public class JahresabschlussView extends AbstractView
     final JahresabschlussControl control = new JahresabschlussControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Jahresabschluss");
-    group.addLabelPair("von", control.getVon());
-    group.addLabelPair("bis", control.getBis());
+    group.addLabelPair("Von", control.getVon());
+    group.addLabelPair("Bis", control.getBis());
     group.addLabelPair("Datum", control.getDatum());
     group.addLabelPair("Name", control.getName());
     group.addLabelPair("Anfangsbestände Folgejahr",
@@ -46,7 +46,7 @@ public class JahresabschlussView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.JAHRESABSCHLUSS, false, "question-circle.png");
-    buttons.addButton("speichern", new Action()
+    buttons.addButton("Speichern", new Action()
     {
 
       @Override
@@ -54,7 +54,7 @@ public class JahresabschlussView extends AbstractView
       {
         control.handleStore();
       }
-    }, null, true, "save.png");
+    }, null, true, "document-save.png");
     buttons.paint(this.getParent());
   }
 }

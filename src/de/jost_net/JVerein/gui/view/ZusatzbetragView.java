@@ -50,9 +50,9 @@ public class ZusatzbetragView extends AbstractView
         null, false, "clone.png");
     buttons.addButton("Mitglied", new MitgliedDetailAction(),
         control.getZusatzbetrag().getMitglied(), false, "user-friends.png");
-    buttons.addButton("löschen", new ZusatzbetraegeDeleteAction(),
-        control.getZusatzbetrag(), false, "trash-alt.png");
-    buttons.addButton("speichern", new Action()
+    buttons.addButton("Löschen", new ZusatzbetraegeDeleteAction(),
+        control.getZusatzbetrag(), false, "user-trash-full.png");
+    buttons.addButton("Speichern", new Action()
     {
 
       @Override
@@ -60,7 +60,7 @@ public class ZusatzbetragView extends AbstractView
       {
         control.handleStore();
       }
-    }, null, true, "save.png");
+    }, null, true, "document-save.png");
     buttons.paint(getParent());
   }
 }

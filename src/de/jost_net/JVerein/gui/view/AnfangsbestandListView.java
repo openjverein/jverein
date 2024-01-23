@@ -38,7 +38,7 @@ public class AnfangsbestandListView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ANFANGSBESTAENDE, false, "question-circle.png");
-    buttons.addButton("neu", new AnfangsbestandNeuAction(), null, true,
+    buttons.addButton("Neu", new AnfangsbestandNeuAction(), null, true,
         "file.png");
     buttons.paint(this.getParent());
   }

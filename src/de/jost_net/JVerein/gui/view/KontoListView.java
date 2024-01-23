@@ -41,7 +41,7 @@ public class KontoListView extends AbstractView
         DokumentationUtil.KONTEN, false, "question-circle.png");
     buttons.addButton("Hibiscus-Konten-Import",
         new HibiscusKontenImportAction(control), null, false, "walking.png");
-    buttons.addButton("neu", new KontoAction(), null, false,
+    buttons.addButton("Neu", new KontoAction(), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

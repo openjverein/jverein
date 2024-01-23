@@ -40,13 +40,13 @@ public class SplitBuchungView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPLITBUCHUNG, false, "question-circle.png");
-    buttons.addButton("neu", new SplitbuchungNeuAction(),
+    buttons.addButton("Neu", new SplitbuchungNeuAction(),
         control.getCurrentObject(), false, "document-new.png");
-    buttons.addButton("auflösen", new SplitbuchungAufloesenAction(),
+    buttons.addButton("Auflösen", new SplitbuchungAufloesenAction(),
         control.getCurrentObject(), false, "document-new.png");
     buttons.addButton(control.getSammelueberweisungButton());
 
-    buttons.addButton("speichern", new Action()
+    buttons.addButton("Speichern", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -61,7 +61,7 @@ public class SplitBuchungView extends AbstractView
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
-    }, null, true, "save.png");
+    }, null, true, "document-save.png");
     buttons.paint(getParent());
   }
 }

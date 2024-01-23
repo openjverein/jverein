@@ -47,7 +47,7 @@ public class BuchungsuebernahmeView extends AbstractView
       {
         new Buchungsuebernahme();
       }
-    }, null, true, "save.png");
+    }, null, true, "document-save.png");
     buttons.paint(this.getParent());
   }
 }

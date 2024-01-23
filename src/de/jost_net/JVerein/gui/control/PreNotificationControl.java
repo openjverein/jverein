@@ -230,7 +230,7 @@ public class PreNotificationControl extends AbstractControl
 
   public Button getStartButton(final Object currentObject)
   {
-    Button button = new Button("starten", new Action()
+    Button button = new Button("Starten", new Action()
     {
 
       @Override
@@ -273,7 +273,7 @@ public class PreNotificationControl extends AbstractControl
 
   public Button getStart1ctUeberweisungButton(final Object currentObject)
   {
-    Button button = new Button("starten", new Action()
+    Button button = new Button("Starten", new Action()
     {
 
       @Override

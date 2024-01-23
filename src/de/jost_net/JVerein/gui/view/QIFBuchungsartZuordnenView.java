@@ -62,7 +62,7 @@ public class QIFBuchungsartZuordnenView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.QIFIMPORT, false, "question-circle.png");
     buttons.addButton("Speichern", detailControl.getSpeichernAction(), null,
-        false, "save.png");
+        false, "document-save.png");
     buttons.paint(getParent());
 
     TabFolder folder = new TabFolder(maincontainer.getComposite(),

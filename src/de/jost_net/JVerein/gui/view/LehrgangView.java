@@ -35,15 +35,15 @@ public class LehrgangView extends AbstractView
 
     LabelGroup group = new LabelGroup(getParent(), "Lehrgang");
     group.addLabelPair("Lehrgangsart", control.getLehrgangsart());
-    group.addLabelPair("am/von", control.getVon());
-    group.addLabelPair("bis", control.getBis());
+    group.addLabelPair("Am/von", control.getVon());
+    group.addLabelPair("Bis", control.getBis());
     group.addLabelPair("Veranstalter", control.getVeranstalter());
     group.addLabelPair("Ergebnis", control.getErgebnis());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LEHRGANG, false, "question-circle.png");
-    buttons.addButton("speichern", new Action()
+    buttons.addButton("Speichern", new Action()
     {
 
       @Override
@@ -51,7 +51,7 @@ public class LehrgangView extends AbstractView
       {
         control.handleStore();
       }
-    }, null, true, "save.png");
+    }, null, true, "document-save.png");
     buttons.paint(this.getParent());
   }
 }

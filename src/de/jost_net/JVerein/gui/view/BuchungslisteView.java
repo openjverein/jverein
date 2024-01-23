@@ -57,9 +57,9 @@ public class BuchungslisteView extends AbstractView
       left.addLabelPair("Projekt", control.getSuchProjekt());
       left.addLabelPair("Betrag", control.getSuchBetrag());
       left.addLabelPair("Mitglied zugeordnet?", control.getSuchMitgliedZugeordnet());
-      right.addLabelPair("von Datum", control.getVondatum());
-      right.addLabelPair("bis Datum", control.getBisdatum());
-      right.addLabelPair("enthaltener Text", control.getSuchtext());
+      right.addLabelPair("Von Datum", control.getVondatum());
+      right.addLabelPair("Bis Datum", control.getBisdatum());
+      right.addLabelPair("Enthaltener Text", control.getSuchtext());
     }
     {
       final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(
@@ -99,7 +99,7 @@ public class BuchungslisteView extends AbstractView
     buttons.addButton(control.getStartAuswertungEinzelbuchungenButton());
     buttons.addButton(control.getStartAuswertungSummenButton());
     buttons.addButton(control.getStarteBuchungMitgliedskontoZuordnungAutomatischButton());
-    buttons.addButton("neu", new BuchungNeuAction(), control, false,
+    buttons.addButton("Neu", new BuchungNeuAction(), control, false,
         "file.png");
     buttons.paint(this.getParent());
   }
