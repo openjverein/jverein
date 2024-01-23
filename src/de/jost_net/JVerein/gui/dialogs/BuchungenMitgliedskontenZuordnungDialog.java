@@ -125,9 +125,9 @@ public class BuchungenMitgliedskontenZuordnungDialog extends AbstractDialog<Obje
 
     group.addLabelPair("Startdatum", dateFrom);
     group.addLabelPair("Enddatum", dateUntil);
-    group.addLabelPair("nach eindeutiger IBAN", useIban);
-    group.addLabelPair("nach " + (Einstellungen.getEinstellung().getExterneMitgliedsnummer().booleanValue() ? "Ext. Mitgliedsnummer" : "Mitgliedsnummer"), useMemberNumber);
-    group.addLabelPair("nach eindeutigen Vorname und Nachname", useName);
+    group.addLabelPair("Nach eindeutiger IBAN", useIban);
+    group.addLabelPair("Nach " + (Einstellungen.getEinstellung().getExterneMitgliedsnummer().booleanValue() ? "Ext. Mitgliedsnummer" : "Mitgliedsnummer"), useMemberNumber);
+    group.addLabelPair("Nach eindeutigen Vorname und Nachname", useName);
     ButtonArea buttons = new ButtonArea();
 
     Button button = new Button("Zuordnungen suchen", new Action()

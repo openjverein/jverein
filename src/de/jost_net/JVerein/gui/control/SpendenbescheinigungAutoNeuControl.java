@@ -203,7 +203,7 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
               "Fehler bei der Aufbereitung der Spendenbescheinigung");
         }
       }
-    }, null, false, "save.png");
+    }, null, false, "document-save.png");
     return b;
   }
 

@@ -130,7 +130,7 @@ public class MyExtension implements Extension
       jverein.addChild(abrechnung);
 
       jverein.addChild(new MyItem(jverein, "Mitgliedskonten",
-          new MitgliedskontoListeAction(), "exchange-alt.png"));
+          new MitgliedskontoListeAction(), "calculator.png"));
       jverein.addChild(new MyItem(jverein, "Rechnungen",
           new MitgliedskontoRechnungAction(), "file-invoice.png"));
       jverein.addChild(new MyItem(jverein, "Mahnungen",
@@ -194,14 +194,14 @@ public class MyExtension implements Extension
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Konten",
           new KontoListAction(), "list.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbestände",
-          new AnfangsbestandListAction(), "square.png"));
+          new AnfangsbestandListAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
           new BuchungsListeAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Hibiscus-Buchungen",
           new BuchungsuebernahmeAction(), "hibiscus-icon-64x64.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Projekte",
-          new ProjektSaldoAction(), "exchange-alt.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassen",
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
+          new ProjektSaldoAction(), "euro-sign.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",
           new BuchungsklasseSaldoAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahressaldo",
           new JahressaldoAction(), "euro-sign.png"));
@@ -273,7 +273,7 @@ public class MyExtension implements Extension
           .addChild(new MyItem(einstellungenbuchfuehrung, "QIF Datei-Import",
               new QIFBuchungsImportViewAction(), "file-import.png"));
       einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-          "Projekte", new ProjektListAction(), "exchange-alt.png"));
+          "Projekte", new ProjektListAction(), "screwdriver.png"));
       administration.addChild(einstellungenbuchfuehrung);
 
       administration
@@ -313,10 +313,10 @@ public class MyExtension implements Extension
       einstellungenerweitert = new MyItem(einstellungenerweitert, "Erweitert",
           null);
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,
-          "Diagnose-Backup erstellen", new BackupCreateAction(), "save.png"));
+          "Diagnose-Backup erstellen", new BackupCreateAction(), "document-save.png"));
       einstellungenerweitert.addChild(
           new MyItem(einstellungenerweitert, "Diagnose-Backup importieren",
-              new BackupRestoreAction(), "undo.png"));
+              new BackupRestoreAction(), "file-import.png"));
       administration.addChild(einstellungenerweitert);
       jverein.addChild(administration);
       jverein.addChild(new MyItem(jverein, "Dokumentation",

@@ -270,7 +270,7 @@ public class ImportView extends AbstractView
           {
             doImport();
           }
-        });
+        }, null, false, "file-import.png");
     buttons.addButton(importbt);
     buttons.paint(getParent());
     /*

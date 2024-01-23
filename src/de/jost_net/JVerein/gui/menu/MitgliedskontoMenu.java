@@ -45,17 +45,17 @@ public class MitgliedskontoMenu extends ContextMenu
   public MitgliedskontoMenu()
   {
     addItem(new MitgliedItem("Neue Sollbuchung",
-        new MitgliedskontoDetailSollNeuAction(), "calculator.png"));
+        new MitgliedskontoDetailSollNeuAction(), "list-add.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SollItem("Sollbuchung bearbeiten",
-        new MitgliedskontoDetailAction(), "calculator.png"));
+        new MitgliedskontoDetailAction(), "edit-copy.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
-        new MitgliedskontoDetailSollLoeschenAction(), "calculator.png"));
+        new MitgliedskontoDetailSollLoeschenAction(), "list-remove.png"));
     addItem(new SollMitIstItem("Istbuchung vom Mitgliedskonto lösen",
-        new MitgliedskontoIstLoesenAction(), "calculator.png"));
+        new MitgliedskontoIstLoesenAction(), "unlocked.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SpendenbescheinigungItem("Spendenbescheinigung erstellen",
-        new SpendenbescheinigungAction(), "calculator.png"));
+        new SpendenbescheinigungAction(), "file-invoice.png"));
   }
 
   private static class MitgliedItem extends CheckedContextMenuItem

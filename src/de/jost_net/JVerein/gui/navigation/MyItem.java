@@ -69,7 +69,7 @@ public class MyItem implements NavigationItem
   {
     if (action == null)
     {
-      return SWTUtil.getImage(icon != null ? icon : "folder1.png");
+      return SWTUtil.getImage(icon != null ? icon : "folder.png");
     }
     else
     {
@@ -85,7 +85,7 @@ public class MyItem implements NavigationItem
   {
     if (action == null)
     {
-      return SWTUtil.getImage(icon != null ? icon : "folder1-open.png");
+      return SWTUtil.getImage(icon != null ? icon : "folder-open.png");
     }
     else
     {

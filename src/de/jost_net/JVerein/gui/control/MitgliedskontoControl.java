@@ -1044,7 +1044,7 @@ public class MitgliedskontoControl extends AbstractControl
           item.setExpanded(false);
           break;
         case MitgliedskontoNode.IST:
-          item.setImage(0, SWTUtil.getImage("object-group.png"));
+          item.setImage(0, SWTUtil.getImage("coins.png"));
           break;
       }
     }
