@@ -34,6 +34,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import ezvcard.Ezvcard;
@@ -52,8 +53,7 @@ public class MitgliedVCardQRCodeAction implements Action
       {
         ArrayList<Mitglied> mitgl = new ArrayList<>();
         mitgl.add((Mitglied) context);
-        try
-        {
+
           String qrCodeData = Ezvcard.write(VCardTool.getVCards(mitgl))
               .version(VCardVersion.V3_0).go();
           String charset = "UTF-8"; // or "ISO-8859-1"
@@ -68,23 +68,20 @@ public class MitgliedVCardQRCodeAction implements Action
           QRCodeImageDialog dia = new QRCodeImageDialog(
               AbstractDialog.POSITION_MOUSE, bi);
           dia.open();
-
-        }
-        catch (Exception re)
-        {
-          Logger.error("Fehler", re);
-          GUI.getStatusBar().setErrorText(re.getMessage());
-          throw new ApplicationException(re);
-        }
       }
       else
       {
         throw new ApplicationException("Kein Mitglied ausgewählt");
       }
     }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
     catch (Exception e)
     {
-      throw new ApplicationException("Fehler: " + e.getLocalizedMessage());
+      Logger.error("Fehler", e);
+      GUI.getStatusBar().setErrorText("Fehler beim Generieren des QR Codes");
     }
   }
 }
