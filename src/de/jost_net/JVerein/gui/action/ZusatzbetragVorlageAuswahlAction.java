@@ -21,6 +21,7 @@ import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -42,30 +43,35 @@ public class ZusatzbetragVorlageAuswahlAction implements Action
     {
       ZusatzbetragVorlageDialog zbvd = new ZusatzbetragVorlageDialog();
       ZusatzbetragVorlage zbv = zbvd.open();
-      part.getBetrag().setValue(zbv.getBetrag());
-      part.getBuchungstext().setValue(zbv.getBuchungstext());
-      part.getEndedatum().setValue(zbv.getEndedatum());
-      part.getFaelligkeit().setValue(zbv.getFaelligkeit());
-      part.getIntervall().setValue(zbv.getIntervall());
-      part.getBuchungsart().setValue(zbv.getBuchungsart());
-      for (Object obj : part.getIntervall().getList())
+      if (zbv != null)
       {
-        IntervallZusatzzahlung ivz = (IntervallZusatzzahlung) obj;
-        if (zbv.getIntervall() == ivz.getKey())
+        part.getBetrag().setValue(zbv.getBetrag());
+        part.getBuchungstext().setValue(zbv.getBuchungstext());
+        part.getEndedatum().setValue(zbv.getEndedatum());
+        part.getFaelligkeit().setValue(zbv.getFaelligkeit());
+        part.getIntervall().setValue(zbv.getIntervall());
+        part.getBuchungsart().setValue(zbv.getBuchungsart());
+        for (Object obj : part.getIntervall().getList())
         {
-          part.getIntervall().setPreselected(ivz);
-          break;
+          IntervallZusatzzahlung ivz = (IntervallZusatzzahlung) obj;
+          if (zbv.getIntervall() == ivz.getKey())
+          {
+            part.getIntervall().setPreselected(ivz);
+            break;
+          }
         }
+        part.getStartdatum(false).setValue(zbv.getStartdatum());
       }
-      part.getStartdatum(false).setValue(zbv.getStartdatum());
     }
-    catch (OperationCanceledException e)
+    catch (OperationCanceledException oce)
     {
-      // Nothing to do
+      throw oce;
     }
     catch (Exception e)
     {
-      Logger.error("ZusatzbetragVorlageDialog kann nicht geöffnet werden", e);
+      Logger.error("Fehler", e);
+      GUI.getStatusBar().setErrorText(
+          "Fehler bei der Zusatzbeitrag Vorlagen Auswahl");
     }
   }
 }
