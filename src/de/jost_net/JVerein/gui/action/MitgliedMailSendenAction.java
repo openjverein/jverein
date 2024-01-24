@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
@@ -32,6 +31,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -71,7 +71,7 @@ public class MitgliedMailSendenAction implements Action
               mitgliederohnemail.append(", ");
             }
             mitgliederohnemail
-                .append(Adressaufbereitung.getNameVorname(mitglied));
+            .append(Adressaufbereitung.getNameVorname(mitglied));
           }
           else
           {
@@ -85,50 +85,45 @@ public class MitgliedMailSendenAction implements Action
           d.setTitle("Mail senden");
           d.setText("Folgende Mitglieder haben keine Mail-Adresse:"
               + mitgliederohnemail.toString() + "\nWeiter?");
-          try
+
+          Boolean choice = (Boolean) d.open();
+          if (!choice.booleanValue())
           {
-            Boolean choice = (Boolean) d.open();
-            if (!choice.booleanValue())
-            {
-              return;
-            }
-          }
-          catch (Exception e)
-          {
-            Logger.error("Fehler bei der Auswahl der Mail-Empfänger", e);
             return;
           }
-
         }
         MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
             new MailVorlageControl(null),
             MailVorlagenAuswahlDialog.POSITION_CENTER);
         Mail mail = (Mail) Einstellungen.getDBService().createObject(Mail.class,
             null);
-        try
+
+        MailVorlage mv = mvad.open();
+        if (!mvad.getAbort())
         {
-          MailVorlage mv = mvad.open();
           if (mv != null)
           {
             mail.setBetreff(mv.getBetreff());
             mail.setTxt(mv.getTxt());
           }
+          mail.setEmpfaenger(empf);
+          GUI.startView(MailDetailView.class.getName(), mail);
         }
-        catch (Exception e)
-        {
-          Logger.error("Fehler", e);
-        }
-        mail.setEmpfaenger(empf);
-        GUI.startView(MailDetailView.class.getName(), mail);
       }
       else
       {
         throw new ApplicationException("Keinen Empfänger ausgewählt");
       }
     }
-    catch (RemoteException e)
+    catch (OperationCanceledException oce)
     {
-      throw new ApplicationException("Fehler: " + e.getLocalizedMessage());
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler", e);
+      GUI.getStatusBar().setErrorText(
+          "Fehler bei der Erzeugung der neuen Mail");
     }
   }
 }
