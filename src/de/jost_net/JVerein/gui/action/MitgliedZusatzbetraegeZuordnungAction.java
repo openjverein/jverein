@@ -22,6 +22,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.dialogs.SimpleDialog;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -54,7 +55,10 @@ public class MitgliedZusatzbetraegeZuordnungAction implements Action
     try
     {
       String message = mzb.open();
-      GUI.getStatusBar().setSuccessText(message);
+      if (message.length() > 0)
+      {
+        GUI.getStatusBar().setSuccessText(message);
+      }
     }
     catch (ApplicationException e)
     {
@@ -70,7 +74,10 @@ public class MitgliedZusatzbetraegeZuordnungAction implements Action
       }
       Logger.error("Fehler", e);
     }
-
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
     catch (Exception e)
     {
       Logger.error("Fehler", e);
