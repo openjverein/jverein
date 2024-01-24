@@ -172,6 +172,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput kontonummer_in_buchungsliste;
 
+  private CheckboxInput automatische_buchungskorrektur_hibiscus;
+
   private TextInput smtp_server;
 
   private IntegerInput smtp_port;
@@ -936,6 +938,18 @@ public class EinstellungControl extends AbstractControl
     kontonummer_in_buchungsliste = new CheckboxInput(Einstellungen.getEinstellung().getKontonummerInBuchungsliste());
     kontonummer_in_buchungsliste.setName("Zeige Kontonummer in Buchungsliste");
     return kontonummer_in_buchungsliste;
+  }
+
+  
+  public CheckboxInput getAutomatischeBuchungskorrekturHibiscus() throws RemoteException 
+  {
+    if (automatische_buchungskorrektur_hibiscus != null) 
+    {
+      return automatische_buchungskorrektur_hibiscus;
+    }
+    automatische_buchungskorrektur_hibiscus = new CheckboxInput(Einstellungen.getEinstellung().getAutomatischeBuchungskorrekturHibiscus());
+    automatische_buchungskorrektur_hibiscus.setName("Automatische Korrektur der Verwendungszecke aus Hibsicus Buchungen");
+    return automatische_buchungskorrektur_hibiscus;
   }
 
   public TextInput getSmtpServer() throws RemoteException
@@ -1895,6 +1909,7 @@ public class EinstellungControl extends AbstractControl
       e.setID();
       e.setBeginnGeschaeftsjahr((String) beginngeschaeftsjahr.getValue());
       e.setAutoBuchunguebernahme((Boolean) autobuchunguebernahme.getValue());
+      e.setAutomatischeBuchungskorrekturHibiscus((Boolean) getAutomatischeBuchungskorrekturHibiscus().getValue());
       e.setUnterdrueckungOhneBuchung((Boolean) unterdrueckungohnebuchung
           .getValue());
       e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());

@@ -1627,6 +1627,19 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
 
   @Override
+  public Boolean getAutomatischeBuchungskorrekturHibiscus() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("autobuchungskorrekturhibiscus"));
+  }
+
+  @Override
+  public void setAutomatischeBuchungskorrekturHibiscus(Boolean autobuchungskorrekturhibiscus)
+      throws RemoteException
+  {
+    setAttribute("autobuchungskorrekturhibiscus", autobuchungskorrekturhibiscus);
+  }
+
+  @Override
   public Boolean getUnterdrueckungOhneBuchung() throws RemoteException
   {
     return Util.getBoolean(getAttribute("unterdrueckungohnebuchung"));

@@ -167,11 +167,16 @@ public class Buchungsuebernahme
             zweck += "\r\n" + s.trim();
           }
         }
+        // Beautify zweck
+        if (Einstellungen.getEinstellung().getAutomatischeBuchungskorrekturHibiscus())
+        {
+          zweck = Misc.getBuchungsZweckKorrektur(zweck, true);
+        }
         if (zweck != null && zweck.length() > 500)
         {
           zweck = zweck.substring(0, 500);
         }
-        b.setZweck(Misc.getBuchungsZweckKorrektur(zweck, true));
+        b.setZweck(zweck);
         b.setDatum(u.getDatum());
         b.setArt(u.getArt());
         b.setKommentar(u.getKommentar());

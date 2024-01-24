@@ -39,6 +39,7 @@ public class EinstellungenBuchfuehrungView extends AbstractView
     cont.addLabelPair("Beginn Geschäftsjahr (TT.MM.)",
         control.getBeginnGeschaeftsjahr());
     cont.addInput(control.getAutoBuchunguebernahme());
+    cont.addInput(control.getAutomatischeBuchungskorrekturHibiscus());
     cont.addInput(control.getUnterdrueckungOhneBuchung());
     cont.addInput(control.getKontonummerInBuchungsliste());
 
