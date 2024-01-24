@@ -24,6 +24,7 @@ import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
 public class MailDetailAction implements Action
@@ -47,11 +48,19 @@ public class MailDetailAction implements Action
             MailVorlagenAuswahlDialog.POSITION_CENTER);
         m = (Mail) Einstellungen.getDBService().createObject(Mail.class, null);
         MailVorlage mv = mvad.open();
-        if (mv != null)
+        if (!mvad.getAbort())
         {
-          m.setBetreff(mv.getBetreff());
-          m.setTxt(mv.getTxt());
+          if (mv != null)
+          {
+            m.setBetreff(mv.getBetreff());
+            m.setTxt(mv.getTxt());
+          }
+          GUI.startView(MailDetailView.class.getName(), m);
         }
+      }
+      catch (OperationCanceledException oce)
+      {
+        throw oce;
       }
       catch (Exception e)
       {
@@ -59,6 +68,5 @@ public class MailDetailAction implements Action
             "Fehler bei der Erzeugung der neuen Mail", e);
       }
     }
-    GUI.startView(MailDetailView.class.getName(), m);
   }
 }
