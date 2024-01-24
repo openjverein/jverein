@@ -58,7 +58,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   
   private int unterdrueckunglaenge = 0;
   
-  private boolean abort = false;
+  private boolean abort = true;
 
   /**
    * @param position
@@ -95,6 +95,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
           buchungsart = (Buchungsart) buchungsarten.getValue();
         }
         ueberschr = (Boolean) getUeberschreiben().getValue();
+        abort = false;
         close();
       }
     }, null, true, "ok.png");
@@ -105,6 +106,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       public void handleAction(Object context)
       {
         buchungsart = null;
+        abort = false;
         close();
       }
     }, null, false, "user-trash-full.png");
@@ -113,17 +115,10 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       @Override
       public void handleAction(Object context)
       {
-        abort = true;
         close();
       }
     }, null, false, "process-stop.png");
-    getShell().addListener(SWT.Close,new Listener()
-    {
-      public void handleEvent(Event event)
-      {
-        abort = true;
-      }
-    });
+
     buttons.paint(parent);
     getShell().setMinimumSize(getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT));
   }
