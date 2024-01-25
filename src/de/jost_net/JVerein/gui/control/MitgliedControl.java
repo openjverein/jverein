@@ -2702,7 +2702,7 @@ public class MitgliedControl extends AbstractControl
   public Button getLesefelderEdit()
   {
     return new Button("Bearbeiten",
-        new LesefelddefinitionenAction(getMitglied()), null, false, "edit-copy.png");
+        new LesefelddefinitionenAction(getMitglied()), null, false, "text-x-generic.png");
   }
 
   public Button getZusatzbetragNeu()

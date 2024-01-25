@@ -54,7 +54,7 @@ public class BuchungMenu extends ContextMenu
     addItem(new SingleBuchungItem("Duplizieren", new BuchungDuplizierenAction(),
         "edit-copy.png"));
     addItem(new SingleBuchungItem("Splitbuchung", new SplitBuchungAction(),
-        "text-x-generic.png"));
+        "edit-copy.png"));
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Mitgliedskonto zuordnen",

@@ -191,7 +191,7 @@ public class LesefeldUebersichtPart implements Part
 
     // Bearbeiten-Button
     Button button = new Button("bearbeiten", new EditLesefeldAction(lesefeld),
-        null, false, "edit-copy.png");
+        null, false, "text-x-generic.png");
     lesefelderListeLayout.add(button);
 
     // Löschen-Button
