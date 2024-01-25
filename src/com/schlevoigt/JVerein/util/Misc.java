@@ -5,7 +5,13 @@ import java.util.ArrayList;
 public class Misc {
 	
 	public static String getBuchungsZweckKorrektur(String value, boolean withRealLineBreak) {
-		if ((value == null) || (value.length() < 5)) {
+    String result = "";
+    if (value == null)
+    {
+      return result;
+    }
+		if (value.length() < 5) 
+		{
 			return value.replace("SVWZ+", "");
 		}
 		value = value.replaceAll("\r\n", "|");
@@ -15,7 +21,6 @@ public class Misc {
 		String[] zeilen = value.split("\\|");
 		ArrayList<String> zeilenNeu = new ArrayList<String>();
 
-		String result = "";
 		String currentKey = "";
 		String currentLine = "";
 
