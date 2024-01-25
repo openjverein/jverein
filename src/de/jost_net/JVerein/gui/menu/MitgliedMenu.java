@@ -64,11 +64,11 @@ public class MitgliedMenu extends ContextMenu
   public MitgliedMenu(Action detailaction) throws RemoteException
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten", detailaction,
-        "edit.png"));
+        "text-x-generic.png"));
     addItem(new CheckedSingleContextMenuItem("Duplizieren",
-        new MitgliedDuplizierenAction(), "copy.png"));
+        new MitgliedDuplizierenAction(), "edit-copy.png"));
     addItem(new CheckedContextMenuItem("In Zwischenablage kopieren",
-        new MitgliedInZwischenablageKopierenAction(), "copy.png"));
+        new MitgliedInZwischenablageKopierenAction(), "edit-copy.png"));
     if (detailaction instanceof AdresseDetailAction)
     {
       addItem(new CheckedContextMenuItem("Zu Mitglied umwandeln", new Action()

@@ -39,13 +39,13 @@ public class ZusatzbetraegeMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Vorheriges Fälligkeitsdatum",
         new ZusatzbetraegeVorherigeFaelligkeitAction(table),
-        "calendar-alt.png"));
+        "office-calendar.png"));
     addItem(new CheckedSingleContextMenuItem("Nächstes Fälligkeitsdatum",
         new ZusatzbetraegeNaechsteFaelligkeitAction(table),
-        "calendar-alt.png"));
+        "office-calendar.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Erneut ausführen",
-        new ZusatzbetraegeResetAction(table), "sync.png"));
+        new ZusatzbetraegeResetAction(table), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Löschen...",
         new ZusatzbetraegeDeleteAction(), "user-trash-full.png"));
   }

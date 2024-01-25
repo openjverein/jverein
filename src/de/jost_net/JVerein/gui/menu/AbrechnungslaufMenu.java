@@ -42,9 +42,9 @@ public class AbrechnungslaufMenu extends ContextMenu
   public AbrechnungslaufMenu()
   {
     addItem(new ContextMenuItem("Bearbeiten", new AbrechnungslaufDetailAction(),
-        "edit.png"));
+        "text-x-generic.png"));
     addItem(new AbgeschlossenDisabledItem("Pre-Notification",
-        new PreNotificationAction(), "file.png"));
+        new PreNotificationAction(), "document-new.png"));
     addItem(new AbgeschlossenDisabledItem("Löschen...",
         new AbrechnungslaufDeleteAction(), "user-trash-full.png"));
     try

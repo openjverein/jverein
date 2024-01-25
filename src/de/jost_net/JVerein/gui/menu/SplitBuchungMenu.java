@@ -47,7 +47,7 @@ public class SplitBuchungMenu extends ContextMenu
   public SplitBuchungMenu(BuchungsControl control)
   {
     addItem(new CheckedSplitBuchungItem("Bearbeiten", new BuchungAction(true),
-        "edit.png"));
+        "text-x-generic.png"));
     addItem(new CheckedSplitBuchungItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedSplitBuchungItem("Mitgliedskonto zuordnen",

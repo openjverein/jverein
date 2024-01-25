@@ -35,7 +35,7 @@ public class DokumentMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Anzeigen", new DokumentShowAction(),
         "eye.png"));
     addItem(new CheckedContextMenuItem("Infos bearbeiten",
-        new DokumentInfoBearbeitenAction(), "edit.png"));
+        new DokumentInfoBearbeitenAction(), "text-x-generic.png"));
     if (enabled)
     {
       addItem(ContextMenuItem.SEPARATOR);

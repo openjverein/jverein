@@ -31,7 +31,7 @@ public class MitgliedNextBGruppeMenue extends ContextMenu
   public MitgliedNextBGruppeMenue(MitgliedControl control)
   {
     addItem(new ContextMenuItem("Beitragsgruppe hinzufügen",
-        new MitgliedNextBGruppeNeuAction(control), "file.png"));
+        new MitgliedNextBGruppeNeuAction(control), "document-new.png"));
     addItem(new CheckedContextMenuItem("Beitragsgruppe löschen",
         new MitgliedNextBGruppeLoeschenAction(), "user-trash-full.png"));
   }

@@ -1466,7 +1466,7 @@ public class MitgliedControl extends AbstractControl
           Mitglied m = (Mitglied) zahler.getValue();
           if (m.getID() != null)
           {
-            getMitglied().setZahlerID(new Long(m.getID()));
+            getMitglied().setZahlerID(Long.valueOf(m.getID()));
           }
           else
           {
@@ -2693,7 +2693,7 @@ public class MitgliedControl extends AbstractControl
       {
         GUI.startView(AuswertungVorlagenCsvView.class.getName(), null);
       }
-    }, null, false, "code.png");
+    }, null, false, "xsd.png");
     // button
     return b;
 
@@ -2702,31 +2702,31 @@ public class MitgliedControl extends AbstractControl
   public Button getLesefelderEdit()
   {
     return new Button("Bearbeiten",
-        new LesefelddefinitionenAction(getMitglied()), null, false, "edit.png");
+        new LesefelddefinitionenAction(getMitglied()), null, false, "text-x-generic.png");
   }
 
   public Button getZusatzbetragNeu()
   {
     return new Button("Neuer Zusatzbetrag",
-        new ZusatzbetraegeAction(getMitglied()), null, false, "file.png");
+        new ZusatzbetraegeAction(getMitglied()), null, false, "document-new.png");
   }
 
   public Button getWiedervorlageNeu()
   {
     return new Button("Neue Wiedervorlage",
-        new WiedervorlageAction(getMitglied()), null, false, "file.png");
+        new WiedervorlageAction(getMitglied()), null, false, "document-new.png");
   }
 
   public Button getArbeitseinsatzNeu()
   {
     return new Button("Neuer Arbeitseinsatz",
-        new ArbeitseinsatzAction(getMitglied()), null, false, "file.png");
+        new ArbeitseinsatzAction(getMitglied()), null, false, "document-new.png");
   }
 
   public Button getLehrgangNeu()
   {
     return new Button("Neuer Lehrgang", new LehrgangAction(getMitglied()), null,
-        false, "file.png");
+        false, "document-new.png");
   }
 
   public TablePart getMitgliedTable(int atyp, Action detailaction)
@@ -3079,7 +3079,7 @@ public class MitgliedControl extends AbstractControl
       if (adresstyp != null)
       {
         Adresstyp at = (Adresstyp) getAdresstyp().getValue();
-        m.setAdresstyp(new Integer(at.getID()));
+        m.setAdresstyp(Integer.valueOf(at.getID()));
       }
       else
       {
@@ -3094,7 +3094,7 @@ public class MitgliedControl extends AbstractControl
         try
         {
           Beitragsgruppe bg = (Beitragsgruppe) o;
-          m.setBeitragsgruppe(new Integer(bg.getID()));
+          m.setBeitragsgruppe(Integer.valueOf(bg.getID()));
           if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
           {
             m.setZahlerID(null);
@@ -3273,8 +3273,8 @@ public class MitgliedControl extends AbstractControl
             zf = (Zusatzfelder) Einstellungen.getDBService()
                 .createObject(Zusatzfelder.class, null);
           }
-          zf.setMitglied(new Integer(m.getID()));
-          zf.setFelddefinition(new Integer(fd.getID()));
+          zf.setMitglied(Integer.valueOf(m.getID()));
+          zf.setFelddefinition(Integer.valueOf(fd.getID()));
           switch (fd.getDatentyp())
           {
             case Datentyp.ZEICHENFOLGE:

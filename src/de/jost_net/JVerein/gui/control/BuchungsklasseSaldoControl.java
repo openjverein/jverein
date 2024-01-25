@@ -133,7 +133,7 @@ public class BuchungsklasseSaldoControl extends AbstractControl
       {
         starteAuswertung(AuswertungCSV);
       }
-    }, null, true, "code.png"); // "true" defines this button as the default
+    }, null, true, "xsd.png"); // "true" defines this button as the default
     // button
     return b;
   }

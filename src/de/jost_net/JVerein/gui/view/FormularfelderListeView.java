@@ -52,7 +52,7 @@ public class FormularfelderListeView extends AbstractView
     buttons.addButton("Import", new FormularfelderImportAction(control),
         getCurrentObject(), false, "file-import.png");
     buttons.addButton("Anzeigen", new FormularAnzeigeAction(),
-        getCurrentObject(), false, "edit.png");
+        getCurrentObject(), false, "edit-copy.png");
     buttons.addButton("Neu", new FormularfeldAction(), getCurrentObject(),
         false, "document-new.png");
     buttons.paint(this.getParent());

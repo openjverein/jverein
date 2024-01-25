@@ -27,6 +27,7 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.DokumentMessage;
+import de.jost_net.JVerein.gui.action.DokumentShowAction;
 import de.jost_net.JVerein.gui.menu.DokumentMenu;
 import de.jost_net.JVerein.gui.parts.DokumentPart;
 import de.jost_net.JVerein.gui.view.DokumentView;
@@ -200,7 +201,7 @@ public class DokumentControl extends AbstractControl
     docs.addFilter("referenz = ?", new Object[] { doc.getReferenz() });
     docs.setOrder("ORDER BY datum desc");
 
-    docsList = new TablePart(docs, null /* new KontoAction() */);
+    docsList = new TablePart(docs, new DokumentShowAction());
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     docsList.addColumn("Bemerkung", "bemerkung");

@@ -48,13 +48,13 @@ public class BuchungMenu extends ContextMenu
   public BuchungMenu(BuchungsControl control)
   {
     addItem(new ContextMenuItem("Neue Buchung", new BuchungNeuAction(),
-        "file.png"));
+        "document-new.png"));
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new BuchungAction(false), "edit.png"));
+        new BuchungAction(false), "text-x-generic.png"));
     addItem(new SingleBuchungItem("Duplizieren", new BuchungDuplizierenAction(),
-        "copy.png"));
+        "edit-copy.png"));
     addItem(new SingleBuchungItem("Splitbuchung", new SplitBuchungAction(),
-        "edit.png"));
+        "edit-copy.png"));
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Mitgliedskonto zuordnen",

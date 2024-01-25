@@ -36,6 +36,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -84,6 +85,10 @@ public class MailDetailView extends AbstractView
         try
         {
           mead.open();
+        }
+        catch (OperationCanceledException oce)
+        {
+          throw oce;
         }
         catch (Exception e)
         {

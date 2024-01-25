@@ -770,7 +770,7 @@ public class BuchungsControl extends AbstractControl
       {
         starteCSVExport();
       }
-    }, null, true, "code.png"); // "true" defines this button as the default
+    }, null, true, "xsd.png"); // "true" defines this button as the default
     return b;
   }
 
@@ -845,7 +845,7 @@ public class BuchungsControl extends AbstractControl
               break;
           }
           
-          b_steuer.setBuchungsart(new Long(b_art.getSteuerBuchungsart().getID()));
+          b_steuer.setBuchungsart(Long.valueOf(b_art.getSteuerBuchungsart().getID()));
           b_steuer.setBetrag(steuer.doubleValue());
           b_steuer.setZweck(b.getZweck() + zweck_postfix);          
           b_steuer.setSplitId(b.getSplitId());
@@ -964,7 +964,7 @@ public class BuchungsControl extends AbstractControl
       Projekt projekt = (Projekt) getProjekt().getValue();
       if (null == projekt)
         return null;
-      Long id = new Long(projekt.getID());
+      Long id = Long.valueOf(projekt.getID());
       return id;
     }
     catch (RemoteException ex)
@@ -982,7 +982,7 @@ public class BuchungsControl extends AbstractControl
       Buchungsart buchungsArt = (Buchungsart) getBuchungsart().getValue();
       if (null == buchungsArt)
         return null;
-      Long id = new Long(buchungsArt.getID());
+      Long id = Long.valueOf(buchungsArt.getID());
       return id;
     }
     catch (RemoteException ex)

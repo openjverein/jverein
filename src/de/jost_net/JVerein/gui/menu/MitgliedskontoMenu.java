@@ -48,7 +48,7 @@ public class MitgliedskontoMenu extends ContextMenu
         new MitgliedskontoDetailSollNeuAction(), "list-add.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SollItem("Sollbuchung bearbeiten",
-        new MitgliedskontoDetailAction(), "edit-copy.png"));
+        new MitgliedskontoDetailAction(), "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
         new MitgliedskontoDetailSollLoeschenAction(), "list-remove.png"));
     addItem(new SollMitIstItem("Istbuchung vom Mitgliedskonto lösen",
