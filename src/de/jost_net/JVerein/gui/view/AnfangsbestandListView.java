@@ -39,7 +39,7 @@ public class AnfangsbestandListView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ANFANGSBESTAENDE, false, "question-circle.png");
     buttons.addButton("Neu", new AnfangsbestandNeuAction(), null, true,
-        "file.png");
+        "document-new.png");
     buttons.paint(this.getParent());
   }
 }

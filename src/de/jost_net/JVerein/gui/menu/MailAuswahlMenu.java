@@ -91,7 +91,7 @@ public class MailAuswahlMenu extends ContextMenu
 
       }
 
-    }, "edit.png" /* "mail-message-new.png" */));
+    }, "edit-copy.png" /* "mail-message-new.png" */));
     addItem(new CheckedContextMenuItem("Entfernen",
         new MailAuswahlDeleteAction(control), "user-trash-full.png"));
   }

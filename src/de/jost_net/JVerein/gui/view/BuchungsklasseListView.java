@@ -39,7 +39,7 @@ public class BuchungsklasseListView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGSKLASSEN, false, "question-circle.png");
     buttons.addButton("Neu", new BuchungsklasseAction(), null, false,
-        "file.png");
+        "document-new.png");
     buttons.paint(this.getParent());
   }
 }

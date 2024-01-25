@@ -44,7 +44,7 @@ public class BuchungView extends AbstractView
         DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
     if (control.getBuchung().getSpeicherung())
     {
-      buttons.addButton("Neu", new BuchungNeuAction(), null, false, "file.png");
+      buttons.addButton("Neu", new BuchungNeuAction(), null, false, "document-new.png");
     }
     Button savButton = new Button("Speichern",
         control.getBuchungSpeichernAction(), null, true, "document-save.png");

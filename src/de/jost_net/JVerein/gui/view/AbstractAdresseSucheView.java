@@ -104,7 +104,7 @@ public abstract class AbstractAdresseSucheView extends AbstractView
     buttons.addButton(getHilfeButton());
     if (anzahlbeitragsgruppe > 0)
     {
-      buttons.addButton("Neu", getDetailAction(), null, false, "file.png");
+      buttons.addButton("Neu", getDetailAction(), null, false, "document-new.png");
     }
     buttons.paint(this.getParent());
   }

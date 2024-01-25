@@ -42,7 +42,7 @@ public class AdresstypListView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ADRESSTYPEN, false, "question-circle.png");
-    buttons.addButton("Neu", new AdresstypAction(), null, false, "file.png");
+    buttons.addButton("Neu", new AdresstypAction(), null, false, "document-new.png");
 
     DBIterator<Adresstyp> it = Einstellungen.getDBService()
         .createList(Adresstyp.class);

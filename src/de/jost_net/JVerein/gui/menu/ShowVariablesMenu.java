@@ -104,6 +104,6 @@ public class ShowVariablesMenu extends ContextMenu
         }
       }
     };
-    addItem(new CheckedContextMenuItem("Kopieren", copy, "copy.png"));
+    addItem(new CheckedContextMenuItem("Kopieren", copy, "edit-copy.png"));
   }
 }

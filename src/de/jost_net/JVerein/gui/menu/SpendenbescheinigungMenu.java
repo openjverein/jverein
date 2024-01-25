@@ -42,7 +42,7 @@ public class SpendenbescheinigungMenu extends ContextMenu
         new SpendenbescheinigungPrintAction(false), "file-pdf.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new DuplicateMenuItem("Als Vorlage für neue Spende",
-        new SpendenbescheinigungDuplizierenAction(), "copy.png"));
+        new SpendenbescheinigungDuplizierenAction(), "edit-copy.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Löschen...",
         new SpendenbescheinigungDeleteAction(), "user-trash-full.png"));

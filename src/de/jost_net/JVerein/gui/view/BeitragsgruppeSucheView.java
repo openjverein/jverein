@@ -42,7 +42,7 @@ public class BeitragsgruppeSucheView extends AbstractView
     buttons.addButton("Löschen", new BeitragsgruppeDeleteAction(),
         control.getBeitragsgruppeTable(), false, "user-trash-full.png");
     buttons.addButton("Neu", new BeitragsgruppeDetailAction(), null, false,
-        "file.png");
+        "document-new.png");
     buttons.paint(this.getParent());
   }
 }

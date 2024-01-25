@@ -151,7 +151,7 @@ public class MyExtension implements Extension
       if (Einstellungen.getEinstellung().getWiedervorlage())
       {
         jverein.addChild(new MyItem(jverein, "Wiedervorlage",
-            new WiedervorlageListeAction(), "calendar-alt.png"));
+            new WiedervorlageListeAction(), "office-calendar.png"));
       }
       if (Einstellungen.getEinstellung().getLehrgaenge())
       {
@@ -168,7 +168,7 @@ public class MyExtension implements Extension
       auswertung.addChild(new MyItem(auswertung, "Adressen",
           new AuswertungAdressenAction(), "receipt.png"));
       auswertung.addChild(new MyItem(auswertung, "Jubiläen",
-          new JubilaeenAction(), "file.png"));
+          new JubilaeenAction(), "receipt.png"));
       if (Einstellungen.getEinstellung().getKursteilnehmer())
       {
         auswertung.addChild(new MyItem(auswertung, "Kursteilnehmer",
@@ -184,9 +184,9 @@ public class MyExtension implements Extension
       NavigationItem mail = null;
       mail = new MyItem(mail, "Mail", null);
       mail.addChild(
-          new MyItem(mail, "Mails", new MailListeAction(), "envelope.png"));
+          new MyItem(mail, "Mails", new MailListeAction(), "envelope-open.png"));
       mail.addChild(new MyItem(mail, "Mail-Vorlagen", new MailVorlagenAction(),
-          "envelope.png"));
+          "envelope-open.png"));
       jverein.addChild(mail);
 
       NavigationItem buchfuehrung = null;
