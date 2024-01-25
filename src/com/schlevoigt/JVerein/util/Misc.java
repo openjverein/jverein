@@ -5,11 +5,11 @@ import java.util.ArrayList;
 public class Misc {
 	
 	public static String getBuchungsZweckKorrektur(String value, boolean withRealLineBreak) {
-    String result = "";
-    if (value == null)
-    {
-      return result;
-    }
+		String result = "";
+		if (value == null)
+		{
+		return result;
+		}
 		if (value.length() < 5) 
 		{
 			return value.replace("SVWZ+", "");
