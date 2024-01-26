@@ -85,7 +85,7 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
   private void init()
   {
     imageOk = SWTUtil.getImage("ok.png");
-    imageError = SWTUtil.getImage("stop-circle.png");
+    imageError = SWTUtil.getImage("process-stop.png");
     imageLocked = SWTUtil.getImage("locked.png");
   }
 
@@ -243,7 +243,7 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
     list.addFilter("buchungsklasse.id = buchungsart.buchungsklasse");
     list.setOrder(
         "ORDER BY buchungsklasse.bezeichnung, buchungsart.art, buchungsart.bezeichnung");
-    buchungsartInput = new SelectInput(list, getAktuelleBuchart());
+    buchungsartInput = new SelectInput(PseudoIterator.asList(list), getAktuelleBuchart());
     buchungsartInput.setAttribute("klasse-art-bez");
     buchungsartInput.setPleaseChoose("Bitte auswählen");
     buchungsartInput.setComment(" ");
