@@ -67,7 +67,7 @@ public class BuchungsartSearchInput extends SearchInput
         if (text != null)
         {
           text = "%" + text.toUpperCase() + "%";
-          sql += "AND (UPPER(buchungsart.bezeichnung) like ? or buchungsart.nummer like ?)";
+          sql += "AND (UPPER(buchungsart.bezeichnung) like ? or buchungsart.nummer like ?) ";
         }
         sql += "ORDER BY nummer";
         Logger.debug(sql);
