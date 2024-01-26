@@ -948,7 +948,7 @@ public class EinstellungControl extends AbstractControl
       return automatische_buchungskorrektur_hibiscus;
     }
     automatische_buchungskorrektur_hibiscus = new CheckboxInput(Einstellungen.getEinstellung().getAutomatischeBuchungskorrekturHibiscus());
-    automatische_buchungskorrektur_hibiscus.setName("Automatische Korrektur der Verwendungszecke aus Hibsicus Buchungen");
+    automatische_buchungskorrektur_hibiscus.setName("Automatische Korrektur der Verwendungszwecke aus Hibiscus Buchungen");
     return automatische_buchungskorrektur_hibiscus;
   }
 
