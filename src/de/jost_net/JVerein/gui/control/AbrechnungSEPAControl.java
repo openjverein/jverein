@@ -50,6 +50,7 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.hbci.gui.dialogs.PainVersionDialog;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -368,6 +369,14 @@ public class AbrechnungSEPAControl extends AbstractControl
       {
         PainVersionDialog d = new PainVersionDialog(org.kapott.hbci.sepa.SepaVersion.Type.PAIN_008);
         sepaVersion = (SepaVersion) d.open();
+        if (sepaVersion == null)
+        {
+          return;
+        }
+      }
+      catch (OperationCanceledException oce)
+      {
+        throw oce;
       }
       catch (Exception e)
       {
