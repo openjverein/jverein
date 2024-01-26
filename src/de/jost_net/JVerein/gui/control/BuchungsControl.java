@@ -108,6 +108,7 @@ import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -606,13 +607,17 @@ public class BuchungsControl extends AbstractControl
             refreshSplitbuchungen();
           }
         }
+        catch (OperationCanceledException oce)
+        {
+          throw oce;
+        }
         catch (Exception e)
         {
           e.printStackTrace();
         }
       }
 
-    }, null, false, "stock_navigator-shift-right.png");
+    }, null, false, "list.png");
     return sammelueberweisungButton;
   }
 
