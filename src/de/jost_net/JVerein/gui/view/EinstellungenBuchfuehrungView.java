@@ -38,6 +38,8 @@ public class EinstellungenBuchfuehrungView extends AbstractView
 
     cont.addLabelPair("Beginn Geschäftsjahr (TT.MM.)",
         control.getBeginnGeschaeftsjahr());
+    cont.addLabelPair("Buchungsarten die seit x Monaten nicht benutzt werden unterdrücken",
+        control.getUnterdrueckungLaenge());
     cont.addInput(control.getAutoBuchunguebernahme());
     cont.addInput(control.getAutomatischeBuchungskorrekturHibiscus());
     cont.addInput(control.getUnterdrueckungOhneBuchung());

@@ -20,8 +20,11 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -72,7 +75,10 @@ import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -102,6 +108,7 @@ import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -183,6 +190,8 @@ public class BuchungsControl extends AbstractControl
   public static final String MITGLIEDZUGEORDNET = "suchmitgliedzugeordnet";
 
   private Vector<Listener> changeKontoListener = new Vector<>();
+  
+  private int unterdrueckunglaenge = 0;
 
   public BuchungsControl(AbstractView view)
   {
@@ -542,7 +551,7 @@ public class BuchungsControl extends AbstractControl
         "((startdatum is null or startdatum <= ?) and (endedatum is null or endedatum >= ?))",
         new Object[] { buchungsDatum, buchungsDatum });
     list.setOrder("ORDER BY bezeichnung");
-    projekt = new SelectInput(list, getBuchung().getProjekt());
+    projekt = new SelectInput(PseudoIterator.asList(list), getBuchung().getProjekt());
     projekt.setValue(getBuchung().getProjekt());
     projekt.setAttribute("bezeichnung");
     projekt.setPleaseChoose("Bitte auswählen");
@@ -598,13 +607,17 @@ public class BuchungsControl extends AbstractControl
             refreshSplitbuchungen();
           }
         }
+        catch (OperationCanceledException oce)
+        {
+          throw oce;
+        }
         catch (Exception e)
         {
           e.printStackTrace();
         }
       }
 
-    }, null, false, "stock_navigator-shift-right.png");
+    }, null, false, "list.png");
     return sammelueberweisungButton;
   }
 
@@ -665,10 +678,62 @@ public class BuchungsControl extends AbstractControl
     b2.setBezeichnung("Ohne Buchungsart");
     b2.setArt(-1);
     liste.add(b2);
-    while (list.hasNext())
+    
+    unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
+    if (unterdrueckunglaenge > 0)
     {
-      liste.add(list.next());
+      final DBService service = Einstellungen.getDBService();
+      Calendar cal = Calendar.getInstance();
+      Date db = cal.getTime();
+      cal.add(Calendar.MONTH, - unterdrueckunglaenge);
+      Date dv = cal.getTime();
+      String sql = "SELECT buchungsart.* from buchungsart, buchung ";
+      sql += "WHERE buchung.buchungsart = buchungsart.id ";
+      sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
+      sql += "ORDER BY nummer";
+      Logger.debug(sql);
+      ResultSetExtractor rs = new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs) throws RemoteException, SQLException
+        {
+          ArrayList<Buchungsart> list = new ArrayList<Buchungsart>();
+          while (rs.next())
+          {
+            list.add(
+              (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
+          }
+          return list;
+        }
+      };
+      @SuppressWarnings("unchecked")
+      ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
+          new Object[] { dv, db }, rs);
+      int size = ergebnis.size();
+      Buchungsart bua;
+      for (int i = 0; i < size; i++)
+      {
+        bua = ergebnis.get(i);
+        liste.add(bua);
+        for (int j = i + 1; j < size; j++)
+        {
+          if (bua.getNummer() == ergebnis.get(j).getNummer())
+          {
+            ergebnis.remove(j);
+            j--;
+            size--;
+          }
+        }
+      }
     }
+    else
+    {
+      while (list.hasNext())
+      {
+        liste.add(list.next());
+      }
+    }
+    
     int bwert = settings.getInt(BUCHUNGSART, -2);
     Buchungsart b = null;
     for (int i = 0; i < liste.size(); i++)
@@ -1817,6 +1882,7 @@ public class BuchungsControl extends AbstractControl
       return value;
     }
 
+    @SuppressWarnings("unused")
     public void setValue(Boolean value)
     {
       this.value = value;
@@ -1827,6 +1893,7 @@ public class BuchungsControl extends AbstractControl
       return text;
     }
 
+    @SuppressWarnings("unused")
     public void setText(String text)
     {
       this.text = text;

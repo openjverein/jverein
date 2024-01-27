@@ -17,6 +17,11 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -25,7 +30,10 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -34,7 +42,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
 
 /**
  * Dialog zur Zuordnung einer Buchungsart.
@@ -51,6 +59,10 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   private Buchungsart buchungsart = null;
 
   private boolean ueberschr;
+  
+  private int unterdrueckunglaenge = 0;
+  
+  private boolean abort = true;
 
   /**
    * @param position
@@ -59,7 +71,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   {
     super(position);
     setTitle("Zuordnung Buchungsart");
-    setSize(400, 200);
+    setSize(400, 175);
   }
 
   @Override
@@ -71,7 +83,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     group.addLabelPair("", getStatus());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("übernehmen", new Action()
+    buttons.addButton("Übernehmen", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -87,17 +99,30 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
           buchungsart = (Buchungsart) buchungsarten.getValue();
         }
         ueberschr = (Boolean) getUeberschreiben().getValue();
+        abort = false;
         close();
       }
-    }, null, true);
-    buttons.addButton("abbrechen", new Action()
+    }, null, true, "ok.png");
+    buttons.addButton("Entfernen", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        buchungsart = null;
+        abort = false;
+        close();
+      }
+    }, null, false, "user-trash-full.png");
+    buttons.addButton("Abbrechen", new Action()
     {
       @Override
       public void handleAction(Object context)
       {
-        throw new OperationCanceledException();
+        close();
       }
-    });
+    }, null, false, "process-stop.png");
+
     buttons.paint(parent);
     getShell().setMinimumSize(getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT));
   }
@@ -120,6 +145,11 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   {
     return ueberschr;
   }
+  
+  public boolean getAbort()
+  {
+    return abort;
+  }
 
   private SelectInput getBuchungsartAuswahl() throws RemoteException
   {
@@ -127,10 +157,61 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     {
       return buchungsarten;
     }
-    DBIterator<Buchungsart> it = Einstellungen.getDBService()
-        .createList(Buchungsart.class);
-    it.setOrder("ORDER BY nummer");
-    buchungsarten = new SelectInput(it, null);
+    unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
+    if (unterdrueckunglaenge > 0) 
+    {
+      final DBService service = Einstellungen.getDBService();
+      Calendar cal = Calendar.getInstance();
+      Date db = cal.getTime();
+      cal.add(Calendar.MONTH, - unterdrueckunglaenge);
+      Date dv = cal.getTime();
+      String sql = "SELECT buchungsart.* from buchungsart, buchung ";
+      sql += "WHERE buchung.buchungsart = buchungsart.id ";
+      sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
+      sql += "ORDER BY nummer";
+      Logger.debug(sql);
+      ResultSetExtractor rs = new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs) throws RemoteException, SQLException
+        {
+          ArrayList<Buchungsart> list = new ArrayList<Buchungsart>();
+          while (rs.next())
+          {
+            list.add(
+              (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
+          }
+          return list;
+        }
+      };
+      @SuppressWarnings("unchecked")
+      ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
+          new Object[] { dv, db }, rs);
+      int size = ergebnis.size();
+      Buchungsart bua;
+      for (int i = 0; i < size; i++)
+      {
+        bua = ergebnis.get(i);
+        for (int j = i + 1; j < size; j++)
+        {
+          if (bua.getNummer() == ergebnis.get(j).getNummer())
+          {
+            ergebnis.remove(j);
+            j--;
+            size--;
+          }
+        }
+      }
+      buchungsarten = new SelectInput(ergebnis.toArray(), null);
+    }
+    else
+    {
+      DBIterator<Buchungsart> it = Einstellungen.getDBService()
+          .createList(Buchungsart.class);
+      it.setOrder("ORDER BY nummer");
+      buchungsarten = new SelectInput(PseudoIterator.asList(it), null);
+    }
+
     buchungsarten.setValue(null);
     buchungsarten.setAttribute("nrbezeichnung");
     buchungsarten.setPleaseChoose("Bitte Buchungsart auswählen");

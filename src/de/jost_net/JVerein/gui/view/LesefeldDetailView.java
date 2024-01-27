@@ -96,7 +96,7 @@ public class LesefeldDetailView extends AbstractView implements Listener
         false, "document-save.png");
     buttonArea.addButton(button);
     button = new Button("Abbrechen und zurück", new AbortEditLesefeldAction(),
-        null, false, "stop-circle.png");
+        null, false, "process-stop.png");
     buttonArea.addButton(button);
     buttonArea.paint(this.getParent());
   }

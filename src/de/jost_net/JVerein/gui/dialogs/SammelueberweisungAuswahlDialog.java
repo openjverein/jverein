@@ -63,6 +63,16 @@ public class SammelueberweisungAuswahlDialog
   {
     this.getSammelueberweisungen().paint(parent);
     ButtonArea b = new ButtonArea();
+    b.addButton("Übernehmen", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        selected = (SepaSammelUeberweisung) sammelueberweisung.getSelection();
+        close();
+      }
+    }, null, true, "ok.png");
     b.addButton("Abbrechen", new Action()
     {
 

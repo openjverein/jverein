@@ -26,6 +26,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
 public class MitgliedDetailAction implements Action
@@ -65,6 +66,10 @@ public class MitgliedDetailAction implements Action
           PersonenartDialog pad = new PersonenartDialog(
               PersonenartDialog.POSITION_CENTER);
           String pa = pad.open();
+          if (pa == null)
+          {
+            return;
+          }
           m.setPersonenart(pa);
         }
         else
@@ -80,6 +85,10 @@ public class MitgliedDetailAction implements Action
       {
         GUI.startView(new AdresseDetailView(), m);
       }
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
     }
     catch (Exception e)
     {

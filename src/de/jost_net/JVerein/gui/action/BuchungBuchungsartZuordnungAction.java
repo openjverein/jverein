@@ -17,14 +17,13 @@
 
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.BuchungsartZuordnungDialog;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -72,51 +71,65 @@ public class BuchungBuchungsartZuordnungAction implements Action
       {
         return;
       }
-      try
+      
+      BuchungsartZuordnungDialog baz = new BuchungsartZuordnungDialog(
+          BuchungsartZuordnungDialog.POSITION_MOUSE);
+      baz.open();
+      if (!baz.getAbort())
       {
-        BuchungsartZuordnungDialog baz = new BuchungsartZuordnungDialog(
-            BuchungsartZuordnungDialog.POSITION_MOUSE);
-        baz.open();
         Buchungsart ba = baz.getBuchungsart();
         int counter = 0;
-
-        for (Buchung buchung : b)
+        if (ba == null)
         {
-          boolean protect = buchung.getBuchungsart() != null
-              && !baz.getOverride();
-          if (protect)
+          for (Buchung buchung : b)
           {
-            counter++;
-          }
-          else
-          {
-            buchung.setBuchungsart(new Long(ba.getID()));
+            buchung.setBuchungsart(null);
             buchung.store();
           }
         }
-        control.getBuchungsList();
-        String protecttext = "";
-        if (counter > 0)
+        else
         {
-          protecttext = String
-              .format(", %d Buchungen wurden nicht überschrieben. ", counter);
+          for (Buchung buchung : b)
+          {
+            boolean protect = buchung.getBuchungsart() != null
+                && !baz.getOverride();
+            if (protect)
+            {
+              counter++;
+            }
+            else
+            {
+              buchung.setBuchungsart(Long.valueOf(ba.getID()));
+              buchung.store();
+            }
+          }
         }
-        GUI.getStatusBar()
-            .setSuccessText("Buchungsarten zugeordnet" + protecttext);
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler", e);
-        GUI.getStatusBar()
-            .setErrorText("Fehler bei der Zuordnung der Buchungsart");
-        return;
+        control.getBuchungsList();
+        if (ba == null)
+        {
+          GUI.getStatusBar().setSuccessText("Buchungsarten gelöscht");
+        }
+        else
+        {
+          String protecttext = "";
+          if (counter > 0)
+          {
+            protecttext = String
+                .format(", %d Buchungen wurden nicht überschrieben. ", counter);
+          }
+          GUI.getStatusBar()
+          .setSuccessText("Buchungsarten zugeordnet" + protecttext);
+        }
       }
     }
-    catch (RemoteException e)
+    catch (OperationCanceledException oce)
     {
-      String fehler = "Fehler beim Speichern.";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler", e);
+      GUI.getStatusBar().setErrorText("Fehler bei der Zuordnung der Buchungsart");
     }
   }
 }

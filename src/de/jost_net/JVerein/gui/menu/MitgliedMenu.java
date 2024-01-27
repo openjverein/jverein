@@ -115,7 +115,7 @@ public class MitgliedMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("vCard QR-Code",
         new MitgliedVCardQRCodeAction(), "qr-code.png"));
     addItem(new CheckedContextMenuItem("Eigenschaften",
-        new MitgliedEigenschaftZuordnungAction(), "check-double.png"));
+        new MitgliedEigenschaftZuordnungAction(), "document-properties.png"));
     if (Einstellungen.getEinstellung().getArbeitseinsatz())
     {
       addItem(new CheckedContextMenuItem("Arbeitseinsätze zuweisen",

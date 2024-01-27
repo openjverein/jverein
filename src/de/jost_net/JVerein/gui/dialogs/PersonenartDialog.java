@@ -42,7 +42,7 @@ public class PersonenartDialog extends AbstractDialog<String>
     super(position);
 
     setTitle("Personenart");
-    setSize(450, 200);
+    setSize(400, 140);
   }
 
   @Override

@@ -127,7 +127,7 @@ public class QIFBuchungsImportControl extends AbstractControl
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
     headerSelected = null;
-    imageError = SWTUtil.getImage("stop-circle.png");
+    imageError = SWTUtil.getImage("process-stop.png");
     imageLocked = SWTUtil.getImage("locked.png");
   }
 
