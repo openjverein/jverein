@@ -737,6 +737,18 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
 
   @Override
+  public Boolean getOptiert() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("optiert"));
+  }
+
+  @Override
+  public void setOptiert(Boolean optiert) throws RemoteException
+  {
+    setAttribute("optiert", optiert);
+  }
+
+  @Override
   public Boolean getExterneMitgliedsnummer() throws RemoteException
   {
     return Util.getBoolean(getAttribute("externemitgliedsnummer"));

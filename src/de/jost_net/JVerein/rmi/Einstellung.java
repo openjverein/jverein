@@ -22,6 +22,7 @@ import java.util.Date;
 import de.jost_net.JVerein.io.IBankverbindung;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 
 public interface Einstellung extends DBObject, IBankverbindung
 {
@@ -523,5 +524,9 @@ public interface Einstellung extends DBObject, IBankverbindung
   public int getZaehlerLaenge() throws RemoteException;
 
   public void setZaehlerLaenge(int zaehlerlaenge) throws RemoteException;
+
+  public Boolean getOptiert() throws RemoteException;
+
+  public void setOptiert(Boolean optiert) throws RemoteException;
 
 }

@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
+import com.schlevoigt.JVerein.util.Misc;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
@@ -286,8 +288,16 @@ public class FormularAnzeigeAction implements Action
       differenz.add(-39.99d);
       
       // Summe
-      zg1.add("Rechnungssumme inkl. USt.");
-      zg.add("Rechnungssumme inkl. USt.");
+      if (Einstellungen.getEinstellung().getOptiert())
+      {
+        zg1.add("Rechnungssumme inkl. USt.");
+        zg.add("Rechnungssumme inkl. USt.");
+      }
+      else
+      {
+        zg1.add("Summe");
+        zg.add("Summe");
+      }
       betrag.add(249.99d);
       differenz.add(239.99d);
       ist.add(10d);

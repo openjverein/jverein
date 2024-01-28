@@ -284,6 +284,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput abrlabschliessen;
 
+  private CheckboxInput optiert;
+
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
    */
@@ -759,6 +761,17 @@ public class EinstellungControl extends AbstractControl
           Einstellungen.getEinstellung().getZaehlerLaenge());
     }
     return zaehlerlaenge;
+  }
+  
+  public CheckboxInput getOptiert() throws RemoteException 
+  {
+    if (optiert != null) 
+    {
+      return optiert;
+    }
+    optiert = new CheckboxInput(Einstellungen.getEinstellung().getOptiert());
+    optiert.setName("Umsatzsteueroption");
+    return optiert;
   }
 
   public CheckboxInput getExterneMitgliedsnummer() throws RemoteException
@@ -1927,6 +1940,7 @@ public class EinstellungControl extends AbstractControl
       Integer ulength = (Integer) unterdrueckunglaenge.getValue();
       e.setUnterdrueckungLaenge(ulength);
       e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());
+      e.setOptiert((Boolean) getOptiert().getValue());
       e.store();
       Einstellungen.setEinstellung(e);
 

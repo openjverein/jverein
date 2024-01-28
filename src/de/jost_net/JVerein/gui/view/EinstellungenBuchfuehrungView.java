@@ -44,6 +44,7 @@ public class EinstellungenBuchfuehrungView extends AbstractView
     cont.addInput(control.getAutomatischeBuchungskorrekturHibiscus());
     cont.addInput(control.getUnterdrueckungOhneBuchung());
     cont.addInput(control.getKontonummerInBuchungsliste());
+    cont.addInput(control.getOptiert());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

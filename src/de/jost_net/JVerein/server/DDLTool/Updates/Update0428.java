@@ -39,5 +39,7 @@ public class Update0428 extends AbstractDDLUpdate
     // Add tax amount
     execute(addColumn("mitgliedskonto",
         new Column("steuerbetrag", COLTYPE.DOUBLE, 0, "0", false, false)));
+    execute(addColumn("einstellung", new Column("optiert",
+        COLTYPE.BOOLEAN, 0, "FALSE", false, false)));
   }
 }
