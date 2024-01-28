@@ -810,21 +810,23 @@ public class AbrechnungSEPA
           .createObject(Mitgliedskonto.class, null);
       mk.setAbrechnungslauf(abrl);
       mk.setZahlungsweg(mitglied.getZahlungsweg());
-      // Set bill amount without taxes
-      double nettobetrag = betrag / (1d + (buchungsart.getSteuersatz() / 100d));
-      mk.setNettobetrag(nettobetrag);
-      // Set tax rate
-      mk.setSteuersatz(buchungsart.getSteuersatz());
-      // Set taxes by tax rate and bill amount
-      mk.setSteuerbetrag(betrag - nettobetrag);
       mk.setBetrag(betrag);
       mk.setDatum(datum);
       mk.setMitglied(mitglied);
       mk.setZweck1(zweck1);
+      double steuersatz = 0d;
       if (buchungsart != null)
       {
         mk.setBuchungsart(buchungsart);
+        steuersatz = buchungsart.getSteuersatz();
       }
+      // Set tax rate
+      mk.setSteuersatz(steuersatz);
+      // Set bill amount without taxes
+      double nettobetrag = (steuersatz != 0d) ? (betrag / (1d + (steuersatz / 100d))) : betrag;
+      mk.setNettobetrag(nettobetrag);
+      // Set tax amount
+      mk.setSteuerbetrag(betrag - nettobetrag);    
       mk.store();
     }
     if (haben)
