@@ -154,7 +154,7 @@ public class AbrechnungSEPA
     }
 
     ArrayList<Zahler> z = lastschrift.getZahler();
-    if (param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
+    if ((param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI) && !z.isEmpty())
     {
       writeSepaFile(param, lastschrift, z);
       monitor.log(String.format("SEPA-Datei %s geschrieben.", param.sepafileRCUR.getAbsolutePath()));

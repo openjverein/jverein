@@ -72,6 +72,9 @@ public class Ct1Ueberweisung
 
       case HIBISCUS:
         return hibiscusausgabe(abrl, file, faell, ct1ausgabe, verwendungszweck);
+        
+      case KEINE_DATEI:
+        return 0;
 
     }
     return -1;
