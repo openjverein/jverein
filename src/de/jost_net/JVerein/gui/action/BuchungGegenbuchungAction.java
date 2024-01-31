@@ -73,6 +73,7 @@ public class BuchungGegenbuchungAction implements Action
         b.setBetrag(-b.getBetrag());
         b.setAuszugsnummer(null);
         b.setBlattnummer(null);
+        b.setMitgliedskonto(null);
         GUI.startView(new BuchungView(), b);
       }
     }
