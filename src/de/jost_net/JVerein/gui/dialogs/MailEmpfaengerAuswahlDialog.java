@@ -49,7 +49,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
     super(position);
     this.control = control;
     setTitle("Mail-Empfänger");
-    setSize(650, 450);
+    setSize(700, 450);
   }
 
   @Override

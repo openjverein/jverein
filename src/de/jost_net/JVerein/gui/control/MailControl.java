@@ -256,7 +256,7 @@ public class MailControl extends AbstractControl
 
   public Button getMailSendButton()
   {
-    Button b = new Button("speichern + senden", new Action()
+    Button b = new Button("Speichern und senden", new Action()
     {
 
       @Override
@@ -322,7 +322,7 @@ public class MailControl extends AbstractControl
 
   public Button getMailReSendButton()
   {
-    Button b = new Button("speichern + erneut senden", new Action()
+    Button b = new Button("Speichern und erneut senden", new Action()
     {
 
       @Override
@@ -387,7 +387,7 @@ public class MailControl extends AbstractControl
 
   public Button getMailSpeichernButton()
   {
-    Button b = new Button("speichern", new Action()
+    Button b = new Button("Speichern", new Action()
     {
 
       @Override
