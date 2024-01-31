@@ -18,10 +18,12 @@ package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungDeleteAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungDuplizierenAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungEmailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
@@ -41,10 +43,13 @@ public class SpendenbescheinigungMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Drucken (individuell)",
         new SpendenbescheinigungPrintAction(false), "file-pdf.png"));
     addItem(ContextMenuItem.SEPARATOR);
+    addItem(new CheckedSingleContextMenuItem("E-Mail an Spender",
+        new SpendenbescheinigungEmailAction(), "envelope-open.png"));
+    addItem(ContextMenuItem.SEPARATOR);
     addItem(new DuplicateMenuItem("Als Vorlage für neue Spende",
         new SpendenbescheinigungDuplizierenAction(), "edit-copy.png"));
     addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedContextMenuItem("Löschen...",
+    addItem(new CheckedContextMenuItem("Löschen",
         new SpendenbescheinigungDeleteAction(), "user-trash-full.png"));
   }
 
