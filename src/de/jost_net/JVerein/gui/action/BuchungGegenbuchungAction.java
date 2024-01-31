@@ -16,10 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.KontoAuswahlDialog;
 import de.jost_net.JVerein.gui.view.BuchungView;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -34,18 +37,35 @@ public class BuchungGegenbuchungAction implements Action
  
     if (context == null || !(context instanceof Buchung))
     {
-      throw new ApplicationException("keine Buchung ausgewählt");
+      throw new ApplicationException("Keine Buchung ausgewählt");
     }
     Buchung b = null;
-    Konto konto;
+    Konto konto = null;
+    Konto konto1 = null;
     try
     {
-      KontoAuswahlDialog d = new KontoAuswahlDialog(
-          KontoAuswahlDialog.POSITION_CENTER, false, false, true);
-      konto = (Konto) d.open();
+      final DBService service = Einstellungen.getDBService();
+      DBIterator<Konto> konten = service.createList(Konto.class);
+      b = (Buchung) context;
+      while (konten.hasNext())
+      {
+        konto1 = konten.next();
+        if ((konto1.getBuchungsart() != null) && (b.getBuchungsart() != null))
+        {
+          if (konto1.getBuchungsartId() == b.getBuchungsartId())
+          {
+            konto = konto1;
+          }
+        }
+      }
+      if (konto == null)
+      {
+        KontoAuswahlDialog d = new KontoAuswahlDialog(
+            KontoAuswahlDialog.POSITION_CENTER, false, false, true);
+        konto = (Konto) d.open();
+      }
       if (konto != null)
       {
-        b = (Buchung) context;
         b.setID(null);
         b.setSplitId(null);
         b.setKonto(konto);

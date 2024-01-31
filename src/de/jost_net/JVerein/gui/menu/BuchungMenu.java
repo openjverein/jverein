@@ -18,7 +18,6 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
@@ -31,7 +30,6 @@ import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.willuhn.jameica.gui.Action;
@@ -155,9 +153,10 @@ public class BuchungMenu extends ContextMenu
           {
             return false;
           }
-          Buchungsart bua = (Buchungsart) Einstellungen.getDBService().createObject(Buchungsart.class,
-              b.getBuchungsartId() + "");
-          return bua.getArt() == ArtBuchungsart.UMBUCHUNG;
+          if (b.getBuchungsart() != null)
+          {
+            return b.getBuchungsart().getArt() == ArtBuchungsart.UMBUCHUNG;
+          }
         }
         catch (RemoteException e)
         {

@@ -33,6 +33,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -300,9 +301,10 @@ public class KontoControl extends AbstractControl
     liste.add(b1);
     
     unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
+    final DBService service = Einstellungen.getDBService();
+    DBIterator<Konto> konten = service.createList(Konto.class);
     if (unterdrueckunglaenge > 0)
     {
-      final DBService service = Einstellungen.getDBService();
       Calendar cal = Calendar.getInstance();
       Date db = cal.getTime();
       cal.add(Calendar.MONTH, - unterdrueckunglaenge);
@@ -329,12 +331,19 @@ public class KontoControl extends AbstractControl
       @SuppressWarnings("unchecked")
       ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
           new Object[] { dv, db }, rs);
+
       int size = ergebnis.size();
       Buchungsart bua;
       for (int i = 0; i < size; i++)
       {
         bua = ergebnis.get(i);
-        liste.add(bua);
+        if (bua.getArt() == ArtBuchungsart.UMBUCHUNG)
+        {
+          if (!isUsed(konten, bua))
+          {
+            liste.add(bua);
+          }
+        }
         for (int j = i + 1; j < size; j++)
         {
           if (bua.getNummer() == ergebnis.get(j).getNummer())
@@ -348,9 +357,17 @@ public class KontoControl extends AbstractControl
     }
     else
     {
+      Buchungsart bua;
       while (list.hasNext())
       {
-        liste.add(list.next());
+        bua = list.next();
+        if (bua.getArt() == ArtBuchungsart.UMBUCHUNG)
+        {
+          if (!isUsed(konten, bua))
+          {
+            liste.add(bua);
+          }
+        }
       }
     }
     
@@ -416,6 +433,32 @@ public class KontoControl extends AbstractControl
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
+  }
+  
+  private boolean isUsed(DBIterator<Konto> konten, Buchungsart bua) throws RemoteException
+  {
+    Konto konto1;
+    konten.begin();
+    while (konten.hasNext())
+    {
+      konto1 = konten.next();
+      if ( konto1.getBuchungsart() != null)
+      {
+        if (konto.getBuchungsart() != null)
+        {
+          if (konto.getBuchungsart().getNummer() == bua.getNummer())
+          {
+            //Bei eigenem Konto darf es sein
+            return false;
+          }
+        }
+        if (konto1.getBuchungsart().getNummer() == bua.getNummer())
+        {
+          return true;
+        }
+      }
+    }
+    return false;
   }
   
 }
