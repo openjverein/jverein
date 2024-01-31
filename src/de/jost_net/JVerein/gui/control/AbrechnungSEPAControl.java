@@ -434,7 +434,7 @@ public class AbrechnungSEPAControl extends AbstractControl
             if (abupar.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI || 
                 abupar.abbuchungsausgabe == Abrechnungsausgabe.KEINE_DATEI)
             {
-              GUI.getStatusBar().setSuccessText("Abrechnung durchgeführt");
+              GUI.getStatusBar().setSuccessText("Abrechnung durchgeführt" + abupar.getText());
             } else {
               GUI.getStatusBar().setSuccessText("Abrechnung durchgeführt, Hibiscus-Lastschrift geschrieben.");
             }

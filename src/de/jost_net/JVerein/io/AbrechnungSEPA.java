@@ -159,6 +159,7 @@ public class AbrechnungSEPA
     {
       writeSepaFile(param, lastschrift, z);
       monitor.log(String.format("SEPA-Datei %s geschrieben.", param.sepafileRCUR.getAbsolutePath()));
+      param.setText(String.format(", SEPA-Datei %s geschrieben.", param.sepafileRCUR.getAbsolutePath()));
     }
 
     BigDecimal summemitgliedskonto = new BigDecimal("0");

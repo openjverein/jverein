@@ -34,7 +34,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.VarTools;
-import de.jost_net.JVerein.keys.Abrechnungsausgabe;
+import de.jost_net.JVerein.keys.Ct1Ausgabe;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
@@ -62,7 +62,7 @@ public class Ct1Ueberweisung
   }
 
   public int write(Abrechnungslauf abrl, File file, Date faell,
-      Abrechnungsausgabe ct1ausgabe, String verwendungszweck) throws Exception
+      Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
   {
     Velocity.init();
     switch (ct1ausgabe)
@@ -72,16 +72,12 @@ public class Ct1Ueberweisung
 
       case HIBISCUS:
         return hibiscusausgabe(abrl, file, faell, ct1ausgabe, verwendungszweck);
-        
-      case KEINE_DATEI:
-        return 0;
-
     }
     return -1;
   }
 
   private int dateiausgabe(Abrechnungslauf abrl, File file, Date faell,
-      Abrechnungsausgabe ct1ausgabe, String verwendungszweck) throws Exception
+      Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
   {
     ueb = new Ueberweisung();
     ueb.setAusfuehrungsdatum(faell);
@@ -110,7 +106,7 @@ public class Ct1Ueberweisung
   }
 
   private int hibiscusausgabe(Abrechnungslauf abrl, File file, Date faell,
-      Abrechnungsausgabe ct1ausgabe, String verwendungszweck) throws Exception
+      Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
   {
     try
     {

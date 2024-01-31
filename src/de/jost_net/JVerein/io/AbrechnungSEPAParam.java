@@ -70,6 +70,8 @@ public class AbrechnungSEPAParam
   public final DBService service;
 
   public Konto konto;
+  
+  private String text = "";
 
   public AbrechnungSEPAParam(AbrechnungSEPAControl ac, File sepafileRCUR, SepaVersion sepaVersion, String pdffileRCUR)
       throws ApplicationException, RemoteException
@@ -143,6 +145,15 @@ public class AbrechnungSEPAParam
     {
       service = null;
     }
-
+  }
+  
+  public String getText()
+  {
+    return text;
+  }
+  
+  public void setText(String in)
+  {
+    text = in;
   }
 }
