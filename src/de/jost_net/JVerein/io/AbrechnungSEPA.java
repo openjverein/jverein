@@ -155,6 +155,7 @@ public class AbrechnungSEPA
     }
 
     ArrayList<Zahler> z = lastschrift.getZahler();
+    // Wenn keine Buchungen vorhanden sind, wird kein File erzeugt.
     if ((param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI) && !z.isEmpty())
     {
       writeSepaFile(param, lastschrift, z);
@@ -248,8 +249,13 @@ public class AbrechnungSEPA
     }
     if (param.abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
     {
-      buchenHibiscus(param, z);
-      monitor.log("Hibiscus-Lastschrift erzeugt.");
+      // Wenn keine Buchungen vorhanden sind, wird nichts an Hibiscus übergeben.
+      if (z.size() != 0)
+      {
+        buchenHibiscus(param, z);
+        monitor.log("Hibiscus-Lastschrift erzeugt.");
+        param.setText(String.format(", Hibiscus-Lastschrift erzeugt."));
+      }
     }
     if (param.pdffileRCUR != null)
     {
@@ -664,9 +670,6 @@ public class AbrechnungSEPA
 
   private void writeSepaFile(AbrechnungSEPAParam param, Basislastschrift lastschrift, ArrayList<Zahler> alle_zahler) throws Exception
   {
-    if (alle_zahler.isEmpty()) {
-      return;
-    }
     Properties ls_properties = new Properties();
     ls_properties.setProperty("src.bic", lastschrift.getBIC());
     ls_properties.setProperty("src.iban", lastschrift.getIBAN());
@@ -707,11 +710,6 @@ public class AbrechnungSEPA
   private void buchenHibiscus(AbrechnungSEPAParam param, ArrayList<Zahler> z)
       throws ApplicationException
   {
-    if (z.size() == 0)
-    {
-      // Wenn keine Buchungen vorhanden sind, wird nichts an Hibiscus übergeben.
-      return;
-    }
     try
     {
       SepaLastschrift[] lastschriften = new SepaLastschrift[z.size()];

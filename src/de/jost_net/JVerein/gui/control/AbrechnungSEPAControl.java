@@ -431,13 +431,8 @@ public class AbrechnungSEPAControl extends AbstractControl
 
             monitor.setPercentComplete(100);
             monitor.setStatus(ProgressMonitor.STATUS_DONE);
-            if (abupar.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI || 
-                abupar.abbuchungsausgabe == Abrechnungsausgabe.KEINE_DATEI)
-            {
-              GUI.getStatusBar().setSuccessText("Abrechnung durchgeführt" + abupar.getText());
-            } else {
-              GUI.getStatusBar().setSuccessText("Abrechnung durchgeführt, Hibiscus-Lastschrift geschrieben.");
-            }
+            GUI.getStatusBar().setSuccessText("Abrechnung durchgeführt" + abupar.getText());
+
           }
           catch (ApplicationException ae)
           {
