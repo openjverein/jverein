@@ -40,6 +40,7 @@ public class KontoView extends AbstractView
     group.addLabelPair("Konto-Eröffnung", control.getEroeffnung());
     group.addLabelPair("Konto-Auflösung", control.getAufloesung());
     group.addLabelPair("Hibiscus-Konto", control.getHibiscusId());
+    group.addLabelPair("Gegenbuchung-Buchungsart", control.getBuchungsart());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

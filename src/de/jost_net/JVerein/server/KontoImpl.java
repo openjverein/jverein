@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.db.AbstractDBObject;
@@ -203,5 +204,39 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     super.store();
     Cache.get(Konto.class, false).put(this); // Cache aktualisieren
+  }
+  
+  @Override
+  public Buchungsart getBuchungsart() throws RemoteException
+  {
+    Long l = (Long) super.getAttribute("buchungsart");
+    if (l == null)
+    {
+      return null; // Keine Buchungsart zugeordnet
+    }
+
+    Cache cache = Cache.get(Buchungsart.class, true);
+    return (Buchungsart) cache.get(l);
+  }
+
+  @Override
+  public Long getBuchungsartId() throws RemoteException
+  {
+    return Long.parseLong(getBuchungsart().getID());
+  }
+
+  @Override
+  public void setBuchungsart(Long buchungsart) throws RemoteException
+  {
+    setAttribute("buchungsart", buchungsart);
+  }
+  
+  @Override
+  public Object getAttribute(String fieldName) throws RemoteException
+  {
+    if ("buchungsart".equals(fieldName))
+      return getBuchungsart();
+
+    return super.getAttribute(fieldName);
   }
 }
