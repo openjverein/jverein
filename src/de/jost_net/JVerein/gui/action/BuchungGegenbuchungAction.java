@@ -55,6 +55,7 @@ public class BuchungGegenbuchungAction implements Action
           if (konto1.getBuchungsartId() == b.getBuchungsartId())
           {
             konto = konto1;
+            break;
           }
         }
       }
