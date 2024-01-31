@@ -23,6 +23,7 @@ import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
@@ -42,7 +43,7 @@ public class SpendenbescheinigungMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Drucken (individuell)",
         new SpendenbescheinigungPrintAction(false), "file-pdf.png"));
     addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedContextMenuItem("E-Mail an Spender",
+    addItem(new CheckedSingleContextMenuItem("E-Mail an Spender",
         new SpendenbescheinigungEmailAction(), "envelope-open.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new DuplicateMenuItem("Als Vorlage für neue Spende",

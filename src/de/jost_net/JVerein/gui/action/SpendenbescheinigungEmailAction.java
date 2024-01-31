@@ -37,7 +37,7 @@ public class SpendenbescheinigungEmailAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Spendenbescheinigung[] spbArr = null;
+    Spendenbescheinigung spb = null;
     if (context instanceof TablePart)
     {
       TablePart tp = (TablePart) context;
@@ -49,11 +49,7 @@ public class SpendenbescheinigungEmailAction implements Action
     }
     else if (context instanceof Spendenbescheinigung)
     {
-      spbArr = new Spendenbescheinigung[] { (Spendenbescheinigung) context };
-    }
-    else if (context instanceof Spendenbescheinigung[])
-    {
-      spbArr = (Spendenbescheinigung[]) context;
+      spb = (Spendenbescheinigung) context;
     }
     else
     {
@@ -61,40 +57,22 @@ public class SpendenbescheinigungEmailAction implements Action
     }
     try
     {
-      if (spbArr.length > 1)
+      Mitglied member = spb.getMitglied();
+      if (member == null || member.getEmail() == null
+          || member.getEmail().length() == 0)
       {
-        String fehler = "Bitte nur eine Spendenbescheinigung auswählen.";
+        String fehler = "Kein Mitglied zugewiesen";
         GUI.getStatusBar().setErrorText(fehler);
         Logger.error(fehler);
       }
-      else
+      if (member.getEmail() == null || member.getEmail().length() == 0)
       {
-        for (Spendenbescheinigung spb : spbArr)
-        {
-          if (spb.isNewObject())
-          {
-            continue;
-          }
-          Mitglied member = spb.getMitglied();
-          if (member == null || member.getEmail() == null
-              || member.getEmail().length() == 0)
-          {
-            String fehler = "Kein Mitglied zugewiesen";
-            GUI.getStatusBar().setErrorText(fehler);
-            Logger.error(fehler);
-            continue;
-          }
-          if (member.getEmail() == null || member.getEmail().length() == 0)
-          {
-            String fehler = "Mitglied hat keine E-Mail Adresse";
-            GUI.getStatusBar().setErrorText(fehler);
-            Logger.error(fehler);
-            continue;
-          }
-          MitgliedMailSendenAction mailSendenAction = new MitgliedMailSendenAction();
-          mailSendenAction.handleAction(member);
-        }
+        String fehler = "Mitglied hat keine E-Mail Adresse";
+        GUI.getStatusBar().setErrorText(fehler);
+        Logger.error(fehler);
       }
+      MitgliedMailSendenAction mailSendenAction = new MitgliedMailSendenAction();
+      mailSendenAction.handleAction(member);
     }
     catch (RemoteException e)
     {
