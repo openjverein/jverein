@@ -299,7 +299,7 @@ public class KontoControl extends AbstractControl
       Date db = cal.getTime();
       cal.add(Calendar.MONTH, - unterdrueckunglaenge);
       Date dv = cal.getTime();
-      String sql = "SELECT buchungsart.* from buchungsart, buchung ";
+      String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung, konto ";
       sql += "WHERE buchung.buchungsart = buchungsart.id ";
       sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
       sql += "AND buchungsart.art = ? ";
@@ -310,23 +310,11 @@ public class KontoControl extends AbstractControl
         @Override
         public Object extract(ResultSet rs) throws RemoteException, SQLException
         {
-          Buchungsart bua;
-          boolean found = false;
           ArrayList<Buchungsart> list = new ArrayList<Buchungsart>();
           while (rs.next())
           {
-            bua = (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1));
-            found = false;
-            for (int i = 0; i < list.size(); i++)
-            {
-              if (bua.getNummer() == list.get(i).getNummer())
-              {
-                found = true;
-                break;
-              }
-            }
-            if (!found)
-              list.add(bua);
+            list.add(
+              (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
           }
           return list;
         }
