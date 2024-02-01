@@ -39,25 +39,16 @@ public class BuchungGegenbuchungAction implements Action
     {
       throw new ApplicationException("Keine Buchung ausgewählt");
     }
-    Buchung b = null;
+    Buchung b = (Buchung) context;
     Konto konto = null;
-    Konto konto1 = null;
     try
     {
       final DBService service = Einstellungen.getDBService();
       DBIterator<Konto> konten = service.createList(Konto.class);
-      b = (Buchung) context;
-      while (konten.hasNext())
+      konten.addFilter("buchungsart = ?", b.getBuchungsartId());
+      if (konten.size() > 0)
       {
-        konto1 = konten.next();
-        if ((konto1.getBuchungsart() != null) && (b.getBuchungsart() != null))
-        {
-          if (konto1.getBuchungsartId() == b.getBuchungsartId())
-          {
-            konto = konto1;
-            break;
-          }
-        }
+        konto = (Konto) konten.next();
       }
       if (konto == null)
       {

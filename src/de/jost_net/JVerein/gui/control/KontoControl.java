@@ -57,6 +57,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.hbci.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+//import de.jost_net.JVerein.keys.ArtBuchungsart;
 
 public class KontoControl extends AbstractControl
 {
@@ -281,17 +282,6 @@ public class KontoControl extends AbstractControl
     {
       return buchungsart;
     }
-    DBIterator<Buchungsart> list = Einstellungen.getDBService()
-        .createList(Buchungsart.class);
-    if (Einstellungen.getEinstellung()
-        .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
-    {
-      list.setOrder("ORDER BY nummer");
-    }
-    else
-    {
-      list.setOrder("ORDER BY bezeichnung");
-    }
     ArrayList<Buchungsart> liste = new ArrayList<>();
     Buchungsart b1 = (Buchungsart) Einstellungen.getDBService()
         .createObject(Buchungsart.class, null);
@@ -312,6 +302,7 @@ public class KontoControl extends AbstractControl
       String sql = "SELECT buchungsart.* from buchungsart, buchung ";
       sql += "WHERE buchung.buchungsart = buchungsart.id ";
       sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
+      sql += "AND buchungsart.art = ? ";
       sql += "ORDER BY nummer";
       Logger.debug(sql);
       ResultSetExtractor rs = new ResultSetExtractor()
@@ -319,54 +310,62 @@ public class KontoControl extends AbstractControl
         @Override
         public Object extract(ResultSet rs) throws RemoteException, SQLException
         {
+          Buchungsart bua;
+          boolean found = false;
           ArrayList<Buchungsart> list = new ArrayList<Buchungsart>();
           while (rs.next())
           {
-            list.add(
-              (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
+            bua = (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1));
+            found = false;
+            for (int i = 0; i < list.size(); i++)
+            {
+              if (bua.getNummer() == list.get(i).getNummer())
+              {
+                found = true;
+                break;
+              }
+            }
+            if (!found)
+              list.add(bua);
           }
           return list;
         }
       };
       @SuppressWarnings("unchecked")
       ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-          new Object[] { dv, db }, rs);
+          new Object[] { dv, db, ArtBuchungsart.UMBUCHUNG }, rs);
 
-      int size = ergebnis.size();
       Buchungsart bua;
-      for (int i = 0; i < size; i++)
+      for (int i = 0; i < ergebnis.size(); i++)
       {
         bua = ergebnis.get(i);
-        if (bua.getArt() == ArtBuchungsart.UMBUCHUNG)
+        if (!isUsed(konten, bua))
         {
-          if (!isUsed(konten, bua))
-          {
-            liste.add(bua);
-          }
-        }
-        for (int j = i + 1; j < size; j++)
-        {
-          if (bua.getNummer() == ergebnis.get(j).getNummer())
-          {
-            ergebnis.remove(j);
-            j--;
-            size--;
-          }
+          liste.add(ergebnis.get(i));
         }
       }
     }
     else
     {
+      DBIterator<Buchungsart> list = Einstellungen.getDBService()
+          .createList(Buchungsart.class);
+      list.addFilter("art = ?", ArtBuchungsart.UMBUCHUNG);
+      if (Einstellungen.getEinstellung()
+          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+      {
+        list.setOrder("ORDER BY nummer");
+      }
+      else
+      {
+        list.setOrder("ORDER BY bezeichnung");
+      }
       Buchungsart bua;
       while (list.hasNext())
       {
         bua = list.next();
-        if (bua.getArt() == ArtBuchungsart.UMBUCHUNG)
+        if (!isUsed(konten, bua))
         {
-          if (!isUsed(konten, bua))
-          {
-            liste.add(bua);
-          }
+          liste.add(bua);
         }
       }
     }
@@ -437,25 +436,22 @@ public class KontoControl extends AbstractControl
   
   private boolean isUsed(DBIterator<Konto> konten, Buchungsart bua) throws RemoteException
   {
+    
+    //Bei eigenem Konto darf bua enthalten sein
+    if ((konto.getBuchungsart() != null) && (konto.getBuchungsart().getNummer() == bua.getNummer()))
+    {
+      return false;
+    }
+
     Konto konto1;
     konten.begin();
+    // Check ob bua bei einem Konto benutzt wird
     while (konten.hasNext())
     {
       konto1 = konten.next();
-      if ( konto1.getBuchungsart() != null)
+      if ((konto1.getBuchungsart() != null) && (konto1.getBuchungsart().getNummer() == bua.getNummer()))
       {
-        if (konto.getBuchungsart() != null)
-        {
-          if (konto.getBuchungsart().getNummer() == bua.getNummer())
-          {
-            //Bei eigenem Konto darf es sein
-            return false;
-          }
-        }
-        if (konto1.getBuchungsart().getNummer() == bua.getNummer())
-        {
-          return true;
-        }
+        return true;
       }
     }
     return false;
