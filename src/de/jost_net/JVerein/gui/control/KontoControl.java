@@ -292,7 +292,20 @@ public class KontoControl extends AbstractControl
     
     unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
     final DBService service = Einstellungen.getDBService();
-    DBIterator<Konto> konten = service.createList(Konto.class);
+    ResultSetExtractor rs = new ResultSetExtractor()
+    {
+      @Override
+      public Object extract(ResultSet rs) throws RemoteException, SQLException
+      {
+        ArrayList<Buchungsart> list = new ArrayList<Buchungsart>();
+        while (rs.next())
+        {
+          list.add(
+            (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
+        }
+        return list;
+      }
+    };
     if (unterdrueckunglaenge > 0)
     {
       Calendar cal = Calendar.getInstance();
@@ -303,58 +316,42 @@ public class KontoControl extends AbstractControl
       sql += "WHERE buchung.buchungsart = buchungsart.id ";
       sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
       sql += "AND buchungsart.art = ? ";
+      sql += "AND NOT EXISTS (SELECT buchungsart FROM konto WHERE "
+          + "konto.buchungsart = buchungsart.id) ";
       sql += "ORDER BY nummer";
-      Logger.debug(sql);
-      ResultSetExtractor rs = new ResultSetExtractor()
-      {
-        @Override
-        public Object extract(ResultSet rs) throws RemoteException, SQLException
-        {
-          ArrayList<Buchungsart> list = new ArrayList<Buchungsart>();
-          while (rs.next())
-          {
-            list.add(
-              (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
-          }
-          return list;
-        }
-      };
+
       @SuppressWarnings("unchecked")
       ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
           new Object[] { dv, db, ArtBuchungsart.UMBUCHUNG }, rs);
 
-      Buchungsart bua;
+      if (getKonto().getBuchungsart() != null)
+      {
+        liste.add(getKonto().getBuchungsart());
+      }
       for (int i = 0; i < ergebnis.size(); i++)
       {
-        bua = ergebnis.get(i);
-        if (!isUsed(konten, bua))
-        {
-          liste.add(ergebnis.get(i));
-        }
+         liste.add(ergebnis.get(i));
       }
     }
     else
     {
-      DBIterator<Buchungsart> list = Einstellungen.getDBService()
-          .createList(Buchungsart.class);
-      list.addFilter("art = ?", ArtBuchungsart.UMBUCHUNG);
-      if (Einstellungen.getEinstellung()
-          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+      String sql = "SELECT DISTINCT buchungsart.* from buchungsart, konto ";
+      sql += "WHERE buchungsart.art = ? ";
+      sql += "AND NOT EXISTS (SELECT buchungsart FROM konto WHERE "
+          + "konto.buchungsart = buchungsart.id) ";
+      sql += "ORDER BY nummer";
+
+      @SuppressWarnings("unchecked")
+      ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
+          new Object[] { ArtBuchungsart.UMBUCHUNG }, rs);
+
+      if (getKonto().getBuchungsart() != null)
       {
-        list.setOrder("ORDER BY nummer");
+        liste.add(getKonto().getBuchungsart());
       }
-      else
+      for (int i = 0; i < ergebnis.size(); i++)
       {
-        list.setOrder("ORDER BY bezeichnung");
-      }
-      Buchungsart bua;
-      while (list.hasNext())
-      {
-        bua = list.next();
-        if (!isUsed(konten, bua))
-        {
-          liste.add(bua);
-        }
+         liste.add(ergebnis.get(i));
       }
     }
     
@@ -420,29 +417,6 @@ public class KontoControl extends AbstractControl
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
-  }
-  
-  private boolean isUsed(DBIterator<Konto> konten, Buchungsart bua) throws RemoteException
-  {
-    
-    //Bei eigenem Konto darf bua enthalten sein
-    if ((konto.getBuchungsart() != null) && (konto.getBuchungsart().getNummer() == bua.getNummer()))
-    {
-      return false;
-    }
-
-    Konto konto1;
-    konten.begin();
-    // Check ob bua bei einem Konto benutzt wird
-    while (konten.hasNext())
-    {
-      konto1 = konten.next();
-      if ((konto1.getBuchungsart() != null) && (konto1.getBuchungsart().getNummer() == bua.getNummer()))
-      {
-        return true;
-      }
-    }
-    return false;
   }
   
 }

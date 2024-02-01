@@ -687,7 +687,7 @@ public class BuchungsControl extends AbstractControl
       Date db = cal.getTime();
       cal.add(Calendar.MONTH, - unterdrueckunglaenge);
       Date dv = cal.getTime();
-      String sql = "SELECT buchungsart.* from buchungsart, buchung ";
+      String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
       sql += "WHERE buchung.buchungsart = buchungsart.id ";
       sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
       sql += "ORDER BY nummer";
@@ -709,21 +709,9 @@ public class BuchungsControl extends AbstractControl
       @SuppressWarnings("unchecked")
       ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
           new Object[] { dv, db }, rs);
-      int size = ergebnis.size();
-      Buchungsart bua;
-      for (int i = 0; i < size; i++)
+      for (int i = 0; i < ergebnis.size(); i++)
       {
-        bua = ergebnis.get(i);
-        liste.add(bua);
-        for (int j = i + 1; j < size; j++)
-        {
-          if (bua.getNummer() == ergebnis.get(j).getNummer())
-          {
-            ergebnis.remove(j);
-            j--;
-            size--;
-          }
-        }
+         liste.add(ergebnis.get(i));
       }
     }
     else
