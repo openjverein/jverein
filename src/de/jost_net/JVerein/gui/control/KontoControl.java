@@ -313,7 +313,7 @@ public class KontoControl extends AbstractControl
       Date db = cal.getTime();
       cal.add(Calendar.MONTH, - unterdrueckunglaenge);
       Date dv = cal.getTime();
-      String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung, konto ";
+      String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
       sql += "WHERE buchung.buchungsart = buchungsart.id ";
       sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
       sql += "AND buchungsart.art = ? ";
@@ -333,7 +333,7 @@ public class KontoControl extends AbstractControl
     }
     else
     {
-      String sql = "SELECT DISTINCT buchungsart.* from buchungsart, konto ";
+      String sql = "SELECT DISTINCT buchungsart.* from buchungsart ";
       sql += "WHERE buchungsart.art = ? ";
       sql += "ORDER BY nummer";
 
