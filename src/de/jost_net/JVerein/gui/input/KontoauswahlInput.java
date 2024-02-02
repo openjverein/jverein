@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.input;
 
 import java.rmi.RemoteException;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -119,9 +120,13 @@ public class KontoauswahlInput
     public void handleEvent(Event event)
     {
 
-      if (event == null || event.data == null)
+      if (event == null)
       {
-        if (keinkonto)
+        return;
+      }
+      if (event.data == null)
+      {
+        if (keinkonto && (event.detail != SWT.CANCEL ))
         {
           konto = null;
           try
