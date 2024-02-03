@@ -289,7 +289,6 @@ public class KontoControl extends AbstractControl
     b1.setBezeichnung("Keine Buchungsart");
     b1.setArt(-1);
     liste.add(b1);
-    DBIterator<Konto> konten = Einstellungen.getDBService().createList(Konto.class);
     unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
     final DBService service = Einstellungen.getDBService();
     
@@ -313,60 +312,87 @@ public class KontoControl extends AbstractControl
       Date db = cal.getTime();
       cal.add(Calendar.MONTH, - unterdrueckunglaenge);
       Date dv = cal.getTime();
-      String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
-      sql += "WHERE buchung.buchungsart = buchungsart.id ";
-      sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
-      sql += "AND buchungsart.art = ? ";
-      sql += "ORDER BY nummer";
-
-      @SuppressWarnings("unchecked")
-      ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-          new Object[] { dv, db, ArtBuchungsart.UMBUCHUNG }, rs);
-
-      Buchungsart bua;
-      for (int i = 0; i < ergebnis.size(); i++)
+      String sql = "SELECT DISTINCT ba.* FROM buchungsart ba ";
+      sql += "LEFT JOIN konto k ON k.buchungsart = ba.id, buchung bu ";
+      if (konto.getBuchungsart() == null)
       {
-        bua = ergebnis.get(i);
-        if (!isUsed(konten, bua))
-          liste.add(bua);
+        sql += "WHERE (k.buchungsart IS NULL) ";
+      }
+      else
+      {
+        sql += "WHERE (k.buchungsart IS NULL OR k.buchungsart = ?) ";
+      }
+      sql += "AND ba.id IS NOT NULL AND ba.id = bu.buchungsart ";
+      sql += "AND bu.datum >= ? AND bu.datum <= ? ";
+      sql += "AND ba.art = ? ";
+      if (Einstellungen.getEinstellung()
+          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+      {
+        sql += "ORDER BY nummer";
+      }
+      else
+      {
+        sql += "ORDER BY bezeichnung";
+      }
+
+      if (konto.getBuchungsart() == null)
+      {
+        @SuppressWarnings("unchecked")
+        ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
+            new Object[] { dv, db, ArtBuchungsart.UMBUCHUNG }, rs);    
+        addToList(liste, ergebnis);
+      }
+      else
+      {
+        @SuppressWarnings("unchecked")
+        ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
+            new Object[] { konto.getBuchungsartId(), dv, db, ArtBuchungsart.UMBUCHUNG }, rs);
+        addToList(liste, ergebnis);
       }
     }
     else
     {
-      String sql = "SELECT DISTINCT buchungsart.* from buchungsart ";
-      sql += "WHERE buchungsart.art = ? ";
-      sql += "ORDER BY nummer";
-
-      @SuppressWarnings("unchecked")
-      ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-          new Object[] { ArtBuchungsart.UMBUCHUNG }, rs);
-
-      Buchungsart bua;
-      for (int i = 0; i < ergebnis.size(); i++)
+      String sql = "SELECT DISTINCT ba.* FROM buchungsart ba ";
+      sql += "LEFT JOIN konto k ON k.buchungsart = ba.id, buchung bu ";
+      if (konto.getBuchungsart() == null)
       {
-        bua = ergebnis.get(i);
-        if (!isUsed(konten, bua))
-          liste.add(bua);
+        sql += "WHERE (k.buchungsart IS NULL) ";
+      }
+      else
+      {
+        sql += "WHERE (k.buchungsart IS NULL OR k.buchungsart = ?) ";
+      }
+      sql += "AND ba.id IS NOT NULL AND ba.id = bu.buchungsart ";
+      sql += "AND ba.art = ? ";
+      if (Einstellungen.getEinstellung()
+          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+      {
+        sql += "ORDER BY nummer";
+      }
+      else
+      {
+        sql += "ORDER BY bezeichnung";
+      }
+
+      if (konto.getBuchungsart() == null)
+      {
+        @SuppressWarnings("unchecked")
+        ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
+            new Object[] { ArtBuchungsart.UMBUCHUNG }, rs);    
+        addToList(liste, ergebnis);
+      }
+      else
+      {
+        @SuppressWarnings("unchecked")
+        ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
+            new Object[] { konto.getBuchungsartId(), ArtBuchungsart.UMBUCHUNG }, rs);
+        addToList(liste, ergebnis);
       }
     }
     
     Buchungsart b = konto.getBuchungsart();
     buchungsart = new SelectInput(liste, b);
     buchungsart.addListener(new FilterListener());
-
-    switch (Einstellungen.getEinstellung().getBuchungsartSort())
-    {
-      case BuchungsartSort.NACH_NUMMER:
-        buchungsart.setAttribute("nrbezeichnung");
-        break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
-        buchungsart.setAttribute("bezeichnungnr");
-        break;
-      default:
-        buchungsart.setAttribute("bezeichnung");
-        break;
-    }
-    
     return buchungsart;
   }
   
@@ -414,28 +440,12 @@ public class KontoControl extends AbstractControl
     }
   }
   
-  // Die Funktion testet ob die Buchungsart in einem Konto benutzt wird
-  private boolean isUsed(DBIterator<Konto> konten, Buchungsart bua) throws RemoteException
+  private void addToList(ArrayList<Buchungsart> liste, ArrayList<Buchungsart> ergebnis)
   {
-    // Bei eigenem Konto darf bua benutzt sein
-    if ((konto.getBuchungsart() != null) && (konto.getBuchungsart().getNummer() == bua.getNummer()))
+    for (int i = 0; i < ergebnis.size(); i++)
     {
-      return false;
+      liste.add(ergebnis.get(i));
     }
-
-    Konto konto1;
-    konten.begin();
-    // Check ob bua bei einem Konto benutzt wird
-    while (konten.hasNext())
-    {
-      konto1 = konten.next();
-      if ((konto1.getBuchungsart() != null) && (konto1.getBuchungsart().getNummer() == bua.getNummer()))
-      { 
-        // Buchung ist benutzt
-        return true;
-      }
-    }
-    return false;
   }
   
 }
