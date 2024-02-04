@@ -22,6 +22,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.BuchungBuchungsartAuswahl;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -46,7 +47,7 @@ public class BuchungsartInput
     switch (Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl())
     {
       case BuchungBuchungsartAuswahl.ComboBox:
-        buchungsart = new SelectInput(list, bart);
+        buchungsart = new SelectInput(PseudoIterator.asList(list), bart);
         switch (Einstellungen.getEinstellung().getBuchungsartSort())
         {
           case BuchungsartSort.NACH_NUMMER:
@@ -65,7 +66,18 @@ public class BuchungsartInput
       default: // default soll SearchInput sein. Eigentlich sollten die
         // Settings immer gesetzt sein, aber man weiss ja nie.
         buchungsart = new BuchungsartSearchInput();
-        ((BuchungsartSearchInput) buchungsart).setAttribute("nrbezeichnung");
+        switch (Einstellungen.getEinstellung().getBuchungsartSort())
+        {
+          case BuchungsartSort.NACH_NUMMER:
+            ((BuchungsartSearchInput) buchungsart).setAttribute("nrbezeichnung");
+            break;
+          case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+            ((BuchungsartSearchInput) buchungsart).setAttribute("bezeichnungnr");
+            break;
+          default:
+            ((BuchungsartSearchInput) buchungsart).setAttribute("bezeichnung");
+            break;
+        }
         ((BuchungsartSearchInput) buchungsart)
             .setSearchString("Zum Suchen tippen ...");
     }

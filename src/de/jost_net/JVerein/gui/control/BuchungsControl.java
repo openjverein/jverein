@@ -654,17 +654,7 @@ public class BuchungsControl extends AbstractControl
     {
       return suchbuchungsart;
     }
-    DBIterator<Buchungsart> list = Einstellungen.getDBService()
-        .createList(Buchungsart.class);
-    if (Einstellungen.getEinstellung()
-        .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
-    {
-      list.setOrder("ORDER BY nummer");
-    }
-    else
-    {
-      list.setOrder("ORDER BY bezeichnung");
-    }
+
     ArrayList<Buchungsart> liste = new ArrayList<>();
     Buchungsart b1 = (Buchungsart) Einstellungen.getDBService()
         .createObject(Buchungsart.class, null);
@@ -690,8 +680,15 @@ public class BuchungsControl extends AbstractControl
       String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
       sql += "WHERE buchung.buchungsart = buchungsart.id ";
       sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
-      sql += "ORDER BY nummer";
-      Logger.debug(sql);
+      if (Einstellungen.getEinstellung()
+          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+      {
+        sql += "ORDER BY nummer";
+      }
+      else
+      {
+        sql += "ORDER BY bezeichnung";
+      }
       ResultSetExtractor rs = new ResultSetExtractor()
       {
         @Override
@@ -716,6 +713,18 @@ public class BuchungsControl extends AbstractControl
     }
     else
     {
+      DBIterator<Buchungsart> list = Einstellungen.getDBService()
+          .createList(Buchungsart.class);
+      if (Einstellungen.getEinstellung()
+          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+      {
+        list.setOrder("ORDER BY nummer");
+      }
+      else
+      {
+        list.setOrder("ORDER BY bezeichnung");
+      }
+      
       while (list.hasNext())
       {
         liste.add(list.next());

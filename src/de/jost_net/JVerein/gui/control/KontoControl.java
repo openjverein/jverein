@@ -353,7 +353,7 @@ public class KontoControl extends AbstractControl
     else
     {
       String sql = "SELECT DISTINCT ba.* FROM buchungsart ba ";
-      sql += "LEFT JOIN konto k ON k.buchungsart = ba.id, buchung bu ";
+      sql += "LEFT JOIN konto k ON k.buchungsart = ba.id ";
       if (konto.getBuchungsart() == null)
       {
         sql += "WHERE (k.buchungsart IS NULL) ";
@@ -362,7 +362,6 @@ public class KontoControl extends AbstractControl
       {
         sql += "WHERE (k.buchungsart IS NULL OR k.buchungsart = ?) ";
       }
-      sql += "AND ba.id IS NOT NULL AND ba.id = bu.buchungsart ";
       sql += "AND ba.art = ? ";
       if (Einstellungen.getEinstellung()
           .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
@@ -393,6 +392,20 @@ public class KontoControl extends AbstractControl
     Buchungsart b = konto.getBuchungsart();
     buchungsart = new SelectInput(liste, b);
     buchungsart.addListener(new FilterListener());
+
+    switch (Einstellungen.getEinstellung().getBuchungsartSort())
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        buchungsart.setAttribute("nrbezeichnung");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        buchungsart.setAttribute("bezeichnungnr");
+        break;
+      default:
+        buchungsart.setAttribute("bezeichnung");
+        break;
+    }
+    
     return buchungsart;
   }
   
