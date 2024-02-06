@@ -412,7 +412,8 @@ public class KontoControl extends AbstractControl
   
   private void addToList(ArrayList<Buchungsart> liste, ArrayList<Buchungsart> ergebnis)
   {
-    for (int i = 0; i < ergebnis.size(); i++)
+    int size = ergebnis.size();
+    for (int i = 0; i < size; i++)
     {
       liste.add(ergebnis.get(i));
     }
