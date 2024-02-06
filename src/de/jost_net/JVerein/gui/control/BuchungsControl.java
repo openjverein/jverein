@@ -706,7 +706,8 @@ public class BuchungsControl extends AbstractControl
       @SuppressWarnings("unchecked")
       ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
           new Object[] { dv, db }, rs);
-      for (int i = 0; i < ergebnis.size(); i++)
+      int size = ergebnis.size();
+      for (int i = 0; i < size; i++)
       {
          liste.add(ergebnis.get(i));
       }
@@ -733,7 +734,8 @@ public class BuchungsControl extends AbstractControl
     
     int bwert = settings.getInt(BUCHUNGSART, -2);
     Buchungsart b = null;
-    for (int i = 0; i < liste.size(); i++)
+    int size = liste.size();
+    for (int i = 0; i < size; i++)
     {
       if (liste.get(i).getNummer() == bwert)
       {
