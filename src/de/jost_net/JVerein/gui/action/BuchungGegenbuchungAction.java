@@ -58,14 +58,19 @@ public class BuchungGegenbuchungAction implements Action
       }
       if (konto != null)
       {
-        b.setID(null);
-        b.setSplitId(null);
-        b.setKonto(konto);
-        b.setBetrag(-b.getBetrag());
-        b.setAuszugsnummer(null);
-        b.setBlattnummer(null);
-        b.setMitgliedskonto(null);
-        GUI.startView(new BuchungView(), b);
+        Buchung bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
+            null);
+        bu.setKonto(konto);
+        bu.setName(b.getName());
+        bu.setBetrag(-b.getBetrag());
+        bu.setZweck(b.getZweck());
+        bu.setDatum(b.getDatum());
+        if (b.getBuchungsart() != null)
+          bu.setBuchungsart(b.getBuchungsartId());
+        if (b.getProjekt() != null)
+          bu.setProjektID(b.getProjektID());
+        
+        GUI.startView(new BuchungView(), bu);
       }
     }
     catch (OperationCanceledException oce)
