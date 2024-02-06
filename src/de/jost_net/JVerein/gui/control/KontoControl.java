@@ -23,10 +23,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.KontoAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -186,14 +182,7 @@ public class KontoControl extends AbstractControl
       k.setBezeichnung((String) getBezeichnung().getValue());
       k.setEroeffnung((Date) getEroeffnung().getValue());
       k.setAufloesung((Date) getAufloesung().getValue());
-      if ( ((Buchungsart) getBuchungsart().getValue()).getArt() == -1)
-      {
-        k.setBuchungsart(null);
-      }
-      else
-      {
-        k.setBuchungsart(getSelectedBuchungsArtId());
-      }
+      k.setBuchungsart(getSelectedBuchungsArtId());
       if (getHibiscusId().getValue() == null)
       {
         k.setHibiscusId(-1);
@@ -283,12 +272,6 @@ public class KontoControl extends AbstractControl
       return buchungsart;
     }
     ArrayList<Buchungsart> liste = new ArrayList<>();
-    Buchungsart b1 = (Buchungsart) Einstellungen.getDBService()
-        .createObject(Buchungsart.class, null);
-    b1.setNummer(-1);
-    b1.setBezeichnung("Keine Buchungsart");
-    b1.setArt(-1);
-    liste.add(b1);
     unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
     final DBService service = Einstellungen.getDBService();
     
@@ -391,7 +374,7 @@ public class KontoControl extends AbstractControl
     
     Buchungsart b = konto.getBuchungsart();
     buchungsart = new SelectInput(liste, b);
-    buchungsart.addListener(new FilterListener());
+    buchungsart.setPleaseChoose("Bitte wählen...");
 
     switch (Einstellungen.getEinstellung().getBuchungsartSort())
     {
@@ -407,32 +390,6 @@ public class KontoControl extends AbstractControl
     }
     
     return buchungsart;
-  }
-  
-  public class FilterListener implements Listener
-  {
-
-    FilterListener()
-    {
-    }
-
-    @Override
-    public void handleEvent(Event event)
-    {
-      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
-      {
-        return;
-      }
-
-      try
-      {
-        getKontenList();
-      }
-      catch (RemoteException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
-    }
   }
   
   private Long getSelectedBuchungsArtId() throws ApplicationException
