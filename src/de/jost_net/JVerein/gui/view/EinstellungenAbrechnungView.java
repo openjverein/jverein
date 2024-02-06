@@ -41,6 +41,8 @@ public class EinstellungenAbrechnungView extends AbstractView
     cont.addInput(control.getZahlungsweg());
     cont.addInput(control.getSEPADatumOffset());
     cont.addInput(control.getDefaultSEPALand());
+    cont.addLabelPair("SEPA XML-Version",
+        control.getSepaVersion());
     cont.addLabelPair("Arbeitsstunden Modell",
         control.getArbeitsstundenmodel());
     cont.addLabelPair("Abrechnungslauf abschlieﬂen",

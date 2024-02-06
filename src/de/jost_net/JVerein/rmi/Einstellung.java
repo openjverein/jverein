@@ -18,11 +18,11 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.io.IBankverbindung;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.willuhn.datasource.rmi.DBObject;
-import de.willuhn.jameica.gui.input.CheckboxInput;
 
 public interface Einstellung extends DBObject, IBankverbindung
 {
@@ -528,5 +528,10 @@ public interface Einstellung extends DBObject, IBankverbindung
   public Boolean getOptiert() throws RemoteException;
 
   public void setOptiert(Boolean optiert) throws RemoteException;
+  
+  public void setSepaVersion(SepaVersion sepaversion)
+      throws RemoteException;
+
+  public SepaVersion getSepaVersion() throws RemoteException;
 
 }

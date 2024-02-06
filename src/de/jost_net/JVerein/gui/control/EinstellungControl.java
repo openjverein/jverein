@@ -19,10 +19,12 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BICInput;
@@ -221,6 +223,8 @@ public class EinstellungControl extends AbstractControl
   private SelectInput zahlungsrhytmus;
 
   private SelectInput sepaland;
+  
+  private SelectInput sepaversion;
 
   private Input altersgruppen;
 
@@ -1250,6 +1254,21 @@ public class EinstellungControl extends AbstractControl
     sepaland = new SEPALandInput(sl);
     return sepaland;
   }
+  
+  public SelectInput getSepaVersion() throws RemoteException
+  {
+    if (sepaversion != null)
+    {
+      return sepaversion;
+    }
+    List<SepaVersion> list = SepaVersion.getKnownVersions(
+        org.kapott.hbci.sepa.SepaVersion.Type.PAIN_008);
+    sepaversion = new SelectInput(list, 
+        Einstellungen.getEinstellung().getSepaVersion());
+    sepaversion.setAttribute("file");
+    sepaversion.setPleaseChoose("Bitte auswählen");
+    return sepaversion;
+  }
 
   public Input getAltersgruppen() throws RemoteException
   {
@@ -1851,6 +1870,7 @@ public class EinstellungControl extends AbstractControl
       e.setZahlungsweg(zw.getKey());
       SEPALandObject slo = (SEPALandObject) getDefaultSEPALand().getValue();
       e.setDefaultLand(slo.getLand().getKennzeichen());
+      e.setSepaVersion((SepaVersion) sepaversion.getValue());
       e.setSEPADatumOffset((Integer) sepadatumoffset.getValue());
       e.setAbrlAbschliessen((Boolean) abrlabschliessen.getValue());
       e.store();

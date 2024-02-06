@@ -19,6 +19,7 @@ package de.jost_net.JVerein.server;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.Date;
+import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
@@ -29,9 +30,6 @@ import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.BuchungBuchungsartAuswahl;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Felddefinition;
-import de.jost_net.OBanToo.SEPA.BIC;
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -835,7 +833,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     Double d = (Double) getAttribute("spendenbescheinigungminbetrag");
     if (d == null)
     {
-      d = new Double(0);
+      d = Double.valueOf(0.0d);
     }
     return (d);
   }
@@ -1330,7 +1328,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     {
       DBIterator<Felddefinition> it = Einstellungen.getDBService()
           .createList(Felddefinition.class);
-      hasZus = new Boolean(it.size() > 0);
+      hasZus = Boolean.valueOf(it.size() > 0);
     }
     return hasZus;
   }
@@ -1699,7 +1697,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     Integer offset = (Integer) getAttribute("sepadatumoffset");
     if (offset == null)
     {
-      offset = new Integer(0);
+      offset = Integer.valueOf(0);
     }
     return offset;
   }
@@ -1752,6 +1750,30 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   public void setAbrlAbschliessen(Boolean abschliessen) throws RemoteException
   {
     setAttribute("abrlabschliessen", Boolean.valueOf(abschliessen));
+  }
+  
+  @Override
+  public SepaVersion getSepaVersion() throws RemoteException
+  {
+    String sepaversion = (String) getAttribute("sepaversion");
+    if (sepaversion == null || !(sepaversion.length() > 0))
+    {
+      return null;
+    }
+    return  SepaVersion.byURN(sepaversion);
+  }
+
+  @Override
+  public void setSepaVersion(SepaVersion sepaversion) throws RemoteException
+  {
+    if (sepaversion == null)
+    {
+      setAttribute("sepaversion", null);
+    }
+    else
+    {
+      setAttribute("sepaversion", sepaversion.getFile());
+    }
   }
 
 }

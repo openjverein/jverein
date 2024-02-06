@@ -368,11 +368,18 @@ public class AbrechnungSEPAControl extends AbstractControl
       settings.setAttribute("lastdir.sepa", sepafilercur.getParent());
       try
       {
-        PainVersionDialog d = new PainVersionDialog(org.kapott.hbci.sepa.SepaVersion.Type.PAIN_008);
-        sepaVersion = (SepaVersion) d.open();
-        if (sepaVersion == null)
+        if (Einstellungen.getEinstellung().getSepaVersion() != null)
         {
-          return;
+          sepaVersion = Einstellungen.getEinstellung().getSepaVersion();
+        }
+        else
+        {
+          PainVersionDialog d = new PainVersionDialog(org.kapott.hbci.sepa.SepaVersion.Type.PAIN_008);
+          sepaVersion = (SepaVersion) d.open();
+          if (sepaVersion == null)
+          {
+            return;
+          }
         }
       }
       catch (OperationCanceledException oce)
