@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -42,7 +43,6 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.logging.Logger;
 
 /**
  * Dialog zur Zuordnung einer Buchungsart.
@@ -165,11 +165,18 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       Date db = cal.getTime();
       cal.add(Calendar.MONTH, - unterdrueckunglaenge);
       Date dv = cal.getTime();
-      String sql = "SELECT buchungsart.* from buchungsart, buchung ";
+      String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
       sql += "WHERE buchung.buchungsart = buchungsart.id ";
       sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
-      sql += "ORDER BY nummer";
-      Logger.debug(sql);
+      if (Einstellungen.getEinstellung()
+          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+      {
+        sql += "ORDER BY nummer";
+      }
+      else
+      {
+        sql += "ORDER BY bezeichnung";
+      }
       ResultSetExtractor rs = new ResultSetExtractor()
       {
         @Override
@@ -187,33 +194,37 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       @SuppressWarnings("unchecked")
       ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
           new Object[] { dv, db }, rs);
-      int size = ergebnis.size();
-      Buchungsart bua;
-      for (int i = 0; i < size; i++)
-      {
-        bua = ergebnis.get(i);
-        for (int j = i + 1; j < size; j++)
-        {
-          if (bua.getNummer() == ergebnis.get(j).getNummer())
-          {
-            ergebnis.remove(j);
-            j--;
-            size--;
-          }
-        }
-      }
       buchungsarten = new SelectInput(ergebnis.toArray(), null);
     }
     else
     {
       DBIterator<Buchungsart> it = Einstellungen.getDBService()
           .createList(Buchungsart.class);
-      it.setOrder("ORDER BY nummer");
+      if (Einstellungen.getEinstellung()
+          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+      {
+        it.setOrder("ORDER BY nummer");
+      }
+      else
+      {
+        it.setOrder("ORDER BY bezeichnung");
+      }
       buchungsarten = new SelectInput(PseudoIterator.asList(it), null);
     }
 
     buchungsarten.setValue(null);
-    buchungsarten.setAttribute("nrbezeichnung");
+    switch (Einstellungen.getEinstellung().getBuchungsartSort())
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        buchungsarten.setAttribute("nrbezeichnung");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        buchungsarten.setAttribute("bezeichnungnr");
+        break;
+      default:
+        buchungsarten.setAttribute("bezeichnung");
+        break;
+    }
     buchungsarten.setPleaseChoose("Bitte Buchungsart auswählen");
     buchungsarten.addListener(new Listener()
     {
