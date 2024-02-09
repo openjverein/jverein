@@ -64,6 +64,7 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -90,13 +91,13 @@ public class PreNotificationControl extends AbstractControl
 
   private SelectInput pdfModus = null;
 
-  public static final String NICHT_EINZELN = "eine PDF-Datei";
+  public static final String NICHT_EINZELN = "Eine PDF-Datei";
 
-  public static final String EINZELN_NUMMERIERT = "einzelne PDF-Dateien, nummeriert";
+  public static final String EINZELN_NUMMERIERT = "Einzelne PDF-Dateien, nummeriert";
 
-  public static final String EINZELN_MITGLIEDSNUMMER = "einzelne PDF-Dateien, mit Mitgliedsnummer";
+  public static final String EINZELN_MITGLIEDSNUMMER = "Einzelne PDF-Dateien, mit Mitgliedsnummer";
 
-  public static final String EINZELN_NUMMERIERT_UND_MNR = "einzelne PDF-Dateien, nummeriert mit Mitgliedsnummer";
+  public static final String EINZELN_NUMMERIERT_UND_MNR = "Einzelne PDF-Dateien, nummeriert mit Mitgliedsnummer";
 
   private FormularInput formular = null;
 
@@ -295,6 +296,10 @@ public class PreNotificationControl extends AbstractControl
               (String) getVerwendungszweck().getValue());
           settings.setAttribute("tab.selection", folder.getSelectionIndex());
           generiere1ct(currentObject);
+        }
+        catch (OperationCanceledException oce)
+        {
+          throw oce;
         }
         catch (Exception e)
         {

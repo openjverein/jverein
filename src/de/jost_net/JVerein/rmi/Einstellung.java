@@ -533,5 +533,10 @@ public interface Einstellung extends DBObject, IBankverbindung
       throws RemoteException;
 
   public SepaVersion getSepaVersion() throws RemoteException;
+  
+  public void setCt1SepaVersion(SepaVersion sepaversion)
+      throws RemoteException;
+
+  public SepaVersion getCt1SepaVersion() throws RemoteException;
 
 }

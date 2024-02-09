@@ -1775,5 +1775,29 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
       setAttribute("sepaversion", sepaversion.getFile());
     }
   }
+  
+  @Override
+  public SepaVersion getCt1SepaVersion() throws RemoteException
+  {
+    String ct1sepaversion = (String) getAttribute("ct1sepaversion");
+    if (ct1sepaversion == null || !(ct1sepaversion.length() > 0))
+    {
+      return null;
+    }
+    return  SepaVersion.byURN(ct1sepaversion);
+  }
+
+  @Override
+  public void setCt1SepaVersion(SepaVersion ct1sepaversion) throws RemoteException
+  {
+    if (ct1sepaversion == null)
+    {
+      setAttribute("ct1sepaversion", null);
+    }
+    else
+    {
+      setAttribute("ct1sepaversion", ct1sepaversion.getFile());
+    }
+  }
 
 }

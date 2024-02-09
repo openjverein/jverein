@@ -225,6 +225,8 @@ public class EinstellungControl extends AbstractControl
   private SelectInput sepaland;
   
   private SelectInput sepaversion;
+  
+  private SelectInput ct1sepaversion;
 
   private Input altersgruppen;
 
@@ -1269,6 +1271,21 @@ public class EinstellungControl extends AbstractControl
     sepaversion.setPleaseChoose("Bitte auswählen");
     return sepaversion;
   }
+  
+  public SelectInput getCt1SepaVersion() throws RemoteException
+  {
+    if (ct1sepaversion != null)
+    {
+      return ct1sepaversion;
+    }
+    List<SepaVersion> list = SepaVersion.getKnownVersions(
+        org.kapott.hbci.sepa.SepaVersion.Type.PAIN_001);
+    ct1sepaversion = new SelectInput(list, 
+        Einstellungen.getEinstellung().getCt1SepaVersion());
+    ct1sepaversion.setAttribute("file");
+    ct1sepaversion.setPleaseChoose("Bitte auswählen");
+    return ct1sepaversion;
+  }
 
   public Input getAltersgruppen() throws RemoteException
   {
@@ -1871,6 +1888,7 @@ public class EinstellungControl extends AbstractControl
       SEPALandObject slo = (SEPALandObject) getDefaultSEPALand().getValue();
       e.setDefaultLand(slo.getLand().getKennzeichen());
       e.setSepaVersion((SepaVersion) sepaversion.getValue());
+      e.setCt1SepaVersion((SepaVersion) ct1sepaversion.getValue());
       e.setSEPADatumOffset((Integer) sepadatumoffset.getValue());
       e.setAbrlAbschliessen((Boolean) abrlabschliessen.getValue());
       e.store();
