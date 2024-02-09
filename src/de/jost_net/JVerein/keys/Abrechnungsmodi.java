@@ -67,7 +67,7 @@ public class Abrechnungsmodi
     switch (key)
     {
       case KEINBEITRAG:
-        return "keine Beitragsabrechnung";
+        return "Keine Beitragsabrechnung";
       case ALLE:
         return "Alle";
       case MO:
@@ -87,9 +87,9 @@ public class Abrechnungsmodi
       case VIMO:
         return "Vierteljahres- und Monatsbeiträge";
       case EINGETRETENEMITGLIEDER:
-        return "eingetretene Mitglieder";
+        return "Eingetretene Mitglieder";
       case ABGEMELDETEMITGLIEDER:
-        return "abgemeldete Mitglieder";
+        return "Abgemeldete Mitglieder";
       default:
         return null;
     }
