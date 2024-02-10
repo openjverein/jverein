@@ -138,7 +138,7 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
 
   public Button getSpendenbescheinigungErstellenButton()
   {
-    Button b = new Button("erstellen", new Action()
+    Button b = new Button("Erstellen", new Action()
     {
 
       @Override
@@ -148,6 +148,11 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
         {
           @SuppressWarnings("rawtypes")
           List items = spbTree.getItems();
+          
+          //Baum Spendenbescheinigungen enthält keine Einträge
+          if (items == null)
+        	  return;
+
           SpendenbescheinigungNode spn = (SpendenbescheinigungNode) items
               .get(0);
           // Loop über die Mitglieder
@@ -190,11 +195,12 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
             {
               spbescheinigung.setFormular((Formular) getFormular().getValue());
             }
+            //Spendenbescheinigungen erfolgreich erstellt
             spbescheinigung.store();
+            spbTree.removeAll();
+            GUI.getStatusBar()
+            .setSuccessText("Spendenbescheinigung(en) erstellt");
           }
-          GUI.getStatusBar()
-              .setSuccessText("Spendenbescheinigung(en) erstellt");
-          spbTree.removeAll();
         }
         catch (RemoteException e)
         {
