@@ -101,16 +101,20 @@ public class MyExtension implements Extension
     try
     {
       NavigationItem jverein = (NavigationItem) extendable;
-      jverein.addChild(new MyItem(jverein, "Mitglieder",
+      
+      NavigationItem mitglieder = null;
+      mitglieder = new MyItem(mitglieder, "Mitglieder", null);
+      
+      mitglieder.addChild(new MyItem(mitglieder, "Mitglieder",
           new MitgliedSucheAction(), "user-friends.png"));
       if (Einstellungen.getEinstellung().getZusatzadressen())
       {
-        jverein.addChild(new MyItem(jverein, "Adressen",
+        mitglieder.addChild(new MyItem(mitglieder, "Adressen",
             new AdressenSucheAction(), "user-friends.png"));
       }
       if (Einstellungen.getEinstellung().getKursteilnehmer())
       {
-        jverein.addChild(new MyItem(jverein, "Kursteilnehmer",
+        mitglieder.addChild(new MyItem(mitglieder, "Kursteilnehmer",
             new KursteilnehmerSucheAction(), "user-friends.png"));
       }
       DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
@@ -119,9 +123,42 @@ public class MyExtension implements Extension
           new Object[] { ArtBeitragsart.FAMILIE_ZAHLER.getKey() });
       if (it.size() > 0)
       {
-        jverein.addChild(new MyItem(jverein, "Familienbeitrag",
+        mitglieder.addChild(new MyItem(mitglieder, "Familienbeitrag",
             new FamilienbeitragAction(), "users.png"));
       }
+      
+      mitglieder.addChild(new MyItem(mitglieder, "Mitgliedskonten",
+          new MitgliedskontoListeAction(), "calculator.png"));
+      mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
+          new MitgliedskontoRechnungAction(), "file-invoice.png"));
+      mitglieder.addChild(new MyItem(mitglieder, "Mahnungen",
+          new MitgliedskontoMahnungAction(), "file-invoice.png"));
+      if (Einstellungen.getEinstellung().getArbeitseinsatz())
+      {
+        mitglieder.addChild(new MyItem(mitglieder, "Arbeitseinsätze prüfen",
+            new ArbeitseinsatzUeberpruefungAction(), "screwdriver.png"));
+      }
+
+      if (Einstellungen.getEinstellung().getZusatzbetrag())
+      {
+        mitglieder.addChild(new MyItem(mitglieder, "Zusatzbeträge",
+            new ZusatzbetraegeListeAction(), "euro-sign.png"));
+        mitglieder.addChild(new MyItem(mitglieder, "Zusatzbeträge importieren",
+            new ZusatzbetraegeImportAction(), "file-import.png"));
+      }
+      if (Einstellungen.getEinstellung().getWiedervorlage())
+      {
+        mitglieder.addChild(new MyItem(mitglieder, "Wiedervorlage",
+            new WiedervorlageListeAction(), "office-calendar.png"));
+      }
+      if (Einstellungen.getEinstellung().getLehrgaenge())
+      {
+        mitglieder.addChild(new MyItem(mitglieder, "Lehrgänge",
+            new LehrgaengeListeAction(), "chalkboard-teacher.png"));
+      }
+      mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
+          new SpendenbescheinigungListeAction(), "file-invoice.png"));
+      jverein.addChild(mitglieder);
 
       NavigationItem abrechnung = null;
       abrechnung = new MyItem(abrechnung, "Abrechnung", null);
@@ -130,38 +167,6 @@ public class MyExtension implements Extension
       abrechnung.addChild(new MyItem(abrechnung, "Abrechnungslauf",
           new AbrechnunslaufListAction(), "calculator.png"));
       jverein.addChild(abrechnung);
-
-      jverein.addChild(new MyItem(jverein, "Mitgliedskonten",
-          new MitgliedskontoListeAction(), "calculator.png"));
-      jverein.addChild(new MyItem(jverein, "Rechnungen",
-          new MitgliedskontoRechnungAction(), "file-invoice.png"));
-      jverein.addChild(new MyItem(jverein, "Mahnungen",
-          new MitgliedskontoMahnungAction(), "file-invoice.png"));
-      if (Einstellungen.getEinstellung().getArbeitseinsatz())
-      {
-        jverein.addChild(new MyItem(jverein, "Arbeitseinsätze prüfen",
-            new ArbeitseinsatzUeberpruefungAction(), "screwdriver.png"));
-      }
-
-      if (Einstellungen.getEinstellung().getZusatzbetrag())
-      {
-        jverein.addChild(new MyItem(jverein, "Zusatzbeträge",
-            new ZusatzbetraegeListeAction(), "euro-sign.png"));
-        jverein.addChild(new MyItem(jverein, "Zusatzbeträge importieren",
-            new ZusatzbetraegeImportAction(), "file-import.png"));
-      }
-      if (Einstellungen.getEinstellung().getWiedervorlage())
-      {
-        jverein.addChild(new MyItem(jverein, "Wiedervorlage",
-            new WiedervorlageListeAction(), "office-calendar.png"));
-      }
-      if (Einstellungen.getEinstellung().getLehrgaenge())
-      {
-        jverein.addChild(new MyItem(jverein, "Lehrgänge",
-            new LehrgaengeListeAction(), "chalkboard-teacher.png"));
-      }
-      jverein.addChild(new MyItem(jverein, "Spendenbescheinigungen",
-          new SpendenbescheinigungListeAction(), "file-invoice.png"));
 
       NavigationItem auswertung = null;
       auswertung = new MyItem(auswertung, "Auswertungen", null);
@@ -180,7 +185,6 @@ public class MyExtension implements Extension
           new StatistikMitgliedAction(), "chart-line.png"));
       auswertung.addChild(new MyItem(auswertung, "Statistik Jahrgänge",
           new StatistikJahrgaengeAction(), "chart-line.png"));
-
       jverein.addChild(auswertung);
 
       NavigationItem mail = null;
