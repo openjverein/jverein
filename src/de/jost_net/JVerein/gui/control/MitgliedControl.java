@@ -3145,7 +3145,7 @@ public class MitgliedControl extends AbstractControl
         m.setExterneMitgliedsnummer(null);
       }
 
-      if (m.getPersonenart().equals("n"))
+      if (m.getPersonenart().equals("N"))
       {
         m.setGeburtsdatum((Date) getGeburtsdatum().getValue());
         if (getGeschlecht().getSelectedValue() == null)

@@ -104,26 +104,26 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     checkExterneMitgliedsnummer();
 
     if (getPersonenart() == null
-        || (!getPersonenart().equals("n") && !getPersonenart().equals("j")))
+        || (!getPersonenart().equals("N") && !getPersonenart().equals("J")))
     {
-      throw new ApplicationException("Personenstatus ist nicht 'n' oder 'j'");
+      throw new ApplicationException("Personenstatus ist nicht 'N' oder 'J'");
     }
     if (getName() == null || getName().length() == 0)
     {
       throw new ApplicationException("Bitte Namen eingeben");
     }
-    if (getPersonenart().equals("n")
+    if (getPersonenart().equals("N")
         && (getVorname() == null || getVorname().length() == 0))
     {
       throw new ApplicationException("Bitte Vornamen eingeben");
     }
-    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equals("n")
+    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equals("N")
         && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime()
         && Einstellungen.getEinstellung().getGeburtsdatumPflicht())
     {
       throw new ApplicationException("Bitte Geburtsdatum eingeben");
     }
-    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equals("n")
+    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equals("N")
         && Einstellungen.getEinstellung().getGeburtsdatumPflicht())
     {
       Calendar cal1 = Calendar.getInstance();
@@ -144,7 +144,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
             "Ist das Mitglied wirklich älter als 150 Jahre?");
       }
     }
-    if (getPersonenart().equals("n") && getGeschlecht() == null)
+    if (getPersonenart().equals("N") && getGeschlecht() == null)
     {
       throw new ApplicationException("Bitte Geschlecht auswählen");
     }
@@ -572,7 +572,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     Integer vers = (Integer) getAttribute("mandatversion");
     if (vers == null)
     {
-      vers = new Integer(0);
+      vers = Integer.valueOf(0);
     }
     return vers;
   }
@@ -1001,7 +1001,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     Double d = (Double) getAttribute("individuellerbeitrag");
     if (d == null)
     {
-      return new Double(0);
+      return Double.valueOf(0);
     }
     return d;
   }
@@ -1151,7 +1151,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   {
     if (fieldName.equals("idint"))
     {
-      return new Integer(getID());
+      return Integer.valueOf(getID());
     }
     if (fieldName.equals("namevorname"))
     {

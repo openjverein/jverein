@@ -64,11 +64,11 @@ public class VCardTool
       {
         vcard.setGender(Gender.female());
       }
-      if (m.getGeschlecht().equalsIgnoreCase("o"))
+      if (m.getGeschlecht().equalsIgnoreCase("O"))
       {
         vcard.setGender(Gender.other());
       }
-      if (m.getPersonenart().equals("n"))
+      if (m.getPersonenart().equals("N"))
       {
         StructuredName n = new StructuredName();
         n.setFamily(m.getName());

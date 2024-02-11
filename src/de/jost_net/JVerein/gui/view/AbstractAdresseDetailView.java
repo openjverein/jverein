@@ -576,7 +576,7 @@ public abstract class AbstractAdresseDetailView extends AbstractView
       }
       cols.addInput(control.getKuendigung());
       if (Einstellungen.getEinstellung().getSterbedatum()
-          && control.getMitglied().getPersonenart().equals("n"))
+          && control.getMitglied().getPersonenart().equals("N"))
       {
         cols.addInput(control.getSterbetag());
       }
@@ -656,11 +656,11 @@ public abstract class AbstractAdresseDetailView extends AbstractView
       cols.addInput(control.getAdresstyp());
     }
     cols.addInput(control.getAnrede());
-    if (control.getMitglied().getPersonenart().equals("n"))
+    if (control.getMitglied().getPersonenart().equals("N"))
     {
       cols.addInput(control.getTitel());
     }
-    if (control.getMitglied().getPersonenart().equals("j"))
+    if (control.getMitglied().getPersonenart().equals("J"))
     {
       control.getName(true).setName("Name Zeile 1");
       control.getVorname().setName("Name Zeile 2");
@@ -677,7 +677,7 @@ public abstract class AbstractAdresseDetailView extends AbstractView
     {
       cols.addInput(control.getStaat());
     }
-    if (control.getMitglied().getPersonenart().equals("n"))
+    if (control.getMitglied().getPersonenart().equals("N"))
     {
       cols.addInput(control.getGeburtsdatum());
       cols.addInput(control.getGeschlecht());
