@@ -285,7 +285,8 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     setAttribute("betrag", Double.valueOf(d));
   }
 
-  private String getStringBetrag() throws RemoteException
+  @Override
+  public String getStringBetrag() throws RemoteException
   {
     Double d = (Double) getAttribute("betrag");
     if (d == null)
