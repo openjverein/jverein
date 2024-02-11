@@ -228,6 +228,11 @@ public class BuchungsControl extends AbstractControl
     {
       b.setBetrag((Double) getBetrag().getValue());
     }
+    else
+    {
+      // Nötig um für den Check den letzten gesetzten Wert zu löschen
+      b.setStringBetrag(null);
+    }
     b.setZweck((String) getZweck().getValue());
     b.setDatum((Date) getDatum().getValue());
     b.setArt((String) getArt().getValue());
