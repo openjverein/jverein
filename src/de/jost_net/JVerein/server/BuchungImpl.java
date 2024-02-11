@@ -98,7 +98,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     {
       throw new ApplicationException("Bitte Datum eingeben");
     }
-    if (getStringBetrag() == null)
+    if (isBetragNull())
     {
       throw new ApplicationException("Bitte Betrag eingeben");
     }
@@ -286,25 +286,16 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   }
 
   @Override
-  public String getStringBetrag() throws RemoteException
+  public boolean isBetragNull() throws RemoteException
   {
     Double d = (Double) getAttribute("betrag");
-    if (d == null)
-      return null;
-    return d.toString();
+    return d == null;
   }
 
   @Override
-  public void setStringBetrag(String betrag) throws RemoteException
+  public void setBetragNull() throws RemoteException
   {
-    if (betrag == null)
-    {
-      setAttribute("betrag", null);
-    }
-    else
-    {
-      setAttribute("betrag", Double.parseDouble(betrag));
-    }
+    setAttribute("betrag", null);
   }
   
   @Override

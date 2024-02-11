@@ -231,7 +231,7 @@ public class BuchungsControl extends AbstractControl
     else
     {
       // Nötig um für den Check den letzten gesetzten Wert zu löschen
-      b.setStringBetrag(null);
+      b.setBetragNull();
     }
     b.setZweck((String) getZweck().getValue());
     b.setDatum((Date) getDatum().getValue());
@@ -385,7 +385,7 @@ public class BuchungsControl extends AbstractControl
       return betrag;
     }
 
-    if (getBuchung().isNewObject() && getBuchung().getStringBetrag() == null)
+    if (getBuchung().isNewObject() && getBuchung().isBetragNull())
     {
       betrag = new DecimalInput(Einstellungen.DECIMALFORMAT);
     }
