@@ -66,7 +66,7 @@ public class Adressaufbereitung
   public static String getVornameName(IAdresse adr) throws RemoteException
   {
     String ret = "";
-    if (adr.getPersonenart().equals("n"))
+    if (adr.getPersonenart().equals("N"))
     {
       ret = adr.getTitel();
       if (ret == null)
@@ -151,7 +151,7 @@ public class Adressaufbereitung
   public static String getAnredeDu(IAdresse adr) throws RemoteException
   {
     String anrededu = "Hallo";
-    if (adr.getPersonenart().equals("n"))
+    if (adr.getPersonenart().equals("N"))
     {
       anrededu += " " + adr.getVorname();
     }
