@@ -23,9 +23,9 @@ public enum Beitragsmodel
 {
   GLEICHERTERMINFUERALLE(1, "Gleicher Termin für alle"), MONATLICH12631(
       5,
-      "monatlich mit monatl., viertel-, halb- oder jährlicher Zahlungsweise zu fixen Terminen"), FLEXIBEL(
+      "Monatlich mit monatl., viertel-, halb- oder jährlicher Zahlungsweise zu fixen Terminen"), FLEXIBEL(
       10,
-      "monatl., viertel-, halb- oder jährliche Zahlungsweise zu flexiblen Terminen");
+      "Monatl., viertel-, halb- oder jährliche Zahlungsweise zu flexiblen Terminen");
   private final String text;
 
   private final int key;

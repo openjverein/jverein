@@ -20,9 +20,7 @@ package de.jost_net.JVerein.gui.input;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.input.SelectInput;
 
 /**
@@ -46,13 +44,13 @@ public class GeschlechtInput extends SelectInput
    * @return initialisiert die Liste der Optionen.
    * @throws RemoteException
    */
-  private static GenericIterator init() throws RemoteException
+  private static ArrayList<GeschlechtObject> init() throws RemoteException
   {
     ArrayList<GeschlechtObject> l = new ArrayList<>();
     l.add(new GeschlechtObject(MAENNLICH));
     l.add(new GeschlechtObject(WEIBLICH));
     l.add(new GeschlechtObject(OHNEANGABE));
-    return PseudoIterator.fromArray(l.toArray(new GeschlechtObject[l.size()]));
+    return l;
   }
 
   /**
@@ -113,15 +111,15 @@ public class GeschlechtInput extends SelectInput
 
       if (geschlecht.equals(MAENNLICH))
       {
-        this.label = "männlich";
+        this.label = "Männlich";
       }
       else if (geschlecht.equals(WEIBLICH))
       {
-        this.label = "weiblich";
+        this.label = "Weiblich";
       }
       else if (geschlecht.equals(OHNEANGABE))
       {
-        this.label = "ohne Angabe";
+        this.label = "Ohne Angabe";
       }
       else
       {

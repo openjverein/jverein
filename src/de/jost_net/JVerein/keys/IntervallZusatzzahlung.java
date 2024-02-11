@@ -58,17 +58,17 @@ public class IntervallZusatzzahlung
     switch (key)
     {
       case KEIN:
-        return "kein";
+        return "Kein";
       case MONATLICH:
-        return "monatlich";
+        return "Monatlich";
       case ZWEIMONATLICH:
-        return "zweimonatlich";
+        return "Zweimonatlich";
       case VIERTELJAEHRLICH:
-        return "vierteljährlich";
+        return "Vierteljährlich";
       case HALBJAEHRLICH:
-        return "halbjährlich";
+        return "Halbjährlich";
       case JAEHRLICH:
-        return "jährlich";
+        return "Jährlich";
       default:
         return null;
     }

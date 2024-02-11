@@ -22,9 +22,7 @@ import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
-import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.input.SelectInput;
 
 /**
@@ -42,7 +40,7 @@ public class AbbuchungsmodusInput extends SelectInput
    * @return initialisiert die Liste der Optionen.
    * @throws RemoteException
    */
-  private static GenericIterator<AbbuchungsmodusObject> init()
+  private static ArrayList<AbbuchungsmodusObject> init()
       throws RemoteException
   {
     ArrayList<AbbuchungsmodusObject> l = new ArrayList<>();
@@ -70,8 +68,7 @@ public class AbbuchungsmodusInput extends SelectInput
         l.add(new AbbuchungsmodusObject(Abrechnungsmodi.ABGEMELDETEMITGLIEDER));
         break;
     }
-    return PseudoIterator
-        .fromArray(l.toArray(new AbbuchungsmodusObject[l.size()]));
+    return l;
   }
 
   /**

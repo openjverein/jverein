@@ -32,6 +32,7 @@ import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -45,6 +46,7 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -102,7 +104,7 @@ public class LehrgangControl extends AbstractControl
     DBIterator<Lehrgangsart> it = Einstellungen.getDBService()
         .createList(Lehrgangsart.class);
     it.setOrder("order by bezeichnung");
-    lehrgangsart = new SelectInput(it, getLehrgang().getLehrgangsart());
+    lehrgangsart = new SelectInput(PseudoIterator.asList(it), getLehrgang().getLehrgangsart());
     lehrgangsart.setPleaseChoose("Bitte auswählen");
     lehrgangsart.addListener(new Listener()
     {
@@ -198,7 +200,7 @@ public class LehrgangControl extends AbstractControl
     {
       //
     }
-    suchlehrgangsart = new SelectInput(it, letztesuche);
+    suchlehrgangsart = new SelectInput(PseudoIterator.asList(it), letztesuche);
     suchlehrgangsart.setPleaseChoose("Bitte auswählen");
     suchlehrgangsart.addListener(new FilterListener());
     return suchlehrgangsart;
@@ -262,7 +264,7 @@ public class LehrgangControl extends AbstractControl
     {
       Lehrgang l = getLehrgang();
       Lehrgangsart la = (Lehrgangsart) getLehrgangsart().getValue();
-      l.setLehrgangsart(new Integer(la.getID()));
+      l.setLehrgangsart(Integer.valueOf(la.getID()));
       l.setVon((Date) getVon().getValue());
       l.setBis((Date) getBis().getValue());
       l.setVeranstalter((String) getVeranstalter().getValue());
@@ -404,16 +406,16 @@ public class LehrgangControl extends AbstractControl
         }
       });
       lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
-      lehrgaengeList.addColumn("von/am", "von",
+      lehrgaengeList.addColumn("Von/am", "von",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      lehrgaengeList.addColumn("bis", "bis",
+      lehrgaengeList.addColumn("Bis", "bis",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       lehrgaengeList.addColumn("Veranstalter", "veranstalter");
       lehrgaengeList.addColumn("Ergebnis", "ergebnis");
       lehrgaengeList.setContextMenu(new LehrgangMenu());
       lehrgaengeList.setRememberColWidths(true);
       lehrgaengeList.setRememberOrder(true);
-      lehrgaengeList.setSummary(true);
+      lehrgaengeList.addFeature(new FeatureSummary());
     }
     else
     {

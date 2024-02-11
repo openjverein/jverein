@@ -44,6 +44,7 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -254,9 +255,9 @@ public class JahresabschlussControl extends AbstractControl
     jahresabschluesse.setOrder("ORDER BY von desc");
 
     jahresabschlussList = new TablePart(jahresabschluesse, null);
-    jahresabschlussList.addColumn("von", "von",
+    jahresabschlussList.addColumn("Von", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    jahresabschlussList.addColumn("bis", "bis",
+    jahresabschlussList.addColumn("Bis", "bis",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     jahresabschlussList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -264,7 +265,7 @@ public class JahresabschlussControl extends AbstractControl
     jahresabschlussList.setRememberColWidths(true);
     jahresabschlussList.setContextMenu(new JahresabschlussMenu());
     jahresabschlussList.setRememberOrder(true);
-    jahresabschlussList.setSummary(false);
+    jahresabschlussList.removeFeature(FeatureSummary.class);
     return jahresabschlussList;
   }
 

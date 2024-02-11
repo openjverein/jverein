@@ -23,7 +23,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.GenericObject;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.input.SelectInput;
 
@@ -34,12 +34,12 @@ public class FormularInput extends SelectInput
 {
   public FormularInput(FormularArt art, String id) throws RemoteException
   {
-    super(init(art), initdefault(id));
+    super(PseudoIterator.asList(init(art)), initdefault(id));
   }
 
   public FormularInput(FormularArt mahnung) throws RemoteException
   {
-    super(init(mahnung), null);
+    super(PseudoIterator.asList(init(mahnung)), null);
   }
 
   /**
@@ -60,7 +60,7 @@ public class FormularInput extends SelectInput
     return it;
   }
 
-  private static GenericObject initdefault(String id) throws RemoteException
+  private static Object initdefault(String id) throws RemoteException
   {
     Formular f = (Formular) Einstellungen.getDBService()
         .createObject(Formular.class, id);

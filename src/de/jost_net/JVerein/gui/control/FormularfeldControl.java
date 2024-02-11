@@ -46,6 +46,7 @@ import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 
 public class FormularfeldControl extends AbstractControl
@@ -398,15 +399,15 @@ public class FormularfeldControl extends AbstractControl
         new FormularfeldAction());
     formularfelderList.addColumn("Name", "name");
     formularfelderList.addColumn("Seite", "seite");
-    formularfelderList.addColumn("von links", "x");
-    formularfelderList.addColumn("von unten", "y");
+    formularfelderList.addColumn("Von links", "x");
+    formularfelderList.addColumn("Von unten", "y");
     formularfelderList.addColumn("Font", "font");
     formularfelderList.addColumn("Fonthöhe", "fontsize");
 
     formularfelderList.setRememberColWidths(true);
     formularfelderList.setContextMenu(new FormularfeldMenu());
     formularfelderList.setRememberOrder(true);
-    formularfelderList.setSummary(false);
+    formularfelderList.removeFeature(FeatureSummary.class);
     return formularfelderList;
   }
 

@@ -53,7 +53,7 @@ public class SepaMandatIdSource
       case SepaMandatIdSource.DBID:
         return "Mitgliedsnummer (default)";
       case SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER:
-        return "externe Mitgliedsnummer";
+        return "Externe Mitgliedsnummer";
       default:
         return null;
     }

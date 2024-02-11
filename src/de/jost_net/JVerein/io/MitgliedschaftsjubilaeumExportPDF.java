@@ -113,7 +113,7 @@ public class MitgliedschaftsjubilaeumExportPDF extends
     if (anz == 0)
     {
       reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn("kein Mitglied", Element.ALIGN_LEFT);
+      reporter.addColumn("Kein Mitglied", Element.ALIGN_LEFT);
       reporter.addColumn("", Element.ALIGN_LEFT);
       reporter.addColumn("", Element.ALIGN_LEFT);
     }

@@ -33,6 +33,7 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -144,12 +145,12 @@ public class EigenschaftGruppeControl extends AbstractControl
     eigenschaftgruppeList.addColumn("Bezeichnung", "bezeichnung");
     eigenschaftgruppeList.addColumn("Pflicht", "pflicht",
         new JaNeinFormatter());
-    eigenschaftgruppeList.addColumn("max. 1 Eigenschaft", "max1",
+    eigenschaftgruppeList.addColumn("Max. 1 Eigenschaft", "max1",
         new JaNeinFormatter());
     eigenschaftgruppeList.setContextMenu(new EigenschaftGruppeMenu());
     eigenschaftgruppeList.setRememberColWidths(true);
     eigenschaftgruppeList.setRememberOrder(true);
-    eigenschaftgruppeList.setSummary(true);
+    eigenschaftgruppeList.addFeature(new FeatureSummary());
     return eigenschaftgruppeList;
   }
 }

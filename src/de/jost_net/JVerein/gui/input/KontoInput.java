@@ -23,8 +23,6 @@ import java.util.List;
 
 import org.kapott.hbci.manager.HBCIUtils;
 
-import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.hbci.HBCI;
@@ -63,7 +61,7 @@ public class KontoInput extends SelectInput
    * @return Liste der Konten.
    * @throws RemoteException
    */
-  private static GenericIterator<Konto> init() throws RemoteException
+  private static List<Konto> init() throws RemoteException
   {
     DBIterator<Konto> it = Settings.getDBService().createList(Konto.class);
     it.setOrder("ORDER BY blz, kontonummer");
@@ -72,7 +70,7 @@ public class KontoInput extends SelectInput
     {
       l.add((Konto) it.next());
     }
-    return PseudoIterator.fromArray(l.toArray(new Konto[l.size()]));
+    return l;
   }
 
   /**

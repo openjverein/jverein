@@ -71,14 +71,14 @@ public class EinstellungenAnzeigeView extends AbstractView
     // left.addLabelPair("Inventarverwaltung *", control.getInventar());
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
     right.addLabelPair("Lesefelder anzeigen *", control.getUseLesefelder());
-    right.addLabelPair("zusätzliche Adressen *", control.getZusatzadressen());
+    right.addLabelPair("Zusätzliche Adressen *", control.getZusatzadressen());
     right.addLabelPair("Auslandsadressen *", control.getAuslandsadressen());
     right.addLabelPair("Arbeitseinsatz *", control.getArbeitseinsatz());
     right.addLabelPair("Dokumentenspeicherung *",
         control.getDokumentenspeicherung());
-    right.addLabelPair("individuelle Beiträge *",
+    right.addLabelPair("Individuelle Beiträge *",
         control.getIndividuelleBeitraege());
-    right.addLabelPair("externe Mitgliedsnummer",
+    right.addLabelPair("Externe Mitgliedsnummer",
         control.getExterneMitgliedsnummer());
     right.addLabelPair("Basis für Berechnung des Alters",
         control.getAltersModel());

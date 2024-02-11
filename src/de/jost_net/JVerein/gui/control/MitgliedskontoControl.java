@@ -77,6 +77,7 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.TreePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
@@ -89,7 +90,7 @@ public class MitgliedskontoControl extends AbstractControl
 {
   public enum DIFFERENZ
   {
-    EGAL("egal"), FEHLBETRAG("Fehlbetrag"), UEBERZAHLUNG("Überzahlung");
+    EGAL("Egal"), FEHLBETRAG("Fehlbetrag"), UEBERZAHLUNG("Überzahlung");
     private final String titel;
 
     private DIFFERENZ(String titel)
@@ -275,7 +276,7 @@ public class MitgliedskontoControl extends AbstractControl
     {
       return betrag;
     }
-    Double b = new Double(0);
+    Double b = Double.valueOf(0.0d);
     if (getMitgliedskonto() != null)
     {
       b = getMitgliedskonto().getBetrag();
@@ -654,7 +655,7 @@ public class MitgliedskontoControl extends AbstractControl
       mitgliedskontoList.setRememberColWidths(true);
       mitgliedskontoList.setRememberOrder(true);
       mitgliedskontoList.setMulti(true);
-      mitgliedskontoList.setSummary(true);
+      mitgliedskontoList.addFeature(new FeatureSummary());
     }
     else
     {
@@ -681,7 +682,7 @@ public class MitgliedskontoControl extends AbstractControl
       mitgliedskontoList2.setRememberColWidths(true);
       mitgliedskontoList2.setRememberOrder(true);
       mitgliedskontoList2.setMulti(true);
-      mitgliedskontoList2.setSummary(true);
+      mitgliedskontoList2.addFeature(new FeatureSummary());
     }
     else
     {

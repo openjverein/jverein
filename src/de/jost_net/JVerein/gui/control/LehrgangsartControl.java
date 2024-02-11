@@ -34,6 +34,7 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -166,15 +167,15 @@ public class LehrgangsartControl extends AbstractControl
 
     lehrgangsartList = new TablePart(lehrgangsarten, new LehrgangsartAction());
     lehrgangsartList.addColumn("Bezeichnung", "bezeichnung");
-    lehrgangsartList.addColumn("von/am", "von",
+    lehrgangsartList.addColumn("Von/am", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    lehrgangsartList.addColumn("bis", "bis",
+    lehrgangsartList.addColumn("Bis", "bis",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgangsartList.addColumn("Veranstalter", "veranstalter");
     lehrgangsartList.setRememberColWidths(true);
     lehrgangsartList.setContextMenu(new LehrgangsartMenu());
     lehrgangsartList.setRememberOrder(true);
-    lehrgangsartList.setSummary(false);
+    lehrgangsartList.removeFeature(FeatureSummary.class);
     return lehrgangsartList;
   }
 

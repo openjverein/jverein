@@ -155,7 +155,7 @@ public class MitgliederStatistik
   {
     if (vb.getVon() == -1)
     {
-      reporter.addColumn("ohne Geburtsdatum", Element.ALIGN_LEFT);
+      reporter.addColumn("Ohne Geburtsdatum", Element.ALIGN_LEFT);
     }
     else if (vb.getVon() == 0 && vb.getBis() == 199)
     {
@@ -319,7 +319,7 @@ public class MitgliederStatistik
     if (bg != null)
     {
       list.addFilter("beitragsgruppe = ?",
-          new Object[] { new Integer(bg.getID()) });
+          new Object[] { Integer.valueOf(bg.getID()) });
     }
     if (geschlecht != null && (geschlecht.equals(GeschlechtInput.MAENNLICH)
         || geschlecht.equals(GeschlechtInput.WEIBLICH)))

@@ -54,13 +54,13 @@ public class Zahlungsrhythmus
     switch (key)
     {
       case Zahlungsrhythmus.JAEHRLICH:
-        return "jährlich";
+        return "Jährlich";
       case Zahlungsrhythmus.HALBJAEHRLICH:
-        return "halbjährlich";
+        return "Halbjährlich";
       case Zahlungsrhythmus.VIERTELJAEHRLICH:
-        return "vierteljährlich";
+        return "Vierteljährlich";
       case Zahlungsrhythmus.MONATLICH:
-        return "monatlich";
+        return "Monatlich";
       default:
         return null;
     }

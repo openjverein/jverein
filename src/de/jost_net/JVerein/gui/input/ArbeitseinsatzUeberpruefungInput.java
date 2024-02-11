@@ -20,9 +20,7 @@ package de.jost_net.JVerein.gui.input;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.input.SelectInput;
 
 public class ArbeitseinsatzUeberpruefungInput extends SelectInput
@@ -45,7 +43,7 @@ public class ArbeitseinsatzUeberpruefungInput extends SelectInput
    * @return initialisiert die Liste der Optionen.
    * @throws RemoteException
    */
-  private static GenericIterator<ArbeitseinsatzUeberpruefungObject> init()
+  private static ArrayList<ArbeitseinsatzUeberpruefungObject> init()
       throws RemoteException
   {
     ArrayList<ArbeitseinsatzUeberpruefungObject> l = new ArrayList<>();
@@ -53,8 +51,7 @@ public class ArbeitseinsatzUeberpruefungInput extends SelectInput
     l.add(new ArbeitseinsatzUeberpruefungObject(PASSENDELEISTUNG));
     l.add(new ArbeitseinsatzUeberpruefungObject(MEHRLEISTUNG));
     l.add(new ArbeitseinsatzUeberpruefungObject(ALLE));
-    return PseudoIterator
-        .fromArray(l.toArray(new ArbeitseinsatzUeberpruefungObject[l.size()]));
+    return l;
   }
 
   /**
@@ -84,7 +81,7 @@ public class ArbeitseinsatzUeberpruefungInput extends SelectInput
 
       if (schluessel == ALLE)
       {
-        this.label = "alle";
+        this.label = "Alle";
       }
       else if (schluessel == MINDERLEISTUNG)
       {
@@ -92,7 +89,7 @@ public class ArbeitseinsatzUeberpruefungInput extends SelectInput
       }
       else if (schluessel == PASSENDELEISTUNG)
       {
-        this.label = "passende Leistung";
+        this.label = "Passende Leistung";
       }
       else if (schluessel == MEHRLEISTUNG)
       {

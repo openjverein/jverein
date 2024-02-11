@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.GenericIterator;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.logging.Logger;
@@ -29,7 +30,7 @@ public class JVereinKontoInput extends SelectInput
 {
   public JVereinKontoInput() throws RemoteException
   {
-    super(init(), null);
+    super(PseudoIterator.asList(init()), null);
     this.setPleaseChoose("Wähle ein JVerein Konto");
   }
 

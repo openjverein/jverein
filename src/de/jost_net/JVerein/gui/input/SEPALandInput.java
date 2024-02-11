@@ -22,8 +22,6 @@ import java.util.ArrayList;
 
 import de.jost_net.OBanToo.SEPA.Land.SEPALaender;
 import de.jost_net.OBanToo.SEPA.Land.SEPALand;
-import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.input.SelectInput;
 
 /**
@@ -47,7 +45,7 @@ public class SEPALandInput extends SelectInput
    * @return initialisiert die Liste der Optionen.
    * @throws RemoteException
    */
-  private static GenericIterator init() throws RemoteException
+  private static ArrayList<SEPALandObject> init() throws RemoteException
   {
     ArrayList<SEPALand> l = SEPALaender.getLaender();
     ArrayList<SEPALandObject> lo = new ArrayList<>();
@@ -55,7 +53,7 @@ public class SEPALandInput extends SelectInput
     {
       lo.add(new SEPALandObject(land));
     }
-    return PseudoIterator.fromArray(lo.toArray(new SEPALandObject[lo.size()]));
+    return lo;
   }
 
 }

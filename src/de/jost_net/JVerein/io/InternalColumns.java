@@ -29,7 +29,7 @@ public enum InternalColumns
   BLZ("Bankleitzahl", true), //
   BEITRAG("Beitrag_1", true), //
   BEITRAGSART("Beitragsart_1", true), //
-  BEITRAGINDI("individuellerbeitrag", false), //
+  BEITRAGINDI("Individuellerbeitrag", false), //
   EINTRITTSDATUM("Eintritt", true), //
   EMAIL("Email", true), //
   GEBDATUM("Geburtsdatum", true), //

@@ -21,9 +21,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
-import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.input.SelectInput;
 
 /**
@@ -47,14 +45,13 @@ public class MailAuswertungInput extends SelectInput
    * @return initialisiert die Liste der Optionen.
    * @throws RemoteException
    */
-  private static GenericIterator init() throws RemoteException
+  private static ArrayList<MailAuswertungObject> init() throws RemoteException
   {
     ArrayList<MailAuswertungObject> l = new ArrayList<>();
     l.add(new MailAuswertungObject(MailAuswertungInput.ALLE));
     l.add(new MailAuswertungObject(MailAuswertungInput.OHNE));
     l.add(new MailAuswertungObject(MailAuswertungInput.MIT));
-    return PseudoIterator
-        .fromArray(l.toArray(new MailAuswertungObject[l.size()]));
+    return l;
   }
 
   /**
@@ -95,11 +92,11 @@ public class MailAuswertungInput extends SelectInput
       }
       else if (mail == MIT)
       {
-        this.label = "nur mit Mailadresse";
+        this.label = "Nur mit Mailadresse";
       }
       else if (mail == OHNE)
       {
-        this.label = "nur ohne Mailadresse";
+        this.label = "Nur ohne Mailadresse";
       }
       else
       {

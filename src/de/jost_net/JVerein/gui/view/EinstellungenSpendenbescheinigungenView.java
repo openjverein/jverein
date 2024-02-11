@@ -43,7 +43,7 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
     // cont.addLabelPair("Vorläufig ab", control.getVorlaeufigab());
     cont.addLabelPair("Veranlagung von", control.getVeranlagungVon());
     cont.addLabelPair("Veranlagung bis", control.getVeranlagungBis());
-    cont.addLabelPair("begünstigter Zweck", control.getBeguenstigterzweck());
+    cont.addLabelPair("Begünstigter Zweck", control.getBeguenstigterzweck());
     cont.addLabelPair("Mitgliedsbeiträge dürfen bescheinigt werden",
         control.getMitgliedsbetraege());
     cont.addLabelPair("Mindestbetrag",

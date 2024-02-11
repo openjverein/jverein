@@ -27,9 +27,9 @@ import de.willuhn.jameica.gui.input.SelectInput;
 public class PersonenartInput extends SelectInput
 {
 
-  public final static String NATUERLICHE_PERSON = "natürliche Person";
+  public final static String NATUERLICHE_PERSON = "Natürliche Person";
 
-  public final static String JURISTISCHE_PERSON = "juristische Person (Firma, Organisation, Behörde)";
+  public final static String JURISTISCHE_PERSON = "Juristische Person (Firma, Organisation, Behörde)";
 
   public PersonenartInput(final String personenart)
   {
@@ -43,11 +43,11 @@ public class PersonenartInput extends SelectInput
    */
   private static String init(String personenart)
   {
-    if (personenart.equals("n"))
+    if (personenart.equals("N"))
     {
       return NATUERLICHE_PERSON;
     }
-    else if (personenart.equals("j"))
+    else if (personenart.equals("J"))
     {
       return JURISTISCHE_PERSON;
     }

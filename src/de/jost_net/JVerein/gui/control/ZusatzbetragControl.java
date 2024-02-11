@@ -63,6 +63,7 @@ import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
@@ -266,9 +267,9 @@ public class ZusatzbetragControl extends AbstractControl
       });
       zusatzbetraegeList.addColumn("Startdatum", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("nächste Fälligkeit", "faelligkeit",
+      zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("letzte Ausführung", "ausfuehrung",
+      zusatzbetraegeList.addColumn("Letzte Ausführung", "ausfuehrung",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetraegeList.addColumn("Intervall", "intervalltext");
       zusatzbetraegeList.addColumn("Endedatum", "endedatum",
@@ -281,7 +282,7 @@ public class ZusatzbetragControl extends AbstractControl
           .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
       zusatzbetraegeList.setRememberColWidths(true);
       zusatzbetraegeList.setRememberOrder(true);
-      zusatzbetraegeList.setSummary(true);
+      zusatzbetraegeList.addFeature(new FeatureSummary());
       zusatzbetraegeList.setMulti(true);
     }
     else

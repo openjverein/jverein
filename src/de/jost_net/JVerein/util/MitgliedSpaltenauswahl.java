@@ -102,7 +102,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
         false);
     add("Eingabedatum", "eingabedatum", false,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);
-    add("letzte Änderung", "letzteaenderung", false,
+    add("Letzte Änderung", "letzteaenderung", false,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);
     try
     {

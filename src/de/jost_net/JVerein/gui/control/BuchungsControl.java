@@ -644,7 +644,7 @@ public class BuchungsControl extends AbstractControl
     suchprojekt = new SelectInput(projektliste, null);
     suchprojekt.addListener(new FilterListener());
     suchprojekt.setAttribute("bezeichnung");
-    suchprojekt.setPleaseChoose("keine Einschränkung");
+    suchprojekt.setPleaseChoose("Keine Einschränkung");
     return suchprojekt;
   }
 

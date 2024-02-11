@@ -56,7 +56,7 @@ public class HerkunftSpende
       case PRIVATVERMOEGEN:
         return "Privatvermögen";
       case KEINEANGABEN:
-        return "keine Angaben";
+        return "Keine Angaben";
       default:
         return null;
     }

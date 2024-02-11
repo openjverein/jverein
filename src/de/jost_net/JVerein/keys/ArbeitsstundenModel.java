@@ -53,7 +53,7 @@ public class ArbeitsstundenModel
       case ArbeitsstundenModel.STANDARD:
         return "Standardverfahren";
       case ArbeitsstundenModel.ERLAUBE_NEGATIV:
-        return "negative Stunden erlaubt";
+        return "Negative Stunden erlaubt";
       default:
         return null;
     }
