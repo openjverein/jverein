@@ -152,7 +152,7 @@ public class KursteilnehmerControl extends AbstractControl
       public void handleEvent(Event event)
       {
         String pa = (String) personenart.getValue();
-        if (pa.startsWith("n"))
+        if (pa.startsWith("N"))
         {
           name.setName("Name");
           vorname.setName("Vorname");
