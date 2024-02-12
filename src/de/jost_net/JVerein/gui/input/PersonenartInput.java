@@ -43,11 +43,11 @@ public class PersonenartInput extends SelectInput
    */
   private static String init(String personenart)
   {
-    if (personenart.equals("N"))
+    if (personenart.equalsIgnoreCase("n"))
     {
       return NATUERLICHE_PERSON;
     }
-    else if (personenart.equals("J"))
+    else if (personenart.equalsIgnoreCase("j"))
     {
       return JURISTISCHE_PERSON;
     }
