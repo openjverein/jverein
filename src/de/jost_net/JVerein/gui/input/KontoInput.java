@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.input;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.kapott.hbci.manager.HBCIUtils;
 
@@ -61,11 +60,11 @@ public class KontoInput extends SelectInput
    * @return Liste der Konten.
    * @throws RemoteException
    */
-  private static List<Konto> init() throws RemoteException
+  private static ArrayList<Konto> init() throws RemoteException
   {
     DBIterator<Konto> it = Settings.getDBService().createList(Konto.class);
     it.setOrder("ORDER BY blz, kontonummer");
-    List<Konto> l = new ArrayList<>();
+    ArrayList<Konto> l = new ArrayList<>();
     while (it.hasNext())
     {
       l.add((Konto) it.next());
