@@ -104,7 +104,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     checkExterneMitgliedsnummer();
 
     if (getPersonenart() == null
-        || (!getPersonenart().equals("N") && !getPersonenart().equals("J")))
+        || (!getPersonenart().equalsIgnoreCase("n") && !getPersonenart().equalsIgnoreCase("j")))
     {
       throw new ApplicationException("Personenstatus ist nicht 'N' oder 'J'");
     }
@@ -112,18 +112,18 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       throw new ApplicationException("Bitte Namen eingeben");
     }
-    if (getPersonenart().equals("N")
+    if (getPersonenart().equalsIgnoreCase("n")
         && (getVorname() == null || getVorname().length() == 0))
     {
       throw new ApplicationException("Bitte Vornamen eingeben");
     }
-    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equals("N")
+    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equalsIgnoreCase("n")
         && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime()
         && Einstellungen.getEinstellung().getGeburtsdatumPflicht())
     {
       throw new ApplicationException("Bitte Geburtsdatum eingeben");
     }
-    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equals("N")
+    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equalsIgnoreCase("n")
         && Einstellungen.getEinstellung().getGeburtsdatumPflicht())
     {
       Calendar cal1 = Calendar.getInstance();
@@ -144,7 +144,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
             "Ist das Mitglied wirklich älter als 150 Jahre?");
       }
     }
-    if (getPersonenart().equals("N") && getGeschlecht() == null)
+    if (getPersonenart().equalsIgnoreCase("n") && getGeschlecht() == null)
     {
       throw new ApplicationException("Bitte Geschlecht auswählen");
     }

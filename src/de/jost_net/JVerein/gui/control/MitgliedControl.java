@@ -943,7 +943,7 @@ public class MitgliedControl extends AbstractControl
       public void handleEvent(Event event)
       {
         String pa = (String) ktoipersonenart.getValue();
-        if (pa.startsWith("N"))
+        if (pa.toLowerCase().startsWith("n"))
         {
           ktoiname.setName("Name");
           ktoivorname.setName("Vorname");
@@ -3145,7 +3145,7 @@ public class MitgliedControl extends AbstractControl
         m.setExterneMitgliedsnummer(null);
       }
 
-      if (m.getPersonenart().equals("N"))
+      if (m.getPersonenart().equalsIgnoreCase("n"))
       {
         m.setGeburtsdatum((Date) getGeburtsdatum().getValue());
         if (getGeschlecht().getSelectedValue() == null)
