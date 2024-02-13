@@ -17,10 +17,12 @@
 package de.jost_net.JVerein.io;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -32,8 +34,24 @@ public class SplitbuchungsContainer
   private static ArrayList<Buchung> splitbuchungen = null;
 
   private static int dependencyid = 0;
+  
+  private static Buchung[] buchungen = null;
 
+  public static void init(Buchung[] bl)
+      throws RemoteException, ApplicationException
+  {
+    buchungen = bl;
+    initiate(bl[0]);
+  }
+  
   public static void init(Buchung b)
+      throws RemoteException, ApplicationException
+  {
+    buchungen = null;
+    initiate(b);
+  }
+  
+  public static void initiate(Buchung b)
       throws RemoteException, ApplicationException
   {
     splitbuchungen = new ArrayList<>();
@@ -48,7 +66,7 @@ public class SplitbuchungsContainer
     }
     else
     {
-      b.setSplitId(new Long(b.getID()));
+      b.setSplitId(Long.valueOf(b.getID()));
       SplitbuchungsContainer.add(b);
     }
     DBIterator<Buchung> it = Einstellungen.getDBService()
@@ -59,22 +77,7 @@ public class SplitbuchungsContainer
     {
       // Wenn keine Buchung gefunden wurde, gibt es auch keine Gegenbuchung.
       // Dann wird die jetzt erstellt.
-      Buchung b2 = (Buchung) Einstellungen.getDBService()
-          .createObject(Buchung.class, null);
-      b2.setArt(b.getArt());
-      b2.setAuszugsnummer(b.getAuszugsnummer());
-      b2.setBetrag(b.getBetrag() * -1);
-      b2.setBlattnummer(b.getBlattnummer());
-      b2.setBuchungsart(b.getBuchungsartId());
-      b2.setDatum(b.getDatum());
-      b2.setKommentar(b.getKommentar());
-      b2.setKonto(b.getKonto());
-      b2.setMitgliedskonto(b.getMitgliedskonto());
-      b2.setName(b.getName());
-      b2.setSplitId(new Long(b.getID()));
-      b2.setUmsatzid(b.getUmsatzid());
-      b2.setZweck(b.getZweck());
-      b2.setSplitTyp(SplitbuchungTyp.GEGEN);
+      Buchung b2 = getGegenbuchung(b);
       SplitbuchungsContainer.add(b2);
     }
     while (it.hasNext())
@@ -120,7 +123,7 @@ public class SplitbuchungsContainer
       if (b.getSplitTyp().equals(typ) && !b.isToDelete())
       {
         summe = summe.add(new BigDecimal(b.getBetrag()).setScale(2,
-            BigDecimal.ROUND_HALF_UP));
+            RoundingMode.HALF_UP));
       }
     }
     return summe;
@@ -196,6 +199,13 @@ public class SplitbuchungsContainer
       throw new RemoteException(
           "Buchungsarten bei Haupt- und Gegenbuchung müssen identisch sein");
     }
+    DBTransaction.starten();
+    handleStore();
+    DBTransaction.commit();
+  }
+  
+  public static void handleStore() throws RemoteException, ApplicationException
+  {
     for (Buchung b : get())
     {
       if (b.isToDelete())
@@ -207,9 +217,32 @@ public class SplitbuchungsContainer
         b.store();
       }
     }
+    
+    
   }
 
   public static int getNewDependencyId() {
     return ++dependencyid;
+  }
+  
+  private static Buchung getGegenbuchung(Buchung b) throws RemoteException
+  {
+    Buchung b2 = (Buchung) Einstellungen.getDBService()
+        .createObject(Buchung.class, null);
+    b2.setArt(b.getArt());
+    b2.setAuszugsnummer(b.getAuszugsnummer());
+    b2.setBetrag(b.getBetrag() * -1);
+    b2.setBlattnummer(b.getBlattnummer());
+    b2.setBuchungsart(b.getBuchungsartId());
+    b2.setDatum(b.getDatum());
+    b2.setKommentar(b.getKommentar());
+    b2.setKonto(b.getKonto());
+    b2.setMitgliedskonto(b.getMitgliedskonto());
+    b2.setName(b.getName());
+    b2.setSplitId(Long.valueOf(b.getID()));
+    b2.setUmsatzid(b.getUmsatzid());
+    b2.setZweck(b.getZweck());
+    b2.setSplitTyp(SplitbuchungTyp.GEGEN);
+    return b2;
   }
 }

@@ -58,7 +58,7 @@ public class BuchungMenu extends ContextMenu
         "edit-copy.png"));
     addItem(new SingleGegenBuchungItem("Gegenbuchung", new BuchungGegenbuchungAction(),
         "edit-copy.png"));
-    addItem(new SingleBuchungItem("Splitbuchung", new SplitBuchungAction(),
+    addItem(new SplitBuchungItem("Splitbuchung", new SplitBuchungAction(),
         "edit-copy.png"));
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
@@ -162,6 +162,43 @@ public class BuchungMenu extends ContextMenu
         {
           Logger.error("Fehler", e);
         }
+      }
+      return false;
+    }
+  }
+  
+  private static class SplitBuchungItem extends CheckedContextMenuItem
+  {
+    private SplitBuchungItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      try
+      {
+        if (o instanceof Buchung)
+        {
+          return ((Buchung) o).getSplitId() == null;
+        }
+        if (o instanceof Buchung[])
+        {
+          Double betrag = ((Buchung[]) o)[0].getBetrag();
+          for (Buchung bu : ((Buchung[]) o))
+          {
+            if ((bu.getSplitId() != null) || (bu.getBetrag() != betrag))
+            {
+              return false;
+            }
+          }
+          return true;
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
       }
       return false;
     }
