@@ -542,6 +542,10 @@ public class BuchungsControl extends AbstractControl
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         getBuchung().getBuchungsart());
+    if (!getBuchung().getSpeicherung())
+    {
+      buchungsart.setMandatory(true);
+    }
     return buchungsart;
   }
 
@@ -896,6 +900,7 @@ public class BuchungsControl extends AbstractControl
       }
       else
       {
+        b.plausi();
         Buchungsart b_art = b.getBuchungsart();
         if (b_art.getSteuersatz() > 0) {
           Buchung b_steuer = getDependentBuchungen().get(0);     
