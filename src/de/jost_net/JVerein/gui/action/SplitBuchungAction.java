@@ -76,7 +76,7 @@ public class SplitBuchungAction implements Action
         if (bu.getBuchungsart() == null)
         {
           throw new ApplicationException(
-              "Der Buchung muss zunächst eine Buchungsart zugeordnet werden.");
+              "Allen Buchungen muss zunächst eine Buchungsart zugeordnet werden.");
         }
       }
       bl[0].setSplitTyp(SplitbuchungTyp.HAUPT);
