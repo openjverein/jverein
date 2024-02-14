@@ -39,10 +39,9 @@ public class SplitBuchungAction implements Action
     {
       throw new ApplicationException("Keine Buchung(en) ausgewählt");
     }
-    Buchung b = null;
+    Buchung[] bl = null;
     try
     {
-      Buchung[] bl = null;
       if (context instanceof Buchung)
       {
         bl = new Buchung[1];
@@ -80,14 +79,13 @@ public class SplitBuchungAction implements Action
               "Der Buchung muss zunächst eine Buchungsart zugeordnet werden.");
         }
       }
-      b = bl[0];
-      b.setSplitTyp(SplitbuchungTyp.HAUPT);
+      bl[0].setSplitTyp(SplitbuchungTyp.HAUPT);
       SplitbuchungsContainer.init(bl);
     }
     catch (RemoteException e)
     {
       throw new ApplicationException(e.getMessage());
     }
-    GUI.startView(SplitBuchungView.class.getName(), b);
+    GUI.startView(SplitBuchungView.class.getName(), bl[0]);
   }
 }

@@ -36,18 +36,36 @@ public class SplitbuchungsContainer
   private static int dependencyid = 0;
   
   private static Buchung[] buchungen = null;
+  
+  private static int anzahl = 0;
+  
+  private static String text = null; 
 
   public static void init(Buchung[] bl)
       throws RemoteException, ApplicationException
   {
-    buchungen = bl;
-    initiate(bl[0]);
+    if (bl.length == 1)
+    {
+      buchungen = null;
+      anzahl = 1;
+      text = "Es wird eine Splitbuchung erzeugt.";
+      initiate(bl[0]);
+    }
+    else
+    {
+      buchungen = bl;
+      anzahl = bl.length;
+      text = String.format("Es werden %s Splitbuchungen erzeugt.", anzahl);
+      initiate(bl[0]);
+    }
   }
   
   public static void init(Buchung b)
       throws RemoteException, ApplicationException
   {
     buchungen = null;
+    anzahl = 1;
+    text = "Es wird eine Splitbuchung erzeugt.";
     initiate(b);
   }
   
@@ -199,9 +217,17 @@ public class SplitbuchungsContainer
       throw new RemoteException(
           "Buchungsarten bei Haupt- und Gegenbuchung müssen identisch sein");
     }
+    try
+    {
     DBTransaction.starten();
     handleStore();
     DBTransaction.commit();
+    }
+    catch (Exception ex)
+    {
+      DBTransaction.rollback();
+      throw ex;
+    }
   }
   
   public static void handleStore() throws RemoteException, ApplicationException
@@ -217,32 +243,80 @@ public class SplitbuchungsContainer
         b.store();
       }
     }
-    
-    
+    if (buchungen != null)
+    {
+      Buchung master = null;
+      Buchung gegen = null;
+      Buchung split = null;
+      for (int i = 1; i < anzahl; i++)
+      {
+        master = buchungen[i];
+        master.setSplitTyp(SplitbuchungTyp.HAUPT);
+        master.setSplitId(Long.valueOf(master.getID()));
+        master.store();
+        gegen = getGegenbuchung(master);
+        gegen.store();
+        for (Buchung b : get())
+        {
+          if (!b.isToDelete() && (b.getSplitTyp() == SplitbuchungTyp.SPLIT))
+          {
+            split = getSplitbuchung(master, b);
+            split.store();
+          }
+        }
+      }
+    }
   }
 
   public static int getNewDependencyId() {
     return ++dependencyid;
   }
   
+  public static String getText() {
+    return text;
+  }
+  
   private static Buchung getGegenbuchung(Buchung b) throws RemoteException
   {
-    Buchung b2 = (Buchung) Einstellungen.getDBService()
+    Buchung buch = (Buchung) Einstellungen.getDBService()
         .createObject(Buchung.class, null);
-    b2.setArt(b.getArt());
-    b2.setAuszugsnummer(b.getAuszugsnummer());
-    b2.setBetrag(b.getBetrag() * -1);
-    b2.setBlattnummer(b.getBlattnummer());
-    b2.setBuchungsart(b.getBuchungsartId());
-    b2.setDatum(b.getDatum());
-    b2.setKommentar(b.getKommentar());
-    b2.setKonto(b.getKonto());
-    b2.setMitgliedskonto(b.getMitgliedskonto());
-    b2.setName(b.getName());
-    b2.setSplitId(Long.valueOf(b.getID()));
-    b2.setUmsatzid(b.getUmsatzid());
-    b2.setZweck(b.getZweck());
-    b2.setSplitTyp(SplitbuchungTyp.GEGEN);
-    return b2;
+    buch.setArt(b.getArt());
+    buch.setAuszugsnummer(b.getAuszugsnummer());
+    buch.setBetrag(b.getBetrag() * -1);
+    buch.setBlattnummer(b.getBlattnummer());
+    buch.setBuchungsart(b.getBuchungsartId());
+    buch.setDatum(b.getDatum());
+    buch.setKommentar(b.getKommentar());
+    buch.setKonto(b.getKonto());
+    buch.setMitgliedskonto(b.getMitgliedskonto());
+    buch.setName(b.getName());
+    buch.setProjekt(b.getProjekt());
+    buch.setSplitId(Long.valueOf(b.getID()));
+    buch.setUmsatzid(b.getUmsatzid());
+    buch.setZweck(b.getZweck());
+    buch.setSplitTyp(SplitbuchungTyp.GEGEN);
+    return buch;
+  }
+  
+  private static Buchung getSplitbuchung(Buchung master, Buchung origin) throws RemoteException
+  {
+    Buchung buch = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
+        null);
+    buch.setAuszugsnummer(master.getAuszugsnummer());
+    buch.setBetrag(origin.getBetrag());
+    buch.setBlattnummer(master.getBlattnummer());
+    buch.setBuchungsart(origin.getBuchungsartId());
+    buch.setDatum(master.getDatum());
+    buch.setKommentar(origin.getKommentar());
+    buch.setKonto(master.getKonto());
+    buch.setMitgliedskonto(master.getMitgliedskonto());
+    buch.setName(master.getName());
+    buch.setProjekt(master.getProjekt());
+    buch.setSplitId(Long.valueOf(master.getID()));
+    buch.setUmsatzid(master.getUmsatzid());
+    buch.setZweck(origin.getZweck());
+    buch.setDependencyId(origin.getDependencyId());
+    buch.setSplitTyp(SplitbuchungTyp.SPLIT);
+    return buch;
   }
 }

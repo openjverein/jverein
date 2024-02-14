@@ -25,6 +25,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.parts.InfoPanel;
 
 public class SplitBuchungView extends AbstractView
 {
@@ -35,7 +36,10 @@ public class SplitBuchungView extends AbstractView
     GUI.getView().setTitle("Splitbuchungen");
 
     final BuchungsControl control = new BuchungsControl(this);
-
+    InfoPanel   info = new InfoPanel();
+    info.setText(SplitbuchungsContainer.getText());
+    info.setTitle("Info");
+    info.paint(getParent());
     control.getSplitBuchungsList().paint(getParent());
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
