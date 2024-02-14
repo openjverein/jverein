@@ -27,6 +27,7 @@ import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
 public class SplitbuchungsContainer
@@ -44,20 +45,18 @@ public class SplitbuchungsContainer
   public static void init(Buchung[] bl)
       throws RemoteException, ApplicationException
   {
-    if (bl.length == 1)
+    anzahl = bl.length;
+    if (anzahl == 1)
     {
       buchungen = null;
-      anzahl = 1;
       text = "Es wird eine Splitbuchung erzeugt.";
-      initiate(bl[0]);
     }
     else
     {
       buchungen = bl;
-      anzahl = bl.length;
       text = String.format("Es werden %s Splitbuchungen erzeugt.", anzahl);
-      initiate(bl[0]);
     }
+    initiate(bl[0]);
   }
   
   public static void init(Buchung b)
@@ -219,13 +218,14 @@ public class SplitbuchungsContainer
     }
     try
     {
-    DBTransaction.starten();
-    handleStore();
-    DBTransaction.commit();
+      DBTransaction.starten();
+      handleStore();
+      DBTransaction.commit();
     }
     catch (Exception ex)
     {
       DBTransaction.rollback();
+      GUI.getStatusBar().setErrorText(ex.getMessage());
       throw ex;
     }
   }
@@ -318,5 +318,10 @@ public class SplitbuchungsContainer
     buch.setDependencyId(origin.getDependencyId());
     buch.setSplitTyp(SplitbuchungTyp.SPLIT);
     return buch;
+  }
+  
+  public static int getAnzahl() 
+  {
+    return anzahl;
   }
 }

@@ -1122,9 +1122,6 @@ public class BuchungsControl extends AbstractControl
           return (o != null ? "S" : " ");
         }
       });
-      buchungsList.addColumn("Split Id.", "splitid");
-      buchungsList.addColumn("Typ", "splittyp");
-      buchungsList.addColumn("Dep. Id", "dependencyid");
       buchungsList.addColumn("Konto", "konto", new Formatter()
       {
 
