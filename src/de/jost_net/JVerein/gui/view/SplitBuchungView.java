@@ -39,6 +39,7 @@ public class SplitBuchungView extends AbstractView
     InfoPanel   info = new InfoPanel();
     info.setText(SplitbuchungsContainer.getText());
     info.setTitle("Info");
+    info.setIcon("gtk-info.png");
     info.paint(getParent());
     control.getSplitBuchungsList().paint(getParent());
     ButtonArea buttons = new ButtonArea();

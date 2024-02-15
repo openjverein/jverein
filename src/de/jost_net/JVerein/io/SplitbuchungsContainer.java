@@ -265,9 +265,6 @@ public class SplitbuchungsContainer
           }
         }
       }
-    }
-    if (buchungen != null)
-    {
       buchungen = null;
       splitbuchungen.clear();
     }
