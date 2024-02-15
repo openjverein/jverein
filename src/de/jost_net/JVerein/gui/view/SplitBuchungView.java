@@ -58,6 +58,7 @@ public class SplitBuchungView extends AbstractView
         try
         {
           SplitbuchungsContainer.store();
+          control.refreshSplitbuchungen();
           GUI.getStatusBar().setSuccessText(String.format
               ("%s Splitbuchungen gespeichert", SplitbuchungsContainer.getAnzahl()));
         }
