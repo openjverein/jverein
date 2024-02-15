@@ -40,8 +40,6 @@ public class SplitbuchungsContainer
   
   private static int anzahl = 0;
   
-  private static int anzahlAlt = 0;
-  
   private static String text = null; 
 
   public static void init(Buchung[] bl)
@@ -268,10 +266,11 @@ public class SplitbuchungsContainer
         }
       }
     }
-    buchungen = null;
-    anzahlAlt = anzahl;
-    anzahl = 1;
-    text = "Es wird eine Splitbuchung erzeugt.";
+    if (buchungen != null)
+    {
+      buchungen = null;
+      splitbuchungen.clear();
+    }
   }
 
   public static int getNewDependencyId() {
@@ -329,10 +328,5 @@ public class SplitbuchungsContainer
   public static int getAnzahl() 
   {
     return anzahl;
-  }
-  
-  public static int getAnzahlAlt() 
-  {
-    return anzahlAlt;
   }
 }
