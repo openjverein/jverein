@@ -42,8 +42,8 @@ public class SplitBuchungView extends AbstractView
         DokumentationUtil.SPLITBUCHUNG, false, "question-circle.png");
     buttons.addButton("Neu", new SplitbuchungNeuAction(),
         control.getCurrentObject(), false, "document-new.png");
-    buttons.addButton("Auflösen", new SplitbuchungAufloesenAction(),
-        control.getCurrentObject(), false, "document-new.png");
+    buttons.addButton("Auflösen", new SplitbuchungAufloesenAction(control),
+        control.getCurrentObject(), false, "unlocked.png");
     buttons.addButton(control.getSammelueberweisungButton());
 
     buttons.addButton("Speichern", new Action()

@@ -1325,6 +1325,7 @@ public class BuchungsControl extends AbstractControl
     {
       buchungsList.addItem(b);
     }
+    buchungsList.sort();
   }
 
   public void refreshSplitbuchungen() throws RemoteException
