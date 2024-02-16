@@ -94,10 +94,10 @@ public class SplitbuchungBulkAufloesenAction implements Action
               "Buchung wurde bereits am %s von %s abgeschlossen.",
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
         }
-        SplitbuchungsContainer.init(bu);
         splitid = bu.getSplitId();
         if (!geloescht.contains(splitid))
         {
+          SplitbuchungsContainer.init(bu);
           SplitbuchungsContainer.aufloesen();
           geloescht.add(splitid);
         }
