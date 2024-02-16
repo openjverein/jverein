@@ -25,6 +25,7 @@ import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.logging.Logger;
 
 public class SplitbuchungNeuAction implements Action
 {
@@ -53,6 +54,7 @@ public class SplitbuchungNeuAction implements Action
     }
     catch (RemoteException e)
     {
+      Logger.error("Fehler", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
