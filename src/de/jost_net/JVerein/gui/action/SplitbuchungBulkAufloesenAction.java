@@ -115,7 +115,7 @@ public class SplitbuchungBulkAufloesenAction implements Action
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Auflösen der Splituchung.";
+      String fehler = "Fehler beim Auflösen einer Splituchung.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

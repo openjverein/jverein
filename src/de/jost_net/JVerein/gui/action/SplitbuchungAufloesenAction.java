@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.logging.Logger;
 
@@ -49,8 +50,9 @@ public class SplitbuchungAufloesenAction implements Action
     }
     catch (Exception e)
     {
-      Logger.error("Fehler beim auflösen einer Splitbuchung", e);
-      return;
+      String fehler = "Fehler beim Auflösen der Splituchung.";
+      GUI.getStatusBar().setErrorText(fehler);
+      Logger.error(fehler, e);
     }
   }
 }
