@@ -34,38 +34,58 @@ public class SplitBuchungAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Buchung b = null;
-
-    if (context != null && (context instanceof Buchung))
+    if (context == null
+        || (!(context instanceof Buchung) && !(context instanceof Buchung[])))
     {
-      b = (Buchung) context;
-      try
+      throw new ApplicationException("Keine Buchung(en) ausgewählt");
+    }
+    Buchung[] bl = null;
+    try
+    {
+      if (context instanceof Buchung)
       {
-        Jahresabschluss ja = b.getJahresabschluss();
+        bl = new Buchung[1];
+        bl[0] = (Buchung) context;
+      }
+      if (context instanceof Buchung[])
+      {
+        bl = (Buchung[]) context;
+      }
+      if (bl == null)
+      {
+        return;
+      }
+      if (bl.length == 0)
+      {
+        return;
+      }
+      if (bl[0].isNewObject())
+      {
+        return;
+      }
+
+      for (Buchung bu : bl)
+      {
+        Jahresabschluss ja = bu.getJahresabschluss();
         if (ja != null)
         {
           throw new ApplicationException(String.format(
               "Buchung wurde bereits am %s von %s abgeschlossen.",
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
         }
-        if (b.getBuchungsart() == null)
+        if (bu.getBuchungsart() == null)
         {
           throw new ApplicationException(
-              "Der Buchung muss zunächst eine Buchungsart zugeordnet werden.");
+              "Allen Buchungen muss zunächst eine Buchungsart zugeordnet werden.");
         }
-        b.setSplitTyp(SplitbuchungTyp.HAUPT);
-        SplitbuchungsContainer.init(b);
       }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException(e.getMessage());
-      }
+      bl[0].setSplitTyp(SplitbuchungTyp.HAUPT);
+      SplitbuchungsContainer.init(bl);
     }
-    else
+    catch (RemoteException e)
     {
-      throw new ApplicationException(
-          "Programmfehler! Splitbuchung muss mit einer existierenden Buchung aufgerufen werden");
+      throw new ApplicationException(e.getMessage());
     }
-    GUI.startView(SplitBuchungView.class.getName(), b);
+    GUI.startView(SplitBuchungView.class.getName(), bl[0]);
   }
 }
