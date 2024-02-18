@@ -25,6 +25,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.parts.InfoPanel;
 
 public class SplitBuchungView extends AbstractView
 {
@@ -35,15 +36,19 @@ public class SplitBuchungView extends AbstractView
     GUI.getView().setTitle("Splitbuchungen");
 
     final BuchungsControl control = new BuchungsControl(this);
-
+    InfoPanel   info = new InfoPanel();
+    info.setText(SplitbuchungsContainer.getText());
+    info.setTitle("Info");
+    info.setIcon("gtk-info.png");
+    info.paint(getParent());
     control.getSplitBuchungsList().paint(getParent());
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPLITBUCHUNG, false, "question-circle.png");
     buttons.addButton("Neu", new SplitbuchungNeuAction(),
         control.getCurrentObject(), false, "document-new.png");
-    buttons.addButton("Auflösen", new SplitbuchungAufloesenAction(),
-        control.getCurrentObject(), false, "document-new.png");
+    buttons.addButton("Auflösen", new SplitbuchungAufloesenAction(control),
+        control.getCurrentObject(), false, "unlocked.png");
     buttons.addButton(control.getSammelueberweisungButton());
 
     buttons.addButton("Speichern", new Action()
@@ -56,12 +61,14 @@ public class SplitBuchungView extends AbstractView
           if (SplitbuchungsContainer.get().size() != 0)
           {
             SplitbuchungsContainer.store();
-            GUI.getStatusBar().setSuccessText("Splitbuchungen gespeichert");
+            GUI.getStatusBar().setSuccessText(String.format
+              ("%s Splitbuchungen gespeichert", SplitbuchungsContainer.getAnzahl()));
           }
           else
           {
             GUI.getStatusBar().setErrorText("Hauptbuchung fehlt");
           }
+          control.refreshSplitbuchungen();
         }
         catch (Exception e)
         {

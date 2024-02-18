@@ -17,54 +17,75 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
-import de.jost_net.JVerein.gui.view.SplitBuchungView;
+import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
-import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SplitBuchungAction implements Action
+public class SplitbuchungBulkAufloesenAction implements Action
 {
-
+  private ArrayList<Long> geloescht = new ArrayList<>();
+  private Long splitid;
+  
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
     if (context == null
         || (!(context instanceof Buchung) && !(context instanceof Buchung[])))
     {
-      throw new ApplicationException("Keine Buchung(en) ausgewählt");
+      throw new ApplicationException("Keine Buchung ausgewählt");
     }
-    Buchung[] bl = null;
     try
     {
+      Buchung[] b = null;
       if (context instanceof Buchung)
       {
-        bl = new Buchung[1];
-        bl[0] = (Buchung) context;
+        b = new Buchung[1];
+        b[0] = (Buchung) context;
       }
-      if (context instanceof Buchung[])
+      else if (context instanceof Buchung[])
       {
-        bl = (Buchung[]) context;
+        b = (Buchung[]) context;
       }
-      if (bl == null)
-      {
-        return;
-      }
-      if (bl.length == 0)
+      if (b == null)
       {
         return;
       }
-      if (bl[0].isNewObject())
+      if (b.length == 0)
       {
         return;
       }
-
-      for (Buchung bu : bl)
+      if (b[0].isNewObject())
+      {
+        return;
+      }
+      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+      d.setTitle("Splitbuchung" + (b.length > 1 ? "en" : "") + " auflösen");
+      d.setText("Wollen Sie diese Splituchung" + (b.length > 1 ? "en" : "")
+          + " wirklich auflösen?");
+      try
+      {
+        Boolean choice = (Boolean) d.open();
+        if (!choice.booleanValue())
+        {
+          return;
+        }
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Auflösen der Splituchung", e);
+        return;
+      }
+      for (Buchung bu : b)
       {
         Jahresabschluss ja = bu.getJahresabschluss();
         if (ja != null)
@@ -73,19 +94,34 @@ public class SplitBuchungAction implements Action
               "Buchung wurde bereits am %s von %s abgeschlossen.",
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
         }
-        if (bu.getBuchungsart() == null)
+        splitid = bu.getSplitId();
+        if (!geloescht.contains(splitid))
         {
-          throw new ApplicationException(
-              "Allen Buchungen muss zunächst eine Buchungsart zugeordnet werden.");
+          SplitbuchungsContainer.init(bu);
+          SplitbuchungsContainer.aufloesen();
+          geloescht.add(splitid);
         }
       }
-      bl[0].setSplitTyp(SplitbuchungTyp.HAUPT);
-      SplitbuchungsContainer.init(bl);
+      int count = geloescht.size();
+      if (count > 0)
+      {
+        GUI.getStatusBar().setSuccessText(String.format(
+            "%d Splituchung" + (count != 1 ? "en" : "") + " aufgelöst.", count));
+      }
+      else
+      {
+        GUI.getStatusBar().setErrorText("Keine Splituchung aufgelöst");
+      }
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException(e.getMessage());
+      String fehler = "Fehler beim Auflösen einer Splituchung.";
+      GUI.getStatusBar().setErrorText(fehler);
+      Logger.error(fehler, e);
     }
-    GUI.startView(SplitBuchungView.class.getName(), bl[0]);
+    finally
+    {
+      Application.getMessagingFactory().sendMessage(new BuchungMessage(null));
+    }
   }
 }

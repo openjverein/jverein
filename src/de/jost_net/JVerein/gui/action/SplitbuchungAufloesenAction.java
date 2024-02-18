@@ -16,13 +16,22 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.logging.Logger;
 
 public class SplitbuchungAufloesenAction implements Action
 {
+  private BuchungsControl control;
+  
+  public SplitbuchungAufloesenAction(BuchungsControl control)
+  {
+    this.control = control;
+  }
+  
   @Override
   public void handleAction(Object context)
   {
@@ -37,11 +46,13 @@ public class SplitbuchungAufloesenAction implements Action
         return;
       }
       SplitbuchungsContainer.aufloesen();
+      control.refreshSplitbuchungen();
     }
     catch (Exception e)
     {
-      Logger.error("Fehler beim auflösen einer Splitbuchung", e);
-      return;
+      String fehler = "Fehler beim Auflösen der Splituchung.";
+      GUI.getStatusBar().setErrorText(fehler);
+      Logger.error(fehler, e);
     }
   }
 }

@@ -28,6 +28,7 @@ import de.jost_net.JVerein.gui.action.BuchungMitgliedskontoZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
+import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -58,8 +59,10 @@ public class BuchungMenu extends ContextMenu
         "edit-copy.png"));
     addItem(new SingleGegenBuchungItem("Gegenbuchung", new BuchungGegenbuchungAction(),
         "edit-copy.png"));
-    addItem(new SingleBuchungItem("Splitbuchung", new SplitBuchungAction(),
+    addItem(new SplitBuchungItem("Splitbuchung", new SplitBuchungAction(),
         "edit-copy.png"));
+    addItem(new AufloesenItem("Auflösen", new SplitbuchungBulkAufloesenAction(),
+        "unlocked.png"));
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Mitgliedskonto zuordnen",
@@ -167,4 +170,76 @@ public class BuchungMenu extends ContextMenu
     }
   }
   
+  private static class AufloesenItem extends CheckedContextMenuItem
+  {
+    private AufloesenItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      try
+      {
+        if (o instanceof Buchung)
+        {
+          return ((Buchung) o).getSplitId() != null;
+        }
+        if (o instanceof Buchung[])
+        {
+          for (Buchung bu : ((Buchung[]) o))
+          {
+            if (bu.getSplitId() == null)
+            {
+              return false;
+            }
+          }
+          return true;
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+      }
+      return false;
+    }
+  }
+
+  private static class SplitBuchungItem extends CheckedContextMenuItem
+  {
+    private SplitBuchungItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      try
+      {
+        if (o instanceof Buchung)
+        {
+          return ((Buchung) o).getSplitId() == null;
+        }
+        if (o instanceof Buchung[])
+        {
+          Double betrag = ((Buchung[]) o)[0].getBetrag();
+          for (Buchung bu : ((Buchung[]) o))
+          {
+            if ((bu.getSplitId() != null) || (bu.getBetrag() != betrag))
+            {
+              return false;
+            }
+          }
+          return true;
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+      }
+      return false;
+    }
+  }
 }
