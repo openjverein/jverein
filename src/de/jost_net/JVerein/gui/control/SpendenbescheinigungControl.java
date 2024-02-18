@@ -65,6 +65,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -345,12 +346,20 @@ public class SpendenbescheinigungControl extends AbstractControl
 
   public Part getBuchungsList() throws RemoteException
   {
-    query = new SpendenbescheinigungBuchungQuery(getSpendenbescheinigung());
+    Spendenbescheinigung spb = getSpendenbescheinigung();
+    query = new SpendenbescheinigungBuchungQuery(spb);
     if (buchungsList == null)
     {
       // buchungsList = new BuchungListTablePart(query.get(), new
       // BuchungAction());
-      buchungsList = new BuchungListTablePart(query.get(), null);
+      if (spb.isNewObject())
+      {
+        buchungsList = new BuchungListTablePart(spb.getBuchungen(), null);
+      }
+      else
+      {
+        buchungsList = new BuchungListTablePart(query.get(), null);
+      }
       buchungsList.addColumn("Nr", "id-int");
       buchungsList.addColumn("Konto", "konto", new Formatter()
       {
@@ -406,15 +415,24 @@ public class SpendenbescheinigungControl extends AbstractControl
       buchungsList.setRememberColWidths(true);
       buchungsList.setRememberOrder(true);
       buchungsList.setRememberState(true);
-      buchungsList.setSummary(true);
+      buchungsList.addFeature(new FeatureSummary());
     }
     else
     {
       buchungsList.removeAll();
-
-      for (Buchung bu : query.get())
+      if (spb.isNewObject())
       {
-        buchungsList.addItem(bu);
+        for (Buchung bu : spb.getBuchungen())
+        {
+          buchungsList.addItem(bu);
+        }
+      }
+      else
+      {
+        for (Buchung bu : query.get())
+        {
+          buchungsList.addItem(bu);
+        }
       }
       buchungsList.sort();
     }
@@ -657,7 +675,7 @@ public class SpendenbescheinigungControl extends AbstractControl
     spbList.setRememberColWidths(true);
     spbList.setContextMenu(new SpendenbescheinigungMenu());
     spbList.setRememberOrder(true);
-    spbList.setSummary(false);
+    spbList.removeFeature(FeatureSummary.class);
     spbList.setMulti(true);
     return spbList;
   }
