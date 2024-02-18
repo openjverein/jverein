@@ -64,8 +64,10 @@ public class SpendenbescheinigungAction implements Action
         {
           MitgliedskontoNode mkn = (MitgliedskontoNode) context;
           spb.setSpendenart(Spendenart.GELDSPENDE);
+          spb.setAutocreate(Boolean.TRUE);
           spb.setErsatzAufwendungen(false);
           spb.setBescheinigungsdatum(new Date());
+          
           if (mkn.getMitglied() != null)
           {
             // Mitglied aus Mitgliedskonto lesen
