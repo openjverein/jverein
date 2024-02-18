@@ -17,11 +17,10 @@
 package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 
 import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
+import de.jost_net.JVerein.gui.action.SplitBuchungDeleteAction;
 /*import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungMitgliedskontoZuordnungAction;
@@ -58,7 +57,7 @@ public class SplitBuchungMenu extends ContextMenu
     addItem(new CheckedSplitBuchungItem("Kontoauszug zuordnen",
         new BuchungKontoauszugZuordnungAction(control), "view-refresh.png"));*/
     addItem(new DeleteSplitBuchungItem("Löschen...", 
-        new DeleteSplitBuchungAction(control), "user-trash-full.png"));
+        new SplitBuchungDeleteAction(control), "user-trash-full.png"));
     addItem(new RestoreSplitBuchungItem());
   }
 
@@ -114,64 +113,6 @@ public class SplitBuchungMenu extends ContextMenu
     }
   }
 
-  private static class DeleteSplitBuchungAction implements Action
-  {
-    private BuchungsControl control;
-    
-    public DeleteSplitBuchungAction(BuchungsControl control)
-    {
-      this.control = control;
-    }
-
-    @Override
-    public void handleAction(Object context) throws ApplicationException
-    {
-      if (context == null || !(context instanceof Buchung))
-      {
-        throw new ApplicationException("Keine Buchung ausgewählt");
-      }
-      try
-      {
-        Buchung bu = (Buchung) context;
-        if (((Buchung) context).isNewObject())
-        {
-          if (bu.getDependencyId() == -1)
-          {
-            SplitbuchungsContainer.get().remove(bu);
-          }
-          else
-          {
-            ArrayList<Buchung> container = SplitbuchungsContainer.get();
-            Buchung[] splitbuchungen = new Buchung[container.size()];
-            splitbuchungen = container.toArray(splitbuchungen);
-            int size = splitbuchungen.length;
-            int dependencyId = bu.getDependencyId();
-            for (int i = 0; i < size; i++)
-            {
-              if (splitbuchungen[i].getDependencyId() == dependencyId)
-              {
-                container.remove(splitbuchungen[i]);
-              }
-            }
-          }
-        }
-        else
-        {
-          BuchungDeleteAction action = new BuchungDeleteAction(true);
-          action.handleAction(context);
-        }
-        control.refreshSplitbuchungen();
-      }
-      catch (RemoteException e)
-      {
-        String fehler = "Fehler beim Löschen der Buchung.";
-        GUI.getStatusBar().setErrorText(fehler);
-        Logger.error(fehler, e);
-      }
-    }
-  } 
-
-  
   private static class RestoreSplitBuchungItem extends CheckedContextMenuItem
   {
     private RestoreSplitBuchungItem()
