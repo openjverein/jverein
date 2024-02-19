@@ -40,10 +40,18 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
     info.setTitle("Info");
     info.setIcon("gtk-info.png");
     double betrag = Einstellungen.getEinstellung().getSpendenbescheinigungminbetrag();
-    info.setText(String.format("Es wurden nur Mitglieder berücksichtigt, bei denen eine Strasse, "
-        + "PLZ und Ort eingetragen ist. Auch wurden nur Spendenbescheinigungen "
+    if (betrag == 0)
+    {
+      info.setText("Es wurden nur Mitglieder berücksichtigt, bei denen Strasse, "
+          + "PLZ und Ort eingetragen sind.");
+    }
+    else
+    {
+    info.setText(String.format("Es wurden nur Mitglieder berücksichtigt, bei denen Strasse, "
+        + "PLZ und Ort eingetragen sind."+'\n'+"Auch wurden nur Spendenbescheinigungen "
         + "generiert deren Betrag größer oder gleich %s Euro ist.", betrag));
     info.setComment("Siehe Administration->Einstellungen->Spendenbescheinigungen->Mindestbetrag");
+    }
     info.paint(getParent());
     LabelGroup group = new LabelGroup(getParent(), "Jahr");
     group.addLabelPair("Jahr", control.getJahr());
