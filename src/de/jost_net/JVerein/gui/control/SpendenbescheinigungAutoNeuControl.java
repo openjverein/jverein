@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -38,11 +39,14 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.formatter.TreeFormatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TreePart;
+import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 
 public class SpendenbescheinigungAutoNeuControl extends AbstractControl
 {
@@ -110,7 +114,7 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
         .createList(Formular.class);
     it.addFilter("art = ?",
         new Object[] { FormularArt.SPENDENBESCHEINIGUNG.getKey() });
-    formularEinzel = new SelectInput(it, null);
+    formularEinzel = new SelectInput(PseudoIterator.asList(it), null);
     return formularEinzel;
   }
 
@@ -124,7 +128,7 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
         .createList(Formular.class);
     it.addFilter("art = ?",
         new Object[] { FormularArt.SAMMELSPENDENBESCHEINIGUNG.getKey() });
-    formularSammel = new SelectInput(it, null);
+    formularSammel = new SelectInput(PseudoIterator.asList(it), null);
     return formularSammel;
   }
 
@@ -217,6 +221,27 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
   {
     spbTree = new TreePart(
         new SpendenbescheinigungNode((Integer) getJahr().getValue()), null);
+    spbTree.setFormatter(new TreeFormatter()
+    {
+      @Override
+      public void format(TreeItem item)
+      {
+        SpendenbescheinigungNode spbn = (SpendenbescheinigungNode) item.getData();
+        try
+        {
+         if (spbn.getNodeType()  == SpendenbescheinigungNode.ROOT)
+           item.setImage(SWTUtil.getImage("file-invoice.png"));
+         if (spbn.getNodeType()  == SpendenbescheinigungNode.MITGLIED)
+           item.setImage(SWTUtil.getImage("user.png"));
+         if (spbn.getNodeType()  == SpendenbescheinigungNode.BUCHUNG)
+           item.setImage(SWTUtil.getImage("euro-sign.png"));
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler beim TreeFormatter", e);
+        }
+      }
+    });
     return spbTree;
   }
 
