@@ -98,9 +98,9 @@ public class SpendenbescheinigungNode implements GenericObjectNode
         + "  AND buchung.spendenbescheinigung IS NULL "
         + "  AND buchung.mitgliedskonto IS NOT NULL "
         // rdc: Nur Mitglieder mit bekannter Adresse
-        + "  AND (mitglied.strasse IS NOT NULL OR LENGTH(mitglied.strasse) > 0) "
-        + "  AND (mitglied.plz IS NOT NULL OR LENGTH(mitglied.plz) > 0) "
-        + "  AND (mitglied.ort IS NOT NULL OR LENGTH(mitglied.ort) > 0) "
+        + "  AND (mitglied.strasse IS NOT NULL AND LENGTH(mitglied.strasse) > 0) "
+        + "  AND (mitglied.plz IS NOT NULL AND LENGTH(mitglied.plz) > 0) "
+        + "  AND (mitglied.ort IS NOT NULL AND LENGTH(mitglied.ort) > 0) "
         + "GROUP BY mitglied.name, mitglied.vorname, mitglied.id "
         // rdc: Nur Spendenbescheinigungen, deren Betrag >= Mindestbetrag
         + "HAVING sum(buchung.betrag) >= ? "
@@ -113,18 +113,6 @@ public class SpendenbescheinigungNode implements GenericObjectNode
     {
       Mitglied m = (Mitglied) Einstellungen.getDBService()
           .createObject(Mitglied.class, id);
-      // rdc: hier nochmal prüfen, ob auch wirklich eine gültige Adresse
-      // vorliegt.
-      // rdc: Es kommen manchmal Datensätze ohne Straße/Ort ...
-      if ((m.getStrasse() == null)
-          || (m.getStrasse() != null && m.getStrasse().length() == 0))
-        continue;
-      if ((m.getPlz() == null)
-          || (m.getPlz() != null && m.getPlz().length() == 0))
-        continue;
-      if ((m.getOrt() == null)
-          || (m.getOrt() != null && m.getOrt().length() == 0))
-        continue;
       childrens.add(new SpendenbescheinigungNode(m, jahr));
     }
   }
