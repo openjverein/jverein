@@ -40,7 +40,7 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
     info.setTitle("Info");
     info.setIcon("gtk-info.png");
     double betrag = Einstellungen.getEinstellung().getSpendenbescheinigungminbetrag();
-    info.setText(String.format("\"Es wurden nur Mitglieder berücksichtigt, bei denen eine Strasse, "
+    info.setText(String.format("Es wurden nur Mitglieder berücksichtigt, bei denen eine Strasse, "
         + "PLZ und Ort eingetragen ist. Auch wurden nur Spendenbescheinigungen "
         + "generiert deren Betrag größer oder gleich %s Euro ist.", betrag));
     info.setComment("Siehe Administration->Einstellungen->Spendenbescheinigungen->Mindestbetrag");
