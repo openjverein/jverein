@@ -22,6 +22,7 @@ import java.util.List;
 
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Settings;
 
 public abstract class Spaltenauswahl
@@ -89,7 +90,7 @@ public abstract class Spaltenauswahl
     spaltendefinitionList.addColumn("Spalte", "spaltenbezeichnung");
     spaltendefinitionList.setCheckable(true);
     spaltendefinitionList.setMulti(true);
-    spaltendefinitionList.setSummary(false);
+    spaltendefinitionList.removeFeature(FeatureSummary.class);
     for (Spalte sp : spalten)
     {
       spaltendefinitionList.addItem(sp, sp.isChecked());

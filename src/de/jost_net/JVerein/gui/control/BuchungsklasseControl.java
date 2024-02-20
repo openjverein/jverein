@@ -32,6 +32,7 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -131,7 +132,7 @@ public class BuchungsklasseControl extends AbstractControl
     buchungsklassenList.setContextMenu(new BuchungsklasseMenu());
     buchungsklassenList.setRememberColWidths(true);
     buchungsklassenList.setRememberOrder(true);
-    buchungsklassenList.setSummary(true);
+    buchungsklassenList.addFeature(new FeatureSummary());
     return buchungsklassenList;
   }
 }

@@ -58,6 +58,7 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
@@ -247,7 +248,7 @@ public class BuchungsartControl extends AbstractControl
     Boolean hasSteuersatz = ((getSteuersatz().getValue() != null) && (getSteuersatz().getValue().toString().length() > 0)) ? true : false;
     
     DBIterator<Buchungsart> it = (!isSpende && hasSteuersatz) ? getFilteredBuchungsart() : null;
-    steuer_buchungsart = new SelectInput(it, null);
+    steuer_buchungsart = new SelectInput(PseudoIterator.asList(it), null);
     if (it != null)
     {
       List<Buchungsart> buchungsartenListe = it != null ? PseudoIterator.asList(it) : null;
@@ -377,7 +378,7 @@ public class BuchungsartControl extends AbstractControl
       GenericObject o = (GenericObject) getBuchungsklasse().getValue();
       if (o != null)
       {
-        b.setBuchungsklasse(new Integer(o.getID()));
+        b.setBuchungsklasse(Integer.valueOf(o.getID()));
       }
       else
       {
@@ -507,7 +508,7 @@ public class BuchungsartControl extends AbstractControl
       buchungsartList.setRememberColWidths(true);
       buchungsartList.setRememberOrder(true);
       buchungsartList.setRememberState(true);
-      buchungsartList.setSummary(true);
+      buchungsartList.addFeature(new FeatureSummary());
     }
     else
     {

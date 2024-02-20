@@ -40,7 +40,7 @@ public class SuchbetragTest
   public void test02() throws Exception
   {
     Suchbetrag sb = new Suchbetrag("1,23");
-    Assert.assertEquals(new BigDecimal("1.23"), sb.getBetrag());
+    Assert.assertEquals(BigDecimal.valueOf(1.23), sb.getBetrag());
     Assert.assertEquals(Suchstrategie.GLEICH, sb.getSuchstrategie());
   }
 
@@ -48,7 +48,7 @@ public class SuchbetragTest
   public void test02m() throws Exception
   {
     Suchbetrag sb = new Suchbetrag("-1,23");
-    Assert.assertEquals(new BigDecimal("-1.23"), sb.getBetrag());
+    Assert.assertEquals(BigDecimal.valueOf(-1.23), sb.getBetrag());
     Assert.assertEquals(Suchstrategie.GLEICH, sb.getSuchstrategie());
   }
 
@@ -56,7 +56,7 @@ public class SuchbetragTest
   public void test03() throws Exception
   {
     Suchbetrag sb = new Suchbetrag("=1,23");
-    Assert.assertEquals(new BigDecimal("1.23"), sb.getBetrag());
+    Assert.assertEquals(BigDecimal.valueOf(1.23), sb.getBetrag());
     Assert.assertEquals(Suchstrategie.GLEICH, sb.getSuchstrategie());
   }
 
@@ -64,7 +64,7 @@ public class SuchbetragTest
   public void test04() throws Exception
   {
     Suchbetrag sb = new Suchbetrag(">1,23");
-    Assert.assertEquals(new BigDecimal("1.23"), sb.getBetrag());
+    Assert.assertEquals(BigDecimal.valueOf(1.23), sb.getBetrag());
     Assert.assertEquals(Suchstrategie.GRÖSSER, sb.getSuchstrategie());
   }
 
@@ -72,7 +72,7 @@ public class SuchbetragTest
   public void test05() throws Exception
   {
     Suchbetrag sb = new Suchbetrag(">=1,23");
-    Assert.assertEquals(new BigDecimal("1.23"), sb.getBetrag());
+    Assert.assertEquals(BigDecimal.valueOf(1.23), sb.getBetrag());
     Assert.assertEquals(Suchstrategie.GRÖSSERGLEICH, sb.getSuchstrategie());
   }
 
@@ -80,7 +80,7 @@ public class SuchbetragTest
   public void test06() throws Exception
   {
     Suchbetrag sb = new Suchbetrag("<1,23");
-    Assert.assertEquals(new BigDecimal("1.23"), sb.getBetrag());
+    Assert.assertEquals(BigDecimal.valueOf(1.23), sb.getBetrag());
     Assert.assertEquals(Suchstrategie.KLEINER, sb.getSuchstrategie());
   }
 
@@ -88,7 +88,7 @@ public class SuchbetragTest
   public void test07() throws Exception
   {
     Suchbetrag sb = new Suchbetrag("<=1,23");
-    Assert.assertEquals(new BigDecimal("1.23"), sb.getBetrag());
+    Assert.assertEquals(BigDecimal.valueOf(1.23), sb.getBetrag());
     Assert.assertEquals(Suchstrategie.KLEINERGLEICH, sb.getSuchstrategie());
   }
 
@@ -96,8 +96,8 @@ public class SuchbetragTest
   public void test08() throws Exception
   {
     Suchbetrag sb = new Suchbetrag("1,23..2,34");
-    Assert.assertEquals(new BigDecimal("1.23"), sb.getBetrag());
-    Assert.assertEquals(new BigDecimal("2.34"), sb.getBetrag2());
+    Assert.assertEquals(BigDecimal.valueOf(1.23), sb.getBetrag());
+    Assert.assertEquals(BigDecimal.valueOf(2.34), sb.getBetrag2());
     Assert.assertEquals(Suchstrategie.BEREICH, sb.getSuchstrategie());
   }
 

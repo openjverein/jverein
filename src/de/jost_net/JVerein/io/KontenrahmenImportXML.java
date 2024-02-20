@@ -81,7 +81,7 @@ public class KontenrahmenImportXML implements Importer
             .createObject(Buchungsart.class, null);
         buchungsart.setArt(buaelement.getAttribute("art", 0));
         buchungsart.setBezeichnung(buaelement.getAttribute("bezeichnung", ""));
-        buchungsart.setBuchungsklasse(new Integer(bukl.getID()));
+        buchungsart.setBuchungsklasse(Integer.valueOf(bukl.getID()));
         buchungsart.setNummer(buaelement.getAttribute("nummer", 0));
         String spende = buaelement.getAttribute("spende", "false");
         if (spende.equalsIgnoreCase("true"))

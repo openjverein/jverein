@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Projekt;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -160,7 +161,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     }
 
     pj.setOrder("ORDER BY bezeichnung");
-    this.projekte = new SelectInput(pj, null);
+    this.projekte = new SelectInput(PseudoIterator.asList(pj), null);
     this.projekte.setValue(null);
     this.projekte.setPleaseChoose("Bitte Projekt auswählen");
     this.projekte.addListener(new Listener()

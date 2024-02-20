@@ -426,7 +426,7 @@ public class MitgliedQuery
     }
     if (bg != null)
     {
-      bedingungen.add(new Integer(bg.getID()));
+      bedingungen.add(Integer.valueOf(bg.getID()));
     }
     return (ArrayList<Mitglied>) service.execute(sql, bedingungen.toArray(),
         rs);

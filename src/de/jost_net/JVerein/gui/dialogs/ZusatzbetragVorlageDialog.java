@@ -32,7 +32,7 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 
 /**
  * Ein Dialog, zur Auswahl und Bearbeitung von Zusatzbetrag-Vorlagen
@@ -118,7 +118,7 @@ public class ZusatzbetragVorlageDialog
     tab.setContextMenu(new ZusatzbetragVorlageMenu());
     tab.setRememberColWidths(true);
     tab.setRememberOrder(true);
-    tab.setSummary(true);
+    tab.addFeature(new FeatureSummary());
 
     return this.tab;
   }

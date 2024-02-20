@@ -63,7 +63,7 @@ public class ZusatzbetraegeAction implements Action
 
         if (m != null)
         {
-          z.setMitglied(new Integer(m.getID()).intValue());
+          z.setMitglied(Integer.valueOf(m.getID()).intValue());
         }
       }
       catch (RemoteException e)

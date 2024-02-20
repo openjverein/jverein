@@ -74,7 +74,7 @@ public class QIFImportHeadImpl extends AbstractDBObject implements
   @Override
   public void setStartSaldo(double betrag) throws RemoteException
   {
-    setAttribute(COL_START_SALDO, new Double(betrag));
+    setAttribute(COL_START_SALDO, Double.valueOf(betrag));
   }
 
   @Override
@@ -102,7 +102,7 @@ public class QIFImportHeadImpl extends AbstractDBObject implements
   public void setKonto(Konto konto) throws RemoteException
   {
     if (null != konto)
-      setAttribute(COL_KONTO, new Integer(konto.getID()));
+      setAttribute(COL_KONTO, Integer.valueOf(konto.getID()));
     else
       setAttribute(COL_KONTO, null);
   }

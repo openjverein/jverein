@@ -3289,7 +3289,7 @@ public class MitgliedControl extends AbstractControl
             case Datentyp.WAEHRUNG:
               if (ti.getValue() != null)
               {
-                zf.setFeldWaehrung(new BigDecimal((Double) ti.getValue()));
+                zf.setFeldWaehrung(BigDecimal.valueOf((Double) ti.getValue()));
               }
               else
               {

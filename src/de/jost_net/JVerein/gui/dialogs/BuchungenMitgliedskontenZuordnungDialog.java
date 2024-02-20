@@ -383,7 +383,7 @@ public class BuchungenMitgliedskontenZuordnungDialog extends AbstractDialog<Obje
 
   private BigDecimal convertDoubleToBigDecimal(Double doubleValue)
   {
-    BigDecimal value = new BigDecimal(doubleValue);
+    BigDecimal value = BigDecimal.valueOf(doubleValue);
     return value.setScale(2, RoundingMode.HALF_UP);
   }
 

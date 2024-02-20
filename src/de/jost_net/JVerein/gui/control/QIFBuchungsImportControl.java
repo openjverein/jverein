@@ -67,6 +67,7 @@ import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.gui.util.Font;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
@@ -289,7 +290,7 @@ public class QIFBuchungsImportControl extends AbstractControl
 
     qifImportPosList.setRememberColWidths(true);
     qifImportPosList.setRememberOrder(true);
-    qifImportPosList.setSummary(true);
+    qifImportPosList.addFeature(new FeatureSummary());
     qifImportPosList.setFormatter(new QIFImportPosListTableFormater());
     return qifImportPosList;
 
@@ -316,8 +317,8 @@ public class QIFBuchungsImportControl extends AbstractControl
       qifImportPosList.addItem(importPos);
     }
 
-    anzahlBuchungen.setValue(new Integer(anzahl));
-    endSaldo.setValue(new Double(saldo));
+    anzahlBuchungen.setValue(Integer.valueOf(anzahl));
+    endSaldo.setValue(Double.valueOf(saldo));
   }
 
   private GenericIterator getIterator() throws RemoteException

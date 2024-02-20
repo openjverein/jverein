@@ -825,9 +825,9 @@ public class MitgliedskontoControl extends AbstractControl
               {
                 diff = (DIFFERENZ) differenz.getValue();
               }
-              BigDecimal ist = new BigDecimal(mk.getIstSumme());
+              BigDecimal ist = BigDecimal.valueOf(mk.getIstSumme());
               ist = ist.setScale(2, RoundingMode.HALF_UP);
-              BigDecimal soll = new BigDecimal(mk.getBetrag());
+              BigDecimal soll = BigDecimal.valueOf(mk.getBetrag());
               soll = soll.setScale(2, RoundingMode.HALF_UP);
               if (DIFFERENZ.FEHLBETRAG == diff && ist.compareTo(soll) >= 0)
               {
