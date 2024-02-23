@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.input;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -101,7 +102,8 @@ public class MitgliedskontoauswahlInput
       {
         try
         {
-          getMitgliedskontoAuswahl().setText("");
+          if (event.detail != SWT.CANCEL)
+            getMitgliedskontoAuswahl().setText("");
           return;
         }
         catch (RemoteException er)

@@ -964,7 +964,18 @@ public class BuchungsControl extends AbstractControl
     {
       Object auswahl = mitgliedskonto.getValue();
       if (null == auswahl)
-        return null;
+      {
+        if (mitgliedskonto.getText().length() == 0 )
+        {
+          // Konto wird gelöscht da "Entfernen" ausgewählt
+          return null;
+        }
+        else
+        {
+          // Dialog wurde ohne Auswahl geschlossen aber nicht mit "Entfernen"
+          return b.getMitgliedskonto();
+        }
+      }
 
       if (auswahl instanceof Mitgliedskonto)
         return (Mitgliedskonto) auswahl;
