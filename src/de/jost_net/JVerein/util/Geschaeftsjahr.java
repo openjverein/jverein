@@ -61,6 +61,7 @@ public class Geschaeftsjahr
           .getBeginnGeschaeftsjahr() + cal.get(Calendar.YEAR));
     }
     cal.setTime(beginnGeschaeftsjahr);
+    beginnGeschaeftsjahrjahr = cal.get(Calendar.YEAR);
     cal.add(Calendar.YEAR, 1);
     cal.add(Calendar.DAY_OF_MONTH, -1);
     endeGeschaeftsjahr = cal.getTime();
