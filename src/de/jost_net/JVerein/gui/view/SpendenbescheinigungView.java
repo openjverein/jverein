@@ -90,7 +90,7 @@ public class SpendenbescheinigungView extends AbstractView
     }
     else
     {
-      control.getSpendenart().setEnabled(true);
+      control.getSpendenart().setEnabled(false);
       control.getBetrag().setEnabled(true);
     }
     LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),
