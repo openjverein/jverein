@@ -60,7 +60,7 @@ public class LehrgangAction implements Action
                 "Neues Mitglied bitte erst speichern. Dann können Lehrgänge aufgenommen werden.");
           }
 
-          l.setMitglied(new Integer(m.getID()).intValue());
+          l.setMitglied(Integer.valueOf(m.getID()).intValue());
         }
       }
       catch (RemoteException e)

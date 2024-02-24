@@ -87,7 +87,7 @@ public class Buchungsuebernahme
   private void leseHibiscus(Konto kto) throws Exception
   {
     Integer hibid = kto.getHibiscusId();
-    Integer jvid = new Integer(kto.getID());
+    Integer jvid = Integer.valueOf(kto.getID());
     DBService service = Einstellungen.getDBService();
     String sql = "select max(umsatzid) from buchung where konto = "
         + jvid.toString();
@@ -145,7 +145,7 @@ public class Buchungsuebernahme
       {
         b = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
             null);
-        b.setUmsatzid(new Integer(u.getID()));
+        b.setUmsatzid(Integer.valueOf(u.getID()));
         b.setKonto(kto);
         b.setName(u.getGegenkontoName());
         b.setIban(u.getGegenkontoNummer());

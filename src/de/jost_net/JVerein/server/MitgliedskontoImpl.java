@@ -126,7 +126,7 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   public void setAbrechnungslauf(Abrechnungslauf abrechnungslauf)
       throws RemoteException
   {
-    setAttribute("abrechnungslauf", new Integer(abrechnungslauf.getID()));
+    setAttribute("abrechnungslauf", Integer.valueOf(abrechnungslauf.getID()));
   }
 
   @Override
@@ -138,7 +138,7 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   @Override
   public void setBuchungsart(Buchungsart buchungsart) throws RemoteException
   {
-    setAttribute("buchungsart", new Long(buchungsart.getID()));
+    setAttribute("buchungsart", Long.valueOf(buchungsart.getID()));
   }
 
   @Override
@@ -150,7 +150,7 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   @Override
   public void setMitglied(Mitglied mitglied) throws RemoteException
   {
-    setAttribute("mitglied", new Integer(mitglied.getID()));
+    setAttribute("mitglied", Integer.valueOf(mitglied.getID()));
   }
 
   @Override
@@ -277,12 +277,12 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
       {
         if (!rs.next())
         {
-          return new Double(0.0d);
+          return Double.valueOf(0.0d);
         }
         return Double.valueOf(rs.getDouble(1));
       }
     };
-    ist = new Double((Double) service.execute(sql, new Object[] {}, rs));
+    ist = Double.valueOf((Double) service.execute(sql, new Object[] {}, rs));
     return ist;
   }
 

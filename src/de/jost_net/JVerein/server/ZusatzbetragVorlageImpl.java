@@ -133,7 +133,7 @@ public class ZusatzbetragVorlageImpl extends AbstractDBObject implements
   @Override
   public void setBetrag(double d) throws RemoteException
   {
-    setAttribute("betrag", new Double(d));
+    setAttribute("betrag", Double.valueOf(d));
   }
 
   @Override

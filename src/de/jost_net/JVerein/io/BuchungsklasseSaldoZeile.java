@@ -86,9 +86,9 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     this.buchungsart = buchungsart;
     this.text = null;
     this.text_buchungsart = null;
-    this.umbuchungen = new Double(umbuchungen);
-    this.einnahmen = new Double(einnahmen);
-    this.ausgaben = new Double(ausgaben);
+    this.umbuchungen = Double.valueOf(umbuchungen);
+    this.einnahmen = Double.valueOf(einnahmen);
+    this.ausgaben = Double.valueOf(ausgaben);
   }
 
   public BuchungsklasseSaldoZeile(int status, String text, Double einnahmen,
@@ -99,9 +99,9 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     this.buchungsart = null;
     this.text = text;
     this.text_buchungsart = null;
-    this.umbuchungen = new Double(umbuchungen);
-    this.einnahmen = new Double(einnahmen);
-    this.ausgaben = new Double(ausgaben);
+    this.umbuchungen = Double.valueOf(umbuchungen);
+    this.einnahmen = Double.valueOf(einnahmen);
+    this.ausgaben = Double.valueOf(ausgaben);
   }
 
   public BuchungsklasseSaldoZeile(int status, String text, Double gewinnverlust)
@@ -112,7 +112,7 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     this.text = text;
     this.text_buchungsart = null;
     this.umbuchungen = null;
-    this.einnahmen = new Double(gewinnverlust);
+    this.einnahmen = Double.valueOf(gewinnverlust);
     this.ausgaben = null;
   }
 

@@ -39,6 +39,7 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
 
 public class ProjektSaldoList extends TablePart implements Part
@@ -66,10 +67,7 @@ public class ProjektSaldoList extends TablePart implements Part
 
       if (saldoList == null)
       {
-        GenericIterator gi = PseudoIterator
-            .fromArray(zeile.toArray(new GenericObject[zeile.size()]));
-
-        saldoList = new TablePart(gi, null)
+        saldoList = new TablePart(zeile, null)
         {
           @Override
           protected void orderBy(int index)
@@ -89,7 +87,7 @@ public class ProjektSaldoList extends TablePart implements Part
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
         saldoList.setRememberColWidths(true);
-        saldoList.setSummary(false);
+        saldoList.removeFeature(FeatureSummary.class);
       }
       else
       {
@@ -115,12 +113,12 @@ public class ProjektSaldoList extends TablePart implements Part
     Double einnahmen;
     Double ausgaben;
     Double umbuchungen;
-    Double suBukEinnahmen = new Double(0);
-    Double suBukAusgaben = new Double(0);
-    Double suBukUmbuchungen = new Double(0);
-    Double suEinnahmen = new Double(0);
-    Double suAusgaben = new Double(0);
-    Double suUmbuchungen = new Double(0);
+    Double suBukEinnahmen = Double.valueOf(0);
+    Double suBukAusgaben = Double.valueOf(0);
+    Double suBukUmbuchungen = Double.valueOf(0);
+    Double suEinnahmen = Double.valueOf(0);
+    Double suAusgaben = Double.valueOf(0);
+    Double suUmbuchungen = Double.valueOf(0);
 
     ResultSetExtractor rsd = new ResultSetExtractor()
     {
@@ -129,9 +127,9 @@ public class ProjektSaldoList extends TablePart implements Part
       {
         if (!rs.next())
         {
-          return new Double(0);
+          return Double.valueOf(0);
         }
-        return new Double(rs.getDouble(1));
+        return Double.valueOf(rs.getDouble(1));
       }
     };
     ResultSetExtractor rsi = new ResultSetExtractor()
@@ -163,9 +161,9 @@ public class ProjektSaldoList extends TablePart implements Part
         DBIterator<Buchungsart> buchungsartenIt = service
             .createList(Buchungsart.class);
         buchungsartenIt.setOrder("ORDER BY nummer");
-        suBukEinnahmen = new Double(0);
-        suBukAusgaben = new Double(0);
-        suBukUmbuchungen = new Double(0);
+        suBukEinnahmen = Double.valueOf(0);
+        suBukAusgaben = Double.valueOf(0);
+        suBukUmbuchungen = Double.valueOf(0);
 
         while (buchungsartenIt.hasNext())
         {

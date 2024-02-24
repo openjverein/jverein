@@ -134,12 +134,12 @@ public class SplitbuchungsContainer
 
   public static BigDecimal getSumme(Integer typ) throws RemoteException
   {
-    BigDecimal summe = new BigDecimal(0).setScale(2);
+    BigDecimal summe = BigDecimal.valueOf(0).setScale(2);
     for (Buchung b : splitbuchungen)
     {
       if (b.getSplitTyp().equals(typ) && !b.isToDelete())
       {
-        summe = summe.add(new BigDecimal(b.getBetrag()).setScale(2,
+        summe = summe.add(BigDecimal.valueOf(b.getBetrag()).setScale(2,
             RoundingMode.HALF_UP));
       }
     }
@@ -176,7 +176,7 @@ public class SplitbuchungsContainer
       return;
     }
     BigDecimal gegen = getSumme(SplitbuchungTyp.GEGEN)
-        .multiply(new BigDecimal(-1));
+        .multiply(BigDecimal.valueOf(-1));
     if (!getSumme(SplitbuchungTyp.HAUPT).equals(gegen))
     {
       throw new RemoteException(
@@ -184,7 +184,7 @@ public class SplitbuchungsContainer
     }
     BigDecimal differenz = getSumme(SplitbuchungTyp.HAUPT)
         .subtract(getSumme(SplitbuchungTyp.SPLIT));
-    if (!differenz.equals(new BigDecimal(0).setScale(2)))
+    if (!differenz.equals(BigDecimal.valueOf(0).setScale(2)))
     {
       throw new RemoteException(
           "Differenz zwischen Hauptbuchung und Gegenbuchungen: " + differenz);

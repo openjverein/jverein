@@ -34,6 +34,7 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -160,7 +161,7 @@ public class ProjektControl extends AbstractControl
     projektList.setContextMenu(new ProjektMenu());
     projektList.setRememberColWidths(true);
     projektList.setRememberOrder(true);
-    projektList.setSummary(true);
+    projektList.addFeature(new FeatureSummary());
     return projektList;
   }
 
