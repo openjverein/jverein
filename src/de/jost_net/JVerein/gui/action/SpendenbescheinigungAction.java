@@ -57,6 +57,7 @@ public class SpendenbescheinigungAction implements Action
 
         if (context != null && (context instanceof Mitglied))
         {
+          spb.setSpendenart(Spendenart.SACHSPENDE);
           Mitglied m = (Mitglied) context;
           adressaufbereitung(m, spb);
         }
@@ -103,7 +104,7 @@ public class SpendenbescheinigungAction implements Action
             // it.addFilter("spendenbescheinigung = ?",
             // new Object[] { null });
             itMk.setOrder("ORDER BY datum asc");
-
+            int anzahl = 0;
             while (itMk.hasNext())
             {
               Mitgliedskonto mk = itMk.next();
@@ -113,7 +114,6 @@ public class SpendenbescheinigungAction implements Action
               it.addFilter("mitgliedskonto = ?", new Object[] { mk.getID() });
               it.addFilter("spendenbescheinigung is null");
               it.setOrder("ORDER BY datum asc");
-
               while (it.hasNext())
               {
                 Buchung bu = it.next();
@@ -130,11 +130,17 @@ public class SpendenbescheinigungAction implements Action
                       maxDatum = bu.getDatum();
                     }
                     spb.addBuchung(bu);
+                    anzahl++;
                   }
                 }
               }
             }
             spb.setSpendedatum(minDatum);
+            if (anzahl == 0)
+            {
+              spb.setSpendenart(Spendenart.SACHSPENDE);
+              spb.setAutocreate(Boolean.FALSE);
+            }
           }
         }
       }
