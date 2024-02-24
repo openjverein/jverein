@@ -143,7 +143,12 @@ public class BuchungsklasseSaldoView extends AbstractView
 
     LabelGroup quickGroup = new LabelGroup(getParent(), "Schnellzugriff");
     ButtonArea quickBtns = new ButtonArea();
-    for (Integer i = getYearBounds("min"); i < getYearBounds("max") + 1; i++)
+    Calendar calendar = Calendar.getInstance();
+    Integer bis = calendar.get(Calendar.YEAR);
+    calendar.add(Calendar.YEAR, -10);
+    Integer maxmin = calendar.get(Calendar.YEAR);
+    Integer von = java.lang.Math.max(getYearBounds("min"), maxmin);
+    for (Integer i = von; i <= bis ; i++)
     {
       quickBtns.addButton(i.toString(), new QuickAccessAction(control,
           genYearStartDate(i), genYearEndDate(i)), null, false);
