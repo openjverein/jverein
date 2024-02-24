@@ -148,6 +148,7 @@ public class BuchungsklasseSaldoView extends AbstractView
     calendar.add(Calendar.YEAR, -10);
     Integer maxmin = calendar.get(Calendar.YEAR);
     Integer von = java.lang.Math.max(getYearBounds("min"), maxmin);
+    von = java.lang.Math.min(von, bis);
     for (Integer i = von; i <= bis ; i++)
     {
       quickBtns.addButton(i.toString(), new QuickAccessAction(control,
