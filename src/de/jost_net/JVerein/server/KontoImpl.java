@@ -185,9 +185,8 @@ public class KontoImpl extends AbstractDBObject implements Konto
     konten.addFilter("(eroeffnung is null or eroeffnung <= ?)",
         new Object[] { gj.getEndeGeschaeftsjahr() });
     konten.addFilter(
-        "(aufloesung is null or year(aufloesung) = ? or " + "aufloesung >= ? )",
-        new Object[] { gj.getBeginnGeschaeftsjahrjahr(),
-            gj.getEndeGeschaeftsjahr() });
+        "(aufloesung is null or aufloesung >= ? )",
+        new Object[] { gj.getBeginnGeschaeftsjahr() });
     konten.setOrder("order by bezeichnung");
     return konten;
   }
