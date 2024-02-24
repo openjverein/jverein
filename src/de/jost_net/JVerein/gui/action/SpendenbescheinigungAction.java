@@ -143,6 +143,11 @@ public class SpendenbescheinigungAction implements Action
             }
           }
         }
+        else
+        {
+          spb.setSpendenart(Spendenart.SACHSPENDE);
+          spb.setAutocreate(Boolean.FALSE);
+        }
       }
       GUI.startView(SpendenbescheinigungView.class.getName(), spb);
     }
