@@ -47,6 +47,7 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
@@ -180,7 +181,7 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
           new ZahlungswegFormatter(), false, Column.ALIGN_LEFT);
       SollbuchungsList.setRememberColWidths(true);
       SollbuchungsList.setRememberOrder(true);
-      SollbuchungsList.setSummary(true);
+      SollbuchungsList.addFeature(new FeatureSummary());
     }
     else
     {

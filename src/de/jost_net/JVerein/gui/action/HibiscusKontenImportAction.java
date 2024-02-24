@@ -76,7 +76,7 @@ public class HibiscusKontenImportAction implements Action
               null);
       jvereinkonto.setNummer(k.getKontonummer());
       jvereinkonto.setBezeichnung(k.getBezeichnung());
-      jvereinkonto.setHibiscusId(new Integer(k.getID()));
+      jvereinkonto.setHibiscusId(Integer.valueOf(k.getID()));
       jvereinkonto.store();
       control.refreshTable();
       GUI.getStatusBar().setSuccessText(

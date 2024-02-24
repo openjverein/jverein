@@ -20,11 +20,11 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
+import de.jost_net.JVerein.gui.action.SplitBuchungDeleteAction;
+/*import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungMitgliedskontoZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;*/
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
@@ -48,15 +48,16 @@ public class SplitBuchungMenu extends ContextMenu
   {
     addItem(new CheckedSplitBuchungItem("Bearbeiten", new BuchungAction(true),
         "text-x-generic.png"));
-    addItem(new CheckedSplitBuchungItem("Buchungsart zuordnen",
+    /*addItem(new CheckedSplitBuchungItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedSplitBuchungItem("Mitgliedskonto zuordnen",
         new BuchungMitgliedskontoZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedSplitBuchungItem("Projekt zuordnen",
         new BuchungProjektZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedSplitBuchungItem("Kontoauszug zuordnen",
-        new BuchungKontoauszugZuordnungAction(control), "view-refresh.png"));
-    addItem(new DeleteSplitBuchungItem());
+        new BuchungKontoauszugZuordnungAction(control), "view-refresh.png"));*/
+    addItem(new DeleteSplitBuchungItem("Löschen...", 
+        new SplitBuchungDeleteAction(control), "user-trash-full.png"));
     addItem(new RestoreSplitBuchungItem());
   }
 
@@ -88,9 +89,9 @@ public class SplitBuchungMenu extends ContextMenu
 
   private static class DeleteSplitBuchungItem extends CheckedContextMenuItem
   {
-    private DeleteSplitBuchungItem()
+    private DeleteSplitBuchungItem(String text, Action action, String icon)
     {
-      super("Löschen...", new BuchungDeleteAction(true), "user-trash-full.png");
+      super(text, action, icon);
     }
 
     @Override

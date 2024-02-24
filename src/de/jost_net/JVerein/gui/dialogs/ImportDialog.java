@@ -32,7 +32,6 @@ import de.jost_net.JVerein.io.IOFormat;
 import de.jost_net.JVerein.io.IORegistry;
 import de.jost_net.JVerein.io.Importer;
 import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -318,8 +317,7 @@ public class ImportDialog extends AbstractDialog<Object>
     }
 
     Collections.sort(l);
-    Imp[] imp = l.toArray(new Imp[size]);
-    importerListe = new SelectInput(PseudoIterator.fromArray(imp), selected);
+    importerListe = new SelectInput(l, selected);
     return importerListe;
   }
 

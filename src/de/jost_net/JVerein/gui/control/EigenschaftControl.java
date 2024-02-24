@@ -35,6 +35,7 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -111,7 +112,7 @@ public class EigenschaftControl extends AbstractControl
       {
         if (o != null)
         {
-          ei.setEigenschaftGruppe(new Integer(o.getID()));
+          ei.setEigenschaftGruppe(Integer.valueOf(o.getID()));
         }
         else
         {
@@ -152,7 +153,7 @@ public class EigenschaftControl extends AbstractControl
       eigenschaftList.setRememberColWidths(true);
       eigenschaftList.setRememberOrder(true);
       eigenschaftList.setRememberState(true);
-      eigenschaftList.setSummary(true);
+      eigenschaftList.addFeature(new FeatureSummary());
     }
     else
     {

@@ -215,7 +215,7 @@ public class DefaultZusatzbetraegeImport implements Importer
             Mitglied m = (Mitglied) list.next();
             Zusatzbetrag zus = (Zusatzbetrag) Einstellungen.getDBService()
                 .createObject(Zusatzbetrag.class, null);
-            zus.setMitglied(new Integer(m.getID()));
+            zus.setMitglied(Integer.valueOf(m.getID()));
             double betrag = results.getDouble("Betrag");
             if (betrag == 0)
             {

@@ -58,10 +58,17 @@ public class SplitBuchungView extends AbstractView
       {
         try
         {
-          SplitbuchungsContainer.store();
-          control.refreshSplitbuchungen();
-          GUI.getStatusBar().setSuccessText(String.format
+          if (SplitbuchungsContainer.get().size() != 0)
+          {
+            SplitbuchungsContainer.store();
+            GUI.getStatusBar().setSuccessText(String.format
               ("%s Splitbuchungen gespeichert", SplitbuchungsContainer.getAnzahl()));
+          }
+          else
+          {
+            GUI.getStatusBar().setErrorText("Hauptbuchung fehlt");
+          }
+          control.refreshSplitbuchungen();
         }
         catch (Exception e)
         {

@@ -31,6 +31,7 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -125,7 +126,7 @@ public class AdresstypControl extends AbstractControl
     adresstypList.setContextMenu(new AdresstypMenu());
     adresstypList.setRememberColWidths(true);
     adresstypList.setRememberOrder(true);
-    adresstypList.setSummary(true);
+    adresstypList.addFeature(new FeatureSummary());
     return adresstypList;
   }
 }

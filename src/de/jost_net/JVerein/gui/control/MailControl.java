@@ -60,6 +60,7 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
@@ -140,7 +141,7 @@ public class MailControl extends AbstractControl
         new DateFormatter(new JVDateFormatDATETIME()));
     empfaenger.setContextMenu(new MailAuswahlMenu(this));
     empfaenger.setRememberOrder(true);
-    empfaenger.setSummary(false);
+    empfaenger.removeFeature(FeatureSummary.class);
     return empfaenger;
   }
 
@@ -190,7 +191,7 @@ public class MailControl extends AbstractControl
     mitgliedmitmail.addColumn("Adresstyp", "adresstyp");
     mitgliedmitmail.setRememberOrder(true);
     mitgliedmitmail.setCheckable(true);
-    mitgliedmitmail.setSummary(false);
+    mitgliedmitmail.removeFeature(FeatureSummary.class);
     return mitgliedmitmail;
   }
 
@@ -250,7 +251,7 @@ public class MailControl extends AbstractControl
     anhang.setRememberColWidths(true);
     anhang.setContextMenu(new MailAnhangMenu(this));
     anhang.setRememberOrder(true);
-    anhang.setSummary(false);
+    anhang.removeFeature(FeatureSummary.class);
     return anhang;
   }
 

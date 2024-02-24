@@ -42,6 +42,7 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.logging.Logger;
@@ -142,7 +143,7 @@ public class MailVorschauDialog extends AbstractDialog<Object>
       anhang.addColumn("Dateiname", "dateiname");
       anhang.setRememberColWidths(true);
       anhang.setRememberOrder(true);
-      anhang.setSummary(false);
+      anhang.removeFeature(FeatureSummary.class);
       anhang.addColumn("Dateigröße", "dateigroesse",
           new DateiGroesseFormatter());
       anhang.paint(comp4);

@@ -191,7 +191,7 @@ public class Datum
     }
     if (alter < 1)
       return null;
-    return new Integer(alter);
+    return Integer.valueOf(alter);
   }
 
   public final static int getJahr(Date datum)

@@ -90,9 +90,9 @@ public class SaldoZeile implements GenericObject
       {
         if (!rs.next())
         {
-          return new Double(0);
+          return Double.valueOf(0);
         }
-        return new Double(rs.getDouble(1));
+        return Double.valueOf(rs.getDouble(1));
       }
     };
     einnahmen = (Double) service.execute(sql,

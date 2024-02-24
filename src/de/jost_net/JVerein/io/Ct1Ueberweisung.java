@@ -123,7 +123,7 @@ public class Ct1Ueberweisung
       ls_properties.setProperty(SepaUtil.insertIndex("dst.iban", counter),      StringUtils.trimToEmpty(ls.getIBAN()));
       ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),      StringUtils.trimToEmpty(ls.getMitglied()
           .getKontoinhaber(1).toUpperCase()));
-      ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),     (new BigDecimal("0.01")).toString());
+      ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),     (BigDecimal.valueOf(0.01)).toString());
       ls_properties.setProperty(SepaUtil.insertIndex("btg.curr", counter),      HBCIProperties.CURRENCY_DEFAULT_DE);
       ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),         StringUtils.trimToEmpty(eval(ls, verwendungszweck)));
       ls_properties.setProperty(SepaUtil.insertIndex("endtoendid", counter),    "NOTPROVIDED");

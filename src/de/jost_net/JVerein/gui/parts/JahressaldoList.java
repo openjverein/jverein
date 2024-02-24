@@ -35,6 +35,7 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -73,10 +74,7 @@ public class JahressaldoList extends TablePart implements Part
 
       if (saldoList == null)
       {
-        GenericIterator gi = PseudoIterator
-            .fromArray(zeile.toArray(new GenericObject[zeile.size()]));
-
-        saldoList = new TablePart(gi, null);
+        saldoList = new TablePart(zeile, null);
         saldoList.addColumn("Kontonummer", "kontonummer", null, false,
             Column.ALIGN_RIGHT);
         saldoList.addColumn("Bezeichnung", "kontobezeichnung");
@@ -97,7 +95,7 @@ public class JahressaldoList extends TablePart implements Part
             Column.ALIGN_RIGHT);
         saldoList.addColumn("Bemerkung", "bemerkung");
         saldoList.setRememberColWidths(true);
-        saldoList.setSummary(false);
+        saldoList.removeFeature(FeatureSummary.class);
       }
       else
       {

@@ -45,7 +45,7 @@ public class SplitbuchungNeuAction implements Action
       buch.setMitgliedskonto(master.getMitgliedskonto());
       buch.setName(master.getName());
       buch.setProjekt(master.getProjekt());
-      buch.setSplitId(new Long(master.getID()));
+      buch.setSplitId(Long.valueOf(master.getID()));
       buch.setUmsatzid(master.getUmsatzid());
       buch.setZweck(master.getZweck());
       buch.setSpeicherung(false);
@@ -55,6 +55,7 @@ public class SplitbuchungNeuAction implements Action
     catch (RemoteException e)
     {
       Logger.error("Fehler", e);
+      GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
 }
