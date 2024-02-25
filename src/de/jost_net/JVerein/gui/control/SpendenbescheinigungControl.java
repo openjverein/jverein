@@ -635,7 +635,7 @@ public class SpendenbescheinigungControl extends AbstractControl
     spendenbescheinigungen.setOrder("ORDER BY bescheinigungsdatum desc");
 
     spbList = new TablePart(spendenbescheinigungen,
-        new SpendenbescheinigungAction());
+        new SpendenbescheinigungAction(Spendenart.SACHSPENDE));
     spbList.addColumn("Bescheinigungsdatum", "bescheinigungsdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     spbList.addColumn("Spendedatum", "spendedatum",

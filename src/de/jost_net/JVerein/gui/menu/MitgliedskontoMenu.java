@@ -25,6 +25,7 @@ import de.jost_net.JVerein.gui.action.MitgliedskontoDetailSollNeuAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoIstLoesenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
+import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
@@ -54,8 +55,10 @@ public class MitgliedskontoMenu extends ContextMenu
     addItem(new SollMitIstItem("Istbuchung vom Mitgliedskonto lösen",
         new MitgliedskontoIstLoesenAction(), "unlocked.png"));
     addItem(ContextMenuItem.SEPARATOR);
-    addItem(new SpendenbescheinigungItem("Spendenbescheinigung erstellen",
-        new SpendenbescheinigungAction(), "file-invoice.png"));
+    addItem(new SpendenbescheinigungItem("Geldspendenbescheinigung",
+        new SpendenbescheinigungAction(Spendenart.GELDSPENDE), "file-invoice.png"));
+    addItem(new MitgliedItem("Sachspendenbescheinigung",
+        new SpendenbescheinigungAction(Spendenart.SACHSPENDE), "file-invoice.png"));
   }
 
   private static class MitgliedItem extends CheckedContextMenuItem
@@ -206,17 +209,32 @@ public class MitgliedskontoMenu extends ContextMenu
       if (o instanceof MitgliedskontoNode)
       {
         MitgliedskontoNode mkn = (MitgliedskontoNode) o;
-        if (mkn.getType() == MitgliedskontoNode.IST
-            || mkn.getType() == MitgliedskontoNode.MITGLIED)
+        if (mkn.getType() == MitgliedskontoNode.MITGLIED)
         {
           return true;
         }
-        else
+        else if (mkn.getType() == MitgliedskontoNode.IST)
         {
-          return false;
+          try
+          {
+            Object ob = Einstellungen.getDBService().createObject(Buchung.class,
+                mkn.getID());
+            if (ob != null)
+            {
+              Buchung b = (Buchung) ob;
+              if (b.getBuchungsart().getSpende() == true)
+              {
+                return true;
+              }
+            }
+          }
+          catch (RemoteException e)
+          {
+            return false;
+          }
         }
       }
-      return super.isEnabledFor(o);
+      return false;
     }
   }
 
