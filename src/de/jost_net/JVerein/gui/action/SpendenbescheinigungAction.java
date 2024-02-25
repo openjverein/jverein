@@ -123,6 +123,18 @@ public class SpendenbescheinigungAction implements Action
         {
           spb.setSpendenart(Spendenart.SACHSPENDE);
           spb.setAutocreate(Boolean.FALSE);
+          Object o = GUI.getCurrentView().getCurrentObject();
+          if (o != null && o instanceof Spendenbescheinigung)
+          {
+            Spendenbescheinigung von = (Spendenbescheinigung) o;
+            spb.setZeile1(von.getZeile1());
+            spb.setZeile2(von.getZeile2());
+            spb.setZeile3(von.getZeile3());
+            spb.setZeile4(von.getZeile4());
+            spb.setZeile5(von.getZeile5());
+            spb.setZeile6(von.getZeile6());
+            spb.setZeile7(von.getZeile7());
+          }
         }
       }
       GUI.startView(SpendenbescheinigungView.class.getName(), spb);
