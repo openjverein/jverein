@@ -113,7 +113,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     cal2.add(Calendar.YEAR, -20);
     if (cal1.before(cal2))
     {
-      throw new ApplicationException("Buchung liegt mehr als 10 Jahre zurück");
+      throw new ApplicationException("Buchungsdatum liegt mehr als 10 Jahre zurück");
     }
 
     Jahresabschluss ja = getJahresabschluss();
