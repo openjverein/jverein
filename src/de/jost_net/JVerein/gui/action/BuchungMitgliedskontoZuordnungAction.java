@@ -125,6 +125,11 @@ public class BuchungMitgliedskontoZuordnungAction implements Action
     {
       throw oce;
     }
+    catch (ApplicationException ae)
+    {
+      Logger.error(ae.getLocalizedMessage(), ae);
+      throw new ApplicationException(ae.getLocalizedMessage());
+    }
     catch (Exception e)
     {
       Logger.error("Fehler", e);
