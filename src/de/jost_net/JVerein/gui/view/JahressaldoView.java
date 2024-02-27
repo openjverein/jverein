@@ -43,13 +43,13 @@ public class JahressaldoView extends AbstractView
     QuickAccessPart part = new QuickAccessPart(control, false);
     part.paint(this.getParent());
 
-    LabelGroup group2 = new LabelGroup(getParent(), "Saldo");
+    LabelGroup group2 = new LabelGroup(getParent(), "Saldo", true);
     group2.addPart(control.getSaldoList());
 
-    ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton("Hilfe", new DokumentationAction(),
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.JAHRESSALDO, false, "question-circle.png");
-    buttons2.addButton(control.getStartAuswertungButton());
-    buttons2.paint(this.getParent());
+    buttons.addButton(control.getStartAuswertungButton());
+    buttons.paint(this.getParent());
   }
 }

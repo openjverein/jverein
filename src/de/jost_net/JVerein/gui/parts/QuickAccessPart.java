@@ -17,13 +17,15 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.ArrayList; 
 import org.eclipse.swt.widgets.Composite;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.SaldoControl;
+import de.jost_net.JVerein.util.Datum;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.parts.Button;
@@ -43,6 +45,8 @@ public class QuickAccessPart implements Part
   
   private Integer startjahr;
   
+  private Calendar calendar = Calendar.getInstance();;
+  
   private ArrayList<Button> buttons = new ArrayList<Button>();
 
   public QuickAccessPart(SaldoControl control, boolean additionalButtons)
@@ -50,9 +54,24 @@ public class QuickAccessPart implements Part
     this.control = control;
     this.additionalButtons = additionalButtons;
     Calendar calendar = Calendar.getInstance();
-    calendar.add(Calendar.YEAR, 1-anzahlButtons);
     jahr = calendar.get(Calendar.YEAR);
-    startjahr = jahr;
+    try
+    {
+      if (genYearStartDate(jahr).after(calendar.getTime()))
+      {
+        calendar.add(Calendar.YEAR, -1);
+      }
+    }
+    catch (Exception e)
+    {
+      //
+    }
+    finally
+    {
+      calendar.add(Calendar.YEAR, 1-anzahlButtons);
+      jahr = calendar.get(Calendar.YEAR);
+      startjahr = jahr;
+    }
   }
 
   @Override
@@ -61,21 +80,32 @@ public class QuickAccessPart implements Part
     LabelGroup quickGroup = new LabelGroup(parent, "Schnellzugriff");
     ButtonArea quickBtns = new ButtonArea();
     
-    Button home = new Button("*", new Action()
+    Button home = new Button("", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
-        jahr = startjahr;
-        updateButtons();
-        control.getDatumvon().setValue(genYearStartDate(jahr+anzahlButtons-1));
-        control.getDatumbis().setValue(genYearEndDate(jahr+anzahlButtons-1));
-        control.getSaldoList();
+        try
+        {
+          jahr = startjahr;
+          updateButtons();
+          control.getDatumvon().setValue(genYearStartDate(jahr+anzahlButtons-1));
+          control.getDatumbis().setValue(genYearEndDate(jahr+anzahlButtons-1));
+          control.getSaldoList();
+        }
+        catch (RemoteException e)
+        {
+          throw new ApplicationException("Fehler aufgetreten " + e.getMessage());
+        }
+        catch (ParseException e)
+        {
+          throw new ApplicationException("Fehler aufgetreten " + e.getMessage());
+        }
       }
-    });
+    }, null, false, "edit-undo.png");
     quickBtns.addButton(home);
     
-    Button zurueck = new Button("<", new Action()
+    Button zurueck = new Button("", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
@@ -83,10 +113,10 @@ public class QuickAccessPart implements Part
         jahr = jahr - 5;
         updateButtons();
       }
-    });
+    }, null, false, "go-previous.png");
     quickBtns.addButton(zurueck);
     
-    Button vor = new Button(">", new Action()
+    Button vor = new Button("", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
@@ -94,7 +124,7 @@ public class QuickAccessPart implements Part
         jahr = jahr + 5;
         updateButtons();
       }
-    });
+    }, null, false, "go-next.png");
     quickBtns.addButton(vor);
     
     
@@ -160,25 +190,35 @@ public class QuickAccessPart implements Part
     @Override
     public void handleAction(Object context) throws ApplicationException
     {
-      if (offset == null)
+      try
       {
-        control.getDatumvon().setValue(von);
-        control.getDatumbis().setValue(bis);
-      }
-      else
-      {
-        control.getDatumvon().setValue(genYearStartDate(jahr+offset));
-        control.getDatumbis().setValue(genYearEndDate(jahr+offset));
-      }
+        if (offset == null)
+        {
+          control.getDatumvon().setValue(von);
+          control.getDatumbis().setValue(bis);
+        }
+        else
+        {
+          control.getDatumvon().setValue(genYearStartDate(jahr+offset));
+          control.getDatumbis().setValue(genYearEndDate(jahr+offset));
+        }
 
-      control.getSaldoList();
+        control.getSaldoList();
+      }
+      catch (RemoteException e)
+      {
+        throw new ApplicationException("Fehler aufgetreten " + e.getMessage());
+      }
+      catch (ParseException e)
+      {
+        throw new ApplicationException("Fehler aufgetreten " + e.getMessage());
+      }
     }
   }
 
-  public Date deltaDaysFromNow(Integer delta)
+  private Date deltaDaysFromNow(Integer delta)
   {
     Date now = new Date();
-    Calendar calendar = new GregorianCalendar();
     calendar.setTime(now);
 
     // add 5 days to calendar instance
@@ -188,22 +228,20 @@ public class QuickAccessPart implements Part
     return calendar.getTime();
   }
 
-  public Date genYearStartDate(Integer year)
+  private Date genYearStartDate(Integer year) throws ParseException, RemoteException
   {
-    Calendar calendarStart = Calendar.getInstance();
-    calendarStart.set(Calendar.YEAR, year);
-    calendarStart.set(Calendar.MONTH, 0);
-    calendarStart.set(Calendar.DAY_OF_MONTH, 1);
-    return calendarStart.getTime();
+    Date beginnGeschaeftsjahr = Datum.toDate(Einstellungen.getEinstellung()
+        .getBeginnGeschaeftsjahr() + year);
+    calendar.setTime(beginnGeschaeftsjahr);
+    return calendar.getTime();
   }
 
-  public Date genYearEndDate(Integer year)
+  private Date genYearEndDate(Integer year) throws ParseException, RemoteException
   {
-    Calendar calendarStart = Calendar.getInstance();
-    calendarStart.set(Calendar.YEAR, year);
-    calendarStart.set(Calendar.MONTH, 11);
-    calendarStart.set(Calendar.DAY_OF_MONTH, 31);
-    return calendarStart.getTime();
+    calendar.setTime(genYearStartDate(year));
+    calendar.add(Calendar.YEAR, 1);
+    calendar.add(Calendar.DAY_OF_MONTH, -1);
+    return calendar.getTime();
   }
 
 }

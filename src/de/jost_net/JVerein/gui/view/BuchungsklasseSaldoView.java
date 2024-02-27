@@ -16,18 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.util.Date;
-
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsklasseSaldoControl;
 import de.jost_net.JVerein.gui.parts.QuickAccessPart;
+import de.jost_net.JVerein.gui.parts.VonBisPart;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.util.ApplicationException;
 
 public class BuchungsklasseSaldoView extends AbstractView
 {
@@ -38,40 +34,21 @@ public class BuchungsklasseSaldoView extends AbstractView
 
     final BuchungsklasseSaldoControl control = new BuchungsklasseSaldoControl(
         this);
-
-    LabelGroup group = new LabelGroup(getParent(), "Zeitraum");
-    group.addLabelPair("Von", control.getDatumvon());
-    group.addLabelPair("Bis", control.getDatumbis());
+  
+    VonBisPart vpart = new VonBisPart(control);
+    vpart.paint(this.getParent());
     
-    QuickAccessPart part = new QuickAccessPart(control, true);
-    part.paint(this.getParent());
+    QuickAccessPart qpart = new QuickAccessPart(control, true);
+    qpart.paint(this.getParent());
+
+    LabelGroup group = new LabelGroup(getParent(), "Saldo", true);
+    group.addPart(control.getSaldoList());
 
     ButtonArea buttons = new ButtonArea();
-    Button button = new Button("Suchen", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        Date von = (Date) control.getDatumvon().getValue();
-        Date bis = (Date) control.getDatumbis().getValue();
-        if (von.after(bis))
-        {
-          throw new ApplicationException("Von Datum ist nach Ist Datum!");
-        }
-        control.getSaldoList();
-      }
-    }, null, true, "search.png");
-    buttons.addButton(button);
-    buttons.paint(this.getParent());
-
-    LabelGroup group2 = new LabelGroup(getParent(), "Saldo", true);
-    group2.addPart(control.getSaldoList());
-
-    ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton("Hilfe", new DokumentationAction(),
+    buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGSKLASSEN, false, "question-circle.png");
-    buttons2.addButton(control.getStartAuswertungCSVButton());
-    buttons2.addButton(control.getStartAuswertungButton());
-    buttons2.paint(this.getParent());
+    buttons.addButton(control.getStartAuswertungCSVButton());
+    buttons.addButton(control.getStartAuswertungButton());
+    buttons.paint(this.getParent());
   }
 }

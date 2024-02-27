@@ -32,6 +32,7 @@ import de.jost_net.JVerein.io.JahressaldoPDF;
 import de.jost_net.JVerein.io.SaldoZeile;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -78,6 +79,14 @@ public class JahressaldoControl extends SaldoControl
   {
     try
     {
+      if (getDatumvon().getValue() != null)
+      {
+        settings.setAttribute("von",
+            new JVDateFormatTTMMJJJJ().format((Date) getDatumvon().getValue()));
+        settings.setAttribute("bis",
+            new JVDateFormatTTMMJJJJ().format((Date) getDatumbis().getValue()));
+      }
+      
       Calendar cal = Calendar.getInstance();
       cal.setTime((Date) getDatumvon().getValue());
       int jahr = cal.get(Calendar.YEAR);

@@ -1,0 +1,165 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.JVerein.gui.parts;
+
+import java.rmi.RemoteException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.Date;
+import org.eclipse.swt.widgets.Composite;
+
+import de.jost_net.JVerein.gui.control.SaldoControl;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.util.ApplicationException;
+
+public class VonBisPart implements Part
+{
+  private SaldoControl control;
+  
+  private Calendar calendar = Calendar.getInstance();;
+  
+  private enum RANGE
+  {
+    MONAT, TAG
+  }
+  
+  public VonBisPart(SaldoControl control)
+  {
+    this.control = control;
+  }
+
+  @Override
+  public void paint(Composite parent) throws RemoteException
+  {
+    LabelGroup group = new LabelGroup(parent, "Zeitraum");
+    group.addLabelPair("Von", control.getDatumvon());
+    group.addLabelPair("Bis", control.getDatumbis());
+    ButtonArea buttons = new ButtonArea();
+        
+    Button zurueck = new Button("", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Date von = (Date) control.getDatumvon().getValue();
+        Date bis = (Date) control.getDatumbis().getValue();
+        if (getRangeTyp(von, bis) == RANGE.TAG)
+        {
+          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+          delta++;
+          calendar.setTime(von);
+          calendar.add(Calendar.DAY_OF_MONTH, -delta);
+          control.getDatumvon().setValue(calendar.getTime());
+          calendar.setTime(bis);
+          calendar.add(Calendar.DAY_OF_MONTH, -delta);
+          control.getDatumbis().setValue(calendar.getTime());
+        }
+        else
+        {
+          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
+          delta++;
+          calendar.setTime(von);
+          calendar.add(Calendar.MONTH, -delta);
+          control.getDatumvon().setValue(calendar.getTime());
+          calendar.add(Calendar.MONTH, delta);
+          calendar.add(Calendar.DAY_OF_MONTH, -1);
+          control.getDatumbis().setValue(calendar.getTime());
+        }
+      }
+    }, null, false, "go-previous.png");
+    buttons.addButton(zurueck);
+    
+    Button vor = new Button("", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Date von = (Date) control.getDatumvon().getValue();
+        Date bis = (Date) control.getDatumbis().getValue();
+        if (getRangeTyp(von, bis) == RANGE.TAG)
+        {
+          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+          delta++;
+          calendar.setTime(von);
+          calendar.add(Calendar.DAY_OF_MONTH, delta);
+          control.getDatumvon().setValue(calendar.getTime());
+          calendar.setTime(bis);
+          calendar.add(Calendar.DAY_OF_MONTH, delta);
+          control.getDatumbis().setValue(calendar.getTime());
+        }
+        else
+        {
+          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
+          delta++;
+          calendar.setTime(von);
+          calendar.add(Calendar.MONTH, delta);
+          control.getDatumvon().setValue(calendar.getTime());
+          calendar.add(Calendar.MONTH, delta);
+          calendar.add(Calendar.DAY_OF_MONTH, -1);
+          control.getDatumbis().setValue(calendar.getTime());
+        }
+      }
+    }, null, false, "go-next.png");
+    buttons.addButton(vor);
+    
+    Button suchen = new Button("Suchen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        checkDate();
+        control.getSaldoList();
+      }
+    }, null, true, "search.png");
+    buttons.addButton(suchen);
+    group.addButtonArea(buttons);
+  }
+  
+  private void checkDate() throws ApplicationException
+  {
+    Date von = (Date) control.getDatumvon().getValue();
+    Date bis = (Date) control.getDatumbis().getValue();
+    if (von.after(bis))
+    {
+      throw new ApplicationException("Von Datum ist nach Ist Datum!");
+    }
+  }
+  
+  private RANGE getRangeTyp(Date von, Date bis) throws ApplicationException
+  {
+    checkDate();
+    calendar.setTime(von);
+    if (calendar.get(Calendar.DAY_OF_MONTH) != 1)
+      return RANGE.TAG;
+    calendar.setTime(bis);
+    calendar.add(Calendar.DAY_OF_MONTH, 1);
+    if (calendar.get(Calendar.DAY_OF_MONTH) != 1)
+      return RANGE.TAG;
+    return RANGE.MONAT;
+  }
+  
+}
