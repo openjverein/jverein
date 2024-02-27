@@ -331,8 +331,7 @@ public class ExportDialog extends AbstractDialog<Object>
     }
 
     Collections.sort(l);
-    Exp[] exp = l.toArray(new Exp[size]);
-    exporterListe = new SelectInput(PseudoIterator.fromArray(exp), selected);
+    exporterListe = new SelectInput(l, selected);
     return exporterListe;
   }
 

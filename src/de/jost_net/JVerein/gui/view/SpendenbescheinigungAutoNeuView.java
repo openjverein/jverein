@@ -16,11 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungAutoNeuControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.parts.InfoPanel;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class SpendenbescheinigungAutoNeuView extends AbstractView
@@ -33,7 +35,24 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
 
     SpendenbescheinigungAutoNeuControl control = new SpendenbescheinigungAutoNeuControl(
         this);
-
+    
+    InfoPanel   info = new InfoPanel();
+    info.setTitle("Info");
+    info.setIcon("gtk-info.png");
+    double betrag = Einstellungen.getEinstellung().getSpendenbescheinigungminbetrag();
+    if (betrag == 0)
+    {
+      info.setText("Es wurden nur Mitglieder berücksichtigt, bei denen Strasse, "
+          + "PLZ und Ort eingetragen sind.");
+    }
+    else
+    {
+    info.setText(String.format("Es wurden nur Mitglieder berücksichtigt, bei denen Strasse, "
+        + "PLZ und Ort eingetragen sind."+'\n'+"Auch wurden nur Spendenbescheinigungen "
+        + "generiert deren Betrag größer oder gleich %s Euro ist.", betrag));
+    info.setComment("Siehe Administration->Einstellungen->Spendenbescheinigungen->Mindestbetrag");
+    }
+    info.paint(getParent());
     LabelGroup group = new LabelGroup(getParent(), "Jahr");
     group.addLabelPair("Jahr", control.getJahr());
     // TODO Unterscheidung Einzel/Sammel-Bestätigung: zwei Felder

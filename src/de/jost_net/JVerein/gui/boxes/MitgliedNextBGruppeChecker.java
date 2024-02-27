@@ -289,7 +289,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
   {
     Mitglied mitglied = mitgliedBeitraege.getMitglied();
     Beitragsgruppe beitragsGruppe = mitgliedBeitraege.getBeitragsgruppe();
-    mitglied.setBeitragsgruppe(new Integer(beitragsGruppe.getID()));
+    mitglied.setBeitragsgruppe(Integer.valueOf(beitragsGruppe.getID()));
     mitglied.store();
     mitgliedBeitraege.delete();
     aenderungsListenPart.removeItem(mitgliedBeitraege);

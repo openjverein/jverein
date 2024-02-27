@@ -303,7 +303,7 @@ public class FelddefinitionControl extends AbstractControl
                 {
                   Zusatzfelder z1 = (Zusatzfelder) Einstellungen.getDBService()
                       .createObject(Zusatzfelder.class, z.getID());
-                  z1.setFeldWaehrung(new BigDecimal(doub.doubleValue()));
+                  z1.setFeldWaehrung(BigDecimal.valueOf(doub.doubleValue()));
                   z1.setFeld(null);
                   z1.store();
                 }

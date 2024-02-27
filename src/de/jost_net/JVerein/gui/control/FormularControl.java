@@ -43,6 +43,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -263,7 +264,7 @@ public class FormularControl extends AbstractControl
     formularList.setRememberColWidths(true);
     formularList.setContextMenu(new FormularMenu(this));
     formularList.setRememberOrder(true);
-    formularList.setSummary(false);
+    formularList.removeFeature(FeatureSummary.class);
     return formularList;
   }
 

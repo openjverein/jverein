@@ -26,9 +26,7 @@ import java.util.Map;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
-import de.willuhn.jameica.gui.formatter.DateFormatter;
 
 public class MitgliedskontoMap
 {
@@ -110,8 +108,8 @@ public class MitgliedskontoMap
     map.put(MitgliedskontoVar.BETRAG.getName(), betrag.toArray());
     map.put(MitgliedskontoVar.IST.getName(), ist.toArray());
     map.put(MitgliedskontoVar.DIFFERENZ.getName(), differenz.toArray());
-    map.put(MitgliedskontoVar.STAND.getName(), new Double(-1 * saldo));
-    map.put(MitgliedskontoVar.SUMME_OFFEN.getName(), new Double(saldo));
+    map.put(MitgliedskontoVar.STAND.getName(), Double.valueOf(-1 * saldo));
+    map.put(MitgliedskontoVar.SUMME_OFFEN.getName(), Double.valueOf(saldo));
     return map;
   }
 

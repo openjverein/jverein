@@ -163,7 +163,7 @@ public class AbrechnungSEPA
       param.setText(String.format(", SEPA-Datei %s geschrieben.", param.sepafileRCUR.getAbsolutePath()));
     }
 
-    BigDecimal summemitgliedskonto = new BigDecimal("0");
+    BigDecimal summemitgliedskonto = BigDecimal.valueOf(0);
     for (Zahler za : z)
     {
       Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
@@ -242,7 +242,7 @@ public class AbrechnungSEPA
     }
 
     // Gegenbuchung für das Mitgliedskonto schreiben
-    if (!summemitgliedskonto.equals(new BigDecimal("0")))
+    if (!summemitgliedskonto.equals(BigDecimal.valueOf(0)))
     {
       writeMitgliedskonto(null, new Date(), "Gegenbuchung",
           summemitgliedskonto.doubleValue() * -1, abrl, true, getKonto(), null);
@@ -451,7 +451,7 @@ public class AbrechnungSEPA
         zahler.setPersonId(m.getID());
         zahler.setPersonTyp(JVereinZahlerTyp.MITGLIED);
         zahler.setBetrag(
-            new BigDecimal(betr).setScale(2, RoundingMode.HALF_UP));
+            BigDecimal.valueOf(betr).setScale(2, RoundingMode.HALF_UP));
         new BIC(m.getBic()); // Prüfung des BIC
         zahler.setBic(m.getBic());
         new IBAN(m.getIban()); // Prüfung der IBAN
@@ -545,7 +545,7 @@ public class AbrechnungSEPA
             JVereinZahler zahler = new JVereinZahler();
             zahler.setPersonId(m.getID());
             zahler.setPersonTyp(JVereinZahlerTyp.MITGLIED);
-            zahler.setBetrag(new BigDecimal(z.getBetrag()).setScale(2,
+            zahler.setBetrag(BigDecimal.valueOf(z.getBetrag()).setScale(2,
                 RoundingMode.HALF_UP));
             new BIC(m.getBic());
             new IBAN(m.getIban());
@@ -622,7 +622,7 @@ public class AbrechnungSEPA
         JVereinZahler zahler = new JVereinZahler();
         zahler.setPersonId(kt.getID());
         zahler.setPersonTyp(JVereinZahlerTyp.KURSTEILNEHMER);
-        zahler.setBetrag(new BigDecimal(kt.getBetrag()).setScale(2,
+        zahler.setBetrag(BigDecimal.valueOf(kt.getBetrag()).setScale(2,
             RoundingMode.HALF_UP));
         new BIC(kt.getBic());
         new IBAN(kt.getIban());

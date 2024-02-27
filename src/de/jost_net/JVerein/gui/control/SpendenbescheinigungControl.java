@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Queries.SpendenbescheinigungBuchungQuery;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
@@ -109,8 +108,6 @@ public class SpendenbescheinigungControl extends AbstractControl
   private CheckboxInput unterlagenwertermittlung;
 
   private TablePart buchungsList;
-
-  private SpendenbescheinigungBuchungQuery query;
 
   private Spendenbescheinigung spendenbescheinigung;
 
@@ -347,19 +344,10 @@ public class SpendenbescheinigungControl extends AbstractControl
   public Part getBuchungsList() throws RemoteException
   {
     Spendenbescheinigung spb = getSpendenbescheinigung();
-    query = new SpendenbescheinigungBuchungQuery(spb);
     if (buchungsList == null)
     {
-      // buchungsList = new BuchungListTablePart(query.get(), new
-      // BuchungAction());
-      if (spb.isNewObject())
-      {
-        buchungsList = new BuchungListTablePart(spb.getBuchungen(), null);
-      }
-      else
-      {
-        buchungsList = new BuchungListTablePart(query.get(), null);
-      }
+
+      buchungsList = new BuchungListTablePart(spb.getBuchungen(), null);
       buchungsList.addColumn("Nr", "id-int");
       buchungsList.addColumn("Konto", "konto", new Formatter()
       {
@@ -420,19 +408,9 @@ public class SpendenbescheinigungControl extends AbstractControl
     else
     {
       buchungsList.removeAll();
-      if (spb.isNewObject())
+      for (Buchung bu : spb.getBuchungen())
       {
-        for (Buchung bu : spb.getBuchungen())
-        {
-          buchungsList.addItem(bu);
-        }
-      }
-      else
-      {
-        for (Buchung bu : query.get())
-        {
-          buchungsList.addItem(bu);
-        }
+        buchungsList.addItem(bu);
       }
       buchungsList.sort();
     }
@@ -657,7 +635,7 @@ public class SpendenbescheinigungControl extends AbstractControl
     spendenbescheinigungen.setOrder("ORDER BY bescheinigungsdatum desc");
 
     spbList = new TablePart(spendenbescheinigungen,
-        new SpendenbescheinigungAction());
+        new SpendenbescheinigungAction(Spendenart.SACHSPENDE));
     spbList.addColumn("Bescheinigungsdatum", "bescheinigungsdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     spbList.addColumn("Spendedatum", "spendedatum",

@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.io;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -45,9 +46,9 @@ public class BeitragsUtil
         betr = bg.getBetrag();
         break;
       case MONATLICH12631:
-        BigDecimal bbetr = new BigDecimal(bg.getBetrag());
-        bbetr = bbetr.setScale(2, BigDecimal.ROUND_HALF_UP);
-        BigDecimal bmonate = new BigDecimal(zr);
+        BigDecimal bbetr = BigDecimal.valueOf(bg.getBetrag());
+        bbetr = bbetr.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal bmonate = BigDecimal.valueOf(zr);
         bbetr = bbetr.multiply(bmonate);
         betr = bbetr.doubleValue();
         break;

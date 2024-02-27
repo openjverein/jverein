@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
+import de.jost_net.JVerein.keys.Spendenart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -90,7 +91,7 @@ public class SpendenbescheinigungView extends AbstractView
     }
     else
     {
-      control.getSpendenart().setEnabled(true);
+      control.getSpendenart().setEnabled(false);
       control.getBetrag().setEnabled(true);
     }
     LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),
@@ -102,7 +103,7 @@ public class SpendenbescheinigungView extends AbstractView
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
     buttons.addButton(control.getPDFStandardButton());
     buttons.addButton(control.getPDFIndividuellButton());
-    buttons.addButton("Neu", new SpendenbescheinigungAction(), null, false,
+    buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(Spendenart.SACHSPENDE), null, false,
         "document-new.png");
     buttons.addButton("Speichern", new Action()
     {

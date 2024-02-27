@@ -27,15 +27,13 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
 import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
-import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
 
 public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
@@ -64,10 +62,7 @@ public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
 
       if (arbeitseinsatzueberpruefungList == null)
       {
-        GenericIterator<ArbeitseinsatzZeile> gi = PseudoIterator
-            .fromArray(zeile.toArray(new GenericObject[zeile.size()]));
-
-        arbeitseinsatzueberpruefungList = new TablePart(gi,
+        arbeitseinsatzueberpruefungList = new TablePart(zeile,
             new MitgliedDetailAction());
         arbeitseinsatzueberpruefungList.addColumn("Name, Vorname",
             "namevorname");
@@ -88,7 +83,7 @@ public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
         arbeitseinsatzueberpruefungList.setRememberColWidths(true);
-        arbeitseinsatzueberpruefungList.setSummary(true);
+        arbeitseinsatzueberpruefungList.addFeature(new FeatureSummary());
       }
       else
       {
@@ -116,7 +111,8 @@ public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
         + "where  (mitglied.eintritt is null or year(mitglied.eintritt) <= ?) and "
         + "       (mitglied.austritt is null or year(mitglied.austritt) >= ?) ";
 
-    if (schluessel != ArbeitseinsatzUeberpruefungInput.MEHRLEISTUNG)
+    if (schluessel != ArbeitseinsatzUeberpruefungInput.MEHRLEISTUNG &&
+        schluessel != ArbeitseinsatzUeberpruefungInput.ALLE)
     {
       sql += "        and beitragsgruppe.arbeitseinsatzstunden is not null and "
           + "        beitragsgruppe.arbeitseinsatzstunden > 0 ";
@@ -135,6 +131,11 @@ public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
     if (schluessel == ArbeitseinsatzUeberpruefungInput.MEHRLEISTUNG)
     {
       sql += "    having iststunden > arbeitseinsatzstunden  ";
+    }
+    
+    if (schluessel == ArbeitseinsatzUeberpruefungInput.ALLE)
+    {
+      sql += "    having iststunden > 0 or arbeitseinsatzstunden > 0 ";
     }
 
     sql += "  order by mitglied.name, mitglied.vorname, mitglied.id ";

@@ -235,7 +235,7 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
     Double ret = (Double) getAttribute("betrag");
     if (ret == null)
     {
-      ret = new Double(0);
+      ret = Double.valueOf(0);
     }
     return ret;
   }
@@ -357,7 +357,7 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
   public void store() throws RemoteException, ApplicationException
   {
     super.store();
-    Long id = new Long(getID());
+    Long id = Long.valueOf(getID());
     for (Buchung b : buchungen)
     {
       b.setSpendenbescheinigungId(id);
@@ -402,7 +402,7 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
   {
     if (mitglied != null)
     {
-      setAttribute("mitglied", new Integer(mitglied.getID()));
+      setAttribute("mitglied", Integer.valueOf(mitglied.getID()));
     }
     else
     {

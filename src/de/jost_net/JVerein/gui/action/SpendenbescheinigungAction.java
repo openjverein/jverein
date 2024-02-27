@@ -17,6 +17,8 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,9 +30,9 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
@@ -38,12 +40,18 @@ import de.willuhn.util.ApplicationException;
 
 public class SpendenbescheinigungAction implements Action
 {
+  private int spendenart = Spendenart.SACHSPENDE;
+  
+  private Spendenbescheinigung spb = null;
+  
+  public SpendenbescheinigungAction(int spendenart)
+  {
+    this.spendenart = spendenart;
+  }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Spendenbescheinigung spb = null;
-
     try
     {
       if (context != null && context instanceof Spendenbescheinigung)
@@ -54,23 +62,27 @@ public class SpendenbescheinigungAction implements Action
       {
         spb = (Spendenbescheinigung) Einstellungen.getDBService()
             .createObject(Spendenbescheinigung.class, null);
+        spb.setSpendenart(spendenart);
+        spb.setAutocreate(Boolean.FALSE);
+        spb.setErsatzAufwendungen(false);
+        spb.setBescheinigungsdatum(new Date());
 
         if (context != null && (context instanceof Mitglied))
         {
           Mitglied m = (Mitglied) context;
           adressaufbereitung(m, spb);
+          if (spendenart == Spendenart.GELDSPENDE)
+          {
+            handleMitglied(m);
+          }
         }
         else if (context != null && (context instanceof MitgliedskontoNode))
         {
           MitgliedskontoNode mkn = (MitgliedskontoNode) context;
-          spb.setSpendenart(Spendenart.GELDSPENDE);
-          spb.setErsatzAufwendungen(false);
-          spb.setBescheinigungsdatum(new Date());
           if (mkn.getMitglied() != null)
           {
             // Mitglied aus Mitgliedskonto lesen
             Mitglied m = mkn.getMitglied();
-            spb.setMitglied(m);
             adressaufbereitung(m, spb);
           }
           if (mkn.getType() == MitgliedskontoNode.IST)
@@ -88,51 +100,32 @@ public class SpendenbescheinigungAction implements Action
               }
               spb.setBuchung(b);
               spb.setSpendedatum(b.getDatum());
+              spb.setAutocreate(Boolean.TRUE);
             }
           }
           else if (mkn.getType() == MitgliedskontoNode.MITGLIED)
           {
-            /* Ermitteln der Buchungen zu der neuen Spendenbescheinigung */
-            Date minDatum = Calendar.getInstance().getTime();
-            Date maxDatum = Calendar.getInstance().getTime();
-            DBIterator<Mitgliedskonto> itMk = Einstellungen.getDBService()
-                .createList(Mitgliedskonto.class);
-            itMk.addFilter("mitglied = ?", new Object[] { mkn.getID() });
-            // it.addFilter("spendenbescheinigung = ?",
-            // new Object[] { null });
-            itMk.setOrder("ORDER BY datum asc");
-
-            while (itMk.hasNext())
+            if (spendenart == Spendenart.GELDSPENDE)
             {
-              Mitgliedskonto mk = itMk.next();
-
-              DBIterator<Buchung> it = Einstellungen.getDBService()
-                  .createList(Buchung.class);
-              it.addFilter("mitgliedskonto = ?", new Object[] { mk.getID() });
-              it.addFilter("spendenbescheinigung is null");
-              it.setOrder("ORDER BY datum asc");
-
-              while (it.hasNext())
-              {
-                Buchung bu = it.next();
-                if (bu.getSpendenbescheinigung() == null)
-                {
-                  if (bu.getBuchungsart().getSpende())
-                  {
-                    if (minDatum.after(bu.getDatum()))
-                    {
-                      minDatum = bu.getDatum();
-                    }
-                    if (maxDatum.before(bu.getDatum()))
-                    {
-                      maxDatum = bu.getDatum();
-                    }
-                    spb.addBuchung(bu);
-                  }
-                }
-              }
+              handleMitglied(spb.getMitglied());
             }
-            spb.setSpendedatum(minDatum);
+          }
+        }
+        else
+        {
+          spb.setSpendenart(Spendenart.SACHSPENDE);
+          spb.setAutocreate(Boolean.FALSE);
+          Object o = GUI.getCurrentView().getCurrentObject();
+          if (o != null && o instanceof Spendenbescheinigung)
+          {
+            Spendenbescheinigung von = (Spendenbescheinigung) o;
+            spb.setZeile1(von.getZeile1());
+            spb.setZeile2(von.getZeile2());
+            spb.setZeile3(von.getZeile3());
+            spb.setZeile4(von.getZeile4());
+            spb.setZeile5(von.getZeile5());
+            spb.setZeile6(von.getZeile6());
+            spb.setZeile7(von.getZeile7());
           }
         }
       }
@@ -184,6 +177,67 @@ public class SpendenbescheinigungAction implements Action
       case 1:
         spb.setZeile1(adresse.get(0));
     }
-
+  }
+  
+  private void handleMitglied(Mitglied mg) throws RemoteException, ApplicationException
+  {
+    /* Ermitteln der Buchungen zu der neuen Spendenbescheinigung */
+    Date minDatum = Calendar.getInstance().getTime();
+    Date maxDatum = Calendar.getInstance().getTime();
+    final DBService service = Einstellungen.getDBService();
+    ResultSetExtractor rs = new ResultSetExtractor()
+    {
+      @Override
+      public Object extract(ResultSet rs) throws RemoteException, SQLException
+      {
+        ArrayList<Buchung> list = new ArrayList<Buchung>();
+        while (rs.next())
+        {
+          list.add(
+            (Buchung) service.createObject(Buchung.class, rs.getString(1)));
+        }
+        return list;
+      }
+    };
+    String sql = "SELECT buchung.id  FROM buchung "
+        + "  JOIN buchungsart ON buchung.buchungsart = buchungsart.id "
+        + "  JOIN mitgliedskonto ON buchung.mitgliedskonto = mitgliedskonto.id "
+        + "WHERE buchungsart.spende = true "
+        + "  AND mitgliedskonto.mitglied = ? "
+        + "  AND buchung.spendenbescheinigung IS NULL "
+        + "  AND buchung.mitgliedskonto IS NOT NULL "
+        + "ORDER BY buchung.datum";
+    @SuppressWarnings("unchecked")
+    ArrayList<Buchung> buchungen = (ArrayList<Buchung>) Einstellungen.getDBService()
+        .execute(sql, new Object[] { mg.getID() }, rs);
+    
+    if (buchungen.isEmpty())
+    {
+      throw new ApplicationException(
+          "Es wurden keine relevanten Buchungen gefunden");
+    }
+    
+    for (Buchung bu: buchungen)
+    {
+      if (minDatum.after(bu.getDatum()))
+      {
+        minDatum = bu.getDatum();
+      }
+      if (maxDatum.before(bu.getDatum()))
+      {
+        maxDatum = bu.getDatum();
+      }
+      spb.addBuchung(bu);
+    }
+    spb.setSpendedatum(minDatum);
+    spb.setAutocreate(Boolean.TRUE);
+    
+    double minbetrag = Einstellungen.getEinstellung().getSpendenbescheinigungminbetrag();
+    if (spb.getBetrag() < minbetrag)
+    {
+      throw new ApplicationException(
+          String.format("Der Betrag der Spendenbescheinigung ist unter %s Euro. "
+              + "Siehe Einstellungen->Spendenbescheinigungen.", minbetrag));
+    }
   }
 }

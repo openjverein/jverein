@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
-import com.schlevoigt.JVerein.util.Misc;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
@@ -90,7 +88,7 @@ public class FormularAnzeigeAction implements Action
       map.put(FormularfeldControl.ZAHLUNGSGRUND,
           "Zahlungsgrund1 Zahlungsgrund2");
       map.put(FormularfeldControl.ZAHLUNGSGRUND1, "Zahlungsgrund 1");
-      map.put(FormularfeldControl.BETRAG, new Double(1234.96 + 15.0));
+      map.put(FormularfeldControl.BETRAG, Double.valueOf(1234.96 + 15.0));
       map.put("Betrag in Worten", GermanNumber.toString(1234 + 15));
       map.put(FormularfeldControl.ID, "444");
       map.put(FormularfeldControl.EXTERNEMITGLIEDSNUMMER, "9999");

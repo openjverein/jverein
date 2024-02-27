@@ -64,7 +64,7 @@ public class MitgliedNextBGruppeImpl extends AbstractDBObject
   {
     if (null == mitglied)
       throw new RemoteException("Mitglied fehlt!!");
-    setAttribute(COL_MITGLIED, new Long(mitglied.getID()));
+    setAttribute(COL_MITGLIED, Long.valueOf(mitglied.getID()));
   }
 
   @Override
@@ -95,7 +95,7 @@ public class MitgliedNextBGruppeImpl extends AbstractDBObject
   {
     if (null == beitragsGruppe)
       throw new RemoteException("Beitragsgruppe fehlt!!");
-    setAttribute(COL_BEITRAGSGRUPPE, new Long(beitragsGruppe.getID()));
+    setAttribute(COL_BEITRAGSGRUPPE, Long.valueOf(beitragsGruppe.getID()));
   }
 
   @Override

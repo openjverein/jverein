@@ -37,6 +37,7 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -165,7 +166,7 @@ public class AnfangsbestandControl extends AbstractControl
     anfangsbestandList.setRememberColWidths(true);
     anfangsbestandList.setContextMenu(new AnfangsbestandMenu());
     anfangsbestandList.setRememberOrder(true);
-    anfangsbestandList.setSummary(false);
+    anfangsbestandList.removeFeature(FeatureSummary.class);
     return anfangsbestandList;
   }
 

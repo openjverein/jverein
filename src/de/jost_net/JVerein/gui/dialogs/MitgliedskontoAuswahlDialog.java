@@ -22,8 +22,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
@@ -40,6 +38,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.Container;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
+import de.willuhn.jameica.system.OperationCanceledException;
 
 /**
  * Ein Dialog, ueber den man ein Mitgliedskonto auswaehlen kann.
@@ -61,7 +60,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
 
   private Buchung buchung;
   
-  private boolean abort = false;
+  private boolean abort = true;
 
   public MitgliedskontoAuswahlDialog(Buchung buchung)
   {
@@ -158,6 +157,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
         if (o instanceof Mitgliedskonto)
         {
           choosen = o;
+          abort = false;
           close();
         }
         else
@@ -167,6 +167,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
           if (o instanceof Mitglied)
           {
             choosen = o;
+            abort = false;
             close();
           }
         }
@@ -181,6 +182,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
       public void handleAction(Object context)
       {
         choosen = null;
+        abort = false;
         close();
       }
     }, null, false, "user-trash-full.png");
@@ -191,18 +193,10 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
       @Override
       public void handleAction(Object context)
       {
-        abort = true;
-        close();
+        throw new OperationCanceledException();
       }
     }, null, false, "process-stop.png");
     
-    getShell().addListener(SWT.Close,new Listener()
-    {
-      public void handleEvent(Event event)
-      {
-        abort = true;
-      }
-    });
     b.paint(parent);
   }
 
