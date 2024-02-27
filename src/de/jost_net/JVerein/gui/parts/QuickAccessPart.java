@@ -221,7 +221,7 @@ public class QuickAccessPart implements Part
     Date now = new Date();
     calendar.setTime(now);
 
-    // add 5 days to calendar instance
+    // add delta days to calendar instance
     calendar.add(Calendar.DAY_OF_MONTH, delta);
 
     // get the date instance
@@ -230,10 +230,8 @@ public class QuickAccessPart implements Part
 
   private Date genYearStartDate(Integer year) throws ParseException, RemoteException
   {
-    Date beginnGeschaeftsjahr = Datum.toDate(Einstellungen.getEinstellung()
+    return Datum.toDate(Einstellungen.getEinstellung()
         .getBeginnGeschaeftsjahr() + year);
-    calendar.setTime(beginnGeschaeftsjahr);
-    return calendar.getTime();
   }
 
   private Date genYearEndDate(Integer year) throws ParseException, RemoteException
