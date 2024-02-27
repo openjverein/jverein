@@ -16,20 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Collections;
-import de.jost_net.JVerein.Einstellungen;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsklasseSaldoControl;
-import de.jost_net.JVerein.rmi.Buchung;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
+import de.jost_net.JVerein.gui.parts.QuickAccessPart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -40,89 +31,6 @@ import de.willuhn.util.ApplicationException;
 
 public class BuchungsklasseSaldoView extends AbstractView
 {
-
-  private class QuickAccessAction implements Action
-  {
-
-    private BuchungsklasseSaldoControl control;
-
-    private Date von;
-
-    private Date bis;
-
-    QuickAccessAction(BuchungsklasseSaldoControl control, Date von, Date bis)
-    {
-      this.control = control;
-      this.von = von;
-      this.bis = bis;
-    }
-
-    @Override
-    public void handleAction(Object context) throws ApplicationException
-    {
-      control.getDatumvon().setValue(von);
-      control.getDatumbis().setValue(bis);
-      control.getSaldoList();
-    }
-  }
-
-  private Integer getYearBounds(String fun) throws Exception
-  {
-    String sql = "select " + fun + "(datum) as val from buchung";
-
-    DBService service = Einstellungen.getDBService();
-    Date earliest = (Date) service.execute(sql,
-        Collections.emptyList().toArray(), new ResultSetExtractor()
-        {
-
-          @Override
-          public Object extract(ResultSet rs)
-              throws RemoteException, SQLException
-          {
-            rs.next();
-            return rs.getDate("val");
-          }
-        });
-
-    Calendar calendar = new GregorianCalendar();
-    if (earliest != null)
-    {
-      calendar.setTime(earliest);
-    }
-    return calendar.get(Calendar.YEAR);
-  }
-
-  public Date deltaDaysFromNow(Integer delta)
-  {
-    Date now = new Date();
-    Calendar calendar = new GregorianCalendar();
-    calendar.setTime(now);
-
-    // add 5 days to calendar instance
-    calendar.add(Calendar.DAY_OF_MONTH, delta);
-
-    // get the date instance
-    return calendar.getTime();
-  }
-
-  public Date genYearStartDate(Integer year)
-  {
-    Calendar calendarStart = Calendar.getInstance();
-    calendarStart.set(Calendar.YEAR, year);
-    calendarStart.set(Calendar.MONTH, 0);
-    calendarStart.set(Calendar.DAY_OF_MONTH, 1);
-    return calendarStart.getTime();
-  }
-
-  public Date genYearEndDate(Integer year)
-  {
-    Calendar calendarStart = Calendar.getInstance();
-    calendarStart.set(Calendar.YEAR, year);
-    calendarStart.set(Calendar.MONTH, 11);
-    calendarStart.set(Calendar.DAY_OF_MONTH, 31);
-    return calendarStart.getTime();
-  }
-
   @Override
   public void bind() throws Exception
   {
@@ -134,32 +42,9 @@ public class BuchungsklasseSaldoView extends AbstractView
     LabelGroup group = new LabelGroup(getParent(), "Zeitraum");
     group.addLabelPair("Von", control.getDatumvon());
     group.addLabelPair("Bis", control.getDatumbis());
-
-    DBIterator<Buchung> list = Einstellungen.getDBService().createList(Buchung.class);
-    if (list == null || !list.hasNext())
-    {
-      throw new ApplicationException("Abbruch! Es existiert noch keine Buchung.");
-    }
-
-    LabelGroup quickGroup = new LabelGroup(getParent(), "Schnellzugriff");
-    ButtonArea quickBtns = new ButtonArea();
-    Calendar calendar = Calendar.getInstance();
-    Integer bis = calendar.get(Calendar.YEAR);
-    calendar.add(Calendar.YEAR, -10);
-    Integer maxmin = calendar.get(Calendar.YEAR);
-    Integer von = java.lang.Math.max(getYearBounds("min"), maxmin);
-    von = java.lang.Math.min(von, bis);
-    for (Integer i = von; i <= bis ; i++)
-    {
-      quickBtns.addButton(i.toString(), new QuickAccessAction(control,
-          genYearStartDate(i), genYearEndDate(i)), null, false);
-    }
-
-    quickBtns.addButton("Letzte 30 Tage",
-        new QuickAccessAction(control, deltaDaysFromNow(-30), new Date()));
-    quickBtns.addButton("Letzte 90 Tage",
-        new QuickAccessAction(control, deltaDaysFromNow(-90), new Date()));
-    quickGroup.addPart(quickBtns);
+    
+    QuickAccessPart part = new QuickAccessPart(control, true);
+    part.paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     Button button = new Button("Suchen", new Action()
@@ -167,6 +52,12 @@ public class BuchungsklasseSaldoView extends AbstractView
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
+        Date von = (Date) control.getDatumvon().getValue();
+        Date bis = (Date) control.getDatumbis().getValue();
+        if (von.after(bis))
+        {
+          throw new ApplicationException("Von Datum ist nach Ist Datum!");
+        }
         control.getSaldoList();
       }
     }, null, true, "search.png");

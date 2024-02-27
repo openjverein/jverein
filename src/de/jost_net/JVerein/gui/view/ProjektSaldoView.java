@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.util.Date;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.ProjektSaldoControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -23,6 +25,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.jost_net.JVerein.gui.parts.QuickAccessPart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
 
@@ -39,6 +42,9 @@ public class ProjektSaldoView extends AbstractView
     LabelGroup group = new LabelGroup(getParent(), "Zeitraum");
     group.addLabelPair("Von", control.getDatumvon());
     group.addLabelPair("Bis", control.getDatumbis());
+    
+    QuickAccessPart part = new QuickAccessPart(control, true);
+    part.paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     Button button = new Button("Suchen", new Action()
@@ -46,6 +52,12 @@ public class ProjektSaldoView extends AbstractView
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
+        Date von = (Date) control.getDatumvon().getValue();
+        Date bis = (Date) control.getDatumbis().getValue();
+        if (von.after(bis))
+        {
+          throw new ApplicationException("Von Datum ist nach Ist Datum!");
+        }
         control.getSaldoList();
       }
     }, null, true, "search.png");

@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
@@ -29,16 +30,12 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.parts.JahressaldoList;
 import de.jost_net.JVerein.io.JahressaldoPDF;
 import de.jost_net.JVerein.io.SaldoZeile;
-import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -47,56 +44,14 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class JahressaldoControl extends AbstractControl
+public class JahressaldoControl extends SaldoControl
 {
 
   private JahressaldoList saldoList;
 
-  private SelectInput suchjahr;
-
-  private Settings settings = null;
-
   public JahressaldoControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
-  }
-
-  public SelectInput getSuchJahr()
-      throws RemoteException, ApplicationException, ParseException
-  {
-    if (suchjahr != null)
-    {
-      return suchjahr;
-    }
-    DBIterator<Buchung> list = Einstellungen.getDBService()
-        .createList(Buchung.class);
-    list.setOrder("ORDER BY datum");
-    Buchung b = null;
-    Calendar von = Calendar.getInstance();
-    if (list.hasNext())
-    {
-      b = list.next();
-      von.setTime(new Geschaeftsjahr(b.getDatum()).getBeginnGeschaeftsjahr());
-    }
-    else
-    {
-      throw new ApplicationException(
-          "Abbruch! Es existiert noch keine Buchung");
-    }
-    Calendar bis = Calendar.getInstance();
-    ArrayList<Integer> jahre = new ArrayList<>();
-
-    for (int i = von.get(Calendar.YEAR); i <= bis.get(Calendar.YEAR); i++)
-    {
-      jahre.add(i);
-    }
-
-    suchjahr = new SelectInput(jahre, settings.getInt("jahr", jahre.get(0)));
-    // suchjahr.setPleaseChoose("Bitte auswählen");
-    suchjahr.setPreselected(settings.getInt("jahr", bis.get(Calendar.YEAR)));
-    return suchjahr;
   }
 
   public Button getStartAuswertungButton()
@@ -123,17 +78,17 @@ public class JahressaldoControl extends AbstractControl
   {
     try
     {
-      settings.setAttribute("jahr", (Integer) getSuchJahr().getValue());
+      Calendar cal = Calendar.getInstance();
+      cal.setTime((Date) getDatumvon().getValue());
+      int jahr = cal.get(Calendar.YEAR);
 
       if (saldoList == null)
       {
-        saldoList = new JahressaldoList(null,
-            new Geschaeftsjahr((Integer) getSuchJahr().getValue()));
+        saldoList = new JahressaldoList(null, new Geschaeftsjahr(jahr));
       }
       else
       {
-        saldoList.setGeschaeftsjahr(
-            new Geschaeftsjahr((Integer) getSuchJahr().getValue()));
+        saldoList.setGeschaeftsjahr(new Geschaeftsjahr(jahr));
         ArrayList<SaldoZeile> zeile = saldoList.getInfo();
         saldoList.removeAll();
         for (SaldoZeile sz : zeile)
@@ -182,9 +137,10 @@ public class JahressaldoControl extends AbstractControl
 
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
-      Integer jahr = (Integer) suchjahr.getValue();
-
-      Geschaeftsjahr gj = new Geschaeftsjahr(jahr.intValue());
+      Calendar cal = Calendar.getInstance();
+      cal.setTime((Date) getDatumvon().getValue());
+      int jahr = cal.get(Calendar.YEAR);
+      Geschaeftsjahr gj = new Geschaeftsjahr(jahr);
 
       auswertungSaldoPDF(zeile, file, gj);
     }

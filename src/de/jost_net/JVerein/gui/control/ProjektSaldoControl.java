@@ -18,9 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.io.File;
 import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.eclipse.swt.SWT;
@@ -32,12 +30,10 @@ import de.jost_net.JVerein.io.ProjektSaldoPDF;
 import de.jost_net.JVerein.io.ProjektSaldoZeile;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -45,64 +41,14 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class ProjektSaldoControl extends AbstractControl
+public class ProjektSaldoControl extends SaldoControl
 {
 
   private ProjektSaldoList saldoList;
 
-  private DateInput datumvon;
-
-  private DateInput datumbis;
-
-  private Settings settings = null;
-
   public ProjektSaldoControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
-  }
-
-  public DateInput getDatumvon()
-  {
-    if (datumvon != null)
-    {
-      return datumvon;
-    }
-    Calendar cal = Calendar.getInstance();
-    Date d = new Date();
-    try
-    {
-      d = new JVDateFormatTTMMJJJJ()
-          .parse(settings.getString("von", "01.01" + cal.get(Calendar.YEAR)));
-    }
-    catch (ParseException e)
-    {
-      //
-    }
-    datumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    return datumvon;
-  }
-
-  public DateInput getDatumbis()
-  {
-    if (datumbis != null)
-    {
-      return datumbis;
-    }
-    Calendar cal = Calendar.getInstance();
-    Date d = new Date();
-    try
-    {
-      d = new JVDateFormatTTMMJJJJ()
-          .parse(settings.getString("bis", "31.12." + cal.get(Calendar.YEAR)));
-    }
-    catch (ParseException e)
-    {
-      //
-    }
-    datumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    return datumbis;
   }
 
   public Button getStartAuswertungButton()
@@ -132,9 +78,6 @@ public class ProjektSaldoControl extends AbstractControl
       {
         settings.setAttribute("von",
             new JVDateFormatTTMMJJJJ().format((Date) getDatumvon().getValue()));
-      }
-      if (getDatumvon().getValue() != null)
-      {
         settings.setAttribute("bis",
             new JVDateFormatTTMMJJJJ().format((Date) getDatumbis().getValue()));
       }
