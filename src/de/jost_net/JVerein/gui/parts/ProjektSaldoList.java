@@ -28,9 +28,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.ProjektSaldoZeile;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Projekt;
-import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -222,6 +219,9 @@ public class ProjektSaldoList extends TablePart implements Part
           new ProjektSaldoZeile(ProjektSaldoZeile.NICHTZUGEORDNETEBUCHUNGEN,
               "Anzahl Buchungen ohne Buchungsart: " + anzahl.toString()));
     }
+    
+    // Leerzeile am Ende wegen Scrollbar
+    zeile.add(new ProjektSaldoZeile(ProjektSaldoZeile.UNDEFINED, ""));
     return zeile;
   }
 

@@ -144,6 +144,20 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     this.ausgaben = Double.valueOf(ausgaben);
     this.umbuchungen = null;
   }
+  
+  // Für Leerzeile
+  public BuchungsklasseSaldoZeile(int status, String text)
+  {
+    this.status = status;
+    this.buchungsklasse = null;
+    this.buchungsart = null;
+    this.text = text;
+    this.text_buchungsart = null;
+    this.umbuchungen = null;
+    this.einnahmen = null;
+    this.ausgaben = null;
+    this.anzahlbuchungen = null;
+  }
 
   public int getStatus()
   {

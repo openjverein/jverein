@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -30,9 +29,6 @@ import de.jost_net.JVerein.io.BuchungsklasseSaldoZeile;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
-import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -402,6 +398,9 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
           BuchungsklasseSaldoZeile.NICHTZUGEORDNETEBUCHUNGEN,
           "Anzahl Buchungen ohne Buchungsart", anzahl));
     }
+    
+    // Leerzeile am Ende wegen Scrollbar
+    zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.UNDEFINED, ""));
     return zeile;
   }
 
