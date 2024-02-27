@@ -26,9 +26,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.SaldoZeile;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
-import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
@@ -149,7 +146,10 @@ public class JahressaldoList extends TablePart implements Part
     k.setNummer("");
     k.setBezeichnung("Überschuss/Verlust(-)");
     zeile.add(new SaldoZeile(k, null, null, null, null, jahressaldo));
-
+    
+    // Leerzeile am Ende wegen Scrollbar
+    k.setBezeichnung("");
+    zeile.add(new SaldoZeile(k, null, null, null, null, null));
     return zeile;
   }
 
