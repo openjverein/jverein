@@ -26,6 +26,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
@@ -40,9 +41,11 @@ public class BuchungslisteView extends AbstractView
   @Override
   public void bind() throws Exception
   {
+    GUI.getView().setTitle("Buchungen");
+    
     final BuchungsControl control = new BuchungsControl(this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Buchungen");
+    LabelGroup group = new LabelGroup(getParent(), "Konto");
     group.addLabelPair("Konto", control.getSuchKonto());
 
     TabFolder folder = new TabFolder(getParent(), SWT.V_SCROLL | SWT.BORDER);
