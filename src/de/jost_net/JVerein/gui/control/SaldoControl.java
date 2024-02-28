@@ -20,11 +20,16 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
@@ -34,7 +39,13 @@ public class SaldoControl extends AbstractControl
   protected DateInput datumvon;
 
   protected DateInput datumbis;
+  
+  protected DateInput suchdatumvon;
 
+  protected DateInput suchdatumbis;
+  
+  protected TextInput geschaeftsjahr;
+  
   protected Settings settings = null;
 
 
@@ -63,6 +74,7 @@ public class SaldoControl extends AbstractControl
       //
     }
     datumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    datumvon.disable();
     return datumvon;
   }
 
@@ -84,12 +96,99 @@ public class SaldoControl extends AbstractControl
       //
     }
     datumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    datumbis.disable();
     return datumbis;
+  }
+  
+  public Input getGeschaeftsjahr()
+  {
+    if (geschaeftsjahr != null)
+    {
+      return geschaeftsjahr;
+    }
+    Calendar cal = Calendar.getInstance();
+    cal.setTime((Date)getDatumvon().getValue());
+    geschaeftsjahr = new TextInput(Integer.valueOf(((int) 
+        cal.get(Calendar.YEAR))).toString());
+    geschaeftsjahr.disable();
+    return geschaeftsjahr;
+  }
+  
+  public DateInput getSuchDatumvon()
+  {
+    if (suchdatumvon != null)
+    {
+      return suchdatumvon;
+    }
+    Calendar cal = Calendar.getInstance();
+    Date d = new Date();
+    try
+    {
+      d = new JVDateFormatTTMMJJJJ()
+          .parse(settings.getString("von", "01.01" + cal.get(Calendar.YEAR)));
+    }
+    catch (ParseException e)
+    {
+      //
+    }
+    suchdatumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    return suchdatumvon;
+  }
+
+  public DateInput getSuchDatumbis()
+  {
+    if (suchdatumbis != null)
+    {
+      return suchdatumbis;
+    }
+    Calendar cal = Calendar.getInstance();
+    Date d = new Date();
+    try
+    {
+      d = new JVDateFormatTTMMJJJJ()
+          .parse(settings.getString("bis", "31.12." + cal.get(Calendar.YEAR)));
+    }
+    catch (ParseException e)
+    {
+      //
+    }
+    suchdatumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    return suchdatumbis;
   }
   
   public Part getSaldoList() throws ApplicationException
   {
     //to be implemented in derived class
     return new TablePart(new ArrayList<>(), null);
+  }
+  
+  public Integer isGeschaeftsjahr()
+  {
+    try
+    {
+      Integer year;
+      Calendar cal = Calendar.getInstance();
+      Date von = (Date) getDatumvon().getValue();
+      Date bis = (Date) getDatumbis().getValue();
+      cal.setTime(von);
+      year = cal.get(Calendar.YEAR);
+      Date gjvon  = Datum.toDate(Einstellungen.getEinstellung()
+          .getBeginnGeschaeftsjahr() + year);
+      if (!von.equals(gjvon))
+      {
+        return 0;
+      }
+      cal.add(Calendar.YEAR, 1);
+      cal.add(Calendar.DAY_OF_MONTH, -1);
+      if (bis.equals(cal.getTime()))
+      {
+        return year;
+      }
+    }
+    catch (Exception e)
+    {
+      //
+    }
+    return 0;
   }
 }

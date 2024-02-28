@@ -30,11 +30,14 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
 
 public class VonBisPart implements Part
 {
   private SaldoControl control;
+  
+  private boolean suchen = false;
   
   private Calendar calendar = Calendar.getInstance();;
   
@@ -43,106 +46,128 @@ public class VonBisPart implements Part
     MONAT, TAG
   }
   
-  public VonBisPart(SaldoControl control)
+  public VonBisPart(SaldoControl control, boolean suchen)
   {
     this.control = control;
+    this.suchen = suchen;
   }
 
   @Override
   public void paint(Composite parent) throws RemoteException
   {
-    LabelGroup group = new LabelGroup(parent, "Zeitraum");
-    group.addLabelPair("Von", control.getDatumvon());
-    group.addLabelPair("Bis", control.getDatumbis());
-    ButtonArea buttons = new ButtonArea();
-        
-    Button zurueck = new Button("", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        Date von = (Date) control.getDatumvon().getValue();
-        Date bis = (Date) control.getDatumbis().getValue();
-        if (getRangeTyp(von, bis) == RANGE.TAG)
-        {
-          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
-          delta++;
-          calendar.setTime(von);
-          calendar.add(Calendar.DAY_OF_MONTH, -delta);
-          control.getDatumvon().setValue(calendar.getTime());
-          calendar.setTime(bis);
-          calendar.add(Calendar.DAY_OF_MONTH, -delta);
-          control.getDatumbis().setValue(calendar.getTime());
-        }
-        else
-        {
-          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-          int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
-          delta++;
-          calendar.setTime(von);
-          calendar.add(Calendar.MONTH, -delta);
-          control.getDatumvon().setValue(calendar.getTime());
-          calendar.add(Calendar.MONTH, delta);
-          calendar.add(Calendar.DAY_OF_MONTH, -1);
-          control.getDatumbis().setValue(calendar.getTime());
-        }
-      }
-    }, null, false, "go-previous.png");
-    buttons.addButton(zurueck);
+    SimpleContainer group = new SimpleContainer(parent, false, 2);
     
-    Button vor = new Button("", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        Date von = (Date) control.getDatumvon().getValue();
-        Date bis = (Date) control.getDatumbis().getValue();
-        if (getRangeTyp(von, bis) == RANGE.TAG)
-        {
-          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
-          delta++;
-          calendar.setTime(von);
-          calendar.add(Calendar.DAY_OF_MONTH, delta);
-          control.getDatumvon().setValue(calendar.getTime());
-          calendar.setTime(bis);
-          calendar.add(Calendar.DAY_OF_MONTH, delta);
-          control.getDatumbis().setValue(calendar.getTime());
-        }
-        else
-        {
-          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-          int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
-          delta++;
-          calendar.setTime(von);
-          calendar.add(Calendar.MONTH, delta);
-          control.getDatumvon().setValue(calendar.getTime());
-          calendar.add(Calendar.MONTH, delta);
-          calendar.add(Calendar.DAY_OF_MONTH, -1);
-          control.getDatumbis().setValue(calendar.getTime());
-        }
-      }
-    }, null, false, "go-next.png");
-    buttons.addButton(vor);
+    LabelGroup zgroup = new LabelGroup(group.getComposite(), "Zeitraum");
+    zgroup.addLabelPair("Von", control.getDatumvon());
+    zgroup.addLabelPair("Bis", control.getDatumbis());
+    zgroup.addLabelPair("Geschäftsjahr", control.getGeschaeftsjahr());
     
-    Button suchen = new Button("Suchen", new Action()
+    if (suchen)
     {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
+      LabelGroup sgroup = new LabelGroup(group.getComposite(), "Suchen");
+      sgroup.addLabelPair("Von", control.getSuchDatumvon());
+      sgroup.addLabelPair("Bis", control.getSuchDatumbis());
+      ButtonArea buttons = new ButtonArea();
+
+      Button zurueck = new Button("", new Action()
       {
-        checkDate();
-        control.getSaldoList();
-      }
-    }, null, true, "search.png");
-    buttons.addButton(suchen);
-    group.addButtonArea(buttons);
+        @Override
+        public void handleAction(Object context) throws ApplicationException
+        {
+          Date von = (Date) control.getSuchDatumvon().getValue();
+          Date bis = (Date) control.getSuchDatumbis().getValue();
+          if (getRangeTyp(von, bis) == RANGE.TAG)
+          {
+            int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+            delta++;
+            calendar.setTime(von);
+            calendar.add(Calendar.DAY_OF_MONTH, -delta);
+            control.getSuchDatumvon().setValue(calendar.getTime());
+            calendar.setTime(bis);
+            calendar.add(Calendar.DAY_OF_MONTH, -delta);
+            control.getSuchDatumbis().setValue(calendar.getTime());
+          }
+          else
+          {
+            LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
+            delta++;
+            calendar.setTime(von);
+            calendar.add(Calendar.MONTH, -delta);
+            control.getSuchDatumvon().setValue(calendar.getTime());
+            calendar.add(Calendar.MONTH, delta);
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+            control.getSuchDatumbis().setValue(calendar.getTime());
+          }
+        }
+      }, null, false, "go-previous.png");
+      buttons.addButton(zurueck);
+
+      Button vor = new Button("", new Action()
+      {
+        @Override
+        public void handleAction(Object context) throws ApplicationException
+        {
+          Date von = (Date) control.getSuchDatumvon().getValue();
+          Date bis = (Date) control.getSuchDatumbis().getValue();
+          if (getRangeTyp(von, bis) == RANGE.TAG)
+          {
+            int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+            delta++;
+            calendar.setTime(von);
+            calendar.add(Calendar.DAY_OF_MONTH, delta);
+            control.getSuchDatumvon().setValue(calendar.getTime());
+            calendar.setTime(bis);
+            calendar.add(Calendar.DAY_OF_MONTH, delta);
+            control.getSuchDatumbis().setValue(calendar.getTime());
+          }
+          else
+          {
+            LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
+            delta++;
+            calendar.setTime(von);
+            calendar.add(Calendar.MONTH, delta);
+            control.getSuchDatumvon().setValue(calendar.getTime());
+            calendar.add(Calendar.MONTH, delta);
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+            control.getSuchDatumbis().setValue(calendar.getTime());
+          }
+        }
+      }, null, false, "go-next.png");
+      buttons.addButton(vor);
+
+      Button suchen = new Button("Suchen", new Action()
+      {
+        @Override
+        public void handleAction(Object context) throws ApplicationException
+        {
+          checkDate();
+          control.getDatumvon().setValue(control.getSuchDatumvon().getValue());
+          control.getDatumbis().setValue(control.getSuchDatumbis().getValue());
+          Integer year = control.isGeschaeftsjahr();
+          if (year != 0)
+          {
+            control.getGeschaeftsjahr().setValue(year.toString());
+          }
+          else
+          {
+            control.getGeschaeftsjahr().setValue("");
+          }
+          control.getSaldoList();
+        }
+      }, null, true, "search.png");
+      buttons.addButton(suchen);
+      sgroup.addButtonArea(buttons);
+    }
   }
-  
+
   private void checkDate() throws ApplicationException
   {
-    Date von = (Date) control.getDatumvon().getValue();
-    Date bis = (Date) control.getDatumbis().getValue();
+    Date von = (Date) control.getSuchDatumvon().getValue();
+    Date bis = (Date) control.getSuchDatumbis().getValue();
     if (von.after(bis))
     {
       throw new ApplicationException("Von Datum ist nach Ist Datum!");

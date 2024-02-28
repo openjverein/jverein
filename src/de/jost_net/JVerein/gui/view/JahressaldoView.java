@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.JahressaldoControl;
 import de.jost_net.JVerein.gui.parts.QuickAccessPart;
+import de.jost_net.JVerein.gui.parts.VonBisPart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -34,11 +35,8 @@ public class JahressaldoView extends AbstractView
 
     final JahressaldoControl control = new JahressaldoControl(this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Zeitraum");
-    group.addLabelPair("Von", control.getDatumvon());
-    group.addLabelPair("Bis", control.getDatumbis());
-    control.getDatumvon().disable();
-    control.getDatumbis().disable();
+    VonBisPart vpart = new VonBisPart(control, false);
+    vpart.paint(this.getParent());
     
     QuickAccessPart part = new QuickAccessPart(control, false);
     part.paint(this.getParent());

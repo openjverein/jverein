@@ -88,9 +88,11 @@ public class QuickAccessPart implements Part
         try
         {
           jahr = startjahr;
+          Integer geschaeftsjahr = jahr+anzahlButtons-1;
           updateButtons();
-          control.getDatumvon().setValue(genYearStartDate(jahr+anzahlButtons-1));
-          control.getDatumbis().setValue(genYearEndDate(jahr+anzahlButtons-1));
+          control.getDatumvon().setValue(genYearStartDate(geschaeftsjahr));
+          control.getDatumbis().setValue(genYearEndDate(geschaeftsjahr));
+          control.getGeschaeftsjahr().setValue(geschaeftsjahr.toString());
           control.getSaldoList();
         }
         catch (RemoteException e)
@@ -196,11 +198,22 @@ public class QuickAccessPart implements Part
         {
           control.getDatumvon().setValue(von);
           control.getDatumbis().setValue(bis);
+          Integer year = control.isGeschaeftsjahr();
+          if (year != 0)
+          {
+            control.getGeschaeftsjahr().setValue(year.toString());
+          }
+          else
+          {
+            control.getGeschaeftsjahr().setValue("");
+          }
         }
         else
         {
-          control.getDatumvon().setValue(genYearStartDate(jahr+offset));
-          control.getDatumbis().setValue(genYearEndDate(jahr+offset));
+          Integer geschaeftsjahr = jahr+offset;
+          control.getDatumvon().setValue(genYearStartDate(geschaeftsjahr));
+          control.getDatumbis().setValue(genYearEndDate(geschaeftsjahr));
+          control.getGeschaeftsjahr().setValue(geschaeftsjahr.toString());
         }
 
         control.getSaldoList();
