@@ -57,7 +57,7 @@ public class VonBisPart implements Part
   {
     SimpleContainer group = new SimpleContainer(parent, false, 2);
     
-    LabelGroup zgroup = new LabelGroup(group.getComposite(), "Zeitraum");
+    LabelGroup zgroup = new LabelGroup(group.getComposite(), "Aktuell angezeigter Zeitraum");
     zgroup.addLabelPair("Von", control.getDatumvon());
     zgroup.addLabelPair("Bis", control.getDatumbis());
     zgroup.addLabelPair("Geschäftsjahr", control.getGeschaeftsjahr());
