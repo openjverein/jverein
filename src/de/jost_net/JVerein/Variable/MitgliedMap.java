@@ -244,7 +244,7 @@ public class MitgliedMap
         zahlungsweg = Einstellungen.getEinstellung().getRechnungTextBar();
         break;
       }
-      case Zahlungsweg.UBERWEISUNG:
+      case Zahlungsweg.UEBERWEISUNG:
       {
         zahlungsweg = Einstellungen.getEinstellung()
             .getRechnungTextUeberweisung();

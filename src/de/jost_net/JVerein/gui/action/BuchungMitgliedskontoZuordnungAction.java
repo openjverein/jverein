@@ -99,7 +99,7 @@ public class BuchungMitgliedskontoZuordnungAction implements Action
           mk.setBetrag(betrag);
           mk.setDatum(b[0].getDatum());
           mk.setMitglied(m);
-          mk.setZahlungsweg(Zahlungsweg.UBERWEISUNG);
+          mk.setZahlungsweg(Zahlungsweg.UEBERWEISUNG);
           mk.setZweck1(b[0].getZweck());
           mk.store();
         }
