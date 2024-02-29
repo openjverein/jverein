@@ -31,14 +31,14 @@ public class JahressaldoView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Jahressaldo");
+    GUI.getView().setTitle("Kontensaldo");
 
     final JahressaldoControl control = new JahressaldoControl(this);
 
-    VonBisPart vpart = new VonBisPart(control, false);
+    VonBisPart vpart = new VonBisPart(control, true);
     vpart.paint(this.getParent());
     
-    QuickAccessPart part = new QuickAccessPart(control, false);
+    QuickAccessPart part = new QuickAccessPart(control, true);
     part.paint(this.getParent());
 
     LabelGroup group2 = new LabelGroup(getParent(), "Saldo", true);

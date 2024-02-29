@@ -85,18 +85,15 @@ public class JahressaldoControl extends SaldoControl
         settings.setAttribute("bis",
             new JVDateFormatTTMMJJJJ().format(getDatumbis().getDate()));
       }
-      
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(getDatumvon().getDate());
-      int jahr = cal.get(Calendar.YEAR);
 
       if (saldoList == null)
       {
-        saldoList = new JahressaldoList(null, new Geschaeftsjahr(jahr));
+          saldoList = new JahressaldoList(null, 
+              getDatumvon().getDate(), getDatumbis().getDate());
       }
       else
       {
-        saldoList.setGeschaeftsjahr(new Geschaeftsjahr(jahr));
+        saldoList.setVonBis(getDatumvon().getDate(), getDatumbis().getDate());
         ArrayList<SaldoZeile> zeile = saldoList.getInfo();
         saldoList.removeAll();
         for (SaldoZeile sz : zeile)
@@ -106,10 +103,6 @@ public class JahressaldoControl extends SaldoControl
       }
     }
     catch (RemoteException e)
-    {
-      throw new ApplicationException("Fehler aufgetreten " + e.getMessage());
-    }
-    catch (ParseException e)
     {
       throw new ApplicationException("Fehler aufgetreten " + e.getMessage());
     }
