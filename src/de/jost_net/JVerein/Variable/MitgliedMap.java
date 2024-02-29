@@ -98,7 +98,7 @@ public class MitgliedMap
       m.setKtoiName("Wichtig");
       m.setKtoiVorname("Willi");
       m.setKtoiStrasse("Bahnhofstr. 22");
-      m.setAdressierungszusatz("Hinterhof bei Lieschen Müller");
+      m.setAdressierungszusatz("Hinterhof bei Lieschen MÃ¼ller");
       m.setPlz("12345");
       m.setOrt("Testenhausen");
       m.setKuendigung("21.02.2011");
@@ -244,7 +244,7 @@ public class MitgliedMap
         zahlungsweg = Einstellungen.getEinstellung().getRechnungTextBar();
         break;
       }
-      case Zahlungsweg.UBERWEISUNG:
+      case Zahlungsweg.UEBERWEISUNG:
       {
         zahlungsweg = Einstellungen.getEinstellung()
             .getRechnungTextUeberweisung();
@@ -340,7 +340,7 @@ public class MitgliedMap
 
     if (!ohneLesefelder)
     {
-      // Füge Lesefelder diesem Mitglied-Objekt hinzu.
+      // FÃ¼ge Lesefelder diesem Mitglied-Objekt hinzu.
       LesefeldAuswerter l = new LesefeldAuswerter();
       l.setLesefelderDefinitionsFromDatabase();
       l.setMap(map);
