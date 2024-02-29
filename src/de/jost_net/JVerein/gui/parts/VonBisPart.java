@@ -145,8 +145,8 @@ public class VonBisPart implements Part
         public void handleAction(Object context) throws ApplicationException
         {
           checkDate();
-          control.getDatumvon().setValue(control.getSuchDatumvon().getValue());
-          control.getDatumbis().setValue(control.getSuchDatumbis().getValue());
+          control.getDatumvon().setDate((Date) control.getSuchDatumvon().getValue());
+          control.getDatumbis().setDate((Date) control.getSuchDatumbis().getValue());
           Integer year = control.isGeschaeftsjahr();
           if (year != 0)
           {

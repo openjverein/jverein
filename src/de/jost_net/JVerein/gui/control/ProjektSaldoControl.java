@@ -74,26 +74,26 @@ public class ProjektSaldoControl extends SaldoControl
   {
     try
     {
-      if (getDatumvon().getValue() != null)
+      if (getDatumvon().getDate() != null)
       {
         settings.setAttribute("von",
-            new JVDateFormatTTMMJJJJ().format((Date) getDatumvon().getValue()));
+            new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
         settings.setAttribute("bis",
-            new JVDateFormatTTMMJJJJ().format((Date) getDatumbis().getValue()));
+            new JVDateFormatTTMMJJJJ().format(getDatumbis().getDate()));
       }
 
       if (saldoList == null)
       {
-        saldoList = new ProjektSaldoList(null, (Date) datumvon.getValue(),
-            (Date) datumbis.getValue());
+        saldoList = new ProjektSaldoList(null, datumvon.getDate(),
+            datumbis.getDate());
       }
       else
       {
         settings.setAttribute("von",
-            new JVDateFormatTTMMJJJJ().format((Date) getDatumvon().getValue()));
+            new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
 
-        saldoList.setDatumvon((Date) datumvon.getValue());
-        saldoList.setDatumbis((Date) datumbis.getValue());
+        saldoList.setDatumvon(datumvon.getDate());
+        saldoList.setDatumbis(datumbis.getDate());
         ArrayList<ProjektSaldoZeile> zeile = saldoList.getInfo();
         saldoList.removeAll();
         for (ProjektSaldoZeile sz : zeile)
@@ -139,8 +139,8 @@ public class ProjektSaldoControl extends SaldoControl
 
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
-      auswertungSaldoPDF(zeile, file, (Date) getDatumvon().getValue(),
-          (Date) getDatumbis().getValue());
+      auswertungSaldoPDF(zeile, file, getDatumvon().getDate(),
+          getDatumbis().getDate());
     }
     catch (RemoteException e)
     {

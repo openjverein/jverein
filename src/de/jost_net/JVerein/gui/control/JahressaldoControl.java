@@ -21,7 +21,6 @@ import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
@@ -79,16 +78,16 @@ public class JahressaldoControl extends SaldoControl
   {
     try
     {
-      if (getDatumvon().getValue() != null)
+      if (getDatumvon().getDate() != null)
       {
         settings.setAttribute("von",
-            new JVDateFormatTTMMJJJJ().format((Date) getDatumvon().getValue()));
+            new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
         settings.setAttribute("bis",
-            new JVDateFormatTTMMJJJJ().format((Date) getDatumbis().getValue()));
+            new JVDateFormatTTMMJJJJ().format(getDatumbis().getDate()));
       }
       
       Calendar cal = Calendar.getInstance();
-      cal.setTime((Date) getDatumvon().getValue());
+      cal.setTime(getDatumvon().getDate());
       int jahr = cal.get(Calendar.YEAR);
 
       if (saldoList == null)
@@ -147,7 +146,7 @@ public class JahressaldoControl extends SaldoControl
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
       Calendar cal = Calendar.getInstance();
-      cal.setTime((Date) getDatumvon().getValue());
+      cal.setTime(getDatumvon().getDate());
       int jahr = cal.get(Calendar.YEAR);
       Geschaeftsjahr gj = new Geschaeftsjahr(jahr);
 

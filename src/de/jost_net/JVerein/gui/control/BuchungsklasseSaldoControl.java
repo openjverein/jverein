@@ -93,26 +93,26 @@ public class BuchungsklasseSaldoControl extends SaldoControl
   {
     try
     {
-      if (getDatumvon().getValue() != null)
+      if (getDatumvon().getDate() != null)
       {
         settings.setAttribute("von",
-            new JVDateFormatTTMMJJJJ().format((Date) getDatumvon().getValue()));
+            new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
         settings.setAttribute("bis",
-            new JVDateFormatTTMMJJJJ().format((Date) getDatumbis().getValue()));
+            new JVDateFormatTTMMJJJJ().format(getDatumbis().getDate()));
       }
 
       if (saldoList == null)
       {
         saldoList = new BuchungsklasseSaldoList(null,
-            (Date) datumvon.getValue(), (Date) datumbis.getValue());
+            datumvon.getDate(), datumbis.getDate());
       }
       else
       {
         settings.setAttribute("von",
-            new JVDateFormatTTMMJJJJ().format((Date) getDatumvon().getValue()));
+            new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
 
-        saldoList.setDatumvon((Date) datumvon.getValue());
-        saldoList.setDatumbis((Date) datumbis.getValue());
+        saldoList.setDatumvon(datumvon.getDate());
+        saldoList.setDatumbis(datumbis.getDate());
         ArrayList<BuchungsklasseSaldoZeile> zeile = saldoList.getInfo();
         saldoList.removeAll();
         for (BuchungsklasseSaldoZeile sz : zeile)
@@ -160,8 +160,8 @@ public class BuchungsklasseSaldoControl extends SaldoControl
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
 
-      auswertungSaldo(zeile, file, (Date) getDatumvon().getValue(),
-          (Date) getDatumbis().getValue(), type);
+      auswertungSaldo(zeile, file, getDatumvon().getDate(),
+          getDatumbis().getDate(), type);
     }
     catch (RemoteException e)
     {

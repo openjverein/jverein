@@ -36,9 +36,9 @@ import de.willuhn.util.ApplicationException;
 
 public class SaldoControl extends AbstractControl
 {
-  protected DateInput datumvon;
+  protected DateLabel datumvon;
 
-  protected DateInput datumbis;
+  protected DateLabel datumbis;
   
   protected DateInput suchdatumvon;
 
@@ -56,7 +56,7 @@ public class SaldoControl extends AbstractControl
     settings.setStoreWhenRead(true);
   }
 
-  public DateInput getDatumvon()
+  public DateLabel getDatumvon()
   {
     if (datumvon != null)
     {
@@ -73,12 +73,12 @@ public class SaldoControl extends AbstractControl
     {
       //
     }
-    datumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    datumvon = new DateLabel(d);
     datumvon.disable();
     return datumvon;
   }
 
-  public DateInput getDatumbis()
+  public DateLabel getDatumbis()
   {
     if (datumbis != null)
     {
@@ -95,7 +95,7 @@ public class SaldoControl extends AbstractControl
     {
       //
     }
-    datumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    datumbis = new DateLabel(d);
     datumbis.disable();
     return datumbis;
   }
@@ -107,7 +107,7 @@ public class SaldoControl extends AbstractControl
       return geschaeftsjahr;
     }
     Calendar cal = Calendar.getInstance();
-    cal.setTime((Date)getDatumvon().getValue());
+    cal.setTime(getDatumvon().getDate());
     geschaeftsjahr = new TextInput(Integer.valueOf(((int) 
         cal.get(Calendar.YEAR))).toString());
     geschaeftsjahr.disable();
@@ -168,8 +168,8 @@ public class SaldoControl extends AbstractControl
     {
       Integer year;
       Calendar cal = Calendar.getInstance();
-      Date von = (Date) getDatumvon().getValue();
-      Date bis = (Date) getDatumbis().getValue();
+      Date von = getDatumvon().getDate();
+      Date bis = getDatumbis().getDate();
       cal.setTime(von);
       year = cal.get(Calendar.YEAR);
       Date gjvon  = Datum.toDate(Einstellungen.getEinstellung()
@@ -190,5 +190,29 @@ public class SaldoControl extends AbstractControl
       //
     }
     return 0;
+  }
+  
+  public class DateLabel extends TextInput
+  {
+    private Date d;
+    
+    DateLabel(Date date)
+    {
+      super("");
+      setDate(date);
+    }
+    
+    public void setDate(Date date)
+    {
+      d = date;
+      JVDateFormatTTMMJJJJ df = new JVDateFormatTTMMJJJJ();
+      String dstring = d == null ? "" : df.format(d);
+      super.setValue(dstring);
+    }
+
+    public Date getDate()
+    {
+      return d;
+    }
   }
 }
