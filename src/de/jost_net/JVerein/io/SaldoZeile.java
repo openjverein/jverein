@@ -89,8 +89,9 @@ public class SaldoZeile implements GenericObject
     DBService service = Einstellungen.getDBService();
     Date vonRange = null;
     Date bisRange = null;
+    Calendar cal = Calendar.getInstance();
     
-    // Suchen ob Anfangsstand innerhalb des Bereichs
+    // Suchen ob Anfangsstand im Suchbereich enthalten ist
     DBIterator<Anfangsbestand> anf = service.createList(Anfangsbestand.class);
     anf.addFilter("konto = ? ", new Object[] { konto.getID() });
     anf.addFilter("datum >= ? AND datum <= ?", new Object[] { von, bis });
@@ -115,23 +116,12 @@ public class SaldoZeile implements GenericObject
     @SuppressWarnings("unchecked")
     ArrayList<Anfangsbestand> anf2 = (ArrayList<Anfangsbestand>) PseudoIterator.asList(anf);
     
-    // Anfangsstand ist im Bereich vorhanden und es gibt keinen Anfangsstand vorher
-    // Dann muß das Konto im Lauf des Jahres erzeugt worden sein, Also starte erst dann
-    if (anf1 != null && !anf1.isEmpty() && (anf2 == null || anf2.isEmpty()))
-    {
-      Anfangsbestand a = anf1.get(0);
-      anfangsbestand = a.getBetrag();
-      extract(service, anf1.get(0).getDatum(), bis);
-      return;
-    }
-    
     // Anfangsstand vor von Datum vorhanden
     if (anf2 != null && !anf2.isEmpty())
     {
       int size = anf2.size();
-      // Endstand zum von Datum berechnen
+      // Endstand zum von Datum berechnen vom letzten Anfangsbestand
       vonRange = anf2.get(size-1).getDatum();
-      Calendar cal = Calendar.getInstance();
       cal.setTime(von);
       cal.add(Calendar.DAY_OF_MONTH, -1);
       bisRange = cal.getTime();
@@ -141,12 +131,28 @@ public class SaldoZeile implements GenericObject
       // Jetzt Anfangsstand zum von Datum setzen
       anfangsbestand = endbestand;
       extract(service, von, bis);
+      return;
     }
-    else
+    
+    // Anfangsstand ist im Bereich vorhanden und es gibt keinen Anfangsstand vorher
+    // Dann muß das Konto im Bereich erzeugt worden sein oder es gibt keinen 
+    // früheren Anfangsstand. Dann zurückrechnen
+    if (anf1 != null && !anf1.isEmpty() && (anf2 == null || anf2.isEmpty()))
     {
-      anfangsbestand = 0.0d;
-      bemerkung += "kein Anfangsbestand vorhanden  ";
+      // Delta in die Zukunft berechnen
+      cal.setTime(anf1.get(0).getDatum());
+      cal.add(Calendar.DAY_OF_MONTH, -1);
+      bisRange = cal.getTime();
+      extract(service, von, bisRange);
+      Anfangsbestand a = anf1.get(0);
+      // Endstand zum von Datum berechnen
+      anfangsbestand = a.getBetrag() - endbestand;
+      extract(service, von, bis);
+      return;
     }
+
+    anfangsbestand = 0.0d;
+    bemerkung += "kein Anfangsbestand vorhanden  ";
   }
 
   @Override
