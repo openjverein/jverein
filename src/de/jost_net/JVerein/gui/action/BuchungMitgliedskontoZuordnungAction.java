@@ -48,7 +48,7 @@ public class BuchungMitgliedskontoZuordnungAction implements Action
     if (context == null || !(context instanceof Buchung)
         && !(context instanceof Buchung[]))
     {
-      throw new ApplicationException("Keine Buchung(en) ausgewählt");
+      throw new ApplicationException("Keine Buchung(en) ausgewÃ¤hlt");
     }
     try
     {
@@ -99,7 +99,7 @@ public class BuchungMitgliedskontoZuordnungAction implements Action
           mk.setBetrag(betrag);
           mk.setDatum(b[0].getDatum());
           mk.setMitglied(m);
-          mk.setZahlungsweg(Zahlungsweg.UBERWEISUNG);
+          mk.setZahlungsweg(Zahlungsweg.UEBERWEISUNG);
           mk.setZweck1(b[0].getZweck());
           mk.store();
         }
@@ -113,7 +113,7 @@ public class BuchungMitgliedskontoZuordnungAction implements Action
 
         if (mk == null)
         {
-          GUI.getStatusBar().setSuccessText("Mitgliedskonto gelöscht");
+          GUI.getStatusBar().setSuccessText("Mitgliedskonto gelÃ¶scht");
         } 
         else
         {
