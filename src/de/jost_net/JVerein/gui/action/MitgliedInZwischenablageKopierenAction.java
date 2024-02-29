@@ -60,16 +60,16 @@ public class MitgliedInZwischenablageKopierenAction implements Action
       StringBuilder clip = new StringBuilder();
 
       // bestimme ausgewählte/selektierte Mitglieder
-      ArrayList<Mitglied> ausgewählteMitglieder = new ArrayList<>();
+      ArrayList<Mitglied> ausgewaehlteMitglieder = new ArrayList<>();
       if (context instanceof Mitglied)
       {
-        ausgewählteMitglieder.add((Mitglied) context);
+        ausgewaehlteMitglieder.add((Mitglied) context);
       }
       else if (context instanceof Mitglied[])
       {
         for (Mitglied mitglied : (Mitglied[]) context)
         {
-          ausgewählteMitglieder.add(mitglied);
+          ausgewaehlteMitglieder.add(mitglied);
         }
       }
 
@@ -95,7 +95,7 @@ public class MitgliedInZwischenablageKopierenAction implements Action
        */
 
       // schreibe Mitgliederdaten nach clip
-      for (Mitglied mitglied : ausgewählteMitglieder)
+      for (Mitglied mitglied : ausgewaehlteMitglieder)
       {
 
         try

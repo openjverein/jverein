@@ -29,7 +29,7 @@ public class Suchbetrag
 
   public enum Suchstrategie
   {
-    KEINE, GLEICH, GRÖSSER, GRÖSSERGLEICH, KLEINER, KLEINERGLEICH, BEREICH, UNGÜLTIG
+    KEINE, GLEICH, GROESSER, GROESSERGLEICH, KLEINER, KLEINERGLEICH, BEREICH, UNGUELTIG
   }
 
   private Suchstrategie sustrat = Suchstrategie.KEINE;
@@ -76,12 +76,12 @@ public class Suchbetrag
     }
     if (liste.get(0).equals(">"))
     {
-      sustrat = Suchstrategie.GRÖSSER;
+      sustrat = Suchstrategie.GROESSER;
       liste.remove(0);
     }
     else if (liste.get(0).equals(">="))
     {
-      sustrat = Suchstrategie.GRÖSSERGLEICH;
+      sustrat = Suchstrategie.GROESSERGLEICH;
       liste.remove(0);
     }
     else if (liste.get(0).equals("<"))
@@ -126,7 +126,7 @@ public class Suchbetrag
     }
     catch (ParseException e)
     {
-      sustrat = Suchstrategie.UNGÜLTIG;
+      sustrat = Suchstrategie.UNGUELTIG;
       throw new Exception("Wert ungültig");
     }
   }

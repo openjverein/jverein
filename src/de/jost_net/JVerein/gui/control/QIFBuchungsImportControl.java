@@ -737,7 +737,7 @@ public class QIFBuchungsImportControl extends AbstractControl
       mk.setBetrag(buchung.getBetrag());
       mk.setDatum(buchung.getDatum());
       mk.setMitglied(mitglied);
-      mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+      mk.setZahlungsweg(Zahlungsweg.UBERWEISUNG);
       mk.setZweck1(buchung.getZweck());
       mk.store();
 

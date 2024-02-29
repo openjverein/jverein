@@ -207,12 +207,12 @@ public class BuchungQuery
             it.addFilter("betrag = ?", suchbetrag.getBetrag());
             break;
           }
-          case GRÖSSER:
+          case GROESSER:
           {
             it.addFilter("betrag > ?", suchbetrag.getBetrag());
             break;
           }
-          case GRÖSSERGLEICH:
+          case GROESSERGLEICH:
           {
             it.addFilter("betrag >= ?", suchbetrag.getBetrag());
             break;

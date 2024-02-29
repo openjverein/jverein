@@ -26,7 +26,7 @@ public class Zahlungsweg
 
   public static final int BASISLASTSCHRIFT = 1;
 
-  public static final int ÜBERWEISUNG = 2;
+  public static final int UBERWEISUNG = 2;
 
   public static final int BARZAHLUNG = 3;
 
@@ -53,7 +53,7 @@ public class Zahlungsweg
     {
       case BASISLASTSCHRIFT:
         return "Basislastschrift";
-      case ÜBERWEISUNG:
+      case UBERWEISUNG:
         return "Überweisung";
       case BARZAHLUNG:
         return "Barzahlung";
@@ -66,7 +66,7 @@ public class Zahlungsweg
   {
     ArrayList<Zahlungsweg> ret = new ArrayList<>();
     ret.add(new Zahlungsweg(BASISLASTSCHRIFT));
-    ret.add(new Zahlungsweg(ÜBERWEISUNG));
+    ret.add(new Zahlungsweg(UBERWEISUNG));
     ret.add(new Zahlungsweg(BARZAHLUNG));
     return ret;
   }

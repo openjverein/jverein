@@ -699,7 +699,7 @@ public class Import
     else if (zahlart.equalsIgnoreCase("u")
         || zahlart.equalsIgnoreCase("ueberweisung"))
     {
-      zahlweg = Zahlungsweg.ÜBERWEISUNG;
+      zahlweg = Zahlungsweg.UBERWEISUNG;
     }
     else
     {

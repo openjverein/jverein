@@ -212,7 +212,7 @@ public class BuchungenMitgliedskontenZuordnungDialog extends AbstractDialog<Obje
           if(useIbanInput || useMemberNumberInput || useNameInput)
           {
             DBIterator<Mitglied> mitglieder = Einstellungen.getDBService().createList(Mitglied.class);
-            mitglieder.addFilter("zahlungsweg = ?", Zahlungsweg.ÜBERWEISUNG);
+            mitglieder.addFilter("zahlungsweg = ?", Zahlungsweg.UBERWEISUNG);
 
             while(mitglieder.hasNext())
             {
@@ -375,7 +375,7 @@ public class BuchungenMitgliedskontenZuordnungDialog extends AbstractDialog<Obje
           + "   AND m.zahlungsweg = ?"
           + " GROUP BY m.id"
           + " ORDER BY a.stichtag, m.id";
-      Einstellungen.getDBService().execute(sql, new Object[] { dateFromInput, dateUntilInput, mitgliedsId, Zahlungsweg.ÜBERWEISUNG}, rs);
+      Einstellungen.getDBService().execute(sql, new Object[] { dateFromInput, dateUntilInput, mitgliedsId, Zahlungsweg.UBERWEISUNG}, rs);
     }
 
     return processed;

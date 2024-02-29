@@ -988,7 +988,7 @@ public class BuchungsControl extends AbstractControl
         mk.setBetrag(b.getBetrag());
         mk.setDatum(b.getDatum());
         mk.setMitglied(mitglied);
-        mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+        mk.setZahlungsweg(Zahlungsweg.UBERWEISUNG);
         mk.setZweck1(b.getZweck());
         mk.store();
         mitgliedskonto.setValue(mk);
