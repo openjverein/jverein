@@ -602,6 +602,7 @@ public class MitgliedskontoControl extends AbstractControl
         List<MitgliedskontoNode> items = mitgliedskontoTree.getItems();
         for (MitgliedskontoNode mkn : items)
         {
+          @SuppressWarnings("rawtypes")
           GenericIterator items2 = mkn.getChildren();
           while (items2.hasNext())
           {
@@ -637,6 +638,7 @@ public class MitgliedskontoControl extends AbstractControl
       throws RemoteException
   {
     this.action = action;
+    @SuppressWarnings("rawtypes")
     GenericIterator mitgliedskonten = getMitgliedskontoIterator();
     settings.setAttribute("differenz", getDifferenz().getValue().toString());
     if (mitgliedskontoList == null)
@@ -745,6 +747,7 @@ public class MitgliedskontoControl extends AbstractControl
     return mitglieder;
   }
 
+  @SuppressWarnings("rawtypes")
   public GenericIterator getMitgliedskontoIterator() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();

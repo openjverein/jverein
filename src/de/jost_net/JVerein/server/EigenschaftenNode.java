@@ -147,6 +147,7 @@ public class EigenschaftenNode implements GenericObjectNode
   }
 
   @Override
+  @SuppressWarnings("rawtypes")
   public GenericIterator getChildren() throws RemoteException
   {
     if (childrens == null)
@@ -169,12 +170,14 @@ public class EigenschaftenNode implements GenericObjectNode
   }
 
   @Override
+  @SuppressWarnings("rawtypes")
   public GenericIterator getPath()
   {
     return null;
   }
 
   @Override
+  @SuppressWarnings("rawtypes")
   public GenericIterator getPossibleParents()
   {
     return null;

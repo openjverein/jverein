@@ -17,7 +17,6 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;

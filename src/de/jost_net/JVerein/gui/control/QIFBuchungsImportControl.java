@@ -321,6 +321,7 @@ public class QIFBuchungsImportControl extends AbstractControl
     endSaldo.setValue(Double.valueOf(saldo));
   }
 
+  @SuppressWarnings("rawtypes")
   private GenericIterator getIterator() throws RemoteException
   {
     ArrayList<QIFImportPos> zeile = new ArrayList<>();

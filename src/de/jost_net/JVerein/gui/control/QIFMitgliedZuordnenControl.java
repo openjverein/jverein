@@ -277,7 +277,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
     {
       return mitgliederInput;
     }
-    mitgliederInput = new SelectInput((GenericIterator) null, null);
+    mitgliederInput = new SelectInput((Object[]) null, null);
     mitgliederInput.setAttribute("namevorname");
     mitgliederInput.setPleaseChoose("Bitte auswählen");
     mitgliederInput.setComment(" ");
@@ -356,6 +356,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
    * 
    * @throws RemoteException
    */
+  @SuppressWarnings("rawtypes")
   private GenericIterator getDistinctQIFNameList() throws RemoteException
   {
     DBIterator<QIFImportPos> it = Einstellungen.getDBService()

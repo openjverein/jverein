@@ -17,7 +17,6 @@
 package com.schlevoigt.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 
 import com.schlevoigt.JVerein.Queries.BuchungsKorrekturQuery;
 import com.schlevoigt.JVerein.util.Misc;

@@ -487,7 +487,7 @@ public class ArbeitseinsatzControl extends AbstractControl
   {
     ArrayList<ArbeitseinsatzZeile> zeile = arbeitseinsatzueberpruefungList
         .getInfo();
-
+    @SuppressWarnings("unchecked")
     GenericIterator<ArbeitseinsatzZeile> gi = PseudoIterator
         .fromArray(zeile.toArray(new GenericObject[zeile.size()]));
     return gi;
