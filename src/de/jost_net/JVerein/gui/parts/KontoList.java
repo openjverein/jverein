@@ -20,12 +20,13 @@ package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
 import java.util.Calendar;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Konto;
-import de.willuhn.datasource.GenericIterator;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
@@ -36,14 +37,13 @@ import de.willuhn.jameica.gui.parts.TablePart;
  */
 public class KontoList extends TablePart implements Part
 {
-
   public KontoList(Action action, boolean onlyHibiscus,
       boolean nurAktuelleKonten) throws RemoteException
   {
     this(init(onlyHibiscus, nurAktuelleKonten), action);
   }
 
-  public KontoList(GenericIterator konten, Action action)
+  public KontoList(List<Konto> konten, Action action)
   {
     super(konten, action);
 
@@ -73,10 +73,10 @@ public class KontoList extends TablePart implements Part
 	      boolean nurAktuelleKonten) throws RemoteException
   {
     super.removeAll();
-    DBIterator<Konto> i = init(onlyHibiscus, nurAktuelleKonten);
-    while (i.hasNext()) 
+    List<Konto> list = init(onlyHibiscus, nurAktuelleKonten);
+    for (Konto kto: list) 
     {
-      super.addItem(i.next());
+      super.addItem(kto);
     }
   }
   
@@ -86,7 +86,8 @@ public class KontoList extends TablePart implements Part
    * @return Liste der Konten.
    * @throws RemoteException
    */
-  private static DBIterator<Konto> init(boolean onlyHibiscus,
+  @SuppressWarnings("unchecked")
+  private static List<Konto> init(boolean onlyHibiscus,
       boolean nurAktuelleKonten) throws RemoteException
   {
     DBIterator<Konto> i = Einstellungen.getDBService().createList(Konto.class);
@@ -98,10 +99,10 @@ public class KontoList extends TablePart implements Part
     {
       Calendar cal = Calendar.getInstance();
       int year = cal.get(Calendar.YEAR);
-      year = year - 2;
+      year = year - Einstellungen.getEinstellung().getUnterdrueckungKonten();
       i.addFilter("(aufloesung is null or year(aufloesung) >= ?)", year);
     }
     i.setOrder("ORDER BY nummer, bezeichnung");
-    return i;
+    return PseudoIterator.asList(i);
   }
 }

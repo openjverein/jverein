@@ -271,6 +271,11 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public void setUnterdrueckungLaenge(int unterdrueckunglaenge)
       throws RemoteException;
+  
+  public int getUnterdrueckungKonten() throws RemoteException;
+  
+  public void setUnterdrueckungKonten(int unterdrueckungkonten)
+      throws RemoteException;
 
   public Boolean getKontonummerInBuchungsliste() throws RemoteException;
 

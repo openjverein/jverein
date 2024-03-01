@@ -63,7 +63,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
       boolean nurHibiscus, boolean nurAktuelleKonten)
   {
     super(position);
-    super.setSize(400, 300);
+    super.setSize(400, 350);
     this.setTitle("Konto-Auswahl");
     this.keinkonto = keinkonto;
     this.nurHibiscus = nurHibiscus;

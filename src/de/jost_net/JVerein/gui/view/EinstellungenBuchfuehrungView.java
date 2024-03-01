@@ -38,6 +38,8 @@ public class EinstellungenBuchfuehrungView extends AbstractView
 
     cont.addLabelPair("Beginn Geschäftsjahr (TT.MM.)",
         control.getBeginnGeschaeftsjahr());
+    cont.addLabelPair("Intervall für aktive Konten (Jahre)",
+        control.getUnterdrueckungKonten());
     cont.addLabelPair("Buchungsarten die seit x Monaten nicht benutzt werden unterdrücken",
         control.getUnterdrueckungLaenge());
     cont.addInput(control.getAutoBuchunguebernahme());
