@@ -31,7 +31,7 @@ public class JahressaldoView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Kontensaldo");
+    GUI.getView().setTitle("Konten-Saldo");
 
     final JahressaldoControl control = new JahressaldoControl(this);
 
