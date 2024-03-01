@@ -147,6 +147,10 @@ public class SaldoZeile implements GenericObject
       Anfangsbestand a = anf1.get(0);
       // Endstand zum von Datum berechnen
       anfangsbestand = a.getBetrag() - endbestand;
+      if (endbestand != 0)
+      {
+        bemerkung += "Anfangsbestand wurde berechnet  ";
+      }
       extract(service, von, bis);
       return;
     }
