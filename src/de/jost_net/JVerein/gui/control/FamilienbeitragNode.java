@@ -177,12 +177,14 @@ public class FamilienbeitragNode implements GenericObjectNode
   }
 
   @Override
+  @SuppressWarnings("rawtypes")
   public GenericIterator getPossibleParents()
   {
     return null;
   }
 
   @Override
+  @SuppressWarnings("rawtypes")
   public GenericIterator getPath()
   {
     return null;
@@ -195,6 +197,7 @@ public class FamilienbeitragNode implements GenericObjectNode
   }
 
   @Override
+  @SuppressWarnings("rawtypes")
   public GenericIterator getChildren() throws RemoteException
   {
     if (children != null)

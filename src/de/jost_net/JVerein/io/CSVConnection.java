@@ -207,7 +207,7 @@ public class CSVConnection
   public void openCsvDB() throws SQLException
   {
     Properties props = new java.util.Properties();
-    props.put("separator", (new Character(seperator)).toString()); // separator
+    props.put("separator", (Character.valueOf(seperator)).toString()); // separator
                                                                    // is a bar
     props.put("suppressHeaders", "false"); // first line contains data
     props.put("charset", "ISO-8859-1");

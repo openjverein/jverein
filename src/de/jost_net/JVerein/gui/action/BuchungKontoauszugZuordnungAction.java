@@ -17,14 +17,12 @@
 
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.BuchungsartZuordnungDialog;
 import de.jost_net.JVerein.gui.dialogs.KontoauszugZuordnungDialog;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.jameica.system.OperationCanceledException;

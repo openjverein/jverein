@@ -35,6 +35,7 @@ public class SplitbuchungListTablePart extends TablePart
     super(action);
   }
 
+  @SuppressWarnings("rawtypes")
   public SplitbuchungListTablePart(GenericIterator list, Action action)
   {
     super(list, action);

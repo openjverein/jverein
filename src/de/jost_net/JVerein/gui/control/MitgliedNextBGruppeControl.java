@@ -25,6 +25,7 @@ import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -183,7 +184,7 @@ public class MitgliedNextBGruppeControl extends AbstractControl
           ArtBeitragsart.FAMILIE_ZAHLER.getKey(),
           ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
     }
-    beitragsgruppe = new SelectInput(list,
+    beitragsgruppe = new SelectInput(PseudoIterator.asList(list),
         getMitgliedNextBGruppe().getBeitragsgruppe());
     beitragsgruppe.setName("Beitragsgruppe");
     beitragsgruppe.setMandatory(true);

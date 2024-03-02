@@ -180,6 +180,7 @@ public class SpendenbescheinigungNode implements GenericObjectNode
   }
 
   @Override
+  @SuppressWarnings("rawtypes")
   public GenericIterator getChildren() throws RemoteException
   {
     if (childrens == null)
@@ -202,12 +203,14 @@ public class SpendenbescheinigungNode implements GenericObjectNode
   }
 
   @Override
+  @SuppressWarnings("rawtypes")
   public GenericIterator getPath()
   {
     return null;
   }
 
   @Override
+  @SuppressWarnings("rawtypes")
   public GenericIterator getPossibleParents()
   {
     return null;
@@ -236,6 +239,7 @@ public class SpendenbescheinigungNode implements GenericObjectNode
       }
       case MITGLIED:
       {
+        @SuppressWarnings("rawtypes")
         GenericIterator it1 = getChildren();
         double betrag = 0.0;
         while (it1.hasNext())

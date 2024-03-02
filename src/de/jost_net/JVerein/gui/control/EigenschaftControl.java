@@ -25,6 +25,7 @@ import de.jost_net.JVerein.gui.menu.EigenschaftMenu;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.willuhn.datasource.GenericObject;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -93,7 +94,7 @@ public class EigenschaftControl extends AbstractControl
     DBIterator<EigenschaftGruppe> list = Einstellungen.getDBService()
         .createList(EigenschaftGruppe.class);
     list.setOrder("ORDER BY bezeichnung");
-    eigenschaftgruppe = new SelectInput(list,
+    eigenschaftgruppe = new SelectInput(PseudoIterator.asList(list),
         getEigenschaft().getEigenschaftGruppe());
     eigenschaftgruppe.setValue(getEigenschaft().getEigenschaftGruppe());
     eigenschaftgruppe.setAttribute("bezeichnung");

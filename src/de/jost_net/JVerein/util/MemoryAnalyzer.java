@@ -10,7 +10,7 @@ public class MemoryAnalyzer extends Thread
   @Override
   public void run()
   {
-    while (1 == 1)
+    while (true)
     {
       // System.out.println(Runtime.getRuntime().freeMemory());
       MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
