@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.dialogs;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.control.MitgliedControl;
@@ -61,7 +60,7 @@ public class EigenschaftenAuswahlDialog
       boolean verknuepfung)
   {
     super(EigenschaftenAuswahlDialog.POSITION_CENTER);
-    this.setSize(400, SWT.DEFAULT);
+    this.setSize(400, 400);
     this.ohnePflicht = ohnePflicht;
     this.verknuepfung = verknuepfung;
     setTitle("Eigenschaften auswählen ");

@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -51,7 +50,7 @@ public class ZusatzbetragVorlageDialog
     super(AbstractDialog.POSITION_CENTER);
 
     setTitle("Zusatzbetrag-Vorlagen");
-    setSize(850, SWT.DEFAULT);
+    setSize(850, 350);
   }
 
   @Override

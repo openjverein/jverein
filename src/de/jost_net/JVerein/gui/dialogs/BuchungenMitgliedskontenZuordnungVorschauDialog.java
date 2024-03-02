@@ -21,7 +21,6 @@ package de.jost_net.JVerein.gui.dialogs;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -53,7 +52,7 @@ public class BuchungenMitgliedskontenZuordnungVorschauDialog extends AbstractDia
   public BuchungenMitgliedskontenZuordnungVorschauDialog(List<BookingMemberAccountEntry> assignedBooking)
   {
     super(AbstractDialog.POSITION_CENTER);
-    super.setSize(1400, SWT.DEFAULT);
+    super.setSize(1400, 400);
     this.setTitle("Buchungszuordnung bestätigen");
     this.assignedBooking = assignedBooking;
   }

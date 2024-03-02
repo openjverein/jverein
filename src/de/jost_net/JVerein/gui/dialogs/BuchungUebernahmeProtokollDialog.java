@@ -21,7 +21,6 @@ package de.jost_net.JVerein.gui.dialogs;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -55,7 +54,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
       Buchung fehlerbuchung, Exception exeption)
   {
     super(AbstractDialog.POSITION_CENTER);
-    super.setSize(650, SWT.DEFAULT);
+    super.setSize(650, 400);
     this.setTitle("Buchungsübernahme Hibiscus->JVerein");
     this.buchungen = buchungen;
     this.fehlerbuchung = fehlerbuchung;

@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
@@ -46,7 +45,7 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
     super(position);
     this.control = control;
     setTitle("Mail-Vorlage");
-    setSize(550, SWT.DEFAULT);
+    setSize(550, 450);
   }
 
   @Override

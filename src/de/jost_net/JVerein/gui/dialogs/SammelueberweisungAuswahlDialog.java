@@ -20,7 +20,6 @@ package de.jost_net.JVerein.gui.dialogs;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -55,7 +54,7 @@ public class SammelueberweisungAuswahlDialog
     super(AbstractDialog.POSITION_CENTER);
 
     setTitle("Sammelüberweisung auswählen");
-    setSize(650, SWT.DEFAULT);
+    setSize(650, 350);
     this.master = master;
   }
 
