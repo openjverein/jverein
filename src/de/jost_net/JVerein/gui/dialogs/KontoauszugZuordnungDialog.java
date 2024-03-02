@@ -60,7 +60,7 @@ public class KontoauszugZuordnungDialog extends AbstractDialog<Object>
   {
     super(position);
     setTitle("Zuordnung Kontoauszugsinformationen");
-    setSize(400, 215);
+    setSize(400, SWT.DEFAULT);
     getAuszugsnummer().setValue(auszugsnummer);
     getBlattnummer().setValue(blattnummer);
   }

@@ -39,7 +39,7 @@ public class SplitBuchungDialog extends AbstractDialog<Buchung>
   {
     super(AbstractDialog.POSITION_CENTER);
     setTitle("Zuordnung Buchungsart");
-    setSize(450, 650);
+    setSize(450, SWT.DEFAULT);
     this.control = control;
     this.view = view;
   }

@@ -17,6 +17,7 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -60,7 +61,7 @@ public class BuchungsjournalSortDialog extends AbstractDialog<String>
     super(position);
 
     setTitle("Buchungsjournal-Sortierung");
-    setSize(300, 140);
+    setSize(300, SWT.DEFAULT);
   }
 
   @Override

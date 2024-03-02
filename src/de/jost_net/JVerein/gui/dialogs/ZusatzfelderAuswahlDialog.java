@@ -21,6 +21,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -51,7 +52,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
   public ZusatzfelderAuswahlDialog(Settings settings)
   {
     super(EigenschaftenAuswahlDialog.POSITION_CENTER);
-    this.setSize(400, 700);
+    this.setSize(400, SWT.DEFAULT);
     setTitle("Zusatzfelder-Bedingungen ");
     this.settings = settings;
   }

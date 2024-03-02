@@ -17,6 +17,7 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.input.PersonenartInput;
@@ -42,7 +43,7 @@ public class PersonenartDialog extends AbstractDialog<String>
     super(position);
 
     setTitle("Personenart");
-    setSize(400, 140);
+    setSize(400, SWT.DEFAULT);
   }
 
   @Override

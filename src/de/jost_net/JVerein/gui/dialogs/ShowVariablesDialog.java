@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.menu.ShowVariablesMenu;
@@ -55,7 +56,7 @@ public class ShowVariablesDialog extends AbstractDialog<Object>
   {
     super(AbstractDialog.POSITION_CENTER);
     setTitle("Liste der Variablen");
-    setSize(400, 400);
+    setSize(400, SWT.DEFAULT);
     this.vars = vars;
     // default context menu
     contextMenu = new ShowVariablesMenu();

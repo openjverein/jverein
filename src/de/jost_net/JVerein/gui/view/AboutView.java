@@ -41,7 +41,7 @@ public class AboutView extends AbstractDialog<Object>
   public AboutView(int position)
   {
     super(position);
-    this.setSize(460, 650);
+    this.setSize(460, SWT.DEFAULT);
     this.setTitle("Über...");
   }
 

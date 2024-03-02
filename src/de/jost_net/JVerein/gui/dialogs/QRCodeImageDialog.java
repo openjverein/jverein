@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 
 import javax.imageio.ImageIO;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.willuhn.jameica.gui.Action;
@@ -31,7 +32,7 @@ public class QRCodeImageDialog extends AbstractDialog<Object>
   {
     super(position);
     setTitle("QR-Code");
-    setSize(330, 400);
+    setSize(330, SWT.DEFAULT);
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ImageIO.write(qrcode, "jpg", baos);

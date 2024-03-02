@@ -20,6 +20,7 @@ package de.jost_net.JVerein.gui.dialogs;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.parts.DokumentPart;
@@ -45,7 +46,7 @@ public class DokumentDialog extends AbstractDialog<AbstractDokument>
     this.dok = dok;
 
     setTitle("Dokument-Infos");
-    setSize(850, 350);
+    setSize(850, SWT.DEFAULT);
   }
 
   @Override

@@ -20,6 +20,7 @@ package de.jost_net.JVerein.gui.dialogs;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -49,7 +50,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
     super(position);
     this.control = control;
     setTitle("Mail-Empfänger");
-    setSize(700, 450);
+    setSize(700, SWT.DEFAULT);
   }
 
   @Override
