@@ -126,7 +126,6 @@ public class SaldoZeile implements GenericObject
       cal.add(Calendar.DAY_OF_MONTH, -1);
       bisRange = cal.getTime();
       anfangsbestand = anf2.get(size-1).getBetrag();
-      bemerkung += "Anfangsbestand wurde berechnet  ";
       extract(service, vonRange, bisRange);
       // Jetzt Anfangsstand zum von Datum setzen
       anfangsbestand = endbestand;
@@ -147,10 +146,6 @@ public class SaldoZeile implements GenericObject
       Anfangsbestand a = anf1.get(0);
       // Endstand zum von Datum berechnen
       anfangsbestand = a.getBetrag() - endbestand;
-      if (endbestand != 0)
-      {
-        bemerkung += "Anfangsbestand wurde berechnet  ";
-      }
       extract(service, von, bis);
       return;
     }
