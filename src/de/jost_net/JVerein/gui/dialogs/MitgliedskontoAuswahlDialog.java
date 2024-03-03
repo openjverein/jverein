@@ -80,7 +80,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     TabFolder folder = new TabFolder(parent, SWT.NONE);
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-    TabGroup tabNurIst = new TabGroup(folder, "nur Ist", false, 1);
+    TabGroup tabNurIst = new TabGroup(folder, "Nur Ist", false, 1);
     Container grNurIst = new SimpleContainer(tabNurIst.getComposite());
     grNurIst.addHeadline("Auswahl des Mitgliedskontos");
     if (text == null || text.length() == 0)
@@ -111,7 +111,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     mitgliedskontolist.paint(tabNurIst.getComposite());
 
     //
-    TabGroup tabSollIst = new TabGroup(folder, "Soll u. Ist", true, 1);
+    TabGroup tabSollIst = new TabGroup(folder, "Soll und Ist", true, 1);
     Container grSollIst = new SimpleContainer(tabSollIst.getComposite());
     grSollIst.addHeadline("Auswahl des Mitgliedskontos");
 

@@ -17,8 +17,6 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,6 +34,7 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
+import de.jost_net.JVerein.Queries.MitgliedskontoQuery;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
@@ -750,8 +749,11 @@ public class MitgliedskontoControl extends AbstractControl
   @SuppressWarnings("rawtypes")
   public GenericIterator getMitgliedskontoIterator() throws RemoteException
   {
-    DBService service = Einstellungen.getDBService();
+    final DBService service = Einstellungen.getDBService();
+
+    ArrayList<Mitglied> suchmitgliederliste = new ArrayList<>();
     Date d1 = null;
+    Date d2 = null;
     java.sql.Date vd = null;
     java.sql.Date bd = null;
     if (vondatum != null)
@@ -770,117 +772,148 @@ public class MitgliedskontoControl extends AbstractControl
     }
     if (bisdatum != null)
     {
-      d1 = (Date) bisdatum.getValue();
-      if (d1 != null)
+      d2 = (Date) bisdatum.getValue();
+      if (d2 != null)
       {
         settings.setAttribute(datumverwendung + "datumbis",
-            new JVDateFormatTTMMJJJJ().format(d1));
-        bd = new java.sql.Date(d1.getTime());
+            new JVDateFormatTTMMJJJJ().format(d2));
+        bd = new java.sql.Date(d2.getTime());
       }
       else
       {
         settings.setAttribute(datumverwendung + "datumbis", "");
       }
     }
-    String sql = "select  mitgliedskonto.*, mitglied.name, mitglied.vorname from mitgliedskonto "
-        + "join mitglied on (mitgliedskonto.mitglied = mitglied.id) ";
-    String where = "";
-    ArrayList<Object> param = new ArrayList<>();
-    if (vd != null)
+    
+    ResultSetExtractor rse = new ResultSetExtractor()
     {
-      where += (where.length() > 0 ? "and " : "")
-          + "mitgliedskonto.datum >= ? ";
-      param.add(vd);
-    }
-    if (bd != null)
-    {
-      where += (where.length() > 0 ? "and " : "")
-          + "mitgliedskonto.datum <= ? ";
-      param.add(bd);
-    }
-    if (where.length() > 0)
-    {
-      sql += "WHERE " + where;
-    }
-    sql += "order by mitglied.name, mitglied.vorname, mitgliedskonto.datum desc";
-    PseudoIterator mitgliedskonten = (PseudoIterator) service.execute(sql,
-        param.toArray(), new ResultSetExtractor()
+
+      @Override
+      public ArrayList<Mitglied> extract(ResultSet rs) throws SQLException, RemoteException
+      {
+        ArrayList<Mitglied> list = new ArrayList<Mitglied>();
+        ArrayList<String> mitglieder = new ArrayList<String>();
+        String mitglied = null;
+        while (rs.next())
         {
-
-          @Override
-          public Object extract(ResultSet rs)
-              throws RemoteException, SQLException
+          mitglied = rs.getString(1);
+          if (!mitglieder.contains(mitglied))
           {
-            ArrayList<Mitgliedskonto> ergebnis = new ArrayList<>();
-
-            // In case the text search input is used, we calculate
-            // an "equality" score for each Mitgliedskonto (aka
-            // Mitgliedskontobuchung) entry. Only the entries with
-            // score == maxScore will be shown.
-            Integer maxScore = 0;
-            while (rs.next())
-            {
-              Mitgliedskonto mk = (Mitgliedskonto) Einstellungen.getDBService()
-                  .createObject(Mitgliedskonto.class, rs.getString(1));
-
-              DIFFERENZ diff = DIFFERENZ.EGAL;
-              if (differenz != null)
-              {
-                diff = (DIFFERENZ) differenz.getValue();
-              }
-              BigDecimal ist = BigDecimal.valueOf(mk.getIstSumme());
-              ist = ist.setScale(2, RoundingMode.HALF_UP);
-              BigDecimal soll = BigDecimal.valueOf(mk.getBetrag());
-              soll = soll.setScale(2, RoundingMode.HALF_UP);
-              if (DIFFERENZ.FEHLBETRAG == diff && ist.compareTo(soll) >= 0)
-              {
-                continue;
-              }
-              if (DIFFERENZ.UEBERZAHLUNG == diff && ist.compareTo(soll) <= 0)
-              {
-                continue;
-              }
-
-              if (suchname != null && suchname.getValue() != null)
-              {
-                StringTokenizer tok = new StringTokenizer(
-                    (String) suchname.getValue(), " ,-");
-                Integer score = 0;
-                while (tok.hasMoreElements())
-                {
-                  String nextToken = tok.nextToken();
-                  if (nextToken.length() > 3)
-                  {
-                    score += scoreWord(nextToken, mk.getMitglied().getName());
-                    score += scoreWord(nextToken,
-                        mk.getMitglied().getVorname());
-                    score += scoreWord(nextToken, mk.getZweck1());
-                  }
-                }
-
-                if (maxScore < score)
-                {
-                  maxScore = score;
-                  // We found a Mitgliedskonto matching with a higher equality
-                  // score, so we drop all previous matches, because they were
-                  // less equal.
-                  ergebnis.clear();
-                }
-                else if (maxScore > score)
-                {
-                  // This match is worse, so skip it.
-                  continue;
-                }
-              }
-
-              ergebnis.add(mk);
-            }
-            return PseudoIterator.fromArray(
-                ergebnis.toArray(new GenericObject[ergebnis.size()]));
+            mitglieder.add(mitglied);
+            list.add(
+                (Mitglied) service.createObject(Mitglied.class, mitglied));
           }
-        });
+        }
+        return list;
+      }
+    };
+    
+    String sql = "SELECT mitglied " + "FROM mitgliedskonto "
+        + " JOIN mitglied ON mitgliedskonto.mitglied = mitglied.id ";
+        String where = "";
+        ArrayList<Object> param = new ArrayList<>();
+        if (vd != null)
+        {
+          where += (where.length() > 0 ? "and " : "")
+              + "mitgliedskonto.datum >= ? ";
+          param.add(vd);
+        }
+        if (bd != null)
+        {
+          where += (where.length() > 0 ? "and " : "")
+              + "mitgliedskonto.datum <= ? ";
+          param.add(bd);
+        }
+        if (where.length() > 0)
+        {
+          sql += "WHERE " + where;
+        }
+        sql += "order by mitglied.name, mitglied.vorname, mitgliedskonto.datum desc";
+    
+    if (vd != null && bd != null)
+    {
+      @SuppressWarnings("unchecked")
+      ArrayList<Mitglied> tmp = (ArrayList<Mitglied>)
+          service.execute(sql, new Object[] { vd, bd }, rse);
+      suchmitgliederliste = tmp;
+    }
+    else if (vd != null && bd == null)
+    {
+      @SuppressWarnings("unchecked")
+      ArrayList<Mitglied> tmp = (ArrayList<Mitglied>)
+          service.execute(sql, new Object[] { vd }, rse);
+      suchmitgliederliste = tmp;
+    }
+    else if (vd == null && bd != null)
+    {
+      @SuppressWarnings("unchecked")
+      ArrayList<Mitglied> tmp = (ArrayList<Mitglied>)
+          service.execute(sql, new Object[] { bd }, rse);
+      suchmitgliederliste = tmp;
+    }
+    else
+    {
+      @SuppressWarnings("unchecked")
+      ArrayList<Mitglied> tmp = (ArrayList<Mitglied>) 
+          service.execute(sql, new Object[] { }, rse);
+      suchmitgliederliste = tmp;
+    }
+    
+    ArrayList<Mitglied> mitgliederliste = new ArrayList<Mitglied>();
+    
+    Integer maxScore = 0;
+    for (Mitglied m: suchmitgliederliste)
+    {
+      if (suchname != null && suchname.getValue() != null)
+      {
+        StringTokenizer tok = new StringTokenizer(
+            (String) suchname.getValue(), " ,-");
+        Integer score = 0;
+        while (tok.hasMoreElements())
+        {
+          String nextToken = tok.nextToken();
+          // Namen müssen mehr als 2 Buchstaben haben, ist das sinnvoll?
+          if (nextToken.length() > 2)
+          {
+            score += scoreWord(nextToken, m.getName());
+            score += scoreWord(nextToken, m.getVorname());
+          }
+        }
 
-    return mitgliedskonten;
+        if (maxScore < score)
+        {
+          maxScore = score;
+          // We found a Mitglied matching with a higher equality
+          // score, so we drop all previous matches, because they were
+          // less equal.
+          mitgliederliste.clear();
+        }
+        else if (maxScore > score)
+        {
+          // This match is worse, so skip it.
+          continue;
+        }
+      }
+      mitgliederliste.add(m);
+    }
+    
+    DIFFERENZ diff = DIFFERENZ.EGAL;
+    if (differenz != null)
+    {
+      diff = (DIFFERENZ) differenz.getValue();
+    }
+    ArrayList<Mitgliedskonto> mitgliedskonten = new ArrayList<>();
+    for (Mitglied m: mitgliederliste)
+    {
+      MitgliedskontoQuery mkq = new MitgliedskontoQuery(m, d1, d2,
+          diff, false);
+      for (Mitgliedskonto mk : mkq.get())
+      {
+        mitgliedskonten.add(mk);
+      }
+    }
+    return PseudoIterator.fromArray(
+        mitgliedskonten.toArray(new GenericObject[mitgliedskonten.size()]));
   }
 
   public Integer scoreWord(String word, String in)
