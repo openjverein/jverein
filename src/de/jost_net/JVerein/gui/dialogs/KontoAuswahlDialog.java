@@ -18,6 +18,7 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -63,7 +64,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
       boolean nurHibiscus, boolean nurAktuelleKonten)
   {
     super(position);
-    super.setSize(400, 300);
+    super.setSize(400, SWT.DEFAULT);
     this.setTitle("Konto-Auswahl");
     this.keinkonto = keinkonto;
     this.nurHibiscus = nurHibiscus;
