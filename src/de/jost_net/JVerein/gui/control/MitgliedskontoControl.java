@@ -782,6 +782,11 @@ public class MitgliedskontoControl extends AbstractControl
         settings.setAttribute(datumverwendung + "datumbis", "");
       }
     }
+    DIFFERENZ diff = DIFFERENZ.EGAL;
+    if (differenz != null)
+    {
+      diff = (DIFFERENZ) differenz.getValue();
+    }
     
     ResultSetExtractor rse = new ResultSetExtractor()
     {
@@ -802,8 +807,9 @@ public class MitgliedskontoControl extends AbstractControl
     
     // Lese alle Mitglieder die auch Soll Buchungen
     // (Mitgliedskonten) haben. Müssen ja nicht alle sein.
-    String sql = "SELECT mitglied, mitglied.name, mitglied.vorname " + "FROM mitgliedskonto "
-        + " JOIN mitglied ON mitgliedskonto.mitglied = mitglied.id ";
+    String sql = "SELECT mitglied, mitglied.name, mitglied.vorname, sum(buchung.betrag) " + "FROM mitgliedskonto "
+        + " JOIN mitglied ON mitgliedskonto.mitglied = mitglied.id "
+        + " LEFT JOIN buchung on mitgliedskonto.id = buchung.MITGLIEDSKONTO ";
         String where = "";
         ArrayList<Object> param = new ArrayList<>();
         if (vd != null)
@@ -821,6 +827,16 @@ public class MitgliedskontoControl extends AbstractControl
         if (where.length() > 0)
         {
           sql += "WHERE " + where;
+        }
+        sql += "group by mitgliedskonto.id ";
+
+        if (DIFFERENZ.FEHLBETRAG == diff)
+        {
+          sql += "having sum(buchung.betrag) < mitgliedskonto.betrag or sum(buchung.betrag) is null ";
+        }
+        if (DIFFERENZ.UEBERZAHLUNG == diff)
+        {
+          sql += "having sum(buchung.betrag) > mitgliedskonto.betrag ";
         }
         sql += "order by mitglied.name, mitglied.vorname, mitgliedskonto.datum desc";
     
@@ -870,11 +886,6 @@ public class MitgliedskontoControl extends AbstractControl
     
     // Jetzt alle Mitgliedskonten der gefundenen Mitglieder
     // suchen die den Kriterien entsprechen
-    DIFFERENZ diff = DIFFERENZ.EGAL;
-    if (differenz != null)
-    {
-      diff = (DIFFERENZ) differenz.getValue();
-    }
     ArrayList<Mitgliedskonto> mitgliedskonten = new ArrayList<>();
     for (MyMitglied m: mitgliederliste)
     {
