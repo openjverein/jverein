@@ -71,7 +71,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   {
     super(position);
     setTitle("Zuordnung Buchungsart");
-    setSize(400, 175);
+    setSize(400, SWT.DEFAULT);
   }
 
   @Override

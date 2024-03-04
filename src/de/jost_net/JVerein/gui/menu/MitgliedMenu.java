@@ -18,6 +18,8 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
+import org.eclipse.swt.SWT;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AdresseDetailAction;
 import de.jost_net.JVerein.gui.action.FreiesFormularAction;
@@ -85,7 +87,7 @@ public class MitgliedMenu extends ContextMenu
             sd.setText(
                 "Bitte die für Mitglieder erforderlichen Daten nacherfassen.");
             sd.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
-            sd.setSize(400, 150);
+            sd.setSize(400, SWT.DEFAULT);
             sd.setTitle("Daten nacherfassen");
             try
             {

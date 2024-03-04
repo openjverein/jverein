@@ -64,7 +64,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     this.buchungen = buchungen;
 
     setTitle("Projekt auswählen");
-    setSize(400, 220);
+    setSize(400, SWT.DEFAULT);
   }
 
   @Override

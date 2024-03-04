@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Messaging.FamilienbeitragMessage;
@@ -50,7 +51,7 @@ public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
   {
     super(AbstractDialog.POSITION_CENTER);
     setTitle("Person aus Familienverband entfernen");
-    setSize(450, 450);
+    setSize(450, SWT.DEFAULT);
     control = new MitgliedControl(null);
     control.setMitglied(fbn.getMitglied());
     try
