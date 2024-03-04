@@ -17,8 +17,6 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -782,8 +780,16 @@ public class MitgliedskontoControl extends AbstractControl
         settings.setAttribute(datumverwendung + "datumbis", "");
       }
     }
-    String sql = "select  mitgliedskonto.*, mitglied.name, mitglied.vorname from mitgliedskonto "
-        + "join mitglied on (mitgliedskonto.mitglied = mitglied.id) ";
+    
+    DIFFERENZ diff = DIFFERENZ.EGAL;
+    if (differenz != null)
+    {
+      diff = (DIFFERENZ) differenz.getValue();
+    }
+    
+    String sql = "SELECT  mitgliedskonto.id, mitglied.name, mitglied.vorname, sum(buchung.betrag) FROM mitgliedskonto "
+        + "JOIN mitglied on (mitgliedskonto.mitglied = mitglied.id) "
+        + "LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto ";
     String where = "";
     ArrayList<Object> param = new ArrayList<>();
     if (vd != null)
@@ -802,8 +808,19 @@ public class MitgliedskontoControl extends AbstractControl
     {
       sql += "WHERE " + where;
     }
+    sql += "group by mitgliedskonto.id ";
+
+    if (DIFFERENZ.FEHLBETRAG == diff)
+    {
+      sql += "having sum(buchung.betrag) < mitgliedskonto.betrag or sum(buchung.betrag) is null ";
+    }
+    if (DIFFERENZ.UEBERZAHLUNG == diff)
+    {
+      sql += "having sum(buchung.betrag) > mitgliedskonto.betrag ";
+    }
     sql += "order by mitglied.name, mitglied.vorname, mitgliedskonto.datum desc";
-    PseudoIterator mitgliedskonten = (PseudoIterator) service.execute(sql,
+    @SuppressWarnings("unchecked")
+    ArrayList<String> mitgliedskontenids = (ArrayList<String>) service.execute(sql,
         param.toArray(), new ResultSetExtractor()
         {
 
@@ -811,7 +828,7 @@ public class MitgliedskontoControl extends AbstractControl
           public Object extract(ResultSet rs)
               throws RemoteException, SQLException
           {
-            ArrayList<Mitgliedskonto> ergebnis = new ArrayList<>();
+            ArrayList<String> ergebnis = new ArrayList<>();
 
             // In case the text search input is used, we calculate
             // an "equality" score for each Mitgliedskonto (aka
@@ -820,26 +837,8 @@ public class MitgliedskontoControl extends AbstractControl
             Integer maxScore = 0;
             while (rs.next())
             {
-              Mitgliedskonto mk = (Mitgliedskonto) Einstellungen.getDBService()
-                  .createObject(Mitgliedskonto.class, rs.getString(1));
-
-              DIFFERENZ diff = DIFFERENZ.EGAL;
-              if (differenz != null)
-              {
-                diff = (DIFFERENZ) differenz.getValue();
-              }
-              BigDecimal ist = BigDecimal.valueOf(mk.getIstSumme());
-              ist = ist.setScale(2, RoundingMode.HALF_UP);
-              BigDecimal soll = BigDecimal.valueOf(mk.getBetrag());
-              soll = soll.setScale(2, RoundingMode.HALF_UP);
-              if (DIFFERENZ.FEHLBETRAG == diff && ist.compareTo(soll) >= 0)
-              {
-                continue;
-              }
-              if (DIFFERENZ.UEBERZAHLUNG == diff && ist.compareTo(soll) <= 0)
-              {
-                continue;
-              }
+              // Nur die ids der Mitgliedskonten speichern
+              String mk = rs.getString(1);
 
               if (suchname != null && suchname.getValue() != null)
               {
@@ -849,12 +848,10 @@ public class MitgliedskontoControl extends AbstractControl
                 while (tok.hasMoreElements())
                 {
                   String nextToken = tok.nextToken();
-                  if (nextToken.length() > 3)
+                  if (nextToken.length() > 2)
                   {
-                    score += scoreWord(nextToken, mk.getMitglied().getName());
-                    score += scoreWord(nextToken,
-                        mk.getMitglied().getVorname());
-                    score += scoreWord(nextToken, mk.getZweck1());
+                    score += scoreWord(nextToken, rs.getString(2));
+                    score += scoreWord(nextToken, rs.getString(3));
                   }
                 }
 
@@ -875,12 +872,21 @@ public class MitgliedskontoControl extends AbstractControl
 
               ergebnis.add(mk);
             }
-            return PseudoIterator.fromArray(
-                ergebnis.toArray(new GenericObject[ergebnis.size()]));
+            return ergebnis;
           }
         });
 
-    return mitgliedskonten;
+    // Jetzt erst die Mitgliedskonten für die endgültige Anzeige generieren
+    ArrayList<Mitgliedskonto> mitgliedskonten = new ArrayList<>();
+    Mitgliedskonto mk;
+    for (String mkid: mitgliedskontenids)
+    {
+      mk = (Mitgliedskonto) service.createObject(Mitgliedskonto.class, mkid);
+      mitgliedskonten.add(mk);
+    }
+    
+    return PseudoIterator.fromArray(
+        mitgliedskonten.toArray(new GenericObject[mitgliedskonten.size()]));
   }
 
   public Integer scoreWord(String word, String in)
