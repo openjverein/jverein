@@ -750,8 +750,6 @@ public class MitgliedskontoControl extends AbstractControl
   public GenericIterator getMitgliedskontoIterator() throws RemoteException
   {
     final DBService service = Einstellungen.getDBService();
-
-    ArrayList<Mitglied> suchmitgliederliste = new ArrayList<>();
     Date d1 = null;
     Date d2 = null;
     java.sql.Date vd = null;
@@ -789,26 +787,22 @@ public class MitgliedskontoControl extends AbstractControl
     {
 
       @Override
-      public ArrayList<Mitglied> extract(ResultSet rs) throws SQLException, RemoteException
+      public Object extract(ResultSet rs) throws SQLException
       {
-        ArrayList<Mitglied> list = new ArrayList<Mitglied>();
-        ArrayList<String> mitglieder = new ArrayList<String>();
-        String mitglied = null;
+        ArrayList<MyMitglied> mlist = new ArrayList<>();
         while (rs.next())
         {
-          mitglied = rs.getString(1);
-          if (!mitglieder.contains(mitglied))
-          {
-            mitglieder.add(mitglied);
-            list.add(
-                (Mitglied) service.createObject(Mitglied.class, mitglied));
-          }
+          MyMitglied m = new MyMitglied(rs.getString(1), rs.getString(2), rs.getString(3));
+          if (!mlist.contains(m))
+            mlist.add(m);
         }
-        return list;
+        return mlist;
       }
     };
     
-    String sql = "SELECT mitglied " + "FROM mitgliedskonto "
+    // Lese alle Mitglieder die auch Soll Buchungen
+    // (Mitgliedskonten) haben. Müssen ja nicht alle sein.
+    String sql = "SELECT mitglied, mitglied.name, mitglied.vorname " + "FROM mitgliedskonto "
         + " JOIN mitglied ON mitgliedskonto.mitglied = mitglied.id ";
         String where = "";
         ArrayList<Object> param = new ArrayList<>();
@@ -830,39 +824,16 @@ public class MitgliedskontoControl extends AbstractControl
         }
         sql += "order by mitglied.name, mitglied.vorname, mitgliedskonto.datum desc";
     
-    if (vd != null && bd != null)
-    {
       @SuppressWarnings("unchecked")
-      ArrayList<Mitglied> tmp = (ArrayList<Mitglied>)
-          service.execute(sql, new Object[] { vd, bd }, rse);
-      suchmitgliederliste = tmp;
-    }
-    else if (vd != null && bd == null)
-    {
-      @SuppressWarnings("unchecked")
-      ArrayList<Mitglied> tmp = (ArrayList<Mitglied>)
-          service.execute(sql, new Object[] { vd }, rse);
-      suchmitgliederliste = tmp;
-    }
-    else if (vd == null && bd != null)
-    {
-      @SuppressWarnings("unchecked")
-      ArrayList<Mitglied> tmp = (ArrayList<Mitglied>)
-          service.execute(sql, new Object[] { bd }, rse);
-      suchmitgliederliste = tmp;
-    }
-    else
-    {
-      @SuppressWarnings("unchecked")
-      ArrayList<Mitglied> tmp = (ArrayList<Mitglied>) 
-          service.execute(sql, new Object[] { }, rse);
-      suchmitgliederliste = tmp;
-    }
+      ArrayList<MyMitglied> suchmitgliederliste = (ArrayList<MyMitglied>)
+          service.execute(sql, param.toArray(), rse);
     
-    ArrayList<Mitglied> mitgliederliste = new ArrayList<Mitglied>();
-    
+    // Jetzt den Match der gefundenen Mitglieder zum Suchstring machen
+    // Sollte hoffentlich nur noch ein Mitglied sein, 
+    // oder es gab keinen Match
+    ArrayList<MyMitglied> mitgliederliste = new ArrayList<MyMitglied>();
     Integer maxScore = 0;
-    for (Mitglied m: suchmitgliederliste)
+    for (MyMitglied m: suchmitgliederliste)
     {
       if (suchname != null && suchname.getValue() != null)
       {
@@ -897,21 +868,25 @@ public class MitgliedskontoControl extends AbstractControl
       mitgliederliste.add(m);
     }
     
+    // Jetzt alle Mitgliedskonten der gefundenen Mitglieder
+    // suchen die den Kriterien entsprechen
     DIFFERENZ diff = DIFFERENZ.EGAL;
     if (differenz != null)
     {
       diff = (DIFFERENZ) differenz.getValue();
     }
     ArrayList<Mitgliedskonto> mitgliedskonten = new ArrayList<>();
-    for (Mitglied m: mitgliederliste)
+    for (MyMitglied m: mitgliederliste)
     {
-      MitgliedskontoQuery mkq = new MitgliedskontoQuery(m, d1, d2,
+      MitgliedskontoQuery mkq = new MitgliedskontoQuery(m.getId(), d1, d2,
           diff, false);
       for (Mitgliedskonto mk : mkq.get())
       {
         mitgliedskonten.add(mk);
       }
     }
+    
+    // Das Ergebnis zurückliefern
     return PseudoIterator.fromArray(
         mitgliedskonten.toArray(new GenericObject[mitgliedskonten.size()]));
   }
@@ -1157,6 +1132,51 @@ public class MitgliedskontoControl extends AbstractControl
         }
 
       });
+    }
+  }
+  
+  private class MyMitglied extends Object
+  {
+    String id;
+
+    String name;
+    
+    String vorname;
+    
+    public MyMitglied(String id, String name, String vorname)
+    {
+      this.id = id;
+      this.name = name;
+      this.vorname = vorname;
+    }
+    
+    public String getId()
+    {
+      return id;
+    }
+    
+    public String getName()
+    {
+      return name;
+    }
+    
+    public String getVorname()
+    {
+      return vorname;
+    }
+    
+    @Override
+    public boolean equals(Object obj)
+    {
+        if(obj instanceof MyMitglied)
+        {
+          MyMitglied m = (MyMitglied) obj;
+          return id.equals(m.getId());
+        }
+        else
+        {
+          return false;
+        }
     }
   }
 

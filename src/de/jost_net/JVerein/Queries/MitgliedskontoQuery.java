@@ -34,7 +34,9 @@ import de.willuhn.logging.Logger;
 public class MitgliedskontoQuery
 {
 
-  private Mitglied mitglied;
+  private Mitglied mitglied = null;
+  
+  private String mitgliedId;
 
   protected Date vonDatum;
 
@@ -61,17 +63,29 @@ public class MitgliedskontoQuery
     this.differenz = differenz;
     this.ohneAbbucher = ohneAbbucher;
   }
+  
+  public MitgliedskontoQuery(String mId, Date vonDatum, Date bisDatum,
+      DIFFERENZ differenz, Boolean ohneAbbucher)
+  {
+    this.mitgliedId = mId;
+    this.vonDatum = vonDatum;
+    this.bisDatum = bisDatum;
+    this.differenz = differenz;
+    this.ohneAbbucher = ohneAbbucher;
+  }
 
   @SuppressWarnings("unchecked")
   public ArrayList<Mitgliedskonto> get() throws RemoteException
   {
+    if (mitglied != null)
+      mitgliedId = mitglied.getID();
     final DBService service = Einstellungen.getDBService();
     ergebnis = new ArrayList<>();
     sql = "select mitgliedskonto.*, sum(buchung.betrag) ";
     sql += "from mitgliedskonto ";
     sql += "left join buchung on mitgliedskonto.id = buchung.MITGLIEDSKONTO ";
 
-    addCondition("mitgliedskonto.mitglied = ?", mitglied.getID());
+    addCondition("mitgliedskonto.mitglied = ?", mitgliedId);
 
     try
     {
