@@ -23,10 +23,12 @@ import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.menu.Mitgliedskonto2Menu;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.util.ApplicationException;
 
 public class MitgliedskontoListeView extends AbstractView
 {
@@ -43,6 +45,18 @@ public class MitgliedskontoListeView extends AbstractView
         control.getVondatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO));
     group.addLabelPair("Bis",
         control.getBisdatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO));
+    
+    ButtonArea button = new ButtonArea();
+    Button suchen = new Button("Suchen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        control.refreshMitgliedskontoList();
+      }
+    }, null, true, "search.png");
+    button.addButton(suchen);
+    group.addButtonArea(button);
     group.addLabelPair("Differenz", control.getDifferenz());
 
     control.getMitgliedskontoList(new MitgliedDetailAction(),

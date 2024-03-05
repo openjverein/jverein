@@ -33,12 +33,14 @@ import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.Container;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Ein Dialog, ueber den man ein Mitgliedskonto auswaehlen kann.
@@ -91,6 +93,17 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     TextInput suNa = control.getSuchName();
     suNa.setValue(buchung.getName());
     grNurIst.addLabelPair("Name", suNa);
+    ButtonArea button1 = new ButtonArea();
+    Button suchen1 = new Button("Suchen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        control.refreshMitgliedskontoList();
+      }
+    }, null, true, "search.png");
+    button1.addButton(suchen1);
+    grNurIst.addButtonArea(button1);
     grNurIst.addLabelPair("Differenz",
         control.getDifferenz(DIFFERENZ.FEHLBETRAG));
     Action action = new Action()
@@ -104,6 +117,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
           return;
         }
         choosen = context;
+        abort = false;
         close();
       }
     };
@@ -122,6 +136,17 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     grSollIst.addText(text, true);
     control.getSuchName2(true).setValue(buchung.getName());
     grSollIst.addLabelPair("Name", control.getSuchName2(false));
+    ButtonArea button2 = new ButtonArea();
+    Button suchen2 = new Button("Suchen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        control.refreshMitgliedskontoList2();
+      }
+    }, null, true, "search.png");
+    button2.addButton(suchen2);
+    grSollIst.addButtonArea(button2);
     grSollIst.addInput(control.getSpezialSuche());
 
     final Action action2 = new Action()
@@ -135,6 +160,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
           return;
         }
         choosen = context;
+        abort = false;
         close();
       }
     };

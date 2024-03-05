@@ -337,7 +337,6 @@ public class MitgliedskontoControl extends AbstractControl
     this.vondatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.vondatum.setTitle("Anfangsdatum");
     this.vondatum.setText("Bitte Anfangsdatum wählen");
-    vondatum.addListener(new FilterListener());
     return vondatum;
   }
 
@@ -364,7 +363,6 @@ public class MitgliedskontoControl extends AbstractControl
     this.bisdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.bisdatum.setTitle("Endedatum");
     this.bisdatum.setText("Bitte Endedatum wählen");
-    bisdatum.addListener(new FilterListener());
     return bisdatum;
   }
 
@@ -449,7 +447,6 @@ public class MitgliedskontoControl extends AbstractControl
     }
     suchname = new TextInput("", 30);
     suchname.setName("Name");
-    suchname.addListener(new FilterListener());
     return suchname;
   }
 
@@ -461,7 +458,6 @@ public class MitgliedskontoControl extends AbstractControl
     }
     suchname2 = new TextInput("", 30);
     suchname2.setName("Name");
-    suchname2.addListener(new FilterListener());
     return suchname2;
   }
 
@@ -1039,6 +1035,32 @@ public class MitgliedskontoControl extends AbstractControl
       }
       refresh();
     }
+  }
+  
+  public void refreshMitgliedskontoList()
+  {
+    try
+    {
+      getMitgliedskontoList(action, null);
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+    }
+    refresh();
+  }
+  
+  public void refreshMitgliedskontoList2()
+  {
+    try
+    {
+      refreshMitgliedkonto2();
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+    }
+
   }
 
   public static class MitgliedskontoTreeFormatter implements TreeFormatter
