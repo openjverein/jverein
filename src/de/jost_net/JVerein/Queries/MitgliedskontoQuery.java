@@ -94,7 +94,7 @@ public class MitgliedskontoQuery
     }
     catch (NullPointerException e)
     {
-      Logger.info("Export Mitgliedskonto ohne 'von-Datum'");
+      //Logger.info("Export Mitgliedskonto ohne 'von-Datum'");
     }
 
     try
@@ -104,7 +104,7 @@ public class MitgliedskontoQuery
     }
     catch (NullPointerException e)
     {
-      Logger.info("Export Mitgliedskonto ohne 'bis-Datum'");
+      //Logger.info("Export Mitgliedskonto ohne 'bis-Datum'");
     }
 
     if (ohneAbbucher.booleanValue())
