@@ -805,11 +805,23 @@ public class MitgliedskontoControl extends AbstractControl
       }
     };
     
+    ArrayList<MyMitglied> suchmitgliederliste = new ArrayList<>();
+    if (diff == DIFFERENZ.EGAL)
+    {
+      String sql = "SELECT mitglied.id, mitglied.name, mitglied.vorname FROM mitglied ";
+      
+      @SuppressWarnings("unchecked")
+      ArrayList<MyMitglied> tmp = (ArrayList<MyMitglied>)
+          service.execute(sql, new Object[] {}, rse);
+      suchmitgliederliste = tmp;
+    }
+    else
+    {
     // Lese alle Mitglieder die auch Soll Buchungen
-    // (Mitgliedskonten) haben. Müssen ja nicht alle sein.
-    String sql = "SELECT mitglied, mitglied.name, mitglied.vorname, sum(buchung.betrag) " + "FROM mitgliedskonto "
+    // (Mitgliedskonten) haben und die Bedingungen erfüllen.
+    String sql = "SELECT mitglied, mitglied.name, mitglied.vorname FROM mitgliedskonto "
         + " JOIN mitglied ON mitgliedskonto.mitglied = mitglied.id "
-        + " LEFT JOIN buchung on mitgliedskonto.id = buchung.MITGLIEDSKONTO ";
+        + " LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto ";
         String where = "";
         ArrayList<Object> param = new ArrayList<>();
         if (vd != null)
@@ -841,17 +853,20 @@ public class MitgliedskontoControl extends AbstractControl
         sql += "order by mitglied.name, mitglied.vorname, mitgliedskonto.datum desc";
     
       @SuppressWarnings("unchecked")
-      ArrayList<MyMitglied> suchmitgliederliste = (ArrayList<MyMitglied>)
+      ArrayList<MyMitglied> tmp = (ArrayList<MyMitglied>)
           service.execute(sql, param.toArray(), rse);
+      suchmitgliederliste = tmp;
+    }
+    
     
     // Jetzt den Match der gefundenen Mitglieder zum Suchstring machen
     // Sollte hoffentlich nur noch ein Mitglied sein, 
     // oder es gab keinen Match
     ArrayList<MyMitglied> mitgliederliste = new ArrayList<MyMitglied>();
-    Integer maxScore = 0;
-    for (MyMitglied m: suchmitgliederliste)
+    if (suchname != null && suchname.getValue() != null)
     {
-      if (suchname != null && suchname.getValue() != null)
+      Integer maxScore = 0;
+      for (MyMitglied m: suchmitgliederliste)
       {
         StringTokenizer tok = new StringTokenizer(
             (String) suchname.getValue(), " ,-");
@@ -880,8 +895,14 @@ public class MitgliedskontoControl extends AbstractControl
           // This match is worse, so skip it.
           continue;
         }
+
+        mitgliederliste.add(m);
       }
-      mitgliederliste.add(m);
+    }
+    else
+    {
+      // Kein Suchname eingegeben, dann nehme die ganze Suchliste
+      mitgliederliste = suchmitgliederliste;
     }
     
     // Jetzt alle Mitgliedskonten der gefundenen Mitglieder
