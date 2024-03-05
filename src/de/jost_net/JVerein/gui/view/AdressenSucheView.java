@@ -24,7 +24,9 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.util.ApplicationException;
 
 public class AdressenSucheView extends AbstractAdresseSucheView
 {
@@ -44,8 +46,19 @@ public class AdressenSucheView extends AbstractAdresseSucheView
   {
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     TextInput suchName = control.getSuchname();
-    suchName.addListener(new FilterListener());
     group.addInput(suchName);
+    
+    ButtonArea button = new ButtonArea();
+    Button suchen = new Button("Suchen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        TabRefresh();
+      }
+    }, null, true, "search.png");
+    button.addButton(suchen);
+    group.addButtonArea(button);
 
     Input adrtyp = control.getSuchAdresstyp(2);
     adrtyp.addListener(new FilterListener());
