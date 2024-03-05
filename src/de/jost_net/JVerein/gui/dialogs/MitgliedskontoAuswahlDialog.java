@@ -80,7 +80,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     TabFolder folder = new TabFolder(parent, SWT.NONE);
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-    TabGroup tabNurIst = new TabGroup(folder, "Ist-Buchung einer Soll-Buchung zuordenen", false, 1);
+    TabGroup tabNurIst = new TabGroup(folder, "Ist-Buchung einer Soll-Buchung zuorden", false, 1);
     Container grNurIst = new SimpleContainer(tabNurIst.getComposite());
     grNurIst.addHeadline("Auswahl des Mitgliedskontos");
     if (text == null || text.length() == 0)
