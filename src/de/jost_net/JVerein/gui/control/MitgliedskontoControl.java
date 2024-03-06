@@ -819,7 +819,8 @@ public class MitgliedskontoControl extends AbstractControl
     {
     // Lese alle Mitglieder die auch Soll Buchungen
     // (Mitgliedskonten) haben und die Bedingungen erfüllen.
-    String sql = "SELECT mitglied, mitglied.name, mitglied.vorname FROM mitgliedskonto "
+    String sql = "SELECT mitglied, mitglied.name, mitglied.vorname,"
+        + " mitgliedskonto.betrag, sum(buchung.betrag) FROM mitgliedskonto "
         + " JOIN mitglied ON mitgliedskonto.mitglied = mitglied.id "
         + " LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto ";
         String where = "";
