@@ -30,11 +30,11 @@ public class AdresstypView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Adresstyp");
+    GUI.getView().setTitle("Mitgliedstyp");
 
     final AdresstypControl control = new AdresstypControl(this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Adresstyp");
+    LabelGroup group = new LabelGroup(getParent(), "Mitgliedstyp");
     group.addLabelPair("Bezeichnung", control.getBezeichnung());
     group.addLabelPair("Bezeichnung Plural", control.getBezeichnungPlural());
 

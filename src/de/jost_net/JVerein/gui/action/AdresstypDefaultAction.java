@@ -46,11 +46,11 @@ public class AdresstypDefaultAction implements Action
       at.setJVereinid(2);
       at.store();
 
-      GUI.getStatusBar().setSuccessText("Adresstypen eingefügt.");
+      GUI.getStatusBar().setSuccessText("Mitgliedstypen eingefügt.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Einfügen von Adresstypen.";
+      String fehler = "Fehler beim Einfügen von Mitgliedstypen.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

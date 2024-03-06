@@ -33,7 +33,7 @@ public class AdresstypListView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Adresstypen");
+    GUI.getView().setTitle("Mitgliedstypen");
 
     AdresstypControl control = new AdresstypControl(this);
 
@@ -49,7 +49,7 @@ public class AdresstypListView extends AbstractView
     it.addFilter("jvereinid >= 1 and jvereinid <= 2");
     if (it.size() == 0)
     {
-      buttons.addButton("Default-Adresstypen einrichten",
+      buttons.addButton("Default-Mitgliedstypen einrichten",
           new AdresstypDefaultAction());
     }
     buttons.paint(this.getParent());

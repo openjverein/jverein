@@ -21,13 +21,13 @@ import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
- * Kontext-Menu zu den Adresstypen.
+ * Kontext-Menu zu den Mitgliedstypen.
  */
 public class AdresstypMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Adresstypen.
+   * Erzeugt ein Kontext-Menu fuer die Liste der Mitgliedstypen.
    */
   public AdresstypMenu()
   {

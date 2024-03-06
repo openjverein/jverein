@@ -98,7 +98,7 @@ public class AdresstypControl extends AbstractControl
       try
       {
         at.store();
-        GUI.getStatusBar().setSuccessText("Adresstyp gespeichert");
+        GUI.getStatusBar().setSuccessText("Mitgliedstyp gespeichert");
       }
       catch (ApplicationException e)
       {
@@ -107,7 +107,7 @@ public class AdresstypControl extends AbstractControl
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler bei speichern des Adresstypen";
+      String fehler = "Fehler bei speichern des Mitgliedstyp";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }

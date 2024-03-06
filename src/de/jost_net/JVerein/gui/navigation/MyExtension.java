@@ -314,7 +314,7 @@ public class MyExtension implements Extension
           new MitgliedImportAction(), "file-import.png"));
       if (Einstellungen.getEinstellung().getZusatzadressen())
       {
-        administration.addChild(new MyItem(administration, "Adresstypen",
+        administration.addChild(new MyItem(administration, "Mitgliedstypen",
             new AdresstypListAction(), "columns.png"));
       }
       NavigationItem einstellungenerweitert = null;

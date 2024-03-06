@@ -26,7 +26,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Loeschen eines Adresstypen.
+ * Loeschen eines Mitgliedstyp.
  */
 public class AdresstypDeleteAction implements Action
 {
@@ -35,7 +35,7 @@ public class AdresstypDeleteAction implements Action
   {
     if (context == null || !(context instanceof Adresstyp))
     {
-      throw new ApplicationException("Kein Adresstyp ausgewählt");
+      throw new ApplicationException("Kein Mitgliedstyp ausgewählt");
     }
     try
     {
@@ -43,15 +43,15 @@ public class AdresstypDeleteAction implements Action
       if (at.getJVereinid() > 0)
       {
         throw new ApplicationException(
-            "Dieser Adresstyp darf nicht gelöscht werden");
+            "Dieser Mitgliedstyp darf nicht gelöscht werden");
       }
       if (at.isNewObject())
       {
         return;
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Adresstyp löschen");
-      d.setText("Wollen Sie diesen Adresstyp wirklich löschen?");
+      d.setTitle("Mitgliedstyp löschen");
+      d.setText("Wollen Sie diesen Mitgliedstyp wirklich löschen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -60,16 +60,16 @@ public class AdresstypDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen eines Adresstypen", e);
+        Logger.error("Fehler beim Löschen eines Mitgliedstyp", e);
         return;
       }
 
       at.delete();
-      GUI.getStatusBar().setSuccessText("Adresstyp gelöscht.");
+      GUI.getStatusBar().setSuccessText("Mitgliedstyp gelöscht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Buchungsart.";
+      String fehler = "Fehler beim Löschen des Mitgliedstyp.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

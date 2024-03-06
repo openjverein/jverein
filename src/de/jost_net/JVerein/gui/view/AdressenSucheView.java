@@ -49,7 +49,7 @@ public class AdressenSucheView extends AbstractAdresseSucheView
     group.addInput(suchName);
     Input adrtyp = control.getSuchAdresstyp(2);
     adrtyp.addListener(new FilterListener());
-    group.addLabelPair("Adresstyp", adrtyp);
+    group.addLabelPair("Mitgliedstyp", adrtyp);
     
     ButtonArea button = new ButtonArea();
     Button suchen = new Button("Suchen", new Action()

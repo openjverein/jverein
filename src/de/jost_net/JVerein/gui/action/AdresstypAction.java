@@ -58,7 +58,7 @@ public class AdresstypAction implements Action
       catch (RemoteException e)
       {
         throw new ApplicationException(
-            "Fehler bei der Erzeugung eines neuen Adresstypen", e);
+            "Fehler bei der Erzeugung eines neuen Mitgliedstypen", e);
       }
     }
     GUI.startView(AdresstypView.class.getName(), at);

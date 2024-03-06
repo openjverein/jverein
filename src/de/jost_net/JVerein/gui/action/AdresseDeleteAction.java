@@ -26,7 +26,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen einer Adresse.
+ * Löschen eines Nicht-Mitglied
  */
 public class AdresseDeleteAction implements Action
 {
@@ -35,7 +35,7 @@ public class AdresseDeleteAction implements Action
   {
     if (context == null || !(context instanceof Mitglied))
     {
-      throw new ApplicationException("Keine Adresse ausgewählt");
+      throw new ApplicationException("Kein Nicht-Mitglied ausgewählt");
     }
     try
     {
@@ -45,8 +45,8 @@ public class AdresseDeleteAction implements Action
         return;
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Adresse löschen");
-      d.setText("Wollen Sie diese Adresse wirklich löschen?");
+      d.setTitle("Nicht-Mitglied löschen");
+      d.setText("Wollen Sie dieses Nicht-Mitglied wirklich löschen?");
 
       try
       {
@@ -56,15 +56,15 @@ public class AdresseDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Adresse", e);
+        Logger.error("Fehler beim Löschen des Nicht-Mitglied", e);
         return;
       }
       m.delete();
-      GUI.getStatusBar().setSuccessText("Adresse gelöscht.");
+      GUI.getStatusBar().setSuccessText("Nicht-Mitglied gelöscht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Adresse";
+      String fehler = "Fehler beim Löschen des Nicht-Mitglied";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

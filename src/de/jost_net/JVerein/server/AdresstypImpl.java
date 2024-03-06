@@ -75,7 +75,7 @@ public class AdresstypImpl extends AbstractDBObject implements Adresstyp
     }
     catch (RemoteException e)
     {
-      String fehler = "Adresstyp kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Mitgliedstyp kann nicht gespeichert werden. Siehe system log";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }

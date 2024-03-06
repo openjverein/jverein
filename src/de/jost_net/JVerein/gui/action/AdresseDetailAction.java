@@ -62,7 +62,7 @@ public class AdresseDetailAction implements Action
     catch (Exception e)
     {
       throw new ApplicationException(
-          "Fehler bei der Erzeugung einer neuen Adresse", e);
+          "Fehler bei der Erzeugung eines neuen Nicht-Mitglied", e);
     }
     GUI.startView(new AdresseDetailView(), m);
   }

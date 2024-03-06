@@ -438,7 +438,7 @@ public class MitgliedControl extends AbstractControl
       }
       suchadresstyp = new SelectInput(PseudoIterator.asList(at), def);
     }
-    suchadresstyp.setName("Adresstyp");
+    suchadresstyp.setName("Mitgliedstyp");
     suchadresstyp.addListener(new Listener()
     {
 
@@ -470,7 +470,7 @@ public class MitgliedControl extends AbstractControl
     at.addFilter("jvereinid != 1 or jvereinid is null");
     at.setOrder("order by bezeichnung");
     adresstyp = new SelectInput(PseudoIterator.asList(at), getMitglied().getAdresstyp());
-    adresstyp.setName("Adresstyp");
+    adresstyp.setName("Mitgliedstyp");
     return adresstyp;
   }
 
@@ -3338,7 +3338,7 @@ public class MitgliedControl extends AbstractControl
       }
       else
       {
-        successtext = "Adresse gespeichert";
+        successtext = "Nicht-Mitglied gespeichert";
       }
       GUI.getStatusBar().setSuccessText(successtext);
     }
