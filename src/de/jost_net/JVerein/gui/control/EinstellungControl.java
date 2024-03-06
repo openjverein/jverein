@@ -175,6 +175,8 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput kontonummer_in_buchungsliste;
   
   private IntegerInput unterdrueckunglaenge;
+  
+  private IntegerInput unterdrueckungkonten;
 
   private CheckboxInput automatische_buchungskorrektur_hibiscus;
 
@@ -958,6 +960,16 @@ public class EinstellungControl extends AbstractControl
           Einstellungen.getEinstellung().getUnterdrueckungLaenge());
     }
     return unterdrueckunglaenge;
+  }
+  
+  public IntegerInput getUnterdrueckungKonten() throws RemoteException
+  {
+    if (null == unterdrueckungkonten)
+    {
+      unterdrueckungkonten = new IntegerInput(
+          Einstellungen.getEinstellung().getUnterdrueckungKonten());
+    }
+    return unterdrueckungkonten;
   }  
   
   public CheckboxInput getKontonummerInBuchungsliste() throws RemoteException 
@@ -971,7 +983,6 @@ public class EinstellungControl extends AbstractControl
     return kontonummer_in_buchungsliste;
   }
 
-  
   public CheckboxInput getAutomatischeBuchungskorrekturHibiscus() throws RemoteException 
   {
     if (automatische_buchungskorrektur_hibiscus != null) 
@@ -1977,6 +1988,8 @@ public class EinstellungControl extends AbstractControl
           .getValue());
       Integer ulength = (Integer) unterdrueckunglaenge.getValue();
       e.setUnterdrueckungLaenge(ulength);
+      Integer klength = (Integer) unterdrueckungkonten.getValue();
+      e.setUnterdrueckungKonten(klength);
       e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());
       e.setOptiert((Boolean) getOptiert().getValue());
       e.store();
