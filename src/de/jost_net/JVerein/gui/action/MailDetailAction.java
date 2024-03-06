@@ -55,7 +55,6 @@ public class MailDetailAction implements Action
             m.setBetreff(mv.getBetreff());
             m.setTxt(mv.getTxt());
           }
-          GUI.startView(MailDetailView.class.getName(), m);
         }
       }
       catch (OperationCanceledException oce)
@@ -68,5 +67,6 @@ public class MailDetailAction implements Action
             "Fehler bei der Erzeugung der neuen Mail", e);
       }
     }
+    GUI.startView(MailDetailView.class.getName(), m);
   }
 }
