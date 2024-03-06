@@ -19,12 +19,16 @@ package de.jost_net.JVerein.io;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.GenericObject;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -37,17 +41,21 @@ public class SaldoZeile implements GenericObject
 
   private Konto konto;
 
-  private Double anfangsbestand;
+  private Double anfangsbestand = 0.0d;
 
-  private Double einnahmen;
+  private Double einnahmen = 0.0d;
 
-  private Double ausgaben;
+  private Double ausgaben = 0.0d;
 
-  private Double umbuchungen;
+  private Double umbuchungen = 0.0d;
 
-  private Double endbestand;
+  private Double endbestand = 0.0d;
 
   private String bemerkung = "";
+  
+  private Date von = null;
+  
+  private Date bis = null;
 
   public SaldoZeile(Konto konto, Double anfangsbestand, Double einnahmen,
       Double ausgaben, Double umbuchungen, Double endbestand)
@@ -60,54 +68,90 @@ public class SaldoZeile implements GenericObject
     this.endbestand = endbestand;
   }
 
+  public SaldoZeile(Date von, Date bis, Konto konto) throws RemoteException
+  {
+    this.von = von;
+    this.bis = bis;
+    this.konto = konto;
+    saldoZeile();
+  }
+  
   public SaldoZeile(Geschaeftsjahr gj, Konto konto) throws RemoteException
   {
+    this.von = gj.getBeginnGeschaeftsjahr();
+    this.bis = gj.getEndeGeschaeftsjahr();
     this.konto = konto;
+    saldoZeile();
+  }
+  
+  public void saldoZeile() throws RemoteException
+  {
     DBService service = Einstellungen.getDBService();
+    Date vonRange = null;
+    Date bisRange = null;
+    Calendar cal = Calendar.getInstance();
+    
+    // Suchen ob Anfangsstand im Suchbereich enthalten ist
     DBIterator<Anfangsbestand> anf = service.createList(Anfangsbestand.class);
     anf.addFilter("konto = ? ", new Object[] { konto.getID() });
-    anf.addFilter("datum >= ? AND datum <= ?", new Object[] {
-        gj.getBeginnGeschaeftsjahr(), gj.getEndeGeschaeftsjahr() });
-    if (anf.hasNext())
+    anf.addFilter("datum >= ? AND datum <= ?", new Object[] { von, bis });
+    anf.setOrder("ORDER BY day(datum)");
+    @SuppressWarnings("unchecked")
+    ArrayList<Anfangsbestand> anf1 = (ArrayList<Anfangsbestand>) PseudoIterator.asList(anf);
+    
+    // Anfangsstand ist für das von Datum vorhanden (Geschäftsjahresanfang)
+    if (anf1 != null && !anf1.isEmpty() && anf1.get(0).getDatum().equals(von))
     {
-      Anfangsbestand a = anf.next();
+      Anfangsbestand a = anf1.get(0);
       anfangsbestand = a.getBetrag();
+      extract(service, von, bis);
+      return;
     }
-    else
+    
+    // Suchen ob Anfangsstand vor dem Bereich
+    anf = service.createList(Anfangsbestand.class);
+    anf.addFilter("konto = ? ", new Object[] { konto.getID() });
+    anf.addFilter("datum < ? ", new Object[] { von });
+    anf.setOrder("ORDER BY day(datum)");
+    @SuppressWarnings("unchecked")
+    ArrayList<Anfangsbestand> anf2 = (ArrayList<Anfangsbestand>) PseudoIterator.asList(anf);
+    
+    // Anfangsstand vor von Datum vorhanden
+    if (anf2 != null && !anf2.isEmpty())
     {
-      anfangsbestand = 0d;
-      bemerkung += "kein Anfangsbestand vorhanden  ";
+      int size = anf2.size();
+      // Endstand zum von Datum berechnen vom letzten Anfangsbestand
+      vonRange = anf2.get(size-1).getDatum();
+      cal.setTime(von);
+      cal.add(Calendar.DAY_OF_MONTH, -1);
+      bisRange = cal.getTime();
+      anfangsbestand = anf2.get(size-1).getBetrag();
+      extract(service, vonRange, bisRange);
+      // Jetzt Anfangsstand zum von Datum setzen
+      anfangsbestand = endbestand;
+      extract(service, von, bis);
+      return;
     }
-    String sql = "select sum(betrag) from buchung, buchungsart "
-        + "where datum >= ? and datum <= ? AND konto = ? "
-        + "and buchung.buchungsart = buchungsart.id " + "and buchungsart.art=?";
-
-    ResultSetExtractor rs = new ResultSetExtractor()
+    
+    // Anfangsstand ist im Bereich vorhanden und es gibt keinen Anfangsstand vorher
+    // Dann muß das Konto im Bereich erzeugt worden sein oder es gibt keinen 
+    // früheren Anfangsstand. Dann zurückrechnen
+    if (anf1 != null && !anf1.isEmpty() && (anf2 == null || anf2.isEmpty()))
     {
+      // Delta in die Zukunft berechnen
+      cal.setTime(anf1.get(0).getDatum());
+      cal.add(Calendar.DAY_OF_MONTH, -1);
+      bisRange = cal.getTime();
+      extract(service, von, bisRange);
+      Anfangsbestand a = anf1.get(0);
+      // Endstand zum von Datum berechnen
+      anfangsbestand = a.getBetrag() - endbestand;
+      extract(service, von, bis);
+      return;
+    }
 
-      @Override
-      public Object extract(ResultSet rs) throws SQLException
-      {
-        if (!rs.next())
-        {
-          return Double.valueOf(0);
-        }
-        return Double.valueOf(rs.getDouble(1));
-      }
-    };
-    einnahmen = (Double) service.execute(sql,
-        new Object[] { gj.getBeginnGeschaeftsjahr(), gj.getEndeGeschaeftsjahr(),
-            konto.getID(), 0 },
-        rs);
-    ausgaben = (Double) service.execute(sql,
-        new Object[] { gj.getBeginnGeschaeftsjahr(), gj.getEndeGeschaeftsjahr(),
-            konto.getID(), 1 },
-        rs);
-    umbuchungen = (Double) service.execute(sql,
-        new Object[] { gj.getBeginnGeschaeftsjahr(), gj.getEndeGeschaeftsjahr(),
-            konto.getID(), 2 },
-        rs);
-    endbestand = anfangsbestand + einnahmen + ausgaben + umbuchungen;
+    anfangsbestand = 0.0d;
+    bemerkung += "kein Anfangsbestand vorhanden  ";
   }
 
   @Override
@@ -180,4 +224,33 @@ public class SaldoZeile implements GenericObject
     }
     return this.getID().equals(arg0.getID());
   }
+  
+  private void extract(DBService service, Date von, Date bis) throws RemoteException
+  {
+    String sql = "select sum(betrag) from buchung, buchungsart "
+        + "where datum >= ? and datum <= ? AND konto = ? "
+        + "and buchung.buchungsart = buchungsart.id " + "and buchungsart.art=?";
+
+    ResultSetExtractor rs = new ResultSetExtractor()
+    {
+
+      @Override
+      public Object extract(ResultSet rs) throws SQLException
+      {
+        if (!rs.next())
+        {
+          return Double.valueOf(0);
+        }
+        return Double.valueOf(rs.getDouble(1));
+      }
+    };
+    einnahmen = (Double) service.execute(sql,
+        new Object[] { von, bis, konto.getID(), 0 }, rs);
+    ausgaben = (Double) service.execute(sql,
+        new Object[] { von, bis , konto.getID(), 1 },  rs);
+    umbuchungen = (Double) service.execute(sql,
+        new Object[] { von, bis, konto.getID(), 2 }, rs);
+    endbestand = anfangsbestand + einnahmen + ausgaben + umbuchungen;
+  }
+  
 }

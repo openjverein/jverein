@@ -53,5 +53,8 @@ public interface Konto extends DBObject
 
   public DBIterator<Konto> getKontenEinesJahres(Geschaeftsjahr gj)
       throws RemoteException;
+  
+  public DBIterator<Konto> getKontenVonBis(Date von, Date bis)
+      throws RemoteException;
 
 }

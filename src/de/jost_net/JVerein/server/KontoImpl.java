@@ -190,6 +190,21 @@ public class KontoImpl extends AbstractDBObject implements Konto
     konten.setOrder("order by bezeichnung");
     return konten;
   }
+  
+  @Override
+  public DBIterator<Konto> getKontenVonBis(Date von, Date bis)
+      throws RemoteException
+  {
+    DBIterator<Konto> konten = Einstellungen.getDBService()
+        .createList(Konto.class);
+    konten.addFilter("(eroeffnung is null or eroeffnung <= ?)",
+        new Object[] { bis });
+    konten.addFilter(
+        "(aufloesung is null or aufloesung >= ? )",
+        new Object[] { von });
+    konten.setOrder("order by bezeichnung");
+    return konten;
+  }
 
   @Override
   public void delete() throws RemoteException, ApplicationException

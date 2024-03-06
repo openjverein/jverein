@@ -17,8 +17,8 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.eclipse.swt.widgets.Composite;
 
@@ -33,33 +33,29 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class JahressaldoList extends TablePart implements Part
 {
 
   private TablePart saldoList;
-
-  private Geschaeftsjahr gj = null;
-
-  public JahressaldoList(Action action, int jahr) throws RemoteException
-  {
-    super(action);
-    try
-    {
-      gj = new Geschaeftsjahr(jahr);
-    }
-    catch (ParseException e)
-    {
-      Logger.error("Fehler", e);
-    }
-  }
+  
+  private Date von = null;
+  
+  private Date bis = null;
 
   public JahressaldoList(Action action, Geschaeftsjahr gj)
   {
     super(action);
-    this.gj = gj;
+    this.von = gj.getBeginnGeschaeftsjahr();
+    this.bis = gj.getEndeGeschaeftsjahr();
+  }
+  
+  public JahressaldoList(Action action, Date von, Date bis)
+  {
+    super(action);
+    this.von = von;
+    this.bis = bis;
   }
 
   public Part getSaldoList() throws ApplicationException
@@ -115,18 +111,19 @@ public class JahressaldoList extends TablePart implements Part
     ArrayList<SaldoZeile> zeile = new ArrayList<>();
     Konto k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
         null);
-    DBIterator<Konto> konten = k.getKontenEinesJahres(gj);
+    DBIterator<Konto> konten = k.getKontenVonBis(von, bis);
     double anfangsbestand = 0;
     double einnahmen = 0;
     double ausgaben = 0;
     double umbuchungen = 0;
     double endbestand = 0;
     double jahressaldo = 0;
-    if (gj != null)
+    if (von != null)
     {
+      SaldoZeile sz = null;
       while (konten.hasNext())
       {
-        SaldoZeile sz = new SaldoZeile(gj, (Konto) konten.next());
+        sz = new SaldoZeile(von, bis, (Konto) konten.next());
         anfangsbestand += (Double) sz.getAttribute("anfangsbestand");
         einnahmen += (Double) sz.getAttribute("einnahmen");
         ausgaben += (Double) sz.getAttribute("ausgaben");
@@ -155,7 +152,14 @@ public class JahressaldoList extends TablePart implements Part
 
   public void setGeschaeftsjahr(Geschaeftsjahr gj)
   {
-    this.gj = gj;
+    this.von = gj.getBeginnGeschaeftsjahr();
+    this.bis = gj.getEndeGeschaeftsjahr();
+  }
+  
+  public void setVonBis(Date von, Date bis)
+  {
+    this.von = von;
+    this.bis = bis;
   }
 
   @Override
