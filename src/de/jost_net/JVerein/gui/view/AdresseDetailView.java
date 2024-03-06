@@ -22,7 +22,7 @@ public class AdresseDetailView extends AbstractAdresseDetailView
   @Override
   public String getTitle()
   {
-    return "Adressdaten";
+    return "Daten des Nicht-Mitgliedes";
   }
 
   @Override

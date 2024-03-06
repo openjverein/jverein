@@ -113,11 +113,11 @@ public class BuchungMitgliedskontoZuordnungAction implements Action
 
         if (mk == null)
         {
-          GUI.getStatusBar().setSuccessText("Mitgliedskonto gelöscht");
+          GUI.getStatusBar().setSuccessText("Sollbuchung gelöscht");
         } 
         else
         {
-          GUI.getStatusBar().setSuccessText("Mitgliedskonto zugeordnet");
+          GUI.getStatusBar().setSuccessText("Sollbuchung zugeordnet");
         }
       }
     }

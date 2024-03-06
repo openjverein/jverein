@@ -710,11 +710,10 @@ public abstract class AbstractAdresseDetailView extends AbstractView
       {
         mgname = (String) control.getExterneMitgliedsnummer().getValue();
         if (mgname == null || mgname.isEmpty())
-          mgname = "?";
-        mgname = mgname + " - ";
+          mgname = "? - ";
+        else
+          mgname = (String) control.getMitgliedsnummer().getValue() + " - ";
       }
-      else
-        mgname = (String) control.getMitgliedsnummer().getValue() + " - ";
     }
 
     if (control.getName(false).getValue() != null)

@@ -36,8 +36,7 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.util.Container;
-import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
@@ -49,8 +48,6 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
 {
 
   private de.willuhn.jameica.system.Settings settings;
-
-  private String text = null;
 
   private Object choosen = null;
 
@@ -71,7 +68,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     settings.setStoreWhenRead(true);
 
     this.setSize(900, 700);
-    this.setTitle("Mitgliedskonto-Auswahl");
+    this.setTitle("Sollbuchung Auswahl");
     this.buchung = buchung;
     control = new MitgliedskontoControl(null);
   }
@@ -82,17 +79,15 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     TabFolder folder = new TabFolder(parent, SWT.NONE);
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-    TabGroup tabNurIst = new TabGroup(folder, "nur Ist", false, 1);
-    Container grNurIst = new SimpleContainer(tabNurIst.getComposite());
-    grNurIst.addHeadline("Auswahl des Mitgliedskontos");
-    if (text == null || text.length() == 0)
-    {
-      text = "Bitte wählen Sie das gewünschte Mitgliedskonto aus.";
-    }
-    grNurIst.addText(text, true);
+    TabGroup tabNurIst = new TabGroup(folder, "Sollbuchung zuordnen", false, 1);
+    LabelGroup grNurIst = new LabelGroup(tabNurIst.getComposite(), "Filter");
+
     TextInput suNa = control.getSuchName();
     suNa.setValue(buchung.getName());
     grNurIst.addLabelPair("Name", suNa);
+    grNurIst.addLabelPair("Differenz",
+        control.getDifferenz(DIFFERENZ.FEHLBETRAG));
+    
     ButtonArea button1 = new ButtonArea();
     Button suchen1 = new Button("Suchen", new Action()
     {
@@ -104,8 +99,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     }, null, true, "search.png");
     button1.addButton(suchen1);
     grNurIst.addButtonArea(button1);
-    grNurIst.addLabelPair("Differenz",
-        control.getDifferenz(DIFFERENZ.FEHLBETRAG));
+
     Action action = new Action()
     {
 
@@ -124,18 +118,13 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     mitgliedskontolist = control.getMitgliedskontoList(action, null);
     mitgliedskontolist.paint(tabNurIst.getComposite());
 
-    //
-    TabGroup tabSollIst = new TabGroup(folder, "Soll u. Ist", true, 1);
-    Container grSollIst = new SimpleContainer(tabSollIst.getComposite());
-    grSollIst.addHeadline("Auswahl des Mitgliedskontos");
+    TabGroup tabSollIst = new TabGroup(folder, "Sollbuchung erzeugen und Istbuchung zuordnen", true, 1);
+    LabelGroup grSollIst = new LabelGroup(tabSollIst.getComposite(), "Filter");
 
-    if (text == null || text.length() == 0)
-    {
-      text = "Bitte wählen Sie das gewünschte Mitgliedskonto aus.";
-    }
-    grSollIst.addText(text, true);
     control.getSuchName2(true).setValue(buchung.getName());
     grSollIst.addLabelPair("Name", control.getSuchName2(false));
+    grSollIst.addInput(control.getSpezialSuche());
+    
     ButtonArea button2 = new ButtonArea();
     Button suchen2 = new Button("Suchen", new Action()
     {
@@ -147,7 +136,6 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     }, null, true, "search.png");
     button2.addButton(suchen2);
     grSollIst.addButtonArea(button2);
-    grSollIst.addInput(control.getSpezialSuche());
 
     final Action action2 = new Action()
     {
@@ -238,17 +226,6 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     return choosen;
   }
 
-  /**
-   * Optionale Angabe des anzuzeigenden Textes. Wird hier kein Wert gesetzt,
-   * wird ein Standard-Text angezeigt.
-   * 
-   * @param text
-   */
-  public void setText(String text)
-  {
-    this.text = text;
-  }
-  
   public boolean getAbort()
   {
     return abort;

@@ -38,11 +38,11 @@ public class MitgliedskontoDetailView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Mitgliedskonto-Buchung");
+    GUI.getView().setTitle("Buchung");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
     LabelGroup grBuchung = new LabelGroup(getParent(),
-        (typ == MitgliedskontoNode.SOLL ? "Soll" : "Ist") + "-Buchung");
+        (typ == MitgliedskontoNode.SOLL ? "Soll" : "Ist") + "buchung");
     grBuchung.addLabelPair("Datum", control.getDatum());
     grBuchung.addLabelPair("Verwendungszweck 1", control.getZweck1());
     grBuchung.addLabelPair("Zahlungsweg", control.getZahlungsweg());

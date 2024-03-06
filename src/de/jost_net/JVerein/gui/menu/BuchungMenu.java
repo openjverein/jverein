@@ -65,7 +65,7 @@ public class BuchungMenu extends ContextMenu
         "unlocked.png"));
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
-    addItem(new CheckedContextMenuItem("Mitgliedskonto zuordnen",
+    addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
         new BuchungMitgliedskontoZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Projekt zuordnen",
         new BuchungProjektZuordnungAction(control), "view-refresh.png"));

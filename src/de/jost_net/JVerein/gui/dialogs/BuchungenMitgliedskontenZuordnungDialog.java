@@ -90,7 +90,7 @@ public class BuchungenMitgliedskontenZuordnungDialog extends AbstractDialog<Obje
   {
     super(POSITION_CENTER);
 
-    setTitle("Buchungen zu Mitgliedskonten zuordnen");
+    setTitle("Buchungen zu Sollbuchung zuordnen");
     setSize(WINDOW_WIDTH, SWT.DEFAULT);
 
     settings = new Settings(this.getClass());
@@ -275,7 +275,7 @@ public class BuchungenMitgliedskontenZuordnungDialog extends AbstractDialog<Obje
 
           if(assignedBooking.isEmpty())
           {
-            GUI.getStatusBar().setErrorText("Es wurden keine passenden Buchungen oder Mitgliedskonten zum Zuordnen gefunden.");
+            GUI.getStatusBar().setErrorText("Es wurden keine passenden Buchungen oder Sollbuchungen zum Zuordnen gefunden.");
           }
           else
           {

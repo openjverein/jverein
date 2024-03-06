@@ -570,7 +570,7 @@ public class MitgliedskontoControl extends AbstractControl
       mkto.setSteuerbetrag((Double) getBetrag().getValue() - netto);
       
       mkto.store();
-      GUI.getStatusBar().setSuccessText("Mitgliedskonto gespeichert");
+      GUI.getStatusBar().setSuccessText("Sollbuchung gespeichert");
     }
     catch (ApplicationException e)
     {
@@ -578,7 +578,7 @@ public class MitgliedskontoControl extends AbstractControl
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim speichern";
+      String fehler = "Fehler beim speichern der Sollbuchung";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }

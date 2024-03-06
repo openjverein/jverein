@@ -38,7 +38,7 @@ public class AdressenSucheView extends AbstractAdresseSucheView
   @Override
   public String getTitle()
   {
-    return "Adressen suchen";
+    return "Nicht-Mitglieder suchen";
   }
 
   @Override
@@ -47,6 +47,9 @@ public class AdressenSucheView extends AbstractAdresseSucheView
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     TextInput suchName = control.getSuchname();
     group.addInput(suchName);
+    Input adrtyp = control.getSuchAdresstyp(2);
+    adrtyp.addListener(new FilterListener());
+    group.addLabelPair("Adresstyp", adrtyp);
     
     ButtonArea button = new ButtonArea();
     Button suchen = new Button("Suchen", new Action()
@@ -59,10 +62,6 @@ public class AdressenSucheView extends AbstractAdresseSucheView
     }, null, true, "search.png");
     button.addButton(suchen);
     group.addButtonArea(button);
-
-    Input adrtyp = control.getSuchAdresstyp(2);
-    adrtyp.addListener(new FilterListener());
-    group.addLabelPair("Adresstyp", adrtyp);
   }
 
   @Override

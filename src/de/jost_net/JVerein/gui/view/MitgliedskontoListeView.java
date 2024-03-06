@@ -36,7 +36,7 @@ public class MitgliedskontoListeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Mitgliedskonten");
+    GUI.getView().setTitle("Sollbuchungen");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
     LabelGroup group = new LabelGroup(getParent(), "Filter");
@@ -45,6 +45,7 @@ public class MitgliedskontoListeView extends AbstractView
         control.getVondatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO));
     group.addLabelPair("Bis",
         control.getBisdatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO));
+    group.addLabelPair("Differenz", control.getDifferenz());
     
     ButtonArea button = new ButtonArea();
     Button suchen = new Button("Suchen", new Action()
@@ -57,7 +58,6 @@ public class MitgliedskontoListeView extends AbstractView
     }, null, true, "search.png");
     button.addButton(suchen);
     group.addButtonArea(button);
-    group.addLabelPair("Differenz", control.getDifferenz());
 
     control.getMitgliedskontoList(new MitgliedDetailAction(),
         new Mitgliedskonto2Menu()).paint(this.getParent());

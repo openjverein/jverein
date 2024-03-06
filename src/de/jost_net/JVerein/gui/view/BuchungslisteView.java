@@ -51,44 +51,45 @@ public class BuchungslisteView extends AbstractView
     TabFolder folder = new TabFolder(getParent(), SWT.V_SCROLL | SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     folder.setBackground(Color.BACKGROUND.getSWTColor());
-    {
-      TabGroup tabAllgemein = new TabGroup(folder, "Suche Buchungen", true, 2);
-      ColumnLayout cl = new ColumnLayout(tabAllgemein.getComposite(), 2);
-      SimpleContainer left = new SimpleContainer(cl.getComposite());
-      SimpleContainer right = new SimpleContainer(cl.getComposite());
-      left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
-      left.addLabelPair("Projekt", control.getSuchProjekt());
-      left.addLabelPair("Betrag", control.getSuchBetrag());
-      left.addLabelPair("Mitglied zugeordnet?", control.getSuchMitgliedZugeordnet());
-      right.addLabelPair("Von Datum", control.getVondatum());
-      right.addLabelPair("Bis Datum", control.getBisdatum());
-      right.addLabelPair("Enthaltener Text", control.getSuchtext());
-    }
-    {
-      final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(
-          this, control);
-      TabGroup tabKonto = new TabGroup(folder, "Konto Kenndaten", true, 4);
-      tabKonto.addLabelPair("Konto:", headerControl.getKontoNameInput());
-      tabKonto.addLabelPair("Vorjahr", new LabelInput(""));
 
-      tabKonto.addLabelPair("Anfangssaldo:",
-          headerControl.getAktJahrAnfangsSaldoInput());
-      tabKonto.addLabelPair("Anfangssaldo:",
-          headerControl.getVorJahrAnfangsSaldoInput());
+    // Erster Tab
+    TabGroup tabAllgemein = new TabGroup(folder, "Suche Buchungen", true, 2);
+    LabelGroup labelgroup1 = new LabelGroup(tabAllgemein.getComposite(), "");
+    ColumnLayout cl = new ColumnLayout(labelgroup1.getComposite(), 2);
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
+    left.addLabelPair("Projekt", control.getSuchProjekt());
+    left.addLabelPair("Betrag", control.getSuchBetrag());
+    left.addLabelPair("Mitglied zugeordnet?", control.getSuchMitgliedZugeordnet());
+    right.addLabelPair("Von Datum", control.getVondatum());
+    right.addLabelPair("Bis Datum", control.getBisdatum());
+    right.addLabelPair("Enthaltener Text", control.getSuchtext());
 
-      tabKonto.addLabelPair("Einnahmen:",
-          headerControl.getAktJahrEinnahmenInput());
-      tabKonto.addLabelPair("Einnahmen:",
-          headerControl.getVorJahrEinnahmenInput());
-
-      tabKonto.addLabelPair("Ausgaben:",
-          headerControl.getAktJahrAusgabenInput());
-      tabKonto.addLabelPair("Ausgaben:",
-          headerControl.getVorJahrAusgabenInput());
-
-      tabKonto.addLabelPair("Saldo:", headerControl.getAktJahrSaldoInput());
-      tabKonto.addLabelPair("Saldo:", headerControl.getVorJahrSaldoInput());
-    }
+    // Zweiter Tab
+    final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(
+        this, control);
+    TabGroup tabKonto = new TabGroup(folder, "Konto Kenndaten", true, 4);
+    LabelGroup labelgroup2 = new LabelGroup(tabKonto.getComposite(), "");
+    ColumnLayout c2 = new ColumnLayout(labelgroup2.getComposite(), 2);
+    SimpleContainer left2 = new SimpleContainer(c2.getComposite());
+    SimpleContainer right2 = new SimpleContainer(c2.getComposite());
+    left2.addLabelPair("Konto:", headerControl.getKontoNameInput());
+    right2.addLabelPair("Vorjahr", new LabelInput(""));
+    left2.addLabelPair("Anfangssaldo:",
+        headerControl.getAktJahrAnfangsSaldoInput());
+    right2.addLabelPair("Anfangssaldo:",
+        headerControl.getVorJahrAnfangsSaldoInput());
+    left2.addLabelPair("Einnahmen:",
+        headerControl.getAktJahrEinnahmenInput());
+    right2.addLabelPair("Einnahmen:",
+        headerControl.getVorJahrEinnahmenInput());
+    left2.addLabelPair("Ausgaben:",
+        headerControl.getAktJahrAusgabenInput());
+    right2.addLabelPair("Ausgaben:",
+        headerControl.getVorJahrAusgabenInput());
+    left2.addLabelPair("Saldo:", headerControl.getAktJahrSaldoInput());
+    right2.addLabelPair("Saldo:", headerControl.getVorJahrSaldoInput());
 
     control.getBuchungsList().paint(this.getParent());
 

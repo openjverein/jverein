@@ -109,7 +109,7 @@ public class MyExtension implements Extension
           new MitgliedSucheAction(), "user-friends.png"));
       if (Einstellungen.getEinstellung().getZusatzadressen())
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Adressen",
+        mitglieder.addChild(new MyItem(mitglieder, "Nicht-Mitglieder",
             new AdressenSucheAction(), "user-friends.png"));
       }
       if (Einstellungen.getEinstellung().getKursteilnehmer())
@@ -127,7 +127,7 @@ public class MyExtension implements Extension
             new FamilienbeitragAction(), "users.png"));
       }
       
-      mitglieder.addChild(new MyItem(mitglieder, "Mitgliedskonten",
+      mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new MitgliedskontoListeAction(), "calculator.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
           new MitgliedskontoRechnungAction(), "file-invoice.png"));
@@ -172,7 +172,7 @@ public class MyExtension implements Extension
       auswertung = new MyItem(auswertung, "Auswertungen", null);
       auswertung.addChild(new MyItem(auswertung, "Mitglieder",
           new AuswertungMitgliedAction(), "receipt.png"));
-      auswertung.addChild(new MyItem(auswertung, "Adressen",
+      auswertung.addChild(new MyItem(auswertung, "Nicht-Mitglieder",
           new AuswertungAdressenAction(), "receipt.png"));
       auswertung.addChild(new MyItem(auswertung, "Jubiläen",
           new JubilaeenAction(), "receipt.png"));

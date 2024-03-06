@@ -69,7 +69,7 @@ public class ArbeitseinsatzUeberpruefungView extends AbstractView
       }
     }, null, true, "search.png");
     buttons.addButton(button);
-    buttons.paint(this.getParent());
+    group.addButtonArea(buttons);
 
     control.getArbeitseinsatzUeberpruefungList().paint(getParent());
     ButtonArea buttons2 = new ButtonArea();

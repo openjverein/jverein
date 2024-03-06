@@ -50,7 +50,7 @@ public class SplitBuchungMenu extends ContextMenu
         "text-x-generic.png"));
     /*addItem(new CheckedSplitBuchungItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
-    addItem(new CheckedSplitBuchungItem("Mitgliedskonto zuordnen",
+    addItem(new CheckedSplitBuchungItem("Sollbuchung zuordnen",
         new BuchungMitgliedskontoZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedSplitBuchungItem("Projekt zuordnen",
         new BuchungProjektZuordnungAction(control), "view-refresh.png"));

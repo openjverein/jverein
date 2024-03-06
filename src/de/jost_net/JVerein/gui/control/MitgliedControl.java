@@ -3501,7 +3501,7 @@ public class MitgliedControl extends AbstractControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("adressauswertung", "",
+      fd.setFileName(new Dateiname("auswertungnichtmitglied", "",
           Einstellungen.getEinstellung().getDateinamenmuster(),
           ausw.getDateiendung()).get());
       fd.setFilterExtensions(new String[] { "*." + ausw.getDateiendung() });
