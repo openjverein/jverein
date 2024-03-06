@@ -787,7 +787,8 @@ public class MitgliedskontoControl extends AbstractControl
       diff = (DIFFERENZ) differenz.getValue();
     }
     
-    String sql = "SELECT  mitgliedskonto.id, mitglied.name, mitglied.vorname FROM mitgliedskonto "
+    String sql = "SELECT  mitgliedskonto.id, mitglied.name, mitglied.vorname, "
+        + " mitgliedskonto.betrag, sum(buchung.betrag) FROM mitgliedskonto "
         + "JOIN mitglied on (mitgliedskonto.mitglied = mitglied.id) "
         + "LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto ";
     String where = "";
