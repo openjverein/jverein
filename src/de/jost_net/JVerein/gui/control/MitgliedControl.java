@@ -3136,8 +3136,15 @@ public class MitgliedControl extends AbstractControl
       {
         if (externemitgliedsnummer != null)
         {
-          m.setExterneMitgliedsnummer(
-              (String) getExterneMitgliedsnummer().getValue());
+          String mitgliedsnummer = (String) getExterneMitgliedsnummer().getValue();
+          if (mitgliedsnummer != null && !mitgliedsnummer.isEmpty())
+          {
+            m.setExterneMitgliedsnummer(mitgliedsnummer);
+          }
+          else
+          {
+            throw new ApplicationException("Externe Mitgliedsnummer fehlt");
+          }
         }
       }
       else

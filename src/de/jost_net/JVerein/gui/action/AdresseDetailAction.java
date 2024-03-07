@@ -23,6 +23,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
 public class AdresseDetailAction implements Action
@@ -52,12 +53,20 @@ public class AdresseDetailAction implements Action
               PersonenartDialog.POSITION_CENTER);
           String pa = pad.open();
           m.setPersonenart(pa);
+          if (pa == null)
+          {
+            return;
+          }
         }
         else
         {
           m.setPersonenart("n");
         }
       }
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
     }
     catch (Exception e)
     {
