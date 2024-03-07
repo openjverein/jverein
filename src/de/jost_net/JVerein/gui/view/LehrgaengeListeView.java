@@ -19,9 +19,12 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.LehrgangControl;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.util.ApplicationException;
 
 public class LehrgaengeListeView extends AbstractView
 {
@@ -31,12 +34,24 @@ public class LehrgaengeListeView extends AbstractView
   {
     GUI.getView().setTitle("Lehrgänge");
 
-    LehrgangControl control = new LehrgangControl(this);
+    final LehrgangControl control = new LehrgangControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     group.addLabelPair("Lehrgangsart", control.getSuchLehrgangsart());
     group.addLabelPair("Datum von", control.getDatumvon());
     group.addLabelPair("Datum bis", control.getDatumbis());
+    
+    ButtonArea button1 = new ButtonArea();
+    Button suchen1 = new Button("Suchen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        control.refresh();
+      }
+    }, null, true, "search.png");
+    button1.addButton(suchen1);
+    group.addButtonArea(button1);
 
     control.getLehrgaengeList().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();

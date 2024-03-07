@@ -384,7 +384,6 @@ public class KursteilnehmerControl extends AbstractControl
     }
     String tmp = settings.getString("name", "");
     this.suchname = new TextInput(tmp, 30);
-    suchname.addListener(new FilterListener());
     return suchname;
   }
 
@@ -410,7 +409,6 @@ public class KursteilnehmerControl extends AbstractControl
     this.eingabedatumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.eingabedatumvon.setTitle("Eingabedatum");
     this.eingabedatumvon.setText("Beginn des Eingabe-Zeitraumes");
-    eingabedatumvon.addListener(new FilterListener());
     return eingabedatumvon;
   }
 
@@ -436,7 +434,6 @@ public class KursteilnehmerControl extends AbstractControl
     this.eingabedatumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.eingabedatumbis.setTitle("Eingabedatum");
     this.eingabedatumbis.setText("Ende des Eingabe-Zeitraumes");
-    eingabedatumbis.addListener(new FilterListener());
     return eingabedatumbis;
   }
 
@@ -517,7 +514,7 @@ public class KursteilnehmerControl extends AbstractControl
     return part;
   }
 
-  private void refresh()
+  public void refresh()
   {
 
     try
@@ -790,7 +787,7 @@ public class KursteilnehmerControl extends AbstractControl
     }
   }
 
-  private class FilterListener implements Listener
+  /*private class FilterListener implements Listener
   {
 
     @Override
@@ -802,7 +799,7 @@ public class KursteilnehmerControl extends AbstractControl
       }
       refresh();
     }
-  }
+  }*/
 
   private DBIterator<Kursteilnehmer> getIterator() throws RemoteException
   {

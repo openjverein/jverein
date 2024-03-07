@@ -228,7 +228,6 @@ public class LehrgangControl extends AbstractControl
     this.datumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datumvon.setTitle("Datum von");
     this.datumvon.setText("Datum von");
-    datumvon.addListener(new FilterListener());
     return datumvon;
   }
 
@@ -254,7 +253,6 @@ public class LehrgangControl extends AbstractControl
     this.datumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datumbis.setTitle("Datum bis");
     this.datumbis.setText("Datum bis");
-    datumbis.addListener(new FilterListener());
     return datumbis;
   }
 
@@ -284,7 +282,7 @@ public class LehrgangControl extends AbstractControl
     }
   }
 
-  private void refresh()
+  public void refresh()
   {
     try
     {
