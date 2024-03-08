@@ -105,7 +105,7 @@ public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
   public ArrayList<ArbeitseinsatzZeile> getInfo() throws RemoteException
   {
 
-    String sql = "select mitglied.id as id, arbeitseinsatzstunden  sollstunden, beitragsgruppe.arbeitseinsatzbetrag as betrag, sum(stunden)  iststunden from mitglied "
+    String sql = "select mitglied.id as id, arbeitseinsatzstunden sollstunden, beitragsgruppe.arbeitseinsatzbetrag as betrag, sum(stunden) iststunden from mitglied "
         + "  join beitragsgruppe on mitglied.beitragsgruppe = beitragsgruppe.id "
         + "  left join arbeitseinsatz on mitglied.id = arbeitseinsatz.mitglied and year(arbeitseinsatz.datum) = ? "
         + "where  (mitglied.eintritt is null or year(mitglied.eintritt) <= ?) and "
@@ -117,7 +117,7 @@ public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
       sql += "        and beitragsgruppe.arbeitseinsatzstunden is not null and "
           + "        beitragsgruppe.arbeitseinsatzstunden > 0 ";
     }
-    sql += "group by mitglied.id ";
+    sql += "group by mitglied.id, year(arbeitseinsatz.datum)";
     if (schluessel == ArbeitseinsatzUeberpruefungInput.MINDERLEISTUNG)
     {
       sql += "    having iststunden < arbeitseinsatzstunden or iststunden is null  ";
