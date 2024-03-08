@@ -18,14 +18,20 @@ package de.jost_net.JVerein.gui.view;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AdresseDetailAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
 
 public class AdressenSucheView extends AbstractAdresseSucheView
@@ -45,11 +51,32 @@ public class AdressenSucheView extends AbstractAdresseSucheView
   public void getFilter() throws RemoteException
   {
     LabelGroup group = new LabelGroup(getParent(), "Filter");
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
     TextInput suchName = control.getSuchname();
-    group.addInput(suchName);
+    left.addInput(suchName);
     Input adrtyp = control.getSuchAdresstyp(2);
     adrtyp.addListener(new FilterListener());
-    group.addLabelPair("Mitgliedstyp", adrtyp);
+    left.addLabelPair("Mitgliedstyp", adrtyp);
+    DialogInput mitgleigenschaften = control.getEigenschaftenAuswahl();
+    left.addLabelPair("Eigenschaften", mitgleigenschaften);
+    if (Einstellungen.getEinstellung().hasZusatzfelder())
+    {
+      DialogInput mitglzusatzfelder = control.getZusatzfelderAuswahl();
+      mitglzusatzfelder.addListener(new FilterListener());
+      left.addLabelPair("Zusatzfelder", mitglzusatzfelder);
+    }
+    
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    DateInput mitglgebdatvon = control.getGeburtsdatumvon();
+    right.addLabelPair("Geburtsdatum von", mitglgebdatvon);
+    DateInput mitglgebdatbis = control.getGeburtsdatumbis();
+    right.addLabelPair("Geburtsdatum bis", mitglgebdatbis);
+    SelectInput mitglgeschlecht = control.getGeschlecht();
+    mitglgeschlecht.setMandatory(false);
+    mitglgeschlecht.addListener(new FilterListener());
+    right.addLabelPair("Geschlecht", mitglgeschlecht);
     
     ButtonArea button = new ButtonArea();
     Button suchen = new Button("Suchen", new Action()
