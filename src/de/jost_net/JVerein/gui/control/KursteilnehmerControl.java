@@ -787,20 +787,6 @@ public class KursteilnehmerControl extends AbstractControl
     }
   }
 
-  /*private class FilterListener implements Listener
-  {
-
-    @Override
-    public void handleEvent(Event event)
-    {
-      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
-      {
-        return;
-      }
-      refresh();
-    }
-  }*/
-
   private DBIterator<Kursteilnehmer> getIterator() throws RemoteException
   {
     DBIterator<Kursteilnehmer> kursteilnehmer = Einstellungen.getDBService()
