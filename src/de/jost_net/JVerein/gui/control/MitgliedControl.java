@@ -348,6 +348,13 @@ public class MitgliedControl extends AbstractControl
   private TablePart beitragsTabelle;
 
   private ArrayList<SekundaereBeitragsgruppe> listeSeB;
+  
+  private Mitgliedstyp typ = null;
+  
+  public enum Mitgliedstyp {
+    MITGLIED,
+    NICHTMITGLIED,
+  }
 
   // Zeitstempel merken, wann der Letzte refresh ausgeführt wurde.
   private long lastrefresh = 0;
@@ -380,13 +387,14 @@ public class MitgliedControl extends AbstractControl
    *          1=Mitglieder 2= alle ohne Mitglieder
    * @throws RemoteException
    */
-  public SelectInput getSuchAdresstyp(int typ) throws RemoteException
+  public SelectInput getSuchAdresstyp(Mitgliedstyp typ) throws RemoteException
   {
     if (suchadresstyp != null)
     {
       return suchadresstyp;
     }
-    if (typ != 1)
+    this.typ = typ;
+    /*if (typ != 1)
     {
       settings.setAttribute("mitglied.austrittvon", "");
       settings.setAttribute("mitglied.austrittbis", "");
@@ -401,22 +409,22 @@ public class MitgliedControl extends AbstractControl
       settings.setAttribute("mitglied.stichtag", "");
       settings.setAttribute("status.mitglied", "");
       settings.setAttribute("zusatzfelder.selected", 0);
-    }
+    }*/
     DBIterator<Adresstyp> at = Einstellungen.getDBService()
         .createList(Adresstyp.class);
     switch (typ)
     {
-      case 1:
+      case MITGLIED:
         at.addFilter("jvereinid = 1");
         break;
-      case 2:
+      case NICHTMITGLIED:
         at.addFilter("jvereinid != 1 or jvereinid is null");
         break;
     }
     at.addFilter("jvereinid != 1 or jvereinid is null");
     at.setOrder("order by bezeichnung");
 
-    if (typ == 1)
+    if (typ == Mitgliedstyp.MITGLIED)
     {
       Adresstyp def = (Adresstyp) Einstellungen.getDBService()
           .createObject(Adresstyp.class, "1");
@@ -432,13 +440,15 @@ public class MitgliedControl extends AbstractControl
       }
       catch (Exception e)
       {
-        settings.setAttribute("suchadresstyp", "2");
+        def = null;
+        /*settings.setAttribute("suchadresstyp", "2");
         def = (Adresstyp) Einstellungen.getDBService().createObject(
-            Adresstyp.class, settings.getString("suchadresstyp", "2"));
+            Adresstyp.class, settings.getString("suchadresstyp", "2"));*/
       }
       suchadresstyp = new SelectInput(PseudoIterator.asList(at), def);
     }
     suchadresstyp.setName("Mitgliedstyp");
+    suchadresstyp.setPleaseChoose("Bitte auswählen");
     suchadresstyp.addListener(new Listener()
     {
 
@@ -452,7 +462,7 @@ public class MitgliedControl extends AbstractControl
         }
         catch (RemoteException e)
         {
-          Logger.error("Fehler", e);
+          settings.setAttribute("suchadresstyp", "");
         }
       }
     });
@@ -1953,7 +1963,15 @@ public class MitgliedControl extends AbstractControl
       return geburtsdatumvon;
     }
     Date d = null;
-    String tmp = settings.getString("mitglied.geburtsdatumvon", null);
+    String tmp = null;
+    if (typ == Mitgliedstyp.MITGLIED)
+    {
+      tmp = settings.getString("mitglied.geburtsdatumvon", null);
+    }
+    else
+    {
+      tmp = settings.getString("nichtmitglied.geburtsdatumvon", null);
+    }
     if (tmp != null)
     {
       try
@@ -1992,7 +2010,15 @@ public class MitgliedControl extends AbstractControl
       return geburtsdatumbis;
     }
     Date d = null;
-    String tmp = settings.getString("mitglied.geburtsdatumbis", null);
+    String tmp = null;
+    if (typ == Mitgliedstyp.MITGLIED)
+    {
+      tmp = settings.getString("mitglied.geburtsdatumbis", null);
+    }
+    else
+    {
+      tmp = settings.getString("nichtmitglied.geburtsdatumbisn", null);
+    }
     if (tmp != null)
     {
       try
@@ -2274,8 +2300,16 @@ public class MitgliedControl extends AbstractControl
     {
       return suchname;
     }
-    this.suchname = new TextInput(settings.getString("mitglied.suchname", ""),
-        50);
+    if (typ == Mitgliedstyp.MITGLIED)
+    {
+      this.suchname = new TextInput(settings.getString("mitglied.suchname", ""),
+          50);
+    }
+    else
+    {
+      this.suchname = new TextInput(settings.getString("nichtmitglied.suchname", ""),
+          50);
+    }
     suchname.setName("Name");
     return suchname;
   }
@@ -2374,7 +2408,15 @@ public class MitgliedControl extends AbstractControl
 
   public DialogInput getEigenschaftenAuswahl() throws RemoteException
   {
-    String tmp = settings.getString("mitglied.eigenschaften", "");
+    String tmp = null;
+    if (typ == Mitgliedstyp.MITGLIED)
+    {
+      tmp = settings.getString("mitglied.eigenschaften", "");
+    }
+    else
+    {
+      tmp = settings.getString("nichtmitglied.eigenschaften", "");
+    }
     final EigenschaftenAuswahlDialog d = new EigenschaftenAuswahlDialog(tmp,
         false, true);
     d.addCloseListener(new EigenschaftenListener());
@@ -2406,7 +2448,14 @@ public class MitgliedControl extends AbstractControl
       @Override
       public void handleEvent(Event event)
       {
-        d.setDefaults(settings.getString("mitglied.eigenschaften", ""));
+        if (typ == Mitgliedstyp.MITGLIED)
+        {
+          d.setDefaults(settings.getString("mitglied.eigenschaften", ""));
+        }
+        else
+        {
+          d.setDefaults(settings.getString("nichtmitglied.eigenschaften", ""));
+        }
       }
     });
     return eigenschaftenabfrage;
@@ -2414,7 +2463,14 @@ public class MitgliedControl extends AbstractControl
 
   public void resetEigenschaftenAuswahl()
   {
-    settings.setAttribute("mitglied.eigenschaften", "");
+    if (typ == Mitgliedstyp.MITGLIED)
+    {
+      settings.setAttribute("mitglied.eigenschaften", "");
+    }
+    else
+    {
+      settings.setAttribute("nichtmitglied.eigenschaften", "");
+    }
     eigenschaftenabfrage.setText("");
     eigenschaftenabfrage.getControl().redraw();
   }
@@ -2436,8 +2492,16 @@ public class MitgliedControl extends AbstractControl
 
   public void resetZusatzfelderAuswahl()
   {
-    settings.setAttribute("mitglied.eigenschaften", "");
-    settings.setAttribute("zusatzfelder.selected", 0);
+    if (typ == Mitgliedstyp.MITGLIED)
+    {
+      settings.setAttribute("mitglied.eigenschaften", "");
+      settings.setAttribute("zusatzfelder.selected", 0);
+    }
+    else
+    {
+      settings.setAttribute("nichtmitglied.eigenschaften", "");
+      settings.setAttribute("zusatzfelder.selected", 0);
+    }
     setZusatzfelderAuswahl();
   }
 
@@ -2780,12 +2844,27 @@ public class MitgliedControl extends AbstractControl
       Date tmp = (Date) getGeburtsdatumvon().getValue();
       if (tmp != null)
       {
+        if (typ == Mitgliedstyp.MITGLIED)
+        {
         settings.setAttribute("mitglied.geburtsdatumvon",
             new JVDateFormatTTMMJJJJ().format(tmp));
+        }
+        else
+        {
+          settings.setAttribute("nichtmitglied.geburtsdatumvon",
+              new JVDateFormatTTMMJJJJ().format(tmp));
+        }
       }
       else
       {
-        settings.setAttribute("mitglied.geburtsdatumvon", "");
+        if (typ == Mitgliedstyp.MITGLIED)
+        {
+          settings.setAttribute("mitglied.geburtsdatumvon", "");
+        }
+        else
+        {
+          settings.setAttribute("nichtmitglied.geburtsdatumvon", "");
+        }
       }
     }
     if (auswertungUeberschrift != null)
@@ -2818,15 +2897,29 @@ public class MitgliedControl extends AbstractControl
     if (suchname != null)
     {
       String tmp = (String) getSuchname().getValue();
+      
       if (tmp != null)
       {
-        settings.setAttribute("mitglied.suchname", tmp);
+        if (typ == Mitgliedstyp.MITGLIED)
+        {
+          settings.setAttribute("mitglied.suchname", tmp);
+        }
+        else
+        {
+          settings.setAttribute("nichtmitglied.suchname", tmp);
+        }
       }
       else
       {
-        settings.setAttribute("mitglied.suchname", "");
+        if (typ == Mitgliedstyp.MITGLIED)
+        {
+          settings.setAttribute("mitglied.suchname", "");
+        }
+        else
+        {
+          settings.setAttribute("nichtmitglied.suchname", "");
+        }
       }
-
     }
 
     if (geburtsdatumbis != null)
@@ -2834,12 +2927,27 @@ public class MitgliedControl extends AbstractControl
       Date tmp = (Date) getGeburtsdatumbis().getValue();
       if (tmp != null)
       {
+        if (typ == Mitgliedstyp.MITGLIED)
+        {
         settings.setAttribute("mitglied.geburtsdatumbis",
             new JVDateFormatTTMMJJJJ().format(tmp));
+        }
+        else
+        {
+          settings.setAttribute("nichtmitglied.geburtsdatumbis",
+              new JVDateFormatTTMMJJJJ().format(tmp));
+        }
       }
       else
       {
-        settings.setAttribute("mitglied.geburtsdatumbis", "");
+        if (typ == Mitgliedstyp.MITGLIED)
+        {
+          settings.setAttribute("mitglied.geburtsdatumbis", "");
+        }
+        else
+        {
+          settings.setAttribute("nichtmitglied.geburtsdatumbis", "");
+        }
       }
     }
 
@@ -2955,7 +3063,14 @@ public class MitgliedControl extends AbstractControl
           tmp.append(node.getEigenschaft().getID());
         }
       }
-      settings.setAttribute("mitglied.eigenschaften", tmp.toString());
+      if (typ == Mitgliedstyp.MITGLIED)
+      {
+        settings.setAttribute("mitglied.eigenschaften", tmp.toString());
+      }
+      else
+      {
+        settings.setAttribute("nichtmitglied.eigenschaften", tmp.toString());
+      }
     }
 
     if (beitragsgruppeausw != null)
@@ -2975,12 +3090,26 @@ public class MitgliedControl extends AbstractControl
 
   public String getEigenschaftenString()
   {
-    return settings.getString("mitglied.eigenschaften", "");
+    if (typ == Mitgliedstyp.MITGLIED)
+    {
+      return settings.getString("mitglied.eigenschaften", "");
+    }
+    else
+    {
+      return settings.getString("nichtmitglied.eigenschaften", "");
+    }
   }
 
   public String getEigenschaftenVerknuepfung()
   {
-    return settings.getString("mitglied.eigenschaften.verknuepfung", "und");
+    if (typ == Mitgliedstyp.MITGLIED)
+    {
+      return settings.getString("mitglied.eigenschaften.verknuepfung", "und");
+    }
+    else
+    {
+      return settings.getString("nichtmitglied.eigenschaften.verknuepfung", "und");
+    }
   }
 
   public TreePart getEigenschaftenTree() throws RemoteException
@@ -3682,9 +3811,18 @@ public class MitgliedControl extends AbstractControl
         }
       }
       eigenschaftenabfrage.setText(text.toString());
-      settings.setAttribute("mitglied.eigenschaften", id.toString());
-      settings.setAttribute("mitglied.eigenschaften.verknuepfung",
+      if (typ == Mitgliedstyp.MITGLIED)
+      {
+        settings.setAttribute("mitglied.eigenschaften", id.toString());
+        settings.setAttribute("mitglied.eigenschaften.verknuepfung",
           param.getVerknuepfung());
+      }
+      else
+      {
+        settings.setAttribute("nichtmitglied.eigenschaften", id.toString());
+        settings.setAttribute("nichtmitglied.eigenschaften.verknuepfung",
+          param.getVerknuepfung());
+      }
     }
   }
 

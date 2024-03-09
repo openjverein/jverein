@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Adresstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.rmi.DBService;
@@ -94,7 +95,7 @@ public abstract class AbstractAdresseSucheView extends AbstractView
     Long anzahl = (Long) service.execute(sql, new Object[] {}, rs);
     if (anzahl.longValue() > 0)
     {
-      Adresstyp at = (Adresstyp) control.getSuchAdresstyp(1).getValue();
+      Adresstyp at = (Adresstyp) control.getSuchAdresstyp(Mitgliedstyp.MITGLIED).getValue();
       Logger.debug(at.getID() + ": " + at.getBezeichnung());
       p = control.getMitgliedTable(Integer.parseInt(at.getID()),
           getDetailAction());
@@ -120,8 +121,15 @@ public abstract class AbstractAdresseSucheView extends AbstractView
     try
     {
       control.saveDefaults();
-      Adresstyp at = (Adresstyp) control.getSuchAdresstyp(2).getValue();
-      control.refreshMitgliedTable(Integer.parseInt(at.getID()));
+      Adresstyp at = (Adresstyp) control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
+      if (at != null)
+      {
+        control.refreshMitgliedTable(Integer.parseInt(at.getID()));
+      }
+      else
+      {
+        control.refreshMitgliedTable(0);
+      }
     }
     catch (RemoteException e1)
     {

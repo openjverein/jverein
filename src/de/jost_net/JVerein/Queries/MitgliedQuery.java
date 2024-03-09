@@ -186,8 +186,15 @@ public class MitgliedQuery
         }
       }
     }
-    addCondition("adresstyp = " + adresstyp);
-    if (control.isMitgliedStatusAktiv())
+    if (adresstyp != 0)
+    {
+      addCondition("adresstyp = " + adresstyp);
+    }
+    else
+    {
+      addCondition("adresstyp != " + 1);
+    }
+    if (control.isMitgliedStatusAktiv() && adresstyp == 1)
     {
       if (control.getMitgliedStatus().getValue().equals("Angemeldet"))
       {
@@ -292,13 +299,13 @@ public class MitgliedQuery
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
 
-    if (batch && control.getSterbedatumvon().getValue() != null)
+    if (batch && control.getSterbedatumvon().getValue() != null  && adresstyp == 1)
     {
       addCondition("sterbetag >= ?");
       Date d = (Date) control.getSterbedatumvon().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (batch && control.getSterbedatumbis().getValue() != null)
+    if (batch && control.getSterbedatumbis().getValue() != null  && adresstyp == 1)
     {
       addCondition("sterbetag <= ?");
       Date d = (Date) control.getSterbedatumbis().getValue();
@@ -311,19 +318,19 @@ public class MitgliedQuery
       String g = (String) control.getGeschlecht().getValue();
       bedingungen.add(g);
     }
-    if (control.getEintrittvon().getValue() != null)
+    if (control.getEintrittvon().getValue() != null  && adresstyp == 1)
     {
       addCondition("eintritt >= ?");
       Date d = (Date) control.getEintrittvon().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.getEintrittbis().getValue() != null)
+    if (control.getEintrittbis().getValue() != null  && adresstyp == 1)
     {
       addCondition("eintritt <= ?");
       Date d = (Date) control.getEintrittbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.isAustrittbisAktiv())
+    if (control.isAustrittbisAktiv()  && adresstyp == 1)
     {
       if (control.getAustrittvon().getValue() != null)
       {
@@ -349,7 +356,7 @@ public class MitgliedQuery
     {
       try
       {
-        if (control.getSuchExterneMitgliedsnummer().getValue() != null)
+        if (control.getSuchExterneMitgliedsnummer().getValue() != null  && adresstyp == 1)
         {
           String ext = (String) control.getSuchExterneMitgliedsnummer()
               .getValue();
@@ -366,7 +373,7 @@ public class MitgliedQuery
     }
     Beitragsgruppe bg = (Beitragsgruppe) control.getBeitragsgruppeAusw()
         .getValue();
-    if (bg != null)
+    if (bg != null  && adresstyp == 1)
     {
       addCondition("beitragsgruppe = ? ");
     }
@@ -410,7 +417,7 @@ public class MitgliedQuery
     try
     {
       if (Einstellungen.getEinstellung().getExterneMitgliedsnummer()
-          && control.getSuchExterneMitgliedsnummer().getValue() != null)
+          && control.getSuchExterneMitgliedsnummer().getValue() != null  && adresstyp == 1)
       {
         String ext = (String) control.getSuchExterneMitgliedsnummer()
             .getValue();
@@ -424,7 +431,7 @@ public class MitgliedQuery
     {
       // Workaround f. Bug in IntegerInput
     }
-    if (bg != null)
+    if (bg != null && adresstyp == 1)
     {
       bedingungen.add(Integer.valueOf(bg.getID()));
     }

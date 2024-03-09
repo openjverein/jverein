@@ -33,12 +33,13 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
+import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
 
 public class AdressenSucheView extends AbstractAdresseSucheView
 {
   public AdressenSucheView() throws RemoteException
   {
-    control.getSuchAdresstyp(2).getValue();
+    control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
   }
 
   @Override
@@ -56,7 +57,7 @@ public class AdressenSucheView extends AbstractAdresseSucheView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     TextInput suchName = control.getSuchname();
     left.addInput(suchName);
-    Input adrtyp = control.getSuchAdresstyp(2);
+    Input adrtyp = control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED);
     adrtyp.addListener(new FilterListener());
     left.addLabelPair("Mitgliedstyp", adrtyp);
     DialogInput mitgleigenschaften = control.getEigenschaftenAuswahl();
@@ -78,7 +79,30 @@ public class AdressenSucheView extends AbstractAdresseSucheView
     mitglgeschlecht.addListener(new FilterListener());
     right.addLabelPair("Geschlecht", mitglgeschlecht);
     
-    ButtonArea button = new ButtonArea();
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton(new Button("Filter-Reset", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        try
+        {
+          control.resetEigenschaftenAuswahl();
+          control.getSuchname().setValue("");
+          control.getGeburtsdatumvon().setValue(null);
+          control.getGeburtsdatumbis().setValue(null);
+          control.getGeschlecht().setValue(null);
+          control.resetZusatzfelderAuswahl();
+          TabRefresh();
+        }
+        catch (RemoteException e)
+        {
+          throw new ApplicationException(e);
+        }
+
+      }
+    }, null, false, "eraser.png"));
     Button suchen = new Button("Suchen", new Action()
     {
       @Override
@@ -87,8 +111,8 @@ public class AdressenSucheView extends AbstractAdresseSucheView
         TabRefresh();
       }
     }, null, true, "search.png");
-    button.addButton(suchen);
-    group.addButtonArea(button);
+    buttons.addButton(suchen);
+    group.addButtonArea(buttons);
   }
 
   @Override

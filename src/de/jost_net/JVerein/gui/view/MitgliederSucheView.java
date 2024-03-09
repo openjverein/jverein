@@ -34,13 +34,14 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
+import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
 
 public class MitgliederSucheView extends AbstractAdresseSucheView
 {
 
   public MitgliederSucheView() throws RemoteException
   {
-    control.getSuchAdresstyp(1).getValue();
+    control.getSuchAdresstyp(Mitgliedstyp.MITGLIED).getValue();
   }
 
   @Override
