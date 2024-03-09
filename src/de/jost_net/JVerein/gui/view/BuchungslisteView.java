@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
@@ -26,14 +27,17 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.LabelInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
+import de.willuhn.util.ApplicationException;
 
 public class BuchungslisteView extends AbstractView
 {
@@ -54,7 +58,7 @@ public class BuchungslisteView extends AbstractView
 
     // Erster Tab
     TabGroup tabAllgemein = new TabGroup(folder, "Suche Buchungen", true, 2);
-    LabelGroup labelgroup1 = new LabelGroup(tabAllgemein.getComposite(), "");
+    LabelGroup labelgroup1 = new LabelGroup(tabAllgemein.getComposite(), "Filter");
     ColumnLayout cl = new ColumnLayout(labelgroup1.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     SimpleContainer right = new SimpleContainer(cl.getComposite());
@@ -65,6 +69,18 @@ public class BuchungslisteView extends AbstractView
     right.addLabelPair("Von Datum", control.getVondatum());
     right.addLabelPair("Bis Datum", control.getBisdatum());
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
+    
+    ButtonArea buttons1 = new ButtonArea();
+    Button suchen = new Button("Suchen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        control.refreshBuchungsList();
+      }
+    }, null, true, "search.png");
+    buttons1.addButton(suchen);
+    labelgroup1.addButtonArea(buttons1);
 
     // Zweiter Tab
     final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(

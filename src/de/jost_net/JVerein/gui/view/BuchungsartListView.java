@@ -39,7 +39,7 @@ public class BuchungsartListView extends AbstractView
 
     final BuchungsartControl control = new BuchungsartControl(this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Suche");
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
     group.addLabelPair("Suche", control.getSuchtext());
 
     ButtonArea buttons1 = new ButtonArea();
@@ -60,7 +60,7 @@ public class BuchungsartListView extends AbstractView
       }
     }, null, true, "search.png");
     buttons1.addButton(button);
-    buttons1.paint(this.getParent());
+    group.addButtonArea(buttons1);
 
     LabelGroup group2 = new LabelGroup(getParent(), "Liste", true);
     group2.addPart(control.getBuchungsartList());
