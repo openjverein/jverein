@@ -77,7 +77,7 @@ public class ArbeitseinsatzUeberpruefungView extends AbstractView
         DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
     buttons2.addButton(control.getPDFAusgabeButton());
     buttons2.addButton(control.getCSVAusgabeButton());
-    buttons2.addButton(control.getArbeitseinsatzAusgabeButton());
+    buttons2.addButton(butArbeitseinsaetze);
     buttons2.paint(this.getParent());
   }
 }
