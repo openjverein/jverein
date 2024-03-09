@@ -19,9 +19,12 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
@@ -31,6 +34,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -39,6 +43,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
@@ -60,6 +65,10 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
   private Buchung buchung;
   
   private boolean abort = true;
+  
+  private MyButton suchen1;
+  
+  private MyButton suchen2;
 
   public MitgliedskontoAuswahlDialog(Buchung buchung)
   {
@@ -76,8 +85,25 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    TabFolder folder = new TabFolder(parent, SWT.NONE);
+    final TabFolder folder = new TabFolder(parent, SWT.NONE);
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
+    folder.addSelectionListener(new SelectionAdapter()
+    {
+
+      @Override
+      public void widgetSelected(SelectionEvent evt)
+      {
+        TabItem item = folder.getSelection()[0];
+        if (item.getText().startsWith("Ist"))
+        {
+          suchen1.setDefaultButton();
+        }
+        else if (item.getText().startsWith("Soll"))
+        {
+          suchen2.setDefaultButton();
+        }
+      }
+    });
 
     TabGroup tabNurIst = new TabGroup(folder, "Istbuchung einer Sollbuchung zuordnen", false, 1);
     LabelGroup grNurIst = new LabelGroup(tabNurIst.getComposite(), "Filter");
@@ -89,14 +115,14 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
         control.getDifferenz(DIFFERENZ.FEHLBETRAG));
     
     ButtonArea button1 = new ButtonArea();
-    Button suchen1 = new Button("Suchen", new Action()
+    suchen1 = new MyButton("Suchen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
         control.refreshMitgliedskontoList();
       }
-    }, null, true, "search.png");
+    }, null, false, "search.png");
     button1.addButton(suchen1);
     grNurIst.addButtonArea(button1);
 
@@ -120,20 +146,21 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
 
     TabGroup tabSollIst = new TabGroup(folder, "Sollbuchung erzeugen und Istbuchung zuordnen", true, 1);
     LabelGroup grSollIst = new LabelGroup(tabSollIst.getComposite(), "Filter");
-
+    
     control.getSuchName2(true).setValue(buchung.getName());
     grSollIst.addLabelPair("Name", control.getSuchName2(false));
     grSollIst.addInput(control.getSpezialSuche());
     
     ButtonArea button2 = new ButtonArea();
-    Button suchen2 = new Button("Suchen", new Action()
+    suchen2 = new MyButton("Suchen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
         control.refreshMitgliedskontoList2();
       }
-    }, null, true, "search.png");
+    }, null, false, "search.png");
+    
     button2.addButton(suchen2);
     grSollIst.addButtonArea(button2);
 
@@ -154,7 +181,7 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     };
     mitgliedlist = control.getMitgliedskontoList2(action2, null);
     mitgliedlist.paint(tabSollIst.getComposite());
-
+    
     ButtonArea b = new ButtonArea();
     
     b.addButton("Hilfe", new DokumentationAction(),
@@ -230,4 +257,37 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
   {
     return abort;
   }
+  
+  public class MyButton extends Button
+  {
+    public MyButton(String title, Action action, Object context, boolean defaultButton, String icon)
+    {
+      super(title,action,context,defaultButton,icon);
+    }
+    
+    public void setDefaultButton()
+    {
+      try
+      {
+        getShell().setDefaultButton(button);
+      }
+      catch (IllegalArgumentException ae)
+      {
+        // Kann unter MacOS wohl passieren. Siehe Mail von
+        // Jan Lolling vom 22.09.2006. Mal schauen, ob wir
+        // Fehlertext: "Widget has the wrong parent"
+        // Wir versuchen es mal mit der Shell der GUI.
+        try
+        {
+          GUI.getShell().setDefaultButton(button);
+        }
+        catch (IllegalArgumentException ae2)
+        {
+          // Geht auch nicht? Na gut, dann lassen wir es halt bleiben
+          Logger.warn("unable to set default button: " + ae2.getLocalizedMessage());
+        }
+      }
+    }
+  }
+  
 }

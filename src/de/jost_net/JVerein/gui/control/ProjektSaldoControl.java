@@ -60,7 +60,7 @@ public class ProjektSaldoControl extends SaldoControl
       {
         starteAuswertung();
       }
-    }, null, true, "file-pdf.png"); // "true" defines this button as the default
+    }, null, false, "file-pdf.png");
     // button
     return b;
   }

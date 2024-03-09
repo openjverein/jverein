@@ -544,7 +544,7 @@ public class BuchungsartControl extends AbstractControl
               "Fehler beim Start der PDF-Ausgabe der Buchungsarten");
         }
       }
-    }, null, true, "file-pdf.png");
+    }, null, false, "file-pdf.png");
     return b;
   }
 
