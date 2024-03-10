@@ -36,14 +36,14 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class JahressaldoList extends TablePart implements Part
+public class KontensaldoList extends TablePart implements Part
 {
 
   private TablePart saldoList;
 
   private Geschaeftsjahr gj = null;
 
-  public JahressaldoList(Action action, int jahr) throws RemoteException
+  public KontensaldoList(Action action, int jahr) throws RemoteException
   {
     super(action);
     try
@@ -56,7 +56,7 @@ public class JahressaldoList extends TablePart implements Part
     }
   }
 
-  public JahressaldoList(Action action, Geschaeftsjahr gj)
+  public KontensaldoList(Action action, Geschaeftsjahr gj)
   {
     super(action);
     this.gj = gj;

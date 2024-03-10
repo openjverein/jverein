@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.JahressaldoControl;
+import de.jost_net.JVerein.gui.control.KontensaldoControl;
 import de.jost_net.JVerein.gui.parts.QuickAccessPart;
 import de.jost_net.JVerein.gui.parts.VonBisPart;
 import de.willuhn.jameica.gui.AbstractView;
@@ -25,7 +25,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class JahressaldoView extends AbstractView
+public class KontensaldoView extends AbstractView
 {
 
   @Override
@@ -33,7 +33,7 @@ public class JahressaldoView extends AbstractView
   {
     GUI.getView().setTitle("Jahressaldo");
 
-    final JahressaldoControl control = new JahressaldoControl(this);
+    final KontensaldoControl control = new KontensaldoControl(this);
 
     VonBisPart vpart = new VonBisPart(control, false);
     vpart.paint(this.getParent());
