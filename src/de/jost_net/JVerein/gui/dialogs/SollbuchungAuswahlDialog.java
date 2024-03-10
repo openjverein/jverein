@@ -49,7 +49,7 @@ import de.willuhn.util.ApplicationException;
 /**
  * Ein Dialog, ueber den man ein Mitgliedskonto auswaehlen kann.
  */
-public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
+public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -70,9 +70,9 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
   
   private MyButton suchen2;
 
-  public MitgliedskontoAuswahlDialog(Buchung buchung)
+  public SollbuchungAuswahlDialog(Buchung buchung)
   {
-    super(MitgliedskontoAuswahlDialog.POSITION_MOUSE, true);
+    super(SollbuchungAuswahlDialog.POSITION_MOUSE, true);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
 

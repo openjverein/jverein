@@ -17,8 +17,8 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.AdresstypAction;
-import de.jost_net.JVerein.gui.action.AdresstypDefaultAction;
+import de.jost_net.JVerein.gui.action.MitgliedstypAction;
+import de.jost_net.JVerein.gui.action.MitgliedstypDefaultAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AdresstypControl;
 import de.jost_net.JVerein.rmi.Adresstyp;
@@ -27,7 +27,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class AdresstypListView extends AbstractView
+public class MitgliedstypenListView extends AbstractView
 {
 
   @Override
@@ -42,7 +42,7 @@ public class AdresstypListView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ADRESSTYPEN, false, "question-circle.png");
-    buttons.addButton("Neu", new AdresstypAction(), null, false, "document-new.png");
+    buttons.addButton("Neu", new MitgliedstypAction(), null, false, "document-new.png");
 
     DBIterator<Adresstyp> it = Einstellungen.getDBService()
         .createList(Adresstyp.class);
@@ -50,7 +50,7 @@ public class AdresstypListView extends AbstractView
     if (it.size() == 0)
     {
       buttons.addButton("Default-Mitgliedstypen einrichten",
-          new AdresstypDefaultAction());
+          new MitgliedstypDefaultAction());
     }
     buttons.paint(this.getParent());
   }

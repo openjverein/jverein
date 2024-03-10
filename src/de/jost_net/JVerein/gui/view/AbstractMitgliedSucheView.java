@@ -41,7 +41,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 
-public abstract class AbstractAdresseSucheView extends AbstractView
+public abstract class AbstractMitgliedSucheView extends AbstractView
 {
 
   private TablePart p;

@@ -30,7 +30,7 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoDetailSollLoeschenAction implements Action
+public class MitgliedskontoSollbuchungLoeschenAction implements Action
 {
 
   @Override

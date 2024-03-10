@@ -19,67 +19,49 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.gui.view.BuchungDetailView;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoIstLoesenAction implements Action
+public class MitgliedskontoSollbuchungEditAction implements Action
 {
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof MitgliedskontoNode))
-    {
-      throw new ApplicationException("Keine Istbuchung ausgewählt");
-    }
-  	
-    YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle("Istbuchung vom Mitgliedskonto lösen");
-    d.setText("Wollen Sie die Istbuchung wirklich vom Mitgliedskonto lösen?");
-
-    try
-    {
-      Boolean choice = (Boolean) d.open();
-      if (!choice.booleanValue())
-      {
-        return;
-      }
-    }
-    catch (Exception e)
-    {
-      Logger.error("Fehler", e);
-      return;
-    }
     MitgliedskontoNode mkn = null;
-    Buchung bu = null;
+    Mitgliedskonto mk = null;
 
     if (context != null && (context instanceof MitgliedskontoNode))
     {
       mkn = (MitgliedskontoNode) context;
       try
       {
-        bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
-            mkn.getID());
-        bu.setMitgliedskonto(null);
-        bu.store();
-        GUI.getStatusBar().setSuccessText(
-
-        "Istbuchung vom Mitgliedskonto gelöst.");
-        Application.getMessagingFactory().sendMessage(
-            new MitgliedskontoMessage(mkn.getMitglied()));
+        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
+            Mitgliedskonto.class, mkn.getID());
       }
       catch (RemoteException e)
       {
         throw new ApplicationException(
-            "Fehler beim lösen der Istbuchung vom Mitgliedskonto");
+            "Fehler bei der Erzeugung eines Mitgliedskontos");
       }
     }
+    else
+    {
+      try
+      {
+        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
+            Mitgliedskonto.class, null);
+      }
+      catch (Exception e)
+      {
+        throw new ApplicationException(
+            "Fehler bei der Erzeugung eines neuen Mitgliedskontos", e);
+      }
+    }
+    GUI.startView(new BuchungDetailView(MitgliedskontoNode.SOLL), mk);
   }
 }

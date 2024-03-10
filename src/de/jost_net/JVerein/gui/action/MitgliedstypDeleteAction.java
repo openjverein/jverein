@@ -28,7 +28,7 @@ import de.willuhn.util.ApplicationException;
 /**
  * Loeschen eines Mitgliedstyp.
  */
-public class AdresstypDeleteAction implements Action
+public class MitgliedstypDeleteAction implements Action
 {
   @Override
   public void handleAction(Object context) throws ApplicationException

@@ -14,17 +14,24 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.action;
+package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.view.MitgliedskontoListeView;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
+import de.jost_net.JVerein.gui.action.MitgliedstypDeleteAction;
+import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.ContextMenu;
 
-public class MitgliedskontoListeAction implements Action
+/**
+ * Kontext-Menu zu den Mitgliedstypen.
+ */
+public class MitgliedstypMenu extends ContextMenu
 {
-  @Override
-  public void handleAction(Object context)
+
+  /**
+   * Erzeugt ein Kontext-Menu fuer die Liste der Mitgliedstypen.
+   */
+  public MitgliedstypMenu()
   {
-    GUI.startView(MitgliedskontoListeView.class.getName(), null);
+    addItem(new CheckedContextMenuItem("Löschen...",
+        new MitgliedstypDeleteAction(), "user-trash-full.png"));
   }
 }

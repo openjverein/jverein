@@ -19,46 +19,48 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.MitgliedskontoDetailView;
-import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.gui.view.MitgliedstypView;
+import de.jost_net.JVerein.rmi.Adresstyp;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoDetailSollNeuAction implements Action
+public class MitgliedstypAction implements Action
 {
-
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    MitgliedskontoNode mkn = null;
-    Mitgliedskonto mk = null;
-    
-    if (context == null || !(context instanceof MitgliedskontoNode))
-    {
-      throw new ApplicationException("Kein Mitgliedskonto ausgewählt");
-    }
+    Adresstyp at = null;
 
-    if (context != null && (context instanceof MitgliedskontoNode))
+    if (context != null && (context instanceof Adresstyp))
     {
-      mkn = (MitgliedskontoNode) context;
+      at = (Adresstyp) context;
       try
       {
-        Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
-            Mitglied.class, mkn.getID());
-        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-            Mitgliedskonto.class, null);
-        mk.setZahlungsweg(m.getZahlungsweg());
-        mk.setMitglied(m);
+        if (at.getJVereinid() > 0)
+        {
+          throw new ApplicationException(
+              "Dieser Adresstyp ist reserviert und darf durch den Benutzer nicht verändert werden.");
+        }
+      }
+      catch (RemoteException e)
+      {
+        throw new ApplicationException("Fehler", e);
+      }
+    }
+    else
+    {
+      try
+      {
+        at = (Adresstyp) Einstellungen.getDBService().createObject(
+            Adresstyp.class, null);
       }
       catch (RemoteException e)
       {
         throw new ApplicationException(
-            "Fehler bei der Erzeugung eines Mitgliedskontos");
+            "Fehler bei der Erzeugung eines neuen Mitgliedstypen", e);
       }
     }
-    GUI.startView(new MitgliedskontoDetailView(MitgliedskontoNode.SOLL), mk);
+    GUI.startView(MitgliedstypView.class.getName(), at);
   }
 }

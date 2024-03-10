@@ -36,7 +36,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
 import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
 
-public class MitgliederSucheView extends AbstractAdresseSucheView
+public class MitgliederSucheView extends AbstractMitgliedSucheView
 {
 
   public MitgliederSucheView() throws RemoteException

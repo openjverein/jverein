@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.AdresseDetailView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
@@ -44,7 +44,7 @@ public class MitgliedDuplizierenAction implements Action
       }
       else
       {
-        GUI.startView(new AdresseDetailView(), m);
+        GUI.startView(new NichtMitgliedDetailView(), m);
       }
     }
     catch (Exception e)

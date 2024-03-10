@@ -62,7 +62,7 @@ import de.willuhn.util.ProgressMonitor;
 /**
  * Dialog, ueber den Daten importiert werden koennen.
  */
-public class BuchungenMitgliedskontenZuordnungDialog extends AbstractDialog<Object>
+public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
 {
   private static final String SETTINGS_PREFIX = "BUCHUNGSZUORDNUNG.";
   private static final String SETTINGS_NAME_IBAN = SETTINGS_PREFIX + "IBAN";
@@ -86,7 +86,7 @@ public class BuchungenMitgliedskontenZuordnungDialog extends AbstractDialog<Obje
    * 
    * @throws RemoteException
    */
-  public BuchungenMitgliedskontenZuordnungDialog(Date vondatum, Date bisdatum)
+  public BuchungenSollbuchungZuordnungDialog(Date vondatum, Date bisdatum)
   {
     super(POSITION_CENTER);
 
@@ -279,7 +279,7 @@ public class BuchungenMitgliedskontenZuordnungDialog extends AbstractDialog<Obje
           }
           else
           {
-            BuchungenMitgliedskontenZuordnungVorschauDialog userValidationDialog = new BuchungenMitgliedskontenZuordnungVorschauDialog(assignedBooking);
+            BuchungenSollbuchungZuordnungVorschauDialog userValidationDialog = new BuchungenSollbuchungZuordnungVorschauDialog(assignedBooking);
             userValidationDialog.open();
           }
         } 

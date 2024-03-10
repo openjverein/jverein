@@ -28,7 +28,7 @@ import de.willuhn.util.ApplicationException;
 /**
  * Löschen eines Nicht-Mitglied
  */
-public class AdresseDeleteAction implements Action
+public class NichtMitgliedDeleteAction implements Action
 {
   @Override
   public void handleAction(Object context) throws ApplicationException

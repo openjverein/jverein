@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BuchungsListeAction;
-import de.jost_net.JVerein.gui.dialogs.BuchungenMitgliedskontenZuordnungDialog.BookingMemberAccountEntry;
+import de.jost_net.JVerein.gui.dialogs.BuchungenSollbuchungZuordnungDialog.BookingMemberAccountEntry;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -45,11 +45,11 @@ import de.willuhn.util.ProgressMonitor;
  * Ein Dialog, der die automatisch ermittelten Zuordnungen zwischen Buchung
  * und Mitgliedskonto anzeigt und bei Bestätigung persistiert 
  */
-public class BuchungenMitgliedskontenZuordnungVorschauDialog extends AbstractDialog<Object>
+public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<Object>
 {
   private List<BookingMemberAccountEntry> assignedBooking;
 
-  public BuchungenMitgliedskontenZuordnungVorschauDialog(List<BookingMemberAccountEntry> assignedBooking)
+  public BuchungenSollbuchungZuordnungVorschauDialog(List<BookingMemberAccountEntry> assignedBooking)
   {
     super(AbstractDialog.POSITION_CENTER);
     super.setSize(1400, 400);

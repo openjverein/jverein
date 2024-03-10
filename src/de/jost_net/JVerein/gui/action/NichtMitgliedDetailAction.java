@@ -17,11 +17,8 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.FamilienbeitragNode;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
-import de.jost_net.JVerein.gui.view.MitgliedDetailView;
-import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
@@ -29,26 +26,15 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedDetailAction implements Action
+public class NichtMitgliedDetailAction implements Action
 {
-
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
     Mitglied m = null;
     try
     {
-      if (context != null && context instanceof FamilienbeitragNode)
-      {
-        FamilienbeitragNode fbn = (FamilienbeitragNode) context;
-        m = fbn.getMitglied();
-      }
-      else if (context != null && context instanceof ArbeitseinsatzZeile)
-      {
-        ArbeitseinsatzZeile aez = (ArbeitseinsatzZeile) context;
-        m = (Mitglied) aez.getAttribute("mitglied");
-      }
-      else if (context != null && (context instanceof Mitglied))
+      if (context != null && (context instanceof Mitglied))
       {
         m = (Mitglied) context;
       }
@@ -66,24 +52,16 @@ public class MitgliedDetailAction implements Action
           PersonenartDialog pad = new PersonenartDialog(
               PersonenartDialog.POSITION_CENTER);
           String pa = pad.open();
+          m.setPersonenart(pa);
           if (pa == null)
           {
             return;
           }
-          m.setPersonenart(pa);
         }
         else
         {
           m.setPersonenart("n");
         }
-      }
-      if (m.getAdresstyp() == null || m.getAdresstyp().getID().equals("1"))
-      {
-        GUI.startView(new MitgliedDetailView(), m);
-      }
-      else
-      {
-        GUI.startView(new NichtMitgliedDetailView(), m);
       }
     }
     catch (OperationCanceledException oce)
@@ -93,7 +71,8 @@ public class MitgliedDetailAction implements Action
     catch (Exception e)
     {
       throw new ApplicationException(
-          "Fehler bei der Erzeugung eines neuen Mitgliedes", e);
+          "Fehler bei der Erzeugung eines neuen Nicht-Mitglied", e);
     }
+    GUI.startView(new NichtMitgliedDetailView(), m);
   }
 }

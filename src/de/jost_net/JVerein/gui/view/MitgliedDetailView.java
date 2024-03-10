@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-public class MitgliedDetailView extends AbstractAdresseDetailView
+public class MitgliedDetailView extends AbstractMitgliedDetailView
 {
 
   @Override

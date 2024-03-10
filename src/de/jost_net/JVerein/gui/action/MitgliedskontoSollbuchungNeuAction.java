@@ -19,48 +19,46 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.AdresstypView;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
+import de.jost_net.JVerein.gui.view.BuchungDetailView;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class AdresstypAction implements Action
+public class MitgliedskontoSollbuchungNeuAction implements Action
 {
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Adresstyp at = null;
-
-    if (context != null && (context instanceof Adresstyp))
+    MitgliedskontoNode mkn = null;
+    Mitgliedskonto mk = null;
+    
+    if (context == null || !(context instanceof MitgliedskontoNode))
     {
-      at = (Adresstyp) context;
-      try
-      {
-        if (at.getJVereinid() > 0)
-        {
-          throw new ApplicationException(
-              "Dieser Adresstyp ist reserviert und darf durch den Benutzer nicht verändert werden.");
-        }
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException("Fehler", e);
-      }
+      throw new ApplicationException("Kein Mitgliedskonto ausgewählt");
     }
-    else
+
+    if (context != null && (context instanceof MitgliedskontoNode))
     {
+      mkn = (MitgliedskontoNode) context;
       try
       {
-        at = (Adresstyp) Einstellungen.getDBService().createObject(
-            Adresstyp.class, null);
+        Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
+            Mitglied.class, mkn.getID());
+        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
+            Mitgliedskonto.class, null);
+        mk.setZahlungsweg(m.getZahlungsweg());
+        mk.setMitglied(m);
       }
       catch (RemoteException e)
       {
         throw new ApplicationException(
-            "Fehler bei der Erzeugung eines neuen Mitgliedstypen", e);
+            "Fehler bei der Erzeugung einer Sollbuchung");
       }
     }
-    GUI.startView(AdresstypView.class.getName(), at);
+    GUI.startView(new BuchungDetailView(MitgliedskontoNode.SOLL), mk);
   }
 }

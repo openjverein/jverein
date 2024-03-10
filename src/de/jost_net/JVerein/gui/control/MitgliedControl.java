@@ -69,7 +69,7 @@ import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.Familienverband;
 import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
 import de.jost_net.JVerein.gui.parts.MitgliedSekundaereBeitragsgruppePart;
-import de.jost_net.JVerein.gui.view.AbstractAdresseDetailView;
+import de.jost_net.JVerein.gui.view.AbstractMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.AuswertungVorlagenCsvView;
 import de.jost_net.JVerein.gui.view.IAuswertung;
 import de.jost_net.JVerein.gui.view.MitgliederSuchProfilView;
@@ -504,9 +504,9 @@ public class MitgliedControl extends AbstractControl
   {
     if (Einstellungen.getEinstellung().getExterneMitgliedsnummer() == false)
       return false;
-    if (view instanceof AbstractAdresseDetailView == false)
+    if (view instanceof AbstractMitgliedDetailView == false)
       return false;
-    AbstractAdresseDetailView detailView = (AbstractAdresseDetailView) view;
+    AbstractMitgliedDetailView detailView = (AbstractMitgliedDetailView) view;
     return detailView.isMitgliedDetail();
   }
 

@@ -16,63 +16,50 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
-import de.jost_net.JVerein.gui.view.AdresseDetailView;
-import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import java.util.Date;
+
+import de.jost_net.JVerein.gui.dialogs.BuchungenSollbuchungZuordnungDialog;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AdresseDetailAction implements Action
+public class BuchungSollbuchungZuordnungAutomatischAction implements Action
 {
+  private DateInput vondatum;
+  private DateInput bisdatum;
+
+  public BuchungSollbuchungZuordnungAutomatischAction(DateInput vondatum, DateInput bisdatum) {
+    this.vondatum = vondatum;
+    this.bisdatum = bisdatum;
+  }
+
+ /**
+   * @see de.willuhn.jameica.gui.Action#handleAction(java.lang.Object)
+   */
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Mitglied m = null;
     try
     {
-      if (context != null && (context instanceof Mitglied))
-      {
-        m = (Mitglied) context;
-      }
-      else if (context != null && (context instanceof Mitgliedskonto))
-      {
-        Mitgliedskonto mk = (Mitgliedskonto) context;
-        m = mk.getMitglied();
-      }
-      else
-      {
-        m = (Mitglied) Einstellungen.getDBService().createObject(
-            Mitglied.class, null);
-        if (Einstellungen.getEinstellung().getJuristischePersonen())
-        {
-          PersonenartDialog pad = new PersonenartDialog(
-              PersonenartDialog.POSITION_CENTER);
-          String pa = pad.open();
-          m.setPersonenart(pa);
-          if (pa == null)
-          {
-            return;
-          }
-        }
-        else
-        {
-          m.setPersonenart("n");
-        }
-      }
+      BuchungenSollbuchungZuordnungDialog d = new BuchungenSollbuchungZuordnungDialog((Date)vondatum.getValue(), (Date)bisdatum.getValue());
+      d.open();
     }
     catch (OperationCanceledException oce)
     {
-      throw oce;
+      Logger.info(oce.getMessage());
+    }
+    catch (ApplicationException ae)
+    {
+      throw ae;
     }
     catch (Exception e)
     {
-      throw new ApplicationException(
-          "Fehler bei der Erzeugung eines neuen Nicht-Mitglied", e);
+      Logger.error("error while assign transfers to members", e);
+      GUI.getStatusBar().setErrorText("Fehler beim Zuordnen von Buchungen zu Sollbuchungen");
     }
-    GUI.startView(new AdresseDetailView(), m);
   }
+
 }

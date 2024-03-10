@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.dialogs.MitgliedskontoAuswahlDialog;
+import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -34,7 +34,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.logging.Logger;
 
-public class MitgliedskontoauswahlInput
+public class SollbuchungAuswahlInput
 {
 
   private DialogInput mitgliedskontoAuswahl = null;
@@ -45,7 +45,7 @@ public class MitgliedskontoauswahlInput
 
   private Mitglied mitglied = null;
 
-  public MitgliedskontoauswahlInput(Buchung buchung) throws RemoteException
+  public SollbuchungAuswahlInput(Buchung buchung) throws RemoteException
   {
     buchungen = new Buchung[1];
     buchungen[0] = buchung;
@@ -65,7 +65,7 @@ public class MitgliedskontoauswahlInput
     {
       return mitgliedskontoAuswahl;
     }
-    MitgliedskontoAuswahlDialog d = new MitgliedskontoAuswahlDialog(
+    SollbuchungAuswahlDialog d = new SollbuchungAuswahlDialog(
         buchungen[0]);
     d.addCloseListener(new MitgliedskontoListener());
 

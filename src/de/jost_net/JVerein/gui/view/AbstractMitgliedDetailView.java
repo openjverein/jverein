@@ -28,8 +28,8 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
-import de.jost_net.JVerein.gui.action.AdresseDeleteAction;
-import de.jost_net.JVerein.gui.action.AdresseDetailAction;
+import de.jost_net.JVerein.gui.action.NichtMitgliedDeleteAction;
+import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
@@ -62,7 +62,7 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.logging.Logger;
 
-public abstract class AbstractAdresseDetailView extends AbstractView
+public abstract class AbstractMitgliedDetailView extends AbstractView
 {
 
   // Statische Variable, die den zuletzt ausgewählten Tab speichert.
@@ -212,11 +212,11 @@ public abstract class AbstractAdresseDetailView extends AbstractView
     // buttons.addButton("neue Mail", new MailDetailAction(),
     // control.getCurrentObject(), false, "document-new.png");
     buttons.addButton("Neu", (isMitgliedDetail() ? new MitgliedDetailAction()
-        : new AdresseDetailAction()), null, false, "document-new.png");
+        : new NichtMitgliedDetailAction()), null, false, "document-new.png");
 
     buttons.addButton("Löschen",
         (isMitgliedDetail() ? new MitgliedDeleteAction()
-            : new AdresseDeleteAction()),
+            : new NichtMitgliedDeleteAction()),
         control.getCurrentObject(), false, "user-trash-full.png");
     buttons.addButton("Speichern", new Action()
     {

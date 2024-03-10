@@ -21,12 +21,12 @@ import java.rmi.RemoteException;
 import org.eclipse.swt.SWT;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.AdresseDetailAction;
+import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.FreiesFormularAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
-import de.jost_net.JVerein.gui.action.AdresseDeleteAction;
+import de.jost_net.JVerein.gui.action.NichtMitgliedDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedEigenschaftZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedInZwischenablageKopierenAction;
@@ -73,7 +73,7 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedDuplizierenAction(), "edit-copy.png"));
     addItem(new CheckedContextMenuItem("In Zwischenablage kopieren",
         new MitgliedInZwischenablageKopierenAction(), "edit-copy.png"));
-    if (detailaction instanceof AdresseDetailAction)
+    if (detailaction instanceof NichtMitgliedDetailAction)
     {
       addItem(new CheckedContextMenuItem("Zu Mitglied umwandeln", new Action()
       {
@@ -109,10 +109,10 @@ public class MitgliedMenu extends ContextMenu
         }
       }, "arrows-alt-h.png"));
     }
-    if (detailaction instanceof AdresseDetailAction)
+    if (detailaction instanceof NichtMitgliedDetailAction)
     {
     addItem(new CheckedSingleContextMenuItem("Löschen...",
-        new AdresseDeleteAction(), "user-trash-full.png"));
+        new NichtMitgliedDeleteAction(), "user-trash-full.png"));
     }
     else
     {

@@ -42,7 +42,7 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.action.BuchungMitgliedskontoZuordnungAutomatischAction;
+import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAutomatischAction;
 import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -50,7 +50,7 @@ import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
-import de.jost_net.JVerein.gui.input.MitgliedskontoauswahlInput;
+import de.jost_net.JVerein.gui.input.SollbuchungAuswahlInput;
 import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
@@ -462,7 +462,7 @@ public class BuchungsControl extends AbstractControl
 
   public DialogInput getMitgliedskonto() throws RemoteException
   {
-    mitgliedskonto = new MitgliedskontoauswahlInput(getBuchung())
+    mitgliedskonto = new SollbuchungAuswahlInput(getBuchung())
         .getMitgliedskontoAuswahl();
     mitgliedskonto.addListener(new Listener()
     {
@@ -862,7 +862,7 @@ public class BuchungsControl extends AbstractControl
 
   public Button getStarteBuchungMitgliedskontoZuordnungAutomatischButton()
   {
-    Button b = new Button("Zuordnung", new BuchungMitgliedskontoZuordnungAutomatischAction(getVondatum(), getBisdatum()), null, false,
+    Button b = new Button("Zuordnung", new BuchungSollbuchungZuordnungAutomatischAction(getVondatum(), getBisdatum()), null, false,
             "user-friends.png");
     return b;
   }

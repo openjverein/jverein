@@ -16,50 +16,43 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.util.Date;
+import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.dialogs.BuchungenMitgliedskontenZuordnungDialog;
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Adresstyp;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungMitgliedskontoZuordnungAutomatischAction implements Action
+/**
+ * Loeschen eines Adresstypen.
+ */
+public class MitgliedstypDefaultAction implements Action
 {
-  private DateInput vondatum;
-  private DateInput bisdatum;
-
-  public BuchungMitgliedskontoZuordnungAutomatischAction(DateInput vondatum, DateInput bisdatum) {
-    this.vondatum = vondatum;
-    this.bisdatum = bisdatum;
-  }
-
- /**
-   * @see de.willuhn.jameica.gui.Action#handleAction(java.lang.Object)
-   */
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
     try
     {
-      BuchungenMitgliedskontenZuordnungDialog d = new BuchungenMitgliedskontenZuordnungDialog((Date)vondatum.getValue(), (Date)bisdatum.getValue());
-      d.open();
+      Adresstyp at = (Adresstyp) Einstellungen.getDBService().createObject(
+          Adresstyp.class, "1");
+      at.setBezeichnung("Mitglied");
+      at.setJVereinid(1);
+      at.store();
+      at = (Adresstyp) Einstellungen.getDBService().createObject(
+          Adresstyp.class, "2");
+      at.setBezeichnung("Spender/in");
+      at.setJVereinid(2);
+      at.store();
+
+      GUI.getStatusBar().setSuccessText("Mitgliedstypen eingefügt.");
     }
-    catch (OperationCanceledException oce)
+    catch (RemoteException e)
     {
-      Logger.info(oce.getMessage());
-    }
-    catch (ApplicationException ae)
-    {
-      throw ae;
-    }
-    catch (Exception e)
-    {
-      Logger.error("error while assign transfers to members", e);
-      GUI.getStatusBar().setErrorText("Fehler beim Zuordnen von Buchungen zu Mitgliedskonten");
+      String fehler = "Fehler beim Einfügen von Mitgliedstypen.";
+      GUI.getStatusBar().setErrorText(fehler);
+      Logger.error(fehler, e);
     }
   }
-
 }

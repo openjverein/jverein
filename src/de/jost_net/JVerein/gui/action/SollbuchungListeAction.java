@@ -16,43 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.gui.view.SollbuchungListeView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 
-/**
- * Loeschen eines Adresstypen.
- */
-public class AdresstypDefaultAction implements Action
+public class SollbuchungListeAction implements Action
 {
   @Override
-  public void handleAction(Object context) throws ApplicationException
+  public void handleAction(Object context)
   {
-    try
-    {
-      Adresstyp at = (Adresstyp) Einstellungen.getDBService().createObject(
-          Adresstyp.class, "1");
-      at.setBezeichnung("Mitglied");
-      at.setJVereinid(1);
-      at.store();
-      at = (Adresstyp) Einstellungen.getDBService().createObject(
-          Adresstyp.class, "2");
-      at.setBezeichnung("Spender/in");
-      at.setJVereinid(2);
-      at.store();
-
-      GUI.getStatusBar().setSuccessText("Mitgliedstypen eingefügt.");
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler beim Einfügen von Mitgliedstypen.";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
-    }
+    GUI.startView(SollbuchungListeView.class.getName(), null);
   }
 }

@@ -14,20 +14,23 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.view;
+package de.jost_net.JVerein.gui.action;
 
-public class AdresseDetailView extends AbstractAdresseDetailView
+import de.jost_net.JVerein.gui.view.NichtMitgliederSucheView;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
+
+public class NichtMitgliedSucheAction implements Action
 {
 
-  @Override
-  public String getTitle()
+  public NichtMitgliedSucheAction()
   {
-    return "Daten des Nicht-Mitgliedes";
   }
 
   @Override
-  public boolean isMitgliedDetail()
+  public void handleAction(Object context)
   {
-    return false;
+    GUI.startView(NichtMitgliederSucheView.class.getName(), null);
   }
+
 }

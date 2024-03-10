@@ -17,46 +17,32 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
+import de.jost_net.JVerein.gui.control.AdresstypControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class MitgliedskontoDetailView extends AbstractView
+public class MitgliedstypView extends AbstractView
 {
-
-  private int typ;
-
-  public MitgliedskontoDetailView(int typ)
-  {
-    this.typ = typ;
-  }
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Buchung");
+    GUI.getView().setTitle("Mitgliedstyp");
 
-    final MitgliedskontoControl control = new MitgliedskontoControl(this);
-    LabelGroup grBuchung = new LabelGroup(getParent(),
-        (typ == MitgliedskontoNode.SOLL ? "Soll" : "Ist") + "buchung");
-    grBuchung.addLabelPair("Datum", control.getDatum());
-    grBuchung.addLabelPair("Verwendungszweck 1", control.getZweck1());
-    grBuchung.addLabelPair("Zahlungsweg", control.getZahlungsweg());
-    control.getBetrag().setMandatory(true);
-    grBuchung.addLabelPair("Betrag", control.getBetrag());
-    grBuchung.addLabelPair("Buchungsart", control.getBuchungsart());
+    final AdresstypControl control = new AdresstypControl(this);
+
+    LabelGroup group = new LabelGroup(getParent(), "Mitgliedstyp");
+    group.addLabelPair("Bezeichnung", control.getBezeichnung());
+    group.addLabelPair("Bezeichnung Plural", control.getBezeichnungPlural());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
-        "question-circle.png");
+        DokumentationUtil.ADRESSTYPEN, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
-
       @Override
       public void handleAction(Object context)
       {

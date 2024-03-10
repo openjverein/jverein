@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.AdresseDetailAction;
+import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -35,9 +35,9 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
 import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
 
-public class AdressenSucheView extends AbstractAdresseSucheView
+public class NichtMitgliederSucheView extends AbstractMitgliedSucheView
 {
-  public AdressenSucheView() throws RemoteException
+  public NichtMitgliederSucheView() throws RemoteException
   {
     control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
   }
@@ -118,7 +118,7 @@ public class AdressenSucheView extends AbstractAdresseSucheView
   @Override
   public Action getDetailAction()
   {
-    return new AdresseDetailAction();
+    return new NichtMitgliedDetailAction();
   }
 
   @Override
