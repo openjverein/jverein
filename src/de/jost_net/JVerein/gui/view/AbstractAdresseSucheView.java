@@ -96,9 +96,16 @@ public abstract class AbstractAdresseSucheView extends AbstractView
     if (anzahl.longValue() > 0)
     {
       Adresstyp at = (Adresstyp) control.getSuchAdresstyp(Mitgliedstyp.MITGLIED).getValue();
+      if (at != null)
+      {
       Logger.debug(at.getID() + ": " + at.getBezeichnung());
       p = control.getMitgliedTable(Integer.parseInt(at.getID()),
           getDetailAction());
+      }
+      else
+      {
+        p = control.getMitgliedTable(0, getDetailAction());
+      }
       p.paint(getParent());
     }
     ButtonArea buttons = new ButtonArea();

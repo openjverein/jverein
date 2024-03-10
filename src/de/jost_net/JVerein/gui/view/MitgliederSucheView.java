@@ -98,7 +98,6 @@ public class MitgliederSucheView extends AbstractAdresseSucheView
     if (Einstellungen.getEinstellung().hasZusatzfelder())
     {
       DialogInput mitglzusatzfelder = control.getZusatzfelderAuswahl();
-      mitglzusatzfelder.addListener(new FilterListener());
       left.addLabelPair("Zusatzfelder", mitglzusatzfelder);
     }
     
