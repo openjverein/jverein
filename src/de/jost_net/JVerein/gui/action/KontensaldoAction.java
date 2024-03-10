@@ -20,7 +20,7 @@ import de.jost_net.JVerein.gui.view.KontensaldoView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 
-public class JahressaldoAction implements Action
+public class KontensaldoAction implements Action
 {
   @Override
   public void handleAction(Object context)

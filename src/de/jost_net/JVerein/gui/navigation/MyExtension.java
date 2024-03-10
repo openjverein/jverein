@@ -55,7 +55,7 @@ import de.jost_net.JVerein.gui.action.FamilienbeitragAction;
 import de.jost_net.JVerein.gui.action.FelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.FormularListeAction;
 import de.jost_net.JVerein.gui.action.JahresabschlussListAction;
-import de.jost_net.JVerein.gui.action.JahressaldoAction;
+import de.jost_net.JVerein.gui.action.KontensaldoAction;
 import de.jost_net.JVerein.gui.action.JubilaeenAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenExportAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenImportAction;
@@ -212,7 +212,7 @@ public class MyExtension implements Extension
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
           new ProjektSaldoAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
-          new JahressaldoAction(), "euro-sign.png"));
+          new KontensaldoAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
           new JahresabschlussListAction(), "euro-sign.png"));
       jverein.addChild(buchfuehrung);
