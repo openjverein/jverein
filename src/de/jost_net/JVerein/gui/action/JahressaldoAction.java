@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.KontensaldoView;
+import de.jost_net.JVerein.gui.view.JahressaldoView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 
@@ -25,6 +25,6 @@ public class JahressaldoAction implements Action
   @Override
   public void handleAction(Object context)
   {
-    GUI.startView(KontensaldoView.class.getName(), null);
+    GUI.startView(JahressaldoView.class.getName(), null);
   }
 }

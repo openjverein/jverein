@@ -26,7 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.parts.KontensaldoList;
+import de.jost_net.JVerein.gui.parts.JahressaldoList;
 import de.jost_net.JVerein.io.JahressaldoPDF;
 import de.jost_net.JVerein.io.SaldoZeile;
 import de.jost_net.JVerein.util.Dateiname;
@@ -44,12 +44,12 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class KontensaldoControl extends SaldoControl
+public class JahressaldoControl extends SaldoControl
 {
 
-  private KontensaldoList saldoList;
+  private JahressaldoList saldoList;
 
-  public KontensaldoControl(AbstractView view)
+  public JahressaldoControl(AbstractView view)
   {
     super(view);
   }
@@ -92,7 +92,7 @@ public class KontensaldoControl extends SaldoControl
 
       if (saldoList == null)
       {
-        saldoList = new KontensaldoList(null, new Geschaeftsjahr(jahr));
+        saldoList = new JahressaldoList(null, new Geschaeftsjahr(jahr));
       }
       else
       {
