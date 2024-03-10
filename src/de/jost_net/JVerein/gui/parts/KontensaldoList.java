@@ -35,7 +35,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
 
-public class JahressaldoList extends TablePart implements Part
+public class KontensaldoList extends TablePart implements Part
 {
 
   private TablePart saldoList;
@@ -44,14 +44,14 @@ public class JahressaldoList extends TablePart implements Part
   
   private Date bis = null;
 
-  public JahressaldoList(Action action, Geschaeftsjahr gj)
+  public KontensaldoList(Action action, Geschaeftsjahr gj)
   {
     super(action);
     this.von = gj.getBeginnGeschaeftsjahr();
     this.bis = gj.getEndeGeschaeftsjahr();
   }
   
-  public JahressaldoList(Action action, Date von, Date bis)
+  public KontensaldoList(Action action, Date von, Date bis)
   {
     super(action);
     this.von = von;
