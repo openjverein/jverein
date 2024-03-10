@@ -167,7 +167,9 @@ public class MitgliedskontoControl extends AbstractControl
 
   private SelectInput differenz = null;
 
-  private CheckboxInput spezialsuche = null;
+  private CheckboxInput spezialsuche1 = null;
+  
+  private CheckboxInput spezialsuche2 = null;
 
   private TextInput betreff = null;
 
@@ -392,15 +394,43 @@ public class MitgliedskontoControl extends AbstractControl
     return ohneabbucher;
   }
 
-  public CheckboxInput getSpezialSuche()
+  public CheckboxInput getSpezialSuche1()
   {
-    if (spezialsuche != null && !spezialsuche.getControl().isDisposed())
+    if (spezialsuche1 != null && !spezialsuche1.getControl().isDisposed())
     {
-      return spezialsuche;
+      return spezialsuche1;
     }
-    spezialsuche = new CheckboxInput(false);
-    spezialsuche.setName("Spezial-Suche");
-    spezialsuche.addListener(new Listener()
+    spezialsuche1 = new CheckboxInput(false);
+    spezialsuche1.setName("Erlaube Teilsting Vergleich");
+    spezialsuche1.addListener(new Listener()
+    {
+
+      @Override
+      public void handleEvent(Event event)
+      {
+        try
+        {
+          refreshMitgliedkonto1();
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+    });
+
+    return spezialsuche1;
+  }
+  
+  public CheckboxInput getSpezialSuche2()
+  {
+    if (spezialsuche2 != null && !spezialsuche2.getControl().isDisposed())
+    {
+      return spezialsuche2;
+    }
+    spezialsuche2 = new CheckboxInput(false);
+    spezialsuche2.setName("Erlaube Teilsting Vergleich");
+    spezialsuche2.addListener(new Listener()
     {
 
       @Override
@@ -417,7 +447,7 @@ public class MitgliedskontoControl extends AbstractControl
       }
     });
 
-    return spezialsuche;
+    return spezialsuche2;
   }
 
   public SelectInput getDifferenz()
@@ -726,7 +756,7 @@ public class MitgliedskontoControl extends AbstractControl
         where.append(
             "upper(name) like upper(?) or upper(vorname) like upper(?) ");
         String o = tok.nextToken();
-        if ((Boolean) getSpezialSuche().getValue())
+        if ((Boolean) getSpezialSuche2().getValue())
         {
           o = "%" + o + "%";
         }
@@ -743,6 +773,18 @@ public class MitgliedskontoControl extends AbstractControl
     return mitglieder;
   }
 
+  
+  public void refreshMitgliedkonto1() throws RemoteException
+  {
+    @SuppressWarnings("rawtypes")
+    GenericIterator mitgliedskonten = getMitgliedskontoIterator();
+    mitgliedskontoList.removeAll();
+    while (mitgliedskonten.hasNext())
+    {
+      mitgliedskontoList.addItem(mitgliedskonten.next());
+    }
+  }
+  
   @SuppressWarnings("rawtypes")
   public GenericIterator getMitgliedskontoIterator() throws RemoteException
   {
@@ -1050,6 +1092,19 @@ public class MitgliedskontoControl extends AbstractControl
     refresh();
   }
   
+  public void refreshMitgliedskontoList1()
+  {
+    try
+    {
+      refreshMitgliedkonto1();
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+    }
+    refresh();
+  }
+  
   public void refreshMitgliedskontoList2()
   {
     try
@@ -1060,7 +1115,6 @@ public class MitgliedskontoControl extends AbstractControl
     {
       Logger.error("Fehler", e);
     }
-
   }
 
   public static class MitgliedskontoTreeFormatter implements TreeFormatter

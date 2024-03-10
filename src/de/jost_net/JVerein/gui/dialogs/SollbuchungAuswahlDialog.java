@@ -113,6 +113,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     grNurIst.addLabelPair("Name", suNa);
     grNurIst.addLabelPair("Differenz",
         control.getDifferenz(DIFFERENZ.FEHLBETRAG));
+    grNurIst.addInput(control.getSpezialSuche1());
     
     ButtonArea button1 = new ButtonArea();
     suchen1 = new MyButton("Suchen", new Action()
@@ -120,7 +121,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
-        control.refreshMitgliedskontoList();
+        control.refreshMitgliedskontoList1();
       }
     }, null, false, "search.png");
     button1.addButton(suchen1);
@@ -149,7 +150,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     
     control.getSuchName2(true).setValue(buchung.getName());
     grSollIst.addLabelPair("Name", control.getSuchName2(false));
-    grSollIst.addInput(control.getSpezialSuche());
+    grSollIst.addInput(control.getSpezialSuche2());
     
     ButtonArea button2 = new ButtonArea();
     suchen2 = new MyButton("Suchen", new Action()
