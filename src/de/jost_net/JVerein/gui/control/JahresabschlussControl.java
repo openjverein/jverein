@@ -24,7 +24,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
-import de.jost_net.JVerein.gui.parts.JahressaldoList;
+import de.jost_net.JVerein.gui.parts.KontensaldoList;
 import de.jost_net.JVerein.io.SaldoZeile;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -178,7 +178,7 @@ public class JahresabschlussControl extends AbstractControl
     }
     try
     {
-      jahresabschlusssaldoList = new JahressaldoList(null,
+      jahresabschlusssaldoList = new KontensaldoList(null,
           new Geschaeftsjahr((Date) getVon().getValue())).getSaldoList();
     }
     catch (ApplicationException e)
@@ -207,7 +207,7 @@ public class JahresabschlussControl extends AbstractControl
       ja.store();
       if ((Boolean) getAnfangsbestaende().getValue())
       {
-        JahressaldoList jsl = new JahressaldoList(null,
+        KontensaldoList jsl = new KontensaldoList(null,
             new Geschaeftsjahr(ja.getVon()));
         ArrayList<SaldoZeile> zeilen = jsl.getInfo();
         for (SaldoZeile z : zeilen)
