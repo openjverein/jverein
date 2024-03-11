@@ -1079,6 +1079,7 @@ public class MitgliedskontoControl extends AbstractControl
     }
   }
   
+  //Für Sollbuchungen View
   public void refreshMitgliedskontoList()
   {
     try
@@ -1092,6 +1093,7 @@ public class MitgliedskontoControl extends AbstractControl
     refresh();
   }
   
+  // Für SollbuchungAuswahlDialog
   public void refreshMitgliedskontoList1()
   {
     try
@@ -1102,9 +1104,10 @@ public class MitgliedskontoControl extends AbstractControl
     {
       Logger.error("Fehler", e);
     }
-    refresh();
+    settings.setAttribute("differenz", getDifferenz().getValue().toString());
   }
   
+  //Für SollbuchungAuswahlDialog
   public void refreshMitgliedskontoList2()
   {
     try
