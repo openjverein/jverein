@@ -128,7 +128,10 @@ public class MitgliederSucheView extends AbstractMitgliedSucheView
           control.getAustrittvon().setValue(null);
           control.getAustrittbis().setValue(null);
           control.getStichtag().setValue(null);
-          control.resetZusatzfelderAuswahl();
+          if (Einstellungen.getEinstellung().hasZusatzfelder())
+          {
+            control.resetZusatzfelderAuswahl();
+          }
           TabRefresh();
         }
         catch (RemoteException e)

@@ -90,10 +90,14 @@ public class NichtMitgliederSucheView extends AbstractMitgliedSucheView
         {
           control.resetEigenschaftenAuswahl();
           control.getSuchname().setValue("");
+          control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).setValue(null);
           control.getGeburtsdatumvon().setValue(null);
           control.getGeburtsdatumbis().setValue(null);
           control.getGeschlecht().setValue(null);
-          control.resetZusatzfelderAuswahl();
+          if (Einstellungen.getEinstellung().hasZusatzfelder())
+          {
+            control.resetZusatzfelderAuswahl();
+          }
           TabRefresh();
         }
         catch (RemoteException e)

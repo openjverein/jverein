@@ -2845,6 +2845,21 @@ public class MitgliedControl extends AbstractControl
         settings.setAttribute(mitgliedtyp + ".suchname", "");
       }
     }
+    
+    if (suchadresstyp != null)
+    {
+      Adresstyp tmp = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
+      
+      if (tmp != null)
+      {
+        settings.setAttribute("suchadresstyp", tmp.getID());
+      }
+      else
+      {
+
+        settings.setAttribute("suchadresstyp", "");
+      }
+    }
 
     if (geburtsdatumbis != null)
     {
