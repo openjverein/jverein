@@ -466,7 +466,10 @@ public class MitgliedControl extends AbstractControl
             settings.setAttribute("suchadresstyp", "");
           }
         }
-        settings.setAttribute("suchadresstyp", "");
+        else
+        {
+          settings.setAttribute("suchadresstyp", "");
+        }
       }
     });
     return suchadresstyp;
@@ -2452,7 +2455,7 @@ public class MitgliedControl extends AbstractControl
 
   public void resetZusatzfelderAuswahl()
   {
-    settings.setAttribute(mitglied + ".eigenschaften", "");
+    settings.setAttribute(mitgliedtyp + ".eigenschaften", "");
     settings.setAttribute(zusatzfelderstring + "selected", 0);
     setZusatzfelderAuswahl();
   }

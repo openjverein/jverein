@@ -256,6 +256,11 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
         }
       }
       settings.setAttribute(zusatzfelder + "counter", counter);
+      int selected = settings.getInt(zusatzfelder + "selected", 0);
+      if (selected == 0)
+      {
+        reset();
+      }
     }
 
     ButtonArea buttons = new ButtonArea();
