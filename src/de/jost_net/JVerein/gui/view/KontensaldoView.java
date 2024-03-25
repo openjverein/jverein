@@ -35,10 +35,10 @@ public class KontensaldoView extends AbstractView
 
     final KontensaldoControl control = new KontensaldoControl(this);
 
-    VonBisPart vpart = new VonBisPart(control, false);
+    VonBisPart vpart = new VonBisPart(control, true);
     vpart.paint(this.getParent());
     
-    QuickAccessPart part = new QuickAccessPart(control, false);
+    QuickAccessPart part = new QuickAccessPart(control, true);
     part.paint(this.getParent());
 
     LabelGroup group2 = new LabelGroup(getParent(), "Saldo", true);
