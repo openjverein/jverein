@@ -21,7 +21,7 @@ import java.util.List;
 
 public enum InternalColumns
 {
-  ADRESSTYP("Mitgliedstyp", false), //
+  ADRESSTYP("Adresstyp", false), //
   ADRZUSATZ("Adressierungszusatz", false), //
   ANREDE("Anrede", true), //
   AUSTRITTSDATUM("Austritt", true), //
