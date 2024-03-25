@@ -25,12 +25,12 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class BuchungDetailView extends AbstractView
+public class SollbuchungDetailView extends AbstractView
 {
 
   private int typ;
 
-  public BuchungDetailView(int typ)
+  public SollbuchungDetailView(int typ)
   {
     this.typ = typ;
   }

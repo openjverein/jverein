@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.BuchungDetailView;
+import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
@@ -59,6 +59,6 @@ public class MitgliedskontoSollbuchungNeuAction implements Action
             "Fehler bei der Erzeugung einer Sollbuchung");
       }
     }
-    GUI.startView(new BuchungDetailView(MitgliedskontoNode.SOLL), mk);
+    GUI.startView(new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
   }
 }

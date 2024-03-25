@@ -35,7 +35,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AdresstypControl extends AbstractControl
+public class MitgliedstypControl extends AbstractControl
 {
   private de.willuhn.jameica.system.Settings settings;
 
@@ -47,7 +47,7 @@ public class AdresstypControl extends AbstractControl
 
   private Adresstyp adresstyp;
 
-  public AdresstypControl(AbstractView view)
+  public MitgliedstypControl(AbstractView view)
   {
     super(view);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());

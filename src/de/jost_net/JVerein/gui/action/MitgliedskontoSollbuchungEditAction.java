@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.BuchungDetailView;
+import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -46,7 +46,7 @@ public class MitgliedskontoSollbuchungEditAction implements Action
       catch (RemoteException e)
       {
         throw new ApplicationException(
-            "Fehler bei der Erzeugung eines Mitgliedskontos");
+            "Fehler beim Editieren einer Sollbuchung");
       }
     }
     else
@@ -59,9 +59,9 @@ public class MitgliedskontoSollbuchungEditAction implements Action
       catch (Exception e)
       {
         throw new ApplicationException(
-            "Fehler bei der Erzeugung eines neuen Mitgliedskontos", e);
+            "Fehler bei der Erzeugung einer neuen Sollbuchung", e);
       }
     }
-    GUI.startView(new BuchungDetailView(MitgliedskontoNode.SOLL), mk);
+    GUI.startView(new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
   }
 }

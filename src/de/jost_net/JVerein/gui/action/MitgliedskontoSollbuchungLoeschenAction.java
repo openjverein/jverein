@@ -77,7 +77,7 @@ public class MitgliedskontoSollbuchungLoeschenAction implements Action
       catch (RemoteException e)
       {
         throw new ApplicationException(
-            "Fehler bei der Erzeugung einer Mitgliedskonto-Buchung");
+            "Fehler beim Löschen einer Sollbuchung");
       }
     }
   }

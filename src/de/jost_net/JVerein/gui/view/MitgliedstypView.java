@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.AdresstypControl;
+import de.jost_net.JVerein.gui.control.MitgliedstypControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -32,7 +32,7 @@ public class MitgliedstypView extends AbstractView
   {
     GUI.getView().setTitle("Mitgliedstyp");
 
-    final AdresstypControl control = new AdresstypControl(this);
+    final MitgliedstypControl control = new MitgliedstypControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Mitgliedstyp");
     group.addLabelPair("Bezeichnung", control.getBezeichnung());

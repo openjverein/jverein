@@ -20,7 +20,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.MitgliedstypAction;
 import de.jost_net.JVerein.gui.action.MitgliedstypDefaultAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.AdresstypControl;
+import de.jost_net.JVerein.gui.control.MitgliedstypControl;
 import de.jost_net.JVerein.rmi.Adresstyp;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
@@ -35,7 +35,7 @@ public class MitgliedstypenListView extends AbstractView
   {
     GUI.getView().setTitle("Mitgliedstypen");
 
-    AdresstypControl control = new AdresstypControl(this);
+    MitgliedstypControl control = new MitgliedstypControl(this);
 
     control.getAdresstypList().paint(this.getParent());
 

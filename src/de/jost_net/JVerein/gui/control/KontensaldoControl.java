@@ -126,7 +126,7 @@ public class KontensaldoControl extends SaldoControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("jahressaldo", "",
+      fd.setFileName(new Dateiname("kontensaldo", "",
           Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
 
       final String s = fd.open();

@@ -40,7 +40,7 @@ public class MitgliedstypAction implements Action
         if (at.getJVereinid() > 0)
         {
           throw new ApplicationException(
-              "Dieser Adresstyp ist reserviert und darf durch den Benutzer nicht verändert werden.");
+              "Dieser Mitgliedstyp ist reserviert und darf durch den Benutzer nicht verändert werden.");
         }
       }
       catch (RemoteException e)
