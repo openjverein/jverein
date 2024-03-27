@@ -563,7 +563,7 @@ public class BuchungsControl extends AbstractControl
         "((startdatum is null or startdatum <= ?) and (endedatum is null or endedatum >= ?))",
         new Object[] { buchungsDatum, buchungsDatum });
     list.setOrder("ORDER BY bezeichnung");
-    projekt = new SelectInput(PseudoIterator.asList(list), getBuchung().getProjekt());
+    projekt = new SelectInput(list != null ? PseudoIterator.asList(list) : null, getBuchung().getProjekt());
     projekt.setValue(getBuchung().getProjekt());
     projekt.setAttribute("bezeichnung");
     projekt.setPleaseChoose("Bitte auswählen");

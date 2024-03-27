@@ -96,7 +96,7 @@ public class BuchungsartInput
           {
             it.setOrder("ORDER BY bezeichnung");
           }
-          buchungsart = new SelectInput(PseudoIterator.asList(it), bart);
+          buchungsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, bart);
         }
         
         switch (Einstellungen.getEinstellung().getBuchungsartSort())

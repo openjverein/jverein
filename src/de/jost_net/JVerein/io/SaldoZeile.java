@@ -96,8 +96,13 @@ public class SaldoZeile implements GenericObject
     anf.addFilter("konto = ? ", new Object[] { konto.getID() });
     anf.addFilter("datum >= ? AND datum <= ?", new Object[] { von, bis });
     anf.setOrder("ORDER BY day(datum)");
-    @SuppressWarnings("unchecked")
-    ArrayList<Anfangsbestand> anf1 = (ArrayList<Anfangsbestand>) PseudoIterator.asList(anf);
+    ArrayList<Anfangsbestand> anf1 = null;
+    if (anf != null)
+    {
+      @SuppressWarnings("unchecked")
+      ArrayList<Anfangsbestand> anf01 = (ArrayList<Anfangsbestand>) PseudoIterator.asList(anf);
+      anf1 = anf01;
+    }
     
     // Anfangsstand ist für das von Datum vorhanden (Geschäftsjahresanfang)
     if (anf1 != null && !anf1.isEmpty() && anf1.get(0).getDatum().equals(von))
@@ -113,9 +118,14 @@ public class SaldoZeile implements GenericObject
     anf.addFilter("konto = ? ", new Object[] { konto.getID() });
     anf.addFilter("datum < ? ", new Object[] { von });
     anf.setOrder("ORDER BY day(datum)");
-    @SuppressWarnings("unchecked")
-    ArrayList<Anfangsbestand> anf2 = (ArrayList<Anfangsbestand>) PseudoIterator.asList(anf);
-    
+    ArrayList<Anfangsbestand> anf2 = null; 
+    if (anf != null)
+    {
+      @SuppressWarnings("unchecked")
+      ArrayList<Anfangsbestand> anf02 = (ArrayList<Anfangsbestand>) PseudoIterator.asList(anf);
+      anf2 = anf02;
+    }
+       
     // Anfangsstand vor von Datum vorhanden
     if (anf2 != null && !anf2.isEmpty())
     {

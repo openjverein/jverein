@@ -34,12 +34,12 @@ public class FormularInput extends SelectInput
 {
   public FormularInput(FormularArt art, String id) throws RemoteException
   {
-    super(PseudoIterator.asList(init(art)), initdefault(id));
+    super(init(art) != null ? PseudoIterator.asList(init(art)) : null, initdefault(id));
   }
 
   public FormularInput(FormularArt mahnung) throws RemoteException
   {
-    super(PseudoIterator.asList(init(mahnung)), null);
+    super(init(mahnung) != null ? PseudoIterator.asList(init(mahnung)) : null, null);
   }
 
   /**

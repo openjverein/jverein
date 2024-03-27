@@ -103,6 +103,6 @@ public class KontoList extends TablePart implements Part
       i.addFilter("(aufloesung is null or year(aufloesung) >= ?)", year);
     }
     i.setOrder("ORDER BY nummer, bezeichnung");
-    return PseudoIterator.asList(i);
+    return i != null ? PseudoIterator.asList(i) : null;
   }
 }

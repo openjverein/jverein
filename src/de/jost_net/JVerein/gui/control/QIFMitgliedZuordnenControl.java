@@ -219,7 +219,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
     Logger.info("Mitglieder zur Auswahl geladen. Anzahl : " + iAnzahl);
 
     SelectInput selMitglied = getMitgliederInput();
-    selMitglied.setList(PseudoIterator.asList(iteratorMitglieder));
+    selMitglied.setList(iteratorMitglieder != null ? PseudoIterator.asList(iteratorMitglieder) : null);
     selMitglied.setComment(
         Integer.toString(iAnzahl) + " Mitglieder zur Auswahl möglich..");
     mitgliederGeladen = true;

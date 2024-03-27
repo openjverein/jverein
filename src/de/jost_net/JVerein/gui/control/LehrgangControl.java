@@ -104,7 +104,7 @@ public class LehrgangControl extends AbstractControl
     DBIterator<Lehrgangsart> it = Einstellungen.getDBService()
         .createList(Lehrgangsart.class);
     it.setOrder("order by bezeichnung");
-    lehrgangsart = new SelectInput(PseudoIterator.asList(it), getLehrgang().getLehrgangsart());
+    lehrgangsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, getLehrgang().getLehrgangsart());
     lehrgangsart.setPleaseChoose("Bitte auswählen");
     lehrgangsart.addListener(new Listener()
     {
@@ -200,7 +200,7 @@ public class LehrgangControl extends AbstractControl
     {
       //
     }
-    suchlehrgangsart = new SelectInput(PseudoIterator.asList(it), letztesuche);
+    suchlehrgangsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, letztesuche);
     suchlehrgangsart.setPleaseChoose("Bitte auswählen");
     suchlehrgangsart.addListener(new FilterListener());
     return suchlehrgangsart;

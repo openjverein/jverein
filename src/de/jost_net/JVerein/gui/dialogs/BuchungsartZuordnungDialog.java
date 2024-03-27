@@ -209,7 +209,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       {
         it.setOrder("ORDER BY bezeichnung");
       }
-      buchungsarten = new SelectInput(PseudoIterator.asList(it), null);
+      buchungsarten = new SelectInput(it != null ? PseudoIterator.asList(it) : null, null);
     }
 
     buchungsarten.setValue(null);

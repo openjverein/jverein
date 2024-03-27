@@ -249,7 +249,7 @@ public class BuchungsartControl extends AbstractControl
     Boolean hasSteuersatz = ((getSteuersatz().getValue() != null) && (getSteuersatz().getValue().toString().length() > 0)) ? true : false;
     
     DBIterator<Buchungsart> it = (!isSpende && hasSteuersatz) ? getFilteredBuchungsart() : null;
-    steuer_buchungsart = new SelectInput(PseudoIterator.asList(it), null);
+    steuer_buchungsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, null);
     if (it != null)
     {
       @SuppressWarnings("unchecked")
@@ -349,7 +349,7 @@ public class BuchungsartControl extends AbstractControl
     DBIterator<Buchungsklasse> list = Einstellungen.getDBService()
         .createList(Buchungsklasse.class);
     list.setOrder(getBuchungartSortOrder());
-    buchungsklasse = new SelectInput(PseudoIterator.asList(list),
+    buchungsklasse = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
         getBuchungsart().getBuchungsklasse());
     buchungsklasse.setValue(getBuchungsart().getBuchungsklasse());
     buchungsklasse.setAttribute(getBuchungartAttribute());

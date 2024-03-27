@@ -114,7 +114,7 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
         .createList(Formular.class);
     it.addFilter("art = ?",
         new Object[] { FormularArt.SPENDENBESCHEINIGUNG.getKey() });
-    formularEinzel = new SelectInput(PseudoIterator.asList(it), null);
+    formularEinzel = new SelectInput(it != null ? PseudoIterator.asList(it) : null, null);
     return formularEinzel;
   }
 
@@ -128,7 +128,7 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
         .createList(Formular.class);
     it.addFilter("art = ?",
         new Object[] { FormularArt.SAMMELSPENDENBESCHEINIGUNG.getKey() });
-    formularSammel = new SelectInput(PseudoIterator.asList(it), null);
+    formularSammel = new SelectInput(it != null ? PseudoIterator.asList(it) : null, null);
     return formularSammel;
   }
 

@@ -184,7 +184,7 @@ public class MitgliedNextBGruppeControl extends AbstractControl
           ArtBeitragsart.FAMILIE_ZAHLER.getKey(),
           ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
     }
-    beitragsgruppe = new SelectInput(PseudoIterator.asList(list),
+    beitragsgruppe = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
         getMitgliedNextBGruppe().getBeitragsgruppe());
     beitragsgruppe.setName("Beitragsgruppe");
     beitragsgruppe.setMandatory(true);
