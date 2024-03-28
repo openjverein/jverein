@@ -228,7 +228,7 @@ public class MitgliedskontoMenu extends ContextMenu
               }
             }
           }
-          catch (RemoteException e)
+          catch (Exception e)
           {
             return false;
           }
