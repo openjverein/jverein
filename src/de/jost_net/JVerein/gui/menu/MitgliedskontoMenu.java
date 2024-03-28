@@ -52,7 +52,7 @@ public class MitgliedskontoMenu extends ContextMenu
         new MitgliedskontoSollbuchungEditAction(), "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
         new MitgliedskontoSollbuchungLoeschenAction(), "list-remove.png"));
-    addItem(new SollMitIstItem("Istbuchung vom Mitgliedskonto lösen",
+    addItem(new SollMitIstItem("Istbuchung von Sollbuchung lösen",
         new MitgliedskontoIstbuchungLoesenAction(), "unlocked.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SpendenbescheinigungItem("Geldspendenbescheinigung",
