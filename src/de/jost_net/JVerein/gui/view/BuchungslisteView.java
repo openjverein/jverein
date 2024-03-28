@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
@@ -26,14 +27,17 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.LabelInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
+import de.willuhn.util.ApplicationException;
 
 public class BuchungslisteView extends AbstractView
 {
@@ -51,44 +55,57 @@ public class BuchungslisteView extends AbstractView
     TabFolder folder = new TabFolder(getParent(), SWT.V_SCROLL | SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     folder.setBackground(Color.BACKGROUND.getSWTColor());
+
+    // Erster Tab
+    TabGroup tabAllgemein = new TabGroup(folder, "Suche Buchungen", true, 2);
+    LabelGroup labelgroup1 = new LabelGroup(tabAllgemein.getComposite(), "Filter");
+    ColumnLayout cl = new ColumnLayout(labelgroup1.getComposite(), 2);
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
+    left.addLabelPair("Projekt", control.getSuchProjekt());
+    left.addLabelPair("Betrag", control.getSuchBetrag());
+    left.addLabelPair("Mitglied zugeordnet?", control.getSuchMitgliedZugeordnet());
+    right.addLabelPair("Von Datum", control.getVondatum());
+    right.addLabelPair("Bis Datum", control.getBisdatum());
+    right.addLabelPair("Enthaltener Text", control.getSuchtext());
+    
+    ButtonArea buttons1 = new ButtonArea();
+    Button suchen = new Button("Suchen", new Action()
     {
-      TabGroup tabAllgemein = new TabGroup(folder, "Suche Buchungen", true, 2);
-      ColumnLayout cl = new ColumnLayout(tabAllgemein.getComposite(), 2);
-      SimpleContainer left = new SimpleContainer(cl.getComposite());
-      SimpleContainer right = new SimpleContainer(cl.getComposite());
-      left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
-      left.addLabelPair("Projekt", control.getSuchProjekt());
-      left.addLabelPair("Betrag", control.getSuchBetrag());
-      left.addLabelPair("Mitglied zugeordnet?", control.getSuchMitgliedZugeordnet());
-      right.addLabelPair("Von Datum", control.getVondatum());
-      right.addLabelPair("Bis Datum", control.getBisdatum());
-      right.addLabelPair("Enthaltener Text", control.getSuchtext());
-    }
-    {
-      final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(
-          this, control);
-      TabGroup tabKonto = new TabGroup(folder, "Konto Kenndaten", true, 4);
-      tabKonto.addLabelPair("Konto:", headerControl.getKontoNameInput());
-      tabKonto.addLabelPair("Vorjahr", new LabelInput(""));
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        control.refreshBuchungsList();
+      }
+    }, null, true, "search.png");
+    buttons1.addButton(suchen);
+    labelgroup1.addButtonArea(buttons1);
 
-      tabKonto.addLabelPair("Anfangssaldo:",
-          headerControl.getAktJahrAnfangsSaldoInput());
-      tabKonto.addLabelPair("Anfangssaldo:",
-          headerControl.getVorJahrAnfangsSaldoInput());
-
-      tabKonto.addLabelPair("Einnahmen:",
-          headerControl.getAktJahrEinnahmenInput());
-      tabKonto.addLabelPair("Einnahmen:",
-          headerControl.getVorJahrEinnahmenInput());
-
-      tabKonto.addLabelPair("Ausgaben:",
-          headerControl.getAktJahrAusgabenInput());
-      tabKonto.addLabelPair("Ausgaben:",
-          headerControl.getVorJahrAusgabenInput());
-
-      tabKonto.addLabelPair("Saldo:", headerControl.getAktJahrSaldoInput());
-      tabKonto.addLabelPair("Saldo:", headerControl.getVorJahrSaldoInput());
-    }
+    // Zweiter Tab
+    final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(
+        this, control);
+    TabGroup tabKonto = new TabGroup(folder, "Konto Kenndaten", true, 4);
+    LabelGroup labelgroup2 = new LabelGroup(tabKonto.getComposite(), "");
+    ColumnLayout c2 = new ColumnLayout(labelgroup2.getComposite(), 2);
+    SimpleContainer left2 = new SimpleContainer(c2.getComposite());
+    SimpleContainer right2 = new SimpleContainer(c2.getComposite());
+    left2.addLabelPair("Konto:", headerControl.getKontoNameInput());
+    right2.addLabelPair("Vorjahr", new LabelInput(""));
+    left2.addLabelPair("Anfangssaldo:",
+        headerControl.getAktJahrAnfangsSaldoInput());
+    right2.addLabelPair("Anfangssaldo:",
+        headerControl.getVorJahrAnfangsSaldoInput());
+    left2.addLabelPair("Einnahmen:",
+        headerControl.getAktJahrEinnahmenInput());
+    right2.addLabelPair("Einnahmen:",
+        headerControl.getVorJahrEinnahmenInput());
+    left2.addLabelPair("Ausgaben:",
+        headerControl.getAktJahrAusgabenInput());
+    right2.addLabelPair("Ausgaben:",
+        headerControl.getVorJahrAusgabenInput());
+    left2.addLabelPair("Saldo:", headerControl.getAktJahrSaldoInput());
+    right2.addLabelPair("Saldo:", headerControl.getVorJahrSaldoInput());
 
     control.getBuchungsList().paint(this.getParent());
 

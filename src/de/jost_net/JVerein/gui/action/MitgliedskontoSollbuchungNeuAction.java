@@ -18,55 +18,47 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
+import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-/**
- * Löschen einer Adresse.
- */
-public class AdresseDeleteAction implements Action
+public class MitgliedskontoSollbuchungNeuAction implements Action
 {
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof Mitglied))
+    MitgliedskontoNode mkn = null;
+    Mitgliedskonto mk = null;
+    
+    if (context == null || !(context instanceof MitgliedskontoNode))
     {
-      throw new ApplicationException("Keine Adresse ausgewählt");
+      throw new ApplicationException("Kein Mitgliedskonto ausgewählt");
     }
-    try
-    {
-      Mitglied m = (Mitglied) context;
-      if (m.isNewObject())
-      {
-        return;
-      }
-      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Adresse löschen");
-      d.setText("Wollen Sie diese Adresse wirklich löschen?");
 
+    if (context != null && (context instanceof MitgliedskontoNode))
+    {
+      mkn = (MitgliedskontoNode) context;
       try
       {
-        Boolean choice = (Boolean) d.open();
-        if (!choice.booleanValue())
-          return;
+        Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
+            Mitglied.class, mkn.getID());
+        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
+            Mitgliedskonto.class, null);
+        mk.setZahlungsweg(m.getZahlungsweg());
+        mk.setMitglied(m);
       }
-      catch (Exception e)
+      catch (RemoteException e)
       {
-        Logger.error("Fehler beim Löschen der Adresse", e);
-        return;
+        throw new ApplicationException(
+            "Fehler bei der Erzeugung einer Sollbuchung");
       }
-      m.delete();
-      GUI.getStatusBar().setSuccessText("Adresse gelöscht.");
     }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler beim Löschen der Adresse";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
-    }
+    GUI.startView(new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
   }
 }

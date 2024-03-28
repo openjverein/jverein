@@ -16,42 +16,39 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.AdresstypAction;
-import de.jost_net.JVerein.gui.action.AdresstypDefaultAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.AdresstypControl;
-import de.jost_net.JVerein.rmi.Adresstyp;
-import de.willuhn.datasource.rmi.DBIterator;
+import de.jost_net.JVerein.gui.control.MitgliedstypControl;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class AdresstypListView extends AbstractView
+public class MitgliedstypView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Adresstypen");
+    GUI.getView().setTitle("Mitgliedstyp");
 
-    AdresstypControl control = new AdresstypControl(this);
+    final MitgliedstypControl control = new MitgliedstypControl(this);
 
-    control.getAdresstypList().paint(this.getParent());
+    LabelGroup group = new LabelGroup(getParent(), "Mitgliedstyp");
+    group.addLabelPair("Bezeichnung", control.getBezeichnung());
+    group.addLabelPair("Bezeichnung Plural", control.getBezeichnungPlural());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ADRESSTYPEN, false, "question-circle.png");
-    buttons.addButton("Neu", new AdresstypAction(), null, false, "document-new.png");
-
-    DBIterator<Adresstyp> it = Einstellungen.getDBService()
-        .createList(Adresstyp.class);
-    it.addFilter("jvereinid >= 1 and jvereinid <= 2");
-    if (it.size() == 0)
+    buttons.addButton("Speichern", new Action()
     {
-      buttons.addButton("Default-Adresstypen einrichten",
-          new AdresstypDefaultAction());
-    }
+      @Override
+      public void handleAction(Object context)
+      {
+        control.handleStore();
+      }
+    }, null, true, "document-save.png");
     buttons.paint(this.getParent());
   }
 }

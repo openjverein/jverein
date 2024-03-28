@@ -19,10 +19,10 @@ package de.jost_net.JVerein.gui.menu;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.MitgliedskontoDetailAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoDetailSollLoeschenAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoDetailSollNeuAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoIstLoesenAction;
+import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungEditAction;
+import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungLoeschenAction;
+import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungNeuAction;
+import de.jost_net.JVerein.gui.action.MitgliedskontoIstbuchungLoesenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.keys.Spendenart;
@@ -46,14 +46,14 @@ public class MitgliedskontoMenu extends ContextMenu
   public MitgliedskontoMenu()
   {
     addItem(new MitgliedItem("Neue Sollbuchung",
-        new MitgliedskontoDetailSollNeuAction(), "list-add.png"));
+        new MitgliedskontoSollbuchungNeuAction(), "list-add.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SollItem("Sollbuchung bearbeiten",
-        new MitgliedskontoDetailAction(), "text-x-generic.png"));
+        new MitgliedskontoSollbuchungEditAction(), "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
-        new MitgliedskontoDetailSollLoeschenAction(), "list-remove.png"));
+        new MitgliedskontoSollbuchungLoeschenAction(), "list-remove.png"));
     addItem(new SollMitIstItem("Istbuchung vom Mitgliedskonto lösen",
-        new MitgliedskontoIstLoesenAction(), "unlocked.png"));
+        new MitgliedskontoIstbuchungLoesenAction(), "unlocked.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SpendenbescheinigungItem("Geldspendenbescheinigung",
         new SpendenbescheinigungAction(Spendenart.GELDSPENDE), "file-invoice.png"));

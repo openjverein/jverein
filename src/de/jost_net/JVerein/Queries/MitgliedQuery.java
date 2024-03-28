@@ -50,6 +50,10 @@ public class MitgliedQuery
   private boolean and = false;
 
   private String sql = "";
+  
+  String zusatzfeld = null;
+  
+  String zusatzfelder = null;
 
   public MitgliedQuery(MitgliedControl control, boolean batch)
   {
@@ -60,6 +64,16 @@ public class MitgliedQuery
   @SuppressWarnings("unchecked")
   public ArrayList<Mitglied> get(int adresstyp) throws RemoteException
   {
+    if (adresstyp == 1)
+    {
+      zusatzfeld = "zusatzfeld.";
+      zusatzfelder = "zusatzfelder.";
+    }
+    else
+    {
+      zusatzfeld = "nichtzusatzfeld.";
+      zusatzfelder = "nichtzusatzfelder.";
+    }
     final DBService service = Einstellungen.getDBService();
     ArrayList<Object> bedingungen = new ArrayList<>();
 
@@ -74,23 +88,23 @@ public class MitgliedQuery
     char synonym = 'a';
     DBIterator<Felddefinition> fdit = Einstellungen.getDBService()
         .createList(Felddefinition.class);
-    if (settings.getInt("zusatzfelder.selected", 0) > fdit.size())
+    if (settings.getInt(zusatzfelder + "selected", 0) > fdit.size())
     {
-      settings.setAttribute("zusatzfelder.selected", 0);
+      settings.setAttribute(zusatzfelder + "selected", 0);
     }
-    if (settings.getInt("zusatzfelder.selected", 0) > 0)
+    if (settings.getInt(zusatzfelder + "selected", 0) > 0)
     {
-      for (int i = 1; i <= settings.getInt("zusatzfelder.counter", 0); i++)
+      for (int i = 1; i <= settings.getInt(zusatzfelder + "counter", 0); i++)
       {
-        int definition = settings.getInt("zusatzfeld." + i + ".definition", -1);
-        switch (settings.getInt("zusatzfeld." + i + ".datentyp", -1))
+        int definition = settings.getInt(zusatzfeld + i + ".definition", -1);
+        switch (settings.getInt(zusatzfeld + i + ".datentyp", -1))
         {
           case Datentyp.ZEICHENFOLGE:
           {
             String value = settings
-                .getString("zusatzfeld." + i + ".value", null)
+                .getString(zusatzfeld + i + ".value", null)
                 .replace('*', '%');
-            String cond = settings.getString("zusatzfeld." + i + ".cond", null);
+            String cond = settings.getString(zusatzfeld + i + ".cond", null);
             if (value != null && value.length() > 0)
             {
               sql += "join zusatzfelder " + synonym + " on " + synonym
@@ -105,9 +119,9 @@ public class MitgliedQuery
           }
           case Datentyp.DATUM:
           {
-            String value = settings.getString("zusatzfeld." + i + ".value",
+            String value = settings.getString(zusatzfeld + i + ".value",
                 null);
-            String cond = settings.getString("zusatzfeld." + i + ".cond", null);
+            String cond = settings.getString(zusatzfeld + i + ".cond", null);
             if (value != null)
             {
               try
@@ -129,9 +143,9 @@ public class MitgliedQuery
           }
           case Datentyp.GANZZAHL:
           {
-            int value = settings.getInt("zusatzfeld." + i + ".value",
+            int value = settings.getInt(zusatzfeld + i + ".value",
                 Integer.MIN_VALUE);
-            String cond = settings.getString("zusatzfeld." + i + ".cond", null);
+            String cond = settings.getString(zusatzfeld + i + ".cond", null);
             if (value != Integer.MIN_VALUE)
             {
               sql += "join zusatzfelder " + synonym + " on " + synonym
@@ -145,7 +159,7 @@ public class MitgliedQuery
           }
           case Datentyp.JANEIN:
           {
-            boolean value = settings.getBoolean("zusatzfeld." + i + ".value",
+            boolean value = settings.getBoolean(zusatzfeld + i + ".value",
                 false);
             if (value)
             {
@@ -160,9 +174,9 @@ public class MitgliedQuery
           }
           case Datentyp.WAEHRUNG:
           {
-            String value = settings.getString("zusatzfeld." + i + ".value",
+            String value = settings.getString(zusatzfeld + i + ".value",
                 null);
-            String cond = settings.getString("zusatzfeld." + i + ".cond", null);
+            String cond = settings.getString(zusatzfeld + i + ".cond", null);
             if (value != null)
             {
               try
@@ -186,8 +200,15 @@ public class MitgliedQuery
         }
       }
     }
-    addCondition("adresstyp = " + adresstyp);
-    if (control.isMitgliedStatusAktiv())
+    if (adresstyp != 0)
+    {
+      addCondition("adresstyp = " + adresstyp);
+    }
+    else
+    {
+      addCondition("adresstyp != " + 1);
+    }
+    if (control.isMitgliedStatusAktiv() && adresstyp == 1)
     {
       if (control.getMitgliedStatus().getValue().equals("Angemeldet"))
       {
@@ -292,13 +313,13 @@ public class MitgliedQuery
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
 
-    if (batch && control.getSterbedatumvon().getValue() != null)
+    if (batch && control.getSterbedatumvon().getValue() != null  && adresstyp == 1)
     {
       addCondition("sterbetag >= ?");
       Date d = (Date) control.getSterbedatumvon().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (batch && control.getSterbedatumbis().getValue() != null)
+    if (batch && control.getSterbedatumbis().getValue() != null  && adresstyp == 1)
     {
       addCondition("sterbetag <= ?");
       Date d = (Date) control.getSterbedatumbis().getValue();
@@ -311,19 +332,19 @@ public class MitgliedQuery
       String g = (String) control.getGeschlecht().getValue();
       bedingungen.add(g);
     }
-    if (control.getEintrittvon().getValue() != null)
+    if (control.getEintrittvon().getValue() != null  && adresstyp == 1)
     {
       addCondition("eintritt >= ?");
       Date d = (Date) control.getEintrittvon().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.getEintrittbis().getValue() != null)
+    if (control.getEintrittbis().getValue() != null  && adresstyp == 1)
     {
       addCondition("eintritt <= ?");
       Date d = (Date) control.getEintrittbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.isAustrittbisAktiv())
+    if (control.isAustrittbisAktiv()  && adresstyp == 1)
     {
       if (control.getAustrittvon().getValue() != null)
       {
@@ -349,7 +370,7 @@ public class MitgliedQuery
     {
       try
       {
-        if (control.getSuchExterneMitgliedsnummer().getValue() != null)
+        if (control.getSuchExterneMitgliedsnummer().getValue() != null  && adresstyp == 1)
         {
           String ext = (String) control.getSuchExterneMitgliedsnummer()
               .getValue();
@@ -366,7 +387,7 @@ public class MitgliedQuery
     }
     Beitragsgruppe bg = (Beitragsgruppe) control.getBeitragsgruppeAusw()
         .getValue();
-    if (bg != null)
+    if (bg != null  && adresstyp == 1)
     {
       addCondition("beitragsgruppe = ? ");
     }
@@ -410,7 +431,7 @@ public class MitgliedQuery
     try
     {
       if (Einstellungen.getEinstellung().getExterneMitgliedsnummer()
-          && control.getSuchExterneMitgliedsnummer().getValue() != null)
+          && control.getSuchExterneMitgliedsnummer().getValue() != null  && adresstyp == 1)
       {
         String ext = (String) control.getSuchExterneMitgliedsnummer()
             .getValue();
@@ -424,7 +445,7 @@ public class MitgliedQuery
     {
       // Workaround f. Bug in IntegerInput
     }
-    if (bg != null)
+    if (bg != null && adresstyp == 1)
     {
       bedingungen.add(Integer.valueOf(bg.getID()));
     }

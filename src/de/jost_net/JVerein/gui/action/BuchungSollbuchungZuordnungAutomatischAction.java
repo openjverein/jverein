@@ -16,51 +16,50 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
+import java.util.Date;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.AdresstypView;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.gui.dialogs.BuchungenSollbuchungZuordnungDialog;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AdresstypAction implements Action
+public class BuchungSollbuchungZuordnungAutomatischAction implements Action
 {
+  private DateInput vondatum;
+  private DateInput bisdatum;
+
+  public BuchungSollbuchungZuordnungAutomatischAction(DateInput vondatum, DateInput bisdatum) {
+    this.vondatum = vondatum;
+    this.bisdatum = bisdatum;
+  }
+
+ /**
+   * @see de.willuhn.jameica.gui.Action#handleAction(java.lang.Object)
+   */
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Adresstyp at = null;
-
-    if (context != null && (context instanceof Adresstyp))
+    try
     {
-      at = (Adresstyp) context;
-      try
-      {
-        if (at.getJVereinid() > 0)
-        {
-          throw new ApplicationException(
-              "Dieser Adresstyp ist reserviert und darf durch den Benutzer nicht verändert werden.");
-        }
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException("Fehler", e);
-      }
+      BuchungenSollbuchungZuordnungDialog d = new BuchungenSollbuchungZuordnungDialog((Date)vondatum.getValue(), (Date)bisdatum.getValue());
+      d.open();
     }
-    else
+    catch (OperationCanceledException oce)
     {
-      try
-      {
-        at = (Adresstyp) Einstellungen.getDBService().createObject(
-            Adresstyp.class, null);
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung eines neuen Adresstypen", e);
-      }
+      Logger.info(oce.getMessage());
     }
-    GUI.startView(AdresstypView.class.getName(), at);
+    catch (ApplicationException ae)
+    {
+      throw ae;
+    }
+    catch (Exception e)
+    {
+      Logger.error("error while assign transfers to members", e);
+      GUI.getStatusBar().setErrorText("Fehler beim Zuordnen von Buchungen zu Sollbuchungen");
+    }
   }
+
 }

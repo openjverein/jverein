@@ -16,15 +16,21 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.MitgliedskontoListeView;
+import de.jost_net.JVerein.gui.view.NichtMitgliederSucheView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 
-public class MitgliedskontoListeAction implements Action
+public class NichtMitgliedSucheAction implements Action
 {
+
+  public NichtMitgliedSucheAction()
+  {
+  }
+
   @Override
   public void handleAction(Object context)
   {
-    GUI.startView(MitgliedskontoListeView.class.getName(), null);
+    GUI.startView(NichtMitgliederSucheView.class.getName(), null);
   }
+
 }

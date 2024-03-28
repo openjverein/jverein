@@ -18,50 +18,60 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.MitgliedskontoDetailView;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Adresstyp;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoDetailAction implements Action
+/**
+ * Loeschen eines Mitgliedstyp.
+ */
+public class MitgliedstypDeleteAction implements Action
 {
-
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    MitgliedskontoNode mkn = null;
-    Mitgliedskonto mk = null;
-
-    if (context != null && (context instanceof MitgliedskontoNode))
+    if (context == null || !(context instanceof Adresstyp))
     {
-      mkn = (MitgliedskontoNode) context;
-      try
-      {
-        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-            Mitgliedskonto.class, mkn.getID());
-      }
-      catch (RemoteException e)
+      throw new ApplicationException("Kein Mitgliedstyp ausgewählt");
+    }
+    try
+    {
+      Adresstyp at = (Adresstyp) context;
+      if (at.getJVereinid() > 0)
       {
         throw new ApplicationException(
-            "Fehler bei der Erzeugung eines Mitgliedskontos");
+            "Dieser Mitgliedstyp darf nicht gelöscht werden");
       }
-    }
-    else
-    {
+      if (at.isNewObject())
+      {
+        return;
+      }
+      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+      d.setTitle("Mitgliedstyp löschen");
+      d.setText("Wollen Sie diesen Mitgliedstyp wirklich löschen?");
       try
       {
-        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-            Mitgliedskonto.class, null);
+        Boolean choice = (Boolean) d.open();
+        if (!choice.booleanValue())
+          return;
       }
       catch (Exception e)
       {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung eines neuen Mitgliedskontos", e);
+        Logger.error("Fehler beim Löschen eines Mitgliedstyp", e);
+        return;
       }
+
+      at.delete();
+      GUI.getStatusBar().setSuccessText("Mitgliedstyp gelöscht.");
     }
-    GUI.startView(new MitgliedskontoDetailView(MitgliedskontoNode.SOLL), mk);
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler beim Löschen des Mitgliedstyp.";
+      GUI.getStatusBar().setErrorText(fehler);
+      Logger.error(fehler, e);
+    }
   }
 }

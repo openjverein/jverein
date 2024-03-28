@@ -33,8 +33,8 @@ import de.jost_net.JVerein.gui.action.AdministrationEinstellungenMitgliederSpalt
 import de.jost_net.JVerein.gui.action.AdministrationEinstellungenRechnungenAction;
 import de.jost_net.JVerein.gui.action.AdministrationEinstellungenSpendenbescheinigungenAction;
 import de.jost_net.JVerein.gui.action.AdministrationEinstellungenStatistikAction;
-import de.jost_net.JVerein.gui.action.AdressenSucheAction;
-import de.jost_net.JVerein.gui.action.AdresstypListAction;
+import de.jost_net.JVerein.gui.action.NichtMitgliedSucheAction;
+import de.jost_net.JVerein.gui.action.MitgliedstypListAction;
 import de.jost_net.JVerein.gui.action.AnfangsbestandListAction;
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzUeberpruefungAction;
 import de.jost_net.JVerein.gui.action.AuswertungAdressenAction;
@@ -68,7 +68,7 @@ import de.jost_net.JVerein.gui.action.MailListeAction;
 import de.jost_net.JVerein.gui.action.MailVorlagenAction;
 import de.jost_net.JVerein.gui.action.MitgliedImportAction;
 import de.jost_net.JVerein.gui.action.MitgliedSucheAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoListeAction;
+import de.jost_net.JVerein.gui.action.SollbuchungListeAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoMahnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoRechnungAction;
 import de.jost_net.JVerein.gui.action.ProjektListAction;
@@ -109,8 +109,8 @@ public class MyExtension implements Extension
           new MitgliedSucheAction(), "user-friends.png"));
       if (Einstellungen.getEinstellung().getZusatzadressen())
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Adressen",
-            new AdressenSucheAction(), "user-friends.png"));
+        mitglieder.addChild(new MyItem(mitglieder, "Nicht-Mitglieder",
+            new NichtMitgliedSucheAction(), "user-friends.png"));
       }
       if (Einstellungen.getEinstellung().getKursteilnehmer())
       {
@@ -127,8 +127,8 @@ public class MyExtension implements Extension
             new FamilienbeitragAction(), "users.png"));
       }
       
-      mitglieder.addChild(new MyItem(mitglieder, "Mitgliedskonten",
-          new MitgliedskontoListeAction(), "calculator.png"));
+      mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
+          new SollbuchungListeAction(), "calculator.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
           new MitgliedskontoRechnungAction(), "file-invoice.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Mahnungen",
@@ -172,7 +172,7 @@ public class MyExtension implements Extension
       auswertung = new MyItem(auswertung, "Auswertungen", null);
       auswertung.addChild(new MyItem(auswertung, "Mitglieder",
           new AuswertungMitgliedAction(), "receipt.png"));
-      auswertung.addChild(new MyItem(auswertung, "Adressen",
+      auswertung.addChild(new MyItem(auswertung, "Nicht-Mitglieder",
           new AuswertungAdressenAction(), "receipt.png"));
       auswertung.addChild(new MyItem(auswertung, "Jubiläen",
           new JubilaeenAction(), "receipt.png"));
@@ -314,8 +314,8 @@ public class MyExtension implements Extension
           new MitgliedImportAction(), "file-import.png"));
       if (Einstellungen.getEinstellung().getZusatzadressen())
       {
-        administration.addChild(new MyItem(administration, "Adresstypen",
-            new AdresstypListAction(), "columns.png"));
+        administration.addChild(new MyItem(administration, "Mitgliedstypen",
+            new MitgliedstypListAction(), "columns.png"));
       }
       NavigationItem einstellungenerweitert = null;
       einstellungenerweitert = new MyItem(einstellungenerweitert, "Erweitert",

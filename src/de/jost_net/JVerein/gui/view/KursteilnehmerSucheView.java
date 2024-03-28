@@ -26,9 +26,12 @@ import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.util.ApplicationException;
 
 public class KursteilnehmerSucheView extends AbstractView
 {
@@ -38,7 +41,7 @@ public class KursteilnehmerSucheView extends AbstractView
   {
     GUI.getView().setTitle("Suche Kursteilnehmer");
 
-    KursteilnehmerControl control = new KursteilnehmerControl(this);
+    final KursteilnehmerControl control = new KursteilnehmerControl(this);
 
     String sql = "select count(*) from kursteilnehmer";
     DBService service = Einstellungen.getDBService();
@@ -58,6 +61,18 @@ public class KursteilnehmerSucheView extends AbstractView
     group.addLabelPair("Name", control.getSuchname());
     group.addLabelPair("Eingabedatum von", control.getEingabedatumvon());
     group.addLabelPair("Eingabedatum bis", control.getEingabedatumbis());
+    
+    ButtonArea button1 = new ButtonArea();
+    Button suchen1 = new Button("Suchen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        control.refresh();
+      }
+    }, null, true, "search.png");
+    button1.addButton(suchen1);
+    group.addButtonArea(button1);
 
     if (anzahl.longValue() > 0)
     {

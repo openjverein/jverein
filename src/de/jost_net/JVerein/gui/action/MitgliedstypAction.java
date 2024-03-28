@@ -16,50 +16,51 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.util.Date;
+import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.dialogs.BuchungenMitgliedskontenZuordnungDialog;
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.view.MitgliedstypView;
+import de.jost_net.JVerein.rmi.Adresstyp;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.system.OperationCanceledException;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungMitgliedskontoZuordnungAutomatischAction implements Action
+public class MitgliedstypAction implements Action
 {
-  private DateInput vondatum;
-  private DateInput bisdatum;
-
-  public BuchungMitgliedskontoZuordnungAutomatischAction(DateInput vondatum, DateInput bisdatum) {
-    this.vondatum = vondatum;
-    this.bisdatum = bisdatum;
-  }
-
- /**
-   * @see de.willuhn.jameica.gui.Action#handleAction(java.lang.Object)
-   */
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    try
-    {
-      BuchungenMitgliedskontenZuordnungDialog d = new BuchungenMitgliedskontenZuordnungDialog((Date)vondatum.getValue(), (Date)bisdatum.getValue());
-      d.open();
-    }
-    catch (OperationCanceledException oce)
-    {
-      Logger.info(oce.getMessage());
-    }
-    catch (ApplicationException ae)
-    {
-      throw ae;
-    }
-    catch (Exception e)
-    {
-      Logger.error("error while assign transfers to members", e);
-      GUI.getStatusBar().setErrorText("Fehler beim Zuordnen von Buchungen zu Mitgliedskonten");
-    }
-  }
+    Adresstyp at = null;
 
+    if (context != null && (context instanceof Adresstyp))
+    {
+      at = (Adresstyp) context;
+      try
+      {
+        if (at.getJVereinid() > 0)
+        {
+          throw new ApplicationException(
+              "Dieser Mitgliedstyp ist reserviert und darf durch den Benutzer nicht verändert werden.");
+        }
+      }
+      catch (RemoteException e)
+      {
+        throw new ApplicationException("Fehler", e);
+      }
+    }
+    else
+    {
+      try
+      {
+        at = (Adresstyp) Einstellungen.getDBService().createObject(
+            Adresstyp.class, null);
+      }
+      catch (RemoteException e)
+      {
+        throw new ApplicationException(
+            "Fehler bei der Erzeugung eines neuen Mitgliedstypen", e);
+      }
+    }
+    GUI.startView(MitgliedstypView.class.getName(), at);
+  }
 }

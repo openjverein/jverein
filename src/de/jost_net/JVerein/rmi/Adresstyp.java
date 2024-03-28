@@ -33,7 +33,7 @@ public interface Adresstyp extends DBObject
 
   /**
    * JVerein-ID <br>
-   * Mit der JVerein-ID werden Adresstypen mit festen Funktionen in JVerein
+   * Mit der JVerein-ID werden Mitgliedstypen mit festen Funktionen in JVerein
    * festgelegt. Beispiele: Mitglied, Spender.
    */
   public int getJVereinid() throws RemoteException;

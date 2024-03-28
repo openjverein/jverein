@@ -188,7 +188,7 @@ public class MailControl extends AbstractControl
     mitgliedmitmail.addColumn("EMail", "email");
     mitgliedmitmail.addColumn("Name", "name");
     mitgliedmitmail.addColumn("Vorname", "vorname");
-    mitgliedmitmail.addColumn("Adresstyp", "adresstyp");
+    mitgliedmitmail.addColumn("Mitgliedstyp", "adresstyp");
     mitgliedmitmail.setRememberOrder(true);
     mitgliedmitmail.setCheckable(true);
     mitgliedmitmail.removeFeature(FeatureSummary.class);

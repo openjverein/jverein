@@ -19,9 +19,12 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
@@ -31,24 +34,25 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.util.Container;
-import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Ein Dialog, ueber den man ein Mitgliedskonto auswaehlen kann.
  */
-public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
+public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 {
 
   private de.willuhn.jameica.system.Settings settings;
-
-  private String text = null;
 
   private Object choosen = null;
 
@@ -61,15 +65,19 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
   private Buchung buchung;
   
   private boolean abort = true;
+  
+  private MyButton suchen1;
+  
+  private MyButton suchen2;
 
-  public MitgliedskontoAuswahlDialog(Buchung buchung)
+  public SollbuchungAuswahlDialog(Buchung buchung)
   {
-    super(MitgliedskontoAuswahlDialog.POSITION_MOUSE, true);
+    super(SollbuchungAuswahlDialog.POSITION_MOUSE, true);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
 
     this.setSize(900, 700);
-    this.setTitle("Mitgliedskonto-Auswahl");
+    this.setTitle("Sollbuchung Auswahl");
     this.buchung = buchung;
     control = new MitgliedskontoControl(null);
   }
@@ -77,22 +85,48 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    TabFolder folder = new TabFolder(parent, SWT.NONE);
+    final TabFolder folder = new TabFolder(parent, SWT.NONE);
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-    TabGroup tabNurIst = new TabGroup(folder, "nur Ist", false, 1);
-    Container grNurIst = new SimpleContainer(tabNurIst.getComposite());
-    grNurIst.addHeadline("Auswahl des Mitgliedskontos");
-    if (text == null || text.length() == 0)
+    folder.addSelectionListener(new SelectionAdapter()
     {
-      text = "Bitte wählen Sie das gewünschte Mitgliedskonto aus.";
-    }
-    grNurIst.addText(text, true);
+
+      @Override
+      public void widgetSelected(SelectionEvent evt)
+      {
+        TabItem item = folder.getSelection()[0];
+        if (item.getText().startsWith("Ist"))
+        {
+          suchen1.setDefaultButton();
+        }
+        else if (item.getText().startsWith("Soll"))
+        {
+          suchen2.setDefaultButton();
+        }
+      }
+    });
+
+    TabGroup tabNurIst = new TabGroup(folder, "Istbuchung einer Sollbuchung zuordnen", false, 1);
+    LabelGroup grNurIst = new LabelGroup(tabNurIst.getComposite(), "Filter");
+
     TextInput suNa = control.getSuchName();
     suNa.setValue(buchung.getName());
     grNurIst.addLabelPair("Name", suNa);
     grNurIst.addLabelPair("Differenz",
         control.getDifferenz(DIFFERENZ.FEHLBETRAG));
+    grNurIst.addInput(control.getSpezialSuche1());
+    
+    ButtonArea button1 = new ButtonArea();
+    suchen1 = new MyButton("Suchen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        control.refreshMitgliedskontoList1();
+      }
+    }, null, false, "search.png");
+    button1.addButton(suchen1);
+    grNurIst.addButtonArea(button1);
+
     Action action = new Action()
     {
 
@@ -104,25 +138,32 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
           return;
         }
         choosen = context;
+        abort = false;
         close();
       }
     };
     mitgliedskontolist = control.getMitgliedskontoList(action, null);
     mitgliedskontolist.paint(tabNurIst.getComposite());
 
-    //
-    TabGroup tabSollIst = new TabGroup(folder, "Soll u. Ist", true, 1);
-    Container grSollIst = new SimpleContainer(tabSollIst.getComposite());
-    grSollIst.addHeadline("Auswahl des Mitgliedskontos");
-
-    if (text == null || text.length() == 0)
-    {
-      text = "Bitte wählen Sie das gewünschte Mitgliedskonto aus.";
-    }
-    grSollIst.addText(text, true);
+    TabGroup tabSollIst = new TabGroup(folder, "Sollbuchung erzeugen und Istbuchung zuordnen", true, 1);
+    LabelGroup grSollIst = new LabelGroup(tabSollIst.getComposite(), "Filter");
+    
     control.getSuchName2(true).setValue(buchung.getName());
     grSollIst.addLabelPair("Name", control.getSuchName2(false));
-    grSollIst.addInput(control.getSpezialSuche());
+    grSollIst.addInput(control.getSpezialSuche2());
+    
+    ButtonArea button2 = new ButtonArea();
+    suchen2 = new MyButton("Suchen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        control.refreshMitgliedskontoList2();
+      }
+    }, null, false, "search.png");
+    
+    button2.addButton(suchen2);
+    grSollIst.addButtonArea(button2);
 
     final Action action2 = new Action()
     {
@@ -135,12 +176,13 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
           return;
         }
         choosen = context;
+        abort = false;
         close();
       }
     };
     mitgliedlist = control.getMitgliedskontoList2(action2, null);
     mitgliedlist.paint(tabSollIst.getComposite());
-
+    
     ButtonArea b = new ButtonArea();
     
     b.addButton("Hilfe", new DokumentationAction(),
@@ -212,19 +254,41 @@ public class MitgliedskontoAuswahlDialog extends AbstractDialog<Object>
     return choosen;
   }
 
-  /**
-   * Optionale Angabe des anzuzeigenden Textes. Wird hier kein Wert gesetzt,
-   * wird ein Standard-Text angezeigt.
-   * 
-   * @param text
-   */
-  public void setText(String text)
-  {
-    this.text = text;
-  }
-  
   public boolean getAbort()
   {
     return abort;
   }
+  
+  public class MyButton extends Button
+  {
+    public MyButton(String title, Action action, Object context, boolean defaultButton, String icon)
+    {
+      super(title,action,context,defaultButton,icon);
+    }
+    
+    public void setDefaultButton()
+    {
+      try
+      {
+        getShell().setDefaultButton(button);
+      }
+      catch (IllegalArgumentException ae)
+      {
+        // Kann unter MacOS wohl passieren. Siehe Mail von
+        // Jan Lolling vom 22.09.2006. Mal schauen, ob wir
+        // Fehlertext: "Widget has the wrong parent"
+        // Wir versuchen es mal mit der Shell der GUI.
+        try
+        {
+          GUI.getShell().setDefaultButton(button);
+        }
+        catch (IllegalArgumentException ae2)
+        {
+          // Geht auch nicht? Na gut, dann lassen wir es halt bleiben
+          Logger.warn("unable to set default button: " + ae2.getLocalizedMessage());
+        }
+      }
+    }
+  }
+  
 }

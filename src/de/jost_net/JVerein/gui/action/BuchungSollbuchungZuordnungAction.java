@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.dialogs.MitgliedskontoAuswahlDialog;
+import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -33,11 +33,11 @@ import de.willuhn.util.ApplicationException;
 /**
  * Mitgliedskonto zuordnen.
  */
-public class BuchungMitgliedskontoZuordnungAction implements Action
+public class BuchungSollbuchungZuordnungAction implements Action
 {
   private BuchungsControl control;
 
-  public BuchungMitgliedskontoZuordnungAction(BuchungsControl control)
+  public BuchungSollbuchungZuordnungAction(BuchungsControl control)
   {
     this.control = control;
   }
@@ -74,7 +74,7 @@ public class BuchungMitgliedskontoZuordnungAction implements Action
       {
         return;
       }
-      MitgliedskontoAuswahlDialog mkaz = new MitgliedskontoAuswahlDialog(b[0]);
+      SollbuchungAuswahlDialog mkaz = new SollbuchungAuswahlDialog(b[0]);
       Object open = mkaz.open();
       Mitgliedskonto mk = null;
 
@@ -113,11 +113,11 @@ public class BuchungMitgliedskontoZuordnungAction implements Action
 
         if (mk == null)
         {
-          GUI.getStatusBar().setSuccessText("Mitgliedskonto gelöscht");
+          GUI.getStatusBar().setSuccessText("Sollbuchung gelöscht");
         } 
         else
         {
-          GUI.getStatusBar().setSuccessText("Mitgliedskonto zugeordnet");
+          GUI.getStatusBar().setSuccessText("Sollbuchung zugeordnet");
         }
       }
     }
@@ -133,7 +133,7 @@ public class BuchungMitgliedskontoZuordnungAction implements Action
     {
       Logger.error("Fehler", e);
       GUI.getStatusBar().setErrorText(
-          "Fehler bei der Zuordnung des Mitgliedskontos");
+          "Fehler bei der Zuordnung der Sollbuchung");
     }
   }
 }

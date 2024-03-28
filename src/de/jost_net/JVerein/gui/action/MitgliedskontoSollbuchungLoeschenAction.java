@@ -19,46 +19,66 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.MitgliedskontoDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoDetailSollNeuAction implements Action
+public class MitgliedskontoSollbuchungLoeschenAction implements Action
 {
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    MitgliedskontoNode mkn = null;
-    Mitgliedskonto mk = null;
-    
     if (context == null || !(context instanceof MitgliedskontoNode))
     {
-      throw new ApplicationException("Kein Mitgliedskonto ausgewählt");
+      throw new ApplicationException("Keine Sollbuchung ausgewählt");
     }
+  	
+    YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+    d.setTitle("Sollbuchung löschen");
+    d.setText("Wollen Sie die Sollbuchung wirklich löschen?");
+
+    try
+    {
+      Boolean choice = (Boolean) d.open();
+      if (!choice.booleanValue())
+      {
+        return;
+      }
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler", e);
+      return;
+    }
+    MitgliedskontoNode mkn = null;
+    Mitgliedskonto mk = null;
 
     if (context != null && (context instanceof MitgliedskontoNode))
     {
       mkn = (MitgliedskontoNode) context;
       try
       {
-        Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
-            Mitglied.class, mkn.getID());
         mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-            Mitgliedskonto.class, null);
-        mk.setZahlungsweg(m.getZahlungsweg());
-        mk.setMitglied(m);
+            Mitgliedskonto.class, mkn.getID());
+        Mitglied mitglied = mk.getMitglied();
+        mk.delete();
+        GUI.getStatusBar().setSuccessText("Sollbuchung gelöscht.");
+        Application.getMessagingFactory().sendMessage(
+            new MitgliedskontoMessage(mitglied));
       }
       catch (RemoteException e)
       {
         throw new ApplicationException(
-            "Fehler bei der Erzeugung eines Mitgliedskontos");
+            "Fehler beim Löschen einer Sollbuchung");
       }
     }
-    GUI.startView(new MitgliedskontoDetailView(MitgliedskontoNode.SOLL), mk);
   }
 }

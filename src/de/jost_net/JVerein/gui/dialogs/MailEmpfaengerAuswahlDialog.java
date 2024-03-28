@@ -49,7 +49,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
     super(position);
     this.control = control;
     setTitle("Mail-Empfänger");
-    setSize(700, 450);
+    setSize(720, 450);
   }
 
   @Override
@@ -181,7 +181,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
       }
     });
 
-    b.addButton("Alle Adressen", new Action()
+    b.addButton("Nicht-Mitglieder", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -204,7 +204,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
       }
     });
 
-    b.addButton("Aktive Mitglieder und Adressen", new Action()
+    b.addButton("Aktive Mitglieder und Nicht-Mitglieder", new Action()
     {
       @Override
       public void handleAction(Object context)

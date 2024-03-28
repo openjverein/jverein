@@ -19,8 +19,8 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.AdresstypAction;
-import de.jost_net.JVerein.gui.menu.AdresstypMenu;
+import de.jost_net.JVerein.gui.action.MitgliedstypAction;
+import de.jost_net.JVerein.gui.menu.MitgliedstypMenu;
 import de.jost_net.JVerein.rmi.Adresstyp;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -35,7 +35,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AdresstypControl extends AbstractControl
+public class MitgliedstypControl extends AbstractControl
 {
   private de.willuhn.jameica.system.Settings settings;
 
@@ -47,7 +47,7 @@ public class AdresstypControl extends AbstractControl
 
   private Adresstyp adresstyp;
 
-  public AdresstypControl(AbstractView view)
+  public MitgliedstypControl(AbstractView view)
   {
     super(view);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
@@ -98,7 +98,7 @@ public class AdresstypControl extends AbstractControl
       try
       {
         at.store();
-        GUI.getStatusBar().setSuccessText("Adresstyp gespeichert");
+        GUI.getStatusBar().setSuccessText("Mitgliedstyp gespeichert");
       }
       catch (ApplicationException e)
       {
@@ -107,7 +107,7 @@ public class AdresstypControl extends AbstractControl
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler bei speichern des Adresstypen";
+      String fehler = "Fehler bei speichern des Mitgliedstyp";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
@@ -119,11 +119,11 @@ public class AdresstypControl extends AbstractControl
     DBIterator<Adresstyp> adresstypen = service.createList(Adresstyp.class);
     adresstypen.setOrder("ORDER BY bezeichnung");
 
-    adresstypList = new TablePart(adresstypen, new AdresstypAction());
+    adresstypList = new TablePart(adresstypen, new MitgliedstypAction());
     adresstypList.addColumn("Bezeichnung", "bezeichnung");
     adresstypList.addColumn("Bezeichnung Plural", "bezeichnungplural");
     adresstypList.addColumn("ID", "id");
-    adresstypList.setContextMenu(new AdresstypMenu());
+    adresstypList.setContextMenu(new MitgliedstypMenu());
     adresstypList.setRememberColWidths(true);
     adresstypList.setRememberOrder(true);
     adresstypList.addFeature(new FeatureSummary());

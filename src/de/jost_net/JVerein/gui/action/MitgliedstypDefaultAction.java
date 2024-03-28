@@ -18,58 +18,39 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Adresstyp;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
  * Loeschen eines Adresstypen.
  */
-public class AdresstypDeleteAction implements Action
+public class MitgliedstypDefaultAction implements Action
 {
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof Adresstyp))
-    {
-      throw new ApplicationException("Kein Adresstyp ausgewählt");
-    }
     try
     {
-      Adresstyp at = (Adresstyp) context;
-      if (at.getJVereinid() > 0)
-      {
-        throw new ApplicationException(
-            "Dieser Adresstyp darf nicht gelöscht werden");
-      }
-      if (at.isNewObject())
-      {
-        return;
-      }
-      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Adresstyp löschen");
-      d.setText("Wollen Sie diesen Adresstyp wirklich löschen?");
-      try
-      {
-        Boolean choice = (Boolean) d.open();
-        if (!choice.booleanValue())
-          return;
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Löschen eines Adresstypen", e);
-        return;
-      }
+      Adresstyp at = (Adresstyp) Einstellungen.getDBService().createObject(
+          Adresstyp.class, "1");
+      at.setBezeichnung("Mitglied");
+      at.setJVereinid(1);
+      at.store();
+      at = (Adresstyp) Einstellungen.getDBService().createObject(
+          Adresstyp.class, "2");
+      at.setBezeichnung("Spender/in");
+      at.setJVereinid(2);
+      at.store();
 
-      at.delete();
-      GUI.getStatusBar().setSuccessText("Adresstyp gelöscht.");
+      GUI.getStatusBar().setSuccessText("Mitgliedstypen eingefügt.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Buchungsart.";
+      String fehler = "Fehler beim Einfügen von Mitgliedstypen.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

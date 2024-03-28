@@ -16,15 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.AdresstypListView;
+import de.jost_net.JVerein.gui.view.MitgliedstypenListView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 
-public class AdresstypListAction implements Action
+public class MitgliedstypListAction implements Action
 {
   @Override
   public void handleAction(Object context)
   {
-    GUI.startView(AdresstypListView.class.getName(), null);
+    GUI.startView(MitgliedstypenListView.class.getName(), null);
   }
 }

@@ -18,39 +18,53 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Loeschen eines Adresstypen.
+ * Löschen eines Nicht-Mitglied
  */
-public class AdresstypDefaultAction implements Action
+public class NichtMitgliedDeleteAction implements Action
 {
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
+    if (context == null || !(context instanceof Mitglied))
+    {
+      throw new ApplicationException("Kein Nicht-Mitglied ausgewählt");
+    }
     try
     {
-      Adresstyp at = (Adresstyp) Einstellungen.getDBService().createObject(
-          Adresstyp.class, "1");
-      at.setBezeichnung("Mitglied");
-      at.setJVereinid(1);
-      at.store();
-      at = (Adresstyp) Einstellungen.getDBService().createObject(
-          Adresstyp.class, "2");
-      at.setBezeichnung("Spender/in");
-      at.setJVereinid(2);
-      at.store();
+      Mitglied m = (Mitglied) context;
+      if (m.isNewObject())
+      {
+        return;
+      }
+      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+      d.setTitle("Nicht-Mitglied löschen");
+      d.setText("Wollen Sie dieses Nicht-Mitglied wirklich löschen?");
 
-      GUI.getStatusBar().setSuccessText("Adresstypen eingefügt.");
+      try
+      {
+        Boolean choice = (Boolean) d.open();
+        if (!choice.booleanValue())
+          return;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Löschen des Nicht-Mitglied", e);
+        return;
+      }
+      m.delete();
+      GUI.getStatusBar().setSuccessText("Nicht-Mitglied gelöscht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Einfügen von Adresstypen.";
+      String fehler = "Fehler beim Löschen des Nicht-Mitglied";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

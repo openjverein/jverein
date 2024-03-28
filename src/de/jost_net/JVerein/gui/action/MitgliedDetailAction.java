@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FamilienbeitragNode;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
-import de.jost_net.JVerein.gui.view.AdresseDetailView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -83,7 +83,7 @@ public class MitgliedDetailAction implements Action
       }
       else
       {
-        GUI.startView(new AdresseDetailView(), m);
+        GUI.startView(new NichtMitgliedDetailView(), m);
       }
     }
     catch (OperationCanceledException oce)

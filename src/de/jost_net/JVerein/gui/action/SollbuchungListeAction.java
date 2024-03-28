@@ -14,24 +14,17 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.menu;
+package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.action.AdresstypDeleteAction;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
-import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.jost_net.JVerein.gui.view.SollbuchungListeView;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 
-/**
- * Kontext-Menu zu den Adresstypen.
- */
-public class AdresstypMenu extends ContextMenu
+public class SollbuchungListeAction implements Action
 {
-
-  /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Adresstypen.
-   */
-  public AdresstypMenu()
+  @Override
+  public void handleAction(Object context)
   {
-    addItem(new CheckedContextMenuItem("Löschen...",
-        new AdresstypDeleteAction(), "user-trash-full.png"));
+    GUI.startView(SollbuchungListeView.class.getName(), null);
   }
 }

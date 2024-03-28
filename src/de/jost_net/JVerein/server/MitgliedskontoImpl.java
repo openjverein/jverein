@@ -86,7 +86,7 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
     }
     catch (RemoteException e)
     {
-      String fehler = "Mitgliedskonto kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Sollbuchung kann nicht gespeichert werden. Siehe system log";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }

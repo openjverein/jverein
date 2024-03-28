@@ -65,7 +65,7 @@ public class BuchungsklasseSaldoControl extends SaldoControl
       {
         starteAuswertung(AuswertungPDF);
       }
-    }, null, true, "file-pdf.png"); // "true" defines this button as the default
+    }, null, false, "file-pdf.png");
     // button
     return b;
   }
@@ -79,7 +79,7 @@ public class BuchungsklasseSaldoControl extends SaldoControl
       {
         starteAuswertung(AuswertungCSV);
       }
-    }, null, true, "xsd.png"); // "true" defines this button as the default
+    }, null, false, "xsd.png");
     // button
     return b;
   }

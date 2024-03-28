@@ -14,20 +14,24 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.view;
+package de.jost_net.JVerein.gui.menu;
 
-public class AdresseDetailView extends AbstractAdresseDetailView
+import de.jost_net.JVerein.gui.action.MitgliedstypDeleteAction;
+import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.ContextMenu;
+
+/**
+ * Kontext-Menu zu den Mitgliedstypen.
+ */
+public class MitgliedstypMenu extends ContextMenu
 {
 
-  @Override
-  public String getTitle()
+  /**
+   * Erzeugt ein Kontext-Menu fuer die Liste der Mitgliedstypen.
+   */
+  public MitgliedstypMenu()
   {
-    return "Adressdaten";
-  }
-
-  @Override
-  public boolean isMitgliedDetail()
-  {
-    return false;
+    addItem(new CheckedContextMenuItem("Löschen...",
+        new MitgliedstypDeleteAction(), "user-trash-full.png"));
   }
 }

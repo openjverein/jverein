@@ -19,8 +19,8 @@ package de.jost_net.JVerein.gui.view;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DialogInput;
@@ -32,77 +32,54 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
 import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
 
-public class MitgliederSucheView extends AbstractMitgliedSucheView
+public class NichtMitgliederSucheView extends AbstractMitgliedSucheView
 {
-
-  public MitgliederSucheView() throws RemoteException
+  public NichtMitgliederSucheView() throws RemoteException
   {
-    control.getSuchAdresstyp(Mitgliedstyp.MITGLIED).getValue();
+    control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
   }
 
   @Override
   public String getTitle()
   {
-    return "Mitglieder suchen";
+    return "Nicht-Mitglieder suchen";
   }
 
   @Override
   public void getFilter() throws RemoteException
   {
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
-
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    Input mitglstat = control.getMitgliedStatus();
-    mitglstat.addListener(new FilterListener());
-    left.addLabelPair("Mitgliedschaft", mitglstat);
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
-    {
-      left.addLabelPair("Externe Mitgliedsnummer",
-          control.getSuchExterneMitgliedsnummer());
-    }
+    TextInput suchName = control.getSuchname();
+    left.addInput(suchName);
+    Input adrtyp = control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED);
+    adrtyp.addListener(new FilterListener());
+    left.addLabelPair("Mitgliedstyp", adrtyp);
     DialogInput mitgleigenschaften = control.getEigenschaftenAuswahl();
     left.addLabelPair("Eigenschaften", mitgleigenschaften);
-    SelectInput mitglbeitragsgruppe = control.getBeitragsgruppeAusw();
-    mitglbeitragsgruppe.addListener(new FilterListener());
-    left.addLabelPair("Beitragsgruppe", mitglbeitragsgruppe);
-
-    SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    TextInput suchName = control.getSuchname();
-    middle.addInput(suchName);
-    DateInput mitglgebdatvon = control.getGeburtsdatumvon();
-    middle.addLabelPair("Geburtsdatum von", mitglgebdatvon);
-    DateInput mitglgebdatbis = control.getGeburtsdatumbis();
-    middle.addLabelPair("Geburtsdatum bis", mitglgebdatbis);
-    SelectInput mitglgeschlecht = control.getGeschlecht();
-    mitglgeschlecht.setMandatory(false);
-    mitglgeschlecht.addListener(new FilterListener());
-    middle.addLabelPair("Geschlecht", mitglgeschlecht);
-    DateInput stichtag = control.getStichtag();
-    middle.addLabelPair("Stichtag", stichtag);
-
-    SimpleContainer right = new SimpleContainer(cl.getComposite());
-    DateInput mitgleintrittvon = control.getEintrittvon();
-    right.addLabelPair("Eintrittsdatum von", mitgleintrittvon);
-    DateInput mitgleintrittbis = control.getEintrittbis();
-    right.addLabelPair("Eintrittsdatum bis", mitgleintrittbis);
-    DateInput mitglaustrittvon = control.getAustrittvon();
-    right.addLabelPair("Austrittsdatum von", mitglaustrittvon);
-    DateInput mitglaustrittbis = control.getAustrittbis();
-    right.addLabelPair("Austrittsdatum bis", mitglaustrittbis);
-
     if (Einstellungen.getEinstellung().hasZusatzfelder())
     {
       DialogInput mitglzusatzfelder = control.getZusatzfelderAuswahl();
+      mitglzusatzfelder.addListener(new FilterListener());
       left.addLabelPair("Zusatzfelder", mitglzusatzfelder);
     }
     
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    DateInput mitglgebdatvon = control.getGeburtsdatumvon();
+    right.addLabelPair("Geburtsdatum von", mitglgebdatvon);
+    DateInput mitglgebdatbis = control.getGeburtsdatumbis();
+    right.addLabelPair("Geburtsdatum bis", mitglgebdatbis);
+    SelectInput mitglgeschlecht = control.getGeschlecht();
+    mitglgeschlecht.setMandatory(false);
+    mitglgeschlecht.addListener(new FilterListener());
+    right.addLabelPair("Geschlecht", mitglgeschlecht);
+    
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(control.getProfileButton());
     buttons.addButton(new Button("Filter-Reset", new Action()
     {
 
@@ -111,23 +88,12 @@ public class MitgliederSucheView extends AbstractMitgliedSucheView
       {
         try
         {
-          Settings s = control.getSettings();
-          s.setAttribute("id", "");
-          s.setAttribute("profilname", "");
-
-          control.getMitgliedStatus().setValue("Angemeldet");
-          control.getSuchExterneMitgliedsnummer().setValue("");
           control.resetEigenschaftenAuswahl();
-          control.getBeitragsgruppeAusw().setValue(null);
           control.getSuchname().setValue("");
+          control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).setValue(null);
           control.getGeburtsdatumvon().setValue(null);
           control.getGeburtsdatumbis().setValue(null);
           control.getGeschlecht().setValue(null);
-          control.getEintrittvon().setValue(null);
-          control.getEintrittbis().setValue(null);
-          control.getAustrittvon().setValue(null);
-          control.getAustrittbis().setValue(null);
-          control.getStichtag().setValue(null);
           if (Einstellungen.getEinstellung().hasZusatzfelder())
           {
             control.resetZusatzfelderAuswahl();
@@ -156,14 +122,13 @@ public class MitgliederSucheView extends AbstractMitgliedSucheView
   @Override
   public Action getDetailAction()
   {
-    return new MitgliedDetailAction();
+    return new NichtMitgliedDetailAction();
   }
 
   @Override
   public Button getHilfeButton()
   {
     return new Button("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIED, false, "question-circle.png");
+        DokumentationUtil.ADRESSEN, false, "question-circle.png");
   }
-
 }

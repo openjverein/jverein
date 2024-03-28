@@ -26,7 +26,9 @@ import java.util.Date;
 import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Listener;
 import org.supercsv.io.CsvMapWriter;
 import org.supercsv.io.ICsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
@@ -113,6 +115,7 @@ public class ArbeitseinsatzControl extends AbstractControl
       return auswertungschluessel;
     }
     auswertungschluessel = new ArbeitseinsatzUeberpruefungInput(1);
+    auswertungschluessel.addListener(new FilterListener());
     return auswertungschluessel;
   }
 
@@ -166,6 +169,7 @@ public class ArbeitseinsatzControl extends AbstractControl
     suchjahr = new SelectInput(jahre, settings.getInt("jahr", jahre.get(0)));
     // suchjahr.setPleaseChoose("Bitte auswählen");
     suchjahr.setPreselected(settings.getInt("jahr", bis.get(Calendar.YEAR)));
+    suchjahr.addListener(new FilterListener());
     return suchjahr;
   }
 
@@ -188,7 +192,7 @@ public class ArbeitseinsatzControl extends AbstractControl
               "Fehler beim Start der PDF-Ausgabe der Arbeitseinsatzüberprüfung");
         }
       }
-    }, null, true, "file-pdf.png");
+    }, null, false, "file-pdf.png");
     return b;
   }
 
@@ -211,7 +215,7 @@ public class ArbeitseinsatzControl extends AbstractControl
               "Fehler beim Start der CSV-Ausgabe der Arbeitseinsatzüberprüfung");
         }
       }
-    }, null, true, "xsd.png");
+    }, null, false, "xsd.png");
     return b;
   }
 
@@ -234,7 +238,7 @@ public class ArbeitseinsatzControl extends AbstractControl
               "Fehler beim der Zusatzbetragsgenerierung");
         }
       }
-    }, null, true, "euro-sign.png");
+    }, null, false, "euro-sign.png");
     return b;
   }
 
@@ -529,4 +533,31 @@ public class ArbeitseinsatzControl extends AbstractControl
     }
     return arbeitseinsatzueberpruefungList.getArbeitseinsatzUeberpruefungList();
   }
+  
+  private void refresh()
+  {
+    try
+    {
+      getArbeitseinsatzUeberpruefungList();
+    }
+    catch (ApplicationException e1)
+    {
+      //
+    }
+  }
+  
+  private class FilterListener implements Listener
+  {
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      refresh();
+    }
+  }
+  
 }

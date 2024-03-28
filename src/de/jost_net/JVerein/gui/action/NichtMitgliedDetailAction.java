@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
-import de.jost_net.JVerein.gui.view.AdresseDetailView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
@@ -26,7 +26,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
-public class AdresseDetailAction implements Action
+public class NichtMitgliedDetailAction implements Action
 {
   @Override
   public void handleAction(Object context) throws ApplicationException
@@ -71,8 +71,8 @@ public class AdresseDetailAction implements Action
     catch (Exception e)
     {
       throw new ApplicationException(
-          "Fehler bei der Erzeugung einer neuen Adresse", e);
+          "Fehler bei der Erzeugung eines neuen Nicht-Mitglied", e);
     }
-    GUI.startView(new AdresseDetailView(), m);
+    GUI.startView(new NichtMitgliedDetailView(), m);
   }
 }

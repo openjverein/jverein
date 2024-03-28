@@ -16,53 +16,42 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.MitgliedstypAction;
+import de.jost_net.JVerein.gui.action.MitgliedstypDefaultAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
+import de.jost_net.JVerein.gui.control.MitgliedstypControl;
+import de.jost_net.JVerein.rmi.Adresstyp;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class MitgliedskontoDetailView extends AbstractView
+public class MitgliedstypenListView extends AbstractView
 {
-
-  private int typ;
-
-  public MitgliedskontoDetailView(int typ)
-  {
-    this.typ = typ;
-  }
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Mitgliedskonto-Buchung");
+    GUI.getView().setTitle("Mitgliedstypen");
 
-    final MitgliedskontoControl control = new MitgliedskontoControl(this);
-    LabelGroup grBuchung = new LabelGroup(getParent(),
-        (typ == MitgliedskontoNode.SOLL ? "Soll" : "Ist") + "-Buchung");
-    grBuchung.addLabelPair("Datum", control.getDatum());
-    grBuchung.addLabelPair("Verwendungszweck 1", control.getZweck1());
-    grBuchung.addLabelPair("Zahlungsweg", control.getZahlungsweg());
-    control.getBetrag().setMandatory(true);
-    grBuchung.addLabelPair("Betrag", control.getBetrag());
-    grBuchung.addLabelPair("Buchungsart", control.getBuchungsart());
+    MitgliedstypControl control = new MitgliedstypControl(this);
+
+    control.getAdresstypList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
-        "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
+        DokumentationUtil.ADRESSTYPEN, false, "question-circle.png");
+    buttons.addButton("Neu", new MitgliedstypAction(), null, false, "document-new.png");
 
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
+    DBIterator<Adresstyp> it = Einstellungen.getDBService()
+        .createList(Adresstyp.class);
+    it.addFilter("jvereinid >= 1 and jvereinid <= 2");
+    if (it.size() == 0)
+    {
+      buttons.addButton("Default-Mitgliedstypen einrichten",
+          new MitgliedstypDefaultAction());
+    }
     buttons.paint(this.getParent());
   }
 }

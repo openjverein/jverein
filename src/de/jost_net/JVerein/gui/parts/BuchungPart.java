@@ -74,7 +74,7 @@ public class BuchungPart implements Part
     grKontoauszug.addLabelPair("Verwendungszweck", control.getZweck());
     grKontoauszug.addLabelPair("Datum", control.getDatum());
     grKontoauszug.addLabelPair("Art", control.getArt());
-    grKontoauszug.addLabelPair("Mitgliedskonto", control.getMitgliedskonto());
+    grKontoauszug.addLabelPair("Sollbuchung", control.getMitgliedskonto());
     grKontoauszug.addLabelPair("Kommentar", control.getKommentar());
 
     SimpleContainer grBuchungsinfos = new SimpleContainer(cols1.getComposite());

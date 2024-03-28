@@ -17,44 +17,52 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.menu.Mitgliedskonto2Menu;
+import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class MitgliedskontoListeView extends AbstractView
+public class SollbuchungDetailView extends AbstractView
 {
+
+  private int typ;
+
+  public SollbuchungDetailView(int typ)
+  {
+    this.typ = typ;
+  }
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Mitgliedskonten");
+    GUI.getView().setTitle("Buchung");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
-    LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addInput(control.getSuchName());
-    group.addLabelPair("Von",
-        control.getVondatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO));
-    group.addLabelPair("Bis",
-        control.getBisdatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO));
-    group.addLabelPair("Differenz", control.getDifferenz());
-
-    control.getMitgliedskontoList(new MitgliedDetailAction(),
-        new Mitgliedskonto2Menu()).paint(this.getParent());
+    LabelGroup grBuchung = new LabelGroup(getParent(),
+        (typ == MitgliedskontoNode.SOLL ? "Soll" : "Ist") + "buchung");
+    grBuchung.addLabelPair("Datum", control.getDatum());
+    grBuchung.addLabelPair("Verwendungszweck 1", control.getZweck1());
+    grBuchung.addLabelPair("Zahlungsweg", control.getZahlungsweg());
+    control.getBetrag().setMandatory(true);
+    grBuchung.addLabelPair("Betrag", control.getBetrag());
+    grBuchung.addLabelPair("Buchungsart", control.getBuchungsart());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
-    buttons.addButton(new Button("Export",
-        new MitgliedskontoExportAction(EXPORT_TYP.MITGLIEDSKONTO, null),
-        control, false, "document-save.png"));
+    buttons.addButton("Speichern", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        control.handleStore();
+      }
+    }, null, true, "document-save.png");
     buttons.paint(this.getParent());
   }
 }

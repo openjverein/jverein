@@ -19,45 +19,19 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoDetailSollLoeschenAction implements Action
+public class MitgliedskontoSollbuchungEditAction implements Action
 {
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof MitgliedskontoNode))
-    {
-      throw new ApplicationException("Keine Sollbuchung ausgewählt");
-    }
-  	
-    YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle("Sollbuchung löschen");
-    d.setText("Wollen Sie die Sollbuchung wirklich löschen?");
-
-    try
-    {
-      Boolean choice = (Boolean) d.open();
-      if (!choice.booleanValue())
-      {
-        return;
-      }
-    }
-    catch (Exception e)
-    {
-      Logger.error("Fehler", e);
-      return;
-    }
     MitgliedskontoNode mkn = null;
     Mitgliedskonto mk = null;
 
@@ -68,17 +42,26 @@ public class MitgliedskontoDetailSollLoeschenAction implements Action
       {
         mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
             Mitgliedskonto.class, mkn.getID());
-        Mitglied mitglied = mk.getMitglied();
-        mk.delete();
-        GUI.getStatusBar().setSuccessText("Sollbuchung gelöscht.");
-        Application.getMessagingFactory().sendMessage(
-            new MitgliedskontoMessage(mitglied));
       }
       catch (RemoteException e)
       {
         throw new ApplicationException(
-            "Fehler bei der Erzeugung einer Mitgliedskonto-Buchung");
+            "Fehler beim Editieren einer Sollbuchung");
       }
     }
+    else
+    {
+      try
+      {
+        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
+            Mitgliedskonto.class, null);
+      }
+      catch (Exception e)
+      {
+        throw new ApplicationException(
+            "Fehler bei der Erzeugung einer neuen Sollbuchung", e);
+      }
+    }
+    GUI.startView(new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
   }
 }

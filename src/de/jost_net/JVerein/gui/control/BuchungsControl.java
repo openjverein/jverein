@@ -42,7 +42,7 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.action.BuchungMitgliedskontoZuordnungAutomatischAction;
+import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAutomatischAction;
 import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -50,7 +50,7 @@ import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
-import de.jost_net.JVerein.gui.input.MitgliedskontoauswahlInput;
+import de.jost_net.JVerein.gui.input.SollbuchungAuswahlInput;
 import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
@@ -431,7 +431,6 @@ public class BuchungsControl extends AbstractControl
       return suchtext;
     }
     suchtext = new TextInput(settings.getString("suchtext", ""), 35);
-    suchtext.addListener(new FilterListener());
     return suchtext;
   }
 
@@ -442,7 +441,6 @@ public class BuchungsControl extends AbstractControl
       return suchbetrag;
     }
     suchbetrag = new TextInput(settings.getString("suchbetrag", ""));
-    suchbetrag.addListener(new FilterListener());
     return suchbetrag;
   }
 
@@ -464,7 +462,7 @@ public class BuchungsControl extends AbstractControl
 
   public DialogInput getMitgliedskonto() throws RemoteException
   {
-    mitgliedskonto = new MitgliedskontoauswahlInput(getBuchung())
+    mitgliedskonto = new SollbuchungAuswahlInput(getBuchung())
         .getMitgliedskontoAuswahl();
     mitgliedskonto.addListener(new Listener()
     {
@@ -793,7 +791,6 @@ public class BuchungsControl extends AbstractControl
     this.vondatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.vondatum.setTitle("Anfangsdatum");
     this.vondatum.setText("Bitte Anfangsdatum wählen");
-    this.vondatum.addListener(new FilterListener());
     this.vondatum.setMandatory(true);
     return vondatum;
   }
@@ -817,7 +814,6 @@ public class BuchungsControl extends AbstractControl
     this.bisdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.bisdatum.setTitle("Anfangsdatum");
     this.bisdatum.setText("Bitte Anfangsdatum wählen");
-    this.bisdatum.addListener(new FilterListener());
     this.bisdatum.setMandatory(true);
     return bisdatum;
   }
@@ -832,7 +828,7 @@ public class BuchungsControl extends AbstractControl
       {
         starteAuswertung(true);
       }
-    }, null, true, "file-pdf.png"); // "true" defines this button as the default
+    }, null, false, "file-pdf.png");
     return b;
   }
 
@@ -846,7 +842,7 @@ public class BuchungsControl extends AbstractControl
       {
         starteCSVExport();
       }
-    }, null, true, "xsd.png"); // "true" defines this button as the default
+    }, null, false, "xsd.png");
     return b;
   }
 
@@ -860,13 +856,13 @@ public class BuchungsControl extends AbstractControl
       {
         starteAuswertung(false);
       }
-    }, null, true, "file-pdf.png"); // "true" defines this button as the default
+    }, null, false, "file-pdf.png");
     return b;
   }
 
   public Button getStarteBuchungMitgliedskontoZuordnungAutomatischButton()
   {
-    Button b = new Button("Zuordnung", new BuchungMitgliedskontoZuordnungAutomatischAction(getVondatum(), getBisdatum()), null, false,
+    Button b = new Button("Zuordnung", new BuchungSollbuchungZuordnungAutomatischAction(getVondatum(), getBisdatum()), null, false,
             "user-friends.png");
     return b;
   }
@@ -881,7 +877,7 @@ public class BuchungsControl extends AbstractControl
       {
         starteAuswertungBuchungsjournal();
       }
-    }, null, true, "file-pdf.png"); // "true" defines this button as the default
+    }, null, false, "file-pdf.png");
     return b;
   }
 
@@ -1087,13 +1083,13 @@ public class BuchungsControl extends AbstractControl
     Date dv = (Date) getVondatum().getValue();
     if (dv == null)
     {
-      throw new RemoteException("von-Datum fehlt!");
+      throw new RemoteException("Bitte Von Datum eingeben!");
     }
     settings.setAttribute("vondatum", new JVDateFormatTTMMJJJJ().format(dv));
     Date db = (Date) getBisdatum().getValue();
     if (db == null)
     {
-      throw new RemoteException("bis-Datum fehlt!");
+      throw new RemoteException("Bitte Bis Datum eingeben!");
     }
     settings.setAttribute("bisdatum", new JVDateFormatTTMMJJJJ().format(db));
     Konto k = null;
@@ -1638,6 +1634,19 @@ public class BuchungsControl extends AbstractControl
       }
     }
 
+  }
+  
+  public void refreshBuchungsList()
+  {
+    try
+    {
+      getBuchungsList();
+    }
+    catch (RemoteException e)
+    
+    {
+      GUI.getStatusBar().setErrorText(e.getMessage());
+    }
   }
 
   private void informKontoChangeListener() throws RemoteException

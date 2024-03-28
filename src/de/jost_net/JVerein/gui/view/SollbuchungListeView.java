@@ -16,11 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.rmi.RemoteException;
-
-import de.jost_net.JVerein.gui.action.BuchungsartAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.BuchungsartControl;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction;
+import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
+import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
+import de.jost_net.JVerein.gui.menu.Mitgliedskonto2Menu;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -29,47 +30,45 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsartListView extends AbstractView
+public class SollbuchungListeView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Buchungsarten");
+    GUI.getView().setTitle("Sollbuchungen");
 
-    final BuchungsartControl control = new BuchungsartControl(this);
-
+    final MitgliedskontoControl control = new MitgliedskontoControl(this);
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addLabelPair("Suche", control.getSuchtext());
-
-    ButtonArea buttons1 = new ButtonArea();
-    Button button = new Button("Suchen", new Action()
+    group.addInput(control.getSuchName());
+    group.addLabelPair("Von",
+        control.getVondatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO));
+    group.addLabelPair("Bis",
+        control.getBisdatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO));
+    group.addLabelPair("Differenz", control.getDifferenz());
+    
+    ButtonArea button = new ButtonArea();
+    Button suchen = new Button("Suchen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
-        try
-        {
-          control.getBuchungsartList();
-        }
-        catch (RemoteException e)
-        {
-          // TODO Auto-generated catch block
-          GUI.getStatusBar().setErrorText(e.getMessage());
-        }
+        control.refreshMitgliedskontoList();
       }
     }, null, true, "search.png");
-    buttons1.addButton(button);
-    group.addButtonArea(buttons1);
+    button.addButton(suchen);
+    group.addButtonArea(button);
 
-    LabelGroup group2 = new LabelGroup(getParent(), "Liste", true);
-    group2.addPart(control.getBuchungsartList());
+    control.getMitgliedskontoList(new MitgliedDetailAction(),
+        new Mitgliedskonto2Menu()).paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.BUCHUNGSART, false, "question-circle.png");
-    buttons.addButton(control.getPDFAusgabeButton());
-    buttons.addButton("Neu", new BuchungsartAction(), null, false, "document-new.png");
+        DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
+        "question-circle.png");
+    buttons.addButton(new Button("Export",
+        new MitgliedskontoExportAction(EXPORT_TYP.MITGLIEDSKONTO, null),
+        control, false, "document-save.png"));
     buttons.paint(this.getParent());
   }
 }
