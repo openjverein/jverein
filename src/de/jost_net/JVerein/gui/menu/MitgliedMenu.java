@@ -38,11 +38,15 @@ import de.jost_net.JVerein.gui.action.MitgliedZusatzbetraegeZuordnungAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
+import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.SimpleDialog;
@@ -101,6 +105,65 @@ public class MitgliedMenu extends ContextMenu
             m.setAdresstyp(1);
             m.setEingabedatum();
             GUI.startView(MitgliedDetailView.class.getName(), m);
+          }
+          catch (RemoteException e)
+          {
+            throw new ApplicationException(e);
+          }
+        }
+      }, "arrows-alt-h.png"));
+    }
+    else
+    {
+      addItem(new CheckedContextMenuItem("Zu Nicht-Mitglied umwandeln", new Action()
+      {
+
+        @Override
+        public void handleAction(Object context) throws ApplicationException
+        {
+          Mitglied m = (Mitglied) context;
+          try
+          {
+            SimpleDialog sd = new SimpleDialog(SimpleDialog.POSITION_CENTER);
+            sd.setText(
+                "Bitte den Mitgliedstyp nacherfassen.");
+            sd.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
+            sd.setSize(400, SWT.DEFAULT);
+            sd.setTitle("Daten nacherfassen");
+            try
+            {
+              sd.open();
+            }
+            catch (Exception e)
+            {
+              Logger.error("Fehler", e);
+            }
+            m.setAdresstyp(2);
+            m.setEingabedatum();
+            m.setBeitragsgruppe(null);
+            m.setExterneMitgliedsnummer(null);
+            m.setIndividuellerBeitrag(0.0d);
+            m.setEintritt("");
+            m.setAustritt("");
+            m.setKuendigung("");
+            DBService service = Einstellungen.getDBService();
+            // Sekundäre Beitragsgruppen löschen
+            DBIterator<SekundaereBeitragsgruppe> sit = service
+                .createList(SekundaereBeitragsgruppe.class);
+            sit.addFilter("mitglied = ? ", m.getID());
+            while (sit.hasNext())
+            {
+              sit.next().delete();
+            }
+            // Zukünftige Beitragsgruppen löschen
+            DBIterator<MitgliedNextBGruppe> mit = service
+                .createList(MitgliedNextBGruppe.class);
+            mit.addFilter(MitgliedNextBGruppe.COL_MITGLIED + " = ? ", m.getID());
+            while (mit.hasNext())
+            {
+              mit.next().delete();
+            }
+            GUI.startView(NichtMitgliedDetailView.class.getName(), m);
           }
           catch (RemoteException e)
           {
