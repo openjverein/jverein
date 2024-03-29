@@ -403,7 +403,7 @@ public class MitgliedskontoControl extends AbstractControl
       return spezialsuche1;
     }
     spezialsuche1 = new CheckboxInput(false);
-    spezialsuche1.setName("Erlaube Teilsting Vergleich");
+    spezialsuche1.setName("Erlaube Teilstring Vergleich");
     spezialsuche1.addListener(new Listener()
     {
 
@@ -431,7 +431,7 @@ public class MitgliedskontoControl extends AbstractControl
       return spezialsuche2;
     }
     spezialsuche2 = new CheckboxInput(false);
-    spezialsuche2.setName("Erlaube Teilsting Vergleich");
+    spezialsuche2.setName("Erlaube Teilstring Vergleich");
     spezialsuche2.addListener(new Listener()
     {
 
