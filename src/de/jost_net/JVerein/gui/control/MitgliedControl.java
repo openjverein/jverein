@@ -2793,7 +2793,8 @@ public class MitgliedControl extends AbstractControl
       settings.setAttribute("status.mitglied",
           (String) getMitgliedStatus().getValue());
     }
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer() &&
+        suchexternemitgliedsnummer != null)
     {
       String tmp = (String) getSuchExterneMitgliedsnummer().getValue();
       if (tmp != null)
