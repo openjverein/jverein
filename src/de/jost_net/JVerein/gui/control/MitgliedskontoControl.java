@@ -1006,10 +1006,7 @@ public class MitgliedskontoControl extends AbstractControl
       {
         try
         {
-          settings.setAttribute(datumverwendung + "datumvon",
-              new JVDateFormatTTMMJJJJ().format(von.getValue()));
-          settings.setAttribute(datumverwendung + "datumbis",
-              new JVDateFormatTTMMJJJJ().format(bis.getValue()));
+          saveDefaults();
           new Kontoauszug(currentObject, (Date) von.getValue(), (Date) bis.getValue());
         }
         catch (Exception e)
