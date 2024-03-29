@@ -554,27 +554,9 @@ public class MitgliedskontoControl extends AbstractControl
     txt.setName("Text");
     return txt;
   }
-
-  private void refresh()
-  { 
-	  saveDefaults();
-  }
   
   public void saveDefaults()
   {	  
-    if (this.suchname != null)
-    {
-      String tmp = (String) getSuchName().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("sollbuchung.suchname", tmp);
-      }
-      else
-      {
-        settings.setAttribute("sollbuchung.suchname", "");
-      }
-    }
-    
     if (this.vondatum != null)
     {
       Date tmp = (Date) getVondatum("kontoauszugdatumvon").getValue();
@@ -695,7 +677,7 @@ public class MitgliedskontoControl extends AbstractControl
     this.action = action;
     @SuppressWarnings("rawtypes")
     GenericIterator mitgliedskonten = getMitgliedskontoIterator();
-    settings.setAttribute("differenz", getDifferenz().getValue().toString());
+    settings.setAttribute(datumverwendung + "differenz", getDifferenz().getValue().toString());
     if (mitgliedskontoList == null)
     {
       mitgliedskontoList = new TablePart(mitgliedskonten, action);
@@ -807,6 +789,7 @@ public class MitgliedskontoControl extends AbstractControl
   {
     @SuppressWarnings("rawtypes")
     GenericIterator mitgliedskonten = getMitgliedskontoIterator();
+    settings.setAttribute(datumverwendung + "differenz", getDifferenz().getValue().toString());
     mitgliedskontoList.removeAll();
     while (mitgliedskonten.hasNext())
     {
@@ -1023,6 +1006,10 @@ public class MitgliedskontoControl extends AbstractControl
       {
         try
         {
+          settings.setAttribute(datumverwendung + "datumvon",
+              new JVDateFormatTTMMJJJJ().format(von.getValue()));
+          settings.setAttribute(datumverwendung + "datumbis",
+              new JVDateFormatTTMMJJJJ().format(bis.getValue()));
           new Kontoauszug(currentObject, (Date) von.getValue(), (Date) bis.getValue());
         }
         catch (Exception e)
@@ -1104,7 +1091,6 @@ public class MitgliedskontoControl extends AbstractControl
           Logger.error("Fehler", e);
         }
       }
-      refresh();
     }
   }
   
@@ -1113,13 +1099,13 @@ public class MitgliedskontoControl extends AbstractControl
   {
     try
     {
+      settings.setAttribute("sollbuchung.suchname", getSuchName().getValue().toString());
       getMitgliedskontoList(action, null);
     }
     catch (RemoteException e)
     {
       Logger.error("Fehler", e);
     }
-    refresh();
   }
   
   // Für SollbuchungAuswahlDialog
@@ -1133,7 +1119,6 @@ public class MitgliedskontoControl extends AbstractControl
     {
       Logger.error("Fehler", e);
     }
-    settings.setAttribute("differenz", getDifferenz().getValue().toString());
   }
   
   // Für SollbuchungAuswahlDialog

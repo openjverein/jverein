@@ -40,7 +40,7 @@ public class Rechnungsausgabe extends AbstractMitgliedskontoDokument
         .getValue();
     if (form == null)
     {
-      throw new IOException("kein Rechnungsformular ausgewählt");
+      throw new IOException("Kein Rechnungsformular ausgewählt");
     }
     Formular formular = (Formular) Einstellungen.getDBService()
         .createObject(Formular.class, form.getID());

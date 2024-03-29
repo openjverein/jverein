@@ -37,7 +37,7 @@ public class Mahnungsausgabe extends AbstractMitgliedskontoDokument
         .getValue();
     if (form == null)
     {
-      throw new IOException("kein Mahnungsformular ausgewählt");
+      throw new IOException("Kein Mahnungsformular ausgewählt");
     }
     Formular formular = (Formular) Einstellungen.getDBService().createObject(
         Formular.class, form.getID());
