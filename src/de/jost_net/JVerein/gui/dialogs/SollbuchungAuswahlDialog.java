@@ -36,7 +36,6 @@ import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
-import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -108,9 +107,8 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     TabGroup tabNurIst = new TabGroup(folder, "Istbuchung einer Sollbuchung zuordnen", false, 1);
     LabelGroup grNurIst = new LabelGroup(tabNurIst.getComposite(), "Filter");
 
-    TextInput suNa = control.getSuchName();
-    suNa.setValue(buchung.getName());
-    grNurIst.addLabelPair("Name", suNa);
+    control.getSuchName1(true).setValue(buchung.getName());
+    grNurIst.addLabelPair("Name", control.getSuchName1(false));
     grNurIst.addLabelPair("Differenz",
         control.getDifferenz(DIFFERENZ.FEHLBETRAG));
     grNurIst.addInput(control.getSpezialSuche1());

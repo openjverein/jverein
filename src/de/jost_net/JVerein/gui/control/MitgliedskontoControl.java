@@ -163,6 +163,8 @@ public class MitgliedskontoControl extends AbstractControl
 
   private TextInput suchname = null;
 
+  private TextInput suchname1 = null;
+
   private TextInput suchname2 = null;
 
   private SelectInput differenz = null;
@@ -469,17 +471,31 @@ public class MitgliedskontoControl extends AbstractControl
     return differenz;
   }
 
+  // Für SollbuchungListeView
   public TextInput getSuchName()
   {
     if (suchname != null && !suchname.getControl().isDisposed())
     {
       return suchname;
     }
-    suchname = new TextInput("", 30);
+    suchname = new TextInput(settings.getString("sollbuchung.suchname",""), 30);
     suchname.setName("Name");
     return suchname;
   }
 
+  // Für SollbuchungAuswahlDialog
+  public TextInput getSuchName1(boolean newcontrol)
+  {
+    if (!newcontrol && suchname1 != null)
+    {
+      return suchname1;
+    }
+    suchname1 = new TextInput("", 30);
+    suchname1.setName("Name");
+    return suchname1;
+  }
+  
+  //Für SollbuchungAuswahlDialog
   public TextInput getSuchName2(boolean newcontrol)
   {
     if (!newcontrol && suchname2 != null)
@@ -546,33 +562,46 @@ public class MitgliedskontoControl extends AbstractControl
   
   public void saveDefaults()
   {	  
-	  if (this.vondatum != null)
-	    {
-	      Date tmp = (Date) getVondatum("kontoauszugdatumvon").getValue();
-	      if (tmp != null)
-	      {
-	        settings.setAttribute("kontoauszugdatumvon",
-	            new JVDateFormatTTMMJJJJ().format(tmp));
-	      }
-	      else
-	      {
-	        settings.setAttribute("kontoauszugdatumvon", "");
-	      }
-	    }
+    if (this.suchname != null)
+    {
+      String tmp = (String) getSuchName().getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute("sollbuchung.suchname", tmp);
+      }
+      else
+      {
+        settings.setAttribute("sollbuchung.suchname", "");
+      }
+    }
+    
+    if (this.vondatum != null)
+    {
+      Date tmp = (Date) getVondatum("kontoauszugdatumvon").getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute("kontoauszugdatumvon",
+            new JVDateFormatTTMMJJJJ().format(tmp));
+      }
+      else
+      {
+        settings.setAttribute("kontoauszugdatumvon", "");
+      }
+    }
 
-	    if (this.bisdatum != null)
-	    {
-	      Date tmp = (Date) getBisdatum("kontoauszugdatumbis").getValue();
-	      if (tmp != null)
-	      {
-	        settings.setAttribute("kontoauszugdatumbis",
-	            new JVDateFormatTTMMJJJJ().format(tmp));
-	      }
-	      else
-	      {
-	        settings.setAttribute("kontoauszugbatumbis", "");
-	      }
-	    }	  
+    if (this.bisdatum != null)
+    {
+      Date tmp = (Date) getBisdatum("kontoauszugdatumbis").getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute("kontoauszugdatumbis",
+            new JVDateFormatTTMMJJJJ().format(tmp));
+      }
+      else
+      {
+        settings.setAttribute("kontoauszugbatumbis", "");
+      }
+    }	  
   }
   
   public void handleStore()

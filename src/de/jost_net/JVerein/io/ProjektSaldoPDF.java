@@ -42,7 +42,7 @@ public class ProjektSaldoPDF
       FileOutputStream fos = new FileOutputStream(file);
       String subtitle = new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
           + new JVDateFormatTTMMJJJJ().format(datumbis);
-      Reporter reporter = new Reporter(fos, "Projekte-Saldo", subtitle,
+      Reporter reporter = new Reporter(fos, "Projekt-Saldo", subtitle,
           zeile.size());
       makeHeader(reporter);
 
