@@ -2800,6 +2800,10 @@ public class MitgliedControl extends AbstractControl
       {
         settings.setAttribute(mitgliedtyp + ".suchExterneMitgliedsNummer",tmp);
       }
+      else
+      {
+        settings.setAttribute(mitgliedtyp + ".suchExterneMitgliedsNummer","");
+      }
     }
     if (geburtsdatumvon != null)
     {
