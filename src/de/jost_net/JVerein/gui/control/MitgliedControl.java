@@ -474,6 +474,11 @@ public class MitgliedControl extends AbstractControl
     });
     return suchadresstyp;
   }
+  
+  public boolean isSuchAdresstypActive()
+  {
+    return suchadresstyp != null;
+  }
 
   public SelectInput getAdresstyp() throws RemoteException
   {
@@ -707,6 +712,11 @@ public class MitgliedControl extends AbstractControl
     geschlecht.setMandatory(true);
     geschlecht.setName("Geschlecht");
     return geschlecht;
+  }
+  
+  public boolean isGeschlechtAktiv()
+  {
+    return geschlecht != null;
   }
 
   public SelectInput getZahlungsweg() throws RemoteException
@@ -1389,6 +1399,11 @@ public class MitgliedControl extends AbstractControl
     beitragsgruppeausw.setName("Beitragsgruppe");
     return beitragsgruppeausw;
   }
+  
+  public boolean isBeitragsgruppeAuswAktiv()
+  {
+    return beitragsgruppeausw != null;
+  }
 
   /**
    * Liefert ein Part zurück, das den Familienverband anzeigt. Da Container
@@ -2000,6 +2015,11 @@ public class MitgliedControl extends AbstractControl
     geburtsdatumvon.setName("Geburtsdatum von");
     return geburtsdatumvon;
   }
+  
+  public boolean isGeburtsdatumvonAktiv()
+  {
+    return geburtsdatumvon != null;
+  }
 
   public DateInput getGeburtsdatumbis()
   {
@@ -2038,6 +2058,11 @@ public class MitgliedControl extends AbstractControl
     });
     geburtsdatumbis.setName("Geburtsdatum bis");
     return geburtsdatumbis;
+  }
+  
+  public boolean isGeburtsdatumbisAktiv()
+  {
+    return geburtsdatumbis != null;
   }
 
   public DateInput getSterbedatumvon()
@@ -2078,6 +2103,11 @@ public class MitgliedControl extends AbstractControl
     sterbedatumvon.setName("Sterbedatum von");
     return sterbedatumvon;
   }
+  
+  public boolean isSterbedatumvonAktiv()
+  {
+    return sterbedatumvon != null;
+  }
 
   public DateInput getSterbedatumbis()
   {
@@ -2116,6 +2146,11 @@ public class MitgliedControl extends AbstractControl
     });
     sterbedatumbis.setName("Sterbedatum bis");
     return sterbedatumbis;
+  }
+  
+  public boolean isSterbedatumbisAktiv()
+  {
+    return sterbedatumbis != null;
   }
 
   public DateInput getEintrittvon()
@@ -2157,9 +2192,9 @@ public class MitgliedControl extends AbstractControl
     return eintrittvon;
   }
 
-  public boolean isEintrittbisAktiv()
+  public boolean isEintrittvonAktiv()
   {
-    return eintrittbis != null;
+    return eintrittvon != null;
   }
 
   public DateInput getEintrittbis()
@@ -2201,6 +2236,11 @@ public class MitgliedControl extends AbstractControl
     return eintrittbis;
   }
 
+  public boolean isEintrittbisAktiv()
+  {
+    return eintrittbis != null;
+  }
+
   public DateInput getAustrittvon()
   {
     if (austrittvon != null)
@@ -2240,9 +2280,9 @@ public class MitgliedControl extends AbstractControl
     return austrittvon;
   }
 
-  public boolean isAustrittbisAktiv()
+  public boolean isAustrittvonAktiv()
   {
-    return austrittbis != null;
+    return austrittvon != null;
   }
 
   public DateInput getAustrittbis()
@@ -2283,6 +2323,11 @@ public class MitgliedControl extends AbstractControl
     austrittbis.setName("Austritt bis");
     return austrittbis;
   }
+  
+  public boolean isAustrittbisAktiv()
+  {
+    return austrittbis != null;
+  }
 
   public TextInput getSuchname()
   {
@@ -2295,6 +2340,11 @@ public class MitgliedControl extends AbstractControl
           50);
     suchname.setName("Name");
     return suchname;
+  }
+  
+  public boolean isSuchnameAktiv()
+  {
+    return suchname != null;
   }
 
   public DateInput getStichtag()
@@ -2334,6 +2384,11 @@ public class MitgliedControl extends AbstractControl
     });
     stichtag.setName("Stichtag");
     return stichtag;
+  }
+  
+  public boolean isStichtagAktiv()
+  {
+    return stichtag != null;
   }
 
   public DateInput getStichtag(boolean jahresende)
@@ -2429,6 +2484,11 @@ public class MitgliedControl extends AbstractControl
     });
     return eigenschaftenabfrage;
   }
+  
+  public boolean isEigenschaftenAuswahlAktiv()
+  {
+    return eigenschaftenabfrage != null;
+  }
 
   public void resetEigenschaftenAuswahl()
   {
@@ -2451,6 +2511,11 @@ public class MitgliedControl extends AbstractControl
     setZusatzfelderAuswahl();
     zusatzfelderabfrage.setName("Zusatzfelder");
     return zusatzfelderabfrage;
+  }
+  
+  public boolean isZusatzfelderAuswahlAktiv()
+  {
+    return zusatzfelderabfrage != null;
   }
 
   public void resetZusatzfelderAuswahl()
@@ -2537,19 +2602,19 @@ public class MitgliedControl extends AbstractControl
     return sortierung;
   }
 
-  public boolean isMitgliedStatusAktiv()
-  {
-    return status != null;
-  }
-
   public TextInput getSuchExterneMitgliedsnummer()
   {
     if (suchexternemitgliedsnummer != null)
     {
       return suchexternemitgliedsnummer;
     }
-    suchexternemitgliedsnummer = new TextInput("", 50);
+    suchexternemitgliedsnummer = new TextInput(settings.getString(mitgliedtyp + ".suchExterneMitgliedsNummer",""), 50);
     return suchexternemitgliedsnummer;
+  }
+  
+  public boolean isSuchExterneMitgliedsnummerActive()
+  {
+    return suchexternemitgliedsnummer != null;
   }
 
   public Input getMitgliedStatus()
@@ -2565,6 +2630,11 @@ public class MitgliedControl extends AbstractControl
     return status;
   }
 
+  public boolean isMitgliedStatusAktiv()
+  {
+    return status != null;
+  }
+
   public SelectInput getMailauswahl() throws RemoteException
   {
     if (mailAuswahl != null)
@@ -2574,6 +2644,11 @@ public class MitgliedControl extends AbstractControl
     mailAuswahl = new MailAuswertungInput(1);
     mailAuswahl.setName("Mail");
     return mailAuswahl;
+  }
+  
+  public boolean isMailauswahlAktiv()
+  {
+    return mailAuswahl != null;
   }
 
   public Button getStartAuswertungButton()
@@ -2772,11 +2847,14 @@ public class MitgliedControl extends AbstractControl
     }
     lastrefresh = System.currentTimeMillis();
     saveDefaults();
-    part.removeAll();
-    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this, false).get(atyp);
-    for (Mitglied m : mitglieder)
+    if (part != null)
     {
-      part.addItem(m);
+      part.removeAll();
+      ArrayList<Mitglied> mitglieder = new MitgliedQuery(this, false).get(atyp);
+      for (Mitglied m : mitglieder)
+      {
+        part.addItem(m);
+      }
     }
     return part;
   }
@@ -2793,7 +2871,19 @@ public class MitgliedControl extends AbstractControl
       settings.setAttribute("status.mitglied",
           (String) getMitgliedStatus().getValue());
     }
-
+    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer() &&
+        suchexternemitgliedsnummer != null)
+    {
+      String tmp = (String) getSuchExterneMitgliedsnummer().getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute(mitgliedtyp + ".suchExterneMitgliedsNummer",tmp);
+      }
+      else
+      {
+        settings.setAttribute(mitgliedtyp + ".suchExterneMitgliedsNummer","");
+      }
+    }
     if (geburtsdatumvon != null)
     {
       Date tmp = (Date) getGeburtsdatumvon().getValue();

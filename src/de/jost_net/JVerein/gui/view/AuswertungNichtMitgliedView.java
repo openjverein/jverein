@@ -16,9 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -26,15 +29,19 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class AuswertungAdresseView extends AbstractView
+public class AuswertungNichtMitgliedView extends AbstractView
 {
+  final MitgliedControl control = new MitgliedControl(this);
+  
+  public AuswertungNichtMitgliedView() throws RemoteException
+  {
+    control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
+  }
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Auswertung Nicht-Mitgliederdaten");
-
-    final MitgliedControl control = new MitgliedControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
 
