@@ -41,8 +41,8 @@ public class MitgliedskontoIstbuchungLoesenAction implements Action
     }
   	
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle("Istbuchung vom Mitgliedskonto lösen");
-    d.setText("Wollen Sie die Istbuchung wirklich vom Mitgliedskonto lösen?");
+    d.setTitle("Istbuchung von Sollbuchung lösen");
+    d.setText("Wollen Sie die Istbuchung wirklich von der Sollbuchung lösen?");
 
     try
     {
@@ -71,14 +71,14 @@ public class MitgliedskontoIstbuchungLoesenAction implements Action
         bu.store();
         GUI.getStatusBar().setSuccessText(
 
-        "Istbuchung vom Mitgliedskonto gelöst.");
+        "Istbuchung von Sollbuchung gelöst.");
         Application.getMessagingFactory().sendMessage(
             new MitgliedskontoMessage(mkn.getMitglied()));
       }
       catch (RemoteException e)
       {
         throw new ApplicationException(
-            "Fehler beim lösen der Istbuchung vom Mitgliedskonto");
+            "Fehler beim lösen der Istbuchung von der Sollbuchung");
       }
     }
   }
