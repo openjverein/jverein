@@ -157,8 +157,8 @@ public class MitgliedAuswertungPDF implements IAuswertung
       params.put("Stichtag", new JVDateFormatTTMMJJJJ().format(d));
     }
 
-    for (int i = 0; i < control.getSettings().getInt(zusatzfelder + "selected",
-        0); i++)
+    for (int i = 1; i < control.getSettings().getInt(zusatzfelder + "counter",
+        0) + 1; i++)
     {
       if (!control.getSettings().getString(zusatzfeld + i + ".value", "")
           .equals(""))
