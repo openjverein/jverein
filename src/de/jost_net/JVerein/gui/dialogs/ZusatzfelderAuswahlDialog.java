@@ -369,7 +369,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
           {
           case Datentyp.ZEICHENFOLGE:
           {
-            settings.getString(zusatzfeld + counter + ".value", "");
+            settings.setAttribute(zusatzfeld + counter + ".value", "");
             break;
           }
           case Datentyp.DATUM:
@@ -389,7 +389,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
           }
           case Datentyp.WAEHRUNG:
           {
-            settings.getString(zusatzfeld + counter + ".value", "");
+            settings.setAttribute(zusatzfeld + counter + ".value", "");
             break;
           }
           }
