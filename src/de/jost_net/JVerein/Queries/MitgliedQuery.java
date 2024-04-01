@@ -430,11 +430,12 @@ public class MitgliedQuery
       {
         sql += " ORDER BY month(geburtsdatum), day(geburtsdatum)";
       }
-      else
-      {
-        sql += " ORDER BY name, vorname";
-      }
     }
+    else
+    {
+      sql += " ORDER BY name, vorname";
+    }
+    
     Logger.debug(sql);
 
     ResultSetExtractor rs = new ResultSetExtractor()
