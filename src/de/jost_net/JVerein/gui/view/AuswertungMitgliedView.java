@@ -53,6 +53,11 @@ public class AuswertungMitgliedView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     Input mitglstat = control.getMitgliedStatus();
     left.addInput(mitglstat);
+    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    {
+      left.addLabelPair("Externe Mitgliedsnummer",
+          control.getSuchExterneMitgliedsnummer());
+    }
     left.addInput(control.getEigenschaftenAuswahl());
     left.addInput(control.getBeitragsgruppeAusw());
 
@@ -66,10 +71,10 @@ public class AuswertungMitgliedView extends AbstractView
     middle.addInput(control.getMailauswahl());
     middle.addInput(control.getGeburtsdatumvon());
     middle.addInput(control.getGeburtsdatumbis());
-
     SelectInput inpGeschlecht = control.getGeschlecht();
     inpGeschlecht.setMandatory(false);
     middle.addInput(inpGeschlecht);
+    middle.addInput(control.getStichtag(false));
 
     // right
     SimpleContainer right = new SimpleContainer(cl.getComposite());
@@ -78,7 +83,6 @@ public class AuswertungMitgliedView extends AbstractView
 
     right.addInput(control.getAustrittvon());
     right.addInput(control.getAustrittbis());
-    right.addInput(control.getStichtag(false));
 
     if (Einstellungen.getEinstellung().getSterbedatum())
     {

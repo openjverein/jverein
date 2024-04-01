@@ -2194,7 +2194,7 @@ public class MitgliedControl extends AbstractControl
         }
       }
     });
-    eintrittvon.setName("Eintritt von");
+    eintrittvon.setName("Eintrittsdatum von");
     return eintrittvon;
   }
 
@@ -2238,7 +2238,7 @@ public class MitgliedControl extends AbstractControl
         }
       }
     });
-    eintrittbis.setName("Eintritt bis");
+    eintrittbis.setName("Eintrittsdatum bis");
     return eintrittbis;
   }
 
@@ -2282,7 +2282,7 @@ public class MitgliedControl extends AbstractControl
         }
       }
     });
-    austrittvon.setName("Austritt von");
+    austrittvon.setName("Austrittsdatum von");
     return austrittvon;
   }
 
@@ -2326,7 +2326,7 @@ public class MitgliedControl extends AbstractControl
         }
       }
     });
-    austrittbis.setName("Austritt bis");
+    austrittbis.setName("Austrittsdatum bis");
     return austrittbis;
   }
   
@@ -2529,6 +2529,7 @@ public class MitgliedControl extends AbstractControl
     settings.setAttribute(mitgliedtyp + ".eigenschaften", "");
     settings.setAttribute(zusatzfelderstring + "selected", 0);
     setZusatzfelderAuswahl();
+    zad.reset();
   }
 
   public Input getAusgabe() throws RemoteException
@@ -2606,6 +2607,11 @@ public class MitgliedControl extends AbstractControl
     sortierung = new SelectInput(sort, "Name, Vorname");
     sortierung.setName("Sortierung");
     return sortierung;
+  }
+  
+  public boolean isSortierungAktiv()
+  {
+    return sortierung != null;
   }
 
   public TextInput getSuchExterneMitgliedsnummer()
@@ -3067,7 +3073,7 @@ public class MitgliedControl extends AbstractControl
       }
       else
       {
-        settings.setAttribute(mitgliedtyp + "stichtag", "");
+        settings.setAttribute(mitgliedtyp + ".stichtag", "");
       }
     }
 
@@ -3566,7 +3572,7 @@ public class MitgliedControl extends AbstractControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("auswertung", dateinamensort,
+      fd.setFileName(new Dateiname("auswertungmitglied", dateinamensort,
           Einstellungen.getEinstellung().getDateinamenmuster(),
           ausw.getDateiendung()).get());
       fd.setFilterExtensions(new String[] { "*." + ausw.getDateiendung() });
@@ -3643,6 +3649,25 @@ public class MitgliedControl extends AbstractControl
     list = new MitgliedQuery(this, true).get(Integer.parseInt(atyp.getID()));
     try
     {
+      String sort = (String) sortierung.getValue();
+      String dateinamensort = "";
+      if (sort.equals("Name, Vorname"))
+      {
+        dateinamensort = "name";
+      }
+      else if (sort.equals("Eintrittsdatum"))
+      {
+        dateinamensort = "eintrittsdatum";
+      }
+      else if (sort.equals("Geburtsdatum"))
+      {
+        dateinamensort = "geburtsdatum";
+      }
+      else if (sort.equals("Geburtstagsliste"))
+      {
+        dateinamensort = "geburtstagsliste";
+      }
+      
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
 
@@ -3652,7 +3677,7 @@ public class MitgliedControl extends AbstractControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("auswertungnichtmitglied", "",
+      fd.setFileName(new Dateiname("auswertungnichtmitglied", dateinamensort,
           Einstellungen.getEinstellung().getDateinamenmuster(),
           ausw.getDateiendung()).get());
       fd.setFilterExtensions(new String[] { "*." + ausw.getDateiendung() });
@@ -3861,7 +3886,7 @@ public class MitgliedControl extends AbstractControl
       try
       {
         Adresstyp at = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
-        if (at != null)
+        if (at != null && at.getID() != null)
         {
           refreshMitgliedTable(Integer.parseInt(at.getID()));
         }

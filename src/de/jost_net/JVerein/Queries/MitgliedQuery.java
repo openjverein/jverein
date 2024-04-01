@@ -78,10 +78,13 @@ public class MitgliedQuery
     ArrayList<Object> bedingungen = new ArrayList<>();
 
     sql = "select distinct mitglied.*, ucase(name), ucase(vorname) ";
-    String sort = (String) control.getSortierung().getValue();
-    if (sort.equals("Geburtstagsliste"))
+    if (control.isSortierungAktiv())
     {
-      sql += ", month(geburtsdatum), day(geburtsdatum) ";
+      String sort = (String) control.getSortierung().getValue();
+      if (sort.equals("Geburtstagsliste"))
+      {
+        sql += ", month(geburtsdatum), day(geburtsdatum) ";
+      }
     }
     sql += "from mitglied ";
     Settings settings = control.getSettings();
@@ -408,25 +411,29 @@ public class MitgliedQuery
         bedingungen.add(Integer.valueOf(bg.getID()));
       }
     }
-    if (sort.equals("Name, Vorname"))
+    if (control.isSortierungAktiv())
     {
-      sql += " ORDER BY ucase(name), ucase(vorname)";
-    }
-    else if (sort.equals("Eintrittsdatum"))
-    {
-      sql += " ORDER BY eintritt";
-    }
-    else if (sort.equals("Geburtsdatum"))
-    {
-      sql += " ORDER BY geburtsdatum";
-    }
-    else if (sort.equals("Geburtstagsliste"))
-    {
-      sql += " ORDER BY month(geburtsdatum), day(geburtsdatum)";
-    }
-    else
-    {
-      sql += " ORDER BY name, vorname";
+      String sort = (String) control.getSortierung().getValue();
+      if (sort.equals("Name, Vorname"))
+      {
+        sql += " ORDER BY ucase(name), ucase(vorname)";
+      }
+      else if (sort.equals("Eintrittsdatum"))
+      {
+        sql += " ORDER BY eintritt";
+      }
+      else if (sort.equals("Geburtsdatum"))
+      {
+        sql += " ORDER BY geburtsdatum";
+      }
+      else if (sort.equals("Geburtstagsliste"))
+      {
+        sql += " ORDER BY month(geburtsdatum), day(geburtsdatum)";
+      }
+      else
+      {
+        sql += " ORDER BY name, vorname";
+      }
     }
     Logger.debug(sql);
 

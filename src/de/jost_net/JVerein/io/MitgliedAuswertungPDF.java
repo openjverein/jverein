@@ -86,11 +86,19 @@ public class MitgliedAuswertungPDF implements IAuswertung
     if (control.isMitgliedStatusAktiv())
     {
       params.put("Status", (String) control.getMitgliedStatus().getValue());
+    }
+    if (control.isEigenschaftenAuswahlAktiv())
+    {
       String eig = control.getEigenschaftenAuswahl().getText();
       if (eig.length() > 0)
       {
         params.put("Eigenschaften", eig);
       }
+    }
+    if (control.isSuchExterneMitgliedsnummerActive() && control.getSuchExterneMitgliedsnummer() != null)
+    {
+      String val = control.getSuchExterneMitgliedsnummer().getValue().toString();
+      params.put("Externe Mitgliedsnummer ", val);
     }
     if (control.isGeburtsdatumvonAktiv() && control.getGeburtsdatumvon().getValue() != null)
     {
@@ -156,16 +164,17 @@ public class MitgliedAuswertungPDF implements IAuswertung
       Date d = (Date) control.getStichtag(false).getValue();
       params.put("Stichtag", new JVDateFormatTTMMJJJJ().format(d));
     }
-
-    for (int i = 1; i < control.getSettings().getInt(zusatzfelder + "counter",
-        0) + 1; i++)
+    if (control.isZusatzfelderAuswahlAktiv())
     {
-      if (!control.getSettings().getString(zusatzfeld + i + ".value", "")
-          .equals(""))
+      int counter = control.getSettings().getInt(zusatzfelder + "counter", 0);
+      for (int i = 1; i <= counter; i++)
       {
-        params.put(
-            control.getSettings().getString(zusatzfeld + i + ".name", ""),
-            control.getSettings().getString(zusatzfeld + i + ".value", ""));
+        String value = control.getSettings().getString(zusatzfeld + i + ".value", "");
+        if (!value.equals("") && !value.equals("false"))
+        {
+          params.put(
+            control.getSettings().getString(zusatzfeld + i + ".name", ""), value);
+        }
       }
     }
     String ueberschrift = (String) control.getAuswertungUeberschrift()
