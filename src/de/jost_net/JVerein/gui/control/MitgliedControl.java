@@ -494,6 +494,11 @@ public class MitgliedControl extends AbstractControl
     adresstyp.setName("Mitgliedstyp");
     return adresstyp;
   }
+  
+  public boolean isAdresstypActive()
+  {
+    return adresstyp != null;
+  }
 
   public TextInput getExterneMitgliedsnummer() throws RemoteException
   {
@@ -706,7 +711,8 @@ public class MitgliedControl extends AbstractControl
     {
       return geschlecht;
     }
-    geschlecht = new GeschlechtInput(getMitglied().getGeschlecht());
+    geschlecht = new GeschlechtInput(
+        settings.getString(mitgliedtyp + ".geschlecht", ""));
     geschlecht.setName("Geschlecht");
     geschlecht.setPleaseChoose("Bitte auswählen");
     geschlecht.setMandatory(true);
@@ -1375,7 +1381,7 @@ public class MitgliedControl extends AbstractControl
       return beitragsgruppeausw;
     }
     Beitragsgruppe bg = null;
-    String beitragsgru = settings.getString("mitglied.beitragsgruppe", "");
+    String beitragsgru = settings.getString(mitgliedtyp + ".beitragsgruppe", "");
     if (beitragsgru.length() > 0)
     {
       try
@@ -2072,7 +2078,7 @@ public class MitgliedControl extends AbstractControl
       return sterbedatumvon;
     }
     Date d = null;
-    String tmp = settings.getString("mitglied.sterbedatumvon", null);
+    String tmp = settings.getString(mitgliedtyp + ".sterbedatumvon", null);
     if (tmp != null)
     {
       try
@@ -2116,7 +2122,7 @@ public class MitgliedControl extends AbstractControl
       return sterbedatumbis;
     }
     Date d = null;
-    String tmp = settings.getString("mitglied.sterbedatumbis", null);
+    String tmp = settings.getString(mitgliedtyp + ".sterbedatumbis", null);
     if (tmp != null)
     {
       try
@@ -2160,7 +2166,7 @@ public class MitgliedControl extends AbstractControl
       return eintrittvon;
     }
     Date d = null;
-    String tmp = settings.getString("mitglied.eintrittvon", null);
+    String tmp = settings.getString(mitgliedtyp + ".eintrittvon", null);
     if (tmp != null)
     {
       try
@@ -2204,7 +2210,7 @@ public class MitgliedControl extends AbstractControl
       return eintrittbis;
     }
     Date d = null;
-    String tmp = settings.getString("mitglied.eintrittbis", null);
+    String tmp = settings.getString(mitgliedtyp + ".eintrittbis", null);
     if (tmp != null)
     {
       try
@@ -2248,7 +2254,7 @@ public class MitgliedControl extends AbstractControl
       return austrittvon;
     }
     Date d = null;
-    String tmp = settings.getString("mitglied.austrittvon", null);
+    String tmp = settings.getString(mitgliedtyp + ".austrittvon", null);
     if (tmp != null)
     {
       try
@@ -2292,7 +2298,7 @@ public class MitgliedControl extends AbstractControl
       return austrittbis;
     }
     Date d = null;
-    String tmp = settings.getString("mitglied.austrittbis", null);
+    String tmp = settings.getString(mitgliedtyp + ".austrittbis", null);
     if (tmp != null)
     {
       try
@@ -2354,7 +2360,7 @@ public class MitgliedControl extends AbstractControl
       return stichtag;
     }
     Date d = null;
-    String tmp = settings.getString("mitglied.stichtag", null);
+    String tmp = settings.getString(mitgliedtyp + ".stichtag", null);
     if (tmp != null)
     {
       try
@@ -2973,12 +2979,12 @@ public class MitgliedControl extends AbstractControl
       Date tmp = (Date) getSterbedatumvon().getValue();
       if (tmp != null)
       {
-        settings.setAttribute("mitglied.sterbedatumvon",
+        settings.setAttribute(mitgliedtyp + ".sterbedatumvon",
             new JVDateFormatTTMMJJJJ().format(tmp));
       }
       else
       {
-        settings.setAttribute("mitglied.sterbedatumvon", "");
+        settings.setAttribute(mitgliedtyp + ".sterbedatumvon", "");
       }
     }
 
@@ -2987,12 +2993,12 @@ public class MitgliedControl extends AbstractControl
       Date tmp = (Date) getSterbedatumbis().getValue();
       if (tmp != null)
       {
-        settings.setAttribute("mitglied.sterbedatumbis",
+        settings.setAttribute(mitgliedtyp + ".sterbedatumbis",
             new JVDateFormatTTMMJJJJ().format(tmp));
       }
       else
       {
-        settings.setAttribute("mitglied.sterbedatumbis", "");
+        settings.setAttribute(mitgliedtyp + ".sterbedatumbis", "");
       }
     }
 
@@ -3001,12 +3007,12 @@ public class MitgliedControl extends AbstractControl
       Date tmp = (Date) getEintrittvon().getValue();
       if (tmp != null)
       {
-        settings.setAttribute("mitglied.eintrittvon",
+        settings.setAttribute(mitgliedtyp + ".eintrittvon",
             new JVDateFormatTTMMJJJJ().format(tmp));
       }
       else
       {
-        settings.setAttribute("mitglied.eintrittvon", "");
+        settings.setAttribute(mitgliedtyp + ".eintrittvon", "");
       }
     }
 
@@ -3015,12 +3021,12 @@ public class MitgliedControl extends AbstractControl
       Date tmp = (Date) getEintrittbis().getValue();
       if (tmp != null)
       {
-        settings.setAttribute("mitglied.eintrittbis",
+        settings.setAttribute(mitgliedtyp + ".eintrittbis",
             new JVDateFormatTTMMJJJJ().format(tmp));
       }
       else
       {
-        settings.setAttribute("mitglied.eintrittbis", "");
+        settings.setAttribute(mitgliedtyp + ".eintrittbis", "");
       }
     }
 
@@ -3029,12 +3035,12 @@ public class MitgliedControl extends AbstractControl
       Date tmp = (Date) getAustrittvon().getValue();
       if (tmp != null)
       {
-        settings.setAttribute("mitglied.austrittvon",
+        settings.setAttribute(mitgliedtyp + ".austrittvon",
             new JVDateFormatTTMMJJJJ().format(tmp));
       }
       else
       {
-        settings.setAttribute("mitglied.austrittvon", "");
+        settings.setAttribute(mitgliedtyp + ".austrittvon", "");
       }
     }
 
@@ -3043,12 +3049,12 @@ public class MitgliedControl extends AbstractControl
       Date tmp = (Date) getAustrittbis().getValue();
       if (tmp != null)
       {
-        settings.setAttribute("mitglied.austrittbis",
+        settings.setAttribute(mitgliedtyp + ".austrittbis",
             new JVDateFormatTTMMJJJJ().format(tmp));
       }
       else
       {
-        settings.setAttribute("mitglied.austrittbis", "");
+        settings.setAttribute(mitgliedtyp + ".austrittbis", "");
       }
     }
     if (stichtag != null)
@@ -3056,12 +3062,12 @@ public class MitgliedControl extends AbstractControl
       Date tmp = (Date) getStichtag().getValue();
       if (tmp != null)
       {
-        settings.setAttribute("mitglied.stichtag",
+        settings.setAttribute(mitgliedtyp + ".stichtag",
             new JVDateFormatTTMMJJJJ().format(tmp));
       }
       else
       {
-        settings.setAttribute("mitglied.stichtag", "");
+        settings.setAttribute(mitgliedtyp + "stichtag", "");
       }
     }
 
@@ -3089,11 +3095,24 @@ public class MitgliedControl extends AbstractControl
           .getValue();
       if (tmpbg != null)
       {
-        settings.setAttribute("mitglied.beitragsgruppe", tmpbg.getID());
+        settings.setAttribute(mitgliedtyp + ".beitragsgruppe", tmpbg.getID());
       }
       else
       {
-        settings.setAttribute("mitglied.beitragsgruppe", "");
+        settings.setAttribute(mitgliedtyp + ".beitragsgruppe", "");
+      }
+    }
+    
+    if (geschlecht != null)
+    {
+      String tmp = (String) getGeschlecht().getValue();
+      if (tmp != null && !getGeschlecht().getText().equals("Bitte auswählen"))
+      {
+        settings.setAttribute(mitgliedtyp + ".geschlecht", tmp);
+      }
+      else
+      {
+        settings.setAttribute(mitgliedtyp + ".geschlecht", "");
       }
     }
   }
