@@ -52,6 +52,10 @@ public class MitgliedAuswertungPDF implements IAuswertung
   private String subtitle = "";
 
   private TreeMap<String, String> params;
+  
+  String zusatzfeld = null;
+  
+  String zusatzfelder = null;
 
   public MitgliedAuswertungPDF(MitgliedControl control)
   {
@@ -62,16 +66,24 @@ public class MitgliedAuswertungPDF implements IAuswertung
   public void beforeGo() throws RemoteException
   {
     params = new TreeMap<>();
-    this.adresstyp = (Adresstyp) control.getAdresstyp().getValue();
-    if (adresstyp == null)
+    
+    if (control.isAdresstypActive())
+    {
+      adresstyp = (Adresstyp) control.getAdresstyp().getValue();
+      zusatzfeld = "nichtzusatzfeld.";
+      zusatzfelder = "nichtzusatzfelder.";
+    }
+    else
     {
       DBIterator<Adresstyp> it = Einstellungen.getDBService()
           .createList(Adresstyp.class);
       it.addFilter("jvereinid=1");
       adresstyp = (Adresstyp) it.next();
+      zusatzfeld = "zusatzfeld.";
+      zusatzfelder = "zusatzfelder.";
     }
 
-    if (adresstyp.getJVereinid() == 1)
+    if (control.isMitgliedStatusAktiv())
     {
       params.put("Status", (String) control.getMitgliedStatus().getValue());
       String eig = control.getEigenschaftenAuswahl().getText();
@@ -79,74 +91,81 @@ public class MitgliedAuswertungPDF implements IAuswertung
       {
         params.put("Eigenschaften", eig);
       }
-      if (control.getGeburtsdatumvon().getValue() != null)
-      {
-        Date d = (Date) control.getGeburtsdatumvon().getValue();
-        params.put("Geburtsdatum von ", new JVDateFormatTTMMJJJJ().format(d));
-      }
-      if (control.getGeburtsdatumbis().getValue() != null)
-      {
-        Date d = (Date) control.getGeburtsdatumbis().getValue();
-        params.put("Geburtsdatum bis ", new JVDateFormatTTMMJJJJ().format(d));
-      }
-      if (control.getEintrittvon().getValue() != null)
-      {
-        Date d = (Date) control.getEintrittvon().getValue();
-        params.put("Eintritt von ", new JVDateFormatTTMMJJJJ().format(d));
-      }
-      if (control.getEintrittbis().getValue() != null)
-      {
-        Date d = (Date) control.getEintrittbis().getValue();
-        params.put("Eintritt bis ", new JVDateFormatTTMMJJJJ().format(d));
-      }
-      if (control.getAustrittvon().getValue() != null)
-      {
-        Date d = (Date) control.getAustrittvon().getValue();
-        params.put("Austritt von ", new JVDateFormatTTMMJJJJ().format(d));
-      }
-      if (control.getAustrittbis().getValue() != null)
-      {
-        Date d = (Date) control.getAustrittbis().getValue();
-        params.put("Austritt bis ", new JVDateFormatTTMMJJJJ().format(d));
-      }
-      if (control.getSterbedatumvon().getValue() != null)
-      {
-        Date d = (Date) control.getSterbedatumvon().getValue();
-        params.put("Sterbetag von", new JVDateFormatTTMMJJJJ().format(d));
-      }
-      if (control.getSterbedatumbis().getValue() != null)
-      {
-        Date d = (Date) control.getSterbedatumbis().getValue();
-        params.put("Sterbedatum bis", new JVDateFormatTTMMJJJJ().format(d));
-      }
-      if (control.getBeitragsgruppeAusw().getValue() != null)
-      {
-        Beitragsgruppe bg = (Beitragsgruppe) control.getBeitragsgruppeAusw()
-            .getValue();
-        params.put("Beitragsgruppe", bg.getBezeichnung());
-      }
+    }
+    if (control.isGeburtsdatumvonAktiv() && control.getGeburtsdatumvon().getValue() != null)
+    {
+      Date d = (Date) control.getGeburtsdatumvon().getValue();
+      params.put("Geburtsdatum von ", new JVDateFormatTTMMJJJJ().format(d));
+    }
+    if (control.isGeburtsdatumbisAktiv() && control.getGeburtsdatumbis().getValue() != null)
+    {
+      Date d = (Date) control.getGeburtsdatumbis().getValue();
+      params.put("Geburtsdatum bis ", new JVDateFormatTTMMJJJJ().format(d));
+    }
+    if (control.isEintrittvonAktiv() && control.getEintrittvon().getValue() != null)
+    {
+      Date d = (Date) control.getEintrittvon().getValue();
+      params.put("Eintritt von ", new JVDateFormatTTMMJJJJ().format(d));
+    }
+    if (control.isEintrittbisAktiv() && control.getEintrittbis().getValue() != null)
+    {
+      Date d = (Date) control.getEintrittbis().getValue();
+      params.put("Eintritt bis ", new JVDateFormatTTMMJJJJ().format(d));
+    }
+    if (control.isAustrittvonAktiv() && control.getAustrittvon().getValue() != null)
+    {
+      Date d = (Date) control.getAustrittvon().getValue();
+      params.put("Austritt von ", new JVDateFormatTTMMJJJJ().format(d));
+    }
+    if (control.isAustrittbisAktiv() && control.getAustrittbis().getValue() != null)
+    {
+      Date d = (Date) control.getAustrittbis().getValue();
+      params.put("Austritt bis ", new JVDateFormatTTMMJJJJ().format(d));
+    }
+    if (control.isSterbedatumvonAktiv() && control.getSterbedatumvon().getValue() != null)
+    {
+      Date d = (Date) control.getSterbedatumvon().getValue();
+      params.put("Sterbetag von", new JVDateFormatTTMMJJJJ().format(d));
+    }
+    if (control.isSterbedatumbisAktiv() && control.getSterbedatumbis().getValue() != null)
+    {
+      Date d = (Date) control.getSterbedatumbis().getValue();
+      params.put("Sterbedatum bis", new JVDateFormatTTMMJJJJ().format(d));
+    }
+    if (control.isBeitragsgruppeAuswAktiv() && control.getBeitragsgruppeAusw().getValue() != null)
+    {
+      Beitragsgruppe bg = (Beitragsgruppe) control.getBeitragsgruppeAusw()
+          .getValue();
+      params.put("Beitragsgruppe", bg.getBezeichnung());
+    }
+    if (control.isMailauswahlAktiv())
+    {
       int ma = (Integer) control.getMailauswahl().getValue();
       if (ma == MailAuswertungInput.ALLE)
       {
         params.put("Mail", control.getMailauswahl().getText());
       }
-      if (control.getGeschlecht().getText() != null
-          && !control.getGeschlecht().getText().equals("Bitte auswählen"))
-      {
-        params.put("Geschlecht", control.getGeschlecht().getText());
-      }
+    }
+    if (control.isGeschlechtAktiv() && control.getGeschlecht().getText() != null
+        && !control.getGeschlecht().getText().equals("Bitte auswählen"))
+    {
+      params.put("Geschlecht", control.getGeschlecht().getText());
+    }
+    if (control.isStichtagAktiv() && control.getStichtag(false).getValue() != null)
+    {
       Date d = (Date) control.getStichtag(false).getValue();
       params.put("Stichtag", new JVDateFormatTTMMJJJJ().format(d));
     }
-    for (int i = 0; i < control.getSettings().getInt("zusatzfelder.selected",
+
+    for (int i = 0; i < control.getSettings().getInt(zusatzfelder + "selected",
         0); i++)
     {
-      if (!control.getSettings().getString("zusatzfeld." + i + ".value", "")
+      if (!control.getSettings().getString(zusatzfeld + i + ".value", "")
           .equals(""))
       {
         params.put(
-            control.getSettings().getString("zusatzfeld." + i + ".name", ""),
-            control.getSettings().getString("zusatzfeld." + i + ".value", ""));
+            control.getSettings().getString(zusatzfeld + i + ".name", ""),
+            control.getSettings().getString(zusatzfeld + i + ".value", ""));
       }
     }
     String ueberschrift = (String) control.getAuswertungUeberschrift()
