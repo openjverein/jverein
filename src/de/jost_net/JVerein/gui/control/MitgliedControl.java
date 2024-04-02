@@ -711,6 +711,20 @@ public class MitgliedControl extends AbstractControl
     {
       return geschlecht;
     }
+    geschlecht = new GeschlechtInput(getMitglied().getGeschlecht());
+    geschlecht.setName("Geschlecht");
+    geschlecht.setPleaseChoose("Bitte auswählen");
+    geschlecht.setMandatory(true);
+    geschlecht.setName("Geschlecht");
+    return geschlecht;
+  }
+  
+  public GeschlechtInput getSuchGeschlecht() throws RemoteException
+  {
+    if (geschlecht != null)
+    {
+      return geschlecht;
+    }
     geschlecht = new GeschlechtInput(
         settings.getString(mitgliedtyp + ".geschlecht", ""));
     geschlecht.setName("Geschlecht");
@@ -720,7 +734,7 @@ public class MitgliedControl extends AbstractControl
     return geschlecht;
   }
   
-  public boolean isGeschlechtAktiv()
+  public boolean isSuchGeschlechtAktiv()
   {
     return geschlecht != null;
   }
@@ -3111,8 +3125,8 @@ public class MitgliedControl extends AbstractControl
     
     if (geschlecht != null)
     {
-      String tmp = (String) getGeschlecht().getValue();
-      if (tmp != null && !getGeschlecht().getText().equals("Bitte auswählen"))
+      String tmp = (String) getSuchGeschlecht().getValue();
+      if (tmp != null && !getSuchGeschlecht().getText().equals("Bitte auswählen"))
       {
         settings.setAttribute(mitgliedtyp + ".geschlecht", tmp);
       }

@@ -98,7 +98,9 @@ public class MitgliedAuswertungPDF implements IAuswertung
     if (control.isSuchExterneMitgliedsnummerActive() && control.getSuchExterneMitgliedsnummer() != null)
     {
       String val = control.getSuchExterneMitgliedsnummer().getValue().toString();
-      params.put("Externe Mitgliedsnummer ", val);
+      if (val.length() > 0) {
+        params.put("Externe Mitgliedsnummer ", val);
+      }
     }
     if (control.isGeburtsdatumvonAktiv() && control.getGeburtsdatumvon().getValue() != null)
     {
@@ -149,15 +151,15 @@ public class MitgliedAuswertungPDF implements IAuswertung
     if (control.isMailauswahlAktiv())
     {
       int ma = (Integer) control.getMailauswahl().getValue();
-      if (ma == MailAuswertungInput.ALLE)
+      if (ma != MailAuswertungInput.ALLE)
       {
         params.put("Mail", control.getMailauswahl().getText());
       }
     }
-    if (control.isGeschlechtAktiv() && control.getGeschlecht().getText() != null
-        && !control.getGeschlecht().getText().equals("Bitte auswählen"))
+    if (control.isSuchGeschlechtAktiv() && control.getSuchGeschlecht().getText() != null
+        && !control.getSuchGeschlecht().getText().equals("Bitte auswählen"))
     {
-      params.put("Geschlecht", control.getGeschlecht().getText());
+      params.put("Geschlecht", control.getSuchGeschlecht().getText());
     }
     if (control.isStichtagAktiv() && control.getStichtag(false).getValue() != null)
     {

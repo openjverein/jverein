@@ -340,11 +340,11 @@ public class MitgliedQuery
       Date d = (Date) control.getSterbedatumbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.isGeschlechtAktiv() && control.getGeschlecht().getText() != null
-        && !control.getGeschlecht().getText().equals("Bitte auswählen"))
+    if (control.isSuchGeschlechtAktiv() && control.getSuchGeschlecht().getText() != null
+        && !control.getSuchGeschlecht().getText().equals("Bitte auswählen"))
     {
       addCondition("geschlecht = ?");
-      String g = (String) control.getGeschlecht().getValue();
+      String g = (String) control.getSuchGeschlecht().getValue();
       bedingungen.add(g);
     }
     if (control.isEintrittvonAktiv() && control.getEintrittvon().getValue() != null)

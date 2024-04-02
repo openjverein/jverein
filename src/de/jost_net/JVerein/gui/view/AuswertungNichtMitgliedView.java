@@ -24,7 +24,6 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -61,9 +60,7 @@ public class AuswertungNichtMitgliedView extends AbstractView
 
     right.addInput(control.getGeburtsdatumvon());
     right.addInput(control.getGeburtsdatumbis());
-    SelectInput inpGeschlecht = control.getGeschlecht();
-    inpGeschlecht.setMandatory(false);
-    right.addInput(inpGeschlecht);
+    right.addInput(control.getSuchGeschlecht());
     
     // Zweite Gruppe: Ausgabe
     LabelGroup group2 = new LabelGroup(getParent(), "Ausgabe");

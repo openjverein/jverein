@@ -25,7 +25,6 @@ import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -71,9 +70,7 @@ public class AuswertungMitgliedView extends AbstractView
     middle.addInput(control.getMailauswahl());
     middle.addInput(control.getGeburtsdatumvon());
     middle.addInput(control.getGeburtsdatumbis());
-    SelectInput inpGeschlecht = control.getGeschlecht();
-    inpGeschlecht.setMandatory(false);
-    middle.addInput(inpGeschlecht);
+    middle.addInput(control.getSuchGeschlecht());
     middle.addInput(control.getStichtag(false));
 
     // right
