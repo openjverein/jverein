@@ -359,20 +359,22 @@ public class MitgliedQuery
       Date d = (Date) control.getEintrittbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
+    if (control.isAustrittvonAktiv() && control.getAustrittvon().getValue() != null)
+    {
+      addCondition("austritt >= ?");
+      Date d = (Date) control.getAustrittvon().getValue();
+      bedingungen.add(new java.sql.Date(d.getTime()));
+    }
+    if (control.isAustrittbisAktiv() && control.getAustrittbis().getValue() != null)
+    {
+      addCondition("austritt <= ?");
+      Date d = (Date) control.getAustrittbis().getValue();
+      bedingungen.add(new java.sql.Date(d.getTime()));
+    }
+    
     if (control.isAustrittbisAktiv())
     {
-      if (control.getAustrittvon().getValue() != null)
-      {
-        addCondition("austritt >= ?");
-        Date d = (Date) control.getAustrittvon().getValue();
-        bedingungen.add(new java.sql.Date(d.getTime()));
-      }
-      if (control.getAustrittbis().getValue() != null)
-      {
-        addCondition("austritt <= ?");
-        Date d = (Date) control.getAustrittbis().getValue();
-        bedingungen.add(new java.sql.Date(d.getTime()));
-      }
+      // Was soll das? Das wird nie durchlaufen!
       if (control.getSterbedatumvon() == null
           && control.getSterbedatumbis() == null
           && control.getAustrittvon().getValue() == null
@@ -381,6 +383,7 @@ public class MitgliedQuery
         addCondition("(austritt is null or austritt > current_date())");
       }
     }
+    
     if (control.isSuchExterneMitgliedsnummerActive())
     {
       try
