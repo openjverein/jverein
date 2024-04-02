@@ -891,10 +891,10 @@ public class MitgliedskontoControl extends AbstractControl
                 continue;
               }
 
-              if (suchname != null && suchname.getValue() != null)
+              if (suchname1 != null && suchname1.getValue() != null)
               {
                 StringTokenizer tok = new StringTokenizer(
-                    (String) suchname.getValue(), " ,-");
+                    (String) suchname1.getValue(), " ,-");
                 Integer score = 0;
                 while (tok.hasMoreElements())
                 {
