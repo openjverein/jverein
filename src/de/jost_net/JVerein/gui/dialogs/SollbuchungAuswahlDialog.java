@@ -113,7 +113,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     grNurIst.addLabelPair("Name", suNa);
     grNurIst.addLabelPair("Differenz",
         control.getDifferenz(DIFFERENZ.FEHLBETRAG));
-    grNurIst.addInput(control.getSpezialSuche1());
+    //grNurIst.addInput(control.getSpezialSuche1());
     
     ButtonArea button1 = new ButtonArea();
     suchen1 = new MyButton("Suchen", new Action()
