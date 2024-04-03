@@ -43,7 +43,7 @@ public class BuchungsKorrekturQuery {
 		
 		it.setOrder("ORDER BY datum");
 
-		this.ergebnis = PseudoIterator.asList(it);
+		this.ergebnis = it != null ? PseudoIterator.asList(it) : null;
 		return ergebnis;
 	}
 

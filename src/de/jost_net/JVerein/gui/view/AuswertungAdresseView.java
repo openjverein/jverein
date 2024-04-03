@@ -32,7 +32,7 @@ public class AuswertungAdresseView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Auswertung Adressen");
+    GUI.getView().setTitle("Auswertung Nicht-Mitgliederdaten");
 
     final MitgliedControl control = new MitgliedControl(this);
 

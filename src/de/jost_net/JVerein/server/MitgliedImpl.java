@@ -257,7 +257,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     if (Einstellungen.getEinstellung().getExterneMitgliedsnummer() == false)
       return;
 
-    if (getExterneMitgliedsnummer() == null)
+    if (getExterneMitgliedsnummer() == null || getExterneMitgliedsnummer().isEmpty())
     {
       throw new ApplicationException("Externe Mitgliedsnummer fehlt");
     }

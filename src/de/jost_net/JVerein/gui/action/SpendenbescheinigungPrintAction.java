@@ -110,7 +110,7 @@ public class SpendenbescheinigungPrintAction implements Action
   }
 
   /**
-   * Aufbereitung der Spendenbescheinigungen<br>
+   * Aufbereitung der Spendenbescheinigungen
    * Hinweis: Das bzw. die generierten Formulare werden nicht im Acrobat Reader
    * angezeigt.
    * 
@@ -231,6 +231,8 @@ public class SpendenbescheinigungPrintAction implements Action
           fa.closeFormular();
         }
       }
+      String erfolg = (spbArr.length > 1) ? "Die Spendenbescheinigungen wurden erstellt." : "Die Spendenbescheinigung wurde erstellt.";
+      GUI.getStatusBar().setSuccessText(erfolg);
     }
     catch (Exception e)
     {

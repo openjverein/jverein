@@ -149,7 +149,7 @@ public class BackupCreateAction implements Action
           backup(AbrechnungslaufImpl.class, writer, monitor);
           monitor.addPercentComplete(2);
 
-          monitor.setStatusText("Speichere Adresstypen");
+          monitor.setStatusText("Speichere Mitgliedstypen");
           backup(AdresstypImpl.class, writer, monitor);
           monitor.addPercentComplete(2);
 

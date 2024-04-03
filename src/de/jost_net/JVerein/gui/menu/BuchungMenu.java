@@ -24,7 +24,7 @@ import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
 import de.jost_net.JVerein.gui.action.BuchungDuplizierenAction;
 import de.jost_net.JVerein.gui.action.BuchungGegenbuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungMitgliedskontoZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
@@ -65,8 +65,8 @@ public class BuchungMenu extends ContextMenu
         "unlocked.png"));
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
-    addItem(new CheckedContextMenuItem("Mitgliedskonto zuordnen",
-        new BuchungMitgliedskontoZuordnungAction(control), "view-refresh.png"));
+    addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
+        new BuchungSollbuchungZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Projekt zuordnen",
         new BuchungProjektZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Kontoauszug zuordnen",

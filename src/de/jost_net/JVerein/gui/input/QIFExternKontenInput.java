@@ -34,7 +34,7 @@ public class QIFExternKontenInput extends SelectInput
 {
   public QIFExternKontenInput() throws RemoteException
   {
-    super(PseudoIterator.asList(init()), null);
+    super(init() != null ? PseudoIterator.asList(init()) : null, null);
     this.setPleaseChoose("Wähle ein externes Konto");
   }
 

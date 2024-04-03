@@ -129,7 +129,7 @@ public class BuchungsartSearchInput extends SearchInput
           result.setOrder("ORDER BY bezeichnung");
         }
         
-        return PseudoIterator.asList(result);
+        return result != null ? PseudoIterator.asList(result) : null;
       }
     }
     catch (Exception e)

@@ -31,6 +31,7 @@ import de.willuhn.jameica.gui.parts.FormTextPart;
 import de.willuhn.jameica.gui.util.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SWTUtil;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.plugin.AbstractPlugin;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.util.ApplicationException;
@@ -41,7 +42,7 @@ public class AboutView extends AbstractDialog<Object>
   public AboutView(int position)
   {
     super(position);
-    this.setSize(460, 550);
+    this.setSize(460, SWT.DEFAULT);
     this.setTitle("Über...");
   }
 
@@ -51,6 +52,7 @@ public class AboutView extends AbstractDialog<Object>
     Label l = GUI.getStyleFactory().createLabel(parent, SWT.BORDER);
     l.setImage(SWTUtil.getImage("JVerein.png"));
 
+    SimpleContainer container = new SimpleContainer(parent);
     FormTextPart text = new FormTextPart();
     text.setText("<form>"
         + "<p><b>Plugin für die Vereinsverwaltung unter Jameica</b></p>"
@@ -60,7 +62,7 @@ public class AboutView extends AbstractDialog<Object>
     	+ "<p>GitHub: https://github.com/openjverein/jverein</p>"
         + "<p>Dokumentation: https://openjverein.gitbook.io/doku</p></form>");
 
-    text.paint(parent);
+    text.paint(container.getComposite());
 
     LabelGroup group = new LabelGroup(parent, "Information");
 
@@ -93,6 +95,7 @@ public class AboutView extends AbstractDialog<Object>
       }
     }, null, true, "window-close.png");
 
+    getShell().setSize(getShell().computeSize(SWT.DEFAULT,SWT.DEFAULT));
   }
 
   @Override

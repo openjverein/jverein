@@ -871,7 +871,7 @@ public class Import
       else
       {
         progMonitor.log(String.format(
-            "Adresstyp bei: %s ist entweder leer oder besteht nicht nur aus Zahlen, setze auf 1 (Mitglied)",
+            "Mitgliedstyp bei: %s ist entweder leer oder besteht nicht nur aus Zahlen, setze auf 1 (Mitglied)",
             Adressaufbereitung.getNameVorname(m)));
         m.setAdresstyp(Integer.valueOf(1));
       }

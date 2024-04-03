@@ -94,7 +94,7 @@ public class EigenschaftControl extends AbstractControl
     DBIterator<EigenschaftGruppe> list = Einstellungen.getDBService()
         .createList(EigenschaftGruppe.class);
     list.setOrder("ORDER BY bezeichnung");
-    eigenschaftgruppe = new SelectInput(PseudoIterator.asList(list),
+    eigenschaftgruppe = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
         getEigenschaft().getEigenschaftGruppe());
     eigenschaftgruppe.setValue(getEigenschaft().getEigenschaftGruppe());
     eigenschaftgruppe.setAttribute("bezeichnung");

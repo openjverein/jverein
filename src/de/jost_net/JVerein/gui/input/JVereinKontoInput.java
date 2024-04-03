@@ -30,7 +30,7 @@ public class JVereinKontoInput extends SelectInput
 {
   public JVereinKontoInput() throws RemoteException
   {
-    super(PseudoIterator.asList(init()), null);
+    super(init() != null ? PseudoIterator.asList(init()) : null, null);
     this.setPleaseChoose("Wähle ein JVerein Konto");
   }
 

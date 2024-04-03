@@ -104,7 +104,7 @@ public class LehrgangControl extends AbstractControl
     DBIterator<Lehrgangsart> it = Einstellungen.getDBService()
         .createList(Lehrgangsart.class);
     it.setOrder("order by bezeichnung");
-    lehrgangsart = new SelectInput(PseudoIterator.asList(it), getLehrgang().getLehrgangsart());
+    lehrgangsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, getLehrgang().getLehrgangsart());
     lehrgangsart.setPleaseChoose("Bitte auswählen");
     lehrgangsart.addListener(new Listener()
     {
@@ -200,7 +200,7 @@ public class LehrgangControl extends AbstractControl
     {
       //
     }
-    suchlehrgangsart = new SelectInput(PseudoIterator.asList(it), letztesuche);
+    suchlehrgangsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, letztesuche);
     suchlehrgangsart.setPleaseChoose("Bitte auswählen");
     suchlehrgangsart.addListener(new FilterListener());
     return suchlehrgangsart;
@@ -228,7 +228,6 @@ public class LehrgangControl extends AbstractControl
     this.datumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datumvon.setTitle("Datum von");
     this.datumvon.setText("Datum von");
-    datumvon.addListener(new FilterListener());
     return datumvon;
   }
 
@@ -254,7 +253,6 @@ public class LehrgangControl extends AbstractControl
     this.datumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datumbis.setTitle("Datum bis");
     this.datumbis.setText("Datum bis");
-    datumbis.addListener(new FilterListener());
     return datumbis;
   }
 
@@ -284,7 +282,7 @@ public class LehrgangControl extends AbstractControl
     }
   }
 
-  private void refresh()
+  public void refresh()
   {
     try
     {

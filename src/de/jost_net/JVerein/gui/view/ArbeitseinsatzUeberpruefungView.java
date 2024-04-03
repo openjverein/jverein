@@ -23,12 +23,10 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.util.ApplicationException;
 
 public class ArbeitseinsatzUeberpruefungView extends AbstractView
 {
@@ -59,25 +57,13 @@ public class ArbeitseinsatzUeberpruefungView extends AbstractView
     });
     group.addLabelPair("Auswertung", aui);
 
-    ButtonArea buttons = new ButtonArea();
-    Button button = new Button("Suchen", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        control.getArbeitseinsatzUeberpruefungList();
-      }
-    }, null, true, "search.png");
-    buttons.addButton(button);
-    buttons.paint(this.getParent());
-
     control.getArbeitseinsatzUeberpruefungList().paint(getParent());
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
     buttons2.addButton(control.getPDFAusgabeButton());
     buttons2.addButton(control.getCSVAusgabeButton());
-    buttons2.addButton(control.getArbeitseinsatzAusgabeButton());
+    buttons2.addButton(butArbeitseinsaetze);
     buttons2.paint(this.getParent());
   }
 }

@@ -81,22 +81,22 @@ public class SpendenbescheinigungView extends AbstractView
         control.getUnterlagenWertermittlung());
 
     /*
-     * Spendenart kann bei automatisch erzeugten Bestätigungen nicht geändert
-     * werden
+     * Betrag kann bei Geldspenden nicht geändert werden
      */
     if (control.getSpendenbescheinigung().getAutocreate())
     {
       control.getSpendenart().setEnabled(false);
       control.getBetrag().setEnabled(false);
+      // Buchnungen nur für Geldspenden
+      LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),
+          "Buchungen");
+      grBuchungen.addPart(control.getBuchungsList());
     }
     else
     {
       control.getSpendenart().setEnabled(false);
       control.getBetrag().setEnabled(true);
     }
-    LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),
-        "Buchungen");
-    grBuchungen.addPart(control.getBuchungsList());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

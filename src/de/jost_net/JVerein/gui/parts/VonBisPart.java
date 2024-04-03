@@ -168,9 +168,17 @@ public class VonBisPart implements Part
   {
     Date von = (Date) control.getSuchDatumvon().getValue();
     Date bis = (Date) control.getSuchDatumbis().getValue();
+    if (von == null)
+    {
+      throw new ApplicationException("Bitte Von Datum eingeben!");
+    }
+    if (bis == null)
+    {
+      throw new ApplicationException("Bitte Bis Datum eingeben!");
+    }
     if (von.after(bis))
     {
-      throw new ApplicationException("Von Datum ist nach Ist Datum!");
+      throw new ApplicationException("Von Datum ist nach Bis Datum!");
     }
   }
   

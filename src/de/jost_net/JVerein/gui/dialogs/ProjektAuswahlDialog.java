@@ -161,7 +161,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     }
 
     pj.setOrder("ORDER BY bezeichnung");
-    this.projekte = new SelectInput(PseudoIterator.asList(pj), null);
+    this.projekte = new SelectInput(pj != null ? PseudoIterator.asList(pj) : null, null);
     this.projekte.setValue(null);
     this.projekte.setPleaseChoose("Bitte Projekt auswählen");
     this.projekte.addListener(new Listener()
