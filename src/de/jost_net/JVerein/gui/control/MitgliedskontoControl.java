@@ -874,23 +874,33 @@ public class MitgliedskontoControl extends AbstractControl
             // Mitgliedskontobuchung) entry. Only the entries with
             // score == maxScore will be shown.
             Integer maxScore = 0;
+            
+            String name = null;
+            if (suchname != null && suchname.getValue() != null)
+            {
+              name = reduceWord((String) suchname.getValue());
+            }
+            
+            String mk = null;
+            String nachname = null;
+            String vorname = null;
             while (rs.next())
             {
               // Nur die ids der Mitgliedskonten speichern
-              String mk = rs.getString(1);
-
-              if (suchname != null && suchname.getValue() != null)
+              mk = rs.getString(1);
+              if (name != null)
               {
-                StringTokenizer tok = new StringTokenizer(
-                    (String) suchname.getValue(), " ,-");
+                StringTokenizer tok = new StringTokenizer(name, " ,-");
                 Integer score = 0;
+                nachname = reduceWord(rs.getString(2));
+                vorname = reduceWord(rs.getString(3));                
                 while (tok.hasMoreElements())
                 {
                   String nextToken = tok.nextToken();
                   if (nextToken.length() > 2)
                   {
-                    score += scoreWord(nextToken, rs.getString(2));
-                    score += scoreWord(nextToken, rs.getString(3));
+                    score += scoreWord(nextToken, nachname);
+                    score += scoreWord(nextToken, vorname);
                   }
                 }
 
@@ -930,15 +940,12 @@ public class MitgliedskontoControl extends AbstractControl
 
   public Integer scoreWord(String word, String in)
   {
-    word = reduceWord(word);
-
     Integer wordScore = 0;
     StringTokenizer tok = new StringTokenizer(in, " ,-");
 
     while (tok.hasMoreElements())
     {
       String nextToken = tok.nextToken();
-      nextToken = reduceWord(nextToken);
 
       // Full match is twice worth
       if (nextToken.equals(word))
