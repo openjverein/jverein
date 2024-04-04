@@ -543,5 +543,9 @@ public interface Einstellung extends DBObject, IBankverbindung
       throws RemoteException;
 
   public SepaVersion getCt1SepaVersion() throws RemoteException;
+  
+  public Boolean getSpendenbescheinigungadresse() throws RemoteException;
+
+  public void setSpendenbescheinigungadresse(Boolean spendenbescheinigungadresse) throws RemoteException;
 
 }

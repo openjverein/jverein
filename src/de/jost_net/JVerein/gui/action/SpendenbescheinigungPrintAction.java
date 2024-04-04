@@ -1281,12 +1281,15 @@ public class SpendenbescheinigungPrintAction implements Action
       rpt.closeTable();      
     }
     
-    // Neue Seite mit Anschrift für Fenster in quer Brief
-    rpt.newPage();
-    rpt.add(new Paragraph(" ", Reporter.getFreeSans(12)));
-    rpt.add("\n\n\n\n\n", 12);
-    rpt.addUnderline(getAussteller(),8);
-    rpt.addLight((String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()),9);
+    if (Einstellungen.getEinstellung().getSpendenbescheinigungadresse())
+    {
+      // Neue Seite mit Anschrift für Fenster in querem Brief
+      rpt.newPage();
+      rpt.add(new Paragraph(" ", Reporter.getFreeSans(12)));
+      rpt.add("\n\n\n\n\n", 12);
+      rpt.addUnderline(getAussteller(),8);
+      rpt.addLight((String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()),9);
+    }
 
     rpt.close();
     fos.close();
