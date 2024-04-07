@@ -110,6 +110,8 @@ public class MitgliedskontoMap
     map.put(MitgliedskontoVar.DIFFERENZ.getName(), differenz.toArray());
     map.put(MitgliedskontoVar.STAND.getName(), Double.valueOf(-1 * saldo));
     map.put(MitgliedskontoVar.SUMME_OFFEN.getName(), Double.valueOf(saldo));
+    map.put(MitgliedskontoVar.QRCODE_INTRO.getName(),
+        Einstellungen.getEinstellung().getQRCodeIntro());
     return map;
   }
 
