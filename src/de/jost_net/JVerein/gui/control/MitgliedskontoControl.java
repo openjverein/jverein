@@ -163,8 +163,6 @@ public class MitgliedskontoControl extends AbstractControl
 
   private TextInput suchname = null;
 
-  private TextInput suchname1 = null;
-
   private TextInput suchname2 = null;
 
   private SelectInput differenz = null;
@@ -486,13 +484,13 @@ public class MitgliedskontoControl extends AbstractControl
   // Für SollbuchungAuswahlDialog
   public TextInput getSuchName1(boolean newcontrol)
   {
-    if (!newcontrol && suchname1 != null)
+    if (!newcontrol && suchname != null)
     {
-      return suchname1;
+      return suchname;
     }
-    suchname1 = new TextInput("", 30);
-    suchname1.setName("Name");
-    return suchname1;
+    suchname = new TextInput("", 30);
+    suchname.setName("Name");
+    return suchname;
   }
   
   //Für SollbuchungAuswahlDialog
@@ -891,10 +889,10 @@ public class MitgliedskontoControl extends AbstractControl
                 continue;
               }
 
-              if (suchname1 != null && suchname1.getValue() != null)
+              if (suchname != null && suchname.getValue() != null)
               {
                 StringTokenizer tok = new StringTokenizer(
-                    (String) suchname1.getValue(), " ,-");
+                    (String) suchname.getValue(), " ,-");
                 Integer score = 0;
                 while (tok.hasMoreElements())
                 {
