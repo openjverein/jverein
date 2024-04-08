@@ -270,7 +270,7 @@ public class FormularAufbereitung
         sb.append("Mitglied ");
       }
 
-      if (true == e.getQRCodeExtNr())
+      if (true == e.getExterneMitgliedsnummer())
       {
         sb.append(getString(
             fieldsMap.get(MitgliedVar.EXTERNE_MITGLIEDSNUMMER.getName())));

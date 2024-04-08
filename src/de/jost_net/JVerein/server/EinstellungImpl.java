@@ -1937,23 +1937,6 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
 
   @Override
-  public boolean getQRCodeExtNr() throws RemoteException
-  {
-    Boolean useExtNr = (Boolean) getAttribute("qrcodeext");
-    if (null == useExtNr)
-    {
-      return false;
-    }
-    return useExtNr.booleanValue();
-  }
-
-  @Override
-  public void setQRCodeExtNr(boolean useExtNr) throws RemoteException
-  {
-    setAttribute("qrcodeext", useExtNr);
-  }
-
-  @Override
   public String getQRCodeInfoM() throws RemoteException
   {
     String qrInfoToMember = (String) getAttribute("qrcodeinfom");

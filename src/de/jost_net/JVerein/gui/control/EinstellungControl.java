@@ -290,11 +290,11 @@ public class EinstellungControl extends AbstractControl
 
   private SelectInput buchungsartsort;
 
-  private IntegerInput qrcodesize;
-
   private CheckboxInput abrlabschliessen;
 
   private CheckboxInput optiert;
+
+  private IntegerInput qrcodesize;
 
   private CheckboxInput qrcodeptext;
 
@@ -307,8 +307,6 @@ public class EinstellungControl extends AbstractControl
   private TextInput qrcodetext;
 
   private CheckboxInput qrcodesngl;
-
-  private CheckboxInput qrcodeext;
 
   private TextInput qrcodeinfom;
 
@@ -1700,16 +1698,6 @@ public class EinstellungControl extends AbstractControl
     return qrcodepmnum;
   }
 
-  public CheckboxInput getQRCodeExt() throws RemoteException
-  {
-    if (null == qrcodeext)
-    {
-      qrcodeext = new CheckboxInput(
-          Einstellungen.getEinstellung().getQRCodeExtNr());
-    }
-    return qrcodeext;
-  }
-
   public TextInput getQRCodeInfoToMember() throws RemoteException
   {
     if (null == qrcodeinfom)
@@ -2153,7 +2141,6 @@ public class EinstellungControl extends AbstractControl
       e.setZaehlerLaenge(length);
       e.setQRCodeSizeInMm((Integer) qrcodesize.getValue());
       e.setQRCodeDatum((Boolean) qrcodepdate.getValue());
-      e.setQRCodeExtNr((Boolean) qrcodeext.getValue());
       e.setQRCodeFesterText((Boolean) qrcodeptext.getValue());
       e.setQRCodeInfoM((String) qrcodeinfom.getValue());
       e.setQRCodeMember((Boolean) qrcodepmnum.getValue());
@@ -2385,5 +2372,5 @@ public class EinstellungControl extends AbstractControl
       }
     }
   }
-  
+
 }

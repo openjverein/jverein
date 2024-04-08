@@ -572,10 +572,6 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public void setQRCodeSnglLine(boolean single) throws RemoteException;
 
-  public boolean getQRCodeExtNr() throws RemoteException;
-
-  public void setQRCodeExtNr(boolean useExtNr) throws RemoteException;
-
   public String getQRCodeInfoM() throws RemoteException;
 
   public void setQRCodeInfoM(String infoMitglied) throws RemoteException;

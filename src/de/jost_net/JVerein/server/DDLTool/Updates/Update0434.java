@@ -35,8 +35,6 @@ public class Update0434 extends AbstractDDLUpdate
     execute(addColumn("einstellung",
         new Column("qrcodepdate", COLTYPE.BOOLEAN, 1, null, false, false)));
     execute(addColumn("einstellung",
-        new Column("qrcodeext", COLTYPE.BOOLEAN, 1, null, false, false)));
-    execute(addColumn("einstellung",
         new Column("qrcodeptext", COLTYPE.BOOLEAN, 1, null, false, false)));
     execute(addColumn("einstellung",
         new Column("qrcodepmnum", COLTYPE.BOOLEAN, 1, null, false, false)));

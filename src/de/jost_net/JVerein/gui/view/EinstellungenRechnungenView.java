@@ -51,8 +51,6 @@ public class EinstellungenRechnungenView extends AbstractView
     cont.addLabelPair("Rechnungsnummer in QR-Code", control.getQRCodeReNr());
     cont.addLabelPair("Mitgliedsnummer in QR-Code",
         control.getQRCodeMemberNr());
-    cont.addLabelPair("externe Mitgliedsnummer verwenden",
-        control.getQRCodeExt());
     cont.addLabelPair("Information an Mitglied in QR-Code",
         control.getQRCodeInfoToMember());
     cont.addLabelPair("Texte in QR-Code kürzen", control.getQRCodeKuerzen());
