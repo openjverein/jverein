@@ -256,6 +256,27 @@ public class Reporter
     cell.setHorizontalAlignment(horizontalalignment);
     table.addCell(cell);
   }
+  
+  public void add(byte[] image, int width, int height,
+      int horizontalalignment)
+      throws BadElementException, MalformedURLException, IOException, DocumentException
+  {
+    Image i = Image.getInstance(image);
+    float w = i.getWidth() / width;
+    float h = i.getHeight() / height;
+    if (w > h)
+    {
+      h = i.getHeight() / w;
+      w = width;
+    }
+    else
+    {
+      w = i.getHeight() / h;
+      h = height;
+    }
+    i.scaleToFit(w, h);
+    rpt.add(i);
+  }
 
   /**
    * Fuegt eine neue Zelle zur Tabelle hinzu.

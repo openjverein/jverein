@@ -1193,8 +1193,18 @@ public class SpendenbescheinigungPrintAction implements Action
             + new JVDateFormatTTMMJJJJ().format(spb.getBescheinigungsdatum()),
         9);
 
+    if (Einstellungen.getEinstellung().getUnterschriftdrucken())
+    {
+      rpt.add("\n", 8);
+      rpt.add(Einstellungen.getEinstellung().getUnterschrift(), 400, 75, 0);
+    }
+    else
+    {
+      rpt.add("\n\n\n\n", 8);
+    }
+    
     rpt.add(
-        "\n\n\n\n.................................................................................\nUnterschrift des Zuwendungsempfängers",
+        ".................................................................................\nUnterschrift des Zuwendungsempfängers",
         8);
 
     rpt.add("\nHinweis:", 8);
