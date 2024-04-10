@@ -1193,7 +1193,8 @@ public class SpendenbescheinigungPrintAction implements Action
             + new JVDateFormatTTMMJJJJ().format(spb.getBescheinigungsdatum()),
         9);
 
-    if (Einstellungen.getEinstellung().getUnterschriftdrucken())
+    if (Einstellungen.getEinstellung().getUnterschriftdrucken() &&
+        Einstellungen.getEinstellung().getUnterschrift() != null)
     {
       rpt.add("\n", 8);
       rpt.add(Einstellungen.getEinstellung().getUnterschrift(), 400, 75, 0);
