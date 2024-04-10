@@ -43,7 +43,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     {
       if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
       {
-        add("externe Mitgliedsnummer", "externemitgliedsnummer", false, false);
+        add("Externe Mitgliedsnummer", "externemitgliedsnummer", false, false);
       }
     }
     catch (RemoteException re)
@@ -98,6 +98,9 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);
     add("Kündigung", "kuendigung", false,
+        new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
+        false);
+    add("Sterbedatum", "sterbetag", false,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);
     add("Eingabedatum", "eingabedatum", false,
