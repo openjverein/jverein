@@ -100,9 +100,19 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Kündigung", "kuendigung", false,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);
-    add("Sterbedatum", "sterbetag", false,
-        new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
-        false);
+    try
+    {
+      if (Einstellungen.getEinstellung().getSterbedatum())
+      {
+        add("Sterbedatum", "sterbetag", false,
+            new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
+            false);
+      }
+    }
+    catch (RemoteException re)
+    {
+      //
+    }
     add("Eingabedatum", "eingabedatum", false,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);
     add("Letzte Änderung", "letzteaenderung", false,
