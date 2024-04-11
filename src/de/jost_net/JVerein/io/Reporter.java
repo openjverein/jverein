@@ -247,7 +247,7 @@ public class Reporter
     }
     else
     {
-      w = i.getHeight() / h;
+      w = i.getWidth() / h;
       h = height;
     }
     i.scaleToFit(w, h);
@@ -271,7 +271,7 @@ public class Reporter
     }
     else
     {
-      w = i.getHeight() / h;
+      w = i.getWidth() / h;
       h = height;
     }
     i.scaleToFit(w, h);

@@ -1197,7 +1197,7 @@ public class SpendenbescheinigungPrintAction implements Action
         Einstellungen.getEinstellung().getUnterschrift() != null)
     {
       rpt.add("\n", 8);
-      rpt.add(Einstellungen.getEinstellung().getUnterschrift(), 400, 75, 0);
+      rpt.add(Einstellungen.getEinstellung().getUnterschrift(), 400, 55, 0);
     }
     else
     {
