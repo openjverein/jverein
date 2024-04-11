@@ -1942,7 +1942,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     String qrInfoToMember = (String) getAttribute("qrcodeinfom");
     if (null == qrInfoToMember)
     {
-      return "Vielen Dank für Ihre Spende!";
+      return "Vielen Dank!";
     }
     return qrInfoToMember;
   }
