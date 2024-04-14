@@ -30,7 +30,6 @@ public enum MitgliedskontoVar
   DIFFERENZ("mitgliedskonto_differenz"), //
   STAND("mitgliedskonto_stand"), //
   SUMME_OFFEN("mitgliedskonto_summe_offen"), //
-  QRCODE_OFFEN("qrcode_offen"), //
   QRCODE_SUMME("qrcode_summe"), //
   QRCODE_INTRO("qrcode_intro");
 

@@ -86,10 +86,6 @@ public class FormularAufbereitung
   private static final String EPC_EUR = "EUR";
 
   private int buendig = links;
-  
-  private static final int OPEN = 0;
-  
-  private static final int SUM = 1;
 
   /**
    * Öffnet die Datei und startet die PDF-Generierung
@@ -156,7 +152,6 @@ public class FormularAufbereitung
           // Increase counter if form field is zaehler or qrcode (counter is
           // needed in QR code, so it needs to be incremented)
           if ((f.getName().equals(AllgemeineVar.ZAEHLER.getName())
-              || f.getName().equals(MitgliedskontoVar.QRCODE_OFFEN.getName())
               || f.getName().equals(MitgliedskontoVar.QRCODE_SUMME.getName()))
               && !increased)
           {
@@ -168,17 +163,10 @@ public class FormularAufbereitung
                 zaehler.toString(), zaehlerLaenge, "0"));
           }
           
-          // create QR code for open amount if form field is QRCODE_OPEN
-          if (f.getName().equals(MitgliedskontoVar.QRCODE_OFFEN.getName()))
-          {
-            map.put(MitgliedskontoVar.QRCODE_OFFEN.getName(), getPaymentQRCode(OPEN, map));
-            // Update QR code
-          }
-
           // create QR code for invoice sum if form field is QRCODE_SUM
           if (f.getName().equals(MitgliedskontoVar.QRCODE_SUMME.getName()))
           {
-            map.put(MitgliedskontoVar.QRCODE_SUMME.getName(), getPaymentQRCode(SUM, map));
+            map.put(MitgliedskontoVar.QRCODE_SUMME.getName(), getPaymentQRCode(map));
             // Update QR code
           }
 
@@ -200,7 +188,7 @@ public class FormularAufbereitung
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  private Image getPaymentQRCode(int type, Map fieldsMap) throws RemoteException
+  private Image getPaymentQRCode(Map fieldsMap) throws RemoteException
   {
 
     Einstellung e = Einstellungen.getEinstellung();
@@ -310,18 +298,11 @@ public class FormularAufbereitung
     sbEpc.append(e.getName()).append("\n");
     sbEpc.append(e.getIban()).append("\n");
     sbEpc.append(EPC_EUR);
-    if (type == OPEN)
-    {
-      sbEpc.append(
-          getString(fieldsMap.get(MitgliedskontoVar.SUMME_OFFEN.getName())));
-    }
-    else
-    {
-      Object[] oPosten = (Object[])fieldsMap
-          .get(MitgliedskontoVar.BETRAG.getName()); 
-      String betrag = getString(oPosten[oPosten.length - 1]);
-      sbEpc.append(betrag);
-    }
+    Object[] oPosten = (Object[]) fieldsMap
+        .get(MitgliedskontoVar.BETRAG.getName());
+    // Der letzte Eintrag in dem Array ist die Rechnungssumme,
+    String betrag = getString(oPosten[oPosten.length - 1]);
+    sbEpc.append(betrag);
     sbEpc.append("\n");
     sbEpc.append("\n"); // currently purpose code not used here
     sbEpc.append("\n"); // Reference not used, unstructured text used instead
@@ -329,8 +310,8 @@ public class FormularAufbereitung
         verwendungszweck.substring(0, Math.min(verwendungszweck.length(), 140)))
         .append("\n"); // trim to 140 chars max.
     sbEpc.append(
-        infoToMitglied.substring(0, Math.min(infoToMitglied.length(), 70))); 
-    	// trim to 70 chars max.
+        infoToMitglied.substring(0, Math.min(infoToMitglied.length(), 70)));
+    // trim to 70 chars max.
     String charset = EPC_CHARSET;
     Map hintMap = new HashMap();
     hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
