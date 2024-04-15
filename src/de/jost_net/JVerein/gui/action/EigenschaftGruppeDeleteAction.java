@@ -18,9 +18,13 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
+import de.jost_net.JVerein.rmi.Eigenschaft;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.SimpleDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
@@ -51,14 +55,32 @@ public class EigenschaftGruppeDeleteAction implements Action
       {
         return;
       }
-      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Eigenschaften-Gruppe löschen");
-      d.setText("Wollen Sie diese Eigenschaften-Gruppe wirklich löschen?");
+      
+      DBIterator<Eigenschaft> it = Einstellungen.getDBService()
+          .createList(Eigenschaft.class);
+      it.addFilter("eigenschaftgruppe = ?", new Object[] { eg.getID() });
+      
       try
       {
-        Boolean choice = (Boolean) d.open();
-        if (!choice.booleanValue())
+        if (it.size() > 0)
+        {
+          SimpleDialog sd = new SimpleDialog(SimpleDialog.POSITION_CENTER);
+          sd.setTitle("Eigenschaften-Gruppe löschen");
+          sd.setText(String.format(
+              "Die Eigenschaften-Gruppe kann nicht gelöscht werden. Sie enthält noch %d Eigenschaft(en).",
+              it.size()));
+          sd.open();
           return;
+        }
+        else
+        {
+          YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+          d.setTitle("Eigenschaften-Gruppe löschen");
+          d.setText("Wollen Sie diese Eigenschaften-Gruppe wirklich löschen?");
+          Boolean choice = (Boolean) d.open();
+          if (!choice.booleanValue())
+            return;
+        }
       }
       catch (Exception e)
       {
