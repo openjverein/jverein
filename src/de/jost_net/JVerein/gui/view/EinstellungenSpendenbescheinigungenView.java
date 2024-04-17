@@ -52,8 +52,10 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
         control.getSpendenbescheinigungverzeichnis());
     cont.addLabelPair("Buchungsart drucken",
         control.getSpendenbescheinigungPrintBuchungsart());
-    cont.addLabelPair("Adressausgabe für Brieffenster",
+    cont.addLabelPair("Adressausgabe für Brieffenster (Briefversand)",
         control.getSpendenbescheinigungadresse());
+    cont.addLabelPair("Adressausgabe für Brieffenster (Mailversand)",
+        control.getSpendenbescheinigungadressem());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

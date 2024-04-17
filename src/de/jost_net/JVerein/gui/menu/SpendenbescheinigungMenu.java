@@ -38,10 +38,12 @@ public class SpendenbescheinigungMenu extends ContextMenu
    */
   public SpendenbescheinigungMenu()
   {
-    addItem(new CheckedContextMenuItem("Drucken (Standard)",
-        new SpendenbescheinigungPrintAction(true), "file-pdf.png"));
+    addItem(new CheckedContextMenuItem("Drucken (Standard, Briefversand)",
+        new SpendenbescheinigungPrintAction(true, false), "file-pdf.png"));
+    addItem(new CheckedContextMenuItem("Drucken (Standard, Mailversand)",
+        new SpendenbescheinigungPrintAction(true, true), "file-pdf.png"));
     addItem(new CheckedContextMenuItem("Drucken (individuell)",
-        new SpendenbescheinigungPrintAction(false), "file-pdf.png"));
+        new SpendenbescheinigungPrintAction(false, false), "file-pdf.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("E-Mail an Spender",
         new SpendenbescheinigungEmailAction(), "envelope-open.png"));

@@ -60,6 +60,8 @@ public class SpendenbescheinigungPrintAction implements Action
 {
 
   private boolean standardPdf = true;
+  
+  private boolean mailversand = false;
 
   private String fileName = null;
 
@@ -82,13 +84,16 @@ public class SpendenbescheinigungPrintAction implements Action
    * 
    * @param standard
    *          true=Standard-Dokument, false=individuelles Dokument
+   * @param mailversand
+   *          true=für Mailversand, false=für Briefversand
    */
-  public SpendenbescheinigungPrintAction(boolean standard)
+  public SpendenbescheinigungPrintAction(boolean standard, boolean mailversand)
   {
     super();
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
     standardPdf = standard;
+    this.mailversand = mailversand;
   }
 
   /**
@@ -97,16 +102,19 @@ public class SpendenbescheinigungPrintAction implements Action
    * 
    * @param standard
    *          true=Standard-Dokument, false=individuelles Dokument
+   * @param mailversand
+   *          true=für Mailversand, false=für Briefversand
    * @param fileName
    *          Dateiname als Vorgabe inklusive Pfad
    */
-  public SpendenbescheinigungPrintAction(boolean standard, String fileName)
+  public SpendenbescheinigungPrintAction(boolean standard, boolean mailversand, String fileName)
   {
     super();
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
     standardPdf = standard;
     this.fileName = fileName;
+    this.mailversand = mailversand;
   }
 
   /**
@@ -1281,7 +1289,12 @@ public class SpendenbescheinigungPrintAction implements Action
       rpt.closeTable();      
     }
     
-    if (Einstellungen.getEinstellung().getSpendenbescheinigungadresse())
+    String email = spb.getMitglied().getEmail();
+    if ( (mailversand == false && Einstellungen.getEinstellung().getSpendenbescheinigungadresse())
+        || (mailversand == true && Einstellungen.getEinstellung().getSpendenbescheinigungadresse() 
+            && (email == null || email.isEmpty()))
+        || (mailversand == true && Einstellungen.getEinstellung().getSpendenbescheinigungadressem() 
+             && email != null && !email.isEmpty()))
     {
       // Neue Seite mit Anschrift für Fenster in querem Brief
       rpt.newPage();
