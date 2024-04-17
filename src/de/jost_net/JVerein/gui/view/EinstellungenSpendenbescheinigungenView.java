@@ -56,6 +56,9 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
         control.getSpendenbescheinigungadresse());
     cont.addLabelPair("Adressausgabe für Brieffenster (Mailversand)",
         control.getSpendenbescheinigungadressem());
+    cont.addLabelPair("Unterschrift drucken",
+        control.getUnterschriftdrucken());
+    cont.addLabelPair("Unterschrift", control.getUnterschrift());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

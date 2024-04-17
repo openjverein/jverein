@@ -552,4 +552,11 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public void setSpendenbescheinigungadressem(Boolean spendenbescheinigungadressem) throws RemoteException;
 
+  public Boolean getUnterschriftdrucken() throws RemoteException;
+
+  public void setUnterschriftdrucken(Boolean unterschriftdrucken) throws RemoteException;
+  
+  public byte[] getUnterschrift() throws RemoteException;
+
+  public void setUnterschrift(byte[] unterschrift) throws RemoteException;
 }

@@ -52,6 +52,7 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.DirectoryInput;
+import de.willuhn.jameica.gui.input.ImageInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.PasswordInput;
@@ -297,6 +298,11 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput spendenbescheinigungadresse;
   
   private CheckboxInput spendenbescheinigungadressem;
+
+  private CheckboxInput unterschriftdrucken;
+  
+  private ImageInput unterschrift;
+
 
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
@@ -1818,6 +1824,26 @@ public class EinstellungControl extends AbstractControl
     abrlabschliessen.setName("Funktion einschalten");
     return abrlabschliessen;
   }
+  
+  public CheckboxInput getUnterschriftdrucken() throws RemoteException 
+  {
+    if (unterschriftdrucken != null) 
+    {
+      return unterschriftdrucken;
+    }
+    unterschriftdrucken = new CheckboxInput(Einstellungen.getEinstellung().getUnterschriftdrucken());
+    return unterschriftdrucken;
+  }
+
+  public ImageInput getUnterschrift() throws RemoteException
+  {
+    if (unterschrift != null)
+    {
+      return unterschrift;
+    }
+    unterschrift = new ImageInput(Einstellungen.getEinstellung().getUnterschrift(), 400, 75);
+    return unterschrift;
+  }
 
   public void handleStoreAllgemein()
   {
@@ -1987,6 +2013,8 @@ public class EinstellungControl extends AbstractControl
           .getValue());
       e.setSpendenbescheinigungadresse((Boolean) getSpendenbescheinigungadresse().getValue());
       e.setSpendenbescheinigungadressem((Boolean) getSpendenbescheinigungadressem().getValue());
+      e.setUnterschriftdrucken((Boolean) unterschriftdrucken.getValue());
+      e.setUnterschrift((byte[]) unterschrift.getValue());
       e.store();
       Einstellungen.setEinstellung(e);
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
