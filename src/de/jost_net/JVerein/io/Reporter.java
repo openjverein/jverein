@@ -247,7 +247,7 @@ public class Reporter
     }
     else
     {
-      w = i.getHeight() / h;
+      w = i.getWidth() / h;
       h = height;
     }
     i.scaleToFit(w, h);
@@ -255,6 +255,27 @@ public class Reporter
     cell.setPadding(3);
     cell.setHorizontalAlignment(horizontalalignment);
     table.addCell(cell);
+  }
+  
+  public void add(byte[] image, int width, int height,
+      int horizontalalignment)
+      throws BadElementException, MalformedURLException, IOException, DocumentException
+  {
+    Image i = Image.getInstance(image);
+    float w = i.getWidth() / width;
+    float h = i.getHeight() / height;
+    if (w > h)
+    {
+      h = i.getHeight() / w;
+      w = width;
+    }
+    else
+    {
+      w = i.getWidth() / h;
+      h = height;
+    }
+    i.scaleToFit(w, h);
+    rpt.add(i);
   }
 
   /**

@@ -2548,7 +2548,7 @@ public class MitgliedControl extends AbstractControl
     {
       return suchexternemitgliedsnummer;
     }
-    suchexternemitgliedsnummer = new TextInput("", 50);
+    suchexternemitgliedsnummer = new TextInput(settings.getString(mitgliedtyp + ".suchExterneMitgliedsNummer",""), 50);
     return suchexternemitgliedsnummer;
   }
 
@@ -2793,7 +2793,19 @@ public class MitgliedControl extends AbstractControl
       settings.setAttribute("status.mitglied",
           (String) getMitgliedStatus().getValue());
     }
-
+    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer() &&
+        suchexternemitgliedsnummer != null)
+    {
+      String tmp = (String) getSuchExterneMitgliedsnummer().getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute(mitgliedtyp + ".suchExterneMitgliedsNummer",tmp);
+      }
+      else
+      {
+        settings.setAttribute(mitgliedtyp + ".suchExterneMitgliedsNummer","");
+      }
+    }
     if (geburtsdatumvon != null)
     {
       Date tmp = (Date) getGeburtsdatumvon().getValue();

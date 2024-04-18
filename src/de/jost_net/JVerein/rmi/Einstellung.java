@@ -543,6 +543,10 @@ public interface Einstellung extends DBObject, IBankverbindung
       throws RemoteException;
 
   public SepaVersion getCt1SepaVersion() throws RemoteException;
+  
+  public Boolean getSpendenbescheinigungadresse() throws RemoteException;
+
+  public void setSpendenbescheinigungadresse(Boolean spendenbescheinigungadresse) throws RemoteException;
 
   public int getQRCodeSizeInMm() throws RemoteException;
 
@@ -584,4 +588,11 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public void setQRCodeIntro(String intro) throws RemoteException;
 
+  public Boolean getUnterschriftdrucken() throws RemoteException;
+
+  public void setUnterschriftdrucken(Boolean unterschriftdrucken) throws RemoteException;
+  
+  public byte[] getUnterschrift() throws RemoteException;
+
+  public void setUnterschrift(byte[] unterschrift) throws RemoteException;
 }
