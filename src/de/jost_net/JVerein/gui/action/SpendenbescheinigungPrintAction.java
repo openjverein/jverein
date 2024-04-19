@@ -47,7 +47,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
@@ -164,9 +163,8 @@ public class SpendenbescheinigungPrintAction implements Action
           Formular spendeformular = spb.getFormular();
           if (spendeformular == null)
           {
-            GUI.getStatusBar().setErrorText(
-                "Nicht alle Spendenbescheinigungen haben ein gültiges Formular!");
-            return;
+            String text = "Nicht alle Spendenbescheinigungen haben ein gültiges Formular!";
+            throw new ApplicationException(text);
           }
         }
       }
@@ -238,8 +236,7 @@ public class SpendenbescheinigungPrintAction implements Action
     {
       String fehler = "Fehler beim Aufbereiten der Spendenbescheinigung ("
           + e.getMessage() + ")";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
     }
   }
 
