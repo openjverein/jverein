@@ -402,7 +402,14 @@ public class FormularAufbereitung
     {
       return;
     }
-    if (val instanceof String)
+    else if (val instanceof Image)
+    {
+      com.itextpdf.text.Image i = com.itextpdf.text.Image
+          .getInstance((Image) val, Color.BLACK);
+      float sz = mm2point(Einstellungen.getEinstellung().getQRCodeSizeInMm());
+      contentByte.addImage(i, sz, 0, 0, sz, x, y);
+    }
+    else
     {
       buendig = links;
       String stringVal = getString(val);
@@ -422,16 +429,6 @@ public class FormularAufbereitung
         contentByte.showText(s);
         contentByte.endText();
         y -= feld.getFontsize().floatValue() + 3;
-      }
-    }
-    else
-    {
-      if (val instanceof Image)
-      {
-        com.itextpdf.text.Image i = com.itextpdf.text.Image
-            .getInstance((Image) val, Color.BLACK);
-        float sz = mm2point(Einstellungen.getEinstellung().getQRCodeSizeInMm());
-        contentByte.addImage(i, sz, 0, 0, sz, x, y);
       }
     }
   }
