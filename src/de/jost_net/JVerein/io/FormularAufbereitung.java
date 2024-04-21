@@ -300,8 +300,9 @@ public class FormularAufbereitung
     sbEpc.append(EPC_EUR);
     Object[] oPosten = (Object[]) fieldsMap
         .get(MitgliedskontoVar.BETRAG.getName());
-    // Der letzte Eintrag in dem Array ist die Rechnungssumme,
-    String betrag = getString(oPosten[oPosten.length - 1]);
+    // Der letzte Eintrag in dem Array ist die Rechnungssumme
+    // Ersetze das Dezimalkomma durch einen Punkt, um der Spezifikation zu entsprechen
+    String betrag = getString(oPosten[oPosten.length - 1]).replace(',', '.');
     sbEpc.append(betrag);
     sbEpc.append("\n");
     sbEpc.append("\n"); // currently purpose code not used here
