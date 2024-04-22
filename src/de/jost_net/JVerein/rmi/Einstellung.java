@@ -548,6 +548,46 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public void setSpendenbescheinigungadresse(Boolean spendenbescheinigungadresse) throws RemoteException;
 
+  public int getQRCodeSizeInMm() throws RemoteException;
+
+  public void setQRCodeSizeInMm(int size) throws RemoteException;
+
+  public boolean getQRCodeFesterText() throws RemoteException;
+
+  public void setQRCodeFesterText(boolean printText) throws RemoteException;
+
+  public boolean getQRCodeDatum() throws RemoteException;
+
+  public void setQRCodeDatum(boolean printDate) throws RemoteException;
+
+  public boolean getQRCodeReNu() throws RemoteException;
+
+  public void setQRCodeReNu(boolean printNum) throws RemoteException;
+
+  public boolean getQRCodeMember() throws RemoteException;
+
+  public void setQRCodeMember(boolean printMember) throws RemoteException;
+
+  public String getQRCodeText() throws RemoteException;
+
+  public void setQRCodeText(String text) throws RemoteException;
+
+  public boolean getQRCodeSnglLine() throws RemoteException;
+
+  public void setQRCodeSnglLine(boolean single) throws RemoteException;
+
+  public String getQRCodeInfoM() throws RemoteException;
+
+  public void setQRCodeInfoM(String infoMitglied) throws RemoteException;
+
+  public boolean getQRCodeKuerzen() throws RemoteException;
+
+  public void setQRCodeKuerzen(boolean kuerzen) throws RemoteException;
+
+  public String getQRCodeIntro() throws RemoteException;
+
+  public void setQRCodeIntro(String intro) throws RemoteException;
+
   public Boolean getUnterschriftdrucken() throws RemoteException;
 
   public void setUnterschriftdrucken(Boolean unterschriftdrucken) throws RemoteException;
