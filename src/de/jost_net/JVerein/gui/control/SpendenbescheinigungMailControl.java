@@ -273,7 +273,10 @@ public class SpendenbescheinigungMailControl extends AbstractControl
               empf.setVersand(ts);
               empf.store();
               anh.setMail(mail);
-              anh.store();
+              if (Einstellungen.getEinstellung().getAnhangSpeichern())
+              {
+                anh.store();
+              }
 
               monitor.log(m.getEmail() + " - versendet");
             }
