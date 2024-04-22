@@ -1818,6 +1818,176 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
 
   @Override
+  public int getQRCodeSizeInMm() throws RemoteException
+  {
+    Integer qrsizemm = (Integer) getAttribute("qrcodesizemm");
+    if (null == qrsizemm)
+    {
+      return 20;
+    }
+    return qrsizemm.intValue();
+  }
+
+  @Override
+  public void setQRCodeSizeInMm(int size) throws RemoteException
+  {
+    setAttribute("qrcodesizemm", size);
+  }
+
+  @Override
+  public boolean getQRCodeFesterText() throws RemoteException
+  {
+    Boolean printFesterText = (Boolean) getAttribute("qrcodeptext");
+    if (null == printFesterText)
+    {
+      return true;
+    }
+    return printFesterText.booleanValue();
+  }
+
+  @Override
+  public void setQRCodeFesterText(boolean printText) throws RemoteException
+  {
+    setAttribute("qrcodeptext", printText);
+  }
+
+  @Override
+  public boolean getQRCodeDatum() throws RemoteException
+  {
+    Boolean printDatum = (Boolean) getAttribute("qrcodepdate");
+    if (null == printDatum)
+    {
+      return false;
+    }
+    return printDatum.booleanValue();
+  }
+
+  @Override
+  public void setQRCodeDatum(boolean printDate) throws RemoteException
+  {
+    setAttribute("qrcodepdate", printDate);
+  }
+
+  @Override
+  public boolean getQRCodeReNu() throws RemoteException
+  {
+    Boolean printReNr = (Boolean) getAttribute("qrcodeprenum");
+    if (null == printReNr)
+    {
+      return false;
+    }
+    return printReNr.booleanValue();
+  }
+
+  @Override
+  public void setQRCodeReNu(boolean printReNum) throws RemoteException
+  {
+    setAttribute("qrcodeprenum", printReNum);
+  }
+
+  @Override
+  public boolean getQRCodeMember() throws RemoteException
+  {
+    Boolean printMemberNr = (Boolean) getAttribute("qrcodepmnum");
+    if (null == printMemberNr)
+    {
+      return false;
+    }
+    return printMemberNr.booleanValue();
+  }
+
+  @Override
+  public void setQRCodeMember(boolean printMember) throws RemoteException
+  {
+    setAttribute("qrcodepmnum", printMember);
+  }
+
+  @Override
+  public String getQRCodeText() throws RemoteException
+  {
+    String qrText = (String) getAttribute("qrcodetext");
+    if (null == qrText)
+    {
+      return "Mitgliedsbeitrag";
+    }
+    return qrText;
+  }
+
+  @Override
+  public void setQRCodeText(String text) throws RemoteException
+  {
+    setAttribute("qrcodetext", text);
+  }
+
+  @Override
+  public boolean getQRCodeSnglLine() throws RemoteException
+  {
+    Boolean replaceSnglLine = (Boolean) getAttribute("qrcodesngl");
+    if (null == replaceSnglLine)
+    {
+      return true;
+    }
+    return replaceSnglLine.booleanValue();
+  }
+
+  @Override
+  public void setQRCodeSnglLine(boolean single) throws RemoteException
+  {
+    setAttribute("qrcodesngl", single);
+  }
+
+  @Override
+  public String getQRCodeInfoM() throws RemoteException
+  {
+    String qrInfoToMember = (String) getAttribute("qrcodeinfom");
+    if (null == qrInfoToMember)
+    {
+      return "Vielen Dank!";
+    }
+    return qrInfoToMember;
+  }
+
+  @Override
+  public void setQRCodeInfoM(String infoMitglied) throws RemoteException
+  {
+    setAttribute("qrcodeinfom", infoMitglied);
+  }
+
+  @Override
+  public boolean getQRCodeKuerzen() throws RemoteException
+  {
+    Boolean kuerzen = (Boolean) getAttribute("qrcodekuerzen");
+    if (null == kuerzen)
+    {
+      return false;
+    }
+    return kuerzen.booleanValue();
+  }
+
+  @Override
+  public void setQRCodeKuerzen(boolean kuerzen) throws RemoteException
+  {
+    setAttribute("qrcodekuerzen", kuerzen);
+  }
+
+  @Override
+  public String getQRCodeIntro() throws RemoteException
+  {
+    String intro = (String) getAttribute("qrcodeintro");
+    if (null == intro)
+    {
+      return "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen.";
+    }
+    return intro;
+  }
+
+  @Override
+  public void setQRCodeIntro(String intro) throws RemoteException
+  {
+    setAttribute("qrcodeintro", intro);
+  }
+
+  @Override
   public Boolean getSpendenbescheinigungadresse() throws RemoteException
   {
     return Util.getBoolean(getAttribute("spendenbescheinigungadresse"));
