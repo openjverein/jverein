@@ -556,7 +556,6 @@ public class MailControl extends AbstractControl
       for (MailEmpfaenger me : getMail().getEmpfaenger())
       {
         me.setMail(m);
-        me.setVersand(m.getVersand());
         me.store();
       }
       DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
