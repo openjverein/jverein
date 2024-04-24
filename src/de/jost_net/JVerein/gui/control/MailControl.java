@@ -463,33 +463,40 @@ public class MailControl extends AbstractControl
           int sentCount = 0;
           for (final MailEmpfaenger empf : getMail().getEmpfaenger())
           {
-            EvalMail em = new EvalMail(empf);
-            if (erneutSenden || empf.getVersand() == null)
+            try
             {
-              sender.sendMail(empf.getMailAdresse(), em.evalBetreff(betr),
-                  em.evalText(txt), getMail().getAnhang());
-              sentCount++;
-              monitor.log(empf.getMailAdresse() + " - versendet");
-              // Nachricht wurde erfolgreich versendet; speicher Versand-Datum
-              // persistent.
-              empf.setVersand(new Timestamp(new Date().getTime()));
-              // Fix null value in colum mail for mailempfaenger
-              empf.setMail(getMail());
-              empf.store();
-              // aktualisiere TablePart getEmpfaenger() (zeige neues
-              // Versand-Datum)
-              GUI.startView(GUI.getCurrentView().getClass(),
-                  GUI.getCurrentView().getCurrentObject());
+              EvalMail em = new EvalMail(empf);
+              if (erneutSenden || empf.getVersand() == null)
+              {
+                sender.sendMail(empf.getMailAdresse(), em.evalBetreff(betr),
+                    em.evalText(txt), getMail().getAnhang());
+                sentCount++;
+                monitor.log(empf.getMailAdresse() + " - versendet");
+                // Nachricht wurde erfolgreich versendet; speicher Versand-Datum
+                // persistent.
+                empf.setVersand(new Timestamp(new Date().getTime()));
+                // Fix null value in colum mail for mailempfaenger
+                empf.setMail(getMail());
+                empf.store();
+                // aktualisiere TablePart getEmpfaenger() (zeige neues
+                // Versand-Datum)
+                GUI.startView(GUI.getCurrentView().getClass(),
+                    GUI.getCurrentView().getCurrentObject());
+              }
+              else
+              {
+                monitor.log(empf.getMailAdresse() + " - übersprungen");
+              }
+              zae++;
+              double proz = (double) zae
+                  / (double) getMail().getEmpfaenger().size() * 100d;
+              monitor.setPercentComplete((int) proz);
             }
-            else
+            catch (Exception e)
             {
-              monitor.log(empf.getMailAdresse() + " - übersprungen");
-            }
-            zae++;
-            double proz = (double) zae
-                / (double) getMail().getEmpfaenger().size() * 100d;
-            monitor.setPercentComplete((int) proz);
-
+              Logger.error("Fehler beim Mailversand", e);
+              monitor.log(empf.getMailAdresse() + " - " + e.getMessage());
+            }         
           }
           monitor.setPercentComplete(100);
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
