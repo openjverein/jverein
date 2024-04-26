@@ -552,11 +552,14 @@ public class MailControl extends AbstractControl
       {
         m.setVersand(new Timestamp(new Date().getTime()));
       }
+      else
+      {
+        m.setVersand(null);
+      }
       m.store();
       for (MailEmpfaenger me : getMail().getEmpfaenger())
       {
         me.setMail(m);
-        me.setVersand(m.getVersand());
         me.store();
       }
       DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
