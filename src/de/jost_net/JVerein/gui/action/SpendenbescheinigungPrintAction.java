@@ -1297,7 +1297,11 @@ public class SpendenbescheinigungPrintAction implements Action
       rpt.closeTable();      
     }
     
-    String email = spb.getMitglied().getEmail();
+    String email = null;
+    if (spb.getMitglied() != null)
+    {
+        spb.getMitglied().getEmail();
+    }
     if ( (mailversand == false && Einstellungen.getEinstellung().getSpendenbescheinigungadresse())
         || (mailversand == true && Einstellungen.getEinstellung().getSpendenbescheinigungadresse() 
             && (email == null || email.isEmpty()))
