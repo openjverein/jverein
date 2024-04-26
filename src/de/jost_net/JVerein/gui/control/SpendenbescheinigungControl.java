@@ -461,9 +461,14 @@ public class SpendenbescheinigungControl extends AbstractControl
     }
   }
 
-  public Button getPDFStandardButton()
+  public Button getPDFStandardButton(final boolean mailversand)
   {
-    Button b = new Button("PDF (Standard)", new Action()
+    String label = "PDF (Standard, Briefversand)";
+    if (mailversand)
+    {
+      label = "PDF (Standard, Mailversand)";
+    }
+    Button b = new Button(label, new Action()
     {
 
       /**
@@ -519,7 +524,7 @@ public class SpendenbescheinigungControl extends AbstractControl
           final File file = new File(s);
           //
           SpendenbescheinigungPrintAction spa = new SpendenbescheinigungPrintAction(
-              true, s);
+              true, mailversand, s);
           spa.handleAction(spb);
           GUI.getStatusBar().setSuccessText("Spendenbescheinigung erstellt");
           FileViewer.show(file);

@@ -2000,6 +2000,17 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
   
   @Override
+  public Boolean getSpendenbescheinigungadressem() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("spendenbescheinigungadressem"));
+  }
+
+  @Override
+  public void setSpendenbescheinigungadressem(Boolean spendenbescheinigungadressem) throws RemoteException
+  {
+    setAttribute("spendenbescheinigungadressem", spendenbescheinigungadressem);
+  }
+  
   public Boolean getUnterschriftdrucken() throws RemoteException
   {
     return Util.getBoolean(getAttribute("unterschriftdrucken"));

@@ -547,6 +547,10 @@ public interface Einstellung extends DBObject, IBankverbindung
   public Boolean getSpendenbescheinigungadresse() throws RemoteException;
 
   public void setSpendenbescheinigungadresse(Boolean spendenbescheinigungadresse) throws RemoteException;
+  
+  public Boolean getSpendenbescheinigungadressem() throws RemoteException;
+
+  public void setSpendenbescheinigungadressem(Boolean spendenbescheinigungadressem) throws RemoteException;
 
   public int getQRCodeSizeInMm() throws RemoteException;
 
