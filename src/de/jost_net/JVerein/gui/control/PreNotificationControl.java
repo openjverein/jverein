@@ -505,6 +505,8 @@ public class PreNotificationControl extends AbstractControl
           monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
           monitor.setPercentComplete(0);
           int sentCount = 0;
+          int zae = 0;
+          int size = it.size();
           while (it.hasNext())
           {
             Lastschrift ls = (Lastschrift) it.next();
@@ -555,6 +557,9 @@ public class PreNotificationControl extends AbstractControl
               Logger.error("Fehler beim Mailversand", e);
               monitor.log(ls.getEmail() + " - " + e.getMessage());
             }
+            zae++;
+            double proz = (double) zae / (double) size * 100d;
+            monitor.setPercentComplete((int) proz);
           }
           monitor.setPercentComplete(100);
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
