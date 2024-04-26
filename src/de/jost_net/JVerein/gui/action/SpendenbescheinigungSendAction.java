@@ -86,12 +86,12 @@ public class SpendenbescheinigungSendAction implements Action
       }
       else if (choice == Auswahl.DRUCKEN_STANDARD)
       {
-        SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(true);
+        SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(true, true);
         action.handleAction(spbArr);
       }
       else if (choice == Auswahl.DRUCKEN_INDIVIDUELL)
       {
-        SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(false);
+        SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(false, true);
         action.handleAction(spbArr);
       }
 

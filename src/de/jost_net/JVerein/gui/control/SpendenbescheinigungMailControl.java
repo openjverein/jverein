@@ -202,6 +202,7 @@ public class SpendenbescheinigungMailControl extends AbstractControl
           monitor.setPercentComplete(0);
 
           int sentCount = 0;
+          int zae = 0;
           int size = spbArr.length;
           for (int i=0; i < size; i++)
           {
@@ -285,6 +286,10 @@ public class SpendenbescheinigungMailControl extends AbstractControl
               Logger.error("Fehler beim Mailversand", e);
               monitor.log(m.getEmail() + " - " + e.getMessage());
             }
+            zae++;
+            double proz = (double) zae
+                / (double) size * 100d;
+            monitor.setPercentComplete((int) proz);
           }
           monitor.setPercentComplete(100);
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
