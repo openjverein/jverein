@@ -487,16 +487,16 @@ public class MailControl extends AbstractControl
               {
                 monitor.log(empf.getMailAdresse() + " - übersprungen");
               }
-              zae++;
-              double proz = (double) zae
-                  / (double) getMail().getEmpfaenger().size() * 100d;
-              monitor.setPercentComplete((int) proz);
             }
             catch (Exception e)
             {
               Logger.error("Fehler beim Mailversand", e);
               monitor.log(empf.getMailAdresse() + " - " + e.getMessage());
-            }  
+            }
+            zae++;
+            double proz = (double) zae
+                / (double) getMail().getEmpfaenger().size() * 100d;
+            monitor.setPercentComplete((int) proz);
           }
           monitor.setPercentComplete(100);
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
