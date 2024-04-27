@@ -65,7 +65,6 @@ public class NichtMitgliederSucheView extends AbstractMitgliedSucheView
     if (Einstellungen.getEinstellung().hasZusatzfelder())
     {
       DialogInput mitglzusatzfelder = control.getZusatzfelderAuswahl();
-      mitglzusatzfelder.addListener(new FilterListener());
       left.addLabelPair("Zusatzfelder", mitglzusatzfelder);
     }
     
@@ -74,8 +73,7 @@ public class NichtMitgliederSucheView extends AbstractMitgliedSucheView
     right.addLabelPair("Geburtsdatum von", mitglgebdatvon);
     DateInput mitglgebdatbis = control.getGeburtsdatumbis();
     right.addLabelPair("Geburtsdatum bis", mitglgebdatbis);
-    SelectInput mitglgeschlecht = control.getGeschlecht();
-    mitglgeschlecht.setMandatory(false);
+    SelectInput mitglgeschlecht = control.getSuchGeschlecht();
     mitglgeschlecht.addListener(new FilterListener());
     right.addLabelPair("Geschlecht", mitglgeschlecht);
     
@@ -93,7 +91,7 @@ public class NichtMitgliederSucheView extends AbstractMitgliedSucheView
           control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).setValue(null);
           control.getGeburtsdatumvon().setValue(null);
           control.getGeburtsdatumbis().setValue(null);
-          control.getGeschlecht().setValue(null);
+          control.getSuchGeschlecht().setValue(null);
           if (Einstellungen.getEinstellung().hasZusatzfelder())
           {
             control.resetZusatzfelderAuswahl();

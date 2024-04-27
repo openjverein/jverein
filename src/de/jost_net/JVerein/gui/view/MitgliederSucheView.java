@@ -78,8 +78,7 @@ public class MitgliederSucheView extends AbstractMitgliedSucheView
     middle.addLabelPair("Geburtsdatum von", mitglgebdatvon);
     DateInput mitglgebdatbis = control.getGeburtsdatumbis();
     middle.addLabelPair("Geburtsdatum bis", mitglgebdatbis);
-    SelectInput mitglgeschlecht = control.getGeschlecht();
-    mitglgeschlecht.setMandatory(false);
+    SelectInput mitglgeschlecht = control.getSuchGeschlecht();
     mitglgeschlecht.addListener(new FilterListener());
     middle.addLabelPair("Geschlecht", mitglgeschlecht);
     DateInput stichtag = control.getStichtag();
@@ -122,7 +121,7 @@ public class MitgliederSucheView extends AbstractMitgliedSucheView
           control.getSuchname().setValue("");
           control.getGeburtsdatumvon().setValue(null);
           control.getGeburtsdatumbis().setValue(null);
-          control.getGeschlecht().setValue(null);
+          control.getSuchGeschlecht().setValue(null);
           control.getEintrittvon().setValue(null);
           control.getEintrittbis().setValue(null);
           control.getAustrittvon().setValue(null);

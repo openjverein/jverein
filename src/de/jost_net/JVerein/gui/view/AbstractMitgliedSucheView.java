@@ -127,7 +127,6 @@ public abstract class AbstractMitgliedSucheView extends AbstractView
   {
     try
     {
-      control.saveDefaults();
       Adresstyp at = (Adresstyp) control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
       if (at != null)
       {

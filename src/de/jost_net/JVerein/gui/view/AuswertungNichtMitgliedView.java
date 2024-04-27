@@ -16,9 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -26,38 +29,51 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class AuswertungAdresseView extends AbstractView
+public class AuswertungNichtMitgliedView extends AbstractView
 {
+  final MitgliedControl control = new MitgliedControl(this);
+  
+  public AuswertungNichtMitgliedView() throws RemoteException
+  {
+    control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
+  }
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Auswertung Nicht-Mitgliederdaten");
 
-    final MitgliedControl control = new MitgliedControl(this);
-
     LabelGroup group = new LabelGroup(getParent(), "Filter");
 
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cl.getComposite());
 
+    left.addInput(control.getMailauswahl());
     left.addInput(control.getAdresstyp());
     left.addInput(control.getEigenschaftenAuswahl());
-
     if (Einstellungen.getEinstellung().hasZusatzfelder())
     {
       left.addInput(control.getZusatzfelderAuswahl());
     }
-    left.addInput(control.getGeburtsdatumvon());
-    left.addInput(control.getGeburtsdatumbis());
-
-    left.addInput(control.getMailauswahl());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
 
-    right.addInput(control.getAusgabe());
-    right.addInput(control.getAuswertungUeberschrift());
+    right.addInput(control.getGeburtsdatumvon());
+    right.addInput(control.getGeburtsdatumbis());
+    right.addInput(control.getSuchGeschlecht());
+    
+    // Zweite Gruppe: Ausgabe
+    LabelGroup group2 = new LabelGroup(getParent(), "Ausgabe");
 
+    ColumnLayout cl2 = new ColumnLayout(group2.getComposite(), 2);
+    SimpleContainer left2 = new SimpleContainer(cl2.getComposite());
+    SimpleContainer right2 = new SimpleContainer(cl2.getComposite());
+
+    left2.addInput(control.getSortierung());
+    left2.addInput(control.getAuswertungUeberschrift());
+    right2.addInput(control.getAusgabe());
+
+    // Button-Bereich
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.AUSWERTUNGMITGLIEDER, false, "question-circle.png");

@@ -16,27 +16,33 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class AuswertungMitgliedView extends AbstractView
-{
+{  
+  final MitgliedControl control = new MitgliedControl(this);
+  
+  public AuswertungMitgliedView() throws RemoteException
+  {
+    control.getSuchAdresstyp(Mitgliedstyp.MITGLIED).getValue();
+  }
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Auswertung Mitgliedsdaten");
-
-    final MitgliedControl control = new MitgliedControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
 
@@ -46,6 +52,11 @@ public class AuswertungMitgliedView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     Input mitglstat = control.getMitgliedStatus();
     left.addInput(mitglstat);
+    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    {
+      left.addLabelPair("Externe Mitgliedsnummer",
+          control.getSuchExterneMitgliedsnummer());
+    }
     left.addInput(control.getEigenschaftenAuswahl());
     left.addInput(control.getBeitragsgruppeAusw());
 
@@ -59,10 +70,8 @@ public class AuswertungMitgliedView extends AbstractView
     middle.addInput(control.getMailauswahl());
     middle.addInput(control.getGeburtsdatumvon());
     middle.addInput(control.getGeburtsdatumbis());
-
-    SelectInput inpGeschlecht = control.getGeschlecht();
-    inpGeschlecht.setMandatory(false);
-    middle.addInput(inpGeschlecht);
+    middle.addInput(control.getSuchGeschlecht());
+    middle.addInput(control.getStichtag(false));
 
     // right
     SimpleContainer right = new SimpleContainer(cl.getComposite());
@@ -71,7 +80,6 @@ public class AuswertungMitgliedView extends AbstractView
 
     right.addInput(control.getAustrittvon());
     right.addInput(control.getAustrittbis());
-    right.addInput(control.getStichtag(false));
 
     if (Einstellungen.getEinstellung().getSterbedatum())
     {

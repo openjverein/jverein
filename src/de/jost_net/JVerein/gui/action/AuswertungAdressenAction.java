@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.AuswertungAdresseView;
+import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -53,7 +53,7 @@ public class AuswertungAdressenAction implements Action
       }
     }
 
-    GUI.startView(AuswertungAdresseView.class.getName(), m);
+    GUI.startView(AuswertungNichtMitgliedView.class.getName(), m);
   }
 
 }
