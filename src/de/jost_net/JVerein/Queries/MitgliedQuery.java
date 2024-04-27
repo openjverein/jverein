@@ -257,20 +257,21 @@ public class MitgliedQuery
         {
           StringBuilder condEigenschaft = new StringBuilder(
               "(select count(*) from eigenschaften where ");
-          boolean first = true;
           condEigenschaft.append("eigenschaften.mitglied = mitglied.id AND (");
+          int count = 0;
           for (Eigenschaft ei : eiu.get(eg))
           {
-            if (!first)
+            if (count != 0)
             {
               condEigenschaft.append("OR ");
             }
-            first = false;
+            count++;
             condEigenschaft.append("eigenschaft = ? ");
             bedingungen.add(ei.getID());
           }
-          condEigenschaft.append(")) > 0 ");
+          condEigenschaft.append(")) = ? ");
           addCondition(condEigenschaft.toString());
+          bedingungen.add(Integer.toString(count));
         }
       }
       else
