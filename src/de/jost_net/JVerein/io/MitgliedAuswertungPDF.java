@@ -172,7 +172,7 @@ public class MitgliedAuswertungPDF implements IAuswertung
       for (int i = 1; i <= counter; i++)
       {
         String value = control.getSettings().getString(zusatzfeld + i + ".value", "");
-        if (!value.equals("") && !value.equals("false") && !value.equals("-1"))
+        if (!value.equals("") && !value.equals("false"))
         {
           params.put(
             control.getSettings().getString(zusatzfeld + i + ".name", ""), value);
