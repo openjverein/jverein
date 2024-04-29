@@ -45,8 +45,6 @@ public class MitgliedQuery
 
   private MitgliedControl control;
 
-  private boolean batch = false;
-
   private boolean and = false;
 
   private String sql = "";
@@ -55,25 +53,18 @@ public class MitgliedQuery
   
   String zusatzfelder = null;
 
-  public MitgliedQuery(MitgliedControl control, boolean batch)
+  public MitgliedQuery(MitgliedControl control)
   {
     this.control = control;
-    this.batch = batch;
   }
 
   @SuppressWarnings("unchecked")
   public ArrayList<Mitglied> get(int adresstyp) throws RemoteException
   {
-    if (adresstyp == 1)
-    {
-      zusatzfeld = "zusatzfeld.";
-      zusatzfelder = "zusatzfelder.";
-    }
-    else
-    {
-      zusatzfeld = "nichtzusatzfeld.";
-      zusatzfelder = "nichtzusatzfelder.";
-    }
+
+    zusatzfeld = control.getAdditionalparamprefix1();
+    zusatzfelder = control.getAdditionalparamprefix2();
+
     final DBService service = Einstellungen.getDBService();
     ArrayList<Object> bedingungen = new ArrayList<>();
 
@@ -218,7 +209,7 @@ public class MitgliedQuery
     {
       if (control.getMitgliedStatus().getValue().equals("Angemeldet"))
       {
-        if (control.getStichtag().getValue() != null)
+        if (control.isStichtagAktiv() && control.getStichtag().getValue() != null)
         {
           addCondition("(eintritt is null or eintritt <= ?)");
           bedingungen.add(control.getStichtag().getValue());
@@ -232,7 +223,7 @@ public class MitgliedQuery
       }
       else if (control.getMitgliedStatus().getValue().equals("Abgemeldet"))
       {
-        if (control.getStichtag().getValue() != null)
+        if (control.isStichtagAktiv() && control.getStichtag().getValue() != null)
         {
           addCondition("austritt is not null and austritt <= ?");
           bedingungen.add(control.getStichtag(false).getValue());
@@ -246,11 +237,11 @@ public class MitgliedQuery
     if (control.isMailauswahlAktiv())
     {
       int mailauswahl = (Integer) control.getMailauswahl().getValue();
-      if (batch && mailauswahl == MailAuswertungInput.OHNE)
+      if (mailauswahl == MailAuswertungInput.OHNE)
       {
         addCondition("(email is null or length(email) = 0)");
       }
-      if (batch && mailauswahl == MailAuswertungInput.MIT)
+      if (mailauswahl == MailAuswertungInput.MIT)
       {
         addCondition("(email is  not null and length(email) > 0)");
       }
@@ -268,20 +259,21 @@ public class MitgliedQuery
           {
             StringBuilder condEigenschaft = new StringBuilder(
                 "(select count(*) from eigenschaften where ");
-            boolean first = true;
             condEigenschaft.append("eigenschaften.mitglied = mitglied.id AND (");
+            int count = 0;
             for (Eigenschaft ei : eiu.get(eg))
             {
-              if (!first)
+              if (count != 0)
               {
                 condEigenschaft.append("OR ");
               }
-              first = false;
+              count++;
               condEigenschaft.append("eigenschaft = ? ");
               bedingungen.add(ei.getID());
             }
-            condEigenschaft.append(")) > 0 ");
+            condEigenschaft.append(")) = ? ");
             addCondition(condEigenschaft.toString());
+            bedingungen.add(Integer.toString(count));
           }
         }
         else
@@ -308,7 +300,7 @@ public class MitgliedQuery
     if (control.isSuchnameAktiv())
     {
       String tmpSuchname = (String) control.getSuchname().getValue();
-      if (!batch && tmpSuchname.length() > 0)
+      if (tmpSuchname.length() > 0)
       {
         addCondition("(lower(name) like ?)");
         bedingungen.add(tmpSuchname.toLowerCase() + "%");
@@ -328,13 +320,13 @@ public class MitgliedQuery
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
 
-    if (batch && control.isSterbedatumvonAktiv() && control.getSterbedatumvon().getValue() != null)
+    if (control.isSterbedatumvonAktiv() && control.getSterbedatumvon().getValue() != null)
     {
       addCondition("sterbetag >= ?");
       Date d = (Date) control.getSterbedatumvon().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (batch && control.isSterbedatumbisAktiv() && control.getSterbedatumbis().getValue() != null)
+    if (control.isSterbedatumbisAktiv() && control.getSterbedatumbis().getValue() != null)
     {
       addCondition("sterbetag <= ?");
       Date d = (Date) control.getSterbedatumbis().getValue();

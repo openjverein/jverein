@@ -22,23 +22,18 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DialogInput;
-import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.willuhn.util.ApplicationException;
-import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
 
 public class NichtMitgliederSucheView extends AbstractMitgliedSucheView
 {
   public NichtMitgliederSucheView() throws RemoteException
   {
+    control.init("nichtmitglied.", "nichtzusatzfeld.", "nichtzusatzfelder.");
     control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
   }
 
@@ -55,65 +50,22 @@ public class NichtMitgliederSucheView extends AbstractMitgliedSucheView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    TextInput suchName = control.getSuchname();
-    left.addInput(suchName);
-    Input adrtyp = control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED);
-    adrtyp.addListener(new FilterListener());
-    left.addLabelPair("Mitgliedstyp", adrtyp);
-    DialogInput mitgleigenschaften = control.getEigenschaftenAuswahl();
-    left.addLabelPair("Eigenschaften", mitgleigenschaften);
+    left.addInput(control.getSuchname());
+    left.addInput(control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED));
+    left.addInput(control.getEigenschaftenAuswahl());
     if (Einstellungen.getEinstellung().hasZusatzfelder())
     {
-      DialogInput mitglzusatzfelder = control.getZusatzfelderAuswahl();
-      left.addLabelPair("Zusatzfelder", mitglzusatzfelder);
+      left.addInput(control.getZusatzfelderAuswahl());
     }
     
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    DateInput mitglgebdatvon = control.getGeburtsdatumvon();
-    right.addLabelPair("Geburtsdatum von", mitglgebdatvon);
-    DateInput mitglgebdatbis = control.getGeburtsdatumbis();
-    right.addLabelPair("Geburtsdatum bis", mitglgebdatbis);
-    SelectInput mitglgeschlecht = control.getSuchGeschlecht();
-    mitglgeschlecht.addListener(new FilterListener());
-    right.addLabelPair("Geschlecht", mitglgeschlecht);
+    right.addInput(control.getGeburtsdatumvon());
+    right.addInput(control.getGeburtsdatumbis());
+    right.addInput(control.getSuchGeschlecht());
     
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(new Button("Filter-Reset", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          control.resetEigenschaftenAuswahl();
-          control.getSuchname().setValue("");
-          control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).setValue(null);
-          control.getGeburtsdatumvon().setValue(null);
-          control.getGeburtsdatumbis().setValue(null);
-          control.getSuchGeschlecht().setValue(null);
-          if (Einstellungen.getEinstellung().hasZusatzfelder())
-          {
-            control.resetZusatzfelderAuswahl();
-          }
-          TabRefresh();
-        }
-        catch (RemoteException e)
-        {
-          throw new ApplicationException(e);
-        }
-
-      }
-    }, null, false, "eraser.png"));
-    Button suchen = new Button("Suchen", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        TabRefresh();
-      }
-    }, null, true, "search.png");
-    buttons.addButton(suchen);
+    buttons.addButton(control.getResetButton());
+    buttons.addButton(control.getSuchenButton());
     group.addButtonArea(buttons);
   }
 

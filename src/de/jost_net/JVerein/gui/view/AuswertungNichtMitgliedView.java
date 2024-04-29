@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -35,7 +35,7 @@ public class AuswertungNichtMitgliedView extends AbstractView
   
   public AuswertungNichtMitgliedView() throws RemoteException
   {
-    control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
+    control.init("nichtmitglied.", "nichtzusatzfeld.", "nichtzusatzfelder.");
   }
 
   @Override
@@ -48,8 +48,7 @@ public class AuswertungNichtMitgliedView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cl.getComposite());
 
-    left.addInput(control.getMailauswahl());
-    left.addInput(control.getAdresstyp());
+    left.addInput(control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED));
     left.addInput(control.getEigenschaftenAuswahl());
     if (Einstellungen.getEinstellung().hasZusatzfelder())
     {
@@ -57,10 +56,14 @@ public class AuswertungNichtMitgliedView extends AbstractView
     }
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-
     right.addInput(control.getGeburtsdatumvon());
     right.addInput(control.getGeburtsdatumbis());
     right.addInput(control.getSuchGeschlecht());
+    right.addInput(control.getMailauswahl());
+    
+    ButtonArea filterbuttons = new ButtonArea();
+    filterbuttons.addButton(control.getResetButton());
+    group.addButtonArea(filterbuttons);
     
     // Zweite Gruppe: Ausgabe
     LabelGroup group2 = new LabelGroup(getParent(), "Ausgabe");
