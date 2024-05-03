@@ -43,7 +43,7 @@ public class Update0439 extends AbstractDDLUpdate
     // Update0430 nicht ausgefürt wird weil schon mit der alten Version 
     // migriert wurde z.B. mit einem Nightly Build.
     // Weil wegen gelöschter Buchungsklassen die Integrität verletzt sein 
-    // muss der Foreign Key mit NOCHECK erzeugt werden
+    // könnte, muss der Foreign Key mit NOCHECK erzeugt werden
 
     execute(createForeignKeyIfNotExistsNocheck("fkKonto1", "konto",
         "buchungsart", "buchungsart", "id", "SET NULL", "NO ACTION"));
