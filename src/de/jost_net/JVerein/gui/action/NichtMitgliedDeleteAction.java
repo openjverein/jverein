@@ -105,12 +105,10 @@ public class NichtMitgliedDeleteAction implements Action
       it.addFilter("mitglied = ?", m.getID());
       while (it.hasNext())
       {
-        String mailId = ((MailEmpfaenger) it.next()).getMail().getID();
-        if (!ergebnis.contains(new BigDecimal(mailId)))
+        Mail ma = ((MailEmpfaenger) it.next()).getMail();
+        if (!ergebnis.contains(new BigDecimal(ma.getID())))
         {
           // Die Mail hat keinen weiteren Empfänger also löschen
-          Mail ma = (Mail) Einstellungen.getDBService()
-              .createObject(Mail.class, mailId);
           ma.delete();
         }
       }
