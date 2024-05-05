@@ -316,5 +316,21 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
   {
     return "drop table " + table + ";\n";
   }
+  
+  public String dropForeignKey(String constraintname, String table)
+  {
+    switch (drv)
+    {
+      case H2:
+      {
+        return "ALTER TABLE " + table + " DROP CONSTRAINT " + constraintname + ";\n";
+      }
+      case MYSQL:
+      {
+        return "ALTER TABLE " + table + " DROP FOREIGN KEY " + constraintname + ";\n";
+      }
+    }
+    return "";
+  }
 
 }
