@@ -45,7 +45,7 @@ public class BuchungenDeleteDialog extends AbstractDialog<Date>
   
   private Boolean loeschen = true;
   
-  private String text = "Dieses Aktion löscht alle Buchungen vor dem "
+  private String text = "Diese Aktion löscht alle Buchungen vor dem "
       + "selektierten Datum."
       + "\nSollbuchungen können mit gelöscht werden damit "
       + "\nkeine offenen Buchungen im Mitgliedskonto bleiben."
