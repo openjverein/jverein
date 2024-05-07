@@ -66,9 +66,9 @@ public class BuchungenDeleteAction implements Action
         }
         catch (Exception e)
         {
-          // Das kann passieren wenn mehrere Buchungen zugeordnet waren
-          // Dann existiert die Sollbuchung nicht mehr bei der zweiten 
-          // Buchung
+          // Das kann passieren wenn der Sollbuchung mehrere Buchungen 
+          // zugeordnet waren. Dann existiert die Sollbuchung nicht mehr  
+          // bei den weiteren Buchungen da das Query vorher erfolgt ist
         }
         b.delete();
         count++;

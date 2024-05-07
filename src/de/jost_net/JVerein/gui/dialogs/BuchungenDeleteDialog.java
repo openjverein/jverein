@@ -19,17 +19,17 @@ package de.jost_net.JVerein.gui.dialogs;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.Container;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SWTUtil;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 /**
  * Dialog zur Zuordnung einer Buchungsart.
@@ -37,8 +37,6 @@ import de.willuhn.jameica.gui.util.SWTUtil;
 public class BuchungenDeleteDialog extends AbstractDialog<Date>
 {
 
-  private TextAreaInput textInput = null;
-  
   private DateInput dateInput = null;
 
   private CheckboxInput sollbuchungenloeschen = null;
@@ -46,6 +44,13 @@ public class BuchungenDeleteDialog extends AbstractDialog<Date>
   private Date date = null;
   
   private Boolean loeschen = true;
+  
+  private String text = "Dieses Aktion löscht alle Buchungen vor dem "
+      + "selektierten Datum."
+      + "\nSollbuchungen können mit gelöscht werden damit "
+      + "\nkeine offenen Buchungen im Mitgliedskonto bleiben."
+      + "\nDie Buchungen können nicht wieder hergestellt werden!"
+      + "\nBitte Aufbewahrungsfristen beachten!";
 
   /**
    * @param position
@@ -61,12 +66,12 @@ public class BuchungenDeleteDialog extends AbstractDialog<Date>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    getText().paint(parent, 300);
+    Container container = new SimpleContainer(parent);
+    container.addText(text,true);
     
     LabelGroup group = new LabelGroup(parent, "");
     group.addLabelPair("Buchungen löschen älter als", getDatumAuswahl());
     group.addLabelPair("Zugeordnete Sollbuchungen löschen", getSollbuchungenLoeschen());
-
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Ok", new Action()
@@ -91,7 +96,6 @@ public class BuchungenDeleteDialog extends AbstractDialog<Date>
     }, null, false, "process-stop.png");
 
     buttons.paint(parent);
-    getShell().setMinimumSize(getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT));
   }
 
   /**
@@ -106,23 +110,6 @@ public class BuchungenDeleteDialog extends AbstractDialog<Date>
   public Boolean getLoeschen()
   {
     return loeschen;
-  }
-
-  private TextAreaInput getText()
-  {
-    if (textInput != null)
-    {
-      return textInput;
-    }
-    String text = "Dieses Aktion löscht alle Buchungen vor dem "
-        + "selektierten Datum."
-        + "\nSollbuchungen können mit gelöscht werden damit "
-        + "keine offenen Buchungen im Mitgliedskonto bleiben."
-        + "\nDie Buchungen können nicht wieder hergestellt werden!"
-        + "\nBitte Aufbewahrungsfristen beachten!";
-    textInput = new TextAreaInput(text, 100);
-    textInput.disable();
-    return textInput;
   }
   
   private DateInput getDatumAuswahl()
