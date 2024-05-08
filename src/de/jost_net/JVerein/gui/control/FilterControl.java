@@ -62,13 +62,13 @@ import de.willuhn.util.ApplicationException;
 public class FilterControl extends AbstractControl
 {  
   // String für allgemeine Settings z.B. settings1
-  private String settingsprefix = "";
+  protected String settingsprefix = "";
 
   // String für Zusatzfelder
-  private String additionalparamprefix1 = "";
+  protected String additionalparamprefix1 = "";
 
   // String für Zusatfelder Anzahl
-  private String additionalparamprefix2 = "";
+  protected String additionalparamprefix2 = "";
 
   protected Settings settings = null;
   
@@ -411,14 +411,11 @@ public class FilterControl extends AbstractControl
     return suchgeschlecht != null;
   }
   
-  public DateInput getStichtag()
+  public DateInput getDateInput(String setting)
   {
-    if (stichtag != null)
-    {
-      return stichtag;
-    }
+
     Date d = null;
-    String tmp = settings.getString(settingsprefix + "stichtag", null);
+    String tmp = settings.getString(settingsprefix + setting, null);
     if (tmp != null)
     {
       try
@@ -430,9 +427,16 @@ public class FilterControl extends AbstractControl
         //
       }
     }
-    this.stichtag = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.stichtag.setTitle("Stichtag");
-    this.stichtag.setText("Stichtag");
+    return new DateInput(d, new JVDateFormatTTMMJJJJ());
+  }
+  
+  public DateInput getStichtag()
+  {
+    if (stichtag != null)
+    {
+      return stichtag;
+    }
+    stichtag = getDateInput("stichtag");
     stichtag.setName("Stichtag");
     return stichtag;
   }
@@ -468,22 +472,7 @@ public class FilterControl extends AbstractControl
     {
       return geburtsdatumvon;
     }
-    Date d = null;
-    String tmp = settings.getString(settingsprefix + "geburtsdatumvon", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.geburtsdatumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.geburtsdatumvon.setTitle("Geburtsdatum");
-    this.geburtsdatumvon.setText("Beginn des Geburtszeitraumes");
+    geburtsdatumvon = getDateInput("geburtsdatumvon");
     geburtsdatumvon.setName("Geburtsdatum von");
     return geburtsdatumvon;
   }
@@ -499,22 +488,7 @@ public class FilterControl extends AbstractControl
     {
       return geburtsdatumbis;
     }
-    Date d = null;
-    String tmp = settings.getString(settingsprefix + "geburtsdatumbis", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.geburtsdatumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.geburtsdatumbis.setTitle("Geburtsdatum");
-    this.geburtsdatumbis.setText("Ende des Geburtszeitraumes");
+    geburtsdatumbis = getDateInput("geburtsdatumbis");
     geburtsdatumbis.setName("Geburtsdatum bis");
     return geburtsdatumbis;
   }
@@ -530,22 +504,7 @@ public class FilterControl extends AbstractControl
     {
       return sterbedatumvon;
     }
-    Date d = null;
-    String tmp = settings.getString(settingsprefix + "sterbedatumvon", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.sterbedatumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.sterbedatumvon.setTitle("Sterbedatum");
-    this.sterbedatumvon.setText("Beginn des Sterbezeitraumes");
+    sterbedatumvon = getDateInput("sterbedatumvon");
     sterbedatumvon.setName("Sterbedatum von");
     return sterbedatumvon;
   }
@@ -561,22 +520,7 @@ public class FilterControl extends AbstractControl
     {
       return sterbedatumbis;
     }
-    Date d = null;
-    String tmp = settings.getString(settingsprefix + "sterbedatumbis", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.sterbedatumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.sterbedatumbis.setTitle("Sterbedatum");
-    this.sterbedatumbis.setText("Ende des Sterbezeitraumes");
+    sterbedatumbis = getDateInput("sterbedatumbis");
     sterbedatumbis.setName("Sterbedatum bis");
     return sterbedatumbis;
   }
@@ -592,22 +536,7 @@ public class FilterControl extends AbstractControl
     {
       return eintrittvon;
     }
-    Date d = null;
-    String tmp = settings.getString(settingsprefix + "eintrittvon", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.eintrittvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.eintrittvon.setTitle("Eintrittsdatum");
-    this.eintrittvon.setText("Beginn des Eintrittszeitraumes");
+    eintrittvon = getDateInput("eintrittvon");
     eintrittvon.setName("Eintrittsdatum von");
     return eintrittvon;
   }
@@ -623,22 +552,7 @@ public class FilterControl extends AbstractControl
     {
       return eintrittbis;
     }
-    Date d = null;
-    String tmp = settings.getString(settingsprefix + "eintrittbis", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.eintrittbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.eintrittbis.setTitle("Eintrittsdatum");
-    this.eintrittbis.setText("Ende des Eintrittszeitraumes");
+    eintrittbis = getDateInput("eintrittbis");
     eintrittbis.setName("Eintrittsdatum bis");
     return eintrittbis;
   }
@@ -654,22 +568,7 @@ public class FilterControl extends AbstractControl
     {
       return austrittvon;
     }
-    Date d = null;
-    String tmp = settings.getString(settingsprefix + "austrittvon", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.austrittvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.austrittvon.setTitle("Austrittsdatum");
-    this.austrittvon.setText("Beginn des Austrittszeitraumes");
+    austrittvon = getDateInput("austrittvon");
     austrittvon.setName("Austrittsdatum von");
     return austrittvon;
   }
@@ -685,22 +584,7 @@ public class FilterControl extends AbstractControl
     {
       return austrittbis;
     }
-    Date d = null;
-    String tmp = settings.getString(settingsprefix + "austrittbis", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.austrittbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.austrittbis.setTitle("Austrittsdatum");
-    this.austrittbis.setText("Ende des Austrittszeitraumes");
+    austrittbis = getDateInput("austrittbis");
     austrittbis.setName("Austrittsdatum bis");
     return austrittbis;
   }
