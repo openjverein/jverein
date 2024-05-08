@@ -951,128 +951,47 @@ public class FilterControl extends AbstractControl
 
     if (stichtag != null)
     {
-      Date tmp = (Date) stichtag.getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute(settingsprefix + "stichtag",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + "stichtag", "");
-      }
+      saveDate((Date) stichtag.getValue(), "stichtag");
     }
 
     if (geburtsdatumvon != null)
     {
-      Date tmp = (Date) geburtsdatumvon.getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute(settingsprefix + "geburtsdatumvon",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + "geburtsdatumvon", "");
-      }
+      saveDate( (Date) geburtsdatumvon.getValue(), "geburtsdatumvon");
     }
     
     if (geburtsdatumbis != null)
     {
-      Date tmp = (Date) geburtsdatumbis.getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute(settingsprefix + "geburtsdatumbis",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + "geburtsdatumbis", "");
-      }
+      saveDate( (Date) geburtsdatumbis.getValue(), "geburtsdatumbis");
     }
 
     if (sterbedatumvon != null)
     {
-      Date tmp = (Date) sterbedatumvon.getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute(settingsprefix + "sterbedatumvon",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + "sterbedatumvon", "");
-      }
+      saveDate( (Date) sterbedatumvon.getValue(), "sterbedatumvon");
     }
 
     if (sterbedatumbis != null)
     {
-      Date tmp = (Date) sterbedatumbis.getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute(settingsprefix + "sterbedatumbis",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + "sterbedatumbis", "");
-      }
+      saveDate( (Date) sterbedatumbis.getValue(), "sterbedatumbis");
     }
 
     if (eintrittvon != null)
     {
-      Date tmp = (Date) eintrittvon.getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute(settingsprefix + "eintrittvon",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + "eintrittvon", "");
-      }
+      saveDate( (Date) eintrittvon.getValue(), "eintrittvon");
     }
 
     if (eintrittbis != null)
     {
-      Date tmp = (Date) eintrittbis.getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute(settingsprefix + "eintrittbis",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + "eintrittbis", "");
-      }
+      saveDate( (Date) eintrittbis.getValue(), "eintrittbis");
     }
 
     if (austrittvon != null)
     {
-      Date tmp = (Date) austrittvon.getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute(settingsprefix + "austrittvon",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + "austrittvon", "");
-      }
+      saveDate( (Date) austrittvon.getValue(), "austrittvon");
     }
 
     if (austrittbis != null)
     {
-      Date tmp = (Date) austrittbis.getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute(settingsprefix + "austrittbis",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + "austrittbis", "");
-      }
+      saveDate( (Date) austrittbis.getValue(), "austrittbis");
     }
     
     if (mailAuswahl != null)
@@ -1086,6 +1005,19 @@ public class FilterControl extends AbstractControl
       {
         settings.setAttribute(settingsprefix + "mailauswahl", "1");
       }
+    }
+  }
+  
+  private void saveDate(Date tmp, String setting)
+  {
+    if (tmp != null)
+    {
+      settings.setAttribute(settingsprefix + setting,
+          new JVDateFormatTTMMJJJJ().format(tmp));
+    }
+    else
+    {
+      settings.setAttribute(settingsprefix + setting, "");
     }
   }
 }
