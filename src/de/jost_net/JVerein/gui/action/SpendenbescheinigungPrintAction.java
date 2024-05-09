@@ -1300,7 +1300,7 @@ public class SpendenbescheinigungPrintAction implements Action
     String email = null;
     if (spb.getMitglied() != null)
     {
-        spb.getMitglied().getEmail();
+        email = spb.getMitglied().getEmail();
     }
     if ( (mailversand == false && Einstellungen.getEinstellung().getSpendenbescheinigungadresse())
         || (mailversand == true && Einstellungen.getEinstellung().getSpendenbescheinigungadresse() 
