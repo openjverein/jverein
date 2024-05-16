@@ -63,6 +63,7 @@ public class AuswertungNichtMitgliedView extends AbstractView
     
     ButtonArea filterbuttons = new ButtonArea();
     filterbuttons.addButton(control.getResetButton());
+    filterbuttons.addButton(control.getSpeichernButton());
     group.addButtonArea(filterbuttons);
     
     // Zweite Gruppe: Ausgabe

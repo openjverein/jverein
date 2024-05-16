@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
 import de.jost_net.JVerein.gui.dialogs.ZusatzfelderAuswahlDialog;
@@ -38,6 +39,7 @@ import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.rmi.Adresstyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Eigenschaft;
+import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObjectNode;
@@ -48,6 +50,7 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.TreeFormatter;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -114,6 +117,25 @@ public class FilterControl extends AbstractControl
   
   protected ZusatzfelderAuswahlDialog zad= null;
   
+  protected DateInput datumvon = null;
+
+  protected DateInput datumbis = null;
+  
+  protected SelectInput differenz = null;
+  
+  protected CheckboxInput ohneabbucher = null;
+  
+  protected SelectInput suchlehrgangsart = null;
+  
+  protected DateInput eingabedatumvon = null;
+
+  protected DateInput eingabedatumbis = null;
+
+  protected DateInput abbuchungsdatumvon = null;
+
+  protected DateInput abbuchungsdatumbis = null;
+
+  
   public enum Mitgliedstyp {
     MITGLIED,
     NICHTMITGLIED,
@@ -153,9 +175,7 @@ public class FilterControl extends AbstractControl
   }
   
   /**
-   * 
-   * @param Mitgliedstyp
-   * @throws RemoteException
+   * Such Input Felder
    */
   public SelectInput getSuchAdresstyp(Mitgliedstyp typ) throws RemoteException
   {
@@ -223,7 +243,7 @@ public class FilterControl extends AbstractControl
     }
     status = new SelectInput(
         new String[] { "Angemeldet", "Abgemeldet", "An- und Abgemeldete" },
-        settings.getString("status.mitglied", "Angemeldet"));
+        settings.getString(settingsprefix + "status.mitglied", "Angemeldet"));
     status.setName("Mitgliedschaft");
     status.addListener(new FilterListener());
     return status;
@@ -649,6 +669,175 @@ public class FilterControl extends AbstractControl
     return mailAuswahl != null;
   }
   
+  public DateInput getDatumvon()
+  {
+    if (datumvon != null)
+    {
+      return datumvon;
+    }
+    datumvon = getDateInput("datumvon");
+    datumvon.setName("Datum von");
+    return datumvon;
+  }
+  
+  public boolean isDatumvonAktiv()
+  {
+    return datumvon != null;
+  }
+  
+  public DateInput getDatumbis()
+  {
+    if (datumbis != null)
+    {
+      return datumbis;
+    }
+    datumbis = getDateInput("datumbis");
+    datumbis.setName("Datum bis");
+    return datumbis;
+  }
+  
+  public boolean isDatumbisAktiv()
+  {
+    return datumbis != null;
+  }
+  
+  public SelectInput getDifferenz()
+  {
+    if (differenz != null)
+    {
+      return differenz;
+    }
+    DIFFERENZ defaultwert = DIFFERENZ
+        .fromString(settings.getString(settingsprefix + "differenz", DIFFERENZ.EGAL.toString()));
+    return getDifferenz(defaultwert);
+  }
+  
+  public SelectInput getDifferenz(DIFFERENZ defaultvalue)
+  {
+    differenz = new SelectInput(DIFFERENZ.values(), defaultvalue);
+    differenz.setName("Differenz");
+    differenz.addListener(new FilterListener());
+    return differenz;
+  }
+  
+  public boolean isDifferenzAktiv()
+  {
+    return differenz != null;
+  }
+  
+  public CheckboxInput getOhneAbbucher()
+  {
+    if (ohneabbucher != null)
+    {
+      return ohneabbucher;
+    }
+    ohneabbucher = new CheckboxInput(settings.getBoolean(settingsprefix + "ohneabbucher", false));
+    return ohneabbucher;
+  }
+  
+  public boolean isOhneAbbucher()
+  {
+    return ohneabbucher != null;
+  }
+  
+  public SelectInput getSuchLehrgangsart() throws RemoteException
+  {
+    if (suchlehrgangsart != null)
+    {
+      return suchlehrgangsart;
+    }
+    DBIterator<Lehrgangsart> it = Einstellungen.getDBService()
+        .createList(Lehrgangsart.class);
+    it.setOrder("order by bezeichnung");
+    Lehrgangsart letztesuche = null;
+    try
+    {
+      letztesuche = (Lehrgangsart) Einstellungen.getDBService().createObject(
+          Lehrgangsart.class, settings.getString(settingsprefix + "suchlehrgangsart", null));
+    }
+    catch (ObjectNotFoundException e)
+    {
+      //
+    }
+    suchlehrgangsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, letztesuche);
+    suchlehrgangsart.setPleaseChoose("Bitte auswählen");
+    suchlehrgangsart.addListener(new FilterListener());
+    suchlehrgangsart.setName("Lehrgangsart");
+    return suchlehrgangsart;
+  }
+  
+  public boolean isSuchLehrgangsartAktiv()
+  {
+    return suchlehrgangsart != null;
+  }
+  
+  public DateInput getEingabedatumvon()
+  {
+    if (eingabedatumvon != null)
+    {
+      return eingabedatumvon;
+    }
+    eingabedatumvon = getDateInput("eingabedatum.von");
+    eingabedatumvon.setName("Eingabedatum von");
+    return eingabedatumvon;
+  }
+
+  public boolean isEingabedatumvonAktiv()
+  {
+    return eingabedatumvon != null;
+  }
+  
+  public DateInput getEingabedatumbis()
+  {
+    if (eingabedatumbis != null)
+    {
+      return eingabedatumbis;
+    }
+    eingabedatumbis = getDateInput("eingabedatum.bis");
+    eingabedatumbis.setName("Eingabedatum bis");
+    return eingabedatumbis;
+  }
+
+  public boolean isEingabedatumbisAktiv()
+  {
+    return eingabedatumbis != null;
+  }
+  
+  public DateInput getAbbuchungsdatumvon()
+  {
+    if (abbuchungsdatumvon != null)
+    {
+      return abbuchungsdatumvon;
+    }
+    abbuchungsdatumvon = getDateInput("abbuchungsdatum.von");
+    abbuchungsdatumvon.setName("Abbuchungsdatum von");
+    return abbuchungsdatumvon;
+  }
+
+  public boolean isAbbuchungsdatumvonAktiv()
+  {
+    return abbuchungsdatumvon != null;
+  }
+  
+  public DateInput getAbbuchungsdatumbis()
+  {
+    if (abbuchungsdatumbis != null)
+    {
+      return abbuchungsdatumbis;
+    }
+    abbuchungsdatumbis = getDateInput("abbuchungsdatum.bis");
+    abbuchungsdatumbis.setName("Abbuchungsdatum bis");
+    return abbuchungsdatumbis;
+  }
+
+  public boolean isAbbuchungsdatumbisAktiv()
+  {
+    return abbuchungsdatumbis != null;
+  }
+  
+  /**
+   * Buttons
+   */
   public Button getSuchenButton()
   {
     Button b = new Button("Suchen", new Action()
@@ -659,6 +848,26 @@ public class FilterControl extends AbstractControl
         refresh();
       }
     }, null, true, "search.png");
+    return b;
+  }
+  
+  public Button getSpeichernButton()
+  {
+    Button b = new Button("Filter-Speichern", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        try
+        {
+          saveFilterSettings();
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+    }, null, false, "document-save.png");
     return b;
   }
   
@@ -718,6 +927,24 @@ public class FilterControl extends AbstractControl
         }
         if (mailAuswahl != null)
           mailAuswahl.setValue(null);
+        if (datumbis != null)
+          datumbis.setValue(null);
+        if (datumvon != null)
+          datumvon.setValue(null);
+        if (differenz != null)
+          differenz.setValue(DIFFERENZ.EGAL);
+        if (ohneabbucher != null)
+          ohneabbucher.setValue(Boolean.FALSE);
+        if (suchlehrgangsart != null)
+          suchlehrgangsart.setValue(null);
+        if (eingabedatumvon != null)
+          eingabedatumvon.setValue(null);
+        if (eingabedatumbis != null)
+          eingabedatumbis.setValue(null);
+        if (abbuchungsdatumvon != null)
+          abbuchungsdatumvon.setValue(null);
+        if (abbuchungsdatumbis != null)
+          abbuchungsdatumbis.setValue(null);
         refresh();
       }
     }, null, false, "eraser.png");
@@ -741,7 +968,7 @@ public class FilterControl extends AbstractControl
   }
   
   /**
-   * Listener, der die Auswahl der Zusatzfelder ueberwacht.
+   * Listener
    */
   private class ZusatzfelderListener implements Listener
   {
@@ -889,11 +1116,11 @@ public class FilterControl extends AbstractControl
       String tmp = (String) status.getValue();
       if (tmp != null)
       {
-        settings.setAttribute("status.mitglied", tmp);
+        settings.setAttribute(settingsprefix + "status.mitglied", tmp);
       }
       else
       {
-        settings.setAttribute("status.mitglied", "");
+        settings.setAttribute(settingsprefix + "status.mitglied", "");
       }
     }
     
@@ -1006,6 +1233,76 @@ public class FilterControl extends AbstractControl
         settings.setAttribute(settingsprefix + "mailauswahl", "1");
       }
     }
+    
+    if (datumvon != null)
+    {
+      saveDate( (Date) datumvon.getValue(), "datumvon");
+    }
+    
+    if (datumbis != null)
+    {
+      saveDate( (Date) datumbis.getValue(), "datumbis");
+    }
+    
+    if (differenz != null)
+    {
+      String tmp = differenz.getValue().toString();
+      if (tmp != null)
+      {
+        settings.setAttribute(settingsprefix + "differenz", tmp);
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "differenz", "");
+      }
+    }
+    
+    if (ohneabbucher != null)
+    {
+      Boolean tmp = (Boolean) ohneabbucher.getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute(settingsprefix + "ohneabbucher", tmp);
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "ohneabbucher", "false");
+      }
+    }
+
+    if (suchlehrgangsart != null)
+    {
+      Lehrgangsart la = (Lehrgangsart) getSuchLehrgangsart().getValue();
+      if (la != null)
+      {
+        settings.setAttribute(settingsprefix + "suchlehrgangsart", la.getID());
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "suchlehrgangsart", "");
+      }
+    }
+    
+    if (eingabedatumvon != null)
+    {
+      saveDate( (Date) eingabedatumvon.getValue(), "eingabedatum.von");
+    }
+    
+    if (eingabedatumbis != null)
+    {
+      saveDate( (Date) eingabedatumbis.getValue(), "eingabedatum.bis");
+    }
+    
+    if (abbuchungsdatumvon != null)
+    {
+      saveDate( (Date) abbuchungsdatumvon.getValue(), "abbuchungsdatum.von");
+    }
+    
+    if (abbuchungsdatumbis != null)
+    {
+      saveDate( (Date) abbuchungsdatumbis.getValue(), "abbuchungsdatum.bis");
+    }
+    
   }
   
   private void saveDate(Date tmp, String setting)

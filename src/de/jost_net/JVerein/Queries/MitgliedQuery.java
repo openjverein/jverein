@@ -297,7 +297,7 @@ public class MitgliedQuery
         }
       }
     }
-    if (control.isSuchnameAktiv())
+    if (control.isSuchnameAktiv() && control.getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) control.getSuchname().getValue();
       if (tmpSuchname.length() > 0)
