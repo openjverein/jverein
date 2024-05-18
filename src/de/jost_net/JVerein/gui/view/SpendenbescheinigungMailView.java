@@ -16,17 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungMailControl;
-import de.jost_net.JVerein.gui.util.JameicaUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.parts.InfoPanel;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class SpendenbescheinigungMailView extends AbstractView
 {
@@ -37,21 +33,14 @@ public class SpendenbescheinigungMailView extends AbstractView
     GUI.getView().setTitle("Spendenbescheinigung-Mail");
 
     final SpendenbescheinigungMailControl control = new SpendenbescheinigungMailControl(this);
-
-    Composite comp = new Composite(this.getParent(), SWT.NONE);
-    comp.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-    GridLayout layout = new GridLayout(2, false);
-    comp.setLayout(layout);
-
-    JameicaUtil.addLabel("Betreff", comp, GridData.VERTICAL_ALIGN_CENTER);
-    control.getBetreff().paint(comp);
-    JameicaUtil.addLabel("Text", comp, GridData.VERTICAL_ALIGN_BEGINNING);
-    control.getTxt().paint(comp);
-    JameicaUtil.addLabel("Info", comp, GridData.VERTICAL_ALIGN_BEGINNING);
-    control.getInfo().paint(comp);
     
-    control.init(this.getCurrentObject());
+    SimpleContainer cont = new SimpleContainer(getParent(), true);
+    InfoPanel   info = new InfoPanel();
+    info.setTitle("Info");
+    info.setText(control.getInfoText(getCurrentObject()));
+    info.paint(getParent());
+    cont.addInput(control.getBetreff());
+    cont.addInput(control.getTxt());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

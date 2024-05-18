@@ -64,8 +64,6 @@ public class SpendenbescheinigungMailControl extends AbstractControl
 
   private TextAreaInput mailtext;
   
-  private TextAreaInput info;
-  
   private Spendenbescheinigung[] spbArr;
 
   public SpendenbescheinigungMailControl(AbstractView view)
@@ -75,12 +73,12 @@ public class SpendenbescheinigungMailControl extends AbstractControl
     settings.setStoreWhenRead(true);
   }
 
-  public void init(Object spbArray)
+  public String getInfoText(Object spbArray)
   {
     spbArr = (Spendenbescheinigung[]) spbArray;
-    info.setValue((String) info.getValue() + "Es wurden " + spbArr.length + 
+    String text = "Es wurden " + spbArr.length + 
         " Spendenbescheinigungen ausgewählt"
-        + "\nFolgende Mitglieder haben keine Mailadresse:");
+        + "\nFolgende Mitglieder haben keine Mailadresse:";
     try
     {
       for (Spendenbescheinigung spb: spbArr)
@@ -88,18 +86,18 @@ public class SpendenbescheinigungMailControl extends AbstractControl
         Mitglied m = spb.getMitglied();
         if (m != null && ( m.getEmail() == null || m.getEmail().isEmpty()))
         {
-          info.setValue((String) info.getValue() + "\n - " + m.getName()
-              + ", " + m.getVorname());
+          text = text + "\n - " + m.getName()
+              + ", " + m.getVorname();
         }
       }
-      info.setValue((String) info.getValue() 
-          + "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:");
+      text = text 
+          + "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:";
       for (Spendenbescheinigung spb: spbArr)
       {
         if (spb.getMitglied() == null)
         {
-          info.setValue((String) info.getValue() + "\n - " + spb.getZeile1()
-              + ", " + spb.getZeile2() + ", " + spb.getZeile3());
+          text = text  + "\n - " + spb.getZeile1()
+              + ", " + spb.getZeile2() + ", " + spb.getZeile3();
         }
       }
     }
@@ -107,6 +105,7 @@ public class SpendenbescheinigungMailControl extends AbstractControl
     {
       GUI.getStatusBar().setErrorText("Fehler beim Ermitteln der Mitglieder aus den Spendenbescheinigungen");
     }
+    return text;
   }
 
   public TextInput getBetreff() throws RemoteException
@@ -129,18 +128,6 @@ public class SpendenbescheinigungMailControl extends AbstractControl
     mailtext = new TextAreaInput(settings.getString("spendenbescheinigungmail.body", ""), 10000);
     mailtext.setName("Text");
     return mailtext;
-  }
-  
-  public TextAreaInput getInfo() throws RemoteException
-  {
-    if (info != null)
-    {
-      return info;
-    }
-    info = new TextAreaInput("", 5000);
-    info.setName("Info");
-    info.setEnabled(false);
-    return info;
   }
   
   public Button getStartButton(final Object currentObject)
