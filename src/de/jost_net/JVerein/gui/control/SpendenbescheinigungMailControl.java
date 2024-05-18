@@ -127,6 +127,7 @@ public class SpendenbescheinigungMailControl extends AbstractControl
     }
     mailtext = new TextAreaInput(settings.getString("spendenbescheinigungmail.body", ""), 10000);
     mailtext.setName("Text");
+    mailtext.setHeight(300);
     return mailtext;
   }
   
