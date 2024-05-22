@@ -17,9 +17,11 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungMailControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TextPart;
 import de.willuhn.jameica.gui.util.SimpleContainer;
@@ -47,6 +49,8 @@ public class SpendenbescheinigungMailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
+    buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
+        control, false, "view-refresh.png"));
     buttons.addButton(control.getStartButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }

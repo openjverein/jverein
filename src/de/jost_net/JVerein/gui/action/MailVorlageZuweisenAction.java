@@ -16,57 +16,63 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
+import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
+import de.jost_net.JVerein.gui.control.SpendenbescheinigungMailControl;
 import de.jost_net.JVerein.gui.dialogs.MailVorlagenAuswahlDialog;
-import de.jost_net.JVerein.gui.view.MailDetailView;
-import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailDetailAction implements Action
+public class MailVorlageZuweisenAction implements Action
 {
-
+  
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Mail m = null;
-
-    if (context != null && (context instanceof Mail))
+    try
     {
-      m = (Mail) context;
-    }
-    else
-    {
-      try
+      if (context != null &&
+          ((context instanceof MitgliedskontoControl) ||
+           (context instanceof SpendenbescheinigungMailControl)))
       {
         MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
             new MailVorlageControl(null),
-            MailVorlagenAuswahlDialog.POSITION_CENTER, true);
-        m = (Mail) Einstellungen.getDBService().createObject(Mail.class, null);
+            MailVorlagenAuswahlDialog.POSITION_CENTER, false);
+
         MailVorlage mv = mvad.open();
-        if (!mvad.getAbort())
+        if (!mvad.getAbort() && mv != null)
         {
-          if (mv != null)
+          if (context instanceof MitgliedskontoControl)
           {
-            m.setBetreff(mv.getBetreff());
-            m.setTxt(mv.getTxt());
+            MitgliedskontoControl kto = (MitgliedskontoControl) context;
+            kto.getBetreff(null).setValue(mv.getBetreff());
+            kto.getTxt(null).setValue(mv.getTxt());
+          }
+          else if (context instanceof SpendenbescheinigungMailControl)
+          {
+            SpendenbescheinigungMailControl kto = (SpendenbescheinigungMailControl) context;
+            kto.getBetreff().setValue(mv.getBetreff());
+            kto.getTxt().setValue(mv.getTxt());
           }
         }
       }
-      catch (OperationCanceledException oce)
+      else
       {
-        throw oce;
-      }
-      catch (Exception e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung der neuen Mail", e);
+        throw new ApplicationException("Keine Kontext ausgewählt");
       }
     }
-    GUI.startView(MailDetailView.class.getName(), m);
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler", e);
+      GUI.getStatusBar().setErrorText("Fehler bei der Zuweisung eine Mail Vorlage");
+    }
   }
 }
