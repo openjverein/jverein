@@ -20,12 +20,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.PreNotificationControl;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.Color;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.TabGroup;
 
 public class PreNotificationView extends AbstractView
@@ -40,38 +42,40 @@ public class PreNotificationView extends AbstractView
 
     TabFolder folder = control.getFolder(getParent());
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
-    folder.setBackground(Color.BACKGROUND.getSWTColor());
 
     TabGroup tabMailPDF = new TabGroup(folder, "Mail + PDF");
+    LabelGroup grtabMailPDF = new LabelGroup(tabMailPDF.getComposite(), null, true);
 
-    tabMailPDF.addHeadline("Parameter");
-    tabMailPDF.addInput(control.getOutput());
-    tabMailPDF.addInput(control.getPdfModus());
-    tabMailPDF.addLabelPair("Formular",
+    grtabMailPDF.addHeadline("Parameter");
+    grtabMailPDF.addInput(control.getOutput());
+    grtabMailPDF.addInput(control.getPdfModus());
+    grtabMailPDF.addLabelPair("Formular",
         control.getFormular(FormularArt.SEPA_PRENOTIFICATION));
 
-    tabMailPDF.addHeadline("Mail");
+    grtabMailPDF.addHeadline("Mail");
 
-    tabMailPDF.addInput(control.getMailSubject());
-    tabMailPDF.addInput(control.getMailBody());
+    grtabMailPDF.addInput(control.getMailSubject());
+    grtabMailPDF.addInput(control.getMailBody());
 
     ButtonArea buttons1 = new ButtonArea();
     buttons1.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.PRENOTIFICATION, false, "question-circle.png");
+    buttons1.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
+        control, false, "view-refresh.png"));
     buttons1.addButton(control.getStartButton(this.getCurrentObject()));
-    buttons1.paint(tabMailPDF.getComposite());
+    grtabMailPDF.addButtonArea(buttons1);
 
     TabGroup tab2 = new TabGroup(folder, "1 ct-Überweisung");
+    LabelGroup grtab2 = new LabelGroup(tab2.getComposite(), null, true);
 
-    tab2.addInput(control.getct1Ausgabe());
-    tab2.addInput(control.getAusfuehrungsdatum());
-    tab2.addInput(control.getVerwendungszweck());
+    grtab2.addInput(control.getct1Ausgabe());
+    grtab2.addInput(control.getAusfuehrungsdatum());
+    grtab2.addInput(control.getVerwendungszweck());
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.PRENOTIFICATION, false, "question-circle.png");
     buttons2.addButton(
         control.getStart1ctUeberweisungButton(this.getCurrentObject()));
-    buttons2.paint(tab2.getComposite());
-
+    grtab2.addButtonArea(buttons2);
   }
 }

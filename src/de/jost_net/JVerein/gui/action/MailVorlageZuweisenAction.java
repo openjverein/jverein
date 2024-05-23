@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungMailControl;
+import de.jost_net.JVerein.gui.control.PreNotificationControl;
 import de.jost_net.JVerein.gui.dialogs.MailVorlagenAuswahlDialog;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.jameica.gui.Action;
@@ -37,7 +38,8 @@ public class MailVorlageZuweisenAction implements Action
     {
       if (context != null &&
           ((context instanceof MitgliedskontoControl) ||
-           (context instanceof SpendenbescheinigungMailControl)))
+           (context instanceof SpendenbescheinigungMailControl) ||
+            context instanceof PreNotificationControl))
       {
         MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
             new MailVorlageControl(null),
@@ -57,6 +59,12 @@ public class MailVorlageZuweisenAction implements Action
             SpendenbescheinigungMailControl kto = (SpendenbescheinigungMailControl) context;
             kto.getBetreff().setValue(mv.getBetreff());
             kto.getTxt().setValue(mv.getTxt());
+          }
+          else if (context instanceof PreNotificationControl)
+          {
+            PreNotificationControl kto = (PreNotificationControl) context;
+            kto.getMailSubject().setValue(mv.getBetreff());
+            kto.getMailBody().setValue(mv.getTxt());
           }
         }
       }

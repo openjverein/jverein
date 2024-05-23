@@ -183,7 +183,6 @@ public class PreNotificationControl extends AbstractControl
       return mailbody;
     }
     mailbody = new TextAreaInput(settings.getString("mail.body", ""), 10000);
-    mailbody.setHeight(200);
     mailbody.setName("Text");
     return mailbody;
   }
