@@ -23,7 +23,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.parts.TextPart;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class SpendenbescheinigungMailView extends AbstractView
@@ -36,10 +35,9 @@ public class SpendenbescheinigungMailView extends AbstractView
 
     final SpendenbescheinigungMailControl control = new SpendenbescheinigungMailControl(this);
 
-    SimpleContainer cont1 = new SimpleContainer(getParent(), true);
+    SimpleContainer cont1 = new SimpleContainer(getParent(), false);
     cont1.addHeadline("Info");
-    TextPart part = new TextPart(control.getInfoText(getCurrentObject()));
-    part.paint(cont1.getComposite());
+    cont1.addInput(control.getInfo());
     
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Mail");

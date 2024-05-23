@@ -64,6 +64,8 @@ public class SpendenbescheinigungMailControl extends AbstractControl
 
   private TextAreaInput mailtext;
   
+  private TextAreaInput  info;
+  
   private Spendenbescheinigung[] spbArr;
 
   public SpendenbescheinigungMailControl(AbstractView view)
@@ -108,6 +110,18 @@ public class SpendenbescheinigungMailControl extends AbstractControl
     return text;
   }
 
+  public TextAreaInput getInfo() throws RemoteException
+  {
+    if (info != null)
+    {
+      return info;
+    }
+    info = new TextAreaInput(getInfoText(getCurrentObject()), 10000);
+    info.setHeight(100);
+    info.setEnabled(false);
+    return info;
+  }
+  
   public TextInput getBetreff() throws RemoteException
   {
     if (mailbetreff != null)
@@ -127,7 +141,6 @@ public class SpendenbescheinigungMailControl extends AbstractControl
     }
     mailtext = new TextAreaInput(settings.getString("spendenbescheinigungmail.body", ""), 10000);
     mailtext.setName("Text");
-    mailtext.setHeight(300);
     return mailtext;
   }
   
