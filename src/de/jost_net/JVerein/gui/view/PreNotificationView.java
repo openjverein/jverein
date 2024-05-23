@@ -27,8 +27,8 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.TabGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class PreNotificationView extends AbstractView
 {
@@ -44,7 +44,7 @@ public class PreNotificationView extends AbstractView
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
     TabGroup tabMailPDF = new TabGroup(folder, "Mail + PDF");
-    LabelGroup grtabMailPDF = new LabelGroup(tabMailPDF.getComposite(), null, true);
+    SimpleContainer grtabMailPDF = new SimpleContainer(tabMailPDF.getComposite(), true);
 
     grtabMailPDF.addHeadline("Parameter");
     grtabMailPDF.addInput(control.getOutput());
@@ -66,7 +66,7 @@ public class PreNotificationView extends AbstractView
     grtabMailPDF.addButtonArea(buttons1);
 
     TabGroup tab2 = new TabGroup(folder, "1 ct-Überweisung");
-    LabelGroup grtab2 = new LabelGroup(tab2.getComposite(), null, true);
+    SimpleContainer grtab2 = new SimpleContainer(tab2.getComposite(), true);
 
     grtab2.addInput(control.getct1Ausgabe());
     grtab2.addInput(control.getAusfuehrungsdatum());
