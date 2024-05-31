@@ -851,7 +851,8 @@ public class MitgliedskontoControl extends AbstractControl
 
     if (DIFFERENZ.FEHLBETRAG == diff)
     {
-      sql += "having sum(buchung.betrag) < mitgliedskonto.betrag or sum(buchung.betrag) is null ";
+      sql += "having sum(buchung.betrag) < mitgliedskonto.betrag or "
+          + "(sum(buchung.betrag) is null and mitgliedskonto.betrag > 0) ";
     }
     if (DIFFERENZ.UEBERZAHLUNG == diff)
     {
