@@ -299,6 +299,16 @@ public class FilterControl extends AbstractControl
     }
     eigenschaftenabfrage = new DialogInput(text.toString(), d);
     eigenschaftenabfrage.setName("Eigenschaften");
+    eigenschaftenabfrage.addListener(new Listener()
+    {
+
+      @Override
+      public void handleEvent(Event event)
+      {
+
+        d.setDefaults(settings.getString(settingsprefix + "eigenschaften", ""));
+      }
+    });
     return eigenschaftenabfrage;
   }
   
