@@ -48,6 +48,7 @@ public class AuswertungNichtMitgliedView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cl.getComposite());
 
+    left.addInput(control.getMailauswahl());
     left.addInput(control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED));
     left.addInput(control.getEigenschaftenAuswahl());
     if (Einstellungen.getEinstellung().hasZusatzfelder())
@@ -59,7 +60,6 @@ public class AuswertungNichtMitgliedView extends AbstractView
     right.addInput(control.getGeburtsdatumvon());
     right.addInput(control.getGeburtsdatumbis());
     right.addInput(control.getSuchGeschlecht());
-    right.addInput(control.getMailauswahl());
     
     ButtonArea filterbuttons = new ButtonArea();
     filterbuttons.addButton(control.getResetButton());
