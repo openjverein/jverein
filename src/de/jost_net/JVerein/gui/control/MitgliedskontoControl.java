@@ -22,13 +22,11 @@ import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -57,7 +55,6 @@ import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -86,7 +83,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoControl extends AbstractControl
+public class MitgliedskontoControl extends FilterControl
 {
   public enum DIFFERENZ
   {
@@ -115,8 +112,7 @@ public class MitgliedskontoControl extends AbstractControl
     }
   }
 
-  private Settings settings;
-
+  // SollbuchungDetailView
   private DateInput datum = null;
 
   private TextAreaInput zweck1;
@@ -127,53 +123,36 @@ public class MitgliedskontoControl extends AbstractControl
 
   private AbstractInput buchungsart;
 
-  private FormularInput formular = null;
-
-  private Mitgliedskonto mkto;
-
-  private TablePart mitgliedskontoList;
-
-  private TablePart mitgliedskontoList2;
-
-  private TreePart mitgliedskontoTree;
-
-  public static final String DATUM_MITGLIEDSKONTO = "datum.mitgliedskonto.";
-
-  //
-  // public static final String DATUM_RECHNUNG = "datum.rechnung.";
-  //
-  // public static final String DATUM_MAHNUNG = "datum.mahnung.";
-
+  // MitgliedskontoMahnung/RechnungView
   public enum TYP
   {
     RECHNUNG, MAHNUNG
   }
-
-  private String datumverwendung = null;
-
-  private DateInput vondatum = null;
-
-  private DateInput bisdatum = null;
-
-  private CheckboxInput ohneabbucher = null;
+  private FormularInput formular = null;
 
   private SelectInput ausgabeart = null;
 
   private SelectInput ausgabesortierung = null;
+  
+  private TextInput betreff = null;
 
-  private TextInput suchname = null;
+  private TextAreaInput txt = null;
+  
+  // AbstractMitgliedDetailView
+  private Mitgliedskonto mkto;
+
+  private TreePart mitgliedskontoTree;
+  
+  // SollbuchungListeView, SollbuchungAuswahldialog
+  private TablePart mitgliedskontoList;
+
+  private TablePart mitgliedskontoList2;
 
   private TextInput suchname2 = null;
-
-  private SelectInput differenz = null;
 
   private CheckboxInput spezialsuche1 = null;
   
   private CheckboxInput spezialsuche2 = null;
-
-  private TextInput betreff = null;
-
-  private TextAreaInput txt = null;
 
   // private CheckboxInput offenePosten = null;
 
@@ -308,71 +287,11 @@ public class MitgliedskontoControl extends AbstractControl
     return formular;
   }
 
-  public String getDatumverwendung()
-  {
-    return this.datumverwendung;
-  }
-
-  public DateInput getVondatum(String datumverwendung)
-  {
-    if (vondatum != null)
-    {
-      return vondatum;
-    }
-    Date d = null;
-    this.datumverwendung = datumverwendung;
-    
-    String tmp = settings.getString(datumverwendung + "datumvon", null);
-    
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-
-    this.vondatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.vondatum.setTitle("Anfangsdatum");
-    this.vondatum.setText("Bitte Anfangsdatum wählen");
-    return vondatum;
-  }
-
-  public DateInput getBisdatum(String datumverwendung)
-  {
-    if (bisdatum != null)
-    {
-      return bisdatum;
-    }
-    this.datumverwendung = datumverwendung;
-    Date d = null;
-    String tmp = settings.getString(datumverwendung + "datumbis", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.bisdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.bisdatum.setTitle("Endedatum");
-    this.bisdatum.setText("Bitte Endedatum wählen");
-    return bisdatum;
-  }
-
   public Object[] getCVSExportGrenzen(Mitglied selectedMitglied)
   {
     return new Object[] {
-        getVondatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO).getValue(),
-        getBisdatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO).getValue(),
+        getDatumvon().getValue(),
+        getDatumbis().getValue(),
         getDifferenz().getValue(), getCVSExportGrenzeOhneAbbucher(),
         selectedMitglied };
   }
@@ -382,16 +301,6 @@ public class MitgliedskontoControl extends AbstractControl
     if (null == ohneabbucher)
       return Boolean.FALSE;
     return (Boolean) ohneabbucher.getValue();
-  }
-
-  public CheckboxInput getOhneAbbucher()
-  {
-    if (ohneabbucher != null)
-    {
-      return ohneabbucher;
-    }
-    ohneabbucher = new CheckboxInput(false);
-    return ohneabbucher;
   }
 
   public CheckboxInput getSpezialSuche1()
@@ -450,37 +359,6 @@ public class MitgliedskontoControl extends AbstractControl
     return spezialsuche2;
   }
 
-  public SelectInput getDifferenz()
-  {
-    if (differenz != null)
-    {
-      return differenz;
-    }
-    DIFFERENZ defaultwert = DIFFERENZ
-        .fromString(settings.getString("differenz", DIFFERENZ.EGAL.toString()));
-    return getDifferenz(defaultwert);
-  }
-
-  public SelectInput getDifferenz(DIFFERENZ defaultvalue)
-  {
-    differenz = new SelectInput(DIFFERENZ.values(), defaultvalue);
-    differenz.setName("Differenz");
-    differenz.addListener(new FilterListener());
-    return differenz;
-  }
-
-  // Für SollbuchungListeView
-  public TextInput getSuchName()
-  {
-    if (suchname != null && !suchname.getControl().isDisposed())
-    {
-      return suchname;
-    }
-    suchname = new TextInput(settings.getString("sollbuchung.suchname",""), 30);
-    suchname.setName("Name");
-    return suchname;
-  }
-
   // Für SollbuchungAuswahlDialog
   public TextInput getSuchName1(boolean newcontrol)
   {
@@ -512,7 +390,7 @@ public class MitgliedskontoControl extends AbstractControl
       return ausgabeart;
     }
     ausgabeart = new SelectInput(Ausgabeart.values(),
-        Ausgabeart.valueOf(settings.getString("ausgabeart", "DRUCK")));
+        Ausgabeart.valueOf(settings.getString(settingsprefix + "ausgabeart", "DRUCK")));
     ausgabeart.setName("Ausgabe");
     return ausgabeart;
   }
@@ -524,64 +402,33 @@ public class MitgliedskontoControl extends AbstractControl
       return ausgabesortierung;
     }
     ausgabesortierung = new SelectInput(Ausgabesortierung.values(),
-        Ausgabesortierung.getByKey(settings.getInt("ausgabesortierung", 1)));
+        Ausgabesortierung.getByKey(settings.getInt(settingsprefix + "ausgabesortierung", 1)));
     ausgabesortierung.setName("Sortierung");
     return ausgabesortierung;
   }
 
-  public TextInput getBetreff(String verwendung)
+  public TextInput getBetreff()
   {
     if (betreff != null)
     {
       return betreff;
     }
     betreff = new TextInput(
-        settings.getString(verwendung + ".mail.betreff", ""), 100);
+        settings.getString(settingsprefix + "mail.betreff", ""), 100);
     betreff.setName("Betreff");
     return betreff;
   }
 
-  public TextAreaInput getTxt(String verwendung)
+  public TextAreaInput getTxt()
   {
     if (txt != null)
     {
       return txt;
     }
-    txt = new TextAreaInput(settings.getString(verwendung + ".mail.text", ""),
+    txt = new TextAreaInput(settings.getString(settingsprefix + "mail.text", ""),
         10000);
     txt.setName("Text");
     return txt;
-  }
-  
-  public void saveDefaults()
-  {	  
-    if (this.vondatum != null)
-    {
-      Date tmp = (Date) getVondatum("kontoauszugdatumvon").getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("kontoauszugdatumvon",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("kontoauszugdatumvon", "");
-      }
-    }
-
-    if (this.bisdatum != null)
-    {
-      Date tmp = (Date) getBisdatum("kontoauszugdatumbis").getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("kontoauszugdatumbis",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("kontoauszugbatumbis", "");
-      }
-    }	  
   }
   
   public void handleStore()
@@ -675,7 +522,6 @@ public class MitgliedskontoControl extends AbstractControl
     this.action = action;
     @SuppressWarnings("rawtypes")
     GenericIterator mitgliedskonten = getMitgliedskontoIterator();
-    settings.setAttribute(datumverwendung + "differenz", getDifferenz().getValue().toString());
     if (mitgliedskontoList == null)
     {
       mitgliedskontoList = new TablePart(mitgliedskonten, action);
@@ -787,7 +633,6 @@ public class MitgliedskontoControl extends AbstractControl
   {
     @SuppressWarnings("rawtypes")
     GenericIterator mitgliedskonten = getMitgliedskontoIterator();
-    settings.setAttribute(datumverwendung + "differenz", getDifferenz().getValue().toString());
     mitgliedskontoList.removeAll();
     while (mitgliedskonten.hasNext())
     {
@@ -802,32 +647,20 @@ public class MitgliedskontoControl extends AbstractControl
     Date d1 = null;
     java.sql.Date vd = null;
     java.sql.Date bd = null;
-    if (vondatum != null)
+    if (datumvon != null)
     {
-      d1 = (Date) vondatum.getValue();
+      d1 = (Date) datumvon.getValue();
       if (d1 != null)
       {
-        settings.setAttribute(datumverwendung + "datumvon",
-            new JVDateFormatTTMMJJJJ().format(d1));
         vd = new java.sql.Date(d1.getTime());
       }
-      else
-      {
-        settings.setAttribute(datumverwendung + "datumvon", "");
-      }
     }
-    if (bisdatum != null)
+    if (datumbis != null)
     {
-      d1 = (Date) bisdatum.getValue();
+      d1 = (Date) datumbis.getValue();
       if (d1 != null)
       {
-        settings.setAttribute(datumverwendung + "datumbis",
-            new JVDateFormatTTMMJJJJ().format(d1));
         bd = new java.sql.Date(d1.getTime());
-      }
-      else
-      {
-        settings.setAttribute(datumverwendung + "datumbis", "");
       }
     }
     String sql = "select  mitgliedskonto.*, mitglied.name, mitglied.vorname from mitgliedskonto "
@@ -1004,7 +837,7 @@ public class MitgliedskontoControl extends AbstractControl
       {
         try
         {
-          saveDefaults();
+          saveFilterSettings();
           new Kontoauszug(currentObject, (Date) von.getValue(), (Date) bis.getValue());
         }
         catch (Exception e)
@@ -1019,15 +852,8 @@ public class MitgliedskontoControl extends AbstractControl
 
   private void generiereRechnung(Object currentObject) throws IOException
   {
-    Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
-    settings.setAttribute("ausgabeart", aa.toString());
-    Ausgabesortierung as = (Ausgabesortierung) getAusgabesortierung()
-        .getValue();
-    settings.setAttribute("ausgabesortierung", as.getKey());
-    settings.setAttribute(TYP.RECHNUNG.name() + ".mail.betreff",
-        (String) getBetreff(TYP.RECHNUNG.name()).getValue());
-    settings.setAttribute(TYP.RECHNUNG.name() + ".mail.text",
-        (String) getTxt(TYP.RECHNUNG.name()).getValue());
+    saveSettings();
+    saveFilterSettings();
     new Rechnungsausgabe(this);
   }
 
@@ -1060,46 +886,49 @@ public class MitgliedskontoControl extends AbstractControl
 
   private void generiereMahnung(Object currentObject) throws IOException
   {
-    Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
-    settings.setAttribute("ausgabeart", aa.toString());
-    settings.setAttribute(TYP.MAHNUNG.name() + ".mail.betreff",
-        (String) getBetreff(TYP.MAHNUNG.name()).getValue());
-    settings.setAttribute(TYP.MAHNUNG.name() + ".mail.text",
-        (String) getTxt(TYP.MAHNUNG.name()).getValue());
+    saveSettings();
+    saveFilterSettings();
     new Mahnungsausgabe(this);
   }
-
-  private class FilterListener implements Listener
+  
+  private void saveSettings()
   {
-
-    @Override
-    public void handleEvent(Event event)
+    if (ausgabeart != null )
     {
-      if (event.type == SWT.Selection || event.type != SWT.FocusOut)
-      {
-        try
-        {
-          getMitgliedskontoList(action, null);
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
+      Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
+      settings.setAttribute(settingsprefix + "ausgabeart", aa.toString());
+    }
+    if (ausgabesortierung != null)
+    {
+      Ausgabesortierung as = (Ausgabesortierung) getAusgabesortierung()
+          .getValue();
+      settings.setAttribute(settingsprefix + "ausgabesortierung", as.getKey());
+    }
+    if (betreff != null)
+    {
+      settings.setAttribute(settingsprefix + "mail.betreff",
+          (String) getBetreff().getValue());
+    }
+    if (txt != null)
+    {
+      settings.setAttribute(settingsprefix + "mail.text",
+          (String) getTxt().getValue());
     }
   }
   
   // Für Sollbuchungen View
-  public void refreshMitgliedskontoList()
+  public void TabRefresh()
   {
-    try
+    if (mitgliedskontoList != null)
     {
-      settings.setAttribute("sollbuchung.suchname", getSuchName().getValue().toString());
-      getMitgliedskontoList(action, null);
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
+      try
+      {
+        getMitgliedskontoList(action, null);
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+      }
     }
   }
   

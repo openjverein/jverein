@@ -32,17 +32,22 @@ public class KontoauszugView extends AbstractView
     GUI.getView().setTitle("Kontoauszug");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
+    control.init("kontoauszug.", null, null);
 
-    LabelGroup group = new LabelGroup(getParent(), "Zeitraum");
-    group.addLabelPair("Von", control.getVondatum("kontoauszug"));
-    group.addLabelPair("Bis", control.getBisdatum("kontoauszug"));
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    group.addInput(control.getDatumvon());
+    group.addInput(control.getDatumbis());
+    
+    ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSpeichernButton());
+    group.addButtonArea(fbuttons);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KONTOAUSZUG, false, "question-circle.png");
     buttons.addButton(control.getStartKontoauszugButton(this.getCurrentObject(),
-        control.getVondatum("kontoauszugdatumvon"),
-        control.getBisdatum("kontoauszugdatumbis")));
+        control.getDatumvon(), control.getDatumbis()));
     buttons.paint(this.getParent());
   }
 }

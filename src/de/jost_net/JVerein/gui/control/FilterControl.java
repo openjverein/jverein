@@ -745,7 +745,7 @@ public class FilterControl extends AbstractControl
     return ohneabbucher;
   }
   
-  public boolean isOhneAbbucher()
+  public boolean isOhneAbbucherAktiv()
   {
     return ohneabbucher != null;
   }
