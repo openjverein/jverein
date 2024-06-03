@@ -40,7 +40,8 @@ public class MailUebersichtView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Betreff", control.getSuchname());
+    left.addLabelPair("Mail Empfänger", control.getSuchname());
+    left.addLabelPair("Betreff", control.getSuchtext());
     
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addLabelPair("Bearbeitung von", control.getEingabedatumvon());

@@ -19,6 +19,8 @@ package de.jost_net.JVerein.gui.control;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,6 +50,7 @@ import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -82,6 +85,12 @@ public class MailControl extends FilterControl
   private Mail mail;
 
   private TablePart mailsList;
+  
+  private boolean and = false;
+
+  private String sql = "";
+  
+  private ArrayList<Object> bedingungen = new ArrayList<>();
 
 
   public MailControl(AbstractView view)
@@ -636,10 +645,9 @@ public class MailControl extends FilterControl
         return;
       }
       mailsList.removeAll();
-      DBIterator<Mail> mails = getMails();
-      while (mails.hasNext())
+      ArrayList<Mail> mails = getMails();
+      for (Mail mail: mails)
       {
-        Mail mail = mails.next();
         mailsList.addItem(mail);
       }
     }
@@ -649,41 +657,94 @@ public class MailControl extends FilterControl
     }
   }
   
-  private DBIterator<Mail> getMails() throws RemoteException
+  @SuppressWarnings("unchecked")
+  private  ArrayList<Mail> getMails() throws RemoteException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Mail> mails = service.createList(Mail.class);
+    and = false;
+    bedingungen = new ArrayList<>();
+    final DBService service = Einstellungen.getDBService();
+    ArrayList<Mail>  mails = new ArrayList<>();
+    sql = "select DISTINCT mail.id, lower(mail.betreff) from mail ";
+    sql += "join mailempfaenger on mail.id = mailempfaenger.mail ";
+    sql += "join mitglied on mailempfaenger.mitglied = mitglied.id ";
     if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) getSuchname().getValue();
       if (tmpSuchname.length() > 0)
       {
-        mails.addFilter("(lower(betreff) like ?)", 
-            new Object[] { "%" + tmpSuchname.toLowerCase() + "%" });
+        addCondition("(lower(mitglied.name) like ?)", "%" + tmpSuchname.toLowerCase() + "%");
+      }
+    }
+    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
+    {
+      String tmpSuchtext = (String) getSuchtext().getValue();
+      if (tmpSuchtext.length() > 0)
+      {
+        addCondition("(lower(betreff) like ?)", "%" + tmpSuchtext.toLowerCase() + "%");
       }
     }
     if (isEingabedatumvonAktiv()  && getEingabedatumvon().getValue() != null)
     {
       Date d = (Date) getEingabedatumvon().getValue();
-      mails.addFilter("bearbeitung >= ?", new Object[] { new java.sql.Date(d.getTime()) });
+      addCondition("bearbeitung >= ?", new java.sql.Date(d.getTime()));
     }
     if (isEingabedatumbisAktiv() && getEingabedatumbis().getValue() != null)
     {
       Date d = (Date) getEingabedatumbis().getValue();
-      mails.addFilter("bearbeitung <= ?", new Object[] { new java.sql.Date(d.getTime()) });
+      addCondition("bearbeitung <= ?", new java.sql.Date(d.getTime()));
     }
     if (isDatumvonAktiv() && getDatumvon().getValue() != null)
     {
       Date d = (Date) getDatumvon().getValue();
-      mails.addFilter("versand >= ?", new Object[] { new java.sql.Date(d.getTime()) });
+      addCondition("versand >= ?", new java.sql.Date(d.getTime()));
     }
     if (isDatumbisAktiv() && getDatumbis().getValue() != null)
     {
       Date d = (Date) getDatumbis().getValue();
-      mails.addFilter("versand <= ?", new Object[] { new java.sql.Date(d.getTime()) });
+      addCondition("versand <= ?", new java.sql.Date(d.getTime()));
     }
-    mails.setOrder("ORDER BY betreff");
+    sql += " ORDER BY lower(mail.betreff)";
+    
+    ResultSetExtractor rs = new ResultSetExtractor()
+    {
+
+      @Override
+      public Object extract(ResultSet rs) throws RemoteException, SQLException
+      {
+        ArrayList<Mail> list = new ArrayList<>();
+        while (rs.next())
+        {
+          list.add((Mail) service.createObject(Mail.class,
+              rs.getString(1)));
+        }
+        return list;
+      }
+    };
+    mails = (ArrayList<Mail>) service.execute(sql,
+        bedingungen.toArray(), rs);
+    
     return mails;
+  }
+  
+
+  private void addCondition(String condition)
+  {
+    if (and)
+    {
+      sql += " AND ";
+    }
+    else
+    {
+      sql += "where ";
+    }
+    and = true;
+    sql += condition;
+  }
+  
+  private void addCondition(String condition, Object obj)
+  {
+    addCondition(condition);
+    bedingungen.add(obj);
   }
 
   public class EvalMail
