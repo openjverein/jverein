@@ -694,7 +694,7 @@ public class SpendenbescheinigungControl extends FilterControl
     and = false;
     
     sql = "select spendenbescheinigung.*  from spendenbescheinigung ";
-    sql +=  "join mitglied on (spendenbescheinigung.mitglied = mitglied.id) ";
+    sql +=  "left join mitglied on (spendenbescheinigung.mitglied = mitglied.id) ";
     
     if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
