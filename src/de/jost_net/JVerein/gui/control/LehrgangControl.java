@@ -17,10 +17,11 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.text.ParseException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -34,8 +35,8 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.ObjectNotFoundException;
-import de.willuhn.jameica.gui.AbstractControl;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -51,7 +52,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangControl extends AbstractControl
+public class LehrgangControl extends FilterControl
 {
 
   private TablePart lehrgaengeList;
@@ -67,16 +68,11 @@ public class LehrgangControl extends AbstractControl
   private TextInput ergebnis = null;
 
   private Lehrgang lehrg = null;
+  
+  private boolean and = false;
 
-  // Elemente für die Auswertung
+  private String sql = "";
 
-  private SelectInput suchlehrgangsart = null;
-
-  private DateInput datumvon = null;
-
-  private DateInput datumbis = null;
-
-  private Settings settings = null;
 
   public LehrgangControl(AbstractView view)
   {
@@ -181,81 +177,6 @@ public class LehrgangControl extends AbstractControl
     return ergebnis;
   }
 
-  public SelectInput getSuchLehrgangsart() throws RemoteException
-  {
-    if (suchlehrgangsart != null)
-    {
-      return suchlehrgangsart;
-    }
-    DBIterator<Lehrgangsart> it = Einstellungen.getDBService()
-        .createList(Lehrgangsart.class);
-    it.setOrder("order by bezeichnung");
-    Lehrgangsart letztesuche = null;
-    try
-    {
-      letztesuche = (Lehrgangsart) Einstellungen.getDBService().createObject(
-          Lehrgangsart.class, settings.getString("suchlehrgangsart", null));
-    }
-    catch (ObjectNotFoundException e)
-    {
-      //
-    }
-    suchlehrgangsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, letztesuche);
-    suchlehrgangsart.setPleaseChoose("Bitte auswählen");
-    suchlehrgangsart.addListener(new FilterListener());
-    return suchlehrgangsart;
-  }
-
-  public DateInput getDatumvon()
-  {
-    if (datumvon != null)
-    {
-      return datumvon;
-    }
-    Date d = null;
-    String tmp = settings.getString("datum.von", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.datumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.datumvon.setTitle("Datum von");
-    this.datumvon.setText("Datum von");
-    return datumvon;
-  }
-
-  public DateInput getDatumbis()
-  {
-    if (datumbis != null)
-    {
-      return datumbis;
-    }
-    Date d = null;
-    String tmp = settings.getString("datum.bis", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.datumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.datumbis.setTitle("Datum bis");
-    this.datumbis.setText("Datum bis");
-    return datumbis;
-  }
-
   public void handleStore()
   {
     try
@@ -282,20 +203,17 @@ public class LehrgangControl extends AbstractControl
     }
   }
 
-  public void refresh()
+  public void TabRefresh()
   {
     try
     {
-      saveDefaults();
       if (lehrgaengeList == null)
       {
         return;
       }
       lehrgaengeList.removeAll();
-      DBIterator<Lehrgang> lehrgaenge = getIterator();
-      while (lehrgaenge.hasNext())
+      for (Lehrgang lg : getLehrgaenge())
       {
-        Lehrgang lg = lehrgaenge.next();
         lehrgaengeList.addItem(lg);
       }
     }
@@ -305,80 +223,83 @@ public class LehrgangControl extends AbstractControl
     }
   }
 
-  private DBIterator<Lehrgang> getIterator() throws RemoteException
+  
+  @SuppressWarnings("unchecked")
+  private ArrayList<Lehrgang> getLehrgaenge() throws RemoteException
   {
-    DBIterator<Lehrgang> lehrgaenge = Einstellungen.getDBService()
-        .createList(Lehrgang.class);
-    if (getSuchLehrgangsart().getValue() != null)
+    final DBService service = Einstellungen.getDBService();
+    ArrayList<Object> bedingungen = new ArrayList<>();
+    and = false;
+    
+    sql = "select lehrgang.*  from lehrgang ";
+    sql +=  "join mitglied on (lehrgang.mitglied = mitglied.id) ";
+    
+    if (isSuchnameAktiv() && getSuchname().getValue() != null)
+    {
+      String tmpSuchname = (String) getSuchname().getValue();
+      if (tmpSuchname.length() > 0)
+      {
+        addCondition("(lower(name) like ?)");
+        bedingungen.add(tmpSuchname.toLowerCase() + "%");
+      }
+    }
+    if (isSuchLehrgangsartAktiv() && getSuchLehrgangsart().getValue() != null)
     {
       Lehrgangsart la = (Lehrgangsart) getSuchLehrgangsart().getValue();
-      lehrgaenge.addFilter("lehrgangsart = ?", new Object[] { la.getID() });
+      addCondition("lehrgangsart = ?");
+      bedingungen.add(la.getID());
     }
-    if (getDatumvon().getValue() != null)
+    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
     {
-      lehrgaenge.addFilter("von >= ?",
-          new Object[] { (Date) getDatumvon().getValue() });
+      addCondition("von >= ?");
+      Date d = (Date) getDatumvon().getValue();
+      bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (getDatumbis().getValue() != null)
+    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
     {
-      lehrgaenge.addFilter("bis <= ?",
-          new Object[] { (Date) getDatumbis().getValue() });
+      addCondition("bis <= ?");
+      Date d = (Date) getDatumbis().getValue();
+      bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    return lehrgaenge;
+
+    sql += " ORDER BY name ";
+    
+    ResultSetExtractor rs = new ResultSetExtractor()
+    {
+      @Override
+      public Object extract(ResultSet rs) throws RemoteException, SQLException
+      {
+        ArrayList<Lehrgang> list = new ArrayList<>();
+        while (rs.next())
+        {
+          list.add(
+              (Lehrgang) service.createObject(Lehrgang.class, rs.getString(1)));
+        }
+        return list;
+      }
+    };
+
+    return (ArrayList<Lehrgang>) service.execute(sql, bedingungen.toArray(),
+        rs);
   }
-
-  /**
-   * Default-Werte speichern.
-   * 
-   * @throws RemoteException
-   */
-  public void saveDefaults() throws RemoteException
+  
+  private void addCondition(String condition)
   {
-    if (this.suchlehrgangsart != null)
+    if (and)
     {
-      Lehrgangsart la = (Lehrgangsart) getSuchLehrgangsart().getValue();
-      if (la != null)
-      {
-        settings.setAttribute("suchlehrgangsart", la.getID());
-      }
-      else
-      {
-        settings.setAttribute("suchlehrgangsart", "");
-      }
+      sql += " AND ";
     }
-    if (this.datumvon != null)
+    else
     {
-      Date tmp = (Date) getDatumvon().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("datum.von",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("datum.von", "");
-      }
+      sql += "where ";
     }
-
-    if (this.datumbis != null)
-    {
-      Date tmp = (Date) getDatumbis().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("datum.bis",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("datum.bis", "");
-      }
-    }
-
+    and = true;
+    sql += condition;
   }
 
   public Part getLehrgaengeList() throws RemoteException
   {
-    DBIterator<Lehrgang> lehrgaenge = getIterator();
+    ArrayList<Lehrgang> lehrgaenge = getLehrgaenge();
     if (lehrgaengeList == null)
     {
       lehrgaengeList = new TablePart(lehrgaenge, new LehrgangAction(null));
@@ -418,26 +339,12 @@ public class LehrgangControl extends AbstractControl
     else
     {
       lehrgaengeList.removeAll();
-      while (lehrgaenge.hasNext())
+      for (Lehrgang lg : lehrgaenge)
       {
-        lehrgaengeList.addItem(lehrgaenge.next());
+        lehrgaengeList.addItem(lg);
       }
     }
     return lehrgaengeList;
-  }
-
-  private class FilterListener implements Listener
-  {
-
-    @Override
-    public void handleEvent(Event event)
-    {
-      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
-      {
-        return;
-      }
-      refresh();
-    }
   }
 
 }
