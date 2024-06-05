@@ -151,10 +151,7 @@ public class AnfangsbestandControl extends FilterControl
     {
       return anfangsbestandList;
     }
-    DBIterator<Anfangsbestand> anfangsbestaende = getAnfangsstaende();
-    anfangsbestaende.setOrder("ORDER BY konto, datum desc");
-
-    anfangsbestandList = new TablePart(anfangsbestaende,
+    anfangsbestandList = new TablePart(getAnfangsstaende(),
         new AnfangsbestandDetailAction());
     anfangsbestandList.addColumn("Konto", "kontotext");
     anfangsbestandList.addColumn("Datum", "datum",
