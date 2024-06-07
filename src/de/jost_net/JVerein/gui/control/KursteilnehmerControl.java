@@ -478,32 +478,15 @@ public class KursteilnehmerControl extends FilterControl
   private void starteAuswertung()
   {
     // Alle Kursteilnehmer lesen
-    final DBIterator<Kursteilnehmer> list;
+    
     try
     {
       saveFilterSettings();
       String subtitle = "";
-      list = Einstellungen.getDBService().createList(Kursteilnehmer.class);
-      if (isAbbuchungsdatumvonAktiv() && getAbbuchungsdatumvon().getValue() != null)
-      {
-        Date d = (Date) getAbbuchungsdatumvon().getValue();
-        subtitle += "Abbuchungsdatum von" + " "
-            + new JVDateFormatTTMMJJJJ().format(d) + "  ";
-        list.addFilter("abbudatum >= ?",
-            new Object[] { new java.sql.Date(d.getTime()) });
-      }
-      if (isAbbuchungsdatumbisAktiv() && getAbbuchungsdatumbis().getValue() != null)
-      {
-        Date d = (Date) getAbbuchungsdatumbis().getValue();
-        subtitle += " " + "bis" + " " + new JVDateFormatTTMMJJJJ().format(d)
-            + "  ";
-        list.addFilter("abbudatum <= ?",
-            new Object[] { new java.sql.Date(d.getTime()) });
-      }
+      final DBIterator<Kursteilnehmer> list = getIterator();
+      
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
-
-      Settings settings = new Settings(this.getClass());
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
