@@ -370,7 +370,14 @@ public class LastschriftImpl extends AbstractDBObject implements Lastschrift
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    return super.getAttribute(fieldName);
+    if (fieldName.equals("faelligkeit"))
+    {
+      return (Date) getAbrechnungslauf().getFaelligkeit();
+    }
+    else
+    {
+      return super.getAttribute(fieldName);
+    }
   }
 
 }
