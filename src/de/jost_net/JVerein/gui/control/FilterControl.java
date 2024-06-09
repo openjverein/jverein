@@ -135,6 +135,7 @@ public class FilterControl extends AbstractControl
 
   protected DateInput abbuchungsdatumbis = null;
 
+  protected TextInput suchtext = null;
   
   public enum Mitgliedstyp {
     MITGLIED,
@@ -845,6 +846,23 @@ public class FilterControl extends AbstractControl
     return abbuchungsdatumbis != null;
   }
   
+  public TextInput getSuchtext()
+  {
+    if (suchtext != null)
+    {
+      return suchtext;
+    }
+    this.suchtext = new TextInput(settings.getString(settingsprefix + "suchtext", ""),
+          50);
+    suchtext.setName("Text");
+    return suchtext;
+  }
+  
+  public boolean isSuchtextAktiv()
+  {
+    return suchtext != null;
+  }
+  
   /**
    * Buttons
    */
@@ -955,6 +973,8 @@ public class FilterControl extends AbstractControl
           abbuchungsdatumvon.setValue(null);
         if (abbuchungsdatumbis != null)
           abbuchungsdatumbis.setValue(null);
+        if (suchtext != null)
+          suchtext.setValue("");
         refresh();
       }
     }, null, false, "eraser.png");
@@ -1311,6 +1331,19 @@ public class FilterControl extends AbstractControl
     if (abbuchungsdatumbis != null)
     {
       saveDate( (Date) abbuchungsdatumbis.getValue(), "abbuchungsdatum.bis");
+    }
+    
+    if (suchtext != null)
+    {
+      String tmp = (String) suchtext.getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute(settingsprefix + "suchtext", tmp);
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "suchtext", "");
+      }
     }
     
   }

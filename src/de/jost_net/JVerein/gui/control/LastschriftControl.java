@@ -109,6 +109,15 @@ public class LastschriftControl extends FilterControl
             new Object[] { tmpSuchname.toLowerCase() + "%"});
       }
     }
+    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
+    {
+      String tmpSuchtext = (String) getSuchtext().getValue();
+      if (tmpSuchtext.length() > 0)
+      {
+        lastschriften.addFilter("(lower(verwendungszweck) like ?)",
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+      }
+    }
     if (isDatumvonAktiv() && getDatumvon().getValue() != null)
     {
       lastschriften.addFilter("faelligkeit >= ?",
