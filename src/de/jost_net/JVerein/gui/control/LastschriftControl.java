@@ -67,7 +67,7 @@ public class LastschriftControl extends FilterControl
     lastschriftList.setRememberColWidths(true);
     lastschriftList.setContextMenu(new LastschriftMenu());
     lastschriftList.setRememberOrder(true);
-    lastschriftList.removeFeature(FeatureSummary.class);
+    lastschriftList.addFeature(new FeatureSummary());
     lastschriftList.setMulti(true);
     return lastschriftList;
   }
