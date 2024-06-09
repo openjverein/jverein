@@ -662,7 +662,7 @@ public class SpendenbescheinigungControl extends FilterControl
     spbList.setRememberColWidths(true);
     spbList.setContextMenu(new SpendenbescheinigungMenu());
     spbList.setRememberOrder(true);
-    spbList.removeFeature(FeatureSummary.class);
+    spbList.addFeature(new FeatureSummary());
     spbList.setMulti(true);
     return spbList;
   }
