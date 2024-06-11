@@ -29,40 +29,40 @@ public class Update0440 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(dropForeignKey("FK_SEKUNDAERBEITRAGEGRUPPE1", "SEKUNDAEREBEITRAGSGRUPPE"));
-    execute(createForeignKey("FK_SEKUNDAERBEITRAGEGRUPPE1", "SEKUNDAEREBEITRAGSGRUPPE",
+    execute(dropForeignKey("fk_sekundaerebeitragsgruppe1", "sekundaerebeitragsgruppe"));
+    execute(createForeignKey("fk_sekundaerebeitragsgruppe1", "sekundaerebeitragsgruppe",
         "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
     
-    execute(dropForeignKey("FKLASTSCHRIFT2", "LASTSCHRIFT"));
-    execute(createForeignKey("FKLASTSCHRIFT2", "LASTSCHRIFT",
+    execute(dropForeignKey("fklastschrift2", "lastschrift"));
+    execute(createForeignKey("fklastschrift2", "lastschrift",
         "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
     
-    execute(dropForeignKey("FKLASTSCHRIFT3", "LASTSCHRIFT"));
-    execute(createForeignKey("FKLASTSCHRIFT3", "LASTSCHRIFT",
+    execute(dropForeignKey("fklastschrift3", "lastschrift"));
+    execute(createForeignKey("fklastschrift3", "lastschrift",
         "kursteilnehmer", "kursteilnehmer", "id", "CASCADE", "NO ACTION"));
     
-    execute(dropForeignKey("FKMITGLIEDDOKUMENT1", "MITGLIEDDOKUMENT"));
-    execute(createForeignKey("FKMITGLIEDDOKUMENT1", "MITGLIEDDOKUMENT",
+    execute(dropForeignKey("fkmitglieddokument1", "mitglieddokument"));
+    execute(createForeignKey("fkmitglieddokument1", "mitglieddokument",
         "referenz", "mitglied", "id", "CASCADE", "NO ACTION"));
     
-    execute(dropForeignKey("FKSPENDENBESCHEINIGUNG2", "SPENDENBESCHEINIGUNG"));
-    execute(createForeignKey("FKSPENDENBESCHEINIGUNG2", "SPENDENBESCHEINIGUNG",
+    execute(dropForeignKey("fkspendenbescheinigung2", "spendenbescheinigung"));
+    execute(createForeignKey("fkspendenbescheinigung2", "spendenbescheinigung",
         "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
     
-    execute(dropForeignKey("FKWIEDERVORLAGE1", "WIEDERVORLAGE"));
-    execute(createForeignKey("FKWIEDERVORLAGE1", "WIEDERVORLAGE",
+    execute(dropForeignKey("fkwiedervorlage1", "wiedervorlage"));
+    execute(createForeignKey("fkwiedervorlage1", "wiedervorlage",
         "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
     
-    execute(dropForeignKey("FKZUSATZABBUCHUNG1", "ZUSATZABBUCHUNG"));
-    execute(createForeignKey("FKZUSATZABBUCHUNG1", "ZUSATZABBUCHUNG",
+    execute(dropForeignKey("fkzusatzabbuchung1", "zusatzabbuchung"));
+    execute(createForeignKey("fkzusatzabbuchung1", "zusatzabbuchung",
         "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
     
-    execute(dropForeignKey("FKBUCHUNG3", "BUCHUNG"));
-    execute(createForeignKey("FKBUCHUNG3", "BUCHUNG",
+    execute(dropForeignKey("fkbuchung3", "buchung"));
+    execute(createForeignKey("fkbuchung3", "buchung",
         "mitgliedskonto", "mitgliedskonto", "id", "SET NULL", "NO ACTION"));
     
-    execute(dropForeignKey("FKBUCHUNG5", "BUCHUNG"));
-    execute(createForeignKey("FKBUCHUNG5", "BUCHUNG",
+    execute(dropForeignKey("fkbuchung5", "buchung"));
+    execute(createForeignKey("fkbuchung5", "buchung",
         "spendenbescheinigung", "spendenbescheinigung", "id", "SET NULL", "NO ACTION"));
   }
 }
