@@ -98,6 +98,28 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
       throw new ApplicationException("Fehler beim Ausführen des Updates", e);
     }
   }
+  
+  public void executeNoCheck(String statement, boolean setVersion)
+      throws ApplicationException
+  {
+    if (statement == null)
+    {
+      throw new ApplicationException("Leeres Statement");
+    }
+    try
+    {
+      Logger.debug(statement);
+      ScriptExecutor.execute(new StringReader(statement), conn, null);
+    }
+    catch (Exception e)
+    {
+      //;
+    }
+    if (setVersion)
+    {
+      setNewVersion(nr);
+    }
+  }
 
   public void setNewVersion(int newVersion) throws ApplicationException
   {
@@ -327,10 +349,10 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
       }
       case MYSQL:
       {
-        return "ALTER TABLE " + table + " ADD CONSTRAINT IF NOT EXISTS " + " FOREIGN KEY "
+        return "ALTER TABLE " + table + " ADD CONSTRAINT " + " FOREIGN KEY "
             + constraintname + "(" + column + ") REFERENCES " + reftable + " ("
             + refcolumn + ") ON DELETE " + ondelete + " ON UPDATE " + onupdate
-            + " NOCHECK;\n";
+            + ";\n";
       }
     }
     return "";
