@@ -29,8 +29,8 @@ public class Update0440 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(dropForeignKey("fk_sekundaerebeitragsgruppe1", "sekundaerebeitragsgruppe"));
-    execute(createForeignKey("fk_sekundaerebeitragsgruppe1", "sekundaerebeitragsgruppe",
+    execute(dropForeignKey("fk_sekundaerbeitragsgruppe1", "sekundaerebeitragsgruppe"));
+    execute(createForeignKey("fk_sekundaerbeitragsgruppe1", "sekundaerebeitragsgruppe",
         "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
     
     execute(dropForeignKey("fklastschrift2", "lastschrift"));
