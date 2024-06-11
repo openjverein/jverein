@@ -29,8 +29,8 @@ public class Update0441 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(dropForeignKey("FKBUCHUNGDOKUMENT1", "BUCHUNGDOKUMENT"));
-    execute(createForeignKey("FKBUCHUNGDOKUMENT1", "BUCHUNGDOKUMENT",
+    execute(dropForeignKey("fkbuchungsdokument1", "buchungsdokument"));
+    execute(createForeignKey("fkbuchungsdokument1", "buchungsdokument",
         "referenz", "buchung", "id", "CASCADE", "NO ACTION"));
   }
 }
