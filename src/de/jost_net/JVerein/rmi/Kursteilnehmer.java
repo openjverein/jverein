@@ -78,7 +78,7 @@ public interface Kursteilnehmer extends DBObject, ILastschrift
 
   public Date getEingabedatum() throws RemoteException;
 
-  public void setAbbudatum() throws RemoteException;
+  public void setAbbudatum(Date abbudatum) throws RemoteException;
 
   public void resetAbbudatum() throws RemoteException;
 

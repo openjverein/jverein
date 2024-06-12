@@ -421,9 +421,9 @@ public class KursteilnehmerImpl extends AbstractDBObject implements
   }
 
   @Override
-  public void setAbbudatum() throws RemoteException
+  public void setAbbudatum(Date abbudatum) throws RemoteException
   {
-    setAttribute("abbudatum", new Date());
+    setAttribute("abbudatum", abbudatum);
   }
 
   @Override

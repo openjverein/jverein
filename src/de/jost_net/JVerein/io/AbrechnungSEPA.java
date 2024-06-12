@@ -635,7 +635,7 @@ public class AbrechnungSEPA
         zahler.setName(kt.getName());
         zahler.setVerwendungszweck(kt.getVZweck1());
         lastschrift.add(zahler);
-        kt.setAbbudatum();
+        kt.setAbbudatum(param.faelligkeit);
         kt.store();
       }
       catch (Exception e)
