@@ -71,6 +71,7 @@ import de.jost_net.OBanToo.SEPA.Basislastschrift.MandatSequence;
 import de.jost_net.OBanToo.SEPA.Basislastschrift.Zahler;
 import de.jost_net.OBanToo.StringLatin.Zeichen;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.internal.action.Program;
 import de.willuhn.jameica.hbci.HBCIProperties;
@@ -139,7 +140,7 @@ public class AbrechnungSEPA
     }
     if (param.kursteilnehmer)
     {
-      abbuchenKursteilnehmer(param, lastschrift);
+      abbuchenKursteilnehmer(param, lastschrift, abrl, konto);
     }
 
     monitor.log(counter + " abgerechnete Fälle");
@@ -607,7 +608,7 @@ public class AbrechnungSEPA
   }
 
   private void abbuchenKursteilnehmer(AbrechnungSEPAParam param,
-      Basislastschrift lastschrift)
+      Basislastschrift lastschrift, Abrechnungslauf abrl, Konto konto)
       throws ApplicationException, IOException
   {
     DBIterator<Kursteilnehmer> list = Einstellungen.getDBService()
@@ -637,6 +638,8 @@ public class AbrechnungSEPA
         lastschrift.add(zahler);
         kt.setAbbudatum();
         kt.store();
+        writeMitgliedskonto(kt, param.faelligkeit, kt.getVZweck1(), 
+            zahler.getBetrag().doubleValue(), abrl, true, konto, null);
       }
       catch (Exception e)
       {
@@ -796,23 +799,24 @@ public class AbrechnungSEPA
     return abrl;
   }
 
-  private void writeMitgliedskonto(Mitglied mitglied, Date datum, String zweck1,
+  private void writeMitgliedskonto(Object mitglied, Date datum, String zweck1,
       double betrag, Abrechnungslauf abrl, boolean haben, Konto konto,
       Buchungsart buchungsart) throws ApplicationException, RemoteException
   {
     Mitgliedskonto mk = null;
-    if (mitglied != null) /*
+    if (mitglied != null && mitglied instanceof Mitglied) /*
                            * Mitglied darf dann null sein, wenn die Gegenbuchung
                            * geschrieben wird
                            */
     {
+      Mitglied mg = (Mitglied) mitglied;
       mk = (Mitgliedskonto) Einstellungen.getDBService()
           .createObject(Mitgliedskonto.class, null);
       mk.setAbrechnungslauf(abrl);
-      mk.setZahlungsweg(mitglied.getZahlungsweg());
+      mk.setZahlungsweg(mg.getZahlungsweg());
       mk.setBetrag(betrag);
       mk.setDatum(datum);
-      mk.setMitglied(mitglied);
+      mk.setMitglied(mg);
       mk.setZweck1(zweck1);
       double steuersatz = 0d;
       if (buchungsart != null)
@@ -838,7 +842,7 @@ public class AbrechnungSEPA
       buchung.setDatum(datum);
       buchung.setKonto(konto);
       buchung.setName(
-          mitglied != null ? Adressaufbereitung.getNameVorname(mitglied)
+          mitglied != null ? Adressaufbereitung.getNameVorname((IAdresse) mitglied)
               : "JVerein");
       buchung.setZweck(zweck1);
       if (mk != null)
