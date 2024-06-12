@@ -45,8 +45,8 @@ public class Update0439 extends AbstractDDLUpdate
     // Weil wegen gelöschter Buchungsklassen die Integrität verletzt sein 
     // könnte, muss der Foreign Key mit NOCHECK erzeugt werden
 
-    executeNoCheck(createForeignKeyIfNotExistsNocheck("fkKonto1", "konto",
-        "buchungsart", "buchungsart", "id", "SET NULL", "NO ACTION"), true);
+    createForeignKeyIfNotExistsNocheck("fkKonto1", "konto",
+        "buchungsart", "buchungsart", "id", "SET NULL", "NO ACTION");
 
   }
 }
