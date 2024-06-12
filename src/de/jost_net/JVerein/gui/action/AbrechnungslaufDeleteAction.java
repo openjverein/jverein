@@ -22,6 +22,8 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
+import de.jost_net.JVerein.rmi.Kursteilnehmer;
+import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
@@ -131,6 +133,18 @@ public class AbrechnungslaufDeleteAction implements Action
         z.vorherigeFaelligkeit();
         z.setAusfuehrung(za.getLetzteAusfuehrung());
         z.store();
+      }
+      it = Einstellungen.getDBService().createList(Lastschrift.class);
+      it.addFilter("abrechnungslauf = ?", abrl.getID());
+      while (it.hasNext())
+      {
+        Lastschrift la = (Lastschrift) it.next();
+        Kursteilnehmer kt = la.getKursteilnehmer();
+        if (kt != null)
+        {
+          kt.resetAbbudatum();
+          kt.store();
+        }
       }
       abrl.delete();
       GUI.getStatusBar().setSuccessText("Abrechnungslauf gelöscht.");
