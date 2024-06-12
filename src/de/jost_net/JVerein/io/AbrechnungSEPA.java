@@ -680,7 +680,7 @@ public class AbrechnungSEPA
     ls_properties.setProperty("sepaid", epochtime_string);
     ls_properties.setProperty("pmtinfid", epochtime_string);
     ls_properties.setProperty("sequencetype", "RCUR");
-    ls_properties.setProperty("targetdate", param.stichtag != null ? ISO_DATE.format(param.stichtag) : SepaUtil.DATE_UNDEFINED);
+    ls_properties.setProperty("targetdate", param.faelligkeit != null ? ISO_DATE.format(param.faelligkeit) : SepaUtil.DATE_UNDEFINED);
     ls_properties.setProperty("type", "CORE");
     ls_properties.setProperty("batchbook", "");
     int counter = 0;
