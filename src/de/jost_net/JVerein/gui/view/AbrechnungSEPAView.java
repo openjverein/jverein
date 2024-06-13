@@ -45,7 +45,7 @@ public class AbrechnungSEPAView extends AbstractView
       group.addLabelPair("Abrechnungsmonat", control.getAbrechnungsmonat());
     }
     group.addLabelPair("Stichtag", control.getStichtag());
-    group.addLabelPair("Von Eingabedatum", control.getVondatum());
+    group.addLabelPair("Von Eintrittsdatum", control.getVondatum());
     group.addLabelPair("Bis Austrittsdatum", control.getBisdatum());
     group.addLabelPair("Zahlungsgrund für Beiträge",
         control.getZahlungsgrund());

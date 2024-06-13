@@ -291,7 +291,7 @@ public class AbrechnungSEPA
       // berücksichtigt, die ab einem bestimmten Zeitpunkt eingetreten sind.
       if (param.vondatum != null)
       {
-        list.addFilter("eingabedatum >= ?",
+        list.addFilter("eintritt >= ?",
             new Object[] { new java.sql.Date(param.vondatum.getTime()) });
       }
       if (Einstellungen.getEinstellung()
