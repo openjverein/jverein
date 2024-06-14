@@ -18,8 +18,8 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction.Spendenstyp;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
-import de.jost_net.JVerein.keys.Spendenart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -85,18 +85,13 @@ public class SpendenbescheinigungView extends AbstractView
      */
     if (control.getSpendenbescheinigung().getAutocreate())
     {
-      control.getSpendenart().setEnabled(false);
       control.getBetrag().setEnabled(false);
       // Buchnungen nur für Geldspenden
       LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),
           "Buchungen");
       grBuchungen.addPart(control.getBuchungsList());
     }
-    else
-    {
-      control.getSpendenart().setEnabled(false);
-      control.getBetrag().setEnabled(true);
-    }
+    control.getSpendenart().setEnabled(false);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -104,7 +99,9 @@ public class SpendenbescheinigungView extends AbstractView
     buttons.addButton(control.getPDFStandardButton(false));
     buttons.addButton(control.getPDFStandardButton(true));
     buttons.addButton(control.getPDFIndividuellButton());
-    buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(Spendenart.SACHSPENDE), null, false,
+    buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(Spendenstyp.SACHSPENDE), null, false,
+        "document-new.png");
+    buttons.addButton("Neu (Spende (Sonstig))", new SpendenbescheinigungAction(Spendenstyp.SONSTIG), null, false,
         "document-new.png");
     buttons.addButton("Speichern", new Action()
     {
