@@ -17,10 +17,15 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
@@ -34,10 +39,12 @@ import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.GUI;
 
@@ -54,30 +61,76 @@ public class Kontoauszug
   {
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
-    init();
-    rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40);
   }
 
   public Kontoauszug(Object object, MitgliedskontoControl control) throws Exception
   {
     this();
+    ArrayList<Mitglied> mitglieder = new ArrayList<>();
     if (object instanceof Mitglied)
     {
-      generiereMitglied((Mitglied) object, control);
+      mitglieder.add((Mitglied) object);
     }
     else if (object instanceof Mitglied[])
     {
-      Mitglied[] mitglieder = (Mitglied[]) object;
-      for (Mitglied m : mitglieder)
-      {
-        generiereMitglied(m, control);
-      }
+      mitglieder = new ArrayList<>(Arrays.asList((Mitglied[]) object));
     }
-    rpt.close();
-    zeigeDokument();
+    
+    switch ((Ausgabeart) control.getAusgabeart().getValue())
+    {
+      case DRUCK:
+        init("pdf");
+        if (file == null)
+        {
+          return;
+        }
+        rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40);
+        for (Mitglied mg : mitglieder)
+        {
+          generiereMitglied(mg, control);
+        }
+        rpt.close();
+        zeigeDokument();
+        break;
+      case EMAIL:
+        init("zip");
+        if (file == null)
+        {
+          return;
+        }
+        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(file));
+        for (Mitglied mg : mitglieder)
+        {
+          if (mg.getEmail() == null || mg.getEmail().isEmpty())
+          {
+            continue;
+          }
+          File f = File.createTempFile(getDateiname(mg), ".pdf");
+          rpt = new Reporter(new FileOutputStream(f), 40, 20, 20, 40);
+          if (generiereMitglied(mg, control) == false)
+          {
+            continue;
+          }
+          rpt.close();
+          zos.putNextEntry(new ZipEntry(getDateiname(mg) + ".pdf"));
+          FileInputStream in = new FileInputStream(f);
+          // buffer size
+          byte[] b = new byte[1024];
+          int count;
+          while ((count = in.read(b)) > 0)
+          {
+            zos.write(b, 0, count);
+          }
+          in.close();
+        }
+        zos.close();
+        new ZipMailer(file, (String) control.getBetreff().getValue(),
+            (String) control.getTxt().getValue(), "Kontoauszug.pdf");
+        break;
+    } 
   }
 
-  private void init() throws IOException
+  private void init(String extension) throws IOException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
@@ -87,24 +140,24 @@ public class Kontoauszug
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("kontoauszug", "", Einstellungen
-        .getEinstellung().getDateinamenmuster(), "pdf").get());
-    fd.setFilterExtensions(new String[] { "*.pdf" });
+    fd.setFileName(new Dateiname("KONTOAUSZUG", "", Einstellungen
+        .getEinstellung().getDateinamenmuster(), extension).get());
+    fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();
     if (s == null || s.length() == 0)
     {
       return;
     }
-    if (!s.toLowerCase().endsWith(".pdf"))
+    if (!s.toLowerCase().endsWith("." + extension))
     {
-      s = s + ".pdf";
+      s = s + "*." + extension;
     }
     file = new File(s);
     settings.setAttribute("lastdir", file.getParent());
   }
 
-  private void generiereMitglied(Mitglied m, MitgliedskontoControl control)
+  private boolean generiereMitglied(Mitglied m, MitgliedskontoControl control)
       throws RemoteException, DocumentException
   {
     DIFFERENZ diff = DIFFERENZ.EGAL;
@@ -118,11 +171,11 @@ public class Kontoauszug
     
     if (diff == DIFFERENZ.FEHLBETRAG && node.getIst() >= node.getSoll())
     {
-      return;
+      return false;
     }
     if (diff == DIFFERENZ.UEBERZAHLUNG && node.getSoll() >= node.getIst())
     {
-      return;
+      return false;
     }
     
     rpt.newPage();
@@ -160,6 +213,7 @@ public class Kontoauszug
       }
     }
     rpt.closeTable();
+    return true;
   }
 
   private void generiereZeile(MitgliedskontoNode node)
@@ -189,5 +243,13 @@ public class Kontoauszug
   {
     GUI.getStatusBar().setSuccessText("Kontoauszug erstellt");
     FileViewer.show(file);
+  }
+  
+  String getDateiname(Mitglied m) throws RemoteException
+  {
+    String filename = m.getID() + "#";
+    String email = StringTool.toNotNullString(m.getEmail());
+    filename += email;
+    return filename;
   }
 }

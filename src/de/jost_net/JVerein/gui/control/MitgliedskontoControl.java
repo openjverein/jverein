@@ -837,6 +837,7 @@ public class MitgliedskontoControl extends FilterControl
       {
         try
         {
+          saveSettings();
           saveFilterSettings();
           new Kontoauszug(currentObject, control);
         }

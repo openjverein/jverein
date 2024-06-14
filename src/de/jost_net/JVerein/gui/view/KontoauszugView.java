@@ -45,6 +45,15 @@ public class KontoauszugView extends AbstractView
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
     
+    SimpleContainer cont = new SimpleContainer(getParent(), true);
+    cont.addHeadline("Parameter");
+    
+    cont.addInput(control.getAusgabeart());
+
+    cont.addHeadline("Mail");
+    cont.addInput(control.getBetreff());
+    cont.addLabelPair("Text", control.getTxt());
+    
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSpeichernButton());
