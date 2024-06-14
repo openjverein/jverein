@@ -206,8 +206,7 @@ public class LehrgangControl extends FilterControl
       DBIterator<Lehrgang> lehrgaenge = getIterator();
       while (lehrgaenge.hasNext())
       {
-        Lehrgang lg = lehrgaenge.next();
-        lehrgaengeList.addItem(lg);
+        lehrgaengeList.addItem(lehrgaenge.next());
       }
     }
     catch (RemoteException e1)
@@ -295,8 +294,7 @@ public class LehrgangControl extends FilterControl
       lehrgaengeList.removeAll();
       while (lehrgaenge.hasNext())
       {
-        Lehrgang lg = lehrgaenge.next();
-        lehrgaengeList.addItem(lg);
+        lehrgaengeList.addItem(lehrgaenge.next());
       }
     }
     return lehrgaengeList;
