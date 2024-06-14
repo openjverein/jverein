@@ -26,8 +26,6 @@ import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -41,10 +39,8 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AnfangsbestandControl extends AbstractControl
+public class AnfangsbestandControl extends FilterControl
 {
-
-  private de.willuhn.jameica.system.Settings settings;
 
   private TablePart anfangsbestandList;
 
@@ -151,12 +147,11 @@ public class AnfangsbestandControl extends AbstractControl
 
   public Part getAnfangsbestandList() throws RemoteException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Anfangsbestand> anfangsbestaende = service
-        .createList(Anfangsbestand.class);
-    anfangsbestaende.setOrder("ORDER BY konto, datum desc");
-
-    anfangsbestandList = new TablePart(anfangsbestaende,
+    if (anfangsbestandList != null)
+    {
+      return anfangsbestandList;
+    }
+    anfangsbestandList = new TablePart(getAnfangsstaende(),
         new AnfangsbestandDetailAction());
     anfangsbestandList.addColumn("Konto", "kontotext");
     anfangsbestandList.addColumn("Datum", "datum",
@@ -170,15 +165,53 @@ public class AnfangsbestandControl extends AbstractControl
     return anfangsbestandList;
   }
 
-  public void refreshTable() throws RemoteException
+  public void TabRefresh() 
   {
+    if (anfangsbestandList == null)
+    {
+      return;
+    }
     anfangsbestandList.removeAll();
+    try
+    {
+      DBIterator<Anfangsbestand> anfangsbestaende = getAnfangsstaende();
+      while (anfangsbestaende.hasNext())
+      {
+        anfangsbestandList.addItem(anfangsbestaende.next());
+      }
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
+  }
+  
+  private DBIterator<Anfangsbestand> getAnfangsstaende() throws RemoteException
+  {
     DBIterator<Anfangsbestand> anfangsbestaende = Einstellungen.getDBService()
         .createList(Anfangsbestand.class);
-    anfangsbestaende.setOrder("ORDER BY konto, datum desc");
-    while (anfangsbestaende.hasNext())
+    anfangsbestaende.join("konto");
+    anfangsbestaende.addFilter("konto.id = anfangsbestand.konto");
+    if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
-      anfangsbestandList.addItem(anfangsbestaende.next());
+      String tmpSuchname = (String) getSuchname().getValue();
+      if (tmpSuchname.length() > 0)
+      {
+        anfangsbestaende.addFilter("(lower(bezeichnung) like ?)",
+            new Object[] { "%" + tmpSuchname.toLowerCase() + "%"});
+      }
     }
+    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
+    {
+      anfangsbestaende.addFilter("datum >= ?",
+          new Object[] { (Date) getDatumvon().getValue() });
+    }
+    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
+    {
+      anfangsbestaende.addFilter("datum <= ?",
+          new Object[] { (Date) getDatumbis().getValue() });
+    }
+    anfangsbestaende.setOrder("ORDER BY konto, datum desc");
+    return anfangsbestaende;
   }
 }
