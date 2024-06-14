@@ -17,9 +17,6 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.eclipse.swt.widgets.Event;
@@ -35,8 +32,6 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -68,10 +63,6 @@ public class LehrgangControl extends FilterControl
   private TextInput ergebnis = null;
 
   private Lehrgang lehrg = null;
-  
-  private boolean and = false;
-
-  private String sql = "";
 
 
   public LehrgangControl(AbstractView view)
@@ -212,8 +203,10 @@ public class LehrgangControl extends FilterControl
         return;
       }
       lehrgaengeList.removeAll();
-      for (Lehrgang lg : getLehrgaenge())
+      DBIterator<Lehrgang> lehrgaenge = getIterator();
+      while (lehrgaenge.hasNext())
       {
+        Lehrgang lg = lehrgaenge.next();
         lehrgaengeList.addItem(lg);
       }
     }
@@ -223,83 +216,44 @@ public class LehrgangControl extends FilterControl
     }
   }
 
-  
-  @SuppressWarnings("unchecked")
-  private ArrayList<Lehrgang> getLehrgaenge() throws RemoteException
+  private DBIterator<Lehrgang> getIterator() throws RemoteException
   {
-    final DBService service = Einstellungen.getDBService();
-    ArrayList<Object> bedingungen = new ArrayList<>();
-    and = false;
-    
-    sql = "select lehrgang.*  from lehrgang ";
-    sql +=  "join mitglied on (lehrgang.mitglied = mitglied.id) ";
+    DBIterator<Lehrgang> lehrgaenge = Einstellungen.getDBService()
+        .createList(Lehrgang.class);
+    lehrgaenge.join("mitglied");
+    lehrgaenge.addFilter("mitglied.id = lehrgang.mitglied");
     
     if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) getSuchname().getValue();
       if (tmpSuchname.length() > 0)
       {
-        addCondition("(lower(name) like ?)");
-        bedingungen.add(tmpSuchname.toLowerCase() + "%");
+        lehrgaenge.addFilter("(lower(name) like ?)", 
+            new Object[] { "%" + tmpSuchname.toLowerCase() + "%"});
       }
     }
     if (isSuchLehrgangsartAktiv() && getSuchLehrgangsart().getValue() != null)
     {
       Lehrgangsart la = (Lehrgangsart) getSuchLehrgangsart().getValue();
-      addCondition("lehrgangsart = ?");
-      bedingungen.add(la.getID());
+      lehrgaenge.addFilter("lehrgangsart = ?", new Object[] { la.getID() });
     }
     if (isDatumvonAktiv() && getDatumvon().getValue() != null)
     {
-      addCondition("von >= ?");
-      Date d = (Date) getDatumvon().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
+      lehrgaenge.addFilter("von >= ?",
+          new Object[] { (Date) getDatumvon().getValue() });
     }
     if (isDatumbisAktiv() && getDatumbis().getValue() != null)
     {
-      addCondition("bis <= ?");
-      Date d = (Date) getDatumbis().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
+      lehrgaenge.addFilter("bis <= ?",
+          new Object[] { (Date) getDatumbis().getValue() });
     }
 
-    sql += " ORDER BY name ";
-    
-    ResultSetExtractor rs = new ResultSetExtractor()
-    {
-      @Override
-      public Object extract(ResultSet rs) throws RemoteException, SQLException
-      {
-        ArrayList<Lehrgang> list = new ArrayList<>();
-        while (rs.next())
-        {
-          list.add(
-              (Lehrgang) service.createObject(Lehrgang.class, rs.getString(1)));
-        }
-        return list;
-      }
-    };
-
-    return (ArrayList<Lehrgang>) service.execute(sql, bedingungen.toArray(),
-        rs);
-  }
-  
-  private void addCondition(String condition)
-  {
-    if (and)
-    {
-      sql += " AND ";
-    }
-    else
-    {
-      sql += "where ";
-    }
-    and = true;
-    sql += condition;
+    return lehrgaenge;
   }
 
   public Part getLehrgaengeList() throws RemoteException
   {
-    ArrayList<Lehrgang> lehrgaenge = getLehrgaenge();
+    DBIterator<Lehrgang> lehrgaenge = getIterator();
     if (lehrgaengeList == null)
     {
       lehrgaengeList = new TablePart(lehrgaenge, new LehrgangAction(null));
@@ -339,8 +293,9 @@ public class LehrgangControl extends FilterControl
     else
     {
       lehrgaengeList.removeAll();
-      for (Lehrgang lg : lehrgaenge)
+      while (lehrgaenge.hasNext())
       {
+        Lehrgang lg = lehrgaenge.next();
         lehrgaengeList.addItem(lg);
       }
     }
