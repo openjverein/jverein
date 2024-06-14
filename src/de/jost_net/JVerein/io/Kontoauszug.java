@@ -67,7 +67,14 @@ public class Kontoauszug
   {
     this();
     ArrayList<Mitglied> mitglieder = new ArrayList<>();
-    if (object instanceof Mitglied)
+    if (object == null || !(object instanceof Mitglied) 
+        || !(object instanceof Mitglied[]))
+    {
+      GUI.getStatusBar().setErrorText(
+          "Kein Mitglied ausgewählt. Vorgang abgebrochen.");
+      return;
+    }
+    else if (object instanceof Mitglied)
     {
       mitglieder.add((Mitglied) object);
     }
