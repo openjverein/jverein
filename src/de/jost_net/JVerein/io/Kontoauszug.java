@@ -30,6 +30,8 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
+import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -56,19 +58,19 @@ public class Kontoauszug
     rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40);
   }
 
-  public Kontoauszug(Object object, Date von, Date bis) throws Exception
+  public Kontoauszug(Object object, MitgliedskontoControl control) throws Exception
   {
     this();
     if (object instanceof Mitglied)
     {
-      generiereMitglied((Mitglied) object, von, bis);
+      generiereMitglied((Mitglied) object, control);
     }
     else if (object instanceof Mitglied[])
     {
       Mitglied[] mitglieder = (Mitglied[]) object;
       for (Mitglied m : mitglieder)
       {
-        generiereMitglied(m, von, bis);
+        generiereMitglied(m, control);
       }
     }
     rpt.close();
@@ -102,9 +104,27 @@ public class Kontoauszug
     settings.setAttribute("lastdir", file.getParent());
   }
 
-  private void generiereMitglied(Mitglied m, Date von, Date bis)
+  private void generiereMitglied(Mitglied m, MitgliedskontoControl control)
       throws RemoteException, DocumentException
   {
+    DIFFERENZ diff = DIFFERENZ.EGAL;
+    if (control.isDifferenzAktiv() && control.getDifferenz().getValue() != null)
+    {
+      diff = (DIFFERENZ) control.getDifferenz().getValue();
+    }
+    
+    MitgliedskontoNode node = new MitgliedskontoNode(m, (Date) control.getDatumvon().getValue(), 
+        (Date) control.getDatumbis().getValue());
+    
+    if (diff == DIFFERENZ.FEHLBETRAG && node.getIst() >= node.getSoll())
+    {
+      return;
+    }
+    if (diff == DIFFERENZ.UEBERZAHLUNG && node.getSoll() >= node.getIst())
+    {
+      return;
+    }
+    
     rpt.newPage();
     rpt.add(Einstellungen.getEinstellung().getName(), 20);
     rpt.add(
@@ -124,7 +144,6 @@ public class Kontoauszug
         BaseColor.LIGHT_GRAY);
     rpt.createHeader();
 
-    MitgliedskontoNode node = new MitgliedskontoNode(m, von, bis);
     generiereZeile(node);
     @SuppressWarnings("rawtypes")
     GenericIterator gi1 = node.getChildren();

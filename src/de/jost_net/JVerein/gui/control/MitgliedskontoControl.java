@@ -827,7 +827,7 @@ public class MitgliedskontoControl extends FilterControl
   }
 
   public Button getStartKontoauszugButton(final Object currentObject,
-      final DateInput von, final DateInput bis)
+      final MitgliedskontoControl control)
   {
     Button button = new Button("Starten", new Action()
     {
@@ -838,7 +838,7 @@ public class MitgliedskontoControl extends FilterControl
         try
         {
           saveFilterSettings();
-          new Kontoauszug(currentObject, (Date) von.getValue(), (Date) bis.getValue());
+          new Kontoauszug(currentObject, control);
         }
         catch (Exception e)
         {

@@ -21,7 +21,9 @@ import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class KontoauszugView extends AbstractView
 {
@@ -35,8 +37,13 @@ public class KontoauszugView extends AbstractView
     control.init("kontoauszug.", null, null);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addInput(control.getDatumvon());
-    group.addInput(control.getDatumbis());
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getDifferenz());
+    
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getDatumvon());
+    right.addInput(control.getDatumbis());
     
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());
@@ -46,8 +53,8 @@ public class KontoauszugView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KONTOAUSZUG, false, "question-circle.png");
-    buttons.addButton(control.getStartKontoauszugButton(this.getCurrentObject(),
-        control.getDatumvon(), control.getDatumbis()));
+    buttons.addButton(control.getStartKontoauszugButton(
+        this.getCurrentObject(), control));
     buttons.paint(this.getParent());
   }
 }
