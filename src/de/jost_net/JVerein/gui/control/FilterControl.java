@@ -82,6 +82,8 @@ public class FilterControl extends AbstractControl
   protected SelectInput suchadresstyp = null;
 
   protected SelectInput status = null;
+  
+  protected SelectInput art = null;
 
   protected TextInput suchexternemitgliedsnummer = null;
 
@@ -253,6 +255,26 @@ public class FilterControl extends AbstractControl
   public boolean isMitgliedStatusAktiv()
   {
     return status != null;
+  }
+  
+  public Input getMitgliedArt()
+  {
+    if (art != null)
+    {
+      return art;
+    }
+    art = new SelectInput(
+        new String[] { "Mitglied", "Nicht-Mitglied", "Kursteilnehmer" },
+        settings.getString(settingsprefix + "status.art", ""));
+    art.setName("Mitgliedsart");
+    art.setPleaseChoose("Bitte auswählen");
+    art.addListener(new FilterListener());
+    return art;
+  }
+
+  public boolean isMitgliedArtAktiv()
+  {
+    return art != null;
   }
   
   public TextInput getSuchExterneMitgliedsnummer()
@@ -914,6 +936,8 @@ public class FilterControl extends AbstractControl
           suchadresstyp.setValue(null);
         if (status != null)
           status.setValue("Angemeldet");
+        if (art != null)
+          art.setValue(null);
         if (suchexternemitgliedsnummer != null)
           suchexternemitgliedsnummer.setValue("");
         if (eigenschaftenabfrage != null)
@@ -1151,6 +1175,19 @@ public class FilterControl extends AbstractControl
       else
       {
         settings.setAttribute(settingsprefix + "status.mitglied", "");
+      }
+    }
+    
+    if (art != null)
+    {
+      String tmp = (String) art.getValue();
+      if (tmp != null && !tmp.equals("Bitte auswählen"))
+      {
+        settings.setAttribute(settingsprefix + "status.art", tmp);
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "status.art", "");
       }
     }
     

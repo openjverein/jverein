@@ -41,6 +41,7 @@ public class LastschriftListeView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addLabelPair("Zweck", control.getSuchtext());
+    left.addInput(control.getMitgliedArt());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Fälligkeit von", control.getDatumvon());

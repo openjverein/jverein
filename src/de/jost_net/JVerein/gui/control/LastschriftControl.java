@@ -100,12 +100,33 @@ public class LastschriftControl extends FilterControl
         .createList(Lastschrift.class);
     lastschriften.join("abrechnungslauf");
     lastschriften.addFilter("abrechnungslauf.id = lastschrift.abrechnungslauf");
+    if (isMitgliedArtAktiv() && getMitgliedArt().getValue() != null)
+    {
+      String tmpArt = (String) getMitgliedArt().getValue();
+      if (tmpArt.equalsIgnoreCase("Kursteilnehmer"))
+      {
+        lastschriften.addFilter("(lastschrift.kursteilnehmer IS NOT NULL)");
+      }
+      else
+      {
+        lastschriften.join("mitglied");
+        lastschriften.addFilter("mitglied.id = lastschrift.mitglied");
+        if (tmpArt.equalsIgnoreCase("Mitglied"))
+        {
+          lastschriften.addFilter("(adresstyp = 1)");
+        }
+        else if (tmpArt.equalsIgnoreCase("Nicht-Mitglied"))
+        {
+          lastschriften.addFilter("(adresstyp > 1)");
+        }
+      }
+    }
     if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) getSuchname().getValue();
       if (tmpSuchname.length() > 0)
       {
-        lastschriften.addFilter("(lower(name) like ?)",
+        lastschriften.addFilter("(lower(lastschrift.name) like ?)",
             new Object[] { tmpSuchname.toLowerCase() + "%"});
       }
     }
