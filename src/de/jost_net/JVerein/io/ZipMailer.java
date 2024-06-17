@@ -80,9 +80,11 @@ public class ZipMailer
           Logger.debug("preparing velocity context");
           monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
           monitor.setPercentComplete(0);
-          // int sentCount = 0;
+          int sentCount = 0;
 
           ZipFile zip = new ZipFile(zipfile);
+          int zae = 0;
+          int size = zip.size();
           for (@SuppressWarnings("rawtypes")
           Enumeration e = zip.entries(); e.hasMoreElements();)
           {
@@ -132,6 +134,7 @@ public class ZipMailer
               {
                 sender.sendMail(mail, wtext1.getBuffer().toString(),
                     wtext2.getBuffer().toString(), anhang);
+                sentCount++;
               }
               catch (SendFailedException e1)
               {
@@ -139,8 +142,18 @@ public class ZipMailer
                 Logger.error("Fehler beim Mailversand: " + e1);
               }
             } // Ende von if
+            zae++;
+            double proz = (double) zae / (double) size * 100d;
+            monitor.setPercentComplete((int) proz);
           } // Ende von for
           zip.close();
+          monitor.setPercentComplete(100);
+          monitor.setStatus(ProgressMonitor.STATUS_DONE);
+          monitor.setStatusText(
+              String.format("Anzahl verschickter Mails: %d", sentCount));
+          GUI.getStatusBar().setSuccessText(
+              "Mail" + (sentCount > 1 ? "s" : "") + " verschickt");
+          GUI.getCurrentView().reload();
         }
         catch (ZipException e)
         {

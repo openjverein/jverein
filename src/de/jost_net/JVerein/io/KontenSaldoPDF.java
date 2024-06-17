@@ -19,26 +19,28 @@ package de.jost_net.JVerein.io;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
-import de.jost_net.JVerein.util.Geschaeftsjahr;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class JahressaldoPDF
+public class KontenSaldoPDF
 {
 
-  public JahressaldoPDF(ArrayList<SaldoZeile> zeile, final File file,
-      Geschaeftsjahr gj) throws ApplicationException
+  public KontenSaldoPDF(ArrayList<SaldoZeile> zeile, final File file,
+      final Date datumvon, final Date datumbis) throws ApplicationException
   {
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      String subtitle = gj.toString();
-      Reporter reporter = new Reporter(fos, "Jahressaldo", subtitle,
+      String subtitle = new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
+          + new JVDateFormatTTMMJJJJ().format(datumbis);
+      Reporter reporter = new Reporter(fos, "Kontensaldo", subtitle,
           zeile.size());
 
       reporter.addHeaderColumn("Konto-\nnummer", Element.ALIGN_CENTER, 50,

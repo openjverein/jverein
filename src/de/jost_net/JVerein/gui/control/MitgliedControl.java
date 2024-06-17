@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,7 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.StringTokenizer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -49,14 +47,10 @@ import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedNextBGruppeBearbeitenAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
-import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
-import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
-import de.jost_net.JVerein.gui.dialogs.ZusatzfelderAuswahlDialog;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
-import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.menu.FamilienbeitragMenu;
@@ -108,12 +102,9 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
 import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ObjectNotFoundException;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -126,7 +117,6 @@ import de.willuhn.jameica.gui.formatter.TreeFormatter;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
-import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.ImageInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -148,7 +138,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class MitgliedControl extends AbstractControl
+public class MitgliedControl extends FilterControl
 {
 
   private TablePart part;
@@ -259,36 +249,12 @@ public class MitgliedControl extends AbstractControl
 
   private Input[] zusatzfelder;
 
-  private ZusatzfelderAuswahlDialog zad;
-
   private Input[] lesefelder;
 
   private TreePart eigenschaftenTree;
 
-  private TreePart eigenschaftenAuswahlTree;
-
   // Elemente für die Auswertung
   private TextInput auswertungUeberschrift = null;
-
-  private SelectInput suchadresstyp = null;
-
-  private TextInput suchname = null;
-
-  private DateInput geburtsdatumvon = null;
-
-  private DateInput geburtsdatumbis = null;
-
-  private DateInput sterbedatumvon = null;
-
-  private DateInput sterbedatumbis = null;
-
-  private DateInput eintrittvon = null;
-
-  private DateInput eintrittbis;
-
-  private DateInput austrittvon;
-
-  private DateInput austrittbis;
 
   private TextAreaInput vermerk1;
 
@@ -300,21 +266,7 @@ public class MitgliedControl extends AbstractControl
 
   private SelectInput sortierung;
 
-  private SelectInput status;
-
-  private DateInput stichtag;
-
   private SelectInput jubeljahr;
-
-  private SelectInput beitragsgruppeausw;
-
-  private DialogInput eigenschaftenabfrage;
-
-  private DialogInput zusatzfelderabfrage;
-
-  private TextInput suchexternemitgliedsnummer;
-
-  private SelectInput mailAuswahl;
 
   private Mitglied mitglied;
 
@@ -339,8 +291,6 @@ public class MitgliedControl extends AbstractControl
 
   private ImageInput foto;
 
-  private Settings settings = null;
-
   private LesefeldAuswerter lesefeldAuswerter = null;
 
   private int jjahr = 0;
@@ -348,17 +298,7 @@ public class MitgliedControl extends AbstractControl
   private TablePart beitragsTabelle;
 
   private ArrayList<SekundaereBeitragsgruppe> listeSeB;
-  
-  private Mitgliedstyp typ = null;
-  
-  private String mitgliedtyp = null;
-  
-  private String zusatzfelderstring = null;
-  
-  public enum Mitgliedstyp {
-    MITGLIED,
-    NICHTMITGLIED,
-  }
+ 
 
   // Zeitstempel merken, wann der Letzte refresh ausgeführt wurde.
   private long lastrefresh = 0;
@@ -383,96 +323,6 @@ public class MitgliedControl extends AbstractControl
   public void setMitglied(Mitglied mitglied)
   {
     this.mitglied = mitglied;
-  }
-
-  /**
-   * 
-   * @param typ
-   *          1=Mitglieder 2= alle ohne Mitglieder
-   * @throws RemoteException
-   */
-  public SelectInput getSuchAdresstyp(Mitgliedstyp typ) throws RemoteException
-  {
-    if (suchadresstyp != null)
-    {
-      return suchadresstyp;
-    }
-    this.typ = typ;
-    if (typ == Mitgliedstyp.MITGLIED)
-    {
-      mitgliedtyp = "mitglied";
-      zusatzfelderstring = "zusatzfelder.";
-    }
-    else
-    {
-      mitgliedtyp = "nichtmitglied";
-      zusatzfelderstring = "nichtzusatzfelder.";
-    }
-      
-    DBIterator<Adresstyp> at = Einstellungen.getDBService()
-        .createList(Adresstyp.class);
-    switch (typ)
-    {
-      case MITGLIED:
-        at.addFilter("jvereinid = 1");
-        break;
-      case NICHTMITGLIED:
-        at.addFilter("jvereinid != 1 or jvereinid is null");
-        break;
-    }
-    at.addFilter("jvereinid != 1 or jvereinid is null");
-    at.setOrder("order by bezeichnung");
-
-    if (typ == Mitgliedstyp.MITGLIED)
-    {
-      Adresstyp def = (Adresstyp) Einstellungen.getDBService()
-          .createObject(Adresstyp.class, "1");
-      suchadresstyp = new SelectInput(at != null ? PseudoIterator.asList(at) : null, def);
-    }
-    else
-    {
-      Adresstyp def = null;
-      try
-      {
-        def = (Adresstyp) Einstellungen.getDBService().createObject(
-            Adresstyp.class, settings.getString("suchadresstyp", "2"));
-      }
-      catch (Exception e)
-      {
-        def = null;
-        /*settings.setAttribute("suchadresstyp", "2");
-        def = (Adresstyp) Einstellungen.getDBService().createObject(
-            Adresstyp.class, settings.getString("suchadresstyp", "2"));*/
-      }
-      suchadresstyp = new SelectInput(at != null ? PseudoIterator.asList(at) : null, def);
-    }
-    suchadresstyp.setName("Mitgliedstyp");
-    suchadresstyp.setPleaseChoose("Bitte auswählen");
-    suchadresstyp.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Adresstyp sel = (Adresstyp) suchadresstyp.getValue();
-        if (sel != null)
-        {
-          try
-          {
-            settings.setAttribute("suchadresstyp", sel.getID());
-          }
-          catch (RemoteException e)
-          {
-            settings.setAttribute("suchadresstyp", "");
-          }
-        }
-        else
-        {
-          settings.setAttribute("suchadresstyp", "");
-        }
-      }
-    });
-    return suchadresstyp;
   }
 
   public SelectInput getAdresstyp() throws RemoteException
@@ -1358,38 +1208,6 @@ public class MitgliedControl extends AbstractControl
     return auswertungUeberschrift;
   }
 
-  public SelectInput getBeitragsgruppeAusw() throws RemoteException
-  {
-    if (beitragsgruppeausw != null)
-    {
-      return beitragsgruppeausw;
-    }
-    Beitragsgruppe bg = null;
-    String beitragsgru = settings.getString("mitglied.beitragsgruppe", "");
-    if (beitragsgru.length() > 0)
-    {
-      try
-      {
-        bg = (Beitragsgruppe) Einstellungen.getDBService()
-            .createObject(Beitragsgruppe.class, beitragsgru);
-      }
-      catch (ObjectNotFoundException e)
-      {
-        bg = (Beitragsgruppe) Einstellungen.getDBService()
-            .createObject(Beitragsgruppe.class, null);
-      }
-    }
-    DBIterator<Beitragsgruppe> list = Einstellungen.getDBService()
-        .createList(Beitragsgruppe.class);
-    list.setOrder("ORDER BY bezeichnung");
-    beitragsgruppeausw = new SelectInput(list != null ? PseudoIterator.asList(list) : null, bg);
-    beitragsgruppeausw.setName("Beitragsgruppe");
-    beitragsgruppeausw.setAttribute("bezeichnung");
-    beitragsgruppeausw.setPleaseChoose("Bitte auswählen");
-    beitragsgruppeausw.setName("Beitragsgruppe");
-    return beitragsgruppeausw;
-  }
-
   /**
    * Liefert ein Part zurück, das den Familienverband anzeigt. Da Container
    * jedoch nur das Hinzufügen von Parts zulassen, ist das Part Familienverband
@@ -1962,400 +1780,6 @@ public class MitgliedControl extends AbstractControl
     return lehrgaengeList;
   }
 
-  public DateInput getGeburtsdatumvon()
-  {
-    if (geburtsdatumvon != null)
-    {
-      return geburtsdatumvon;
-    }
-    Date d = null;
-    String tmp = settings.getString(mitgliedtyp + ".geburtsdatumvon", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.geburtsdatumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.geburtsdatumvon.setTitle("Geburtsdatum");
-    this.geburtsdatumvon.setText("Beginn des Geburtszeitraumes");
-    this.geburtsdatumvon.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) geburtsdatumvon.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
-    geburtsdatumvon.setName("Geburtsdatum von");
-    return geburtsdatumvon;
-  }
-
-  public DateInput getGeburtsdatumbis()
-  {
-    if (geburtsdatumbis != null)
-    {
-      return geburtsdatumbis;
-    }
-    Date d = null;
-    String tmp = settings.getString(mitgliedtyp + ".geburtsdatumbis", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.geburtsdatumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.geburtsdatumbis.setTitle("Geburtsdatum");
-    this.geburtsdatumbis.setText("Ende des Geburtszeitraumes");
-    this.geburtsdatumbis.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) geburtsdatumbis.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
-    geburtsdatumbis.setName("Geburtsdatum bis");
-    return geburtsdatumbis;
-  }
-
-  public DateInput getSterbedatumvon()
-  {
-    if (sterbedatumvon != null)
-    {
-      return sterbedatumvon;
-    }
-    Date d = null;
-    String tmp = settings.getString("mitglied.sterbedatumvon", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.sterbedatumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.sterbedatumvon.setTitle("Sterbedatum");
-    this.sterbedatumvon.setText("Beginn des Sterbezeitraumes");
-    this.sterbedatumvon.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) sterbedatumvon.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
-    sterbedatumvon.setName("Sterbedatum von");
-    return sterbedatumvon;
-  }
-
-  public DateInput getSterbedatumbis()
-  {
-    if (sterbedatumbis != null)
-    {
-      return sterbedatumbis;
-    }
-    Date d = null;
-    String tmp = settings.getString("mitglied.sterbedatumbis", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.sterbedatumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.sterbedatumbis.setTitle("Sterbedatum");
-    this.sterbedatumbis.setText("Ende des Sterbezeitraumes");
-    this.sterbedatumbis.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) sterbedatumbis.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
-    sterbedatumbis.setName("Sterbedatum bis");
-    return sterbedatumbis;
-  }
-
-  public DateInput getEintrittvon()
-  {
-    if (eintrittvon != null)
-    {
-      return eintrittvon;
-    }
-    Date d = null;
-    String tmp = settings.getString("mitglied.eintrittvon", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.eintrittvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.eintrittvon.setTitle("Eintrittsdatum");
-    this.eintrittvon.setText("Beginn des Eintrittszeitraumes");
-    this.eintrittvon.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) eintrittvon.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
-    eintrittvon.setName("Eintritt von");
-    return eintrittvon;
-  }
-
-  public boolean isEintrittbisAktiv()
-  {
-    return eintrittbis != null;
-  }
-
-  public DateInput getEintrittbis()
-  {
-    if (eintrittbis != null)
-    {
-      return eintrittbis;
-    }
-    Date d = null;
-    String tmp = settings.getString("mitglied.eintrittbis", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.eintrittbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.eintrittbis.setTitle("Eintrittsdatum");
-    this.eintrittbis.setText("Ende des Eintrittszeitraumes");
-    this.eintrittbis.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) eintrittbis.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
-    eintrittbis.setName("Eintritt bis");
-    return eintrittbis;
-  }
-
-  public DateInput getAustrittvon()
-  {
-    if (austrittvon != null)
-    {
-      return austrittvon;
-    }
-    Date d = null;
-    String tmp = settings.getString("mitglied.austrittvon", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.austrittvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.austrittvon.setTitle("Austrittsdatum");
-    this.austrittvon.setText("Beginn des Austrittszeitraumes");
-    this.austrittvon.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) austrittvon.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
-    austrittvon.setName("Austritt von");
-    return austrittvon;
-  }
-
-  public boolean isAustrittbisAktiv()
-  {
-    return austrittbis != null;
-  }
-
-  public DateInput getAustrittbis()
-  {
-    if (austrittbis != null)
-    {
-      return austrittbis;
-    }
-    Date d = null;
-    String tmp = settings.getString("mitglied.austrittbis", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.austrittbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.austrittbis.setTitle("Austrittsdatum");
-    this.austrittbis.setText("Ende des Austrittszeitraumes");
-    this.austrittbis.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) austrittbis.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
-    austrittbis.setName("Austritt bis");
-    return austrittbis;
-  }
-
-  public TextInput getSuchname()
-  {
-    if (suchname != null)
-    {
-      return suchname;
-    }
-
-    this.suchname = new TextInput(settings.getString(mitgliedtyp + ".suchname", ""),
-          50);
-    suchname.setName("Name");
-    return suchname;
-  }
-
-  public DateInput getStichtag()
-  {
-    if (stichtag != null)
-    {
-      return stichtag;
-    }
-    Date d = null;
-    String tmp = settings.getString("mitglied.stichtag", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.stichtag = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.stichtag.setTitle("Stichtag");
-    this.stichtag.setText("Stichtag");
-    this.stichtag.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) stichtag.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
-    stichtag.setName("Stichtag");
-    return stichtag;
-  }
-
-  public DateInput getStichtag(boolean jahresende)
-  {
-    if (stichtag != null)
-    {
-      return stichtag;
-    }
-    Date d = new Date();
-    if (jahresende)
-    {
-      Calendar cal = Calendar.getInstance();
-      cal.set(Calendar.MONTH, Calendar.DECEMBER);
-      cal.set(Calendar.DAY_OF_MONTH, 31);
-      d = new Date(cal.getTimeInMillis());
-    }
-    this.stichtag = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.stichtag.setTitle("Stichtag");
-    this.stichtag.setName("Stichtag");
-    return stichtag;
-  }
-
   public SelectInput getJubeljahr()
   {
     if (jubeljahr != null)
@@ -2387,77 +1811,6 @@ public class MitgliedControl extends AbstractControl
   public int getJJahr()
   {
     return jjahr;
-  }
-
-  public DialogInput getEigenschaftenAuswahl() throws RemoteException
-  {
-    String  tmp = settings.getString(mitgliedtyp + ".eigenschaften", "");
-    final EigenschaftenAuswahlDialog d = new EigenschaftenAuswahlDialog(tmp,
-        false, true);
-    d.addCloseListener(new EigenschaftenListener());
-
-    StringTokenizer stt = new StringTokenizer(tmp, ",");
-    StringBuilder text = new StringBuilder();
-    while (stt.hasMoreElements())
-    {
-      if (text.length() > 0)
-      {
-        text.append(", ");
-      }
-      try
-      {
-        Eigenschaft ei = (Eigenschaft) Einstellungen.getDBService()
-            .createObject(Eigenschaft.class, stt.nextToken());
-        text.append(ei.getBezeichnung());
-      }
-      catch (ObjectNotFoundException e)
-      {
-        //
-      }
-    }
-    eigenschaftenabfrage = new DialogInput(text.toString(), d);
-    eigenschaftenabfrage.setName("Eigenschaften");
-    eigenschaftenabfrage.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-
-        d.setDefaults(settings.getString(mitgliedtyp + ".eigenschaften", ""));
-      }
-    });
-    return eigenschaftenabfrage;
-  }
-
-  public void resetEigenschaftenAuswahl()
-  {
-
-    settings.setAttribute(mitgliedtyp + ".eigenschaften", "");
-    eigenschaftenabfrage.setText("");
-    eigenschaftenabfrage.getControl().redraw();
-  }
-
-  public DialogInput getZusatzfelderAuswahl()
-  {
-    if (zusatzfelderabfrage != null)
-    {
-      return zusatzfelderabfrage;
-    }
-    zad = new ZusatzfelderAuswahlDialog(settings, typ);
-    zad.addCloseListener(new ZusatzfelderListener());
-
-    zusatzfelderabfrage = new DialogInput("", zad);
-    setZusatzfelderAuswahl();
-    zusatzfelderabfrage.setName("Zusatzfelder");
-    return zusatzfelderabfrage;
-  }
-
-  public void resetZusatzfelderAuswahl()
-  {
-    settings.setAttribute(mitgliedtyp + ".eigenschaften", "");
-    settings.setAttribute(zusatzfelderstring + "selected", 0);
-    setZusatzfelderAuswahl();
   }
 
   public Input getAusgabe() throws RemoteException
@@ -2536,44 +1889,10 @@ public class MitgliedControl extends AbstractControl
     sortierung.setName("Sortierung");
     return sortierung;
   }
-
-  public boolean isMitgliedStatusAktiv()
+  
+  public boolean isSortierungAktiv()
   {
-    return status != null;
-  }
-
-  public TextInput getSuchExterneMitgliedsnummer()
-  {
-    if (suchexternemitgliedsnummer != null)
-    {
-      return suchexternemitgliedsnummer;
-    }
-    suchexternemitgliedsnummer = new TextInput("", 50);
-    return suchexternemitgliedsnummer;
-  }
-
-  public Input getMitgliedStatus()
-  {
-    if (status != null)
-    {
-      return status;
-    }
-    status = new SelectInput(
-        new String[] { "Angemeldet", "Abgemeldet", "An- und Abgemeldete" },
-        settings.getString("status.mitglied", "Angemeldet"));
-    status.setName("Mitgliedschaft");
-    return status;
-  }
-
-  public SelectInput getMailauswahl() throws RemoteException
-  {
-    if (mailAuswahl != null)
-    {
-      return mailAuswahl;
-    }
-    mailAuswahl = new MailAuswertungInput(1);
-    mailAuswahl.setName("Mail");
-    return mailAuswahl;
+    return sortierung != null;
   }
 
   public Button getStartAuswertungButton()
@@ -2644,7 +1963,7 @@ public class MitgliedControl extends AbstractControl
       {
         try
         {
-          saveDefaults();
+          saveFilterSettings();
         }
         catch (RemoteException e)
         {
@@ -2715,7 +2034,6 @@ public class MitgliedControl extends AbstractControl
     }, null, false, "xsd.png");
     // button
     return b;
-
   }
 
   public Button getLesefelderEdit()
@@ -2751,7 +2069,7 @@ public class MitgliedControl extends AbstractControl
   public TablePart getMitgliedTable(int atyp, Action detailaction)
       throws RemoteException
   {
-    part = new TablePart(new MitgliedQuery(this, false).get(atyp),
+    part = new TablePart(new MitgliedQuery(this).get(atyp),
         detailaction);
     new MitgliedSpaltenauswahl().setColumns(part, atyp);
     part.setContextMenu(new MitgliedMenu(detailaction));
@@ -2771,253 +2089,15 @@ public class MitgliedControl extends AbstractControl
       return part;
     }
     lastrefresh = System.currentTimeMillis();
-    saveDefaults();
     part.removeAll();
-    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this, false).get(atyp);
+    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this).get(atyp);
     for (Mitglied m : mitglieder)
     {
       part.addItem(m);
     }
     return part;
   }
-
-  /**
-   * Default-Werte für die MitgliederSuchView speichern.
-   * 
-   * @throws RemoteException
-   */
-  public void saveDefaults() throws RemoteException
-  {
-    if (status != null)
-    {
-      settings.setAttribute("status.mitglied",
-          (String) getMitgliedStatus().getValue());
-    }
-
-    if (geburtsdatumvon != null)
-    {
-      Date tmp = (Date) getGeburtsdatumvon().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute(mitgliedtyp + ".geburtsdatumvon",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute(mitgliedtyp + ".geburtsdatumvon", "");
-      }
-    }
-    if (auswertungUeberschrift != null)
-    {
-      String tmp = (String) getAuswertungUeberschrift().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("auswertung.ueberschrift", tmp);
-      }
-      else
-      {
-        settings.setAttribute("auswertung.ueberschrift", "");
-      }
-    }
-
-    // RWU: vorlagedateicsv
-    if (vorlagedateicsv != null)
-    {
-      String tmp = (String) getVorlagedateicsv().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("auswertung.vorlagedateicsv", tmp);
-      }
-      else
-      {
-        settings.setAttribute("auswertung.vorlagedateicsv", "");
-      }
-    }
-
-    if (suchname != null)
-    {
-      String tmp = (String) getSuchname().getValue();
-      
-      if (tmp != null)
-      {
-        settings.setAttribute(mitgliedtyp + ".suchname", tmp);
-      }
-      else
-      {
-
-        settings.setAttribute(mitgliedtyp + ".suchname", "");
-      }
-    }
-    
-    if (suchadresstyp != null)
-    {
-      Adresstyp tmp = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
-      
-      if (tmp != null)
-      {
-        settings.setAttribute("suchadresstyp", tmp.getID());
-      }
-      else
-      {
-
-        settings.setAttribute("suchadresstyp", "");
-      }
-    }
-
-    if (geburtsdatumbis != null)
-    {
-      Date tmp = (Date) getGeburtsdatumbis().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute(mitgliedtyp + ".geburtsdatumbis",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute(mitgliedtyp + ".geburtsdatumbis", "");
-      }
-    }
-
-    if (sterbedatumvon != null)
-    {
-      Date tmp = (Date) getSterbedatumvon().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("mitglied.sterbedatumvon",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("mitglied.sterbedatumvon", "");
-      }
-    }
-
-    if (sterbedatumbis != null)
-    {
-      Date tmp = (Date) getSterbedatumbis().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("mitglied.sterbedatumbis",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("mitglied.sterbedatumbis", "");
-      }
-    }
-
-    if (eintrittvon != null)
-    {
-      Date tmp = (Date) getEintrittvon().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("mitglied.eintrittvon",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("mitglied.eintrittvon", "");
-      }
-    }
-
-    if (eintrittbis != null)
-    {
-      Date tmp = (Date) getEintrittbis().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("mitglied.eintrittbis",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("mitglied.eintrittbis", "");
-      }
-    }
-
-    if (austrittvon != null)
-    {
-      Date tmp = (Date) getAustrittvon().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("mitglied.austrittvon",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("mitglied.austrittvon", "");
-      }
-    }
-
-    if (austrittbis != null)
-    {
-      Date tmp = (Date) getAustrittbis().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("mitglied.austrittbis",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("mitglied.austrittbis", "");
-      }
-    }
-    if (stichtag != null)
-    {
-      Date tmp = (Date) getStichtag().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("mitglied.stichtag",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("mitglied.stichtag", "");
-      }
-    }
-
-    if (eigenschaftenAuswahlTree != null)
-    {
-      StringBuffer tmp = new StringBuffer();
-      for (Object o : eigenschaftenAuswahlTree.getItems())
-      {
-        EigenschaftenNode node = (EigenschaftenNode) o;
-        if (node.getNodeType() == EigenschaftenNode.EIGENSCHAFTEN)
-        {
-          if (tmp.length() > 0)
-          {
-            tmp.append(",");
-          }
-          tmp.append(node.getEigenschaft().getID());
-        }
-      }
-      settings.setAttribute(mitgliedtyp + ".eigenschaften", tmp.toString());
-    }
-
-    if (beitragsgruppeausw != null)
-    {
-      Beitragsgruppe tmpbg = (Beitragsgruppe) getBeitragsgruppeAusw()
-          .getValue();
-      if (tmpbg != null)
-      {
-        settings.setAttribute("mitglied.beitragsgruppe", tmpbg.getID());
-      }
-      else
-      {
-        settings.setAttribute("mitglied.beitragsgruppe", "");
-      }
-    }
-  }
-
-  public String getEigenschaftenString()
-  {
-    return settings.getString(mitgliedtyp + ".eigenschaften", "");
-  }
-
-  public String getEigenschaftenVerknuepfung()
-  {
-    return settings.getString(mitgliedtyp + ".eigenschaften.verknuepfung", "und");
-  }
-
+  
   public TreePart getEigenschaftenTree() throws RemoteException
   {
     if (eigenschaftenTree != null)
@@ -3396,18 +2476,6 @@ public class MitgliedControl extends AbstractControl
     }
   }
 
-  public TreePart getEigenschaftenAuswahlTree(String vorbelegung,
-      boolean ohnePflicht) throws RemoteException
-  {
-    eigenschaftenAuswahlTree = new TreePart(
-        new EigenschaftenNode(vorbelegung, ohnePflicht), null);
-    eigenschaftenAuswahlTree.setCheckable(true);
-    eigenschaftenAuswahlTree.addSelectionListener(
-        new EigenschaftListener(eigenschaftenAuswahlTree));
-    eigenschaftenAuswahlTree.setFormatter(new EigenschaftTreeFormatter());
-    return eigenschaftenAuswahlTree;
-  }
-
   public TreePart getFamilienbeitraegeTree() throws RemoteException
   {
     familienbeitragtree = new TreePart(new FamilienbeitragNode(),
@@ -3424,9 +2492,10 @@ public class MitgliedControl extends AbstractControl
   private void starteAuswertung() throws RemoteException
   {
     final IAuswertung ausw = (IAuswertung) getAusgabe().getValue();
-    saveDefaults();
+    saveAusgabeSettings();
+    saveFilterSettings();
     ArrayList<Mitglied> list = null;
-    list = new MitgliedQuery(this, true).get(1);
+    list = new MitgliedQuery(this).get(1);
     try
     {
       String sort = (String) sortierung.getValue();
@@ -3457,7 +2526,7 @@ public class MitgliedControl extends AbstractControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("auswertung", dateinamensort,
+      fd.setFileName(new Dateiname("auswertungmitglied", dateinamensort,
           Einstellungen.getEinstellung().getDateinamenmuster(),
           ausw.getDateiendung()).get());
       fd.setFilterExtensions(new String[] { "*." + ausw.getDateiendung() });
@@ -3528,12 +2597,37 @@ public class MitgliedControl extends AbstractControl
   private void starteAdressAuswertung() throws RemoteException
   {
     final IAuswertung ausw = (IAuswertung) getAusgabe().getValue();
-    saveDefaults();
+    saveAusgabeSettings();
+    saveFilterSettings();
     ArrayList<Mitglied> list = null;
-    Adresstyp atyp = (Adresstyp) getAdresstyp().getValue();
-    list = new MitgliedQuery(this, true).get(Integer.parseInt(atyp.getID()));
+    Adresstyp atyp = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
+    if (atyp == null)
+    {
+      GUI.getStatusBar().setErrorText("Bitte Mitgliedstyp auswählen");
+      return;
+    }
+    list = new MitgliedQuery(this).get(Integer.parseInt(atyp.getID()));
     try
     {
+      String sort = (String) sortierung.getValue();
+      String dateinamensort = "";
+      if (sort.equals("Name, Vorname"))
+      {
+        dateinamensort = "name";
+      }
+      else if (sort.equals("Eintrittsdatum"))
+      {
+        dateinamensort = "eintrittsdatum";
+      }
+      else if (sort.equals("Geburtsdatum"))
+      {
+        dateinamensort = "geburtsdatum";
+      }
+      else if (sort.equals("Geburtstagsliste"))
+      {
+        dateinamensort = "geburtstagsliste";
+      }
+      
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
 
@@ -3543,7 +2637,7 @@ public class MitgliedControl extends AbstractControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("auswertungnichtmitglied", "",
+      fd.setFileName(new Dateiname("auswertungnichtmitglied", dateinamensort,
           Einstellungen.getEinstellung().getDateinamenmuster(),
           ausw.getDateiendung()).get());
       fd.setFilterExtensions(new String[] { "*." + ausw.getDateiendung() });
@@ -3664,187 +2758,6 @@ public class MitgliedControl extends AbstractControl
 
   }
 
-  public void setZusatzfelderAuswahl()
-  {
-    int selected = settings.getInt(zusatzfelderstring + "selected", 0);
-    if (selected == 0)
-    {
-      zusatzfelderabfrage.setText("kein Feld ausgewählt");
-    }
-    else if (selected == 1)
-    {
-      zusatzfelderabfrage.setText("1 Feld ausgewählt");
-    }
-    else
-    {
-      zusatzfelderabfrage
-          .setText(String.format("%d Felder ausgewählt", selected));
-    }
-  }
-
-  /**
-   * Listener, der die Auswahl der Eigenschaften ueberwacht.
-   */
-  private class EigenschaftenListener implements Listener
-  {
-
-    @Override
-    public void handleEvent(Event event)
-    {
-      if (event == null || event.data == null)
-      {
-        return;
-      }
-      EigenschaftenAuswahlParameter param = (EigenschaftenAuswahlParameter) event.data;
-      StringBuilder id = new StringBuilder();
-      StringBuilder text = new StringBuilder();
-      for (Object o : param.getEigenschaften())
-      {
-        if (text.length() > 0)
-        {
-          id.append(",");
-          text.append(", ");
-        }
-        EigenschaftenNode node = (EigenschaftenNode) o;
-        try
-        {
-          id.append(node.getEigenschaft().getID());
-          text.append(node.getEigenschaft().getBezeichnung());
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-      eigenschaftenabfrage.setText(text.toString());
-      settings.setAttribute(mitgliedtyp + ".eigenschaften", id.toString());
-      settings.setAttribute(mitgliedtyp + ".eigenschaften.verknuepfung",
-          param.getVerknuepfung());
-      try
-      {
-        Adresstyp at = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
-        if (at != null)
-        {
-          refreshMitgliedTable(Integer.parseInt(at.getID()));
-        }
-        else
-        {
-          refreshMitgliedTable(0);
-        }
-      }
-      catch (RemoteException e1)
-      {
-        Logger.error("Fehler", e1);
-      }
-    }
-  }
-
-  /**
-   * Listener, der die Auswahl der Zusatzfelder ueberwacht.
-   */
-  private class ZusatzfelderListener implements Listener
-  {
-
-    @Override
-    public void handleEvent(Event event)
-    {
-      setZusatzfelderAuswahl();
-      try
-      {
-        Adresstyp at = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
-        if (at != null)
-        {
-          refreshMitgliedTable(Integer.parseInt(at.getID()));
-        }
-        else
-        {
-          refreshMitgliedTable(0);
-        }
-      }
-      catch (RemoteException e1)
-      {
-        Logger.error("Fehler", e1);
-      }
-    }
-  }
-
-  public static class EigenschaftTreeFormatter implements TreeFormatter
-  {
-
-    @Override
-    public void format(TreeItem item)
-    {
-      EigenschaftenNode eigenschaftitem = (EigenschaftenNode) item.getData();
-      if (eigenschaftitem.getNodeType() == EigenschaftenNode.ROOT
-          || eigenschaftitem
-              .getNodeType() == EigenschaftenNode.EIGENSCHAFTGRUPPE)
-      {
-        //
-      }
-      else
-      {
-        if (eigenschaftitem.getEigenschaften() != null
-            || eigenschaftitem.isPreset())
-        {
-          item.setChecked(true);
-        }
-        else
-        {
-          item.setChecked(false);
-        }
-      }
-    }
-  }
-
-  static class EigenschaftListener implements Listener
-  {
-
-    private TreePart tree;
-
-    public EigenschaftListener(TreePart tree)
-    {
-      this.tree = tree;
-    }
-
-    @Override
-    public void handleEvent(Event event)
-    {
-      // "o" ist das Objekt, welches gerade markiert
-      // wurde oder die Checkbox geaendert wurde.
-      GenericObjectNode o = (GenericObjectNode) event.data;
-
-      // Da der Listener sowohl dann aufgerufen wird,j
-      // nur nur eine Zeile selektiert wurde als auch,
-      // wenn die Checkbox geaendert wurde, musst du jetzt
-      // noch ersteres ausfiltern - die Checkboxen sollen
-      // ja nicht geaendert werden, wenn nur eine Zeile
-      // selektiert aber die Checkbox nicht geaendert wurde.
-      // Hierzu schreibe ich in event.detail einen Int-Wert.
-      // event.detail = -1 // Nur selektiert
-      // event.detail = 1 // Checkbox aktiviert
-      // event.detail = 0 // Checkbox deaktiviert
-
-      // Folgende Abfrage deaktiviert wegen Problemen mit Windows
-      // if (event.detail == -1)
-      // {
-      // return;
-      // }
-      try
-      {
-        if (o.getChildren() == null)
-        {
-          return;
-        }
-        List<?> children = PseudoIterator.asList(o.getChildren());
-        boolean b = event.detail > 0;
-        tree.setChecked(children.toArray(new Object[children.size()]), b);
-      }
-      catch (RemoteException e)
-      {
-        Logger.error("Fehler", e);
-      }
-    }
-  }
 
   /**
    * Wird benachrichtigt um die Anzeige zu aktualisieren.
@@ -3943,6 +2856,61 @@ public class MitgliedControl extends AbstractControl
     {
       MitgliedNextBGruppe m = datenIterator.next();
       beitragsTabelle.addItem(m);
+    }
+  }
+  
+  @Override
+  public void TabRefresh()
+  {
+    if (part != null)
+    {
+      try
+      {
+        Adresstyp at = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
+        if (at != null)
+        {
+          refreshMitgliedTable(Integer.parseInt(at.getID()));
+        }
+        else
+        {
+          refreshMitgliedTable(0);
+        }
+      }
+      catch (RemoteException e1)
+      {
+        Logger.error("Fehler", e1);
+      }
+    }
+  }
+  
+  public void saveAusgabeSettings() throws RemoteException
+  {
+    
+    if (auswertungUeberschrift != null)
+    {
+      String tmp = (String) getAuswertungUeberschrift().getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute("auswertung.ueberschrift", tmp);
+      }
+      else
+      {
+        settings.setAttribute("auswertung.ueberschrift", "");
+      }
+    }
+
+    // RWU: vorlagedateicsv
+    if (vorlagedateicsv != null)
+    {
+      String tmp = (String) getVorlagedateicsv().getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute("auswertung.vorlagedateicsv", tmp);
+      }
+      else
+      {
+        settings.setAttribute("auswertung.vorlagedateicsv", "");
+      }
     }
   }
 }

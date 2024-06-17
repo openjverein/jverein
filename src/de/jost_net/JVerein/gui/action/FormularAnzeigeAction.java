@@ -319,6 +319,8 @@ public class FormularAnzeigeAction implements Action
       map.put(MitgliedskontoVar.IST.getName(), ist.toArray());
       map.put(MitgliedskontoVar.DIFFERENZ.getName(), differenz.toArray());
       map.put(MitgliedskontoVar.SUMME_OFFEN.getName(), 700);
+      map.put(MitgliedskontoVar.QRCODE_INTRO.getName(),
+          Einstellungen.getEinstellung().getQRCodeIntro());
       FormularAufbereitung fab = new FormularAufbereitung(file);
       fab.writeForm(formular, map);
       fab.showFormular();

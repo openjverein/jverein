@@ -117,7 +117,7 @@ public class ProjektSaldoControl extends SaldoControl
       ArrayList<ProjektSaldoZeile> zeile = saldoList.getInfo();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei w?hlen.");
+      fd.setText("Ausgabedatei wählen.");
       //
       Settings settings = new Settings(this.getClass());
       //

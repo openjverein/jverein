@@ -45,8 +45,6 @@ public class MitgliedQuery
 
   private MitgliedControl control;
 
-  private boolean batch = false;
-
   private boolean and = false;
 
   private String sql = "";
@@ -55,50 +53,48 @@ public class MitgliedQuery
   
   String zusatzfelder = null;
 
-  public MitgliedQuery(MitgliedControl control, boolean batch)
+  public MitgliedQuery(MitgliedControl control)
   {
     this.control = control;
-    this.batch = batch;
   }
 
   @SuppressWarnings("unchecked")
   public ArrayList<Mitglied> get(int adresstyp) throws RemoteException
   {
-    if (adresstyp == 1)
-    {
-      zusatzfeld = "zusatzfeld.";
-      zusatzfelder = "zusatzfelder.";
-    }
-    else
-    {
-      zusatzfeld = "nichtzusatzfeld.";
-      zusatzfelder = "nichtzusatzfelder.";
-    }
+
+    zusatzfeld = control.getAdditionalparamprefix1();
+    zusatzfelder = control.getAdditionalparamprefix2();
+
     final DBService service = Einstellungen.getDBService();
     ArrayList<Object> bedingungen = new ArrayList<>();
 
     sql = "select distinct mitglied.*, ucase(name), ucase(vorname) ";
-    String sort = (String) control.getSortierung().getValue();
-    if (sort.equals("Geburtstagsliste"))
+    if (control.isSortierungAktiv())
     {
-      sql += ", month(geburtsdatum), day(geburtsdatum) ";
+      String sort = (String) control.getSortierung().getValue();
+      if (sort.equals("Geburtstagsliste"))
+      {
+        sql += ", month(geburtsdatum), day(geburtsdatum) ";
+      }
     }
     sql += "from mitglied ";
     Settings settings = control.getSettings();
     char synonym = 'a';
     DBIterator<Felddefinition> fdit = Einstellungen.getDBService()
         .createList(Felddefinition.class);
-    if (settings.getInt(zusatzfelder + "selected", 0) > fdit.size())
+    if (control.isZusatzfelderAuswahlAktiv())
     {
-      settings.setAttribute(zusatzfelder + "selected", 0);
-    }
-    if (settings.getInt(zusatzfelder + "selected", 0) > 0)
-    {
-      for (int i = 1; i <= settings.getInt(zusatzfelder + "counter", 0); i++)
+      if (settings.getInt(zusatzfelder + "selected", 0) > fdit.size())
       {
-        int definition = settings.getInt(zusatzfeld + i + ".definition", -1);
-        switch (settings.getInt(zusatzfeld + i + ".datentyp", -1))
+        settings.setAttribute(zusatzfelder + "selected", 0);
+      }
+      if (settings.getInt(zusatzfelder + "selected", 0) > 0)
+      {
+        for (int i = 1; i <= settings.getInt(zusatzfelder + "counter", 0); i++)
         {
+          int definition = settings.getInt(zusatzfeld + i + ".definition", -1);
+          switch (settings.getInt(zusatzfeld + i + ".datentyp", -1))
+          {
           case Datentyp.ZEICHENFOLGE:
           {
             String value = settings
@@ -197,6 +193,7 @@ public class MitgliedQuery
             }
             break;
           }
+          }
         }
       }
     }
@@ -208,11 +205,11 @@ public class MitgliedQuery
     {
       addCondition("adresstyp != " + 1);
     }
-    if (control.isMitgliedStatusAktiv() && adresstyp == 1)
+    if (control.isMitgliedStatusAktiv())
     {
       if (control.getMitgliedStatus().getValue().equals("Angemeldet"))
       {
-        if (control.getStichtag().getValue() != null)
+        if (control.isStichtagAktiv() && control.getStichtag().getValue() != null)
         {
           addCondition("(eintritt is null or eintritt <= ?)");
           bedingungen.add(control.getStichtag().getValue());
@@ -226,7 +223,7 @@ public class MitgliedQuery
       }
       else if (control.getMitgliedStatus().getValue().equals("Abgemeldet"))
       {
-        if (control.getStichtag().getValue() != null)
+        if (control.isStichtagAktiv() && control.getStichtag().getValue() != null)
         {
           addCondition("austritt is not null and austritt <= ?");
           bedingungen.add(control.getStichtag(false).getValue());
@@ -237,29 +234,55 @@ public class MitgliedQuery
         }
       }
     }
-    int mailauswahl = (Integer) control.getMailauswahl().getValue();
-    if (batch && mailauswahl == MailAuswertungInput.OHNE)
+    if (control.isMailauswahlAktiv())
     {
-      addCondition("(email is null or length(email) = 0)");
-    }
-    if (batch && mailauswahl == MailAuswertungInput.MIT)
-    {
-      addCondition("(email is  not null and length(email) > 0)");
-    }
-    String eigenschaften = "";
-    eigenschaften = control.getEigenschaftenString();
-    if (eigenschaften.length() > 0)
-    {
-      EigenschaftenUtil eiu = new EigenschaftenUtil(eigenschaften);
-      if (control.getEigenschaftenVerknuepfung().equals("und"))
+      int mailauswahl = (Integer) control.getMailauswahl().getValue();
+      if (mailauswahl == MailAuswertungInput.OHNE)
       {
-        for (EigenschaftGruppe eg : eiu.getGruppen())
+        addCondition("(email is null or length(email) = 0)");
+      }
+      if (mailauswahl == MailAuswertungInput.MIT)
+      {
+        addCondition("(email is  not null and length(email) > 0)");
+      }
+    }
+    if (control.isEigenschaftenAuswahlAktiv())
+    {
+      String eigenschaften = "";
+      eigenschaften = control.getEigenschaftenString();
+      if (eigenschaften.length() > 0)
+      {
+        EigenschaftenUtil eiu = new EigenschaftenUtil(eigenschaften);
+        if (control.getEigenschaftenVerknuepfung().equals("und"))
+        {
+          for (EigenschaftGruppe eg : eiu.getGruppen())
+          {
+            StringBuilder condEigenschaft = new StringBuilder(
+                "(select count(*) from eigenschaften where ");
+            condEigenschaft.append("eigenschaften.mitglied = mitglied.id AND (");
+            int count = 0;
+            for (Eigenschaft ei : eiu.get(eg))
+            {
+              if (count != 0)
+              {
+                condEigenschaft.append("OR ");
+              }
+              count++;
+              condEigenschaft.append("eigenschaft = ? ");
+              bedingungen.add(ei.getID());
+            }
+            condEigenschaft.append(")) = ? ");
+            addCondition(condEigenschaft.toString());
+            bedingungen.add(Integer.toString(count));
+          }
+        }
+        else
         {
           StringBuilder condEigenschaft = new StringBuilder(
               "(select count(*) from eigenschaften where ");
           boolean first = true;
           condEigenschaft.append("eigenschaften.mitglied = mitglied.id AND (");
-          for (Eigenschaft ei : eiu.get(eg))
+          for (Eigenschaft ei : eiu.getEigenschaften())
           {
             if (!first)
             {
@@ -273,91 +296,77 @@ public class MitgliedQuery
           addCondition(condEigenschaft.toString());
         }
       }
-      else
+    }
+    if (control.isSuchnameAktiv() && control.getSuchname().getValue() != null)
+    {
+      String tmpSuchname = (String) control.getSuchname().getValue();
+      if (tmpSuchname.length() > 0)
       {
-        StringBuilder condEigenschaft = new StringBuilder(
-            "(select count(*) from eigenschaften where ");
-        boolean first = true;
-        condEigenschaft.append("eigenschaften.mitglied = mitglied.id AND (");
-        for (Eigenschaft ei : eiu.getEigenschaften())
-        {
-          if (!first)
-          {
-            condEigenschaft.append("OR ");
-          }
-          first = false;
-          condEigenschaft.append("eigenschaft = ? ");
-          bedingungen.add(ei.getID());
-        }
-        condEigenschaft.append(")) > 0 ");
-        addCondition(condEigenschaft.toString());
+        addCondition("(lower(name) like ?)");
+        bedingungen.add(tmpSuchname.toLowerCase() + "%");
       }
     }
-    String tmpSuchname = (String) control.getSuchname().getValue();
-    if (!batch && tmpSuchname.length() > 0)
-    {
-      addCondition("(lower(name) like ?)");
-      bedingungen.add(tmpSuchname.toLowerCase() + "%");
-    }
 
-    if (control.getGeburtsdatumvon().getValue() != null)
+    if (control.isGeburtsdatumvonAktiv() && control.getGeburtsdatumvon().getValue() != null)
     {
       addCondition("geburtsdatum >= ?");
       Date d = (Date) control.getGeburtsdatumvon().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.getGeburtsdatumbis().getValue() != null)
+    if (control.isGeburtsdatumbisAktiv() && control.getGeburtsdatumbis().getValue() != null)
     {
       addCondition("geburtsdatum <= ?");
       Date d = (Date) control.getGeburtsdatumbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
 
-    if (batch && control.getSterbedatumvon().getValue() != null  && adresstyp == 1)
+    if (control.isSterbedatumvonAktiv() && control.getSterbedatumvon().getValue() != null)
     {
       addCondition("sterbetag >= ?");
       Date d = (Date) control.getSterbedatumvon().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (batch && control.getSterbedatumbis().getValue() != null  && adresstyp == 1)
+    if (control.isSterbedatumbisAktiv() && control.getSterbedatumbis().getValue() != null)
     {
       addCondition("sterbetag <= ?");
       Date d = (Date) control.getSterbedatumbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.getGeschlecht().getText() != null
-        && !control.getGeschlecht().getText().equals("Bitte auswählen"))
+    if (control.isSuchGeschlechtAktiv() && control.getSuchGeschlecht().getText() != null
+        && !control.getSuchGeschlecht().getText().equals("Bitte auswählen"))
     {
       addCondition("geschlecht = ?");
-      String g = (String) control.getGeschlecht().getValue();
+      String g = (String) control.getSuchGeschlecht().getValue();
       bedingungen.add(g);
     }
-    if (control.getEintrittvon().getValue() != null  && adresstyp == 1)
+    if (control.isEintrittvonAktiv() && control.getEintrittvon().getValue() != null)
     {
       addCondition("eintritt >= ?");
       Date d = (Date) control.getEintrittvon().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.getEintrittbis().getValue() != null  && adresstyp == 1)
+    if (control.isEintrittbisAktiv() && control.getEintrittbis().getValue() != null)
     {
       addCondition("eintritt <= ?");
       Date d = (Date) control.getEintrittbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.isAustrittbisAktiv()  && adresstyp == 1)
+    if (control.isAustrittvonAktiv() && control.getAustrittvon().getValue() != null)
     {
-      if (control.getAustrittvon().getValue() != null)
-      {
-        addCondition("austritt >= ?");
-        Date d = (Date) control.getAustrittvon().getValue();
-        bedingungen.add(new java.sql.Date(d.getTime()));
-      }
-      if (control.getAustrittbis().getValue() != null)
-      {
-        addCondition("austritt <= ?");
-        Date d = (Date) control.getAustrittbis().getValue();
-        bedingungen.add(new java.sql.Date(d.getTime()));
-      }
+      addCondition("austritt >= ?");
+      Date d = (Date) control.getAustrittvon().getValue();
+      bedingungen.add(new java.sql.Date(d.getTime()));
+    }
+    if (control.isAustrittbisAktiv() && control.getAustrittbis().getValue() != null)
+    {
+      addCondition("austritt <= ?");
+      Date d = (Date) control.getAustrittbis().getValue();
+      bedingungen.add(new java.sql.Date(d.getTime()));
+    }
+    
+    if (control.isAustrittbisAktiv())
+    {
+      // Was soll das? Das wird nie durchlaufen!
       if (control.getSterbedatumvon() == null
           && control.getSterbedatumbis() == null
           && control.getAustrittvon().getValue() == null
@@ -366,17 +375,19 @@ public class MitgliedQuery
         addCondition("(austritt is null or austritt > current_date())");
       }
     }
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    
+    if (control.isSuchExterneMitgliedsnummerActive())
     {
       try
       {
-        if (control.getSuchExterneMitgliedsnummer().getValue() != null  && adresstyp == 1)
+        if (control.getSuchExterneMitgliedsnummer().getValue() != null)
         {
           String ext = (String) control.getSuchExterneMitgliedsnummer()
               .getValue();
           if (ext.length() > 0)
           {
             addCondition("externemitgliedsnummer = ?");
+            bedingungen.add(ext);
           }
         }
       }
@@ -385,32 +396,41 @@ public class MitgliedQuery
         // Workaround für einen Bug in IntegerInput
       }
     }
-    Beitragsgruppe bg = (Beitragsgruppe) control.getBeitragsgruppeAusw()
-        .getValue();
-    if (bg != null  && adresstyp == 1)
+    if (control.isBeitragsgruppeAuswAktiv())
     {
-      addCondition("beitragsgruppe = ? ");
+      Beitragsgruppe bg = (Beitragsgruppe) control.getBeitragsgruppeAusw()
+          .getValue();
+      if (bg != null)
+      {
+        addCondition("beitragsgruppe = ? ");
+        bedingungen.add(Integer.valueOf(bg.getID()));
+      }
     }
-    if (sort.equals("Name, Vorname"))
+    if (control.isSortierungAktiv())
     {
-      sql += " ORDER BY ucase(name), ucase(vorname)";
-    }
-    else if (sort.equals("Eintrittsdatum"))
-    {
-      sql += " ORDER BY eintritt";
-    }
-    else if (sort.equals("Geburtsdatum"))
-    {
-      sql += " ORDER BY geburtsdatum";
-    }
-    else if (sort.equals("Geburtstagsliste"))
-    {
-      sql += " ORDER BY month(geburtsdatum), day(geburtsdatum)";
+      String sort = (String) control.getSortierung().getValue();
+      if (sort.equals("Name, Vorname"))
+      {
+        sql += " ORDER BY ucase(name), ucase(vorname)";
+      }
+      else if (sort.equals("Eintrittsdatum"))
+      {
+        sql += " ORDER BY eintritt";
+      }
+      else if (sort.equals("Geburtsdatum"))
+      {
+        sql += " ORDER BY geburtsdatum";
+      }
+      else if (sort.equals("Geburtstagsliste"))
+      {
+        sql += " ORDER BY month(geburtsdatum), day(geburtsdatum)";
+      }
     }
     else
     {
       sql += " ORDER BY name, vorname";
     }
+    
     Logger.debug(sql);
 
     ResultSetExtractor rs = new ResultSetExtractor()
@@ -428,27 +448,6 @@ public class MitgliedQuery
       }
     };
 
-    try
-    {
-      if (Einstellungen.getEinstellung().getExterneMitgliedsnummer()
-          && control.getSuchExterneMitgliedsnummer().getValue() != null  && adresstyp == 1)
-      {
-        String ext = (String) control.getSuchExterneMitgliedsnummer()
-            .getValue();
-        if (ext.length() > 0)
-        {
-          bedingungen.add(control.getSuchExterneMitgliedsnummer().getValue());
-        }
-      }
-    }
-    catch (NullPointerException e)
-    {
-      // Workaround f. Bug in IntegerInput
-    }
-    if (bg != null && adresstyp == 1)
-    {
-      bedingungen.add(Integer.valueOf(bg.getID()));
-    }
     return (ArrayList<Mitglied>) service.execute(sql, bedingungen.toArray(),
         rs);
   }

@@ -15,15 +15,14 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
-import de.jost_net.JVerein.server.DDLTool.Index;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 import java.sql.Connection;
 
-public class Update0430 extends AbstractDDLUpdate
+public class Update0435 extends AbstractDDLUpdate
 {
-  public Update0430(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0435(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -31,16 +30,9 @@ public class Update0430 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("konto", new Column("buchungsart",
-        COLTYPE.BIGINT, 0, null, false, false)));
-    
-    Index idx = new Index("ixKonto1", false);
-    Column col = new Column("buchungsart", COLTYPE.BIGINT, 0, null, false,
-        false);
-    idx.add(col);
-    execute(idx.getCreateIndex("konto"));
-
-    execute(createForeignKey("fkKonto1", "konto",
-        "buchungsart", "buchungsart", "id", "SET NULL", "NO ACTION"));
+    execute(addColumn("einstellung", new Column("unterschriftdrucken",
+        COLTYPE.BOOLEAN, 0, null, false, false)));
+    execute(addColumn("einstellung", new Column("unterschrift",
+        COLTYPE.LONGBLOB, 0, null, false, false)));
   }
 }

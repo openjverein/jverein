@@ -17,81 +17,78 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
-import java.rmi.RemoteException;
-
 import org.eclipse.swt.widgets.Composite;
 
-import de.jost_net.JVerein.gui.control.MailVorlageControl;
-import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Ein Dialog, ueber den die Vorlage für eine Mail ausgewählt werden kann.
+ * Ein Dialog, um auszuwählen ob Spendenbescheinigungen 
+ * vor dem Versenden noch gedruckt werden müssen.
  */
-public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
+public class MailAbfrageDialog extends AbstractDialog<MailAbfrageDialog.Auswahl>
 {
 
-  private MailVorlageControl control;
-
-  private MailVorlage retval;
+  private Auswahl retval = null;
   
-  private boolean abort = true;
+  private String text;
   
-  private boolean mailsenden = true;
+  public enum Auswahl {
+    OHNE_DRUCKEN,
+    DRUCKEN_STANDARD,
+    DRUCKEN_INDIVIDUELL
+  }
 
-  public MailVorlagenAuswahlDialog(MailVorlageControl control, int position,
-      boolean mailsenden)
+  public MailAbfrageDialog(String text, int position)
   {
     super(position);
-    this.control = control;
-    this.mailsenden = mailsenden;
-    setTitle("Mail-Vorlage");
-    setSize(550, 450);
+    this.text = text;
   }
 
   @Override
   protected void paint(Composite parent) throws Exception
   {
-
-    control.getMailVorlageTable().paint(parent);
-
+    TextAreaInput  textfeld = new TextAreaInput(text, 100);
+    textfeld.disable();
+    textfeld.paint(parent);
+    
     ButtonArea b = new ButtonArea();
     
-    b.addButton("Verwenden", new Action()
+    b.addButton("Ohne Drucken", new Action()
     {
 
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
-        try
-        {
-          retval = (MailVorlage) control.getMailVorlageTable().getSelection();
-        }
-        catch (RemoteException e)
-        {
-          throw new ApplicationException(e.getMessage());
-        }
-        abort = false;
+        retval = Auswahl.OHNE_DRUCKEN;
         close();
       }
-    }, null, true, "ok.png");
+    }, null, true, "go-next.png");
     
-    if (mailsenden)
+    b.addButton("Mit Drucken (Standard)", new Action()
     {
-      b.addButton("Ohne Mail-Vorlage", new Action()
-      {
 
-        @Override
-        public void handleAction(Object context)
-        {
-          abort = false;
-          close();
-        }
-      }, null, true, "go-next.png");
-    }
+      @Override
+      public void handleAction(Object context)
+      {
+        retval = Auswahl.DRUCKEN_STANDARD;
+        close();
+      }
+    }, null, false, "go-next.png");
+    
+    b.addButton("Mit Drucken (Individuell)", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        retval = Auswahl.DRUCKEN_INDIVIDUELL;
+        close();
+      }
+    }, null, false, "go-next.png");
     
     b.addButton("Abbrechen", new Action()
     {
@@ -99,6 +96,7 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
       @Override
       public void handleAction(Object context)
       {
+        retval = null;
         close();
       }
     }, null, false, "process-stop.png");
@@ -106,14 +104,8 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
   }
 
   @Override
-  protected MailVorlage getData() throws Exception
+  protected Auswahl getData() throws Exception
   {
     return retval;
   }
-  
-  public boolean getAbort()
-  {
-    return abort;
-  }
-
 }

@@ -24,6 +24,9 @@ import de.jost_net.JVerein.keys.Spendenart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
+import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class SpendenbescheinigungListeView extends AbstractView
 {
@@ -34,6 +37,26 @@ public class SpendenbescheinigungListeView extends AbstractView
     GUI.getView().setTitle("Spendenbescheinigungen");
 
     SpendenbescheinigungControl control = new SpendenbescheinigungControl(this);
+    
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getSuchname());
+    left.addInput(control.getMailauswahl());
+
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    middle.addLabelPair("Bescheinigungsdatum von", control.getDatumvon());
+    middle.addLabelPair("Bescheinigungsdatum bis", control.getDatumbis());
+    
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addLabelPair("Spendedatum von", control.getEingabedatumvon());
+    right.addLabelPair("Spendedatum bis", control.getEingabedatumbis());
+    
+    ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSuchenButton());
+    group.addButtonArea(fbuttons);
 
     control.getSpendenbescheinigungList().paint(this.getParent());
 

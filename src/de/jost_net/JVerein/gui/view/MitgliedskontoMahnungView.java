@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
+import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -60,6 +61,8 @@ public class MitgliedskontoMahnungView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAHNUNG, false, "question-circle.png");
+    buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
+            control, false, "view-refresh.png"));
     buttons.addButton(new Button("Export", new MitgliedskontoExportAction(
         EXPORT_TYP.MAHNUNGEN, getCurrentObject()), control, false, "document-save.png"));
     buttons.addButton(control.getStartMahnungButton(this.getCurrentObject()));

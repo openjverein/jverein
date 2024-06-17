@@ -467,9 +467,22 @@ public class MitgliedskontoControl extends AbstractControl
     return differenz;
   }
 
+  // Für SollbuchungListeView
   public TextInput getSuchName()
   {
     if (suchname != null && !suchname.getControl().isDisposed())
+    {
+      return suchname;
+    }
+    suchname = new TextInput(settings.getString("sollbuchung.suchname",""), 30);
+    suchname.setName("Name");
+    return suchname;
+  }
+
+  // Für SollbuchungAuswahlDialog
+  public TextInput getSuchName1(boolean newcontrol)
+  {
+    if (!newcontrol && suchname != null)
     {
       return suchname;
     }
@@ -477,7 +490,8 @@ public class MitgliedskontoControl extends AbstractControl
     suchname.setName("Name");
     return suchname;
   }
-
+  
+  //Für SollbuchungAuswahlDialog
   public TextInput getSuchName2(boolean newcontrol)
   {
     if (!newcontrol && suchname2 != null)
@@ -536,41 +550,36 @@ public class MitgliedskontoControl extends AbstractControl
     txt.setName("Text");
     return txt;
   }
-
-  private void refresh()
-  { 
-	  saveDefaults();
-  }
   
   public void saveDefaults()
   {	  
-	  if (this.vondatum != null)
-	    {
-	      Date tmp = (Date) getVondatum("kontoauszugdatumvon").getValue();
-	      if (tmp != null)
-	      {
-	        settings.setAttribute("kontoauszugdatumvon",
-	            new JVDateFormatTTMMJJJJ().format(tmp));
-	      }
-	      else
-	      {
-	        settings.setAttribute("kontoauszugdatumvon", "");
-	      }
-	    }
+    if (this.vondatum != null)
+    {
+      Date tmp = (Date) getVondatum("kontoauszugdatumvon").getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute("kontoauszugdatumvon",
+            new JVDateFormatTTMMJJJJ().format(tmp));
+      }
+      else
+      {
+        settings.setAttribute("kontoauszugdatumvon", "");
+      }
+    }
 
-	    if (this.bisdatum != null)
-	    {
-	      Date tmp = (Date) getBisdatum("kontoauszugdatumbis").getValue();
-	      if (tmp != null)
-	      {
-	        settings.setAttribute("kontoauszugdatumbis",
-	            new JVDateFormatTTMMJJJJ().format(tmp));
-	      }
-	      else
-	      {
-	        settings.setAttribute("kontoauszugbatumbis", "");
-	      }
-	    }	  
+    if (this.bisdatum != null)
+    {
+      Date tmp = (Date) getBisdatum("kontoauszugdatumbis").getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute("kontoauszugdatumbis",
+            new JVDateFormatTTMMJJJJ().format(tmp));
+      }
+      else
+      {
+        settings.setAttribute("kontoauszugbatumbis", "");
+      }
+    }	  
   }
   
   public void handleStore()
@@ -664,7 +673,7 @@ public class MitgliedskontoControl extends AbstractControl
     this.action = action;
     @SuppressWarnings("rawtypes")
     GenericIterator mitgliedskonten = getMitgliedskontoIterator();
-    settings.setAttribute("differenz", getDifferenz().getValue().toString());
+    settings.setAttribute(datumverwendung + "differenz", getDifferenz().getValue().toString());
     if (mitgliedskontoList == null)
     {
       mitgliedskontoList = new TablePart(mitgliedskonten, action);
@@ -776,6 +785,7 @@ public class MitgliedskontoControl extends AbstractControl
   {
     @SuppressWarnings("rawtypes")
     GenericIterator mitgliedskonten = getMitgliedskontoIterator();
+    settings.setAttribute(datumverwendung + "differenz", getDifferenz().getValue().toString());
     mitgliedskontoList.removeAll();
     while (mitgliedskonten.hasNext())
     {
@@ -1009,6 +1019,7 @@ public class MitgliedskontoControl extends AbstractControl
       {
         try
         {
+          saveDefaults();
           new Kontoauszug(currentObject, (Date) von.getValue(), (Date) bis.getValue());
         }
         catch (Exception e)
@@ -1090,7 +1101,6 @@ public class MitgliedskontoControl extends AbstractControl
           Logger.error("Fehler", e);
         }
       }
-      refresh();
     }
   }
   
@@ -1099,13 +1109,13 @@ public class MitgliedskontoControl extends AbstractControl
   {
     try
     {
+      settings.setAttribute("sollbuchung.suchname", getSuchName().getValue().toString());
       getMitgliedskontoList(action, null);
     }
     catch (RemoteException e)
     {
       Logger.error("Fehler", e);
     }
-    refresh();
   }
   
   // Für SollbuchungAuswahlDialog
@@ -1119,7 +1129,6 @@ public class MitgliedskontoControl extends AbstractControl
     {
       Logger.error("Fehler", e);
     }
-    settings.setAttribute("differenz", getDifferenz().getValue().toString());
   }
   
   // Für SollbuchungAuswahlDialog

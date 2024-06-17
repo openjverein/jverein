@@ -52,6 +52,7 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.DirectoryInput;
+import de.willuhn.jameica.gui.input.ImageInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.PasswordInput;
@@ -293,6 +294,37 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput abrlabschliessen;
 
   private CheckboxInput optiert;
+  
+  private CheckboxInput spendenbescheinigungadresse;
+  
+  private CheckboxInput spendenbescheinigungadressem;
+
+  private CheckboxInput unterschriftdrucken;
+  
+  private ImageInput unterschrift;
+  
+  private CheckboxInput anhangspeichern;
+
+
+  private IntegerInput qrcodesize;
+
+  private CheckboxInput qrcodeptext;
+
+  private CheckboxInput qrcodepdate;
+
+  private CheckboxInput qrcodeprenum;
+
+  private CheckboxInput qrcodepmnum;
+
+  private TextInput qrcodetext;
+
+  private CheckboxInput qrcodesngl;
+
+  private TextInput qrcodeinfom;
+
+  private TextInput qrcodeintro;
+
+  private CheckboxInput qrcodekuerzen;
 
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
@@ -780,6 +812,26 @@ public class EinstellungControl extends AbstractControl
     optiert = new CheckboxInput(Einstellungen.getEinstellung().getOptiert());
     optiert.setName("Umsatzsteueroption");
     return optiert;
+  }
+  
+  public CheckboxInput getSpendenbescheinigungadresse() throws RemoteException 
+  {
+    if (spendenbescheinigungadresse != null) 
+    {
+      return spendenbescheinigungadresse;
+    }
+    spendenbescheinigungadresse = new CheckboxInput(Einstellungen.getEinstellung().getSpendenbescheinigungadresse());
+    return spendenbescheinigungadresse;
+  }
+  
+  public CheckboxInput getSpendenbescheinigungadressem() throws RemoteException 
+  {
+    if (spendenbescheinigungadressem != null) 
+    {
+      return spendenbescheinigungadressem;
+    }
+    spendenbescheinigungadressem = new CheckboxInput(Einstellungen.getEinstellung().getSpendenbescheinigungadressem());
+    return spendenbescheinigungadressem;
   }
 
   public CheckboxInput getExterneMitgliedsnummer() throws RemoteException
@@ -1608,6 +1660,106 @@ public class EinstellungControl extends AbstractControl
     return buchungsartsort;
   }
 
+  public IntegerInput getQRCodeSizeInMm() throws RemoteException
+  {
+    if (null == qrcodesize)
+    {
+      qrcodesize = new IntegerInput(
+          Einstellungen.getEinstellung().getQRCodeSizeInMm());
+    }
+    return qrcodesize;
+  }
+
+  public TextInput getQRCodeVerwendungszweck() throws RemoteException
+  {
+    if (null == qrcodetext)
+    {
+      qrcodetext = new TextInput(
+          Einstellungen.getEinstellung().getQRCodeText());
+    }
+    return qrcodetext;
+  }
+
+  public CheckboxInput getQRCodePrintVerwendungszweck() throws RemoteException
+  {
+    if (null == qrcodeptext)
+    {
+      qrcodeptext = new CheckboxInput(
+          Einstellungen.getEinstellung().getQRCodeFesterText());
+    }
+    return qrcodeptext;
+  }
+
+  public CheckboxInput getQRCodeSingle() throws RemoteException
+  {
+    if (null == qrcodesngl)
+    {
+      qrcodesngl = new CheckboxInput(
+          Einstellungen.getEinstellung().getQRCodeSnglLine());
+    }
+    return qrcodesngl;
+  }
+
+  public CheckboxInput getQRCodeReDa() throws RemoteException
+  {
+    if (null == qrcodepdate)
+    {
+      qrcodepdate = new CheckboxInput(
+          Einstellungen.getEinstellung().getQRCodeDatum());
+    }
+    return qrcodepdate;
+  }
+
+  public CheckboxInput getQRCodeReNr() throws RemoteException
+  {
+    if (null == qrcodeprenum)
+    {
+      qrcodeprenum = new CheckboxInput(
+          Einstellungen.getEinstellung().getQRCodeReNu());
+    }
+    return qrcodeprenum;
+  }
+
+  public CheckboxInput getQRCodeMemberNr() throws RemoteException
+  {
+    if (null == qrcodepmnum)
+    {
+      qrcodepmnum = new CheckboxInput(
+          Einstellungen.getEinstellung().getQRCodeMember());
+    }
+    return qrcodepmnum;
+  }
+
+  public TextInput getQRCodeInfoToMember() throws RemoteException
+  {
+    if (null == qrcodeinfom)
+    {
+      qrcodeinfom = new TextInput(
+          Einstellungen.getEinstellung().getQRCodeInfoM());
+    }
+    return qrcodeinfom;
+  }
+
+  public CheckboxInput getQRCodeKuerzen() throws RemoteException
+  {
+    if (null == qrcodekuerzen)
+    {
+      qrcodekuerzen = new CheckboxInput(
+          Einstellungen.getEinstellung().getQRCodeKuerzen());
+    }
+    return qrcodekuerzen;
+  }
+
+  public TextInput getQRCodeIntro() throws RemoteException
+  {
+    if (null == qrcodeintro)
+    {
+      qrcodeintro = new TextInput(
+          Einstellungen.getEinstellung().getQRCodeIntro());
+    }
+    return qrcodeintro;
+  }
+
   // // public void handleStore()
   // {
   // try
@@ -1794,6 +1946,36 @@ public class EinstellungControl extends AbstractControl
     abrlabschliessen.setName("Funktion einschalten");
     return abrlabschliessen;
   }
+  
+  public CheckboxInput getUnterschriftdrucken() throws RemoteException 
+  {
+    if (unterschriftdrucken != null) 
+    {
+      return unterschriftdrucken;
+    }
+    unterschriftdrucken = new CheckboxInput(Einstellungen.getEinstellung().getUnterschriftdrucken());
+    return unterschriftdrucken;
+  }
+
+  public ImageInput getUnterschrift() throws RemoteException
+  {
+    if (unterschrift != null)
+    {
+      return unterschrift;
+    }
+    unterschrift = new ImageInput(Einstellungen.getEinstellung().getUnterschrift(), 400, 75);
+    return unterschrift;
+  }
+  
+  public CheckboxInput getAnhangSpeichern() throws RemoteException 
+  {
+    if (anhangspeichern != null) 
+    {
+      return anhangspeichern;
+    }
+    anhangspeichern = new CheckboxInput(Einstellungen.getEinstellung().getAnhangSpeichern());
+    return anhangspeichern;
+  }
 
   public void handleStoreAllgemein()
   {
@@ -1961,6 +2143,11 @@ public class EinstellungControl extends AbstractControl
           .getValue());
       e.setSpendenbescheinigungPrintBuchungsart((Boolean) spendenbescheinigungprintbuchungsart
           .getValue());
+      e.setSpendenbescheinigungadresse((Boolean) getSpendenbescheinigungadresse().getValue());
+      e.setSpendenbescheinigungadressem((Boolean) getSpendenbescheinigungadressem().getValue());
+      e.setUnterschriftdrucken((Boolean) unterschriftdrucken.getValue());
+      e.setUnterschrift((byte[]) unterschrift.getValue());
+      e.setAnhangSpeichern((Boolean) anhangspeichern.getValue());
       e.store();
       Einstellungen.setEinstellung(e);
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
@@ -2019,6 +2206,16 @@ public class EinstellungControl extends AbstractControl
       e.setRechnungTextBar((String) rechnungtextbar.getValue());
       Integer length = (Integer) zaehlerlaenge.getValue();
       e.setZaehlerLaenge(length);
+      e.setQRCodeSizeInMm((Integer) qrcodesize.getValue());
+      e.setQRCodeDatum((Boolean) qrcodepdate.getValue());
+      e.setQRCodeFesterText((Boolean) qrcodeptext.getValue());
+      e.setQRCodeInfoM((String) qrcodeinfom.getValue());
+      e.setQRCodeMember((Boolean) qrcodepmnum.getValue());
+      e.setQRCodeReNu((Boolean) qrcodeprenum.getValue());
+      e.setQRCodeSnglLine((Boolean) qrcodesngl.getValue());
+      e.setQRCodeText((String) qrcodetext.getValue());
+      e.setQRCodeIntro((String) qrcodeintro.getValue());
+      e.setQRCodeKuerzen((Boolean) qrcodekuerzen.getValue());
 
       e.store();
       Einstellungen.setEinstellung(e);

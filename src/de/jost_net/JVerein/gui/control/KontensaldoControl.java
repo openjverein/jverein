@@ -18,19 +18,17 @@ package de.jost_net.JVerein.gui.control;
 
 import java.io.File;
 import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.parts.KontensaldoList;
-import de.jost_net.JVerein.io.JahressaldoPDF;
+import de.jost_net.JVerein.io.KontenSaldoPDF;
 import de.jost_net.JVerein.io.SaldoZeile;
 import de.jost_net.JVerein.util.Dateiname;
-import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -138,19 +136,10 @@ public class KontensaldoControl extends SaldoControl
 
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(getDatumvon().getDate());
-      int jahr = cal.get(Calendar.YEAR);
-      Geschaeftsjahr gj = new Geschaeftsjahr(jahr);
-
-      auswertungSaldoPDF(zeile, file, gj);
+      auswertungSaldoPDF(zeile, file, getDatumvon().getDate(),
+          getDatumbis().getDate());
     }
     catch (RemoteException e)
-    {
-      throw new ApplicationException(
-          "Fehler beim Aufbau des Reports: " + e.getMessage());
-    }
-    catch (ParseException e)
     {
       throw new ApplicationException(
           "Fehler beim Aufbau des Reports: " + e.getMessage());
@@ -158,7 +147,7 @@ public class KontensaldoControl extends SaldoControl
   }
 
   private void auswertungSaldoPDF(final ArrayList<SaldoZeile> zeile,
-      final File file, final Geschaeftsjahr gj)
+      final File file, final Date datumvon, final Date datumbis)
   {
     BackgroundTask t = new BackgroundTask()
     {
@@ -168,7 +157,7 @@ public class KontensaldoControl extends SaldoControl
       {
         try
         {
-          new JahressaldoPDF(zeile, file, gj);
+          new KontenSaldoPDF(zeile, file, datumvon, datumbis);
           GUI.getCurrentView().reload();
         }
         catch (ApplicationException ae)

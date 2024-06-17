@@ -101,7 +101,8 @@ public class SpendenbescheinigungView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
-    buttons.addButton(control.getPDFStandardButton());
+    buttons.addButton(control.getPDFStandardButton(false));
+    buttons.addButton(control.getPDFStandardButton(true));
     buttons.addButton(control.getPDFIndividuellButton());
     buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(Spendenart.SACHSPENDE), null, false,
         "document-new.png");
