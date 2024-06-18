@@ -140,7 +140,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         close();
       }
     };
-    mitgliedskontolist = control.getMitgliedskontoList(action, null);
+    mitgliedskontolist = control.getMitgliedskontoList(action, null, true);
     mitgliedskontolist.paint(tabNurIst.getComposite());
 
     TabGroup tabSollIst = new TabGroup(folder, "Sollbuchung erzeugen und Istbuchung zuordnen", true, 1);

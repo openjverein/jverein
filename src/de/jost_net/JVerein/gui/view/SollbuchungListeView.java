@@ -60,7 +60,7 @@ public class SollbuchungListeView extends AbstractView
     group.addButtonArea(button);
 
     control.getMitgliedskontoList(new MitgliedDetailAction(),
-        new Mitgliedskonto2Menu()).paint(this.getParent());
+        new Mitgliedskonto2Menu(), false).paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
