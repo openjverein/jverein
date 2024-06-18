@@ -18,7 +18,6 @@ package de.jost_net.JVerein.gui.control;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -159,6 +158,8 @@ public class MitgliedskontoControl extends FilterControl
   private MitgliedskontoMessageConsumer mc = null;
 
   private Action action;
+  
+  private boolean umwandeln;
 
   public MitgliedskontoControl(AbstractView view)
   {
@@ -516,12 +517,13 @@ public class MitgliedskontoControl extends FilterControl
     return mitgliedskontoTree;
   }
 
-  public TablePart getMitgliedskontoList(Action action, ContextMenu menu)
+  public TablePart getMitgliedskontoList(Action action, ContextMenu menu, boolean umwandeln)
       throws RemoteException
   {
     this.action = action;
+    this.umwandeln = umwandeln;
     @SuppressWarnings("rawtypes")
-    GenericIterator mitgliedskonten = getMitgliedskontoIterator();
+    GenericIterator mitgliedskonten = getMitgliedskontoIterator(umwandeln);
     if (mitgliedskontoList == null)
     {
       mitgliedskontoList = new TablePart(mitgliedskonten, action);
@@ -632,7 +634,7 @@ public class MitgliedskontoControl extends FilterControl
   public void refreshMitgliedkonto1() throws RemoteException
   {
     @SuppressWarnings("rawtypes")
-    GenericIterator mitgliedskonten = getMitgliedskontoIterator();
+    GenericIterator mitgliedskonten = getMitgliedskontoIterator(umwandeln);
     mitgliedskontoList.removeAll();
     while (mitgliedskonten.hasNext())
     {
@@ -641,9 +643,9 @@ public class MitgliedskontoControl extends FilterControl
   }
   
   @SuppressWarnings("rawtypes")
-  public GenericIterator getMitgliedskontoIterator() throws RemoteException
+  public GenericIterator getMitgliedskontoIterator(boolean umwandeln) throws RemoteException
   {
-    DBService service = Einstellungen.getDBService();
+    this.umwandeln = umwandeln;
     Date d1 = null;
     java.sql.Date vd = null;
     java.sql.Date bd = null;
@@ -663,10 +665,145 @@ public class MitgliedskontoControl extends FilterControl
         bd = new java.sql.Date(d1.getTime());
       }
     }
-    String sql = "select  mitgliedskonto.*, mitglied.name, mitglied.vorname from mitgliedskonto "
-        + "join mitglied on (mitgliedskonto.mitglied = mitglied.id) ";
+    
+    DIFFERENZ diff = DIFFERENZ.EGAL;
+    if (differenz != null)
+    {
+      diff = (DIFFERENZ) differenz.getValue();
+    }
+    
+    // Falls kein Name und keine Differenz dann alles lesen
+    if ((suchname == null || suchname.getValue() == null || 
+        ((String) suchname.getValue()).isEmpty()) && diff == DIFFERENZ.EGAL)
+    {
+      DBIterator<Mitgliedskonto> sollbuchungen = Einstellungen.getDBService()
+          .createList(Mitgliedskonto.class);
+      if (vd != null)
+      {
+      sollbuchungen.addFilter("mitgliedskonto.datum >= ? ",
+          new Object[] { vd });
+      }
+      if (bd != null)
+      {
+      sollbuchungen.addFilter("mitgliedskonto.datum <= ? ",
+          new Object[] { bd });
+      }
+      return sollbuchungen;
+    }
+    
+    // Falls ein Name aber keine Differenz dann alles des Mitglieds lesen
+    if (suchname != null && suchname.getValue() != null && 
+        !((String) suchname.getValue()).isEmpty() && diff == DIFFERENZ.EGAL)
+    {
+      String name = (String) suchname.getValue();
+      DBIterator<Mitgliedskonto> sollbuchungen = Einstellungen.getDBService()
+          .createList(Mitgliedskonto.class);
+      if (!umwandeln)
+      {
+        // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
+        sollbuchungen.join("mitglied");
+        sollbuchungen.addFilter("mitglied.id = mitgliedskonto.mitglied");
+        sollbuchungen.addFilter("((lower(mitglied.name) like ?)"
+            + " OR (lower(mitglied.vorname) like ?))",
+            new Object[] {name.toLowerCase() + "%", name.toLowerCase() + "%"});
+      }
+      else
+      {
+        // Der Name muss umgewandelt werden, es kann mehrere Matches geben
+        ArrayList<BigDecimal> namenids = getNamenIds();
+        if (namenids != null)
+        {
+          int anzahl = namenids.size();
+          String querystring = null;
+          
+          for (int i = 1; i <= anzahl; i++)
+          {
+            if (anzahl == 1)
+            {
+              querystring = "(mitgliedskonto.mitglied = ?) ";
+            }
+            else if (i == 1)
+            {
+              querystring =  "((mitgliedskonto.mitglied = ?) OR ";
+            }
+            else if (i < anzahl)
+            {
+              querystring =  querystring + "(mitgliedskonto.mitglied = ?) OR ";
+            }
+            else if (i == anzahl)
+            {
+              querystring =  querystring + "(mitgliedskonto.mitglied = ?)) ";
+            }
+          }
+          sollbuchungen.addFilter(querystring, namenids.toArray() );
+        }
+      }
+
+      if (vd != null)
+      {
+        sollbuchungen.addFilter("(mitgliedskonto.datum >= ?) ",
+            new Object[] { vd });
+      }
+      if (bd != null)
+      {
+        sollbuchungen.addFilter("(mitgliedskonto.datum <= ?) ",
+            new Object[] { bd });
+      }
+      return sollbuchungen;
+    }
+    
+    // Eine Differenz ist ausgewählt
+    final DBService service = Einstellungen.getDBService();
+    String sql = "SELECT  mitgliedskonto.id, mitglied.name, mitglied.vorname, "
+        + " mitgliedskonto.betrag, sum(buchung.betrag) FROM mitgliedskonto "
+        + "JOIN mitglied on (mitgliedskonto.mitglied = mitglied.id) "
+        + "LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto ";
     String where = "";
     ArrayList<Object> param = new ArrayList<>();
+    if (suchname != null && suchname.getValue() != null && 
+        !((String) suchname.getValue()).isEmpty() && umwandeln == false)
+    {
+      // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
+      String tmpSuchname = (String) suchname.getValue();
+      where += (where.length() > 0 ? "and " : "")
+          + "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?)) ";
+      param.add(tmpSuchname.toLowerCase() + "%");
+      param.add(tmpSuchname.toLowerCase() + "%");
+    }
+    else if (suchname != null && suchname.getValue() != null && 
+        !((String) suchname.getValue()).isEmpty() && umwandeln == true)
+    {
+      // Der Name muss umgewandelt werden, es kann mehrere Matches geben
+      ArrayList<BigDecimal> namenids = getNamenIds();
+      if (namenids != null)
+      {
+        int count = 0;
+        int anzahl = namenids.size();
+        for (BigDecimal id: namenids)
+        {
+          count++;
+          if (anzahl == 1)
+          {
+          where += (where.length() > 0 ? "and " : "")
+              + "mitgliedskonto.mitglied = ? ";
+          }
+          else if (count == 1)
+          {
+            where += (where.length() > 0 ? "and " : "")
+                + "(mitgliedskonto.mitglied = ? ";
+          }
+          else if (count < anzahl)
+          {
+            where += " OR mitgliedskonto.mitglied = ? ";
+          }
+          else if (count == anzahl)
+          {
+            where += " OR mitgliedskonto.mitglied = ?) ";
+          }
+          param.add(id);
+        }
+      }
+    }
     if (vd != null)
     {
       where += (where.length() > 0 ? "and " : "")
@@ -683,98 +820,122 @@ public class MitgliedskontoControl extends FilterControl
     {
       sql += "WHERE " + where;
     }
-    sql += "order by mitglied.name, mitglied.vorname, mitgliedskonto.datum desc";
-    PseudoIterator mitgliedskonten = (PseudoIterator) service.execute(sql,
-        param.toArray(), new ResultSetExtractor()
-        {
+    sql += "group by mitgliedskonto.id ";
 
+    if (DIFFERENZ.FEHLBETRAG == diff)
+    {
+      sql += "having sum(buchung.betrag) < mitgliedskonto.betrag or "
+          + "(sum(buchung.betrag) is null and mitgliedskonto.betrag > 0) ";
+    }
+    if (DIFFERENZ.UEBERZAHLUNG == diff)
+    {
+      sql += "having sum(buchung.betrag) > mitgliedskonto.betrag ";
+    }
+    sql += "order by mitglied.name, mitglied.vorname, mitgliedskonto.datum desc";
+    @SuppressWarnings("unchecked")
+    ArrayList<Mitgliedskonto> mitgliedskonten = (ArrayList<Mitgliedskonto>) service.execute(sql,
+        param.toArray(), new ResultSetExtractor()
+    {
+      @Override
+      public Object extract(ResultSet rs)
+          throws RemoteException, SQLException
+      {
+        ArrayList<Mitgliedskonto> list = new ArrayList<>();
+        while (rs.next())
+        {
+          list.add(
+            (Mitgliedskonto) service.createObject(Mitgliedskonto.class, rs.getString(1)));
+        }
+        return list;
+      }
+    });
+    
+    return PseudoIterator.fromArray(
+        mitgliedskonten.toArray(new GenericObject[mitgliedskonten.size()]));
+  }
+  
+  private ArrayList<BigDecimal> getNamenIds() throws RemoteException
+  {
+    DBService service = Einstellungen.getDBService();
+    String sql = "SELECT  mitglied.id, mitglied.name, mitglied.vorname from mitglied";
+    
+    @SuppressWarnings("unchecked")
+    ArrayList<BigDecimal> mitgliedids = (ArrayList<BigDecimal>) service.execute(sql,
+        new Object[] { }, new ResultSetExtractor()
+        {
           @Override
           public Object extract(ResultSet rs)
               throws RemoteException, SQLException
           {
-            ArrayList<Mitgliedskonto> ergebnis = new ArrayList<>();
+            ArrayList<BigDecimal> ergebnis = new ArrayList<>();
 
             // In case the text search input is used, we calculate
-            // an "equality" score for each Mitgliedskonto (aka
-            // Mitgliedskontobuchung) entry. Only the entries with
+            // an "equality" score for each Mitglied entry. 
+            // Only the entries with
             // score == maxScore will be shown.
             Integer maxScore = 0;
+            int count = 0;
+            String name = reduceWord((String) suchname.getValue());
+            BigDecimal mgid = null;
+            String nachname = null;
+            String vorname = null;
             while (rs.next())
             {
-              Mitgliedskonto mk = (Mitgliedskonto) Einstellungen.getDBService()
-                  .createObject(Mitgliedskonto.class, rs.getString(1));
+              count++;
+              // Nur die ids der Mitglieder speichern
+              mgid = rs.getBigDecimal(1);
 
-              DIFFERENZ diff = DIFFERENZ.EGAL;
-              if (differenz != null)
+              StringTokenizer tok = new StringTokenizer(name, " ,-");
+              Integer score = 0;
+              nachname = reduceWord(rs.getString(2));
+              vorname = reduceWord(rs.getString(3));                
+              while (tok.hasMoreElements())
               {
-                diff = (DIFFERENZ) differenz.getValue();
+                String nextToken = tok.nextToken();
+                if (nextToken.length() > 2)
+                {
+                  score += scoreWord(nextToken, nachname);
+                  score += scoreWord(nextToken, vorname);
+                }
               }
-              BigDecimal ist = BigDecimal.valueOf(mk.getIstSumme());
-              ist = ist.setScale(2, RoundingMode.HALF_UP);
-              BigDecimal soll = BigDecimal.valueOf(mk.getBetrag());
-              soll = soll.setScale(2, RoundingMode.HALF_UP);
-              if (DIFFERENZ.FEHLBETRAG == diff && ist.compareTo(soll) >= 0)
+
+              if (maxScore < score)
               {
+                maxScore = score;
+                // We found a Mitgliedskonto matching with a higher equality
+                // score, so we drop all previous matches, because they were
+                // less equal.
+                ergebnis.clear();
+              }
+              else if (maxScore > score)
+              {
+                // This match is worse, so skip it.
                 continue;
               }
-              if (DIFFERENZ.UEBERZAHLUNG == diff && ist.compareTo(soll) <= 0)
-              {
-                continue;
-              }
-
-              if (suchname != null && suchname.getValue() != null)
-              {
-                StringTokenizer tok = new StringTokenizer(
-                    (String) suchname.getValue(), " ,-");
-                Integer score = 0;
-                while (tok.hasMoreElements())
-                {
-                  String nextToken = tok.nextToken();
-                  if (nextToken.length() > 3)
-                  {
-                    score += scoreWord(nextToken, mk.getMitglied().getName());
-                    score += scoreWord(nextToken,
-                        mk.getMitglied().getVorname());
-                    score += scoreWord(nextToken, mk.getZweck1());
-                  }
-                }
-
-                if (maxScore < score)
-                {
-                  maxScore = score;
-                  // We found a Mitgliedskonto matching with a higher equality
-                  // score, so we drop all previous matches, because they were
-                  // less equal.
-                  ergebnis.clear();
-                }
-                else if (maxScore > score)
-                {
-                  // This match is worse, so skip it.
-                  continue;
-                }
-              }
-
-              ergebnis.add(mk);
+              ergebnis.add(mgid);
             }
-            return PseudoIterator.fromArray(
-                ergebnis.toArray(new GenericObject[ergebnis.size()]));
+            if (ergebnis.size() != count)
+            {
+              return ergebnis;
+            }
+            else
+            {
+              // Kein Match
+              return null;
+            }
           }
         });
-
-    return mitgliedskonten;
+    return mitgliedids;
   }
 
   public Integer scoreWord(String word, String in)
   {
-    word = reduceWord(word);
-
     Integer wordScore = 0;
     StringTokenizer tok = new StringTokenizer(in, " ,-");
 
     while (tok.hasMoreElements())
     {
       String nextToken = tok.nextToken();
-      nextToken = reduceWord(nextToken);
 
       // Full match is twice worth
       if (nextToken.equals(word))
@@ -924,7 +1085,7 @@ public class MitgliedskontoControl extends FilterControl
     {
       try
       {
-        getMitgliedskontoList(action, null);
+        getMitgliedskontoList(action, null, umwandeln);
       }
       catch (RemoteException e)
       {
