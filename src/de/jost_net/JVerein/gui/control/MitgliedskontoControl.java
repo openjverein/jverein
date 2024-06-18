@@ -137,7 +137,6 @@ public class MitgliedskontoControl extends FilterControl
 
   private TextAreaInput txt = null;
   
-  // AbstractMitgliedDetailView
   private Mitgliedskonto mkto;
 
   private TreePart mitgliedskontoTree;
@@ -148,8 +147,6 @@ public class MitgliedskontoControl extends FilterControl
   private TablePart mitgliedskontoList2;
 
   private TextInput suchname2 = null;
-
-  private CheckboxInput spezialsuche1 = null;
   
   private CheckboxInput spezialsuche2 = null;
 
@@ -302,34 +299,6 @@ public class MitgliedskontoControl extends FilterControl
     if (null == ohneabbucher)
       return Boolean.FALSE;
     return (Boolean) ohneabbucher.getValue();
-  }
-
-  public CheckboxInput getSpezialSuche1()
-  {
-    if (spezialsuche1 != null && !spezialsuche1.getControl().isDisposed())
-    {
-      return spezialsuche1;
-    }
-    spezialsuche1 = new CheckboxInput(false);
-    spezialsuche1.setName("Erlaube Teilstring Vergleich");
-    spezialsuche1.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        try
-        {
-          refreshMitgliedkonto1();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-    });
-
-    return spezialsuche1;
   }
   
   public CheckboxInput getSpezialSuche2()
