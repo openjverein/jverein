@@ -264,8 +264,21 @@ public class FilterControl extends AbstractControl
       return art;
     }
     art = new SelectInput(
-        new String[] { "Mitglied", "Nicht-Mitglied", "Kursteilnehmer" },
+        new String[] { "Mitglied", "Nicht-Mitglied" },
         settings.getString(settingsprefix + "status.art", ""));
+    try
+    {
+      if (Einstellungen.getEinstellung().getKursteilnehmer())
+      {
+        art = new SelectInput(
+            new String[] { "Mitglied", "Nicht-Mitglied", "Kursteilnehmer" },
+            settings.getString(settingsprefix + "status.art", ""));
+      }
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler beim lesen der Einstellungen");
+    }
     art.setName("Mitgliedsart");
     art.setPleaseChoose("Bitte auswählen");
     art.addListener(new FilterListener());
