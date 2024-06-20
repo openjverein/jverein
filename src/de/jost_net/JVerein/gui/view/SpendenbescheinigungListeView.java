@@ -67,7 +67,7 @@ public class SpendenbescheinigungListeView extends AbstractView
         "document-new.png");
     buttons.addButton("Neu (Spende (Sonstig))", new SpendenbescheinigungAction(Spendenstyp.SONSTIG), null, false,
         "document-new.png");
-    buttons.addButton("Neu (Geldspenden)", new SpendenbescheinigungAutoNeuAction(), null, true,
+    buttons.addButton("Neu (Geldspenden)", new SpendenbescheinigungAutoNeuAction(), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }
