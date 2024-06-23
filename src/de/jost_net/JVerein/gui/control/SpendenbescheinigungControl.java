@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction.Spendenstyp;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
@@ -644,7 +645,7 @@ public class SpendenbescheinigungControl extends FilterControl
       return spbList;
     }
     spbList = new TablePart(getSpendenbescheinigungen(),
-        new SpendenbescheinigungAction(Spendenart.SACHSPENDE));
+        new SpendenbescheinigungAction(Spendenstyp.SONSTIG));
     spbList.addColumn("Bescheinigungsdatum", "bescheinigungsdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     spbList.addColumn("Spendedatum", "spendedatum",

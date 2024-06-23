@@ -40,13 +40,19 @@ import de.willuhn.util.ApplicationException;
 
 public class SpendenbescheinigungAction implements Action
 {
-  private int spendenart = Spendenart.SACHSPENDE;
+  private Spendenstyp spendentyp = Spendenstyp.SONSTIG;
   
   private Spendenbescheinigung spb = null;
   
-  public SpendenbescheinigungAction(int spendenart)
+  public enum Spendenstyp {
+    SONSTIG,
+    GELDSPENDE,
+    SACHSPENDE,
+  }
+  
+  public SpendenbescheinigungAction(Spendenstyp spendentyp)
   {
-    this.spendenart = spendenart;
+    this.spendentyp = spendentyp;
   }
 
   @Override
@@ -62,16 +68,29 @@ public class SpendenbescheinigungAction implements Action
       {
         spb = (Spendenbescheinigung) Einstellungen.getDBService()
             .createObject(Spendenbescheinigung.class, null);
-        spb.setSpendenart(spendenart);
+        switch (spendentyp)
+        {
+          case GELDSPENDE:
+            spb.setSpendenart(Spendenart.GELDSPENDE);
+            spb.setErsatzAufwendungen(false);
+            break;
+          case SACHSPENDE:
+            spb.setSpendenart(Spendenart.SACHSPENDE);
+            spb.setErsatzAufwendungen(false);
+            break;
+          case SONSTIG:
+            spb.setSpendenart(Spendenart.GELDSPENDE);
+            spb.setErsatzAufwendungen(true);
+            break;
+        }
         spb.setAutocreate(Boolean.FALSE);
-        spb.setErsatzAufwendungen(false);
         spb.setBescheinigungsdatum(new Date());
 
         if (context != null && (context instanceof Mitglied))
         {
           Mitglied m = (Mitglied) context;
           adressaufbereitung(m, spb);
-          if (spendenart == Spendenart.GELDSPENDE)
+          if (spendentyp == Spendenstyp.GELDSPENDE)
           {
             handleMitglied(m);
           }
@@ -105,7 +124,7 @@ public class SpendenbescheinigungAction implements Action
           }
           else if (mkn.getType() == MitgliedskontoNode.MITGLIED)
           {
-            if (spendenart == Spendenart.GELDSPENDE)
+            if (spendentyp == Spendenstyp.GELDSPENDE)
             {
               handleMitglied(spb.getMitglied());
             }
@@ -113,8 +132,6 @@ public class SpendenbescheinigungAction implements Action
         }
         else
         {
-          spb.setSpendenart(Spendenart.SACHSPENDE);
-          spb.setAutocreate(Boolean.FALSE);
           Object o = GUI.getCurrentView().getCurrentObject();
           if (o != null && o instanceof Spendenbescheinigung)
           {
@@ -126,6 +143,7 @@ public class SpendenbescheinigungAction implements Action
             spb.setZeile5(von.getZeile5());
             spb.setZeile6(von.getZeile6());
             spb.setZeile7(von.getZeile7());
+            spb.setMitglied(von.getMitglied());
           }
         }
       }
