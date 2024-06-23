@@ -53,8 +53,8 @@ public class MailVorlageZuweisenAction implements Action
           if (context instanceof MitgliedskontoControl)
           {
             MitgliedskontoControl kto = (MitgliedskontoControl) context;
-            kto.getBetreff(null).setValue(mv.getBetreff());
-            kto.getTxt(null).setValue(mv.getTxt());
+            kto.getBetreff().setValue(mv.getBetreff());
+            kto.getTxt().setValue(mv.getTxt());
           }
           else if (context instanceof SpendenbescheinigungMailControl)
           {

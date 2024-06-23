@@ -27,6 +27,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class MitgliedskontoMahnungView extends AbstractView
@@ -38,25 +39,29 @@ public class MitgliedskontoMahnungView extends AbstractView
     GUI.getView().setTitle("Mahnung");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
+    control.init(MitgliedskontoControl.TYP.MAHNUNG.name() + ".", null, null);
+    
+    if (this.getCurrentObject() == null)
+    {
+      LabelGroup group = new LabelGroup(getParent(), "Filter");
+      group.addInput(control.getDatumvon());
+      group.addInput(control.getDatumbis());
+      
+      ButtonArea filterbuttons = new ButtonArea();
+      filterbuttons.addButton(control.getResetButton());
+      filterbuttons.addButton(control.getSpeichernButton());
+      group.addButtonArea(filterbuttons);
+    }
+    control.getDifferenz(DIFFERENZ.FEHLBETRAG);
 
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Parameter");
-    if (this.getCurrentObject() == null)
-    {
-      cont.addLabelPair("Von Datum",
-          control.getVondatum(MitgliedskontoControl.TYP.MAHNUNG.name()));
-      cont.addLabelPair("Bis Datum",
-          control.getBisdatum(MitgliedskontoControl.TYP.MAHNUNG.name()));
-    }
+    
     cont.addLabelPair("Formular", control.getFormular(FormularArt.MAHNUNG));
-    control.getDifferenz(DIFFERENZ.FEHLBETRAG);
-
     cont.addInput(control.getAusgabeart());
-
     cont.addHeadline("Mail");
-    cont.addInput(control.getBetreff(MitgliedskontoControl.TYP.MAHNUNG.name()));
-    cont.addLabelPair("Text",
-        control.getTxt(MitgliedskontoControl.TYP.MAHNUNG.name()));
+    cont.addInput(control.getBetreff());
+    cont.addLabelPair("Text", control.getTxt());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

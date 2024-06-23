@@ -53,7 +53,7 @@ import de.willuhn.util.ProgressMonitor;
  */
 public class ZipMailer
 {
-  public ZipMailer(final File zipfile, final String betreff, final String text)
+  public ZipMailer(final File zipfile, final String betreff, final String text, final String dateiname)
   {
     BackgroundTask t = new BackgroundTask()
     {
@@ -112,7 +112,7 @@ public class ZipMailer
               }
               in.close();
               ma.setAnhang(bos.toByteArray());
-              ma.setDateiname("Rechnung.pdf");
+              ma.setDateiname(dateiname);
               TreeSet<MailAnhang> anhang = new TreeSet<>();
               anhang.add(ma);
 

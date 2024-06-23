@@ -192,8 +192,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
         DokumentationUtil.MITGLIED, false, "question-circle.png");
     if (!control.getMitglied().isNewObject())
     {
-      MitgliedskontoControl mkcontrol = new MitgliedskontoControl(this);
-      mkcontrol.getStartKontoauszugButton(control.getMitglied(), null, null);
       buttons.addButton(new Button("Kontoauszug", new KontoauszugAction(),
           control.getMitglied(), false, "file-invoice.png"));
     }
