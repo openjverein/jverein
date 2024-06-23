@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.control;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.util.Date;
 
 import org.eclipse.swt.SWT;
@@ -44,7 +43,6 @@ import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -64,7 +62,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class KursteilnehmerControl extends AbstractControl
+public class KursteilnehmerControl extends FilterControl
 {
 
   private PersonenartInput personenart;
@@ -107,19 +105,6 @@ public class KursteilnehmerControl extends AbstractControl
 
   private TablePart part;
 
-  // Elemente für die Auswertung
-
-  private DateInput eingabedatumvon = null;
-
-  private DateInput eingabedatumbis = null;
-
-  private DateInput abbuchungsdatumvon = null;
-
-  private DateInput abbuchungsdatumbis = null;
-
-  private TextInput suchname = null;
-
-  private Settings settings = null;
 
   public KursteilnehmerControl(AbstractView view)
   {
@@ -376,121 +361,12 @@ public class KursteilnehmerControl extends AbstractControl
     return geschlecht;
   }
 
-  public TextInput getSuchname()
-  {
-    if (suchname != null)
-    {
-      return suchname;
-    }
-    String tmp = settings.getString("name", "");
-    this.suchname = new TextInput(tmp, 30);
-    return suchname;
-  }
-
-  public DateInput getEingabedatumvon()
-  {
-    if (eingabedatumvon != null)
-    {
-      return eingabedatumvon;
-    }
-    Date d = null;
-    String tmp = settings.getString("eingabedatum.von", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.eingabedatumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.eingabedatumvon.setTitle("Eingabedatum");
-    this.eingabedatumvon.setText("Beginn des Eingabe-Zeitraumes");
-    return eingabedatumvon;
-  }
-
-  public DateInput getEingabedatumbis()
-  {
-    if (eingabedatumbis != null)
-    {
-      return eingabedatumbis;
-    }
-    Date d = null;
-    String tmp = settings.getString("eingabedatum.bis", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.eingabedatumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.eingabedatumbis.setTitle("Eingabedatum");
-    this.eingabedatumbis.setText("Ende des Eingabe-Zeitraumes");
-    return eingabedatumbis;
-  }
-
-  public DateInput getAbbuchungsdatumvon()
-  {
-    if (abbuchungsdatumvon != null)
-    {
-      return abbuchungsdatumvon;
-    }
-    Date d = null;
-    String tmp = settings.getString("abbuchungsdatum.von", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.abbuchungsdatumvon = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.abbuchungsdatumvon.setTitle("Abbuchungsdatum");
-    this.abbuchungsdatumvon.setText("Beginn des Abbuchungszeitraumes");
-    return abbuchungsdatumvon;
-  }
-
-  public DateInput getAbbuchungsdatumbis()
-  {
-    if (abbuchungsdatumbis != null)
-    {
-      return abbuchungsdatumbis;
-    }
-    Date d = null;
-    String tmp = settings.getString("abbuchungsdatum.bis", null);
-    if (tmp != null)
-    {
-      try
-      {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    this.abbuchungsdatumbis = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.abbuchungsdatumbis.setTitle("Abbuchungsdatum");
-    this.abbuchungsdatumbis.setText("Ende des Abbuchungszeitraumes");
-    return abbuchungsdatumbis;
-  }
-
   public Part getKursteilnehmerTable() throws RemoteException
   {
-    saveDefaults();
-
+    if (part != null)
+    {
+      return part;
+    }
     DBIterator<Kursteilnehmer> kursteilnehmer = getIterator();
     part = new TablePart(kursteilnehmer, new KursteilnehmerDetailAction());
 
@@ -514,12 +390,11 @@ public class KursteilnehmerControl extends AbstractControl
     return part;
   }
 
-  public void refresh()
+  public void TabRefresh()
   {
 
     try
     {
-      saveDefaults();
       if (part == null)
       {
         return;
@@ -551,74 +426,6 @@ public class KursteilnehmerControl extends AbstractControl
     }, null, true, "walking.png"); // "true" defines this button as the default
     // button
     return b;
-  }
-
-  /**
-   * Default-Werte speichern.
-   */
-  public void saveDefaults()
-  {
-    if (this.suchname != null)
-    {
-      settings.setAttribute("name", (String) getSuchname().getValue());
-    }
-
-    if (this.eingabedatumvon != null)
-    {
-      Date tmp = (Date) getEingabedatumvon().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("eingabedatum.von",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("eingabedatum.von", "");
-      }
-    }
-
-    if (this.eingabedatumbis != null)
-    {
-      Date tmp = (Date) getEingabedatumbis().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("eingabedatum.bis",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("eingabedatum.bis", "");
-      }
-    }
-
-    if (this.abbuchungsdatumvon != null)
-    {
-      Date tmp = (Date) getAbbuchungsdatumvon().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("abbuchungsdatum.von",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("abbuchungsdatum.von", "");
-      }
-    }
-
-    if (this.abbuchungsdatumbis != null)
-    {
-      Date tmp = (Date) getAbbuchungsdatumbis().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("abbuchungsdatum.bis",
-            new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("abbuchungsdatum.bis", "");
-      }
-    }
-
   }
 
   public void handleStore()
@@ -671,32 +478,15 @@ public class KursteilnehmerControl extends AbstractControl
   private void starteAuswertung()
   {
     // Alle Kursteilnehmer lesen
-    final DBIterator<Kursteilnehmer> list;
+    
     try
     {
-      saveDefaults();
+      saveFilterSettings();
       String subtitle = "";
-      list = Einstellungen.getDBService().createList(Kursteilnehmer.class);
-      if (abbuchungsdatumvon.getValue() != null)
-      {
-        Date d = (Date) abbuchungsdatumvon.getValue();
-        subtitle += "Abbuchungsdatum von" + " "
-            + new JVDateFormatTTMMJJJJ().format(d) + "  ";
-        list.addFilter("abbudatum >= ?",
-            new Object[] { new java.sql.Date(d.getTime()) });
-      }
-      if (abbuchungsdatumbis.getValue() != null)
-      {
-        Date d = (Date) abbuchungsdatumbis.getValue();
-        subtitle += " " + "bis" + " " + new JVDateFormatTTMMJJJJ().format(d)
-            + "  ";
-        list.addFilter("abbudatum <= ?",
-            new Object[] { new java.sql.Date(d.getTime()) });
-      }
+      final DBIterator<Kursteilnehmer> list = getIterator();
+      
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
-
-      Settings settings = new Settings(this.getClass());
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -791,21 +581,34 @@ public class KursteilnehmerControl extends AbstractControl
   {
     DBIterator<Kursteilnehmer> kursteilnehmer = Einstellungen.getDBService()
         .createList(Kursteilnehmer.class);
-    String suchN = (String) getSuchname().getValue();
-    if (suchN != null && suchN.length() > 0)
+    if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
-      kursteilnehmer.addFilter("name like ?",
-          new Object[] { "%" + suchN + "%" });
+      String suchN = (String) getSuchname().getValue();
+      if (suchN.length() > 0)
+      {
+        kursteilnehmer.addFilter("name like ?",
+            new Object[] { "%" + suchN + "%" });
+      }
     }
-    if (getEingabedatumvon().getValue() != null)
+    if (isEingabedatumvonAktiv() && getEingabedatumvon().getValue() != null)
     {
       kursteilnehmer.addFilter("eingabedatum >= ?",
           new Object[] { (Date) getEingabedatumvon().getValue() });
     }
-    if (getEingabedatumbis().getValue() != null)
+    if (isEingabedatumbisAktiv() && getEingabedatumbis().getValue() != null)
     {
       kursteilnehmer.addFilter("eingabedatum <= ?",
           new Object[] { (Date) getEingabedatumbis().getValue() });
+    }
+    if (isAbbuchungsdatumvonAktiv() && getAbbuchungsdatumvon().getValue() != null)
+    {
+      kursteilnehmer.addFilter("abbudatum >= ?",
+          new Object[] { (Date) getAbbuchungsdatumvon().getValue() });
+    }
+    if (isAbbuchungsdatumbisAktiv() && getAbbuchungsdatumbis().getValue() != null)
+    {
+      kursteilnehmer.addFilter("abbudatum <= ?",
+          new Object[] { (Date) getAbbuchungsdatumbis().getValue() });
     }
     return kursteilnehmer;
   }

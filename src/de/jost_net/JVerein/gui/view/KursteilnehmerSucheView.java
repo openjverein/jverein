@@ -26,12 +26,11 @@ import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.util.ApplicationException;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class KursteilnehmerSucheView extends AbstractView
 {
@@ -58,21 +57,23 @@ public class KursteilnehmerSucheView extends AbstractView
     Long anzahl = (Long) service.execute(sql, new Object[] {}, rs);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addLabelPair("Name", control.getSuchname());
-    group.addLabelPair("Eingabedatum von", control.getEingabedatumvon());
-    group.addLabelPair("Eingabedatum bis", control.getEingabedatumbis());
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getSuchname());
     
-    ButtonArea button1 = new ButtonArea();
-    Button suchen1 = new Button("Suchen", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        control.refresh();
-      }
-    }, null, true, "search.png");
-    button1.addButton(suchen1);
-    group.addButtonArea(button1);
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    middle.addInput(control.getEingabedatumvon());
+    middle.addInput(control.getEingabedatumbis());
+    
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getAbbuchungsdatumvon());
+    right.addInput(control.getAbbuchungsdatumbis());
+    
+    ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSuchenButton());
+    group.addButtonArea(fbuttons);
 
     if (anzahl.longValue() > 0)
     {
