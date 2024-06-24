@@ -69,11 +69,7 @@ public class MailEmpfaengerImpl extends AbstractDBObject implements
   @Override
   protected Class<?> getForeignObject(String arg0)
   {
-    if ("mitglied".equals(arg0))
-    {
-      return Mitglied.class;
-    }
-    else if ("mail".equals(arg0))
+    if ("mail".equals(arg0))
     {
       return Mail.class;
     }
@@ -95,7 +91,15 @@ public class MailEmpfaengerImpl extends AbstractDBObject implements
   @Override
   public Mitglied getMitglied() throws RemoteException
   {
-    return (Mitglied) getAttribute("mitglied");
+    Object o = super.getAttribute("mitglied");
+    if (o == null)
+      return null;
+   
+    if(o instanceof Mitglied)
+      return (Mitglied)o;
+    
+    Cache cache = Cache.get(Mitglied.class,true);
+    return (Mitglied) cache.get(o);
   }
 
   @Override
@@ -128,6 +132,10 @@ public class MailEmpfaengerImpl extends AbstractDBObject implements
     if (fieldName.equals("mailadresse"))
     {
       return getMailAdresse();
+    }
+    else if (fieldName.equals("mitglied"))
+    {
+      return getMitglied();
     }
     else if (fieldName.equals("name"))
     {

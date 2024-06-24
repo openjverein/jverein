@@ -295,10 +295,6 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   protected Class<?> getForeignObject(String field)
   {
-    if ("beitragsgruppe".equals(field))
-    {
-      return Beitragsgruppe.class;
-    }
     if ("foto".equals(field))
     {
       return Mitgliedfoto.class;
@@ -980,7 +976,12 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public Beitragsgruppe getBeitragsgruppe() throws RemoteException
   {
-    return (Beitragsgruppe) getAttribute("beitragsgruppe");
+    Object o = (Object) super.getAttribute("beitragsgruppe");
+    if (o == null)
+      return null;
+   
+    Cache cache = Cache.get(Beitragsgruppe.class,true);
+    return (Beitragsgruppe) cache.get(o);
   }
 
   @Override
@@ -1167,6 +1168,13 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     }
     else if (fieldName.startsWith("zusatzfelder_"))
     {
+      Long l = (Long) super.getAttribute("beitragsgruppe");
+      if (l == null)
+        return null;
+       
+      Cache cache = Cache.get(Beitragsgruppe.class,true);
+      cache.get(l);
+        
       DBIterator<Felddefinition> it = Einstellungen.getDBService()
           .createList(Felddefinition.class);
       it.addFilter("name = ?", new Object[] { fieldName.substring(13) });
@@ -1206,6 +1214,8 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       return getAlter();
     }
+    else if("beitragsgruppe".equals(fieldName))
+    	return getBeitragsgruppe();
     return super.getAttribute(fieldName);
   }
 
