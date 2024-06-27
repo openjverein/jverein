@@ -71,6 +71,16 @@ public class BuchungslisteView extends AbstractView
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
     
     ButtonArea buttons1 = new ButtonArea();
+    Button reset = new Button("Filter-Reset", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        control.resetFilter();
+      }
+    }, null, false, "eraser.png");
+    buttons1.addButton(reset);
+    
     Button suchen = new Button("Suchen", new Action()
     {
       @Override

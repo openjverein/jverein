@@ -73,6 +73,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.util.Dateiname;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -2004,5 +2005,37 @@ public class BuchungsControl extends AbstractControl
       return 0;
     }
 
+  }
+  
+  public void resetFilter()
+  {
+    try
+    {
+      suchbuchungsart.setValue(suchbuchungsart.getList().get(0));
+      suchprojekt.setValue(null);
+      suchbetrag.setValue("");
+      hasmitglied.setValue(hasmitglied.getList().get(2));
+      Calendar calendar = Calendar.getInstance();
+      Integer year = calendar.get(Calendar.YEAR);
+      Date startGJ = Datum.toDate(Einstellungen.getEinstellung()
+          .getBeginnGeschaeftsjahr() + year);
+      if (calendar.getTime().before(startGJ))
+      {
+        year = year -1;
+        startGJ = Datum.toDate(Einstellungen.getEinstellung()
+            .getBeginnGeschaeftsjahr() + year);
+      }
+      vondatum.setValue(startGJ);
+      calendar.setTime(startGJ);
+      calendar.add(Calendar.YEAR, 1);
+      calendar.add(Calendar.DAY_OF_MONTH, -1);
+      bisdatum.setValue(calendar.getTime());
+      suchtext.setValue("");
+      refreshBuchungsList();
+    }
+    catch (Exception ex)
+    {
+      Logger.error("Error filter reset", ex);
+    }
   }
 }
