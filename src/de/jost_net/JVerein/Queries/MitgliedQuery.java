@@ -402,7 +402,8 @@ public class MitgliedQuery
           .getValue();
       if (bg != null)
       {
-        addCondition("beitragsgruppe = ? ");
+        addCondition("(beitragsgruppe = ? OR (select id from sekundaerebeitragsgruppe where sekundaerebeitragsgruppe.mitglied = mitglied.id AND sekundaerebeitragsgruppe.beitragsgruppe = ?))");
+        bedingungen.add(Integer.valueOf(bg.getID()));
         bedingungen.add(Integer.valueOf(bg.getID()));
       }
     }
