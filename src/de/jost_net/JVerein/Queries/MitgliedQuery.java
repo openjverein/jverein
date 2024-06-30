@@ -197,6 +197,18 @@ public class MitgliedQuery
         }
       }
     }
+    if (control.isBeitragsgruppeAuswAktiv())
+    {
+      Beitragsgruppe bg = (Beitragsgruppe) control.getBeitragsgruppeAusw()
+          .getValue();
+      if (bg != null)
+      {
+    	sql += " join sekundaerebeitragsgruppe on sekundaerebeitragsgruppe.mitglied = mitglied.id ";
+        addCondition("(mitglied.beitragsgruppe = ? OR sekundaerebeitragsgruppe.beitragsgruppe = ?)");
+        bedingungen.add(Integer.valueOf(bg.getID()));
+        bedingungen.add(Integer.valueOf(bg.getID()));
+      }
+    }
     if (adresstyp != 0)
     {
       addCondition("adresstyp = " + adresstyp);
@@ -394,17 +406,6 @@ public class MitgliedQuery
       catch (NullPointerException e)
       {
         // Workaround für einen Bug in IntegerInput
-      }
-    }
-    if (control.isBeitragsgruppeAuswAktiv())
-    {
-      Beitragsgruppe bg = (Beitragsgruppe) control.getBeitragsgruppeAusw()
-          .getValue();
-      if (bg != null)
-      {
-        addCondition("(beitragsgruppe = ? OR (select id from sekundaerebeitragsgruppe where sekundaerebeitragsgruppe.mitglied = mitglied.id AND sekundaerebeitragsgruppe.beitragsgruppe = ?))");
-        bedingungen.add(Integer.valueOf(bg.getID()));
-        bedingungen.add(Integer.valueOf(bg.getID()));
       }
     }
     if (control.isSortierungAktiv())
