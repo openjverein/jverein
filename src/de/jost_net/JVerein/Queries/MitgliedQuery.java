@@ -203,7 +203,7 @@ public class MitgliedQuery
           .getValue();
       if (bg != null)
       {
-    	sql += " join sekundaerebeitragsgruppe on sekundaerebeitragsgruppe.mitglied = mitglied.id ";
+    	sql += " left join sekundaerebeitragsgruppe on sekundaerebeitragsgruppe.mitglied = mitglied.id ";
         addCondition("(mitglied.beitragsgruppe = ? OR sekundaerebeitragsgruppe.beitragsgruppe = ?)");
         bedingungen.add(Integer.valueOf(bg.getID()));
         bedingungen.add(Integer.valueOf(bg.getID()));
