@@ -232,8 +232,23 @@ public class SpendenbescheinigungPrintAction implements Action
               .createObject(Formular.class, spb.getFormular().getID());
           Map<String, Object> map = spb.getMap(null);
           map = new AllgemeineMap().getMap(map);
+          String email = null;
+          if (spb.getMitglied() != null)
+          {
+              email = spb.getMitglied().getEmail();
+          }
           FormularAufbereitung fa = new FormularAufbereitung(file);
           fa.writeForm(fo, map);
+          // Brieffenster drucken bei Spendenbescheinigung
+          if ( (mailversand == false && Einstellungen.getEinstellung().getSpendenbescheinigungadresse())
+              || (mailversand == true && Einstellungen.getEinstellung().getSpendenbescheinigungadresse() 
+                  && (email == null || email.isEmpty()))
+              || (mailversand == true && Einstellungen.getEinstellung().getSpendenbescheinigungadressem() 
+                   && email != null && !email.isEmpty()))
+          {
+            fa.printAdressfenster(getAussteller(), 
+                (String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()));
+          }
           fa.closeFormular();
         }
       }
