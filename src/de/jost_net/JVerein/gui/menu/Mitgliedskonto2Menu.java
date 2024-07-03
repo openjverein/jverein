@@ -52,7 +52,7 @@ public class Mitgliedskonto2Menu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Sollbuchung bearbeiten",
         new MitgliedskontoSollbuchungEditAction(), "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
-        new MitgliedskontoSollbuchungLoeschenAction(), "list-remove.png"));
+        new MitgliedskontoSollbuchungLoeschenAction(), "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Rechnung...",
         new MitgliedskontoRechnungAction(), "file-invoice.png"));
