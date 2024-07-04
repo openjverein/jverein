@@ -214,7 +214,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       throw new ApplicationException(
           "Bei verstorbenem Mitglied muss das Austrittsdatum gefüllt sein!");
     }
-    if (getAustritt() != null || getKuendigung() != null)
+    if (getAustritt() != null)
     {
       // Person ist ausgetreten
       // Hat das Mitglied für andere gezahlt?
