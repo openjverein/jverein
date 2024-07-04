@@ -249,10 +249,28 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
         }
       }
     }
-    // Check ob Beitragsart vorher FAMILIE_ZAHLER war und für andere gezahlt hat
+    if (getAustritt() == null)
+    {
+      // Person ist eingetreten
+      // Zahlt jemand anderes für das Mitglied?
+      if (getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
+          && getZahlerID() != null)
+      {
+        // ja, suche Familien Zahler. Er darf nicht ausgetreten sein!
+        DBIterator<Mitglied> zahler = Einstellungen.getDBService()
+            .createList(Mitglied.class);
+        zahler.addFilter("id = " + getZahlerID());
+        if (zahler.hasNext() && ((Mitglied) zahler.next()).getAustritt() != null)
+        {
+          throw new ApplicationException(
+              "Der ausgewählte Zahler ist ausgetreten. Bitte anderen Zahler wählen!");
+        }
+      }
+    }
+    // Check ob Beitragsart evtl. vorher FAMILIE_ZAHLER war und für andere gezahlt hat
     if (getBeitragsgruppe().getBeitragsArt() != ArtBeitragsart.FAMILIE_ZAHLER)
     {
-      // jetzt nicht mehr FAMILIE_ZAHLER und darf damit für niemanden zahlen
+      // Kein FAMILIE_ZAHLER und darf damit für niemanden zahlen
       DBIterator<Mitglied> famang = Einstellungen.getDBService()
           .createList(Mitglied.class);
       famang.addFilter("zahlerid = " + getID());
