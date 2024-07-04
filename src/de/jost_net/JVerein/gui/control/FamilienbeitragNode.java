@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -159,10 +160,15 @@ public class FamilienbeitragNode implements GenericObjectNode
       {
         return "Familienbeiträge";
       }
+      Date d = getMitglied().getGeburtsdatum();
+      if (d.equals(Einstellungen.NODATE))
+      {
+        d = null;
+      }
       JVDateFormatTTMMJJJJ jvttmmjjjj = new JVDateFormatTTMMJJJJ();
       return Adressaufbereitung.getNameVorname(mitglied)
-          + (mitglied.getGeburtsdatum() != null
-              ? ", " + jvttmmjjjj.format(mitglied.getGeburtsdatum())
+          + (d != null
+              ? ", " + jvttmmjjjj.format(d)
               : "")
           + (mitglied.getIban().length() > 0
               ? ", " + mitglied.getBic() + ", " + mitglied.getIban()
