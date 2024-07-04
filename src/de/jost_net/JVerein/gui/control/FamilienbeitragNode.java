@@ -65,7 +65,7 @@ public class FamilienbeitragNode implements GenericObjectNode
       DBIterator<Mitglied> it2 = Einstellungen.getDBService()
           .createList(Mitglied.class);
       it2.addFilter("beitragsgruppe = ?", new Object[] { bg.getID() });
-      it2.addFilter("austritt is null");
+      //it2.addFilter("austritt is null");
       it2.setOrder("ORDER BY name, vorname");
       while (it2.hasNext())
       {
@@ -87,7 +87,7 @@ public class FamilienbeitragNode implements GenericObjectNode
     DBIterator<Mitglied> it = Einstellungen.getDBService()
         .createList(Mitglied.class);
     it.addFilter("zahlerid = ?", new Object[] { m.getID() });
-    it.addFilter("austritt is null");
+    //it.addFilter("austritt is null");
     while (it.hasNext())
     {
       FamilienbeitragNode fbn = new FamilienbeitragNode(this, it.next(), 1);
