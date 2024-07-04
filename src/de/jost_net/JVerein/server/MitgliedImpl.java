@@ -78,9 +78,27 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      // Falls das Mitglied für andere zahlt kann man nicht löschen
+      DBIterator<Mitglied> famang = Einstellungen.getDBService()
+          .createList(Mitglied.class);
+      famang.addFilter("zahlerid = " + getID());
+      famang.addFilter("austritt is null");
+      if (famang.hasNext())
+      {
+        throw new ApplicationException(
+            "Dieses Mitglied zahlt noch für andere Mitglieder. Zunächst Beitragsart der Angehörigen ändern!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Mitglied kann nicht gespeichert werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override
@@ -218,18 +236,28 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       // Person ist ausgetreten
       // Hat das Mitglied für andere gezahlt?
-      if (getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ZAHLER)
+      DBIterator<Mitglied> famang = Einstellungen.getDBService()
+          .createList(Mitglied.class);
+      famang.addFilter("zahlerid = " + getID());
+      famang.addFilter("austritt is null");
+      if (famang.hasNext())
       {
-        // ja
-        DBIterator<Mitglied> famang = Einstellungen.getDBService()
-            .createList(Mitglied.class);
-        famang.addFilter("zahlerid = " + getID());
-        famang.addFilter("austritt is null");
-        if (famang.hasNext())
-        {
-          throw new ApplicationException(
-              "Dieses Mitglied zahlt noch für andere Mitglieder. Zunächst Beitragsart der Angehörigen ändern!");
-        }
+        throw new ApplicationException(
+            "Dieses Mitglied zahlt noch für andere Mitglieder. Zunächst Beitragsart der Angehörigen ändern!");
+      }
+    }
+    // Check ob Beitragsart vorher FAMILIE_ZAHLER war und für andere gezahlt hat
+    if (getBeitragsgruppe().getBeitragsArt() != ArtBeitragsart.FAMILIE_ZAHLER)
+    {
+      // jetzt nicht mehr FAMILIE_ZAHLER und darf damit für niemanden zahlen
+      DBIterator<Mitglied> famang = Einstellungen.getDBService()
+          .createList(Mitglied.class);
+      famang.addFilter("zahlerid = " + getID());
+      famang.addFilter("austritt is null");
+      if (famang.hasNext())
+      {
+        throw new ApplicationException(
+            "Dieses Mitglied zahlt noch für andere Mitglieder. Zunächst Beitragsart der Angehörigen ändern!");
       }
     }
     if (getBeitragsgruppe() != null
