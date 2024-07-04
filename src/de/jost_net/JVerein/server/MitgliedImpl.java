@@ -86,7 +86,6 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       DBIterator<Mitglied> famang = Einstellungen.getDBService()
           .createList(Mitglied.class);
       famang.addFilter("zahlerid = " + getID());
-      famang.addFilter("austritt is null");
       if (famang.hasNext())
       {
         throw new ApplicationException(
@@ -257,7 +256,6 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       DBIterator<Mitglied> famang = Einstellungen.getDBService()
           .createList(Mitglied.class);
       famang.addFilter("zahlerid = " + getID());
-      famang.addFilter("austritt is null");
       if (famang.hasNext())
       {
         throw new ApplicationException(
