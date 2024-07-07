@@ -46,17 +46,16 @@ public class Mitgliedskonto2Menu extends ContextMenu
    */
   public Mitgliedskonto2Menu()
   {
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-        new MitgliedDetailAction(), "text-x-generic.png"));
-    addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Sollbuchung bearbeiten",
         new MitgliedskontoSollbuchungEditAction(), "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
         new MitgliedskontoSollbuchungLoeschenAction(), "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedContextMenuItem("Rechnung...",
+    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+        new MitgliedDetailAction(), "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("Rechnung erstellen",
         new MitgliedskontoRechnungAction(), "file-invoice.png"));
-    addItem(new CheckedContextMenuItem("Mahnung...",
+    addItem(new CheckedContextMenuItem("Mahnung erstellen",
         new MitgliedskontoMahnungAction(), "file-invoice.png"));
   }
 
