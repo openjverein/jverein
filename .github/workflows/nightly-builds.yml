@@ -81,8 +81,15 @@ jobs:
         builddatetime=$(date +'%Y-%m-%d %H:%M')
         echo "### Version: $tmp_version | filename: $tmp_filename | build datetime: $builddatetime" >> $GITHUB_STEP_SUMMARY
 
+    # Update tag
+    - uses: rickstaa/action-create-tag@v1
+      with:
+        tag: ${{ steps.openjverein.outputs.selected_version }}
+        tag_exists_error: false
+        message: Release ${{ steps.openjverein.outputs.selected_version }}
+    
     - name: Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.openjverein.outputs.selected_version }}
         prerelease: true
