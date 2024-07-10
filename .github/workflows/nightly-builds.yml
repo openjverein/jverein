@@ -82,11 +82,10 @@ jobs:
         echo "### Version: $tmp_version | filename: $tmp_filename | build datetime: $builddatetime" >> $GITHUB_STEP_SUMMARY
 
     # Update tag
-    - uses: rickstaa/action-create-tag@v1
+    - name: Tag repo
+      uses: richardsimko/update-tag@v1
       with:
-        tag: ${{ steps.openjverein.outputs.selected_version }}
-        tag_exists_error: false
-        message: Release ${{ steps.openjverein.outputs.selected_version }}
+        tag_name: ${{ steps.openjverein.outputs.selected_version }}
     
     - name: Release
       uses: softprops/action-gh-release@v2
