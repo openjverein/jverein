@@ -94,7 +94,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     }
     catch (RemoteException e)
     {
-      String fehler = "Mitglied kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Mitglied kann nicht gelöscht werden. Siehe system log";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
