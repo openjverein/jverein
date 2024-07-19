@@ -58,18 +58,19 @@ public class SpendenbescheinigungEmailAction implements Action
     try
     {
       Mitglied member = spb.getMitglied();
-      if (member == null || member.getEmail() == null
-          || member.getEmail().length() == 0)
+      if (member == null)
       {
         String fehler = "Kein Mitglied zugewiesen";
         GUI.getStatusBar().setErrorText(fehler);
         Logger.error(fehler);
+        return;
       }
       if (member.getEmail() == null || member.getEmail().length() == 0)
       {
         String fehler = "Mitglied hat keine E-Mail Adresse";
         GUI.getStatusBar().setErrorText(fehler);
         Logger.error(fehler);
+        return;
       }
       MitgliedMailSendenAction mailSendenAction = new MitgliedMailSendenAction();
       mailSendenAction.handleAction(member);

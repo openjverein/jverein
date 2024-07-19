@@ -311,6 +311,40 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     return "";
 
   }
+  
+  public void createForeignKeyIfNotExistsNocheck(String constraintname, String table,
+      String column, String reftable, String refcolumn, String ondelete,
+      String onupdate) throws ApplicationException
+  {
+    switch (drv)
+    {
+      case H2:
+      {
+        execute( "ALTER TABLE " + table + " ADD CONSTRAINT IF NOT EXISTS " + constraintname
+            + " FOREIGN KEY (" + column + ") REFERENCES " + reftable + "("
+            + refcolumn + ") ON DELETE " + ondelete + " ON UPDATE " + onupdate
+            + " NOCHECK;\n", true);
+      }
+      break;
+      case MYSQL:
+      {
+        String statement =  "ALTER TABLE " + table + " ADD CONSTRAINT " + " FOREIGN KEY "
+            + constraintname + "(" + column + ") REFERENCES " + reftable + " ("
+            + refcolumn + ") ON DELETE " + ondelete + " ON UPDATE " + onupdate
+            + ";\n";
+        try
+        {
+          Logger.debug(statement);
+          ScriptExecutor.execute(new StringReader(statement), conn, null);
+        }
+        catch (Exception e)
+        {
+          // Wenn Foreign Key schon existiert ist es auch ok;
+        }
+        setNewVersion(nr);
+      }
+    }
+  }
 
   public String dropTable(String table)
   {

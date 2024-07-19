@@ -2033,4 +2033,16 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("unterschrift", unterschrift);
   }
+  
+  @Override
+  public Boolean getAnhangSpeichern() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("anhangspeichern"));
+  }
+
+  @Override
+  public void setAnhangSpeichern(Boolean anhangspeichern) throws RemoteException
+  {
+    setAttribute("anhangspeichern", anhangspeichern);
+  }
 }

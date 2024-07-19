@@ -94,7 +94,7 @@ public class MitgliedMailSendenAction implements Action
         }
         MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
             new MailVorlageControl(null),
-            MailVorlagenAuswahlDialog.POSITION_CENTER);
+            MailVorlagenAuswahlDialog.POSITION_CENTER, true);
         Mail mail = (Mail) Einstellungen.getDBService().createObject(Mail.class,
             null);
 

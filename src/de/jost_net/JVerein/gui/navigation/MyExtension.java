@@ -329,8 +329,6 @@ public class MyExtension implements Extension
       jverein.addChild(administration);
       jverein.addChild(new MyItem(jverein, "Dokumentation",
           new DokumentationAction(), "question-circle.png"));
-      jverein.addChild(new MyItem(jverein, "Spende für JVerein",
-          new SpendenAction(), "coins.png"));
       jverein.addChild(
           new MyItem(jverein, "Über", new AboutAction(), "gtk-info.png"));
     }

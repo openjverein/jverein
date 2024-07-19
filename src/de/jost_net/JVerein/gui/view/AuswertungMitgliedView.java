@@ -21,10 +21,8 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -36,7 +34,7 @@ public class AuswertungMitgliedView extends AbstractView
   
   public AuswertungMitgliedView() throws RemoteException
   {
-    control.getSuchAdresstyp(Mitgliedstyp.MITGLIED).getValue();
+    control.init("mitglied.", "zusatzfeld.", "zusatzfelder.");
   }
 
   @Override
@@ -50,12 +48,10 @@ public class AuswertungMitgliedView extends AbstractView
 
     // left
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    Input mitglstat = control.getMitgliedStatus();
-    left.addInput(mitglstat);
+    left.addInput(control.getMitgliedStatus());
     if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
     {
-      left.addLabelPair("Externe Mitgliedsnummer",
-          control.getSuchExterneMitgliedsnummer());
+      left.addInput(control.getSuchExterneMitgliedsnummer());
     }
     left.addInput(control.getEigenschaftenAuswahl());
     left.addInput(control.getBeitragsgruppeAusw());
@@ -77,7 +73,6 @@ public class AuswertungMitgliedView extends AbstractView
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getEintrittvon());
     right.addInput(control.getEintrittbis());
-
     right.addInput(control.getAustrittvon());
     right.addInput(control.getAustrittbis());
 
@@ -86,6 +81,11 @@ public class AuswertungMitgliedView extends AbstractView
       right.addInput(control.getSterbedatumvon());
       right.addInput(control.getSterbedatumbis());
     }
+    
+    ButtonArea filterbuttons = new ButtonArea();
+    filterbuttons.addButton(control.getResetButton());
+    filterbuttons.addButton(control.getSpeichernButton());
+    group.addButtonArea(filterbuttons);
 
     // Zweite Gruppe: Ausgabe
     LabelGroup group2 = new LabelGroup(getParent(), "Ausgabe");

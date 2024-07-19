@@ -22,6 +22,9 @@ import de.jost_net.JVerein.gui.control.AnfangsbestandControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
+import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class AnfangsbestandListView extends AbstractView
 {
@@ -32,13 +35,28 @@ public class AnfangsbestandListView extends AbstractView
     GUI.getView().setTitle("Anfangsbestände");
 
     AnfangsbestandControl control = new AnfangsbestandControl(this);
+    
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addLabelPair("Konto", control.getSuchname());
+
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getDatumvon());
+    right.addInput(control.getDatumbis());
+
+    ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSuchenButton());
+    group.addButtonArea(fbuttons);
 
     control.getAnfangsbestandList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ANFANGSBESTAENDE, false, "question-circle.png");
-    buttons.addButton("Neu", new AnfangsbestandNeuAction(), null, true,
+    buttons.addButton("Neu", new AnfangsbestandNeuAction(), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

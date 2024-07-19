@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.menu;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungDeleteAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungDuplizierenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungEmailAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.Action;
@@ -47,6 +48,8 @@ public class SpendenbescheinigungMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("E-Mail an Spender",
         new SpendenbescheinigungEmailAction(), "envelope-open.png"));
+    addItem(new CheckedContextMenuItem("Spendenbescheinigungen versenden",
+        new SpendenbescheinigungSendAction(), "envelope-open.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new DuplicateMenuItem("Als Vorlage für neue Spende",
         new SpendenbescheinigungDuplizierenAction(), "edit-copy.png"));

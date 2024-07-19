@@ -15,6 +15,7 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
+import de.jost_net.JVerein.server.DDLTool.Index;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
@@ -32,5 +33,14 @@ public class Update0430 extends AbstractDDLUpdate
   {
     execute(addColumn("konto", new Column("buchungsart",
         COLTYPE.BIGINT, 0, null, false, false)));
+    
+    Index idx = new Index("ixKonto1", false);
+    Column col = new Column("buchungsart", COLTYPE.BIGINT, 0, null, false,
+        false);
+    idx.add(col);
+    execute(idx.getCreateIndex("konto"));
+
+    execute(createForeignKey("fkKonto1", "konto",
+        "buchungsart", "buchungsart", "id", "SET NULL", "NO ACTION"));
   }
 }

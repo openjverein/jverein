@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Composite;
 
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -38,7 +38,7 @@ public class EigenschaftenAuswahlDialog
     extends AbstractDialog<EigenschaftenAuswahlParameter>
 {
 
-  private MitgliedControl control;
+  private FilterControl control;
 
   private SelectInput eigenschaftenverknuepfung;
 
@@ -57,14 +57,14 @@ public class EigenschaftenAuswahlDialog
    *          Liste der Eigenschaften-IDs durch Komma separiert.
    */
   public EigenschaftenAuswahlDialog(String defaults, boolean ohnePflicht,
-      boolean verknuepfung)
+      boolean verknuepfung, FilterControl control)
   {
     super(EigenschaftenAuswahlDialog.POSITION_CENTER);
     this.setSize(400, 400);
     this.ohnePflicht = ohnePflicht;
     this.verknuepfung = verknuepfung;
     setTitle("Eigenschaften auswählen ");
-    control = new MitgliedControl(null);
+    this.control = control;
     this.setDefaults(defaults);
   }
 

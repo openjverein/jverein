@@ -45,7 +45,7 @@ public class MailDetailAction implements Action
       {
         MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
             new MailVorlageControl(null),
-            MailVorlagenAuswahlDialog.POSITION_CENTER);
+            MailVorlagenAuswahlDialog.POSITION_CENTER, true);
         m = (Mail) Einstellungen.getDBService().createObject(Mail.class, null);
         MailVorlage mv = mvad.open();
         if (!mvad.getAbort())

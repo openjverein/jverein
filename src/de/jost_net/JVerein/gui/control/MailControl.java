@@ -48,7 +48,6 @@ import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -67,10 +66,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class MailControl extends AbstractControl
+public class MailControl extends FilterControl
 {
-
-  private de.willuhn.jameica.system.Settings settings;
 
   private TablePart empfaenger;
 
@@ -85,6 +82,7 @@ public class MailControl extends AbstractControl
   private Mail mail;
 
   private TablePart mailsList;
+
 
   public MailControl(AbstractView view)
   {
@@ -463,33 +461,40 @@ public class MailControl extends AbstractControl
           int sentCount = 0;
           for (final MailEmpfaenger empf : getMail().getEmpfaenger())
           {
-            EvalMail em = new EvalMail(empf);
-            if (erneutSenden || empf.getVersand() == null)
+            try
             {
-              sender.sendMail(empf.getMailAdresse(), em.evalBetreff(betr),
-                  em.evalText(txt), getMail().getAnhang());
-              sentCount++;
-              monitor.log(empf.getMailAdresse() + " - versendet");
-              // Nachricht wurde erfolgreich versendet; speicher Versand-Datum
-              // persistent.
-              empf.setVersand(new Timestamp(new Date().getTime()));
-              // Fix null value in colum mail for mailempfaenger
-              empf.setMail(getMail());
-              empf.store();
-              // aktualisiere TablePart getEmpfaenger() (zeige neues
-              // Versand-Datum)
-              GUI.startView(GUI.getCurrentView().getClass(),
-                  GUI.getCurrentView().getCurrentObject());
+              EvalMail em = new EvalMail(empf);
+              if (erneutSenden || empf.getVersand() == null)
+              {
+                sender.sendMail(empf.getMailAdresse(), em.evalBetreff(betr),
+                    em.evalText(txt), getMail().getAnhang());
+                sentCount++;
+                monitor.log(empf.getMailAdresse() + " - versendet");
+                // Nachricht wurde erfolgreich versendet; speicher Versand-Datum
+                // persistent.
+                empf.setVersand(new Timestamp(new Date().getTime()));
+                // Fix null value in colum mail for mailempfaenger
+                empf.setMail(getMail());
+                empf.store();
+                // aktualisiere TablePart getEmpfaenger() (zeige neues
+                // Versand-Datum)
+                GUI.startView(GUI.getCurrentView().getClass(),
+                    GUI.getCurrentView().getCurrentObject());
+              }
+              else
+              {
+                monitor.log(empf.getMailAdresse() + " - übersprungen");
+              }
             }
-            else
+            catch (Exception e)
             {
-              monitor.log(empf.getMailAdresse() + " - übersprungen");
+              Logger.error("Fehler beim Mailversand", e);
+              monitor.log(empf.getMailAdresse() + " - " + e.getMessage());
             }
             zae++;
             double proz = (double) zae
                 / (double) getMail().getEmpfaenger().size() * 100d;
             monitor.setPercentComplete((int) proz);
-
           }
           monitor.setPercentComplete(100);
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
@@ -552,11 +557,14 @@ public class MailControl extends AbstractControl
       {
         m.setVersand(new Timestamp(new Date().getTime()));
       }
+      else
+      {
+        m.setVersand(null);
+      }
       m.store();
       for (MailEmpfaenger me : getMail().getEmpfaenger())
       {
         me.setMail(m);
-        me.setVersand(m.getVersand());
         me.store();
       }
       DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
@@ -603,11 +611,11 @@ public class MailControl extends AbstractControl
 
   public Part getMailList() throws RemoteException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Mail> mails = service.createList(Mail.class);
-    mails.setOrder("ORDER BY betreff");
-
-    mailsList = new TablePart(mails, new MailDetailAction());
+    if (mailsList != null)
+    {
+      return mailsList;
+    }
+    mailsList = new TablePart(getMails(), new MailDetailAction());
     mailsList.addColumn("Betreff", "betreff");
     mailsList.addColumn("Bearbeitung", "bearbeitung",
         new DateFormatter(new JVDateFormatDATETIME()));
@@ -617,6 +625,79 @@ public class MailControl extends AbstractControl
     mailsList.setContextMenu(new MailMenu());
     mailsList.setRememberOrder(true);
     return mailsList;
+  }
+  
+  public void TabRefresh()
+  {
+    try
+    {
+      if (mailsList == null)
+      {
+        return;
+      }
+      mailsList.removeAll();
+      DBIterator<Mail> mails = getMails();
+      while (mails.hasNext())
+      {
+        mailsList.addItem(mails.next());
+      }
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
+  }
+  
+  private  DBIterator<Mail> getMails() throws RemoteException
+  {
+    DBService service = Einstellungen.getDBService();
+    DBIterator<Mail> mails = service.createList(Mail.class);
+    mails.join("mailempfaenger");
+    mails.addFilter("mailempfaenger.mail = mail.id");
+    mails.join("mitglied");
+    mails.addFilter("mitglied.id = mailempfaenger.mitglied");
+    
+    if (isSuchnameAktiv() && getSuchname().getValue() != null)
+    {
+      String tmpSuchname = (String) getSuchname().getValue();
+      if (tmpSuchname.length() > 0)
+      {
+        mails.addFilter("(lower(betreff) like ?)", 
+            new Object[] { "%" + tmpSuchname.toLowerCase() + "%" });
+      }
+    }
+    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
+    {
+      String tmpSuchtext = (String) getSuchtext().getValue();
+      if (tmpSuchtext.length() > 0)
+      {
+        mails.addFilter("(lower(betreff) like ?)", 
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
+      }
+    }
+    if (isEingabedatumvonAktiv()  && getEingabedatumvon().getValue() != null)
+    {
+      Date d = (Date) getEingabedatumvon().getValue();
+      mails.addFilter("bearbeitung >= ?", new Object[] { new java.sql.Date(d.getTime()) });
+    }
+    if (isEingabedatumbisAktiv() && getEingabedatumbis().getValue() != null)
+    {
+      Date d = (Date) getEingabedatumbis().getValue();
+      mails.addFilter("bearbeitung <= ?", new Object[] { new java.sql.Date(d.getTime()) });
+    }
+    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
+    {
+      Date d = (Date) getDatumvon().getValue();
+      mails.addFilter("mail.versand >= ?", new Object[] { new java.sql.Date(d.getTime()) });
+    }
+    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
+    {
+      Date d = (Date) getDatumbis().getValue();
+      mails.addFilter("mail.versand <= ?", new Object[] { new java.sql.Date(d.getTime()) });
+    }
+    mails.setOrder("ORDER BY betreff");
+
+    return mails;
   }
 
   public class EvalMail

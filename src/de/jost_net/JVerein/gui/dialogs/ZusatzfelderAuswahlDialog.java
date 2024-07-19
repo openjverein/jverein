@@ -24,7 +24,6 @@ import java.util.Date;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -53,22 +52,14 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
   
   String zusatzfelder = null;
 
-  public ZusatzfelderAuswahlDialog(Settings settings, Mitgliedstyp typ)
+  public ZusatzfelderAuswahlDialog(Settings settings, String zusatzfeld, String zusatzfelder)
   {
     super(EigenschaftenAuswahlDialog.POSITION_CENTER);
     this.setSize(400, 700);
     setTitle("Zusatzfelder-Bedingungen ");
     this.settings = settings;
-    if (typ == Mitgliedstyp.MITGLIED)
-    {
-      zusatzfeld = "zusatzfeld.";
-      zusatzfelder = "zusatzfelder.";
-    }
-    else
-    {
-      zusatzfeld = "nichtzusatzfeld.";
-      zusatzfelder = "nichtzusatzfelder.";
-    }
+    this.zusatzfeld = zusatzfeld;
+    this.zusatzfelder = zusatzfelder;
   }
 
   @Override
@@ -367,31 +358,35 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
           Felddefinition fd = (Felddefinition) it.next();
           switch (fd.getDatentyp())
           {
-          case Datentyp.ZEICHENFOLGE:
-          {
-            settings.setAttribute(zusatzfeld + counter + ".value", "");
-            break;
-          }
-          case Datentyp.DATUM:
-          {
-            settings.setAttribute(zusatzfeld + counter + ".value", "");
-            break;
-          }
-          case Datentyp.GANZZAHL:
-          {
-            settings.setAttribute(zusatzfeld + counter + ".value", -1);
-            break;
-          }
-          case Datentyp.JANEIN:
-          {
-            settings.setAttribute(zusatzfeld + counter + ".value", "false");
-            break;
-          }
-          case Datentyp.WAEHRUNG:
-          {
-            settings.setAttribute(zusatzfeld + counter + ".value", "");
-            break;
-          }
+            case Datentyp.ZEICHENFOLGE:
+            {
+              settings.setAttribute(zusatzfeld + counter + ".value", "");
+              break;
+            }
+            case Datentyp.DATUM:
+            {
+              settings.setAttribute(zusatzfeld + counter + ".value", "");
+              counter++;
+              settings.setAttribute(zusatzfeld + counter + ".value", "");
+              break;
+            }
+            case Datentyp.GANZZAHL:
+            {
+              settings.setAttribute(zusatzfeld + counter + ".value", -1);
+              counter++;
+              settings.setAttribute(zusatzfeld + counter + ".value", -1);
+              break;
+            }
+            case Datentyp.JANEIN:
+            {
+              settings.setAttribute(zusatzfeld + counter + ".value", "false");
+              break;
+            }
+            case Datentyp.WAEHRUNG:
+            {
+              settings.setAttribute(zusatzfeld + counter + ".value", "");
+              break;
+            }
           }
         }
       }

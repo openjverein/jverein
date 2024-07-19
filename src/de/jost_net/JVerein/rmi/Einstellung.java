@@ -599,4 +599,8 @@ public interface Einstellung extends DBObject, IBankverbindung
   public byte[] getUnterschrift() throws RemoteException;
 
   public void setUnterschrift(byte[] unterschrift) throws RemoteException;
+
+  public Boolean getAnhangSpeichern() throws RemoteException;
+
+  public void setAnhangSpeichern(Boolean anhangspeichern) throws RemoteException;
 }

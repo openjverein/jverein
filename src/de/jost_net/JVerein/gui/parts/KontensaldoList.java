@@ -145,6 +145,7 @@ public class KontensaldoList extends TablePart implements Part
     zeile.add(new SaldoZeile(k, null, null, null, null, jahressaldo));
     
     // Leerzeile am Ende wegen Scrollbar
+    k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
     k.setBezeichnung("");
     zeile.add(new SaldoZeile(k, null, null, null, null, null));
     return zeile;

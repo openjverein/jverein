@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
 import de.jost_net.JVerein.gui.util.JameicaUtil;
@@ -163,6 +164,8 @@ public class MailDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAIL, false, "question-circle.png");
+    buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
+        control, false, "view-refresh.png"));
     buttons.addButton(control.getMailSpeichernButton());
     buttons.addButton(control.getMailReSendButton());
     buttons.addButton(control.getMailSendButton());
