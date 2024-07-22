@@ -302,8 +302,8 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
       }
       case MYSQL:
       {
-        return "ALTER TABLE " + table + " ADD CONSTRAINT " + " FOREIGN KEY "
-            + constraintname + "(" + column + ") REFERENCES " + reftable + " ("
+        return "ALTER TABLE " + table + " ADD CONSTRAINT " + constraintname
+            + " FOREIGN KEY (" + column + ") REFERENCES " + reftable + "("
             + refcolumn + ") ON DELETE " + ondelete + " ON UPDATE " + onupdate
             + ";\n";
       }
