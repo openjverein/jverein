@@ -44,7 +44,39 @@ public class Update0440 extends AbstractDDLUpdate
         runmysql();
       }
     }
-
+    
+    execute(dropForeignKey("fkLastschrift2", "lastschrift"));
+    execute(createForeignKey("fkLastschrift2", "lastschrift",
+        "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
+    
+    execute(dropForeignKey("fkLastschrift3", "lastschrift"));
+    execute(createForeignKey("fkLastschrift3", "lastschrift",
+        "kursteilnehmer", "kursteilnehmer", "id", "CASCADE", "NO ACTION"));
+    
+    execute(dropForeignKey("fkMitgliedDokument1", "mitglieddokument"));
+    execute(createForeignKey("fkMitgliedDokument1", "mitglieddokument",
+        "referenz", "mitglied", "id", "CASCADE", "NO ACTION"));
+    
+    execute(dropForeignKey("fkSpendenbescheinigung2", "spendenbescheinigung"));
+    execute(createForeignKey("fkSpendenbescheinigung2", "spendenbescheinigung",
+        "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
+    
+    execute(dropForeignKey("fkWiedervorlage1", "wiedervorlage"));
+    execute(createForeignKey("fkWiedervorlage1", "wiedervorlage",
+        "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
+    
+    execute(dropForeignKey("fkZusatzabbuchung1", "zusatzabbuchung"));
+    execute(createForeignKey("fkZusatzabbuchung1", "zusatzabbuchung",
+        "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
+    
+    execute(dropForeignKey("fkBuchung3", "buchung"));
+    execute(createForeignKey("fkBuchung3", "buchung",
+        "mitgliedskonto", "mitgliedskonto", "id", "SET NULL", "NO ACTION"));
+    
+    execute(dropForeignKey("fkBuchung5", "buchung"));
+    execute(createForeignKey("fkBuchung5", "buchung",
+        "spendenbescheinigung", "spendenbescheinigung", "id", "SET NULL", "NO ACTION"));
+    
   }
   
   private void runh2() throws ApplicationException
@@ -52,38 +84,6 @@ public class Update0440 extends AbstractDDLUpdate
     execute(dropForeignKey("fk_sekundaerbeitragegruppe1", "sekundaerebeitragsgruppe"));
     execute(createForeignKey("fkSekundaerbeitragegruppe1", "sekundaerebeitragsgruppe",
         "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkLastschrift2", "lastschrift"));
-    execute(createForeignKey("fkLastschrift2", "lastschrift",
-        "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkLastschrift3", "lastschrift"));
-    execute(createForeignKey("fkLastschrift3", "lastschrift",
-        "kursteilnehmer", "kursteilnehmer", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkMitgliedDokument1", "mitglieddokument"));
-    execute(createForeignKey("fkMitgliedDokument1", "mitglieddokument",
-        "referenz", "mitglied", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkSpendenbescheinigung2", "spendenbescheinigung"));
-    execute(createForeignKey("fkSpendenbescheinigung2", "spendenbescheinigung",
-        "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkWiedervorlage1", "wiedervorlage"));
-    execute(createForeignKey("fkWiedervorlage1", "wiedervorlage",
-        "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkZusatzabbuchung1", "zusatzabbuchung"));
-    execute(createForeignKey("fkZusatzabbuchung1", "zusatzabbuchung",
-        "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkBuchung3", "buchung"));
-    execute(createForeignKey("fkBuchung3", "buchung",
-        "mitgliedskonto", "mitgliedskonto", "id", "SET NULL", "NO ACTION"));
-    
-    execute(dropForeignKey("fkBuchung5", "buchung"));
-    execute(createForeignKey("fkBuchung5", "buchung",
-        "spendenbescheinigung", "spendenbescheinigung", "id", "SET NULL", "NO ACTION"));
   }
   
   private void runmysql() throws ApplicationException
@@ -91,38 +91,6 @@ public class Update0440 extends AbstractDDLUpdate
     execute(dropForeignKey("sekundaerebeitragsgruppe_ibfk_1", "sekundaerebeitragsgruppe"));
     execute(createForeignKey("fkSekundaerbeitragegruppe1", "sekundaerebeitragsgruppe",
         "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkLastschrift2", "lastschrift"));
-    execute(createForeignKey("fkLastschrift2", "lastschrift",
-        "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkLastschrift3", "lastschrift"));
-    execute(createForeignKey("fkLastschrift3", "lastschrift",
-        "kursteilnehmer", "kursteilnehmer", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkMitgliedDokument1", "mitglieddokument"));
-    execute(createForeignKey("fkMitgliedDokument1", "mitglieddokument",
-        "referenz", "mitglied", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkSpendenbescheinigung2", "spendenbescheinigung"));
-    execute(createForeignKey("fkSpendenbescheinigung2", "spendenbescheinigung",
-        "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkWiedervorlage1", "wiedervorlage"));
-    execute(createForeignKey("fkWiedervorlage1", "wiedervorlage",
-        "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkZusatzabbuchung1", "zusatzabbuchung"));
-    execute(createForeignKey("fkZusatzabbuchung1", "zusatzabbuchung",
-        "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
-    
-    execute(dropForeignKey("fkBuchung3", "buchung"));
-    execute(createForeignKey("fkBuchung3", "buchung",
-        "mitgliedskonto", "mitgliedskonto", "id", "SET NULL", "NO ACTION"));
-    
-    execute(dropForeignKey("fkBuchung5", "buchung"));
-    execute(createForeignKey("fkBuchung5", "buchung",
-        "spendenbescheinigung", "spendenbescheinigung", "id", "SET NULL", "NO ACTION"));
   }
   
 }
