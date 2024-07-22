@@ -344,7 +344,7 @@ public class KursteilnehmerControl extends FilterControl
     Date d = getKursteilnehmer().getGeburtsdatum();
     this.geburtsdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.geburtsdatum.setTitle("Geburtsdatum");
-    this.geburtsdatum.setText(("Bitte Geburtsdatum wählen"));
+    this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
     this.geburtsdatum.setMandatory(true);
     return geburtsdatum;
   }
