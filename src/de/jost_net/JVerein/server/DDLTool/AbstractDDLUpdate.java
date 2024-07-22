@@ -328,8 +328,8 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
       break;
       case MYSQL:
       {
-        String statement =  "ALTER TABLE " + table + " ADD CONSTRAINT " + " FOREIGN KEY "
-            + constraintname + "(" + column + ") REFERENCES " + reftable + " ("
+        String statement =  "ALTER TABLE " + table + " ADD CONSTRAINT " + constraintname
+            + " FOREIGN KEY (" + column + ") REFERENCES " + reftable + "("
             + refcolumn + ") ON DELETE " + ondelete + " ON UPDATE " + onupdate
             + ";\n";
         try
