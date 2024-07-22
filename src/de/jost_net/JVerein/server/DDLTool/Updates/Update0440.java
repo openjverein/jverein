@@ -82,14 +82,14 @@ public class Update0440 extends AbstractDDLUpdate
   private void runh2() throws ApplicationException
   {
     execute(dropForeignKey("fk_sekundaerbeitragegruppe1", "sekundaerebeitragsgruppe"));
-    execute(createForeignKey("fk_Sekundaerbeitragegruppe1", "sekundaerebeitragsgruppe",
+    execute(createForeignKey("fk_sekundaerbeitragegruppe1", "sekundaerebeitragsgruppe",
         "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
   }
   
   private void runmysql() throws ApplicationException
   {
     execute(dropForeignKey("sekundaerebeitragsgruppe_ibfk_1", "sekundaerebeitragsgruppe"));
-    execute(createForeignKey("fk_Sekundaerbeitragegruppe1", "sekundaerebeitragsgruppe",
+    execute(createForeignKey("fk_sekundaerbeitragegruppe1", "sekundaerebeitragsgruppe",
         "mitglied", "mitglied", "id", "CASCADE", "NO ACTION"));
   }
   
