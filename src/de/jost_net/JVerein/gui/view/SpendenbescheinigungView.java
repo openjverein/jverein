@@ -103,7 +103,8 @@ public class SpendenbescheinigungView extends AbstractView
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
     buttons.addButton(control.getPDFStandardButton(false));
     buttons.addButton(control.getPDFStandardButton(true));
-    buttons.addButton(control.getPDFIndividuellButton());
+    buttons.addButton(control.getPDFIndividuellButton(false));
+    buttons.addButton(control.getPDFIndividuellButton(true));
     buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(Spendenart.SACHSPENDE), null, false,
         "document-new.png");
     buttons.addButton("Speichern", new Action()

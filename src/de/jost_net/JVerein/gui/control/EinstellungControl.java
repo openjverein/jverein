@@ -296,8 +296,6 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput optiert;
   
   private CheckboxInput spendenbescheinigungadresse;
-  
-  private CheckboxInput spendenbescheinigungadressem;
 
   private CheckboxInput unterschriftdrucken;
   
@@ -822,16 +820,6 @@ public class EinstellungControl extends AbstractControl
     }
     spendenbescheinigungadresse = new CheckboxInput(Einstellungen.getEinstellung().getSpendenbescheinigungadresse());
     return spendenbescheinigungadresse;
-  }
-  
-  public CheckboxInput getSpendenbescheinigungadressem() throws RemoteException 
-  {
-    if (spendenbescheinigungadressem != null) 
-    {
-      return spendenbescheinigungadressem;
-    }
-    spendenbescheinigungadressem = new CheckboxInput(Einstellungen.getEinstellung().getSpendenbescheinigungadressem());
-    return spendenbescheinigungadressem;
   }
 
   public CheckboxInput getExterneMitgliedsnummer() throws RemoteException
@@ -2144,7 +2132,6 @@ public class EinstellungControl extends AbstractControl
       e.setSpendenbescheinigungPrintBuchungsart((Boolean) spendenbescheinigungprintbuchungsart
           .getValue());
       e.setSpendenbescheinigungadresse((Boolean) getSpendenbescheinigungadresse().getValue());
-      e.setSpendenbescheinigungadressem((Boolean) getSpendenbescheinigungadressem().getValue());
       e.setUnterschriftdrucken((Boolean) unterschriftdrucken.getValue());
       e.setUnterschrift((byte[]) unterschrift.getValue());
       e.setAnhangSpeichern((Boolean) anhangspeichern.getValue());

@@ -16,7 +16,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
-
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.MailAbfrageDialog;
 import de.jost_net.JVerein.gui.dialogs.MailAbfrageDialog.Auswahl;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -79,6 +79,7 @@ public class SpendenbescheinigungSendAction implements Action
       d.setTitle("Spendenbescheinigungen versenden");
       d.setPanelText("Spendenbescheinigungen drucken?");
       
+      
       MailAbfrageDialog.Auswahl choice = (MailAbfrageDialog.Auswahl) d.open();
       if (choice == null)
       {
@@ -86,12 +87,14 @@ public class SpendenbescheinigungSendAction implements Action
       }
       else if (choice == Auswahl.DRUCKEN_STANDARD)
       {
-        SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(true, true);
+        SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(true, 
+            Einstellungen.getEinstellung().getSpendenbescheinigungadresse());
         action.handleAction(spbArr);
       }
       else if (choice == Auswahl.DRUCKEN_INDIVIDUELL)
       {
-        SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(false, true);
+        SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(false, 
+            Einstellungen.getEinstellung().getSpendenbescheinigungadresse());
         action.handleAction(spbArr);
       }
 
