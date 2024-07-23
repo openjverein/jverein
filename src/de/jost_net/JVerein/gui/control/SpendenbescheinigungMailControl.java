@@ -138,7 +138,7 @@ public class SpendenbescheinigungMailControl extends AbstractControl
     art = new SelectInput( 
         new String[] { "Standard", "Individuell" },
         settings.getString("art", "Standard"));
-    art.setName("Art");
+    art.setName("Ausgabeart");
     return art;
   }
   
