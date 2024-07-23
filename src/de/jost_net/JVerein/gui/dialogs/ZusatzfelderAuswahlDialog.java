@@ -333,7 +333,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
         settings.setAttribute(zusatzfelder + "selected", selcounter);
         close();
       }
-    });
+    }, null, true, "ok.png");
     buttons.paint(parent);
   }
 

@@ -81,8 +81,16 @@ jobs:
         builddatetime=$(date +'%Y-%m-%d %H:%M')
         echo "### Version: $tmp_version | filename: $tmp_filename | build datetime: $builddatetime" >> $GITHUB_STEP_SUMMARY
 
+    # Update tag
+    - name: Tag repo
+      uses: richardsimko/update-tag@v1
+      with:
+        tag_name: ${{ steps.openjverein.outputs.selected_version }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
     - name: Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.openjverein.outputs.selected_version }}
         prerelease: true

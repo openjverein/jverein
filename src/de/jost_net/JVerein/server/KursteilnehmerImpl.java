@@ -97,6 +97,10 @@ public class KursteilnehmerImpl extends AbstractDBObject implements
       {
         throw new ApplicationException("Bitte Geburtsdatum eingeben");
       }
+      if (getGeschlecht() == null)
+      {
+        throw new ApplicationException("Bitte Geschlecht eingeben");
+      }
     }
     if (getIban() == null || getIban().length() == 0)
     {

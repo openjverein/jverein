@@ -77,7 +77,7 @@ jobs:
         echo "### Version: $tmp_version | filename: $tmp_filename | build datetime: $builddatetime" >> $GITHUB_STEP_SUMMARY
 
     - name: Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.openjverein.outputs.selected_version }}
         prerelease: false
