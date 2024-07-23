@@ -52,8 +52,6 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
         control.getSpendenbescheinigungverzeichnis());
     cont.addLabelPair("Buchungsart drucken",
         control.getSpendenbescheinigungPrintBuchungsart());
-    cont.addLabelPair("Adressblatt bei Mailversand drucken",
-        control.getSpendenbescheinigungadresse());
     cont.addLabelPair("Unterschrift drucken",
         control.getUnterschriftdrucken());
     cont.addLabelPair("Unterschrift", control.getUnterschrift());

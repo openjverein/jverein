@@ -43,6 +43,7 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -66,7 +67,10 @@ public class SpendenbescheinigungMailControl extends AbstractControl
   
   private TextAreaInput  info;
   
+  private SelectInput adressblatt;
+  
   private Spendenbescheinigung[] spbArr;
+
 
   public SpendenbescheinigungMailControl(AbstractView view)
   {
@@ -122,6 +126,19 @@ public class SpendenbescheinigungMailControl extends AbstractControl
     return info;
   }
   
+  public SelectInput getAdressblatt()
+  {
+    if (adressblatt != null)
+    {
+      return adressblatt;
+    }
+    adressblatt = new SelectInput( 
+        new String[] { "Ohne Adressblatt", "Mit Adressblatt" },
+        settings.getString("adressblatt", "Ohne Adressblatt"));
+    adressblatt.setName("Bescheinigung");
+    return adressblatt;
+  }
+  
   public TextInput getBetreff() throws RemoteException
   {
     if (mailbetreff != null)
@@ -158,6 +175,9 @@ public class SpendenbescheinigungMailControl extends AbstractControl
               (String) mailbetreff.getValue());
           settings.setAttribute("spendenbescheinigungmail.body", 
               (String) mailtext.getValue());
+          String ab = (String) getAdressblatt().getValue();
+          settings.setAttribute("adressblatt", ab);
+          
           String betr = (String) mailbetreff.getValue();
           String text = (String) mailtext.getValue();
          sendeMail(betr, text);

@@ -29,6 +29,7 @@ public class Update0440 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
+    execute(dropColumn("einstellung", "spendenbescheinigungadresse"));
     execute(dropColumn("einstellung", "spendenbescheinigungadressem"));
   }
 }
