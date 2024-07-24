@@ -43,6 +43,8 @@ public class DokumentationUtil
   public static final String ABRECHNUNG = PRE + FUNKTIONEN + ABRECH + "abrechnung";
 
   public static final String ABRECHNUNGSLAUF = PRE + FUNKTIONEN + ABRECH + "abrechnungslauf";
+  
+  public static final String LASTSCHRIFT = PRE + FUNKTIONEN + ABRECH + "lastschrift";
 
   public static final String ADRESSTYPEN = PRE + FUNKTIONEN + ADMIN + "adresstypen";
 

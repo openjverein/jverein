@@ -17,10 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAutoNeuAction;
-import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
-import de.jost_net.JVerein.keys.Spendenart;
+import de.jost_net.JVerein.gui.control.LastschriftControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -28,46 +25,38 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class SpendenbescheinigungListeView extends AbstractView
+public class LastschriftListeView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Spendenbescheinigungen");
+    GUI.getView().setTitle("Lastschriften");
 
-    SpendenbescheinigungControl control = new SpendenbescheinigungControl(this);
+    LastschriftControl control = new LastschriftControl(this);
     
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
-    left.addInput(control.getMailauswahl());
+    left.addLabelPair("Zweck", control.getSuchtext());
+    left.addInput(control.getMitgliedArt());
 
-    SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    middle.addLabelPair("Bescheinigungsdatum von", control.getDatumvon());
-    middle.addLabelPair("Bescheinigungsdatum bis", control.getDatumbis());
-    
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addLabelPair("Spendedatum von", control.getEingabedatumvon());
-    right.addLabelPair("Spendedatum bis", control.getEingabedatumbis());
+    right.addLabelPair("Fälligkeit von", control.getDatumvon());
+    right.addLabelPair("Fälligkeit bis", control.getDatumbis());
     
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-
-    control.getSpendenbescheinigungList().paint(this.getParent());
+    
+    control.getLastschriftList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
-    buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(Spendenart.SACHSPENDE), null,
-        false, "document-new.png");
-    buttons.addButton("Neu (automatisch)",
-        new SpendenbescheinigungAutoNeuAction(), null, false,
-        "document-new.png");
+        DokumentationUtil.LASTSCHRIFT, false, "question-circle.png");
     buttons.paint(this.getParent());
   }
 }

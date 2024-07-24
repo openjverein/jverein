@@ -20,13 +20,9 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.MitgliedControl.Mitgliedstyp;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Adresstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.rmi.DBService;
@@ -38,15 +34,12 @@ import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 
 public abstract class AbstractMitgliedSucheView extends AbstractView
 {
 
   private TablePart p;
-
-  private Settings settings;
 
   final MitgliedControl control = new MitgliedControl(this);
 
@@ -89,9 +82,6 @@ public abstract class AbstractMitgliedSucheView extends AbstractView
 
     getFilter();
 
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
-
     Long anzahl = (Long) service.execute(sql, new Object[] {}, rs);
     if (anzahl.longValue() > 0)
     {
@@ -123,51 +113,7 @@ public abstract class AbstractMitgliedSucheView extends AbstractView
     p.removeAll();
   }
 
-  public void TabRefresh()
-  {
-    try
-    {
-      Adresstyp at = (Adresstyp) control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
-      if (at != null)
-      {
-        control.refreshMitgliedTable(Integer.parseInt(at.getID()));
-      }
-      else
-      {
-        control.refreshMitgliedTable(0);
-      }
-    }
-    catch (RemoteException e1)
-    {
-      Logger.error("Fehler", e1);
-    }
-  }
 
-  public class FilterListener implements Listener
-  {
-
-    FilterListener()
-    {
-    }
-
-    @Override
-    public void handleEvent(Event event)
-    {
-      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
-      {
-        return;
-      }
-
-      try
-      {
-        TabRefresh();
-      }
-      catch (NullPointerException e)
-      {
-        return;
-      }
-    }
-  }
 
   public abstract String getTitle();
 

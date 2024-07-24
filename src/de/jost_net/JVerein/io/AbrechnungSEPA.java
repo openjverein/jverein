@@ -71,6 +71,7 @@ import de.jost_net.OBanToo.SEPA.Basislastschrift.MandatSequence;
 import de.jost_net.OBanToo.SEPA.Basislastschrift.Zahler;
 import de.jost_net.OBanToo.StringLatin.Zeichen;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.internal.action.Program;
 import de.willuhn.jameica.hbci.HBCIProperties;
@@ -139,7 +140,7 @@ public class AbrechnungSEPA
     }
     if (param.kursteilnehmer)
     {
-      abbuchenKursteilnehmer(param, lastschrift);
+      abbuchenKursteilnehmer(param, lastschrift, abrl, konto);
     }
 
     monitor.log(counter + " abgerechnete Fälle");
@@ -291,7 +292,7 @@ public class AbrechnungSEPA
       // berücksichtigt, die ab einem bestimmten Zeitpunkt eingetreten sind.
       if (param.vondatum != null)
       {
-        list.addFilter("eingabedatum >= ?",
+        list.addFilter("eintritt >= ?",
             new Object[] { new java.sql.Date(param.vondatum.getTime()) });
       }
       if (Einstellungen.getEinstellung()
@@ -607,7 +608,7 @@ public class AbrechnungSEPA
   }
 
   private void abbuchenKursteilnehmer(AbrechnungSEPAParam param,
-      Basislastschrift lastschrift)
+      Basislastschrift lastschrift, Abrechnungslauf abrl, Konto konto)
       throws ApplicationException, IOException
   {
     DBIterator<Kursteilnehmer> list = Einstellungen.getDBService()
@@ -635,8 +636,10 @@ public class AbrechnungSEPA
         zahler.setName(kt.getName());
         zahler.setVerwendungszweck(kt.getVZweck1());
         lastschrift.add(zahler);
-        kt.setAbbudatum();
+        kt.setAbbudatum(param.faelligkeit);
         kt.store();
+        writeMitgliedskonto(kt, param.faelligkeit, kt.getVZweck1(), 
+            zahler.getBetrag().doubleValue(), abrl, true, konto, null);
       }
       catch (Exception e)
       {
@@ -680,7 +683,7 @@ public class AbrechnungSEPA
     ls_properties.setProperty("sepaid", epochtime_string);
     ls_properties.setProperty("pmtinfid", epochtime_string);
     ls_properties.setProperty("sequencetype", "RCUR");
-    ls_properties.setProperty("targetdate", param.stichtag != null ? ISO_DATE.format(param.stichtag) : SepaUtil.DATE_UNDEFINED);
+    ls_properties.setProperty("targetdate", param.faelligkeit != null ? ISO_DATE.format(param.faelligkeit) : SepaUtil.DATE_UNDEFINED);
     ls_properties.setProperty("type", "CORE");
     ls_properties.setProperty("batchbook", "");
     int counter = 0;
@@ -796,23 +799,24 @@ public class AbrechnungSEPA
     return abrl;
   }
 
-  private void writeMitgliedskonto(Mitglied mitglied, Date datum, String zweck1,
+  private void writeMitgliedskonto(Object mitglied, Date datum, String zweck1,
       double betrag, Abrechnungslauf abrl, boolean haben, Konto konto,
       Buchungsart buchungsart) throws ApplicationException, RemoteException
   {
     Mitgliedskonto mk = null;
-    if (mitglied != null) /*
+    if (mitglied != null && mitglied instanceof Mitglied) /*
                            * Mitglied darf dann null sein, wenn die Gegenbuchung
                            * geschrieben wird
                            */
     {
+      Mitglied mg = (Mitglied) mitglied;
       mk = (Mitgliedskonto) Einstellungen.getDBService()
           .createObject(Mitgliedskonto.class, null);
       mk.setAbrechnungslauf(abrl);
-      mk.setZahlungsweg(mitglied.getZahlungsweg());
+      mk.setZahlungsweg(mg.getZahlungsweg());
       mk.setBetrag(betrag);
       mk.setDatum(datum);
-      mk.setMitglied(mitglied);
+      mk.setMitglied(mg);
       mk.setZweck1(zweck1);
       double steuersatz = 0d;
       if (buchungsart != null)
@@ -838,7 +842,7 @@ public class AbrechnungSEPA
       buchung.setDatum(datum);
       buchung.setKonto(konto);
       buchung.setName(
-          mitglied != null ? Adressaufbereitung.getNameVorname(mitglied)
+          mitglied != null ? Adressaufbereitung.getNameVorname((IAdresse) mitglied)
               : "JVerein");
       buchung.setZweck(zweck1);
       if (mk != null)

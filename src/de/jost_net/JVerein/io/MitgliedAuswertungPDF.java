@@ -29,6 +29,7 @@ import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.view.IAuswertung;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -67,11 +68,12 @@ public class MitgliedAuswertungPDF implements IAuswertung
   {
     params = new TreeMap<>();
     
-    if (control.isAdresstypActive())
+    zusatzfeld = control.getAdditionalparamprefix1();
+    zusatzfelder = control.getAdditionalparamprefix2();
+    
+    if (control.isSuchAdresstypActive())
     {
-      adresstyp = (Adresstyp) control.getAdresstyp().getValue();
-      zusatzfeld = "nichtzusatzfeld.";
-      zusatzfelder = "nichtzusatzfelder.";
+      adresstyp = (Adresstyp) control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
     }
     else
     {
@@ -79,8 +81,6 @@ public class MitgliedAuswertungPDF implements IAuswertung
           .createList(Adresstyp.class);
       it.addFilter("jvereinid=1");
       adresstyp = (Adresstyp) it.next();
-      zusatzfeld = "zusatzfeld.";
-      zusatzfelder = "zusatzfelder.";
     }
 
     if (control.isMitgliedStatusAktiv())

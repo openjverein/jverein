@@ -97,6 +97,10 @@ public class KursteilnehmerImpl extends AbstractDBObject implements
       {
         throw new ApplicationException("Bitte Geburtsdatum eingeben");
       }
+      if (getGeschlecht() == null)
+      {
+        throw new ApplicationException("Bitte Geschlecht eingeben");
+      }
     }
     if (getIban() == null || getIban().length() == 0)
     {
@@ -421,9 +425,9 @@ public class KursteilnehmerImpl extends AbstractDBObject implements
   }
 
   @Override
-  public void setAbbudatum() throws RemoteException
+  public void setAbbudatum(Date abbudatum) throws RemoteException
   {
-    setAttribute("abbudatum", new Date());
+    setAttribute("abbudatum", abbudatum);
   }
 
   @Override

@@ -15,29 +15,36 @@
 **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
  * E-Mail senden Formular anhand des zugewiesenen Spenders
  */
-public class SpendenbescheinigungEmailAction implements Action
+public class SpendenbescheinigungSendAction implements Action
 {
+  private de.willuhn.jameica.system.Settings settings;
+  
+  public SpendenbescheinigungSendAction()
+  {
+    super();
+    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings.setStoreWhenRead(true);
+  }
 
   /**
-   * Versenden einer E-Mail anhand der Spendenbescheinigung die in der View
-   * markiert ist.
+   * Versenden einer E-Mail mit der Spendenbescheinigung im Anhang 
+   * für Mitglieder deren Spendenbescheinigung im View ausgewählt ist.
    */
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Spendenbescheinigung spb = null;
+    Spendenbescheinigung[] spbArr = null;
+    // Prüfung des Contexs, vorhanden, eine oder mehrere
     if (context instanceof TablePart)
     {
       TablePart tp = (TablePart) context;
@@ -45,41 +52,21 @@ public class SpendenbescheinigungEmailAction implements Action
     }
     if (context == null)
     {
-      throw new ApplicationException("Keine Spendenbescheinigung ausgewählt.");
+      throw new ApplicationException("Keine Spendenbescheinigung ausgewählt");
     }
     else if (context instanceof Spendenbescheinigung)
     {
-      spb = (Spendenbescheinigung) context;
+      spbArr = new Spendenbescheinigung[] { (Spendenbescheinigung) context };
+    }
+    else if (context instanceof Spendenbescheinigung[])
+    {
+      spbArr = (Spendenbescheinigung[]) context;
     }
     else
     {
       return;
     }
-    try
-    {
-      Mitglied member = spb.getMitglied();
-      if (member == null)
-      {
-        String fehler = "Kein Mitglied zugewiesen";
-        GUI.getStatusBar().setErrorText(fehler);
-        Logger.error(fehler);
-        return;
-      }
-      if (member.getEmail() == null || member.getEmail().length() == 0)
-      {
-        String fehler = "Mitglied hat keine E-Mail Adresse";
-        GUI.getStatusBar().setErrorText(fehler);
-        Logger.error(fehler);
-        return;
-      }
-      MitgliedMailSendenAction mailSendenAction = new MitgliedMailSendenAction();
-      mailSendenAction.handleAction(member);
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler senden der Spendenbescheinigung.";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
-    }
+
+    GUI.startView(SpendenbescheinigungMailView.class, spbArr);
   }
 }

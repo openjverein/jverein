@@ -18,56 +18,43 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.gui.control.SpendenbescheinigungMailControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class MitgliedskontoRechnungView extends AbstractView
+public class SpendenbescheinigungMailView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Rechnung");
+    GUI.getView().setTitle("Spendenbescheinigung-Mail");
 
-    final MitgliedskontoControl control = new MitgliedskontoControl(this);
+    final SpendenbescheinigungMailControl control = new SpendenbescheinigungMailControl(this);
 
+    SimpleContainer cont1 = new SimpleContainer(getParent(), false);
+    cont1.addHeadline("Info");
+    cont1.addInput(control.getInfo());
+    
+    SimpleContainer cont2 = new SimpleContainer(getParent(), false);
+    cont2.addHeadline("Parameter");
+    cont2.addInput(control.getArt());
+    cont2.addInput(control.getAdressblatt());
+    
     SimpleContainer cont = new SimpleContainer(getParent(), true);
-    cont.addHeadline("Parameter");
-    if (this.getCurrentObject() == null)
-    {
-      cont.addLabelPair("Von Datum",
-          control.getVondatum(MitgliedskontoControl.TYP.RECHNUNG.name()));
-      cont.addLabelPair("Bis Datum",
-          control.getBisdatum(MitgliedskontoControl.TYP.RECHNUNG.name()));
-      cont.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
-    }
-    cont.addLabelPair("Formular", control.getFormular(FormularArt.RECHNUNG));
-    cont.addInput(control.getAusgabeart());
-    cont.addInput(control.getAusgabesortierung());
-
     cont.addHeadline("Mail");
-    cont.addInput(
-        control.getBetreff(MitgliedskontoControl.TYP.RECHNUNG.name()));
-    cont.addLabelPair("Text",
-        control.getTxt(MitgliedskontoControl.TYP.RECHNUNG.name()));
+    cont.addInput(control.getBetreff());
+    cont.addInput(control.getTxt());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.RECHNUNG, false, "question-circle.png");
+        DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
     buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
         control, false, "view-refresh.png"));
-    buttons.addButton(new Button("Export",
-        new MitgliedskontoExportAction(EXPORT_TYP.RECHNUNGEN,
-            getCurrentObject()),
-        control, false, "document-save.png"));
-    buttons.addButton(control.getStartRechnungButton(this.getCurrentObject()));
+    buttons.addButton(control.getStartButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }
 }

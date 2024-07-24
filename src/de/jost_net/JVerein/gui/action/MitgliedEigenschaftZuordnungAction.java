@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
 import de.jost_net.JVerein.rmi.Eigenschaften;
@@ -58,7 +59,7 @@ public class MitgliedEigenschaftZuordnungAction implements Action
     try
     {
       EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog("", true,
-          false);
+          false, new MitgliedControl(null));
       EigenschaftenAuswahlParameter param = ead.open();
       for (EigenschaftenNode en : param.getEigenschaften())
       {

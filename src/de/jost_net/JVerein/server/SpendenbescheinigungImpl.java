@@ -358,10 +358,13 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
   {
     super.store();
     Long id = Long.valueOf(getID());
-    for (Buchung b : buchungen)
+    if (buchungen != null)
     {
-      b.setSpendenbescheinigungId(id);
-      b.store();
+      for (Buchung b : buchungen)
+      {
+        b.setSpendenbescheinigungId(id);
+        b.store();
+      }
     }
   }
 

@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MailControl;
+import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -71,7 +72,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
         try
         {
           EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog(null,
-              false, true);
+              false, false, new MitgliedControl(null));
           EigenschaftenAuswahlParameter param = ead.open();
           for (EigenschaftenNode node : param.getEigenschaften())
           {

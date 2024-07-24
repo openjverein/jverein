@@ -19,6 +19,9 @@ package de.jost_net.JVerein.gui.control;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
@@ -29,11 +32,13 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
 import de.jost_net.JVerein.gui.input.FormularInput;
+import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.io.FileViewer;
@@ -47,9 +52,8 @@ import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -68,10 +72,8 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SpendenbescheinigungControl extends AbstractControl
+public class SpendenbescheinigungControl extends FilterControl
 {
-
-  private de.willuhn.jameica.system.Settings settings;
 
   private TablePart spbList;
 
@@ -110,6 +112,10 @@ public class SpendenbescheinigungControl extends AbstractControl
   private TablePart buchungsList;
 
   private Spendenbescheinigung spendenbescheinigung;
+  
+  private boolean and = false;
+
+  private String sql = "";
 
   public SpendenbescheinigungControl(AbstractView view)
   {
@@ -461,12 +467,12 @@ public class SpendenbescheinigungControl extends AbstractControl
     }
   }
 
-  public Button getPDFStandardButton(final boolean mailversand)
+  public Button getPDFStandardButton(final boolean adressblatt)
   {
-    String label = "PDF (Standard, Briefversand)";
-    if (mailversand)
+    String label = "PDF (Standard)";
+    if (adressblatt)
     {
-      label = "PDF (Standard, Mailversand)";
+      label = "PDF (Standard, Mit Adressblatt)";
     }
     Button b = new Button(label, new Action()
     {
@@ -524,12 +530,12 @@ public class SpendenbescheinigungControl extends AbstractControl
           final File file = new File(s);
           //
           SpendenbescheinigungPrintAction spa = new SpendenbescheinigungPrintAction(
-              true, mailversand, s);
+              true, adressblatt, s);
           spa.handleAction(spb);
           GUI.getStatusBar().setSuccessText("Spendenbescheinigung erstellt");
           FileViewer.show(file);
         }
-        catch (RemoteException e)
+        catch (Exception e)
         {
           Logger.error(e.getMessage());
           throw new ApplicationException(
@@ -540,9 +546,14 @@ public class SpendenbescheinigungControl extends AbstractControl
     return b;
   }
 
-  public Button getPDFIndividuellButton()
+  public Button getPDFIndividuellButton(final boolean adressblatt)
   {
-    Button b = new Button("PDF (Individuell)", new Action()
+    String label = "PDF (Individuell)";
+    if (adressblatt)
+    {
+      label = "PDF (Individuell, Mit Adressblatt)";
+    }
+    Button b = new Button(label, new Action()
     {
 
       @Override
@@ -550,7 +561,7 @@ public class SpendenbescheinigungControl extends AbstractControl
       {
         try
         {
-          generiereSpendenbescheinigungIndividuell();
+          generiereSpendenbescheinigungIndividuell(adressblatt);
         }
         catch (RemoteException e)
         {
@@ -569,7 +580,7 @@ public class SpendenbescheinigungControl extends AbstractControl
     return b;
   }
 
-  private void generiereSpendenbescheinigungIndividuell() throws IOException
+  private void generiereSpendenbescheinigungIndividuell(boolean adressblatt) throws IOException
   {
     Spendenbescheinigung spb = getSpendenbescheinigung();
     if (spb.isNewObject())
@@ -628,18 +639,31 @@ public class SpendenbescheinigungControl extends AbstractControl
     map = new AllgemeineMap().getMap(map);
     FormularAufbereitung fa = new FormularAufbereitung(file);
     fa.writeForm(fo, map);
+    // Brieffenster drucken bei Spendenbescheinigung
+    if (adressblatt)
+    {
+      fa.printAdressfenster(getAussteller(), 
+          (String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()));
+    }
     fa.showFormular();
 
+  }
+  
+  private String getAussteller() throws RemoteException
+  {
+    return Einstellungen.getEinstellung().getName() + ", "
+        + Einstellungen.getEinstellung().getStrasse() + ", "
+        + Einstellungen.getEinstellung().getPlz() + " "
+        + Einstellungen.getEinstellung().getOrt();
   }
 
   public Part getSpendenbescheinigungList() throws RemoteException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Spendenbescheinigung> spendenbescheinigungen = service
-        .createList(Spendenbescheinigung.class);
-    spendenbescheinigungen.setOrder("ORDER BY bescheinigungsdatum desc");
-
-    spbList = new TablePart(spendenbescheinigungen,
+    if (spbList != null)
+    {
+      return spbList;
+    }
+    spbList = new TablePart(getSpendenbescheinigungen(),
         new SpendenbescheinigungAction(Spendenart.SACHSPENDE));
     spbList.addColumn("Bescheinigungsdatum", "bescheinigungsdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -658,21 +682,117 @@ public class SpendenbescheinigungControl extends AbstractControl
     spbList.setRememberColWidths(true);
     spbList.setContextMenu(new SpendenbescheinigungMenu());
     spbList.setRememberOrder(true);
-    spbList.removeFeature(FeatureSummary.class);
+    spbList.addFeature(new FeatureSummary());
     spbList.setMulti(true);
     return spbList;
   }
 
-  public void refreshTable() throws RemoteException
+  public void TabRefresh()
   {
-    spbList.removeAll();
-    DBIterator<Spendenbescheinigung> spendenbescheinigungen = Einstellungen
-        .getDBService().createList(Spendenbescheinigung.class);
-    spendenbescheinigungen.setOrder("ORDER BY bescheinigungsdatum desc");
-    while (spendenbescheinigungen.hasNext())
+    if (spbList != null)
     {
-      spbList.addItem(spendenbescheinigungen.next());
+      try
+      {
+        spbList.removeAll();
+        for (Spendenbescheinigung spb : getSpendenbescheinigungen())
+        {
+          spbList.addItem(spb);
+        }
+      }
+      catch (RemoteException e1)
+      {
+        Logger.error("Fehler", e1);
+      }
     }
   }
 
+  @SuppressWarnings("unchecked")
+  private ArrayList<Spendenbescheinigung> getSpendenbescheinigungen() throws RemoteException
+  {
+    final DBService service = Einstellungen.getDBService();
+    ArrayList<Object> bedingungen = new ArrayList<>();
+    and = false;
+    
+    sql = "select spendenbescheinigung.*  from spendenbescheinigung ";
+    sql +=  "left join mitglied on (spendenbescheinigung.mitglied = mitglied.id) ";
+    
+    if (isSuchnameAktiv() && getSuchname().getValue() != null)
+    {
+      String tmpSuchname = (String) getSuchname().getValue();
+      if (tmpSuchname.length() > 0)
+      {
+        addCondition("(lower(zeile2) like ?)");
+        bedingungen.add("%" + tmpSuchname.toLowerCase() + "%");
+      }
+    }
+    if (isMailauswahlAktiv())
+    {
+      int mailauswahl = (Integer) getMailauswahl().getValue();
+      if (mailauswahl == MailAuswertungInput.OHNE)
+      {
+        addCondition("(email is null or length(email) = 0)");
+      }
+      if (mailauswahl == MailAuswertungInput.MIT)
+      {
+        addCondition("(email is  not null and length(email) > 0)");
+      }
+    }
+    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
+    {
+      addCondition("bescheinigungsdatum >= ?");
+      Date d = (Date) getDatumvon().getValue();
+      bedingungen.add(new java.sql.Date(d.getTime()));
+    }
+    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
+    {
+      addCondition("bescheinigungsdatum <= ?");
+      Date d = (Date) getDatumbis().getValue();
+      bedingungen.add(new java.sql.Date(d.getTime()));
+    }
+    if (isEingabedatumvonAktiv() && getEingabedatumvon().getValue() != null)
+    {
+      addCondition("spendedatum >= ?");
+      Date d = (Date) getEingabedatumvon().getValue();
+      bedingungen.add(new java.sql.Date(d.getTime()));
+    }
+    if (isEingabedatumbisAktiv() && getEingabedatumbis().getValue() != null)
+    {
+      addCondition("spendedatum <= ?");
+      Date d = (Date) getEingabedatumbis().getValue();
+      bedingungen.add(new java.sql.Date(d.getTime()));
+    }
+    sql += " ORDER BY bescheinigungsdatum desc ";
+    
+    ResultSetExtractor rs = new ResultSetExtractor()
+    {
+      @Override
+      public Object extract(ResultSet rs) throws RemoteException, SQLException
+      {
+        ArrayList<Spendenbescheinigung> list = new ArrayList<>();
+        while (rs.next())
+        {
+          list.add(
+              (Spendenbescheinigung) service.createObject(Spendenbescheinigung.class, rs.getString(1)));
+        }
+        return list;
+      }
+    };
+
+    return (ArrayList<Spendenbescheinigung>) service.execute(sql, bedingungen.toArray(),
+        rs);
+  }
+  
+  private void addCondition(String condition)
+  {
+    if (and)
+    {
+      sql += " AND ";
+    }
+    else
+    {
+      sql += "where ";
+    }
+    and = true;
+    sql += condition;
+  }
 }

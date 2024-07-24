@@ -1986,31 +1986,8 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("qrcodeintro", intro);
   }
-
-  @Override
-  public Boolean getSpendenbescheinigungadresse() throws RemoteException
-  {
-    return Util.getBoolean(getAttribute("spendenbescheinigungadresse"));
-  }
-
-  @Override
-  public void setSpendenbescheinigungadresse(Boolean spendenbescheinigungadresse) throws RemoteException
-  {
-    setAttribute("spendenbescheinigungadresse", spendenbescheinigungadresse);
-  }
   
-  @Override
-  public Boolean getSpendenbescheinigungadressem() throws RemoteException
-  {
-    return Util.getBoolean(getAttribute("spendenbescheinigungadressem"));
-  }
-
-  @Override
-  public void setSpendenbescheinigungadressem(Boolean spendenbescheinigungadressem) throws RemoteException
-  {
-    setAttribute("spendenbescheinigungadressem", spendenbescheinigungadressem);
-  }
-  
+  @Override 
   public Boolean getUnterschriftdrucken() throws RemoteException
   {
     return Util.getBoolean(getAttribute("unterschriftdrucken"));
@@ -2032,5 +2009,17 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   public void setUnterschrift(byte[] unterschrift) throws RemoteException
   {
     setAttribute("unterschrift", unterschrift);
+  }
+  
+  @Override
+  public Boolean getAnhangSpeichern() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("anhangspeichern"));
+  }
+
+  @Override
+  public void setAnhangSpeichern(Boolean anhangspeichern) throws RemoteException
+  {
+    setAttribute("anhangspeichern", anhangspeichern);
   }
 }

@@ -39,11 +39,15 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
   private MailVorlage retval;
   
   private boolean abort = true;
+  
+  private boolean mailsenden = true;
 
-  public MailVorlagenAuswahlDialog(MailVorlageControl control, int position)
+  public MailVorlagenAuswahlDialog(MailVorlageControl control, int position,
+      boolean mailsenden)
   {
     super(position);
     this.control = control;
+    this.mailsenden = mailsenden;
     setTitle("Mail-Vorlage");
     setSize(550, 450);
   }
@@ -75,16 +79,19 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
       }
     }, null, true, "ok.png");
     
-    b.addButton("Ohne Mail-Vorlage", new Action()
+    if (mailsenden)
     {
-
-      @Override
-      public void handleAction(Object context)
+      b.addButton("Ohne Mail-Vorlage", new Action()
       {
-        abort = false;
-        close();
-      }
-    }, null, true, "go-next.png");
+
+        @Override
+        public void handleAction(Object context)
+        {
+          abort = false;
+          close();
+        }
+      }, null, true, "go-next.png");
+    }
     
     b.addButton("Abbrechen", new Action()
     {

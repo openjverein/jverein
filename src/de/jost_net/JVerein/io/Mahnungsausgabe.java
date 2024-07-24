@@ -51,7 +51,7 @@ public class Mahnungsausgabe extends AbstractMitgliedskontoDokument
     else
     {
       @SuppressWarnings("rawtypes")
-      GenericIterator it = control.getMitgliedskontoIterator();
+      GenericIterator it = control.getMitgliedskontoIterator(false);
       Mitgliedskonto[] mk = new Mitgliedskonto[it.size()];
       int i = 0;
       while (it.hasNext())

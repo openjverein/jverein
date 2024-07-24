@@ -47,7 +47,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
@@ -61,7 +60,7 @@ public class SpendenbescheinigungPrintAction implements Action
 
   private boolean standardPdf = true;
   
-  private boolean mailversand = false;
+  private boolean adressblatt = false;
 
   private String fileName = null;
 
@@ -84,16 +83,16 @@ public class SpendenbescheinigungPrintAction implements Action
    * 
    * @param standard
    *          true=Standard-Dokument, false=individuelles Dokument
-   * @param mailversand
-   *          true=für Mailversand, false=für Briefversand
+   * @param adressblatt
+   *          true=für Adressblatt drucken, false=für kein Adressblatt drucken
    */
-  public SpendenbescheinigungPrintAction(boolean standard, boolean mailversand)
+  public SpendenbescheinigungPrintAction(boolean standard, boolean adressblatt)
   {
     super();
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
     standardPdf = standard;
-    this.mailversand = mailversand;
+    this.adressblatt = adressblatt;
   }
 
   /**
@@ -102,19 +101,19 @@ public class SpendenbescheinigungPrintAction implements Action
    * 
    * @param standard
    *          true=Standard-Dokument, false=individuelles Dokument
-   * @param mailversand
-   *          true=für Mailversand, false=für Briefversand
+   * @param adressblatt
+   *          true=Standard-Dokument, false=individuelles Dokument
    * @param fileName
    *          Dateiname als Vorgabe inklusive Pfad
    */
-  public SpendenbescheinigungPrintAction(boolean standard, boolean mailversand, String fileName)
+  public SpendenbescheinigungPrintAction(boolean standard, boolean adressblatt, String fileName)
   {
     super();
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
     standardPdf = standard;
     this.fileName = fileName;
-    this.mailversand = mailversand;
+    this.adressblatt = adressblatt;
   }
 
   /**
@@ -172,9 +171,8 @@ public class SpendenbescheinigungPrintAction implements Action
           Formular spendeformular = spb.getFormular();
           if (spendeformular == null)
           {
-            GUI.getStatusBar().setErrorText(
-                "Nicht alle Spendenbescheinigungen haben ein gültiges Formular!");
-            return;
+            String text = "Nicht alle Spendenbescheinigungen haben ein gültiges Formular!";
+            throw new ApplicationException(text);
           }
         }
       }
@@ -225,7 +223,7 @@ public class SpendenbescheinigungPrintAction implements Action
           }
           else
           {
-            generiereSpendenbescheinigungStandardAb2014(spb, fileName);
+            generiereSpendenbescheinigungStandardAb2014(spb, fileName, adressblatt);
           }
         }
         else
@@ -236,6 +234,12 @@ public class SpendenbescheinigungPrintAction implements Action
           map = new AllgemeineMap().getMap(map);
           FormularAufbereitung fa = new FormularAufbereitung(file);
           fa.writeForm(fo, map);
+          // Brieffenster drucken bei Spendenbescheinigung
+          if (adressblatt)
+          {
+            fa.printAdressfenster(getAussteller(), 
+                (String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()));
+          }
           fa.closeFormular();
         }
       }
@@ -246,8 +250,7 @@ public class SpendenbescheinigungPrintAction implements Action
     {
       String fehler = "Fehler beim Aufbereiten der Spendenbescheinigung ("
           + e.getMessage() + ")";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
     }
   }
 
@@ -939,7 +942,7 @@ public class SpendenbescheinigungPrintAction implements Action
    * @throws DocumentException
    */
   private void generiereSpendenbescheinigungStandardAb2014(
-      Spendenbescheinigung spb, String fileName)
+      Spendenbescheinigung spb, String fileName, boolean adressblatt)
       throws IOException, DocumentException
   {
     final File file = new File(fileName);
@@ -1300,12 +1303,7 @@ public class SpendenbescheinigungPrintAction implements Action
       rpt.closeTable();      
     }
     
-    String email = spb.getMitglied().getEmail();
-    if ( (mailversand == false && Einstellungen.getEinstellung().getSpendenbescheinigungadresse())
-        || (mailversand == true && Einstellungen.getEinstellung().getSpendenbescheinigungadresse() 
-            && (email == null || email.isEmpty()))
-        || (mailversand == true && Einstellungen.getEinstellung().getSpendenbescheinigungadressem() 
-             && email != null && !email.isEmpty()))
+    if (adressblatt)
     {
       // Neue Seite mit Anschrift für Fenster in querem Brief
       rpt.newPage();
