@@ -19,12 +19,11 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.LehrgangControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.util.ApplicationException;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class LehrgaengeListeView extends AbstractView
 {
@@ -37,21 +36,20 @@ public class LehrgaengeListeView extends AbstractView
     final LehrgangControl control = new LehrgangControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addLabelPair("Lehrgangsart", control.getSuchLehrgangsart());
-    group.addLabelPair("Datum von", control.getDatumvon());
-    group.addLabelPair("Datum bis", control.getDatumbis());
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getSuchname());
+    left.addInput(control.getSuchLehrgangsart());
     
-    ButtonArea button1 = new ButtonArea();
-    Button suchen1 = new Button("Suchen", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        control.refresh();
-      }
-    }, null, true, "search.png");
-    button1.addButton(suchen1);
-    group.addButtonArea(button1);
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getDatumvon());
+    right.addInput(control.getDatumbis());
+    
+    ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSuchenButton());
+    group.addButtonArea(fbuttons);
 
     control.getLehrgaengeList().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();

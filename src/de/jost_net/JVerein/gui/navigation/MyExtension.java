@@ -61,6 +61,7 @@ import de.jost_net.JVerein.gui.action.KontenrahmenExportAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenImportAction;
 import de.jost_net.JVerein.gui.action.KontoListAction;
 import de.jost_net.JVerein.gui.action.KursteilnehmerSucheAction;
+import de.jost_net.JVerein.gui.action.LastschriftListAction;
 import de.jost_net.JVerein.gui.action.LehrgaengeListeAction;
 import de.jost_net.JVerein.gui.action.LehrgangsartListeAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
@@ -166,6 +167,8 @@ public class MyExtension implements Extension
           new AbrechnungSEPAAction(), "calculator.png"));
       abrechnung.addChild(new MyItem(abrechnung, "Abrechnungslauf",
           new AbrechnunslaufListAction(), "calculator.png"));
+      abrechnung.addChild(new MyItem(abrechnung, "Lastschriften",
+          new LastschriftListAction(), "file-invoice.png"));
       jverein.addChild(abrechnung);
 
       NavigationItem auswertung = null;
@@ -329,8 +332,6 @@ public class MyExtension implements Extension
       jverein.addChild(administration);
       jverein.addChild(new MyItem(jverein, "Dokumentation",
           new DokumentationAction(), "question-circle.png"));
-      jverein.addChild(new MyItem(jverein, "Spende für JVerein",
-          new SpendenAction(), "coins.png"));
       jverein.addChild(
           new MyItem(jverein, "Über", new AboutAction(), "gtk-info.png"));
     }

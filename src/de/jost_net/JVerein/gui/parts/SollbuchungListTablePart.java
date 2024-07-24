@@ -21,26 +21,28 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 
-public class BuchungListTablePart extends TablePart
+public class SollbuchungListTablePart extends TablePart
 {
 
-  public BuchungListTablePart(Action action)
+  public SollbuchungListTablePart(Action action)
   {
     super(action);
   }
 
-  public BuchungListTablePart(List<Buchung> list, Action action)
+  @SuppressWarnings("rawtypes")
+  public SollbuchungListTablePart(GenericIterator mitgliedskonten, Action action)
   {
-    super(list, action);
+    super(mitgliedskonten, action);
   }
-  
+
   /**
    * Belegt den Context mit dem anzuzeigenden Text.
    * Ersetzt getSummary() welches deprecated ist.
@@ -61,7 +63,7 @@ public class BuchungListTablePart extends TablePart
         summary = new String(l.size() + " Datensätze");
         for (int i = 0; i < l.size(); i++)
         {
-          Buchung b = (Buchung) l.get(i);
+          Mitgliedskonto b = (Mitgliedskonto) l.get(i);
           sumBetrag += b.getBetrag();
         }
         summary += " / " + "Gesamtbetrag:" + " "
