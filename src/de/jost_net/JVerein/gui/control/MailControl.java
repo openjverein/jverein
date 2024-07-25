@@ -652,18 +652,20 @@ public class MailControl extends FilterControl
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Mail> mails = service.createList(Mail.class);
-    mails.join("mailempfaenger");
-    mails.addFilter("mailempfaenger.mail = mail.id");
-    mails.join("mitglied");
-    mails.addFilter("mitglied.id = mailempfaenger.mitglied");
+
     
     if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) getSuchname().getValue();
       if (tmpSuchname.length() > 0)
       {
-        mails.addFilter("(lower(betreff) like ?)", 
-            new Object[] { "%" + tmpSuchname.toLowerCase() + "%" });
+        mails.join("mailempfaenger");
+        mails.addFilter("mailempfaenger.mail = mail.id");
+        mails.join("mitglied");
+        mails.addFilter("mitglied.id = mailempfaenger.mitglied");
+        mails.addFilter("(lower(name) like ? or lower(vorname) like ?) ", 
+            new Object[] { "%" + tmpSuchname.toLowerCase() + "%",
+                "%" + tmpSuchname.toLowerCase() + "%"});
       }
     }
     if (isSuchtextAktiv() && getSuchtext().getValue() != null)
