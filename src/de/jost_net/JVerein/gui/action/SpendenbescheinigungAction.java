@@ -40,19 +40,13 @@ import de.willuhn.util.ApplicationException;
 
 public class SpendenbescheinigungAction implements Action
 {
-  private Spendenstyp spendentyp = Spendenstyp.SONSTIG;
+  private int spendenart = Spendenart.SONSTIG;
   
   private Spendenbescheinigung spb = null;
   
-  public enum Spendenstyp {
-    SONSTIG,
-    GELDSPENDE,
-    SACHSPENDE,
-  }
-  
-  public SpendenbescheinigungAction(Spendenstyp spendentyp)
+  public SpendenbescheinigungAction(int spendenart)
   {
-    this.spendentyp = spendentyp;
+    this.spendenart = spendenart;
   }
 
   @Override
@@ -68,18 +62,16 @@ public class SpendenbescheinigungAction implements Action
       {
         spb = (Spendenbescheinigung) Einstellungen.getDBService()
             .createObject(Spendenbescheinigung.class, null);
-        switch (spendentyp)
+        spb.setSpendenart(spendenart);
+        switch (spendenart)
         {
-          case GELDSPENDE:
-            spb.setSpendenart(Spendenart.GELDSPENDE);
+          case Spendenart.GELDSPENDE:
             spb.setErsatzAufwendungen(false);
             break;
-          case SACHSPENDE:
-            spb.setSpendenart(Spendenart.SACHSPENDE);
+          case Spendenart.SACHSPENDE:
             spb.setErsatzAufwendungen(false);
             break;
-          case SONSTIG:
-            spb.setSpendenart(Spendenart.GELDSPENDE);
+          case Spendenart.SONSTIG:
             spb.setErsatzAufwendungen(true);
             break;
         }
@@ -90,7 +82,7 @@ public class SpendenbescheinigungAction implements Action
         {
           Mitglied m = (Mitglied) context;
           adressaufbereitung(m, spb);
-          if (spendentyp == Spendenstyp.GELDSPENDE)
+          if (spendenart == Spendenart.GELDSPENDE)
           {
             handleMitglied(m);
           }
@@ -124,7 +116,7 @@ public class SpendenbescheinigungAction implements Action
           }
           else if (mkn.getType() == MitgliedskontoNode.MITGLIED)
           {
-            if (spendentyp == Spendenstyp.GELDSPENDE)
+            if (spendenart == Spendenart.GELDSPENDE)
             {
               handleMitglied(spb.getMitglied());
             }

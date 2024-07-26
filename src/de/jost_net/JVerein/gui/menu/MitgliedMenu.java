@@ -37,10 +37,10 @@ import de.jost_net.JVerein.gui.action.MitgliedVCardQRCodeAction;
 import de.jost_net.JVerein.gui.action.MitgliedZusatzbetraegeZuordnungAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction.Spendenstyp;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
@@ -201,11 +201,11 @@ public class MitgliedMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Kontoauszug", new KontoauszugAction(),
         "file-invoice.png"));
     addItem(new CheckedSingleContextMenuItem("Geldspendenbescheinigung",
-        new SpendenbescheinigungAction(Spendenstyp.GELDSPENDE), "file-invoice.png"));
+        new SpendenbescheinigungAction(Spendenart.GELDSPENDE), "file-invoice.png"));
     addItem(new CheckedSingleContextMenuItem("Sachspendenbescheinigung",
-        new SpendenbescheinigungAction(Spendenstyp.SACHSPENDE), "file-invoice.png"));
+        new SpendenbescheinigungAction(Spendenart.SACHSPENDE), "file-invoice.png"));
     addItem(new CheckedSingleContextMenuItem("Spendenbescheinigung (Sonstig)",
-        new SpendenbescheinigungAction(Spendenstyp.SONSTIG), "file-invoice.png"));
+        new SpendenbescheinigungAction(Spendenart.SONSTIG), "file-invoice.png"));
     addItem(new CheckedContextMenuItem("Personalbogen",
         new PersonalbogenAction(), "file-invoice.png"));
     addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift ...",

@@ -18,8 +18,8 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction.Spendenstyp;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
+import de.jost_net.JVerein.keys.Spendenart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -83,7 +83,8 @@ public class SpendenbescheinigungView extends AbstractView
     /*
      * Betrag kann bei Geldspenden nicht geändert werden
      */
-    if (control.getSpendenbescheinigung().getAutocreate())
+    if (control.getSpendenbescheinigung().getSpendenart()
+        == Spendenart.GELDSPENDE)
     {
       control.getBetrag().setEnabled(false);
       // Buchnungen nur für Geldspenden
@@ -101,9 +102,9 @@ public class SpendenbescheinigungView extends AbstractView
     buttons.addButton(control.getPDFIndividuellButton(false));
     buttons.addButton(control.getPDFIndividuellButton(true));
     buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(
-        Spendenstyp.SACHSPENDE), null, false, "document-new.png");
+        Spendenart.SACHSPENDE), null, false, "document-new.png");
     buttons.addButton("Neu (Spende (Sonstig))", new SpendenbescheinigungAction(
-        Spendenstyp.SONSTIG), null, false, "document-new.png");
+        Spendenart.SONSTIG), null, false, "document-new.png");
     buttons.addButton("Speichern", new Action()
     {
 

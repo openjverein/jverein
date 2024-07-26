@@ -18,9 +18,9 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction.Spendenstyp;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAutoNeuAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
+import de.jost_net.JVerein.keys.Spendenart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -63,10 +63,10 @@ public class SpendenbescheinigungListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
-    buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(Spendenstyp.SACHSPENDE), null, false,
-        "document-new.png");
-    buttons.addButton("Neu (Spende (Sonstig))", new SpendenbescheinigungAction(Spendenstyp.SONSTIG), null, false,
-        "document-new.png");
+    buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(
+        Spendenart.SACHSPENDE), null, false, "document-new.png");
+    buttons.addButton("Neu (Spende (Sonstig))", new SpendenbescheinigungAction(
+        Spendenart.SONSTIG), null, false, "document-new.png");
     buttons.addButton("Neu (Geldspenden)", new SpendenbescheinigungAutoNeuAction(), null, false,
         "document-new.png");
     buttons.paint(this.getParent());

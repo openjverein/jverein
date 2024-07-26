@@ -24,8 +24,8 @@ import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungLoeschenAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungNeuAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoIstbuchungLoesenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction.Spendenstyp;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
+import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
@@ -56,11 +56,11 @@ public class MitgliedskontoMenu extends ContextMenu
         new MitgliedskontoIstbuchungLoesenAction(), "unlocked.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SpendenbescheinigungItem("Geldspendenbescheinigung",
-        new SpendenbescheinigungAction(Spendenstyp.GELDSPENDE), "file-invoice.png"));
+        new SpendenbescheinigungAction(Spendenart.GELDSPENDE), "file-invoice.png"));
     addItem(new MitgliedItem("Sachspendenbescheinigung",
-        new SpendenbescheinigungAction(Spendenstyp.SACHSPENDE), "file-invoice.png"));
+        new SpendenbescheinigungAction(Spendenart.SACHSPENDE), "file-invoice.png"));
     addItem(new MitgliedItem("Spendenbescheinigung (Sonstig)",
-        new SpendenbescheinigungAction(Spendenstyp.SONSTIG), "file-invoice.png"));
+        new SpendenbescheinigungAction(Spendenart.SONSTIG), "file-invoice.png"));
   }
 
   private static class MitgliedItem extends CheckedContextMenuItem

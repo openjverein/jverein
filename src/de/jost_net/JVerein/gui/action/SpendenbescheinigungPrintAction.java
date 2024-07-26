@@ -313,6 +313,7 @@ public class SpendenbescheinigungPrintAction implements Action
     switch (spb.getSpendenart())
     {
       case Spendenart.GELDSPENDE:
+      case Spendenart.SONSTIG:
         rpt.addHeaderColumn("Betrag der Zuwendung -in Ziffern-",
             Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
         break;
@@ -626,6 +627,7 @@ public class SpendenbescheinigungPrintAction implements Action
     switch (spb.getSpendenart())
     {
       case Spendenart.GELDSPENDE:
+      case Spendenart.SONSTIG:
         rpt.addHeaderColumn("Betrag der Zuwendung -in Ziffern-",
             Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
         break;
@@ -782,7 +784,8 @@ public class SpendenbescheinigungPrintAction implements Action
     rpt.add("\nEs wird bestätigt, dass die Zuwendung nur zur "
         + Einstellungen.getEinstellung().getBeguenstigterzweck()
         + " verwendet wird.\n", 8);
-    if (spb.getSpendenart() == Spendenart.GELDSPENDE)
+    if (spb.getSpendenart() == Spendenart.GELDSPENDE ||
+        spb.getSpendenart() == Spendenart.SONSTIG)
     {
       char mitgliedBetraege = (char) 113; // box leer
       if (!Einstellungen.getEinstellung().getMitgliedsbetraege())
@@ -990,6 +993,7 @@ public class SpendenbescheinigungPrintAction implements Action
     switch (spb.getSpendenart())
     {
       case Spendenart.GELDSPENDE:
+      case Spendenart.SONSTIG:
         rpt.addHeaderColumn("Betrag der Zuwendung -in Ziffern-",
             Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
         break;
@@ -1155,7 +1159,8 @@ public class SpendenbescheinigungPrintAction implements Action
     rpt.addLight("\nEs wird bestätigt, dass die Zuwendung nur zur "
         + Einstellungen.getEinstellung().getBeguenstigterzweck()
         + " verwendet wird.\n", 8);
-    if (spb.getSpendenart() == Spendenart.GELDSPENDE)
+    if (spb.getSpendenart() == Spendenart.GELDSPENDE ||
+        spb.getSpendenart() == Spendenart.SONSTIG)
     {
       char mitgliedBetraege = (char) 113; // box leer
       if (!Einstellungen.getEinstellung().getMitgliedsbetraege())
