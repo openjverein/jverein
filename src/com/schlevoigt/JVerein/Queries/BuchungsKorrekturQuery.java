@@ -40,23 +40,26 @@ public class BuchungsKorrekturQuery {
 
 		DBIterator<Jahresabschluss> it1 = service.createList(Jahresabschluss.class);
 		it1.setOrder("ORDER BY bis DESC");
-		Date bis =  ((Jahresabschluss) it1.next()).getBis();
-		
+		Date bis = null;
+		if(it1.hasNext())
+		  bis =  ((Jahresabschluss) it1.next()).getBis();
+
 		DBIterator<Buchung> it = service.createList(Buchung.class);
-		it.addFilter("datum > ?", new java.sql.Date(bis.getTime()));
+		if(bis != null)
+		  it.addFilter("datum > ?", new java.sql.Date(bis.getTime()));
 		Object[] keys = { "%EREF%", "%KREF%", "%MREF%", "%CRED%",
 		    "%DBET%", "%SVWZ%", "%ABWA%","%IBAN+%","%IBAN:%", "%BIC%"};
 		it.addFilter("(upper(zweck) like ? or "
-		            + "upper(zweck) like ? or "
-		            + "upper(zweck) like ? or "
-		            + "upper(zweck) like ? or "
-		            + "upper(zweck) like ? or "
-		            + "upper(zweck) like ? or "
-		            + "upper(zweck) like ? or "
-		            + "upper(zweck) like ? or "
-		            + "upper(zweck) like ? or "
-		            + "upper(zweck) like ?)", keys);
-		
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ?)", keys);
+
 		it.setOrder("ORDER BY datum");
 
 		this.ergebnis = it != null ? PseudoIterator.asList(it) : null;
