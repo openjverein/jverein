@@ -459,7 +459,7 @@ public class MitgliedskontoControl extends AbstractControl
       return differenz;
     }
     DIFFERENZ defaultwert = DIFFERENZ
-        .fromString(settings.getString("differenz", DIFFERENZ.EGAL.toString()));
+        .fromString(settings.getString(datumverwendung + "differenz", DIFFERENZ.EGAL.toString()));
     return getDifferenz(defaultwert);
   }
 
