@@ -17,8 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.MailDetailAction;
-import de.jost_net.JVerein.gui.control.MailControl;
+import de.jost_net.JVerein.gui.control.LastschriftControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -26,43 +25,38 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class MailUebersichtView extends AbstractView
+public class LastschriftListeView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Mails");
+    GUI.getView().setTitle("Lastschriften");
 
-    MailControl control = new MailControl(this);
+    LastschriftControl control = new LastschriftControl(this);
     
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Mail Empfänger", control.getSuchname());
-    left.addLabelPair("Betreff", control.getSuchtext());
-    
-    SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    middle.addLabelPair("Bearbeitung von", control.getEingabedatumvon());
-    middle.addLabelPair("Bearbeitung bis", control.getEingabedatumbis());
-    
+    left.addInput(control.getSuchname());
+    left.addLabelPair("Zweck", control.getSuchtext());
+    left.addInput(control.getMitgliedArt());
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addLabelPair("Versand von", control.getDatumvon());
-    right.addLabelPair("Versand bis", control.getDatumbis());
+    right.addLabelPair("Fälligkeit von", control.getDatumvon());
+    right.addLabelPair("Fälligkeit bis", control.getDatumbis());
     
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-
-    control.getMailList().paint(this.getParent());
+    
+    control.getLastschriftList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MAIL, false, "question-circle.png");
-    buttons.addButton("Neu", new MailDetailAction(), null, false,
-        "document-new.png");
+        DokumentationUtil.LASTSCHRIFT, false, "question-circle.png");
     buttons.paint(this.getParent());
   }
 }

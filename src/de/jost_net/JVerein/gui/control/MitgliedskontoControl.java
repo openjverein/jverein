@@ -37,6 +37,7 @@ import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
+import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.io.Kontoauszug;
 import de.jost_net.JVerein.io.Mahnungsausgabe;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
@@ -495,7 +496,7 @@ public class MitgliedskontoControl extends FilterControl
     GenericIterator mitgliedskonten = getMitgliedskontoIterator(umwandeln);
     if (mitgliedskontoList == null)
     {
-      mitgliedskontoList = new TablePart(mitgliedskonten, action);
+      mitgliedskontoList = new SollbuchungListTablePart(mitgliedskonten, action);
       mitgliedskontoList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       mitgliedskontoList.addColumn("Abrechnungslauf", "abrechnungslauf");
