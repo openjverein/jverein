@@ -17,8 +17,8 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction;
+import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.menu.Mitgliedskonto2Menu;
@@ -59,7 +59,7 @@ public class SollbuchungListeView extends AbstractView
     button.addButton(suchen);
     group.addButtonArea(button);
 
-    control.getMitgliedskontoList(new MitgliedDetailAction(),
+    control.getMitgliedskontoList(new MitgliedskontoSollbuchungEditAction(),
         new Mitgliedskonto2Menu(), false).paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
