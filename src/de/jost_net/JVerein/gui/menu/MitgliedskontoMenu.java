@@ -51,7 +51,7 @@ public class MitgliedskontoMenu extends ContextMenu
     addItem(new SollItem("Sollbuchung bearbeiten",
         new MitgliedskontoSollbuchungEditAction(), "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
-        new MitgliedskontoSollbuchungLoeschenAction(), "list-remove.png"));
+        new MitgliedskontoSollbuchungLoeschenAction(), "user-trash-full.png"));
     addItem(new SollMitIstItem("Istbuchung von Sollbuchung lösen",
         new MitgliedskontoIstbuchungLoesenAction(), "unlocked.png"));
     addItem(ContextMenuItem.SEPARATOR);

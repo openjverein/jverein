@@ -17,10 +17,23 @@
 
 package de.jost_net.JVerein.gui.menu;
 
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoMahnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoRechnungAction;
+import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungEditAction;
+import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungLoeschenAction;
+import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.parts.ContextMenuItem;
+import de.willuhn.logging.Logger;
 
 /**
  * Kontext-Menu zu den Mitgliedskonten.
@@ -33,9 +46,50 @@ public class Mitgliedskonto2Menu extends ContextMenu
    */
   public Mitgliedskonto2Menu()
   {
-    addItem(new CheckedContextMenuItem("Rechnung...",
+    addItem(new CheckedSingleContextMenuItem("Sollbuchung bearbeiten",
+        new MitgliedskontoSollbuchungEditAction(), "text-x-generic.png"));
+    addItem(new SollOhneIstItem("Sollbuchung löschen",
+        new MitgliedskontoSollbuchungLoeschenAction(), "user-trash-full.png"));
+    addItem(ContextMenuItem.SEPARATOR);
+    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+        new MitgliedDetailAction(), "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("Rechnung erstellen",
         new MitgliedskontoRechnungAction(), "file-invoice.png"));
-    addItem(new CheckedContextMenuItem("Mahnung...",
+    addItem(new CheckedContextMenuItem("Mahnung erstellen",
         new MitgliedskontoMahnungAction(), "file-invoice.png"));
+  }
+
+  private static class SollOhneIstItem extends CheckedContextMenuItem
+  {
+
+    private SollOhneIstItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof Mitgliedskonto)
+      {
+        Mitgliedskonto mk = (Mitgliedskonto) o;
+        DBIterator<Buchung> it;
+        try
+        {
+          it = Einstellungen.getDBService().createList(Buchung.class);
+          it.addFilter("mitgliedskonto = ?", new Object[] { mk.getID() });
+          if (it.size() == 0)
+          {
+            return true;
+          }
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return false;
+      }
+      return false;
+    }
   }
 }
