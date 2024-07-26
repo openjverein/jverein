@@ -47,6 +47,10 @@ public class KontoauszugView extends AbstractView
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
     
+    SimpleContainer cont1 = new SimpleContainer(getParent(), false);
+    cont1.addHeadline("Info");
+    cont1.addInput(control.getInfo());
+    
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Parameter");
     

@@ -158,6 +158,9 @@ public class MitgliedskontoControl extends FilterControl
   private Action action;
   
   private boolean umwandeln;
+  
+  // KontoauszugView
+  private TextAreaInput  info;
 
   public MitgliedskontoControl(AbstractView view)
   {
@@ -1175,5 +1178,53 @@ public class MitgliedskontoControl extends FilterControl
       });
     }
   }
+  
+  public TextAreaInput getInfo() throws RemoteException
+  {
+    if (info != null)
+    {
+      return info;
+    }
+    info = new TextAreaInput(getInfoText(getCurrentObject()), 10000);
+    info.setHeight(100);
+    info.setEnabled(false);
+    return info;
+  }
 
+  public String getInfoText(Object mitgliedArray)
+  {
+    Mitglied[] mitglieder = null;
+    if (mitgliedArray instanceof Mitglied)
+    {
+      mitglieder = new Mitglied[] { (Mitglied) mitgliedArray };
+    }
+    else if (mitgliedArray instanceof Mitglied[])
+    {
+      mitglieder = (Mitglied[]) mitgliedArray;
+    }
+    else
+    {
+      return "";
+    }
+    
+    String text = "Es wurden " + mitglieder.length + 
+        " Mitglieder ausgewählt"
+        + "\nFolgende Mitglieder haben keine Mailadresse:";
+    try
+    {
+      for (Mitglied m: mitglieder)
+      {
+        if ( m.getEmail() == null || m.getEmail().isEmpty())
+        {
+          text = text + "\n - " + m.getName()
+              + ", " + m.getVorname();
+        }
+      }
+    }
+    catch (Exception ex)
+    {
+      GUI.getStatusBar().setErrorText("Fehler beim Ermitteln der Mitglieder");
+    }
+    return text;
+  }
 }

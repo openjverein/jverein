@@ -27,6 +27,7 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 
 public class Rechnungsausgabe extends AbstractMitgliedskontoDokument
@@ -85,6 +86,13 @@ public class Rechnungsausgabe extends AbstractMitgliedskontoDokument
         i++;
       }
       mks = getRechnungsempfaenger(mk);
+    }
+    if (mks.size() == 0)
+    {
+      GUI.getStatusBar().setErrorText(
+          "Keine passenden Sollbuchungen gefunden.");
+      file.delete();
+      return;
     }
     aufbereitung(formular);
     try

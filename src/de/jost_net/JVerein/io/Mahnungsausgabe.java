@@ -25,6 +25,7 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.datasource.GenericIterator;
+import de.willuhn.jameica.gui.GUI;
 
 public class Mahnungsausgabe extends AbstractMitgliedskontoDokument
 {
@@ -60,6 +61,13 @@ public class Mahnungsausgabe extends AbstractMitgliedskontoDokument
         i++;
       }
       mks = getRechnungsempfaenger(mk);
+    }
+    if (mks.size() == 0)
+    {
+      GUI.getStatusBar().setErrorText(
+          "Keine passenden Sollbuchungen gefunden.");
+      file.delete();
+      return;
     }
     aufbereitung(formular);
     try

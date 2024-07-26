@@ -83,6 +83,7 @@ public class Kontoauszug
       return;
     }
     
+    int anzahl = 0;
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
       case DRUCK:
@@ -94,7 +95,15 @@ public class Kontoauszug
         rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40);
         for (Mitglied mg : mitglieder)
         {
-          generiereMitglied(mg, control);
+          if (generiereMitglied(mg, control))
+              anzahl++;
+        }
+        if (anzahl == 0)
+        {
+          GUI.getStatusBar().setErrorText(
+              "Kein Mitglied erfüllt das Differenz Kriterium.");
+          file.delete();
+          return;
         }
         rpt.close();
         zeigeDokument();
@@ -119,6 +128,7 @@ public class Kontoauszug
             continue;
           }
           rpt.close();
+          anzahl++;
           zos.putNextEntry(new ZipEntry(getDateiname(mg) + ".pdf"));
           FileInputStream in = new FileInputStream(f);
           // buffer size
@@ -131,6 +141,13 @@ public class Kontoauszug
           in.close();
         }
         zos.close();
+        if (anzahl == 0)
+        {
+          GUI.getStatusBar().setErrorText(
+              "Kein Mitglied erfüllt das Differenz Kriterium.");
+          file.delete();
+          return;
+        }
         new ZipMailer(file, (String) control.getBetreff().getValue(),
             (String) control.getTxt().getValue(), "Kontoauszug.pdf");
         break;
