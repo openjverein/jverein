@@ -95,6 +95,8 @@ public class DokumentationUtil
   public static final String JUBILAEEN = PRE + FUNKTIONEN + AUSWERTUNGEN + "jubilaen";
 
   public static final String LEHRGANG = PRE + FUNKTIONEN + ADMIN + "lehrgange";
+  
+  public static final String BEREINIGEN = PRE + FUNKTIONEN + ADMIN + "bereinigen";
 
   public static final String KONTENRAHMEN = PRE + FUNKTIONEN + ADMIN + ADMBUCHF
       + "kontenrahmen-import-export";

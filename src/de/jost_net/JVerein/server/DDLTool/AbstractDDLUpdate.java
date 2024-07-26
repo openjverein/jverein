@@ -302,8 +302,8 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
       }
       case MYSQL:
       {
-        return "ALTER TABLE " + table + " ADD CONSTRAINT " + " FOREIGN KEY "
-            + constraintname + "(" + column + ") REFERENCES " + reftable + " ("
+        return "ALTER TABLE " + table + " ADD CONSTRAINT " + constraintname
+            + " FOREIGN KEY (" + column + ") REFERENCES " + reftable + "("
             + refcolumn + ") ON DELETE " + ondelete + " ON UPDATE " + onupdate
             + ";\n";
       }
@@ -328,8 +328,8 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
       break;
       case MYSQL:
       {
-        String statement =  "ALTER TABLE " + table + " ADD CONSTRAINT " + " FOREIGN KEY "
-            + constraintname + "(" + column + ") REFERENCES " + reftable + " ("
+        String statement =  "ALTER TABLE " + table + " ADD CONSTRAINT " + constraintname
+            + " FOREIGN KEY (" + column + ") REFERENCES " + reftable + " ("
             + refcolumn + ") ON DELETE " + ondelete + " ON UPDATE " + onupdate
             + ";\n";
         try
@@ -349,6 +349,22 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
   public String dropTable(String table)
   {
     return "drop table " + table + ";\n";
+  }
+  
+  public String dropForeignKey(String constraintname, String table)
+  {
+    switch (drv)
+    {
+      case H2:
+      {
+        return "ALTER TABLE " + table + " DROP CONSTRAINT " + constraintname + ";\n";
+      }
+      case MYSQL:
+      {
+        return "ALTER TABLE " + table + " DROP FOREIGN KEY " + constraintname + ";\n";
+      }
+    }
+    return "";
   }
 
 }
