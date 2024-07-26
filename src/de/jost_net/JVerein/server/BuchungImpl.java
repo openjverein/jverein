@@ -69,7 +69,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    insertCheck();
+    //insertCheck();
   }
 
   @Override

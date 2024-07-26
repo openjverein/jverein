@@ -19,9 +19,9 @@ import de.willuhn.util.ProgressMonitor;
 
 import java.sql.Connection;
 
-public class Update0440 extends AbstractDDLUpdate
+public class Update0441 extends AbstractDDLUpdate
 {
-  public Update0440(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0441(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -29,7 +29,12 @@ public class Update0440 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(dropColumn("einstellung", "spendenbescheinigungadresse"));
-    execute(dropColumn("einstellung", "spendenbescheinigungadressem"));
+    execute(dropForeignKey("fkBuchungDokument1", "buchungdokument"));
+    execute(createForeignKey("fkBuchungDokument1", "buchungdokument",
+        "referenz", "buchung", "id", "CASCADE", "NO ACTION"));
+    
+    execute(dropForeignKey("fkBuchung3", "buchung"));
+    execute(createForeignKey("fkBuchung3", "buchung",
+        "mitgliedskonto", "mitgliedskonto", "id", "SET NULL", "NO ACTION"));
   }
 }

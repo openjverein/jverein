@@ -16,14 +16,10 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
-
-import de.jost_net.JVerein.gui.dialogs.MailAbfrageDialog;
-import de.jost_net.JVerein.gui.dialogs.MailAbfrageDialog.Auswahl;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
 /**
@@ -70,40 +66,7 @@ public class SpendenbescheinigungSendAction implements Action
     {
       return;
     }
-    
-    try
-    {
-      String text = "Für das Versenden werden gedruckte Spendenbescheinigungen benötigt."
-          + "\nWenn sie schon gedruckt wurden brauchen sie nicht neu gedruckt werden.";
-      MailAbfrageDialog d = new MailAbfrageDialog(text, MailAbfrageDialog.POSITION_CENTER);
-      d.setTitle("Spendenbescheinigungen versenden");
-      d.setPanelText("Spendenbescheinigungen drucken?");
-      
-      MailAbfrageDialog.Auswahl choice = (MailAbfrageDialog.Auswahl) d.open();
-      if (choice == null)
-      {
-        return;
-      }
-      else if (choice == Auswahl.DRUCKEN_STANDARD)
-      {
-        SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(true, true);
-        action.handleAction(spbArr);
-      }
-      else if (choice == Auswahl.DRUCKEN_INDIVIDUELL)
-      {
-        SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(false, true);
-        action.handleAction(spbArr);
-      }
 
-      GUI.startView(SpendenbescheinigungMailView.class, spbArr);
-    }
-    catch (OperationCanceledException oce)
-    {
-      throw oce;
-    }
-    catch (Exception e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
-    }
+    GUI.startView(SpendenbescheinigungMailView.class, spbArr);
   }
 }

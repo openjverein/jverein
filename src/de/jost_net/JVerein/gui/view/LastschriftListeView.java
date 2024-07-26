@@ -16,15 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.KursteilnehmerDetailAction;
-import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
+import de.jost_net.JVerein.gui.control.LastschriftControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -32,58 +25,38 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class KursteilnehmerSucheView extends AbstractView
+public class LastschriftListeView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Suche Kursteilnehmer");
+    GUI.getView().setTitle("Lastschriften");
 
-    final KursteilnehmerControl control = new KursteilnehmerControl(this);
-
-    String sql = "select count(*) from kursteilnehmer";
-    DBService service = Einstellungen.getDBService();
-    ResultSetExtractor rs = new ResultSetExtractor()
-    {
-
-      @Override
-      public Object extract(ResultSet rs) throws SQLException
-      {
-        rs.next();
-        return Long.valueOf(rs.getLong(1));
-      }
-    };
-    Long anzahl = (Long) service.execute(sql, new Object[] {}, rs);
-
+    LastschriftControl control = new LastschriftControl(this);
+    
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
-    
-    SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    middle.addInput(control.getEingabedatumvon());
-    middle.addInput(control.getEingabedatumbis());
-    
+    left.addLabelPair("Zweck", control.getSuchtext());
+    left.addInput(control.getMitgliedArt());
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getAbbuchungsdatumvon());
-    right.addInput(control.getAbbuchungsdatumbis());
+    right.addLabelPair("Fälligkeit von", control.getDatumvon());
+    right.addLabelPair("Fälligkeit bis", control.getDatumbis());
     
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
+    
+    control.getLastschriftList().paint(this.getParent());
 
-    if (anzahl.longValue() > 0)
-    {
-      control.getKursteilnehmerTable().paint(getParent());
-    }
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
-    buttons.addButton("Neu", new KursteilnehmerDetailAction(), null, false,
-        "document-new.png");
+        DokumentationUtil.LASTSCHRIFT, false, "question-circle.png");
     buttons.paint(this.getParent());
   }
 }
