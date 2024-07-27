@@ -757,6 +757,7 @@ public class MitgliedskontoControl extends FilterControl
           sollbuchungen.addFilter("(email is  not null and length(email) > 0)");
         }
       }
+      sollbuchungen.setOrder("order by mitglied.name, mitglied.vorname, mitgliedskonto.datum desc");
       return sollbuchungen;
     }
     
