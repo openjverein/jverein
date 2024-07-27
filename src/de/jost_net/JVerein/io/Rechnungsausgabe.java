@@ -18,15 +18,13 @@ package de.jost_net.JVerein.io;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
-import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 
@@ -54,30 +52,8 @@ public class Rechnungsausgabe extends AbstractMitgliedskontoDokument
     else
     {
       // Nein: Sammeldruck aus der MitgliedskontoRechnungView
-      DBIterator<Mitgliedskonto> it = Einstellungen.getDBService()
-          .createList(Mitgliedskonto.class);
-      Date d = null;
-      if (control.isDatumvonAktiv() && control.getDatumvon().getValue() != null)
-      {
-        d = (Date) control.getDatumvon().getValue();
-        if (d != null)
-        {
-          it.addFilter("datum >= ?", d);
-        }
-      }
-      if (control.isDatumbisAktiv() && control.getDatumbis().getValue() != null)
-      {
-        d = (Date) control.getDatumbis().getValue();
-        if (d != null)
-        {
-          it.addFilter("datum <= ?", d);
-        }
-      }
-      if (control.isOhneAbbucherAktiv() && (Boolean) control.getOhneAbbucher().getValue())
-      {
-        it.addFilter("zahlungsweg <> ?", Zahlungsweg.BASISLASTSCHRIFT);
-      }
-
+      @SuppressWarnings("rawtypes")
+      GenericIterator it = control.getMitgliedskontoIterator(false);
       Mitgliedskonto[] mk = new Mitgliedskonto[it.size()];
       int i = 0;
       while (it.hasNext())

@@ -38,13 +38,13 @@ import de.willuhn.logging.Logger;
 /**
  * Kontext-Menu zu den Mitgliedskonten.
  */
-public class Mitgliedskonto2Menu extends ContextMenu
+public class SollbuchungMenu extends ContextMenu
 {
 
   /**
    * Erzeugt ein Kontext-Menu fuer Mitgliedskonten.
    */
-  public Mitgliedskonto2Menu()
+  public SollbuchungMenu()
   {
     addItem(new CheckedSingleContextMenuItem("Sollbuchung bearbeiten",
         new MitgliedskontoSollbuchungEditAction(), "text-x-generic.png"));
