@@ -136,6 +136,10 @@ public class ZipMailer
               monitor.log("Versende an " + mail);
               try
               {
+            	sender.sendMail(mail, wtext1.getBuffer().toString(),
+                  wtext2.getBuffer().toString(), anhang);
+                sentCount++;
+                      
                 Mail ml = (Mail) Einstellungen.getDBService()
                         .createObject(Mail.class, null);
                 ml.setBetreff(betreff);
@@ -153,10 +157,6 @@ public class ZipMailer
                 
                 ma.setMail(ml);
                 ma.store();
-                
-                sender.sendMail(mail, wtext1.getBuffer().toString(),
-                    wtext2.getBuffer().toString(), anhang);
-                sentCount++;
               }
               catch (SendFailedException e1)
               {
