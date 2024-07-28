@@ -955,6 +955,13 @@ public class SpendenbescheinigungControl extends FilterControl
           if (currentObject == null)
           {
             ArrayList<Spendenbescheinigung> spblist = getSpendenbescheinigungen();
+            if (spblist.size() == 0)
+            {
+              GUI.getStatusBar()
+              .setSuccessText("Für die gewählten Filterkriterien wurden "
+                  + "keine Spendenbescheinigungen gefunden");
+              return;
+            }
             spbArray = spblist.toArray(new Spendenbescheinigung[spblist.size()]);
           }
           else if (currentObject instanceof Spendenbescheinigung[])

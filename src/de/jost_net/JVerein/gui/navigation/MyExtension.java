@@ -138,7 +138,7 @@ public class MyExtension implements Extension
           new MitgliedskontoRechnungAction(), "document-print.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Mahnungen",
           new MitgliedskontoMahnungAction(), "document-print.png"));
-      mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigung",
+      mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
           new SpendenbescheinigungSendAction(), "document-print.png"));
 
       if (Einstellungen.getEinstellung().getZusatzbetrag())

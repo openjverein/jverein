@@ -52,7 +52,7 @@ public class SpendenbescheinigungSendAction implements Action
     }
     if (context == null)
     {
-      throw new ApplicationException("Keine Spendenbescheinigung ausgewählt");
+      GUI.startView(SpendenbescheinigungMailView.class, null);
     }
     else if (context instanceof Spendenbescheinigung)
     {
