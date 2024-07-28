@@ -57,16 +57,17 @@ public class SpendenbescheinigungSendAction implements Action
     else if (context instanceof Spendenbescheinigung)
     {
       spbArr = new Spendenbescheinigung[] { (Spendenbescheinigung) context };
+      GUI.startView(SpendenbescheinigungMailView.class, spbArr);
     }
     else if (context instanceof Spendenbescheinigung[])
     {
       spbArr = (Spendenbescheinigung[]) context;
+      GUI.startView(SpendenbescheinigungMailView.class, spbArr);
     }
     else
     {
-      return;
+      GUI.startView(SpendenbescheinigungMailView.class, null);
     }
 
-    GUI.startView(SpendenbescheinigungMailView.class, spbArr);
   }
 }

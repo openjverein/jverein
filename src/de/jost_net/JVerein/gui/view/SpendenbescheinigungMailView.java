@@ -18,11 +18,13 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
-import de.jost_net.JVerein.gui.control.SpendenbescheinigungMailControl;
+import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class SpendenbescheinigungMailView extends AbstractView
@@ -31,16 +33,41 @@ public class SpendenbescheinigungMailView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Spendenbescheinigung-Mail");
+    GUI.getView().setTitle("Spendenbescheinigung");
 
-    final SpendenbescheinigungMailControl control = new SpendenbescheinigungMailControl(this);
+    final SpendenbescheinigungControl control = new SpendenbescheinigungControl(this);
+    control.init("spenden." , null, null);
 
-    SimpleContainer cont1 = new SimpleContainer(getParent(), false);
-    cont1.addHeadline("Info");
-    cont1.addInput(control.getInfo());
+    if (this.getCurrentObject() == null)
+    {
+      LabelGroup group = new LabelGroup(getParent(), "Filter");
+      ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
+
+      SimpleContainer left = new SimpleContainer(cl.getComposite());
+      left.addInput(control.getSuchname());
+      left.addInput(control.getMailauswahl());
+
+      SimpleContainer middle = new SimpleContainer(cl.getComposite());
+      middle.addLabelPair("Bescheinigungsdatum von", control.getDatumvon());
+      middle.addLabelPair("Bescheinigungsdatum bis", control.getDatumbis());
+
+      SimpleContainer right = new SimpleContainer(cl.getComposite());
+      right.addLabelPair("Spendedatum von", control.getEingabedatumvon());
+      right.addLabelPair("Spendedatum bis", control.getEingabedatumbis());
+    }
+    else
+    {
+      SimpleContainer cont1 = new SimpleContainer(getParent(), false);
+      cont1.addHeadline("Info");
+      cont1.addInput(control.getInfo());
+    }
     
     SimpleContainer cont2 = new SimpleContainer(getParent(), false);
     cont2.addHeadline("Parameter");
+    if (this.getCurrentObject() == null)
+    {
+      cont2.addInput(control.getAusgabeart());
+    }
     cont2.addInput(control.getArt());
     cont2.addInput(control.getAdressblatt());
     
