@@ -119,21 +119,21 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   @Override
   protected Class<?> getForeignObject(String arg0)
   {
-    if ("mitglied".equals(arg0))
-    {
-      return Mitglied.class;
-    }
-    if (arg0.equals("buchungsart"))
-    {
-      return Buchungsart.class;
-    }
     return null;
   }
 
   @Override
   public Mitglied getMitglied() throws RemoteException
   {
-    return (Mitglied) getAttribute("mitglied");
+    Object o = (Object) super.getAttribute("mitglied");
+    if (o == null)
+      return null;
+    
+    if(o instanceof Mitglied)
+      return (Mitglied)o;
+   
+    Cache cache = Cache.get(Mitglied.class,true);
+    return (Mitglied) cache.get(o);
   }
 
   @Override
@@ -244,7 +244,15 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
-    return (Buchungsart) getAttribute("buchungsart");
+    Object o = (Object) super.getAttribute("buchungsart");
+    if (o == null)
+      return null;
+    
+    if(o instanceof Buchungsart)
+      return (Buchungsart)o;
+   
+    Cache cache = Cache.get(Buchungsart.class,true);
+    return (Buchungsart) cache.get(o);
   }
 
   @Override
@@ -253,6 +261,14 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
     if (fieldName.equals("intervalltext"))
     {
       return getIntervallText();
+    }
+    if (fieldName.equals("mitglied"))
+    {
+      return getMitglied();
+    }
+    if (fieldName.equals("buchungsart"))
+    {
+      return getBuchungsart();
     }
     return super.getAttribute(fieldName);
   }

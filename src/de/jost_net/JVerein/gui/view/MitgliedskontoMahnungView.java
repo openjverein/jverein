@@ -21,12 +21,12 @@ import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
@@ -44,21 +44,37 @@ public class MitgliedskontoMahnungView extends AbstractView
     if (this.getCurrentObject() == null)
     {
       LabelGroup group = new LabelGroup(getParent(), "Filter");
-      group.addInput(control.getDatumvon());
-      group.addInput(control.getDatumbis());
+      ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+      
+      SimpleContainer left = new SimpleContainer(cl.getComposite());
+      left.addInput(control.getSuchname());
+      left.addInput(control.getDifferenz());
+      left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
+      
+      SimpleContainer right = new SimpleContainer(cl.getComposite());
+      right.addInput(control.getDatumvon());
+      right.addInput(control.getDatumbis());
+      right.addInput(control.getMailauswahl());
       
       ButtonArea filterbuttons = new ButtonArea();
       filterbuttons.addButton(control.getResetButton());
       filterbuttons.addButton(control.getSpeichernButton());
       group.addButtonArea(filterbuttons);
     }
-    control.getDifferenz(DIFFERENZ.FEHLBETRAG);
+    else
+    {
+      SimpleContainer cont1 = new SimpleContainer(getParent(), false);
+      cont1.addHeadline("Info");
+      cont1.addInput(control.getInfo());
+    }
 
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Parameter");
     
     cont.addLabelPair("Formular", control.getFormular(FormularArt.MAHNUNG));
     cont.addInput(control.getAusgabeart());
+    cont.addInput(control.getAusgabesortierung());
+    
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());
     cont.addLabelPair("Text", control.getTxt());

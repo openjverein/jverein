@@ -26,6 +26,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
@@ -43,14 +44,28 @@ public class MitgliedskontoRechnungView extends AbstractView
     if (this.getCurrentObject() == null)
     {
       LabelGroup group = new LabelGroup(getParent(), "Filter");
-      group.addInput(control.getDatumvon());
-      group.addInput(control.getDatumbis());
-      group.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
+      ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+      
+      SimpleContainer left = new SimpleContainer(cl.getComposite());
+      left.addInput(control.getSuchname());
+      left.addInput(control.getDifferenz());
+      left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
+      
+      SimpleContainer right = new SimpleContainer(cl.getComposite());
+      right.addInput(control.getDatumvon());
+      right.addInput(control.getDatumbis());
+      right.addInput(control.getMailauswahl());
       
       ButtonArea filterbuttons = new ButtonArea();
       filterbuttons.addButton(control.getResetButton());
       filterbuttons.addButton(control.getSpeichernButton());
       group.addButtonArea(filterbuttons);
+    }
+    else
+    {
+      SimpleContainer cont1 = new SimpleContainer(getParent(), false);
+      cont1.addHeadline("Info");
+      cont1.addInput(control.getInfo());
     }
         
     SimpleContainer cont = new SimpleContainer(getParent(), true);

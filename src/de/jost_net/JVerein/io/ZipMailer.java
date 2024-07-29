@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeSet;
@@ -37,7 +39,9 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.VarTools;
+import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
@@ -132,9 +136,27 @@ public class ZipMailer
               monitor.log("Versende an " + mail);
               try
               {
-                sender.sendMail(mail, wtext1.getBuffer().toString(),
-                    wtext2.getBuffer().toString(), anhang);
+            	sender.sendMail(mail, wtext1.getBuffer().toString(),
+                  wtext2.getBuffer().toString(), anhang);
                 sentCount++;
+                      
+                Mail ml = (Mail) Einstellungen.getDBService()
+                        .createObject(Mail.class, null);
+                ml.setBetreff(betreff);
+                ml.setTxt(text);
+                ml.setBearbeitung(new Timestamp(new Date().getTime()));
+                ml.setVersand(new Timestamp(new Date().getTime()));
+                ml.store();
+                
+                MailEmpfaenger me = (MailEmpfaenger) Einstellungen.getDBService()
+                        .createObject(MailEmpfaenger.class, null);
+                me.setMitglied(m);
+                me.setMail(ml);
+                me.setVersand(new Timestamp(new Date().getTime()));
+                me.store();
+                
+                ma.setMail(ml);
+                ma.store();
               }
               catch (SendFailedException e1)
               {

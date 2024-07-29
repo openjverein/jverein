@@ -36,6 +36,7 @@ import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
+import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.io.Kontoauszug;
@@ -645,9 +646,17 @@ public class MitgliedskontoControl extends FilterControl
       diff = (DIFFERENZ) differenz.getValue();
     }
     
-    // Falls kein Name und keine Differenz dann alles lesen
-    if ((suchname == null || suchname.getValue() == null || 
-        ((String) suchname.getValue()).isEmpty()) && diff == DIFFERENZ.EGAL)
+    boolean kein_name = suchname == null || suchname.getValue() == null || 
+        ((String) suchname.getValue()).isEmpty();
+    boolean ein_name = suchname != null && suchname.getValue() != null && 
+        !((String) suchname.getValue()).isEmpty();
+    boolean keine_email = mailAuswahl == null || (Integer) mailAuswahl.getValue() == 
+        MailAuswertungInput.ALLE;
+    boolean filter_email = mailAuswahl != null && !((Integer) mailAuswahl.getValue() == 
+        MailAuswertungInput.ALLE);
+    
+    // Falls kein Name, kein Mailfilter und keine Differenz dann alles lesen
+    if (kein_name && keine_email &&  diff == DIFFERENZ.EGAL)
     {
       DBIterator<Mitgliedskonto> sollbuchungen = Einstellungen.getDBService()
           .createList(Mitgliedskonto.class);
@@ -661,26 +670,35 @@ public class MitgliedskontoControl extends FilterControl
       sollbuchungen.addFilter("mitgliedskonto.datum <= ? ",
           new Object[] { bd });
       }
+      if (ohneabbucher != null && (Boolean) ohneabbucher.getValue())
+      {
+        sollbuchungen.addFilter("mitgliedskonto.zahlungsweg <> ?", 
+            Zahlungsweg.BASISLASTSCHRIFT);
+      }
       return sollbuchungen;
     }
     
-    // Falls ein Name aber keine Differenz dann alles des Mitglieds lesen
-    if (suchname != null && suchname.getValue() != null && 
-        !((String) suchname.getValue()).isEmpty() && diff == DIFFERENZ.EGAL)
+    // Falls ein Name oder Mailfilter aber keine Differenz dann alles des Mitglieds lesen
+    if ((ein_name || filter_email)  && diff == DIFFERENZ.EGAL)
     {
-      String name = (String) suchname.getValue();
       DBIterator<Mitgliedskonto> sollbuchungen = Einstellungen.getDBService()
           .createList(Mitgliedskonto.class);
-      if (!umwandeln)
+      
+      if ((!umwandeln && ein_name) || filter_email)
       {
-        // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
         sollbuchungen.join("mitglied");
         sollbuchungen.addFilter("mitglied.id = mitgliedskonto.mitglied");
+      }
+      
+      if (!umwandeln && ein_name)
+      {
+        // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
+        String name = (String) suchname.getValue();
         sollbuchungen.addFilter("((lower(mitglied.name) like ?)"
             + " OR (lower(mitglied.vorname) like ?))",
             new Object[] {name.toLowerCase() + "%", name.toLowerCase() + "%"});
       }
-      else
+      else if (umwandeln && ein_name)
       {
         // Der Name muss umgewandelt werden, es kann mehrere Matches geben
         ArrayList<BigDecimal> namenids = getNamenIds();
@@ -721,6 +739,23 @@ public class MitgliedskontoControl extends FilterControl
       {
         sollbuchungen.addFilter("(mitgliedskonto.datum <= ?) ",
             new Object[] { bd });
+      }
+      if (ohneabbucher != null && (Boolean) ohneabbucher.getValue())
+      {
+        sollbuchungen.addFilter("mitgliedskonto.zahlungsweg <> ?", 
+            Zahlungsweg.BASISLASTSCHRIFT);
+      }
+      if (filter_email)
+      {
+        int mailauswahl = (Integer) mailAuswahl.getValue();
+        if (mailauswahl == MailAuswertungInput.OHNE)
+        {
+          sollbuchungen.addFilter("(email is null or length(email) = 0)");
+        }
+        if (mailauswahl == MailAuswertungInput.MIT)
+        {
+          sollbuchungen.addFilter("(email is  not null and length(email) > 0)");
+        }
       }
       return sollbuchungen;
     }
@@ -789,6 +824,27 @@ public class MitgliedskontoControl extends FilterControl
           + "mitgliedskonto.datum <= ? ";
       param.add(bd);
     }
+    if (ohneabbucher != null && (Boolean) ohneabbucher.getValue())
+    {
+      where += (where.length() > 0 ? "and " : "")
+          +"mitgliedskonto.zahlungsweg <> ?"; 
+      param.add(Zahlungsweg.BASISLASTSCHRIFT);
+    }
+    if (filter_email)
+    {
+      int mailauswahl = (Integer) mailAuswahl.getValue();
+      if (mailauswahl == MailAuswertungInput.OHNE)
+      {
+        where += (where.length() > 0 ? "and " : "")
+            + "(email is null or length(email) = 0)";
+      }
+      if (mailauswahl == MailAuswertungInput.MIT)
+      {
+        where += (where.length() > 0 ? "and " : "")
+            + "(email is not null and length(email) > 0)";
+      }
+    }
+    
     if (where.length() > 0)
     {
       sql += "WHERE " + where;
@@ -1191,39 +1247,69 @@ public class MitgliedskontoControl extends FilterControl
     return info;
   }
 
-  public String getInfoText(Object mitgliedArray)
+  public String getInfoText(Object selection)
   {
     Mitglied[] mitglieder = null;
-    if (mitgliedArray instanceof Mitglied)
+    Mitgliedskonto[] sollbuchungen = null;
+    String text = "";
+    
+    if (selection instanceof Mitglied)
     {
-      mitglieder = new Mitglied[] { (Mitglied) mitgliedArray };
+      mitglieder = new Mitglied[] { (Mitglied) selection };
     }
-    else if (mitgliedArray instanceof Mitglied[])
+    else if (selection instanceof Mitglied[])
     {
-      mitglieder = (Mitglied[]) mitgliedArray;
+      mitglieder = (Mitglied[]) selection;
+    }
+    else if (selection instanceof Mitgliedskonto)
+    {
+      sollbuchungen = new Mitgliedskonto[] { (Mitgliedskonto) selection };
+    }
+    else if (selection instanceof Mitgliedskonto[])
+    {
+      sollbuchungen = (Mitgliedskonto[]) selection;
     }
     else
     {
       return "";
     }
     
-    String text = "Es wurden " + mitglieder.length + 
-        " Mitglieder ausgewählt"
-        + "\nFolgende Mitglieder haben keine Mailadresse:";
     try
     {
-      for (Mitglied m: mitglieder)
+      // Aufruf aus Mitglieder View
+      if (mitglieder != null)
       {
-        if ( m.getEmail() == null || m.getEmail().isEmpty())
+        text = "Es wurden " + mitglieder.length + 
+            " Mitglieder ausgewählt"
+            + "\nFolgende Mitglieder haben keine Mailadresse:";
+        for (Mitglied m: mitglieder)
         {
-          text = text + "\n - " + m.getName()
-              + ", " + m.getVorname();
+          if ( m.getEmail() == null || m.getEmail().isEmpty())
+          {
+            text = text + "\n - " + m.getName()
+            + ", " + m.getVorname();
+          }
+        }
+      }
+      else if (sollbuchungen != null)
+      {
+        text = "Es wurden " + sollbuchungen.length + 
+            " Sollbuchungen ausgewählt"
+            + "\nFolgende Mitglieder haben keine Mailadresse:";
+        for (Mitgliedskonto s: sollbuchungen)
+        {
+          Mitglied m = s.getMitglied();
+          if (m != null && ( m.getEmail() == null || m.getEmail().isEmpty()))
+          {
+            text = text + "\n - " + m.getName()
+            + ", " + m.getVorname();
+          }
         }
       }
     }
     catch (Exception ex)
     {
-      GUI.getStatusBar().setErrorText("Fehler beim Ermitteln der Mitglieder");
+      GUI.getStatusBar().setErrorText("Fehler beim Ermitteln der Info");
     }
     return text;
   }

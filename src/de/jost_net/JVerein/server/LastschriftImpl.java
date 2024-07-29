@@ -24,6 +24,7 @@ import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.datasource.db.AbstractDBObject;
 
 public class LastschriftImpl extends AbstractDBObject implements Lastschrift
@@ -77,10 +78,6 @@ public class LastschriftImpl extends AbstractDBObject implements Lastschrift
     {
       return Kursteilnehmer.class;
     }
-    if ("abrechnungslauf".equals(arg0))
-    {
-      return Abrechnungslauf.class;
-    }
 
     return null;
   }
@@ -88,7 +85,14 @@ public class LastschriftImpl extends AbstractDBObject implements Lastschrift
   @Override
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException
   {
-    return (Abrechnungslauf) getAttribute("abrechnungslauf");
+	  Object o = super.getAttribute("abrechnungslauf");
+	  if (o == null)
+	  {
+	    return null;
+	  }
+
+	  Cache cache = Cache.get(Abrechnungslauf.class, true);
+	  return (Abrechnungslauf) cache.get(o);
   }
 
   @Override
@@ -373,6 +377,10 @@ public class LastschriftImpl extends AbstractDBObject implements Lastschrift
     if (fieldName.equals("faelligkeit"))
     {
       return (Date) getAbrechnungslauf().getFaelligkeit();
+    }
+    else if(fieldName.equals("abrechnungslauf"))
+    {
+    	return getAbrechnungslauf();
     }
     else
     {

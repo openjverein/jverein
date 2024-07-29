@@ -21,7 +21,7 @@ import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.menu.Mitgliedskonto2Menu;
+import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -47,10 +47,12 @@ public class SollbuchungListeView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addInput(control.getDifferenz());
+    left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
     
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
+    right.addInput(control.getMailauswahl());
     
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());
@@ -58,7 +60,7 @@ public class SollbuchungListeView extends AbstractView
     group.addButtonArea(fbuttons);
 
     control.getMitgliedskontoList(new MitgliedskontoSollbuchungEditAction(),
-        new Mitgliedskonto2Menu(), false).paint(this.getParent());
+        new SollbuchungMenu(), false).paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
