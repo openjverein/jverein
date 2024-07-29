@@ -159,7 +159,7 @@ public class ZusatzbetragControl extends AbstractControl
     };
     service.execute(sql, new Object[] {}, rs);
 
-    ausfuehrungSuch = new SelectInput(werte, werte.elementAt(0));
+    ausfuehrungSuch = new SelectInput(werte, werte.elementAt(1));
     ausfuehrungSuch.addListener(new Listener()
     {
 
