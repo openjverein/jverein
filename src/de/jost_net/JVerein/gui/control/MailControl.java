@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeSet;
@@ -652,18 +653,20 @@ public class MailControl extends FilterControl
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Mail> mails = service.createList(Mail.class);
-    mails.join("mailempfaenger");
-    mails.addFilter("mailempfaenger.mail = mail.id");
-    mails.join("mitglied");
-    mails.addFilter("mitglied.id = mailempfaenger.mitglied");
+
     
     if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) getSuchname().getValue();
       if (tmpSuchname.length() > 0)
       {
-        mails.addFilter("(lower(betreff) like ?)", 
-            new Object[] { "%" + tmpSuchname.toLowerCase() + "%" });
+        mails.join("mailempfaenger");
+        mails.addFilter("mailempfaenger.mail = mail.id");
+        mails.join("mitglied");
+        mails.addFilter("mitglied.id = mailempfaenger.mitglied");
+        mails.addFilter("(lower(name) like ? or lower(vorname) like ?) ", 
+            new Object[] { "%" + tmpSuchname.toLowerCase() + "%",
+                "%" + tmpSuchname.toLowerCase() + "%"});
       }
     }
     if (isSuchtextAktiv() && getSuchtext().getValue() != null)
@@ -682,8 +685,11 @@ public class MailControl extends FilterControl
     }
     if (isEingabedatumbisAktiv() && getEingabedatumbis().getValue() != null)
     {
-      Date d = (Date) getEingabedatumbis().getValue();
-      mails.addFilter("bearbeitung <= ?", new Object[] { new java.sql.Date(d.getTime()) });
+      Calendar cal = Calendar.getInstance();
+      cal.setTime((Date) getEingabedatumbis().getValue());
+      cal.add(Calendar.DAY_OF_MONTH, 1);
+      mails.addFilter("bearbeitung <= ?", 
+          new Object[] { new java.sql.Date(cal.getTimeInMillis()) });
     }
     if (isDatumvonAktiv() && getDatumvon().getValue() != null)
     {
@@ -692,8 +698,11 @@ public class MailControl extends FilterControl
     }
     if (isDatumbisAktiv() && getDatumbis().getValue() != null)
     {
-      Date d = (Date) getDatumbis().getValue();
-      mails.addFilter("mail.versand <= ?", new Object[] { new java.sql.Date(d.getTime()) });
+      Calendar cal = Calendar.getInstance();
+      cal.setTime((Date) getDatumbis().getValue());
+      cal.add(Calendar.DAY_OF_MONTH, 1);
+      mails.addFilter("mail.versand <= ?", 
+          new Object[] { new java.sql.Date(cal.getTimeInMillis()) });
     }
     mails.setOrder("ORDER BY betreff");
 

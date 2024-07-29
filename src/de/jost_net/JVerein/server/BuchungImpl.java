@@ -164,11 +164,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   protected Class<?> getForeignObject(String field)
   {
-    if ("mitgliedskonto".equals(field))
-    {
-      return Mitgliedskonto.class;
-    }
-    else if ("abrechnungslauf".equals(field))
+    if ("abrechnungslauf".equals(field))
     {
       return Abrechnungslauf.class;
     }
@@ -409,7 +405,14 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   public Mitgliedskonto getMitgliedskonto() throws RemoteException
   {
-    return (Mitgliedskonto) getAttribute("mitgliedskonto");
+    Object o = super.getAttribute("mitgliedskonto");
+    if (o == null)
+    {
+      return null;
+    }
+
+    Cache cache = Cache.get(Mitgliedskonto.class, true);
+    return (Mitgliedskonto) cache.get(o);
   }
 
   @Override
@@ -606,6 +609,9 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
 
     if ("konto".equals(fieldName))
       return getKonto();
+    
+    if ("mitgliedskonto".equals(fieldName))
+        return getMitgliedskonto();
 
     return super.getAttribute(fieldName);
   }

@@ -62,6 +62,7 @@ public class NichtMitgliederSucheView extends AbstractMitgliedSucheView
     right.addInput(control.getGeburtsdatumvon());
     right.addInput(control.getGeburtsdatumbis());
     right.addInput(control.getSuchGeschlecht());
+    right.addInput(control.getMailauswahl());
     
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(control.getResetButton());

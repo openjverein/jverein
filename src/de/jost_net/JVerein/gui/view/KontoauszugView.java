@@ -17,11 +17,15 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class KontoauszugView extends AbstractView
 {
@@ -32,17 +36,42 @@ public class KontoauszugView extends AbstractView
     GUI.getView().setTitle("Kontoauszug");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
+    control.init("kontoauszug.", null, null);
 
-    LabelGroup group = new LabelGroup(getParent(), "Zeitraum");
-    group.addLabelPair("Von", control.getVondatum("kontoauszug"));
-    group.addLabelPair("Bis", control.getBisdatum("kontoauszug"));
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getDifferenz());
+    
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getDatumvon());
+    right.addInput(control.getDatumbis());
+    
+    SimpleContainer cont1 = new SimpleContainer(getParent(), false);
+    cont1.addHeadline("Info");
+    cont1.addInput(control.getInfo());
+    
+    SimpleContainer cont = new SimpleContainer(getParent(), true);
+    cont.addHeadline("Parameter");
+    
+    cont.addInput(control.getAusgabeart());
+
+    cont.addHeadline("Mail");
+    cont.addInput(control.getBetreff());
+    cont.addLabelPair("Text", control.getTxt());
+    
+    ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSpeichernButton());
+    group.addButtonArea(fbuttons);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KONTOAUSZUG, false, "question-circle.png");
-    buttons.addButton(control.getStartKontoauszugButton(this.getCurrentObject(),
-        control.getVondatum("kontoauszugdatumvon"),
-        control.getBisdatum("kontoauszugdatumbis")));
+    buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
+        control, false, "view-refresh.png"));
+    buttons.addButton(control.getStartKontoauszugButton(
+        this.getCurrentObject(), control));
     buttons.paint(this.getParent());
   }
 }

@@ -113,8 +113,8 @@ public abstract class AbstractMitgliedskontoDokument
         break;
       case EMAIL:
         zos.close();
-        new ZipMailer(file, (String) control.getBetreff(typ.name()).getValue(),
-            (String) control.getTxt(typ.name()).getValue());
+        new ZipMailer(file, (String) control.getBetreff().getValue(),
+            (String) control.getTxt().getValue(), typ.name() + ".pdf");
         break;
     }
 

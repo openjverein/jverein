@@ -101,14 +101,6 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   @Override
   protected Class<?> getForeignObject(String arg0)
   {
-    if ("mitglied".equals(arg0))
-    {
-      return Mitglied.class;
-    }
-    if ("abrechnungslauf".equals(arg0))
-    {
-      return Abrechnungslauf.class;
-    }
     if ("buchungsart".equals(arg0))
     {
       return Buchungsart.class;
@@ -119,7 +111,15 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   @Override
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException
   {
-    return (Abrechnungslauf) getAttribute("abrechnungslauf");
+	Object o = (Object) super.getAttribute("abrechnungslauf");
+    if (o == null)
+      return null;
+    
+    if(o instanceof Abrechnungslauf)
+      return (Abrechnungslauf)o;
+   
+    Cache cache = Cache.get(Abrechnungslauf.class,true);
+    return (Abrechnungslauf) cache.get(o);
   }
 
   @Override
@@ -144,7 +144,15 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   @Override
   public Mitglied getMitglied() throws RemoteException
   {
-    return (Mitglied) getAttribute("mitglied");
+	Object o = (Object) super.getAttribute("mitglied");
+    if (o == null)
+      return null;
+
+    if(o instanceof Mitglied)
+      return (Mitglied)o;
+   
+    Cache cache = Cache.get(Mitglied.class,true);
+    return (Mitglied) cache.get(o);
   }
 
   @Override
@@ -264,7 +272,6 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
     {
       return ist;
     }
-
     DBService service = Einstellungen.getDBService();
     String sql = "select sum(betrag) from buchung where mitgliedskonto = "
         + this.getID();
@@ -292,6 +299,14 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
     if (fieldName.equals("istsumme"))
     {
       return getIstSumme();
+    }
+    if (fieldName.equals("mitglied"))
+    {
+      return getMitglied();
+    }
+    if (fieldName.equals("abrechnungslauf"))
+    {
+      return getAbrechnungslauf();
     }
     return super.getAttribute(fieldName);
   }

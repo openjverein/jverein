@@ -778,10 +778,11 @@ public class FilterControl extends AbstractControl
       return ohneabbucher;
     }
     ohneabbucher = new CheckboxInput(settings.getBoolean(settingsprefix + "ohneabbucher", false));
+    ohneabbucher.addListener(new FilterListener());
     return ohneabbucher;
   }
   
-  public boolean isOhneAbbucher()
+  public boolean isOhneAbbucherAktiv()
   {
     return ohneabbucher != null;
   }

@@ -58,6 +58,10 @@ public class MitgliederSucheView extends AbstractMitgliedSucheView
     }
     left.addInput(control.getEigenschaftenAuswahl());
     left.addInput(control.getBeitragsgruppeAusw());
+    if (Einstellungen.getEinstellung().hasZusatzfelder())
+    {
+      left.addInput(control.getZusatzfelderAuswahl());
+    }
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addInput(control.getSuchname());
@@ -71,11 +75,7 @@ public class MitgliederSucheView extends AbstractMitgliedSucheView
     right.addInput(control.getEintrittbis());
     right.addInput(control.getAustrittvon());
     right.addInput(control.getAustrittbis());
-    
-    if (Einstellungen.getEinstellung().hasZusatzfelder())
-    {
-      left.addInput(control.getZusatzfelderAuswahl());
-    }
+    right.addInput(control.getMailauswahl());
     
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(control.getProfileButton());
