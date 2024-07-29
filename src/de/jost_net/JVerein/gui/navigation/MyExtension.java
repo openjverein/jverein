@@ -132,7 +132,7 @@ public class MyExtension implements Extension
       mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new SollbuchungListeAction(), "calculator.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
-          new SpendenbescheinigungListeAction(), "file-invoice.png"));
+          new SpendenbescheinigungListeAction(), "list.png"));
       
       mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
           new MitgliedskontoRechnungAction(), "document-print.png"));
