@@ -2069,7 +2069,7 @@ public class MitgliedControl extends FilterControl
   public TablePart getMitgliedTable(int atyp, Action detailaction)
       throws RemoteException
   {
-    part = new TablePart(new MitgliedQuery(this).get(atyp),
+    part = new TablePart(new MitgliedQuery(this).get(atyp, null),
         detailaction);
     new MitgliedSpaltenauswahl().setColumns(part, atyp);
     part.setContextMenu(new MitgliedMenu(detailaction));
@@ -2090,7 +2090,7 @@ public class MitgliedControl extends FilterControl
     }
     lastrefresh = System.currentTimeMillis();
     part.removeAll();
-    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this).get(atyp);
+    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this).get(atyp, null);
     for (Mitglied m : mitglieder)
     {
       part.addItem(m);
@@ -2494,11 +2494,15 @@ public class MitgliedControl extends FilterControl
     final IAuswertung ausw = (IAuswertung) getAusgabe().getValue();
     saveAusgabeSettings();
     saveFilterSettings();
+    String sort = null;
+    if (isSortierungAktiv() && getSortierung().getValue() != null)
+    {
+      sort = (String) getSortierung().getValue();
+    }
     ArrayList<Mitglied> list = null;
-    list = new MitgliedQuery(this).get(1);
+    list = new MitgliedQuery(this).get(1, sort);
     try
     {
-      String sort = (String) sortierung.getValue();
       String dateinamensort = "";
       if (sort.equals("Name, Vorname"))
       {
@@ -2599,6 +2603,11 @@ public class MitgliedControl extends FilterControl
     final IAuswertung ausw = (IAuswertung) getAusgabe().getValue();
     saveAusgabeSettings();
     saveFilterSettings();
+    String sort = null;
+    if (isSortierungAktiv() && getSortierung().getValue() != null)
+    {
+      sort = (String) getSortierung().getValue();
+    }
     ArrayList<Mitglied> list = null;
     Adresstyp atyp = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
     if (atyp == null)
@@ -2606,10 +2615,9 @@ public class MitgliedControl extends FilterControl
       GUI.getStatusBar().setErrorText("Bitte Mitgliedstyp auswählen");
       return;
     }
-    list = new MitgliedQuery(this).get(Integer.parseInt(atyp.getID()));
+    list = new MitgliedQuery(this).get(Integer.parseInt(atyp.getID()), sort);
     try
     {
-      String sort = (String) sortierung.getValue();
       String dateinamensort = "";
       if (sort.equals("Name, Vorname"))
       {
@@ -2696,11 +2704,6 @@ public class MitgliedControl extends FilterControl
     {
       Logger.error("Fehler", e);
     }
-  }
-
-  public Settings getSettings()
-  {
-    return settings;
   }
 
   private void starteStatistik() throws RemoteException

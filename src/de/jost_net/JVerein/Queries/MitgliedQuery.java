@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.util.EigenschaftenUtil;
 import de.jost_net.JVerein.keys.Datentyp;
@@ -43,7 +43,7 @@ import de.willuhn.util.Settings;
 public class MitgliedQuery
 {
 
-  private MitgliedControl control;
+  private FilterControl control;
 
   private boolean and = false;
 
@@ -53,13 +53,13 @@ public class MitgliedQuery
   
   String zusatzfelder = null;
 
-  public MitgliedQuery(MitgliedControl control)
+  public MitgliedQuery(FilterControl control)
   {
     this.control = control;
   }
 
   @SuppressWarnings("unchecked")
-  public ArrayList<Mitglied> get(int adresstyp) throws RemoteException
+  public ArrayList<Mitglied> get(int adresstyp, String sort) throws RemoteException
   {
 
     zusatzfeld = control.getAdditionalparamprefix1();
@@ -69,9 +69,8 @@ public class MitgliedQuery
     ArrayList<Object> bedingungen = new ArrayList<>();
 
     sql = "select distinct mitglied.*, ucase(name), ucase(vorname) ";
-    if (control.isSortierungAktiv())
+    if (sort != null && !sort.isEmpty())
     {
-      String sort = (String) control.getSortierung().getValue();
       if (sort.equals("Geburtstagsliste"))
       {
         sql += ", month(geburtsdatum), day(geburtsdatum) ";
@@ -209,11 +208,11 @@ public class MitgliedQuery
         bedingungen.add(Integer.valueOf(bg.getID()));
       }
     }
-    if (adresstyp != 0)
+    if (adresstyp > 0)
     {
       addCondition("adresstyp = " + adresstyp);
     }
-    else
+    else if (adresstyp == 0)
     {
       addCondition("adresstyp != " + 1);
     }
@@ -408,9 +407,8 @@ public class MitgliedQuery
         // Workaround für einen Bug in IntegerInput
       }
     }
-    if (control.isSortierungAktiv())
+    if (sort != null && !sort.isEmpty())
     {
-      String sort = (String) control.getSortierung().getValue();
       if (sort.equals("Name, Vorname"))
       {
         sql += " ORDER BY ucase(name), ucase(vorname)";

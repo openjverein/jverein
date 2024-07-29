@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -39,21 +40,40 @@ public class KontoauszugView extends AbstractView
     control.init("kontoauszug.", null, null);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
-    SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getDifferenz());
     
-    SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getDatumvon());
-    right.addInput(control.getDatumbis());
-    
-    SimpleContainer cont1 = new SimpleContainer(getParent(), false);
-    cont1.addHeadline("Info");
-    cont1.addInput(control.getInfo());
-    
+    if (this.getCurrentObject() == null)
+    {
+      ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+      SimpleContainer left = new SimpleContainer(cl.getComposite());
+      left.addInput(control.getSuchAdresstyp(Mitgliedstyp.ALLE));
+      left.addInput(control.getMitgliedStatus());
+      left.addInput(control.getBeitragsgruppeAusw());
+      left.addInput(control.getMailauswahl());
+
+      SimpleContainer right = new SimpleContainer(cl.getComposite());
+      right.addInput(control.getDatumvon());
+      right.addInput(control.getDatumbis());
+      right.addInput(control.getDifferenz());
+      right.addInput(control.getStichtag(false));
+    }
+    else
+    {
+      ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+      SimpleContainer left = new SimpleContainer(cl.getComposite());
+      left.addInput(control.getDifferenz());
+
+      SimpleContainer right = new SimpleContainer(cl.getComposite());
+      right.addInput(control.getDatumvon());
+      right.addInput(control.getDatumbis());
+
+      SimpleContainer cont1 = new SimpleContainer(getParent(), false);
+      cont1.addHeadline("Info");
+      cont1.addInput(control.getInfo());
+    }
+
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Parameter");
-    
+
     cont.addInput(control.getAusgabeart());
 
     cont.addHeadline("Mail");
