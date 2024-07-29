@@ -160,15 +160,15 @@ public class FamilienbeitragNode implements GenericObjectNode
       {
         return "Familienbeiträge";
       }
-      Date d = getMitglied().getGeburtsdatum();
-      if (d.equals(Einstellungen.NODATE))
+      Date d = null;
+      if (getMitglied().getAustritt() != null)
       {
-        d = null;
+        d = getMitglied().getAustritt();
       }
       JVDateFormatTTMMJJJJ jvttmmjjjj = new JVDateFormatTTMMJJJJ();
       return Adressaufbereitung.getNameVorname(mitglied)
           + (d != null
-              ? ", " + jvttmmjjjj.format(d)
+              ? ", Austritt: " + jvttmmjjjj.format(d)
               : "")
           + (mitglied.getIban().length() > 0
               ? ", " + mitglied.getBic() + ", " + mitglied.getIban()
