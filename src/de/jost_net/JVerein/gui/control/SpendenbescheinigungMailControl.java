@@ -32,6 +32,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.VarTools;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
@@ -43,6 +44,7 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -66,7 +68,12 @@ public class SpendenbescheinigungMailControl extends AbstractControl
   
   private TextAreaInput  info;
   
+  private SelectInput art;
+
+  private SelectInput adressblatt;
+
   private Spendenbescheinigung[] spbArr;
+
 
   public SpendenbescheinigungMailControl(AbstractView view)
   {
@@ -122,6 +129,32 @@ public class SpendenbescheinigungMailControl extends AbstractControl
     return info;
   }
   
+  public SelectInput getArt()
+  {
+    if (art != null)
+    {
+      return art;
+    }
+    art = new SelectInput( 
+        new String[] { "Standard", "Individuell" },
+        settings.getString("art", "Standard"));
+    art.setName("Ausgabeart");
+    return art;
+  }
+  
+  public SelectInput getAdressblatt()
+  {
+    if (adressblatt != null)
+    {
+      return adressblatt;
+    }
+    adressblatt = new SelectInput( 
+        new String[] { "Ohne", "Mit" },
+        settings.getString("adressblatt", "Ohne"));
+    adressblatt.setName("Adressblatt");
+    return adressblatt;
+  }
+  
   public TextInput getBetreff() throws RemoteException
   {
     if (mailbetreff != null)
@@ -158,9 +191,14 @@ public class SpendenbescheinigungMailControl extends AbstractControl
               (String) mailbetreff.getValue());
           settings.setAttribute("spendenbescheinigungmail.body", 
               (String) mailtext.getValue());
+          String ar = (String) getArt().getValue();
+          settings.setAttribute("art", ar);
+          String ab = (String) getAdressblatt().getValue();
+          settings.setAttribute("adressblatt", ab);
           String betr = (String) mailbetreff.getValue();
           String text = (String) mailtext.getValue();
-         sendeMail(betr, text);
+          generatePdf(ar, ab);
+          sendeMail(betr, text);
         }
         catch (Exception e)
         {
@@ -172,6 +210,19 @@ public class SpendenbescheinigungMailControl extends AbstractControl
     return button;
   }
 
+  private void generatePdf(String ar, String ab) throws ApplicationException
+  {
+    boolean standard = true;
+    if (ar.equalsIgnoreCase("Individuell"))
+      standard = false;
+    boolean adressblatt = false;
+    if (ab.equalsIgnoreCase("Mit"))
+      adressblatt = true;
+    SpendenbescheinigungPrintAction action = 
+        new SpendenbescheinigungPrintAction(standard, adressblatt);
+    action.handleAction(spbArr);
+  }
+  
   private void sendeMail(final String betr, final String txt) throws RemoteException
   {
 
@@ -294,13 +345,7 @@ public class SpendenbescheinigungMailControl extends AbstractControl
           monitor.setStatusText(
               String.format("Anzahl verschickter Mails: %d", sentCount));
           GUI.getStatusBar().setSuccessText(
-              "Mail" + (sentCount > 1 ? "s" : "") + " verschickt");
-          GUI.getCurrentView().reload();
-        }
-        catch (ApplicationException ae)
-        {
-          Logger.error("", ae);
-          monitor.log(ae.getMessage());
+              "Mail" + (sentCount > 1 ? "s" : "") +  " verschickt");
         }
         catch (Exception re)
         {

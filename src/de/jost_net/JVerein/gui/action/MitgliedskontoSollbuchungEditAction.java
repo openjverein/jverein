@@ -49,6 +49,10 @@ public class MitgliedskontoSollbuchungEditAction implements Action
             "Fehler beim Editieren einer Sollbuchung");
       }
     }
+    else if (context != null && (context instanceof Mitgliedskonto))
+    {
+      mk = (Mitgliedskonto) context;
+    }
     else
     {
       try

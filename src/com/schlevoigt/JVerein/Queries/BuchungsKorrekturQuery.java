@@ -17,10 +17,12 @@
 package com.schlevoigt.JVerein.Queries;
 
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -36,11 +38,28 @@ public class BuchungsKorrekturQuery {
 	public List<Buchung> get() throws RemoteException {
 		final DBService service = Einstellungen.getDBService();
 
+		DBIterator<Jahresabschluss> it1 = service.createList(Jahresabschluss.class);
+		it1.setOrder("ORDER BY bis DESC");
+		Date bis = null;
+		if(it1.hasNext())
+		  bis =  ((Jahresabschluss) it1.next()).getBis();
+
 		DBIterator<Buchung> it = service.createList(Buchung.class);
-		
-		String text1 = "%SVWZ%";
-		it.addFilter("upper(zweck) like ?", text1);
-		
+		if(bis != null)
+		  it.addFilter("datum > ?", new java.sql.Date(bis.getTime()));
+		Object[] keys = { "%EREF%", "%KREF%", "%MREF%", "%CRED%",
+		    "%DBET%", "%SVWZ%", "%ABWA%","%IBAN+%","%IBAN:%", "%BIC%"};
+		it.addFilter("(upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ? or "
+		    + "upper(zweck) like ?)", keys);
+
 		it.setOrder("ORDER BY datum");
 
 		this.ergebnis = it != null ? PseudoIterator.asList(it) : null;

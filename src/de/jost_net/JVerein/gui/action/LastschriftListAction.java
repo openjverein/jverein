@@ -14,28 +14,17 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
+package de.jost_net.JVerein.gui.action;
 
-package de.jost_net.JVerein.gui.menu;
+import de.jost_net.JVerein.gui.view.LastschriftListeView;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 
-import de.jost_net.JVerein.gui.action.MitgliedskontoMahnungAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoRechnungAction;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
-import de.willuhn.jameica.gui.parts.ContextMenu;
-
-/**
- * Kontext-Menu zu den Mitgliedskonten.
- */
-public class Mitgliedskonto2Menu extends ContextMenu
+public class LastschriftListAction implements Action
 {
-
-  /**
-   * Erzeugt ein Kontext-Menu fuer Mitgliedskonten.
-   */
-  public Mitgliedskonto2Menu()
+  @Override
+  public void handleAction(Object context)
   {
-    addItem(new CheckedContextMenuItem("Rechnung...",
-        new MitgliedskontoRechnungAction(), "file-invoice.png"));
-    addItem(new CheckedContextMenuItem("Mahnung...",
-        new MitgliedskontoMahnungAction(), "file-invoice.png"));
+    GUI.startView(LastschriftListeView.class.getName(), null);
   }
 }

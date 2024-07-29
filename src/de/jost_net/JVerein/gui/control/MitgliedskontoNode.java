@@ -278,5 +278,15 @@ public class MitgliedskontoNode implements GenericObjectNode
       parent.children.remove(this);
     }
   }
+  
+  public Double getSoll()
+  {
+    return soll;
+  }
+  
+  public Double getIst()
+  {
+    return ist;
+  }
 
 }

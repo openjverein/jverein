@@ -26,6 +26,8 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class MitgliedskontoRechnungView extends AbstractView
@@ -37,26 +39,45 @@ public class MitgliedskontoRechnungView extends AbstractView
     GUI.getView().setTitle("Rechnung");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
+    control.init(MitgliedskontoControl.TYP.RECHNUNG.name() + ".", null, null);
 
-    SimpleContainer cont = new SimpleContainer(getParent(), true);
-    cont.addHeadline("Parameter");
     if (this.getCurrentObject() == null)
     {
-      cont.addLabelPair("Von Datum",
-          control.getVondatum(MitgliedskontoControl.TYP.RECHNUNG.name()));
-      cont.addLabelPair("Bis Datum",
-          control.getBisdatum(MitgliedskontoControl.TYP.RECHNUNG.name()));
-      cont.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
+      LabelGroup group = new LabelGroup(getParent(), "Filter");
+      ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+      
+      SimpleContainer left = new SimpleContainer(cl.getComposite());
+      left.addInput(control.getSuchname());
+      left.addInput(control.getDifferenz());
+      left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
+      
+      SimpleContainer right = new SimpleContainer(cl.getComposite());
+      right.addInput(control.getDatumvon());
+      right.addInput(control.getDatumbis());
+      right.addInput(control.getMailauswahl());
+      
+      ButtonArea filterbuttons = new ButtonArea();
+      filterbuttons.addButton(control.getResetButton());
+      filterbuttons.addButton(control.getSpeichernButton());
+      group.addButtonArea(filterbuttons);
     }
+    else
+    {
+      SimpleContainer cont1 = new SimpleContainer(getParent(), false);
+      cont1.addHeadline("Info");
+      cont1.addInput(control.getInfo());
+    }
+        
+    SimpleContainer cont = new SimpleContainer(getParent(), true);
+    cont.addHeadline("Parameter");
+    
     cont.addLabelPair("Formular", control.getFormular(FormularArt.RECHNUNG));
     cont.addInput(control.getAusgabeart());
     cont.addInput(control.getAusgabesortierung());
 
     cont.addHeadline("Mail");
-    cont.addInput(
-        control.getBetreff(MitgliedskontoControl.TYP.RECHNUNG.name()));
-    cont.addLabelPair("Text",
-        control.getTxt(MitgliedskontoControl.TYP.RECHNUNG.name()));
+    cont.addInput(control.getBetreff());
+    cont.addLabelPair("Text", control.getTxt());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -466,12 +467,12 @@ public class SpendenbescheinigungControl extends FilterControl
     }
   }
 
-  public Button getPDFStandardButton(final boolean mailversand)
+  public Button getPDFStandardButton(final boolean adressblatt)
   {
-    String label = "PDF (Standard, Briefversand)";
-    if (mailversand)
+    String label = "PDF (Standard)";
+    if (adressblatt)
     {
-      label = "PDF (Standard, Mailversand)";
+      label = "PDF (Standard, Mit Adressblatt)";
     }
     Button b = new Button(label, new Action()
     {
@@ -529,7 +530,7 @@ public class SpendenbescheinigungControl extends FilterControl
           final File file = new File(s);
           //
           SpendenbescheinigungPrintAction spa = new SpendenbescheinigungPrintAction(
-              true, mailversand, s);
+              true, adressblatt, s);
           spa.handleAction(spb);
           GUI.getStatusBar().setSuccessText("Spendenbescheinigung erstellt");
           FileViewer.show(file);
@@ -545,9 +546,14 @@ public class SpendenbescheinigungControl extends FilterControl
     return b;
   }
 
-  public Button getPDFIndividuellButton()
+  public Button getPDFIndividuellButton(final boolean adressblatt)
   {
-    Button b = new Button("PDF (Individuell)", new Action()
+    String label = "PDF (Individuell)";
+    if (adressblatt)
+    {
+      label = "PDF (Individuell, Mit Adressblatt)";
+    }
+    Button b = new Button(label, new Action()
     {
 
       @Override
@@ -555,7 +561,7 @@ public class SpendenbescheinigungControl extends FilterControl
       {
         try
         {
-          generiereSpendenbescheinigungIndividuell();
+          generiereSpendenbescheinigungIndividuell(adressblatt);
         }
         catch (RemoteException e)
         {
@@ -574,7 +580,7 @@ public class SpendenbescheinigungControl extends FilterControl
     return b;
   }
 
-  private void generiereSpendenbescheinigungIndividuell() throws IOException
+  private void generiereSpendenbescheinigungIndividuell(boolean adressblatt) throws IOException
   {
     Spendenbescheinigung spb = getSpendenbescheinigung();
     if (spb.isNewObject())
@@ -633,8 +639,22 @@ public class SpendenbescheinigungControl extends FilterControl
     map = new AllgemeineMap().getMap(map);
     FormularAufbereitung fa = new FormularAufbereitung(file);
     fa.writeForm(fo, map);
+    // Brieffenster drucken bei Spendenbescheinigung
+    if (adressblatt)
+    {
+      fa.printAdressfenster(getAussteller(), 
+          (String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()));
+    }
     fa.showFormular();
 
+  }
+  
+  private String getAussteller() throws RemoteException
+  {
+    return Einstellungen.getEinstellung().getName() + ", "
+        + Einstellungen.getEinstellung().getStrasse() + ", "
+        + Einstellungen.getEinstellung().getPlz() + " "
+        + Einstellungen.getEinstellung().getOrt();
   }
 
   public Part getSpendenbescheinigungList() throws RemoteException

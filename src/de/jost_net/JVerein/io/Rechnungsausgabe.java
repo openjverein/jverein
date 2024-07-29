@@ -18,16 +18,14 @@ package de.jost_net.JVerein.io;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.GenericIterator;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 
 public class Rechnungsausgabe extends AbstractMitgliedskontoDokument
@@ -54,46 +52,8 @@ public class Rechnungsausgabe extends AbstractMitgliedskontoDokument
     else
     {
       // Nein: Sammeldruck aus der MitgliedskontoRechnungView
-      DBIterator<Mitgliedskonto> it = Einstellungen.getDBService()
-          .createList(Mitgliedskonto.class);
-      Date d = null;
-      if (control.getVondatum(control.getDatumverwendung()).getValue() != null)
-      {
-        d = (Date) control.getVondatum(control.getDatumverwendung()).getValue();
-        if (d != null)
-        {
-          control.getSettings().setAttribute(
-              control.getDatumverwendung() + "datumvon",
-              new JVDateFormatTTMMJJJJ().format(d));
-        }
-        it.addFilter("datum >= ?", d);
-      }
-      else
-      {
-        control.getSettings()
-            .setAttribute(control.getDatumverwendung() + "datumvon", "");
-      }
-      if (control.getBisdatum(control.getDatumverwendung()).getValue() != null)
-      {
-        d = (Date) control.getBisdatum(control.getDatumverwendung()).getValue();
-        if (d != null)
-        {
-          control.getSettings().setAttribute(
-              control.getDatumverwendung() + "datumbis",
-              new JVDateFormatTTMMJJJJ().format(d));
-        }
-        it.addFilter("datum <= ?", d);
-      }
-      else
-      {
-        control.getSettings()
-            .setAttribute(control.getDatumverwendung() + "datumbis", "");
-      }
-      if ((Boolean) control.getOhneAbbucher().getValue())
-      {
-        it.addFilter("zahlungsweg <> ?", Zahlungsweg.BASISLASTSCHRIFT);
-      }
-
+      @SuppressWarnings("rawtypes")
+      GenericIterator it = control.getMitgliedskontoIterator(false);
       Mitgliedskonto[] mk = new Mitgliedskonto[it.size()];
       int i = 0;
       while (it.hasNext())
@@ -102,6 +62,13 @@ public class Rechnungsausgabe extends AbstractMitgliedskontoDokument
         i++;
       }
       mks = getRechnungsempfaenger(mk);
+    }
+    if (mks.size() == 0)
+    {
+      GUI.getStatusBar().setErrorText(
+          "Keine passenden Sollbuchungen gefunden.");
+      file.delete();
+      return;
     }
     aufbereitung(formular);
     try

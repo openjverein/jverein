@@ -36,6 +36,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
@@ -507,4 +508,27 @@ public class FormularAufbereitung
     }
     return stringVal.toString();
   }
+  
+  public void printAdressfenster(String aussteller, String empfaenger)
+      throws RemoteException
+  {
+    // Neue Seite mit Anschrift für Fenster in querem Brief
+    try
+    {
+      doc.newPage();
+      doc.add(new Paragraph(" ", Reporter.getFreeSans(12)));
+      doc.add(new Paragraph("\n\n\n\n\n\n", Reporter.getFreeSans(12)));
+      Paragraph paragraph = new Paragraph(aussteller, Reporter.getFreeSansUnderline(8));
+      paragraph.setIndentationLeft(40);
+      doc.add(paragraph);
+      paragraph = new Paragraph(empfaenger, Reporter.getFreeSans(9));
+      paragraph.setIndentationLeft(40);
+      doc.add(paragraph);
+    }
+    catch (DocumentException e)
+    {
+      throw new RemoteException("Fehler", e);
+    }
+  }
+  
 }

@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeSet;
@@ -48,7 +49,6 @@ import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -67,10 +67,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class MailControl extends AbstractControl
+public class MailControl extends FilterControl
 {
-
-  private de.willuhn.jameica.system.Settings settings;
 
   private TablePart empfaenger;
 
@@ -85,6 +83,7 @@ public class MailControl extends AbstractControl
   private Mail mail;
 
   private TablePart mailsList;
+
 
   public MailControl(AbstractView view)
   {
@@ -613,11 +612,11 @@ public class MailControl extends AbstractControl
 
   public Part getMailList() throws RemoteException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Mail> mails = service.createList(Mail.class);
-    mails.setOrder("ORDER BY betreff");
-
-    mailsList = new TablePart(mails, new MailDetailAction());
+    if (mailsList != null)
+    {
+      return mailsList;
+    }
+    mailsList = new TablePart(getMails(), new MailDetailAction());
     mailsList.addColumn("Betreff", "betreff");
     mailsList.addColumn("Bearbeitung", "bearbeitung",
         new DateFormatter(new JVDateFormatDATETIME()));
@@ -627,6 +626,87 @@ public class MailControl extends AbstractControl
     mailsList.setContextMenu(new MailMenu());
     mailsList.setRememberOrder(true);
     return mailsList;
+  }
+  
+  public void TabRefresh()
+  {
+    try
+    {
+      if (mailsList == null)
+      {
+        return;
+      }
+      mailsList.removeAll();
+      DBIterator<Mail> mails = getMails();
+      while (mails.hasNext())
+      {
+        mailsList.addItem(mails.next());
+      }
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
+  }
+  
+  private  DBIterator<Mail> getMails() throws RemoteException
+  {
+    DBService service = Einstellungen.getDBService();
+    DBIterator<Mail> mails = service.createList(Mail.class);
+
+    
+    if (isSuchnameAktiv() && getSuchname().getValue() != null)
+    {
+      String tmpSuchname = (String) getSuchname().getValue();
+      if (tmpSuchname.length() > 0)
+      {
+        mails.join("mailempfaenger");
+        mails.addFilter("mailempfaenger.mail = mail.id");
+        mails.join("mitglied");
+        mails.addFilter("mitglied.id = mailempfaenger.mitglied");
+        mails.addFilter("(lower(name) like ? or lower(vorname) like ?) ", 
+            new Object[] { "%" + tmpSuchname.toLowerCase() + "%",
+                "%" + tmpSuchname.toLowerCase() + "%"});
+      }
+    }
+    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
+    {
+      String tmpSuchtext = (String) getSuchtext().getValue();
+      if (tmpSuchtext.length() > 0)
+      {
+        mails.addFilter("(lower(betreff) like ?)", 
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
+      }
+    }
+    if (isEingabedatumvonAktiv()  && getEingabedatumvon().getValue() != null)
+    {
+      Date d = (Date) getEingabedatumvon().getValue();
+      mails.addFilter("bearbeitung >= ?", new Object[] { new java.sql.Date(d.getTime()) });
+    }
+    if (isEingabedatumbisAktiv() && getEingabedatumbis().getValue() != null)
+    {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime((Date) getEingabedatumbis().getValue());
+      cal.add(Calendar.DAY_OF_MONTH, 1);
+      mails.addFilter("bearbeitung <= ?", 
+          new Object[] { new java.sql.Date(cal.getTimeInMillis()) });
+    }
+    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
+    {
+      Date d = (Date) getDatumvon().getValue();
+      mails.addFilter("mail.versand >= ?", new Object[] { new java.sql.Date(d.getTime()) });
+    }
+    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
+    {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime((Date) getDatumbis().getValue());
+      cal.add(Calendar.DAY_OF_MONTH, 1);
+      mails.addFilter("mail.versand <= ?", 
+          new Object[] { new java.sql.Date(cal.getTimeInMillis()) });
+    }
+    mails.setOrder("ORDER BY betreff");
+
+    return mails;
   }
 
   public class EvalMail
