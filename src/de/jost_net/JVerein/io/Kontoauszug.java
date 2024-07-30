@@ -35,12 +35,15 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Queries.MitgliedQuery;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Adresstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -68,7 +71,19 @@ public class Kontoauszug
     this();
     ArrayList<Mitglied> mitglieder = new ArrayList<>();
 
-    if (object != null && object instanceof Mitglied)
+    if (object == null && control.isSuchAdresstypActive() && 
+        control.getSuchAdresstyp(Mitgliedstyp.ALLE).getValue() != null)
+    {
+      Adresstyp atyp = (Adresstyp) control.getSuchAdresstyp(Mitgliedstyp.ALLE).getValue();
+      mitglieder = new MitgliedQuery(control).
+          get(Integer.parseInt(atyp.getID()), null);
+    }
+    else if (object == null && control.isSuchAdresstypActive() && 
+        control.getSuchAdresstyp(Mitgliedstyp.ALLE).getValue() == null)
+    {
+      mitglieder = new MitgliedQuery(control).get(-1, null);
+    }
+    else if (object != null && object instanceof Mitglied)
     {
       mitglieder.add((Mitglied) object);
     }

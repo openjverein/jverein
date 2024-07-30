@@ -61,6 +61,7 @@ import de.jost_net.JVerein.gui.action.JubilaeenAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenExportAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenImportAction;
 import de.jost_net.JVerein.gui.action.KontoListAction;
+import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.KursteilnehmerSucheAction;
 import de.jost_net.JVerein.gui.action.LastschriftListAction;
 import de.jost_net.JVerein.gui.action.LehrgaengeListeAction;
@@ -132,12 +133,13 @@ public class MyExtension implements Extension
       mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new SollbuchungListeAction(), "calculator.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
-          new SpendenbescheinigungListeAction(), "list.png"));
-      
+          new SpendenbescheinigungListeAction(), "list.png"));      
       mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
           new MitgliedskontoRechnungAction(), "document-print.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Mahnungen",
           new MitgliedskontoMahnungAction(), "document-print.png"));
+      mitglieder.addChild(new MyItem(mitglieder, "Kontoauszüge",
+          new KontoauszugAction(), "document-print.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
           new SpendenbescheinigungSendAction(), "document-print.png"));
 
