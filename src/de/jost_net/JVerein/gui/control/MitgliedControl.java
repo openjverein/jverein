@@ -129,6 +129,7 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
@@ -2478,7 +2479,7 @@ public class MitgliedControl extends FilterControl
 
   public TreePart getFamilienbeitraegeTree() throws RemoteException
   {
-    familienbeitragtree = new TreePart(new FamilienbeitragNode(),
+    familienbeitragtree = new TreePart(new FamilienbeitragNode(getMitgliedStatus()),
         new MitgliedDetailAction());
     familienbeitragtree.addColumn("Name", "name");
     familienbeitragtree.setContextMenu(new FamilienbeitragMenu());
@@ -2486,6 +2487,35 @@ public class MitgliedControl extends FilterControl
     familienbeitragtree.setRememberOrder(true);
     this.fbc = new FamilienbeitragMessageConsumer();
     Application.getMessagingFactory().registerMessageConsumer(this.fbc);
+    familienbeitragtree.setFormatter(new TreeFormatter()
+    {
+      @Override
+      public void format(TreeItem item)
+      {
+        FamilienbeitragNode fbn = (FamilienbeitragNode) item.getData();
+        try
+        {
+         if (fbn.getType() == FamilienbeitragNode.ROOT)
+           item.setImage(SWTUtil.getImage("users.png"));
+         if (fbn.getType() == FamilienbeitragNode.ZAHLER
+             && fbn.getMitglied().getAustritt() == null)
+           item.setImage(SWTUtil.getImage("user-friends.png"));
+         if (fbn.getType() == FamilienbeitragNode.ZAHLER
+             && fbn.getMitglied().getAustritt() != null)
+           item.setImage(SWTUtil.getImage("eraser.png"));
+         if (fbn.getType() == FamilienbeitragNode.ANGEHOERIGER
+             && fbn.getMitglied().getAustritt() == null)
+           item.setImage(SWTUtil.getImage("user.png"));
+         if (fbn.getType() == FamilienbeitragNode.ANGEHOERIGER
+             && fbn.getMitglied().getAustritt() != null)
+           item.setImage(SWTUtil.getImage("eraser.png"));
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler beim TreeFormatter", e);
+        }
+      }
+    });
     return familienbeitragtree;
   }
 
@@ -2807,7 +2837,7 @@ public class MitgliedControl extends FilterControl
                   FamilienbeitragMessageConsumer.this);
               return;
             }
-            familienbeitragtree.setRootObject(new FamilienbeitragNode());
+            familienbeitragtree.setRootObject(new FamilienbeitragNode(getMitgliedStatus()));
           }
           catch (Exception e)
           {
@@ -2878,6 +2908,19 @@ public class MitgliedControl extends FilterControl
         {
           refreshMitgliedTable(0);
         }
+      }
+      catch (RemoteException e1)
+      {
+        Logger.error("Fehler", e1);
+      }
+    }
+    
+    if (familienbeitragtree != null)
+    {
+      try
+      {
+        familienbeitragtree.removeAll();
+        familienbeitragtree.setRootObject(new FamilienbeitragNode(getMitgliedStatus()));
       }
       catch (RemoteException e1)
       {

@@ -52,21 +52,22 @@ public class SpendenbescheinigungSendAction implements Action
     }
     if (context == null)
     {
-      throw new ApplicationException("Keine Spendenbescheinigung ausgewählt");
+      GUI.startView(SpendenbescheinigungMailView.class, null);
     }
     else if (context instanceof Spendenbescheinigung)
     {
       spbArr = new Spendenbescheinigung[] { (Spendenbescheinigung) context };
+      GUI.startView(SpendenbescheinigungMailView.class, spbArr);
     }
     else if (context instanceof Spendenbescheinigung[])
     {
       spbArr = (Spendenbescheinigung[]) context;
+      GUI.startView(SpendenbescheinigungMailView.class, spbArr);
     }
     else
     {
-      return;
+      GUI.startView(SpendenbescheinigungMailView.class, null);
     }
 
-    GUI.startView(SpendenbescheinigungMailView.class, spbArr);
   }
 }

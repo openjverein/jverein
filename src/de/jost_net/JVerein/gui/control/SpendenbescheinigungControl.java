@@ -17,14 +17,20 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
+import java.util.TreeSet;
 
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -32,7 +38,9 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
+import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -43,12 +51,18 @@ import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.FormularAufbereitung;
+import de.jost_net.JVerein.io.MailSender;
+import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.rmi.Mail;
+import de.jost_net.JVerein.rmi.MailAnhang;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -65,16 +79,21 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
 public class SpendenbescheinigungControl extends FilterControl
 {
 
+  // Spendenbescheinigung View
   private TablePart spbList;
 
   private SelectInput spendenart;
@@ -116,6 +135,20 @@ public class SpendenbescheinigungControl extends FilterControl
   private boolean and = false;
 
   private String sql = "";
+  
+  // Mail/Drucken View
+  private TextInput mailbetreff = null;
+
+  private TextAreaInput mailtext = null;
+  
+  private TextAreaInput info = null;
+  
+  private SelectInput ausgabeart = null;
+  
+  private SelectInput art = null;
+
+  private SelectInput adressblatt = null;
+  
 
   public SpendenbescheinigungControl(AbstractView view)
   {
@@ -795,4 +828,357 @@ public class SpendenbescheinigungControl extends FilterControl
     and = true;
     sql += condition;
   }
+  
+  //Mail/Drucken View
+  public String getInfoText(Object spbArray)
+  {
+    Spendenbescheinigung[] spbArr = (Spendenbescheinigung[]) spbArray;
+    String text = "Es wurden " + spbArr.length + 
+        " Spendenbescheinigungen ausgewählt"
+        + "\nFolgende Mitglieder haben keine Mailadresse:";
+    try
+    {
+      for (Spendenbescheinigung spb: spbArr)
+      {
+        Mitglied m = spb.getMitglied();
+        if (m != null && ( m.getEmail() == null || m.getEmail().isEmpty()))
+        {
+          text = text + "\n - " + m.getName()
+              + ", " + m.getVorname();
+        }
+      }
+      text = text 
+          + "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:";
+      for (Spendenbescheinigung spb: spbArr)
+      {
+        if (spb.getMitglied() == null)
+        {
+          text = text  + "\n - " + spb.getZeile1()
+              + ", " + spb.getZeile2() + ", " + spb.getZeile3();
+        }
+      }
+    }
+    catch (Exception ex)
+    {
+      GUI.getStatusBar().setErrorText("Fehler beim Ermitteln der Mitglieder aus den Spendenbescheinigungen");
+    }
+    return text;
+  }
+
+  public TextAreaInput getInfo() throws RemoteException
+  {
+    if (info != null)
+    {
+      return info;
+    }
+    info = new TextAreaInput(getInfoText(getCurrentObject()), 10000);
+    info.setHeight(100);
+    info.setEnabled(false);
+    return info;
+  }
+  
+  public SelectInput getAusgabeart()
+  {
+    if (ausgabeart != null)
+    {
+      return ausgabeart;
+    }
+    ausgabeart = new SelectInput(Ausgabeart.values(),
+        Ausgabeart.valueOf(settings.getString(settingsprefix + "ausgabeart", "DRUCK")));
+    ausgabeart.setName("Ausgabe");
+    return ausgabeart;
+  }
+  
+  public SelectInput getArt()
+  {
+    if (art != null)
+    {
+      return art;
+    }
+    art = new SelectInput( 
+        new String[] { "Standard", "Individuell" },
+        settings.getString(settingsprefix + "art", "Standard"));
+    art.setName("Ausgabeart");
+    return art;
+  }
+  
+  public SelectInput getAdressblatt()
+  {
+    if (adressblatt != null)
+    {
+      return adressblatt;
+    }
+    adressblatt = new SelectInput( 
+        new String[] { "Ohne", "Mit" },
+        settings.getString(settingsprefix + "adressblatt", "Ohne"));
+    adressblatt.setName("Adressblatt");
+    return adressblatt;
+  }
+  
+  public TextInput getBetreff()
+  {
+    if (mailbetreff != null)
+    {
+      return mailbetreff;
+    }
+    mailbetreff = new TextInput(settings.
+        getString(settingsprefix + "mail.betreff", ""), 100);
+    mailbetreff.setName("Betreff");
+    return mailbetreff;
+  }
+
+  public TextAreaInput getTxt()
+  {
+    if (mailtext != null)
+    {
+      return mailtext;
+    }
+    mailtext = new TextAreaInput(settings.
+        getString(settingsprefix + "mail.text", ""), 10000);
+    mailtext.setName("Text");
+    return mailtext;
+  }
+  
+  public Button getStartButton(final Object currentObject)
+  {
+    Button button = new Button("Starten", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        try
+        {
+          saveSettings();
+          saveFilterSettings();
+          Spendenbescheinigung[] spbArray = null;
+          if (currentObject == null)
+          {
+            ArrayList<Spendenbescheinigung> spblist = getSpendenbescheinigungen();
+            if (spblist.size() == 0)
+            {
+              GUI.getStatusBar()
+              .setSuccessText("Für die gewählten Filterkriterien wurden "
+                  + "keine Spendenbescheinigungen gefunden");
+              return;
+            }
+            spbArray = spblist.toArray(new Spendenbescheinigung[spblist.size()]);
+          }
+          else if (currentObject instanceof Spendenbescheinigung[])
+          {
+            spbArray = (Spendenbescheinigung[]) currentObject;
+          }
+          else
+          {
+            return;
+          }
+          generatePdf((String) art.getValue(),
+              (String) adressblatt.getValue(), spbArray);
+          if (ausgabeart == null || 
+              (Ausgabeart) ausgabeart.getValue() == Ausgabeart.EMAIL)
+          {
+            sendeMail((String) mailbetreff.getValue(),
+                (String) mailtext.getValue(), spbArray);
+          }
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler", e);
+          GUI.getStatusBar().setErrorText(e.getMessage());
+        }
+      }
+    }, null, true, "walking.png");
+    return button;
+  }
+
+  private void generatePdf(String ar, String ab, Spendenbescheinigung[] spba)
+      throws ApplicationException
+  {
+    boolean standard = true;
+    if (ar.equalsIgnoreCase("Individuell"))
+      standard = false;
+    boolean adressblatt = false;
+    if (ab.equalsIgnoreCase("Mit"))
+      adressblatt = true;
+    SpendenbescheinigungPrintAction action = 
+        new SpendenbescheinigungPrintAction(standard, adressblatt);
+    action.handleAction(spba);
+  }
+  
+  private void sendeMail(final String betr, final String txt,
+      final Spendenbescheinigung[] spba) throws RemoteException
+  {
+
+    BackgroundTask t = new BackgroundTask()
+    {
+
+      @Override
+      public void run(ProgressMonitor monitor)
+      {
+        try
+        {
+          MailSender sender = new MailSender(
+              Einstellungen.getEinstellung().getSmtpServer(),
+              Einstellungen.getEinstellung().getSmtpPort(),
+              Einstellungen.getEinstellung().getSmtpAuthUser(),
+              Einstellungen.getEinstellung().getSmtpAuthPwd(),
+              Einstellungen.getEinstellung().getSmtpFromAddress(),
+              Einstellungen.getEinstellung().getSmtpFromAnzeigename(),
+              Einstellungen.getEinstellung().getMailAlwaysBcc(),
+              Einstellungen.getEinstellung().getMailAlwaysCc(),
+              Einstellungen.getEinstellung().getSmtpSsl(),
+              Einstellungen.getEinstellung().getSmtpStarttls(),
+              Einstellungen.getEinstellung().getMailVerzoegerung(),
+              Einstellungen.getImapCopyData());
+
+          Velocity.init();
+          Logger.debug("preparing velocity context");
+          monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
+          monitor.setPercentComplete(0);
+
+          int sentCount = 0;
+          int size = spba.length;
+          for (int i=0; i < size; i++)
+          {
+            double proz = (double) i / (double) size * 100d;
+            monitor.setPercentComplete((int) proz);
+            Mitglied m = spba[i].getMitglied();
+            if (m == null || m.getEmail() == null || m.getEmail().isEmpty())
+            {
+              continue;
+            }
+            VelocityContext context = new VelocityContext();
+            context.put("dateformat", new JVDateFormatTTMMJJJJ());
+            context.put("decimalformat", Einstellungen.DECIMALFORMAT);
+            context.put("email", m.getEmail());
+
+            Map<String, Object> map = new MitgliedMap().getMap(m, null);
+            map = new AllgemeineMap().getMap(map);
+            VarTools.add(context, map);
+
+            StringWriter wtext1 = new StringWriter();
+            Velocity.evaluate(context, wtext1, "LOG", betr);
+
+            StringWriter wtext2 = new StringWriter();
+            Velocity.evaluate(context, wtext2, "LOG", txt);
+
+            try
+            {
+              String path = Einstellungen.getEinstellung()
+                  .getSpendenbescheinigungverzeichnis();
+              if (path == null || path.length() == 0)
+              {
+                path = settings.getString("lastdir", System.getProperty("user.home"));
+              }
+
+              settings.setAttribute("lastdir", path);
+              path = path.endsWith(File.separator) ? path : path + File.separator;
+              TreeSet<MailAnhang> anhang = new TreeSet<MailAnhang>();
+              MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
+                  .createObject(MailAnhang.class, null);
+              String fileName = new Dateiname(m,
+                  spba[i].getBescheinigungsdatum(), "Spendenbescheinigung",
+                  Einstellungen.getEinstellung().getDateinamenmusterSpende(),
+                  "pdf").get();
+              anh.setDateiname(fileName);
+              fileName = path + fileName;
+              File file = new File(fileName);
+              FileInputStream fis = new FileInputStream(file);
+              byte[] buffer = new byte[(int) file.length()];
+              fis.read(buffer);
+              anh.setAnhang(buffer);
+              anhang.add(anh);
+              fis.close();
+
+              sender.sendMail(m.getEmail(), wtext1.getBuffer().toString(),
+                  wtext2.getBuffer().toString(), anhang);
+              sentCount++;
+
+              // Mail in die Datenbank schreiben
+              Mail mail = (Mail) Einstellungen.getDBService()
+                  .createObject(Mail.class, null);
+              Timestamp ts = new Timestamp(new Date().getTime());
+              mail.setBearbeitung(ts);
+              mail.setBetreff(wtext1.getBuffer().toString());
+              mail.setTxt(wtext2.getBuffer().toString());
+              mail.setVersand(ts);
+              mail.store();
+              MailEmpfaenger empf = (MailEmpfaenger) Einstellungen
+                  .getDBService().createObject(MailEmpfaenger.class, null);
+              empf.setMail(mail);
+              empf.setMitglied(m);
+              empf.setVersand(ts);
+              empf.store();
+              anh.setMail(mail);
+              if (Einstellungen.getEinstellung().getAnhangSpeichern())
+              {
+                anh.store();
+              }
+
+              monitor.log(m.getEmail() + " - versendet");
+            }
+            catch (Exception e)
+            {
+              Logger.error("Fehler beim Mailversand", e);
+              monitor.log(m.getEmail() + " - " + e.getMessage());
+            }
+          }
+          monitor.setPercentComplete(100);
+          monitor.setStatus(ProgressMonitor.STATUS_DONE);
+          monitor.setStatusText(
+              String.format("Anzahl verschickter Mails: %d", sentCount));
+          GUI.getStatusBar().setSuccessText(
+              "Mail" + (sentCount > 1 ? "s" : "") +  " verschickt");
+        }
+        catch (Exception re)
+        {
+          Logger.error("", re);
+          monitor.log(re.getMessage());
+        }
+      }
+
+      @Override
+      public void interrupt()
+      {
+        //
+      }
+
+      @Override
+      public boolean isInterrupted()
+      {
+        return false;
+      }
+    };
+    Application.getController().start(t);
+  }
+  
+  private void saveSettings()
+  {
+    if (ausgabeart != null )
+    {
+      Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
+      settings.setAttribute(settingsprefix + "ausgabeart", aa.toString());
+    }
+    if (art != null)
+    {
+      String ar = (String) getArt().getValue();
+      settings.setAttribute(settingsprefix + "art", ar);
+    }
+    if (adressblatt != null)
+    {
+      String ab = (String) getAdressblatt().getValue();
+      settings.setAttribute(settingsprefix + "adressblatt", ab);
+    }
+    if (mailbetreff != null)
+    {
+      settings.setAttribute(settingsprefix + "mail.betreff",
+          (String) getBetreff().getValue());
+    }
+    if (mailtext != null)
+    {
+      settings.setAttribute(settingsprefix + "mail.text",
+          (String) getTxt().getValue());
+    }
+  }
+
 }

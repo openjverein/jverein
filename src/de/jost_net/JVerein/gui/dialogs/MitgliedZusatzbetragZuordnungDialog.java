@@ -97,7 +97,7 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
             zb.store();
             count++;
           }
-          message = String.format("%d Arbeitseinsätze gespeichert.", count);
+          message = String.format("%d Zusatzbeiträge gespeichert.", count);
         }
         catch (RemoteException e)
         {
