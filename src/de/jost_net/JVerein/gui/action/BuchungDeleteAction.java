@@ -91,6 +91,40 @@ public class BuchungDeleteAction implements Action
         Logger.error("Fehler beim Löschen der Buchung", e);
         return;
       }
+      for (Buchung bu : b)
+      {
+        if (bu.getSpendenbescheinigung() != null)
+        {
+          YesNoDialog dl = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+          dl.setTitle("Buchung" + (b.length > 1 ? "en" : "") + 
+              " und Spendenbescheinigungen löschen");
+          if (b.length == 1)
+          {
+            dl.setText("Die Buchung gehört zu einer Spendenbescheinigung.\n"
+                + "Sie können nur zusammen gelöscht werden.\n"
+                + "Beide löschen?");
+          }
+          else
+          {
+            dl.setText("Mindestens eine Buchung gehört zu einer Spendenbescheinigung.\n"
+                + "Sie können nur zusammen gelöscht werden.\n"
+                + "Jeweils auch die Spendenbescheinigungen löschen?");
+          }
+          try
+          {
+            Boolean choice = (Boolean) dl.open();
+            if (!choice.booleanValue())
+            {
+              return;
+            }
+          }
+          catch (Exception e)
+          {
+            Logger.error("Fehler beim Löschen der Buchung", e);
+            return;
+          }
+        }
+      }
       int count = 0;
       for (Buchung bu : b)
       {
@@ -103,6 +137,8 @@ public class BuchungDeleteAction implements Action
         }
         if (bu.getSplitId() == null)
         {
+          if (bu.getSpendenbescheinigung() != null)
+            bu.getSpendenbescheinigung().delete();
           bu.delete();
           count++;
         }

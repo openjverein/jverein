@@ -24,6 +24,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -37,6 +38,7 @@ import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class DbBereinigenControl extends AbstractControl
@@ -44,18 +46,22 @@ public class DbBereinigenControl extends AbstractControl
 
   private Settings settings = null;
   
-  private double anzahl = 3.0d;
+  private double anzahl = 4.0d;
+  
+  // Spendenbescheinigungen loeschen
+  private CheckboxInput sLoeschenInput = null;
+  private DateInput sDateInput = null;
   
   // Buchungen loeschen
   private CheckboxInput bLoeschenInput = null;
   private DateInput bDateInput = null;
-  private CheckboxInput sLoeschenInput = null;
+  private CheckboxInput sollLoeschenInput = null;
 
-  //Lastschriften loeschen
+  // Lastschriften loeschen
   private CheckboxInput lLoeschenInput = null;
   private DateInput lDateInput = null;
   
-  //Mails loeschen
+  // Mails loeschen
   private CheckboxInput mLoeschenInput = null;
   private DateInput mDateInput = null;
 
@@ -77,8 +83,10 @@ public class DbBereinigenControl extends AbstractControl
       {
         try
         {
-          runDelete((boolean) bLoeschenInput.getValue(), (Date) bDateInput.getValue(),
-              (boolean) sLoeschenInput.getValue(),
+          runDelete(
+              (boolean) sLoeschenInput.getValue(), (Date) sDateInput.getValue(),
+              (boolean) bLoeschenInput.getValue(), (Date) bDateInput.getValue(),
+              (boolean) sollLoeschenInput.getValue(),
               (boolean) lLoeschenInput.getValue(), (Date) lDateInput.getValue(),
               (boolean) mLoeschenInput.getValue(), (Date) mDateInput.getValue());
         }
@@ -94,8 +102,8 @@ public class DbBereinigenControl extends AbstractControl
   }
 
   
-  private void runDelete(final boolean bloeschen, final Date bdate,
-      final boolean sloeschen,
+  private void runDelete(final boolean sloeschen, final Date sdate,
+      final boolean bloeschen, final Date bdate, final boolean sollloeschen,
       final boolean lloeschen, final Date ldate,
       final boolean mloeschen, final Date mdate) throws RemoteException
   {
@@ -110,6 +118,18 @@ public class DbBereinigenControl extends AbstractControl
           monitor.setPercentComplete(0);
           double progress = 1.0d;
           
+          // Spendenbescheinigungen löschen
+          if ( sloeschen && sdate == null)
+          {
+            monitor.log("Spendenbescheinigungen löschen: Kein gültiges Datum eingegeben");
+          }
+          else if ( sloeschen && sdate != null)
+          {
+            spendenbescheinigungenLoeschen(monitor, sdate);
+          }
+          monitor.setPercentComplete((int) (progress / anzahl * 100d));
+          progress++;
+          
           // Buchungen löschen
           if ( bloeschen && bdate == null)
           {
@@ -117,7 +137,7 @@ public class DbBereinigenControl extends AbstractControl
           }
           else if ( bloeschen && bdate != null)
           {
-            buchungenLoeschen(monitor, bdate, sloeschen);
+            buchungenLoeschen(monitor, bdate, sollloeschen);
           }
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
@@ -171,6 +191,31 @@ public class DbBereinigenControl extends AbstractControl
     Application.getController().start(t);
   }
   
+  // Spendenbescheinigungen loeschen
+  public CheckboxInput getSpendenbescheinigungenLoeschen()
+  {
+    if (sLoeschenInput != null)
+    {
+      return sLoeschenInput;
+    }
+    sLoeschenInput = new CheckboxInput(false);
+    return sLoeschenInput;
+  }
+  
+  public DateInput getDatumAuswahlSpendenbescheinigungen()
+  {
+    if (sDateInput != null)
+    {
+      return sDateInput;
+    }
+    Calendar cal = Calendar.getInstance();
+    int year = cal.get(Calendar.YEAR);
+    cal.set(Calendar.YEAR, year-11);
+    cal.set(Calendar.MONTH, Calendar.JANUARY);
+    cal.set(Calendar.DAY_OF_MONTH, 1);
+    sDateInput = new DateInput(new Date(cal.getTimeInMillis()));
+    return sDateInput;
+  }
 
   // Buchungen loeschen
   public CheckboxInput getBuchungenLoeschen()
@@ -200,12 +245,12 @@ public class DbBereinigenControl extends AbstractControl
 
   public CheckboxInput getSollbuchungenLoeschen()
   {
-    if (sLoeschenInput != null)
+    if (sollLoeschenInput != null)
     {
-      return sLoeschenInput;
+      return sollLoeschenInput;
     }
-    sLoeschenInput = new CheckboxInput(true);
-    return sLoeschenInput;
+    sollLoeschenInput = new CheckboxInput(true);
+    return sollLoeschenInput;
   }
   
   // Lastschriften loeschen
@@ -261,6 +306,53 @@ public class DbBereinigenControl extends AbstractControl
   }
   
   // Lösch Aktionen
+  private void spendenbescheinigungenLoeschen(ProgressMonitor monitor, final Date date)
+  {
+    try
+    {
+      DBIterator<Spendenbescheinigung> it = Einstellungen.getDBService()
+          .createList(Spendenbescheinigung.class);
+      it.addFilter("spendedatum < ?", date);
+      int count = 0;
+      Spendenbescheinigung sp = null;
+      while (it.hasNext())
+      {
+        try
+        {
+          sp = it.next();
+          sp.delete();
+          count++;
+        }
+        catch (ApplicationException e)
+        {
+          String fehler = "Fehler beim Löschen der Spendenbescheinigung mit Nr " + 
+              sp.getID() + ", " + e.getMessage();
+          monitor.setStatusText(fehler);
+          Logger.error(fehler, e);
+        }
+      }
+      if (count > 0)
+      {
+        monitor.setStatusText(String.format(
+            "%d Spendenbescheinigung" + (count != 1 ? "en" : "") + " gelöscht.", count));
+      }
+      else
+      {
+        monitor.log("Keine Spendenbescheinigung im vorgegebenen Zeitraum vorhanden!");
+      }
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      String fehler = "Fehler beim Löschen von Lastschriften.";
+      monitor.setStatusText(fehler);
+      Logger.error(fehler, e);
+    }
+  }
+  
   private void buchungenLoeschen(ProgressMonitor monitor, final Date date, final boolean sloeschen)
   {
     try
@@ -268,31 +360,49 @@ public class DbBereinigenControl extends AbstractControl
       DBIterator<Buchung> it = Einstellungen.getDBService()
           .createList(Buchung.class);
       it.addFilter("datum < ?", date);
-      int count = 0;
+      int countb = 0;
+      int counts = 0;
       Buchung b = null;
       while (it.hasNext())
       {
-        b = it.next();
         try
         {
-          if (sloeschen && (b.getMitgliedskonto() != null))
+          b = it.next();
+          b.delete();
+          try
           {
-            b.getMitgliedskonto().delete();
+            if (sloeschen && (b.getMitgliedskonto() != null))
+            {
+              b.getMitgliedskonto().delete();
+              counts++;
+            }
           }
+          catch (Exception e)
+          {
+            // Das kann passieren wenn der Sollbuchung mehrere Buchungen 
+            // zugeordnet waren. Dann existiert die Sollbuchung nicht mehr  
+            // bei den weiteren Buchungen da das Query vorher erfolgt ist
+            counts--;
+          }
+          countb++;
         }
-        catch (Exception e)
+        catch (ApplicationException e)
         {
-          // Das kann passieren wenn der Sollbuchung mehrere Buchungen 
-          // zugeordnet waren. Dann existiert die Sollbuchung nicht mehr  
-          // bei den weiteren Buchungen da das Query vorher erfolgt ist
+          String fehler = "Fehler beim Löschen der Buchungen mit Nr " + 
+                           b.getID() + ", " + e.getMessage();
+          monitor.setStatusText(fehler);
+          Logger.error(fehler, e);
         }
-        b.delete();
-        count++;
       }
-      if (count > 0)
+      if (counts > 0)
       {
         monitor.setStatusText(String.format(
-            "%d Buchung" + (count != 1 ? "en" : "") + " gelöscht.", count));
+            "%d Sollbuchung" + (counts != 1 ? "en" : "") + " gelöscht.", counts));
+      }
+      if (countb > 0)
+      {
+        monitor.setStatusText(String.format(
+            "%d Buchung" + (countb != 1 ? "en" : "") + " gelöscht.", countb));
       }
       else
       {
@@ -321,10 +431,22 @@ public class DbBereinigenControl extends AbstractControl
       it.addFilter("abrechnungslauf.id = lastschrift.abrechnungslauf");
       it.addFilter("faelligkeit < ?", date);
       int count = 0;
+      Lastschrift la = null;
       while (it.hasNext())
       {
-        it.next().delete();;
-        count++;
+        try
+        {
+          la = it.next();
+          la.delete();
+          count++;
+        }
+        catch (ApplicationException e)
+        {
+          String fehler = "Fehler beim Löschen der Lastschrift mit Nr " + 
+              la.getID() + ", " + e.getMessage();
+          monitor.setStatusText(fehler);
+          Logger.error(fehler, e);
+        }
       }
       if (count > 0)
       {
@@ -356,10 +478,22 @@ public class DbBereinigenControl extends AbstractControl
           .createList(Mail.class);
       it.addFilter("versand < ?", date);
       int count = 0;
+      Mail mail = null;
       while (it.hasNext())
       {
-        it.next().delete();;
-        count++;
+        try
+        {
+          mail = it.next();
+          mail.delete();
+          count++;
+        }
+        catch (ApplicationException e)
+        {
+          String fehler = "Fehler beim Löschen der Lastschrift mit Nr " + 
+              mail.getID() + ", " + e.getMessage();
+          monitor.setStatusText(fehler);
+          Logger.error(fehler, e);
+        }
       }
       if (count > 0)
       {

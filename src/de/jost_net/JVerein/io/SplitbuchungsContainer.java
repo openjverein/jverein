@@ -236,6 +236,8 @@ public class SplitbuchungsContainer
     {
       if (b.isToDelete())
       {
+        if (b.getSpendenbescheinigung() != null)
+          b.getSpendenbescheinigung().delete();
         b.delete();
       }
       else

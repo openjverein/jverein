@@ -24,7 +24,6 @@ import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.datasource.db.AbstractDBObject;
 
 public class LastschriftImpl extends AbstractDBObject implements Lastschrift
