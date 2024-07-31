@@ -42,8 +42,6 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
-import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class DbBereinigenControl extends AbstractControl
@@ -97,7 +95,6 @@ public class DbBereinigenControl extends AbstractControl
         }
         catch (Exception e)
         {
-          Logger.error("Fehler", e);
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
@@ -176,7 +173,6 @@ public class DbBereinigenControl extends AbstractControl
         }
         catch (Exception re)
         {
-          Logger.error("", re);
           monitor.log(re.getMessage());
         }
       }
@@ -328,12 +324,15 @@ public class DbBereinigenControl extends AbstractControl
           sp.delete();
           count++;
         }
+        catch (OperationCanceledException oce)
+        {
+          throw oce;
+        }
         catch (Exception e)
         {
           String fehler = "Fehler beim Löschen der Spendenbescheinigung mit Nr " + 
               sp.getID() + ", " + e.getMessage();
           monitor.setStatusText(fehler);
-          Logger.error(fehler, e);
         }
       }
       if (count > 0)
@@ -354,7 +353,6 @@ public class DbBereinigenControl extends AbstractControl
     {
       String fehler = "Fehler beim Löschen von Lastschriften.";
       monitor.setStatusText(fehler);
-      Logger.error(fehler, e);
     }
   }
   
@@ -413,14 +411,21 @@ public class DbBereinigenControl extends AbstractControl
               counts++;
             }
           }
+          catch (OperationCanceledException oce)
+          {
+            throw oce;
+          }
           catch (Exception e)
           {
             // Das kann passieren wenn der Sollbuchung mehrere Buchungen 
             // zugeordnet waren. Dann existiert die Sollbuchung nicht mehr  
             // bei den weiteren Buchungen da das Query vorher erfolgt ist
-            counts--;
           }
           countb++;
+        }
+        catch (OperationCanceledException oce)
+        {
+          throw oce;
         }
         catch (Exception e)
         {
@@ -474,12 +479,15 @@ public class DbBereinigenControl extends AbstractControl
           la.delete();
           count++;
         }
+        catch (OperationCanceledException oce)
+        {
+          throw oce;
+        }
         catch (Exception e)
         {
           String fehler = "Fehler beim Löschen der Lastschrift mit Nr " + 
               la.getID() + ", " + e.getMessage();
           monitor.setStatusText(fehler);
-          Logger.error(fehler, e);
         }
       }
       if (count > 0)
@@ -520,12 +528,15 @@ public class DbBereinigenControl extends AbstractControl
           mail.delete();
           count++;
         }
-        catch (ApplicationException e)
+        catch (OperationCanceledException oce)
+        {
+          throw oce;
+        }
+        catch (Exception e)
         {
           String fehler = "Fehler beim Löschen der Lastschrift mit Nr " + 
               mail.getID() + ", " + e.getMessage();
           monitor.setStatusText(fehler);
-          Logger.error(fehler, e);
         }
       }
       if (count > 0)
