@@ -153,7 +153,7 @@ public class AnfangsbestandControl extends FilterControl
     }
     anfangsbestandList = new TablePart(getAnfangsstaende(),
         new AnfangsbestandDetailAction());
-    anfangsbestandList.addColumn("Konto", "kontotext");
+    anfangsbestandList.addColumn("Konto: Nummer Bezeichnung", "kontotext");
     anfangsbestandList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     anfangsbestandList.addColumn("Betrag", "betrag",
