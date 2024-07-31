@@ -366,10 +366,11 @@ public class DbBereinigenControl extends AbstractControl
       // Check ob im Bereich Splittbuchungen mit Spendenbescheinigungen liegen
       final DBService service = Einstellungen.getDBService();
       String sql = "SELECT DISTINCT buchung.splitid from buchung "
-          + "WHERE splitid IS NOT NULL and spendenbescheinigung IS NOT NULL ";
+          + "WHERE splitid IS NOT NULL and spendenbescheinigung IS NOT NULL "
+          + "and datum < ? ";
       @SuppressWarnings("unchecked")
       ArrayList<Long> splitmitspende = (ArrayList<Long>) service.execute(sql,
-          new Object[] { }, new ResultSetExtractor()
+          new Object[] { date }, new ResultSetExtractor()
       {
         @Override
         public Object extract(ResultSet rs)

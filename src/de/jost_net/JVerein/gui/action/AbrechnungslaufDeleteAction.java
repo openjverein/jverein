@@ -67,7 +67,7 @@ public class AbrechnungslaufDeleteAction implements Action
             "Abgeschlossene Abrechnungsläufe können nicht gelöscht werden!");
       }
       
-      // Check ob einer der Buchungen der Splittbuchung
+      // Check ob einer der Buchungen des Abrechnungslaufs
       // eine Spendenbescheinigung zugeordnet ist
       final DBService service = Einstellungen.getDBService();
       String sql = "SELECT DISTINCT buchung.id from buchung "
