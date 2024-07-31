@@ -163,6 +163,8 @@ public class SplitbuchungsContainer
       }
       else
       {
+        if (b.getSpendenbescheinigung() != null)
+          b.getSpendenbescheinigung().delete();
         b.delete();
       }
     }

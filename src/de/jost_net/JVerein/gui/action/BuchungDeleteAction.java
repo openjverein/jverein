@@ -74,10 +74,44 @@ public class BuchungDeleteAction implements Action
       {
         return;
       }
+      
+      // Check ob einer der Buchungen
+      // eine Spendenbescheinigung zugeordnet ist
+      boolean spendenbescheinigung = false;
+      for (Buchung bu : b)
+      {
+        if (bu.getSpendenbescheinigung() != null)
+        {
+          spendenbescheinigung = true;
+          break;
+        }
+      }
+      
+      String text = "";
+      if (!spendenbescheinigung)
+      {
+        text = "Wollen Sie diese Buchung" + (b.length > 1 ? "en" : "")
+            + " wirklich löschen?";
+      }
+      else
+      {
+        if (b.length == 1)
+        {
+         text = "Die Buchung gehört zu einer Spendenbescheinigung.\n"
+              + "Sie können nur zusammen gelöscht werden.\n"
+              + "Beide löschen?";
+        }
+        else
+        {
+          text = "Mindestens eine Buchung gehört zu einer Spendenbescheinigung.\n"
+              + "Sie können nur zusammen gelöscht werden.\n"
+              + "Jeweils auch die Spendenbescheinigungen löschen?";
+        }
+      }
+      
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Buchung" + (b.length > 1 ? "en" : "") + " löschen");
-      d.setText("Wollen Sie diese Buchung" + (b.length > 1 ? "en" : "")
-          + " wirklich löschen?");
+      d.setText(text);
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -91,40 +125,7 @@ public class BuchungDeleteAction implements Action
         Logger.error("Fehler beim Löschen der Buchung", e);
         return;
       }
-      for (Buchung bu : b)
-      {
-        if (bu.getSpendenbescheinigung() != null)
-        {
-          YesNoDialog dl = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-          dl.setTitle("Buchung" + (b.length > 1 ? "en" : "") + 
-              " und Spendenbescheinigungen löschen");
-          if (b.length == 1)
-          {
-            dl.setText("Die Buchung gehört zu einer Spendenbescheinigung.\n"
-                + "Sie können nur zusammen gelöscht werden.\n"
-                + "Beide löschen?");
-          }
-          else
-          {
-            dl.setText("Mindestens eine Buchung gehört zu einer Spendenbescheinigung.\n"
-                + "Sie können nur zusammen gelöscht werden.\n"
-                + "Jeweils auch die Spendenbescheinigungen löschen?");
-          }
-          try
-          {
-            Boolean choice = (Boolean) dl.open();
-            if (!choice.booleanValue())
-            {
-              return;
-            }
-          }
-          catch (Exception e)
-          {
-            Logger.error("Fehler beim Löschen der Buchung", e);
-            return;
-          }
-        }
-      }
+      
       int count = 0;
       for (Buchung bu : b)
       {

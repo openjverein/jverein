@@ -17,6 +17,9 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -26,6 +29,8 @@ import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -323,7 +328,7 @@ public class DbBereinigenControl extends AbstractControl
           sp.delete();
           count++;
         }
-        catch (ApplicationException e)
+        catch (Exception e)
         {
           String fehler = "Fehler beim Löschen der Spendenbescheinigung mit Nr " + 
               sp.getID() + ", " + e.getMessage();
@@ -353,10 +358,32 @@ public class DbBereinigenControl extends AbstractControl
     }
   }
   
-  private void buchungenLoeschen(ProgressMonitor monitor, final Date date, final boolean sloeschen)
+  private void buchungenLoeschen(ProgressMonitor monitor, final Date date, 
+      final boolean sollloeschen)
   {
     try
     {
+      // Check ob im Bereich Splittbuchungen mit Spendenbescheinigungen liegen
+      final DBService service = Einstellungen.getDBService();
+      String sql = "SELECT DISTINCT buchung.splitid from buchung "
+          + "WHERE splitid IS NOT NULL and spendenbescheinigung IS NOT NULL ";
+      @SuppressWarnings("unchecked")
+      ArrayList<Long> splitmitspende = (ArrayList<Long>) service.execute(sql,
+          new Object[] { }, new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs)
+            throws RemoteException, SQLException
+        {
+          ArrayList<Long> list = new ArrayList<>();
+          while (rs.next())
+          {
+            list.add(rs.getLong(1));
+          }
+          return list;
+        }
+      });
+      
       DBIterator<Buchung> it = Einstellungen.getDBService()
           .createList(Buchung.class);
       it.addFilter("datum < ?", date);
@@ -368,10 +395,18 @@ public class DbBereinigenControl extends AbstractControl
         try
         {
           b = it.next();
+          if (splitmitspende.contains(b.getSplitId()))
+          {
+            String fehler = "Die Buchung mit der Nr " + b.getID() +
+                " wurde nicht gelöscht. Sie ist Teil einer Splittbuchung "
+                + "mit zugeordeneten Spendenbescheinigungen";
+            monitor.setStatusText(fehler);
+            continue;
+          }
           b.delete();
           try
           {
-            if (sloeschen && (b.getMitgliedskonto() != null))
+            if (sollloeschen && (b.getMitgliedskonto() != null))
             {
               b.getMitgliedskonto().delete();
               counts++;
@@ -386,12 +421,11 @@ public class DbBereinigenControl extends AbstractControl
           }
           countb++;
         }
-        catch (ApplicationException e)
+        catch (Exception e)
         {
           String fehler = "Fehler beim Löschen der Buchungen mit Nr " + 
                            b.getID() + ", " + e.getMessage();
           monitor.setStatusText(fehler);
-          Logger.error(fehler, e);
         }
       }
       if (counts > 0)
@@ -417,7 +451,6 @@ public class DbBereinigenControl extends AbstractControl
     {
       String fehler = "Fehler beim Löschen von Buchungen.";
       monitor.setStatusText(fehler);
-      Logger.error(fehler, e);
     }
   }
   
@@ -440,7 +473,7 @@ public class DbBereinigenControl extends AbstractControl
           la.delete();
           count++;
         }
-        catch (ApplicationException e)
+        catch (Exception e)
         {
           String fehler = "Fehler beim Löschen der Lastschrift mit Nr " + 
               la.getID() + ", " + e.getMessage();
@@ -466,7 +499,6 @@ public class DbBereinigenControl extends AbstractControl
     {
       String fehler = "Fehler beim Löschen von Lastschriften.";
       monitor.setStatusText(fehler);
-      Logger.error(fehler, e);
     }
   }
   
@@ -513,7 +545,6 @@ public class DbBereinigenControl extends AbstractControl
     {
       String fehler = "Fehler beim Löschen von Mails.";
       monitor.setStatusText(fehler);
-      Logger.error(fehler, e);
     }
   }
 
