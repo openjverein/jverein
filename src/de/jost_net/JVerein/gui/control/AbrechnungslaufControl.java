@@ -32,7 +32,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -47,10 +46,8 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AbrechnungslaufControl extends AbstractControl
+public class AbrechnungslaufControl extends FilterControl
 {
-
-  private final de.willuhn.jameica.system.Settings settings;
 
   private Abrechnungslauf abrl;
 
@@ -64,7 +61,7 @@ public class AbrechnungslaufControl extends AbstractControl
 
   private LabelInput faelligkeit;
 
-  private LabelInput stichtag;
+  private LabelInput astichtag;
 
   private LabelInput eingabedatum;
 
@@ -80,7 +77,7 @@ public class AbrechnungslaufControl extends AbstractControl
 
   private LabelInput statistiklastschriften;
 
-  public AbrechnungslaufControl(AbstractView view)
+  public AbrechnungslaufControl(AbstractView view) 
   {
     super(view);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
@@ -145,16 +142,16 @@ public class AbrechnungslaufControl extends AbstractControl
     return faelligkeit;
   }
 
-  public LabelInput getStichtag() throws RemoteException
+  public LabelInput getAbrechnungStichtag() throws RemoteException
   {
-    if (stichtag != null)
+    if (astichtag != null)
     {
-      return stichtag;
+      return astichtag;
     }
-    stichtag = new LabelInput(new JVDateFormatTTMMJJJJ()
+    astichtag = new LabelInput(new JVDateFormatTTMMJJJJ()
         .format(getAbrechnungslaeufe().getStichtag()));
-    stichtag.setName("Stichtag");
-    return stichtag;
+    astichtag.setName("Stichtag");
+    return astichtag;
   }
 
   public LabelInput getEingabedatum() throws RemoteException
@@ -349,6 +346,16 @@ public class AbrechnungslaufControl extends AbstractControl
     DBService service = Einstellungen.getDBService();
     DBIterator<Abrechnungslauf> abrechnungslaeufe = service
         .createList(Abrechnungslauf.class);
+    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
+    {
+      abrechnungslaeufe.addFilter("datum >= ?",
+          new Object[] { (Date) getDatumvon().getValue() });
+    }
+    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
+    {
+      abrechnungslaeufe.addFilter("datum <= ?",
+          new Object[] { (Date) getDatumbis().getValue() });
+    }
     abrechnungslaeufe.setOrder("ORDER BY datum DESC");
 
     if (abrechnungslaufList == null)
@@ -387,6 +394,22 @@ public class AbrechnungslaufControl extends AbstractControl
       }
     }
     return abrechnungslaufList;
+  }
+  
+  public void TabRefresh()
+  {
+    if (abrechnungslaufList == null)
+    {
+      return;
+    }
+    try
+    {
+      getAbrechungslaeufeList();
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
   }
 
 }

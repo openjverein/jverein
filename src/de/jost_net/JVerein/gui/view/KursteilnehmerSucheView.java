@@ -61,6 +61,7 @@ public class KursteilnehmerSucheView extends AbstractView
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
+    left.addLabelPair("Verwendungszweck", control.getSuchtext());
     
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addInput(control.getEingabedatumvon());

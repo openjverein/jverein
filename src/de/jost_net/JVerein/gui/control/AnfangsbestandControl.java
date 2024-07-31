@@ -201,6 +201,15 @@ public class AnfangsbestandControl extends FilterControl
             new Object[] { "%" + tmpSuchname.toLowerCase() + "%"});
       }
     }
+    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
+    {
+      String tmpSuchtext = (String) getSuchtext().getValue();
+      if (tmpSuchtext.length() > 0)
+      {
+        anfangsbestaende.addFilter("(lower(nummer) like ?)",
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+      }
+    }
     if (isDatumvonAktiv() && getDatumvon().getValue() != null)
     {
       anfangsbestaende.addFilter("datum >= ?",
