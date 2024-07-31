@@ -39,6 +39,7 @@ import de.willuhn.util.ApplicationException;
 public class SplitbuchungBulkAufloesenAction implements Action
 {
   private ArrayList<Long> geloescht = new ArrayList<>();
+  private ArrayList<Long> schongeprueft = new ArrayList<>();
   private Long splitid;
   
   @Override
@@ -77,27 +78,33 @@ public class SplitbuchungBulkAufloesenAction implements Action
       boolean spendenbescheinigung = false;
       for (Buchung splitbu : b)
       {
-        // Check ob einer der Buchungen der Splittbuchung
-        // eine Spendenbescheinigung zugeordnet ist
-        final DBService service = Einstellungen.getDBService();
-        String sql = "SELECT DISTINCT buchung.id from buchung "
-            + "WHERE (splitid = ? and spendenbescheinigung IS NOT NULL) ";
-        spendenbescheinigung = (boolean) service.execute(sql,
-            new Object[] { splitbu.getSplitId() }, new ResultSetExtractor()
+        // Es können mehrere der gleichen Splittbuchung selektiert worden sein
+        // Die Prüfung reicht einmal pro SplitId
+        if (!schongeprueft.contains(splitbu.getSplitId()))
         {
-          @Override
-          public Object extract(ResultSet rs)
-              throws RemoteException, SQLException
+          // Check ob einer der Buchungen der Splittbuchung
+          // eine Spendenbescheinigung zugeordnet ist
+          final DBService service = Einstellungen.getDBService();
+          String sql = "SELECT DISTINCT buchung.id from buchung "
+              + "WHERE (splitid = ? and spendenbescheinigung IS NOT NULL) ";
+          spendenbescheinigung = (boolean) service.execute(sql,
+              new Object[] { splitbu.getSplitId() }, new ResultSetExtractor()
           {
-            if (rs.next())
+            @Override
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
             {
-              return true;
+              if (rs.next())
+              {
+                return true;
+              }
+              return false;
             }
-            return false;
-          }
-        });
-        if (spendenbescheinigung)
-          break;
+          });
+          if (spendenbescheinigung)
+            break;
+          schongeprueft.add(splitbu.getSplitId());
+        }
       }
       
       String text = "";
