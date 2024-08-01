@@ -55,6 +55,7 @@ import de.jost_net.JVerein.gui.action.EigenschaftListeAction;
 import de.jost_net.JVerein.gui.action.FamilienbeitragAction;
 import de.jost_net.JVerein.gui.action.FelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.FormularListeAction;
+import de.jost_net.JVerein.gui.action.FreieFormulareAction;
 import de.jost_net.JVerein.gui.action.JahresabschlussListAction;
 import de.jost_net.JVerein.gui.action.KontensaldoAction;
 import de.jost_net.JVerein.gui.action.JubilaeenAction;
@@ -140,6 +141,8 @@ public class MyExtension implements Extension
           new MitgliedskontoMahnungAction(), "document-print.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Kontoauszüge",
           new KontoauszugAction(), "document-print.png"));
+      mitglieder.addChild(new MyItem(mitglieder, "Freie Formulare",
+          new FreieFormulareAction(), "document-print.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
           new SpendenbescheinigungSendAction(), "document-print.png"));
 
