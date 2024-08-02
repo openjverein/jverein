@@ -76,6 +76,12 @@ public class MailVorlageZuweisenAction implements Action
             kto.getBetreff().setValue(mv.getBetreff());
             kto.getTxt().setValue(mv.getTxt());
           }
+          else if (context instanceof FreieFormulareControl)
+          {
+            FreieFormulareControl kto = (FreieFormulareControl) context;
+            kto.getBetreff().setValue(mv.getBetreff());
+            kto.getTxt().setValue(mv.getTxt());
+          }
         }
       }
       else

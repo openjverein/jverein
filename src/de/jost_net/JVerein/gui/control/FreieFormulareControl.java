@@ -6,7 +6,6 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.io.FreiesFormularAusgabe;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -87,12 +86,6 @@ public class FreieFormulareControl extends FilterControl
     {
       Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
       settings.setAttribute(settingsprefix + "ausgabeart", aa.toString());
-    }
-    if (formular != null)
-    {
-      Formular f = (Formular) getFormular(FormularArt.FREIESFORMULAR).getValue();
-      if(f != null)
-        settings.setAttribute(settingsprefix + "art", f.toString());
     }
     if (betreff != null)
     {
