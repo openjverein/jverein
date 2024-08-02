@@ -45,6 +45,11 @@ public class FreiesFormularAusgabe
     this.control = control;
     Formular formular = (Formular) control
         .getFormular(FormularArt.FREIESFORMULAR).getValue();
+    if(formular == null)
+    {
+      GUI.getStatusBar().setErrorText("Kein Formular ausgewählt.");
+      return;
+    }
 
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {

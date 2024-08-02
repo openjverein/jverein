@@ -53,6 +53,8 @@ public class DokumentationUtil
   public static final String RECHNUNG = PRE + FUNKTIONEN + "rechnungen";
 
   public static final String MAHNUNG = PRE + FUNKTIONEN + "mahnungen";
+  
+  public static final String FREIESFORMULAR = PRE + FUNKTIONEN + "freiesformular";
 
   public static final String PRENOTIFICATION = PRE + FUNKTIONEN + ABRECH + "pre-notification";
 

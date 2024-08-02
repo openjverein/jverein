@@ -1,5 +1,6 @@
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.FreieFormulareControl;
@@ -22,7 +23,7 @@ public class FreieFormulareView extends AbstractView
     GUI.getView().setTitle("Freie Formulare");
 
     final FreieFormulareControl control = new FreieFormulareControl(this);
-    control.init("freieformulare.", null, null);
+    control.init("freieformulare.","zusatzfeld.", "zusatzfelder.");
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
 
@@ -42,7 +43,8 @@ public class FreieFormulareView extends AbstractView
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getEigenschaftenAuswahl());
     right.addInput(control.getStichtag());
-    right.addInput(control.getZusatzfelderAuswahl());
+    if (Einstellungen.getEinstellung().hasZusatzfelder())
+      right.addInput(control.getZusatzfelderAuswahl());
 
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Parameter");
@@ -61,7 +63,7 @@ public class FreieFormulareView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.KONTOAUSZUG, false, "question-circle.png");
+        DokumentationUtil.FREIESFORMULAR, false, "question-circle.png");
     buttons.addButton(new Button("Mail-Vorlage",
         new MailVorlageZuweisenAction(), control, false, "view-refresh.png"));
     buttons.addButton(

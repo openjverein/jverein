@@ -20,6 +20,7 @@ import de.jost_net.JVerein.gui.control.MailVorlageControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
 import de.jost_net.JVerein.gui.control.PreNotificationControl;
+import de.jost_net.JVerein.gui.control.FreieFormulareControl;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.MailVorlagenAuswahlDialog;
 import de.jost_net.JVerein.rmi.MailVorlage;
@@ -41,7 +42,8 @@ public class MailVorlageZuweisenAction implements Action
           (context instanceof MitgliedskontoControl ||
            context instanceof SpendenbescheinigungControl ||
            context instanceof PreNotificationControl ||
-           context instanceof MailControl))
+           context instanceof MailControl ||
+           context instanceof FreieFormulareControl))
       {
         MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
             new MailVorlageControl(null),
