@@ -89,6 +89,10 @@ public class FreiesFormularAusgabe
           aufbereitenFormular(m, formularaufbereitung, formular);
           break;
         case EMAIL:
+          if (m.getEmail() == null || m.getEmail().isEmpty())
+          {
+            continue;
+          }
           File f = File.createTempFile(getDateiname(m), ".pdf");
           formularaufbereitung = new FormularAufbereitung(f);
           aufbereitenFormular(m, formularaufbereitung, formular);
