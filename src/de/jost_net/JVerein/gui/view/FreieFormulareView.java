@@ -48,9 +48,9 @@ public class FreieFormulareView extends AbstractView
 
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Parameter");
-    cont.addInput(control.getAusgabeart());
     cont.addLabelPair("Formular",
         control.getFormular(FormularArt.FREIESFORMULAR));
+    cont.addInput(control.getAusgabeart());
 
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());
