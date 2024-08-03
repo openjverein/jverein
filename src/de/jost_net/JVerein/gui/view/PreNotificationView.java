@@ -39,6 +39,7 @@ public class PreNotificationView extends AbstractView
     GUI.getView().setTitle("SEPA Pre-Notification");
 
     final PreNotificationControl control = new PreNotificationControl(this);
+    control.init("prenotification." , null, null);
 
     TabFolder folder = control.getFolder(getParent());
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -54,8 +55,8 @@ public class PreNotificationView extends AbstractView
 
     grtabMailPDF.addHeadline("Mail");
 
-    grtabMailPDF.addInput(control.getMailSubject());
-    grtabMailPDF.addInput(control.getMailBody());
+    grtabMailPDF.addInput(control.getBetreff());
+    grtabMailPDF.addInput(control.getTxt());
 
     ButtonArea buttons1 = new ButtonArea();
     buttons1.addButton("Hilfe", new DokumentationAction(),

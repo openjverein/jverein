@@ -36,7 +36,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.VarTools;
-import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.io.Ct1Ueberweisung;
 import de.jost_net.JVerein.io.FormularAufbereitung;
 import de.jost_net.JVerein.io.MailSender;
@@ -53,13 +52,11 @@ import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.system.Application;
@@ -70,36 +67,10 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class PreNotificationControl extends AbstractControl
+public class PreNotificationControl extends DruckMailControl
 {
 
-  private Settings settings = null;
-
   private TabFolder folder = null;
-
-  private SelectInput output = null;
-
-  private TextInput mailsubject = null;
-
-  private TextAreaInput mailbody = null;
-
-  public static final String EMAIL = "EMail";
-
-  public static final String PDF1 = "PDF (Lastschriften ohne Mailadresse)";
-
-  public static final String PDF2 = "PDF (Alle)";
-
-  private SelectInput pdfModus = null;
-
-  public static final String NICHT_EINZELN = "Eine PDF-Datei";
-
-  public static final String EINZELN_NUMMERIERT = "Einzelne PDF-Dateien, nummeriert";
-
-  public static final String EINZELN_MITGLIEDSNUMMER = "Einzelne PDF-Dateien, mit Mitgliedsnummer";
-
-  public static final String EINZELN_NUMMERIERT_UND_MNR = "Einzelne PDF-Dateien, nummeriert mit Mitgliedsnummer";
-
-  private FormularInput formular = null;
 
   private FormularAufbereitung fa;
 
@@ -123,68 +94,8 @@ public class PreNotificationControl extends AbstractControl
       return folder;
     }
     folder = new TabFolder(parent, SWT.NONE);
-    folder.setSelection(settings.getInt("tab.selection", 0));
+    folder.setSelection(settings.getInt(settingsprefix + "tab.selection", 0));
     return folder;
-  }
-
-  public SelectInput getPdfModus()
-  {
-    if (pdfModus != null)
-    {
-      return pdfModus;
-    }
-    Object[] values = new Object[] { NICHT_EINZELN, EINZELN_NUMMERIERT,
-        EINZELN_MITGLIEDSNUMMER, EINZELN_NUMMERIERT_UND_MNR };
-    pdfModus = new SelectInput(values,
-        settings.getString("pdfModus", NICHT_EINZELN));
-    pdfModus.setName("PDF als");
-    return pdfModus;
-  }
-
-  public SelectInput getOutput()
-  {
-    if (output != null)
-    {
-      return output;
-    }
-    Object[] values = new Object[] { EMAIL, PDF1, PDF2 };
-    output = new SelectInput(values, settings.getString("output", PDF1));
-    output.setName("Ausgabe");
-    return output;
-  }
-
-  public FormularInput getFormular(FormularArt formulartyp)
-      throws RemoteException
-  {
-    if (formular != null)
-    {
-      return formular;
-    }
-    formular = new FormularInput(formulartyp);
-    return formular;
-  }
-
-  public TextInput getMailSubject()
-  {
-    if (mailsubject != null)
-    {
-      return mailsubject;
-    }
-    mailsubject = new TextInput(settings.getString("mail.subject", ""), 100);
-    mailsubject.setName("Betreff");
-    return mailsubject;
-
-  }
-
-  public TextAreaInput getMailBody() throws RemoteException
-  {
-    if (mailbody != null)
-    {
-      return mailbody;
-    }
-    mailbody = new TextAreaInput(settings.getString("mail.body", ""), 10000);
-    mailbody.setName("Text");
-    return mailbody;
   }
 
   public DateInput getAusfuehrungsdatum()
@@ -205,7 +116,8 @@ public class PreNotificationControl extends AbstractControl
       return ct1ausgabe;
     }
     Ct1Ausgabe aus = Ct1Ausgabe.getByKey(
-        settings.getInt("ct1ausgabe", Ct1Ausgabe.SEPA_DATEI.getKey()));
+        settings.getInt(settingsprefix + "ct1ausgabe", 
+            Ct1Ausgabe.SEPA_DATEI.getKey()));
     if (aus != Ct1Ausgabe.SEPA_DATEI
         && aus != Ct1Ausgabe.HIBISCUS)
     {
@@ -241,12 +153,9 @@ public class PreNotificationControl extends AbstractControl
           String val = (String) getOutput().getValue();
           String pdfMode = (String) getPdfModus().getValue();
 
-          settings.setAttribute("output", val);
-          settings.setAttribute("pdfModus", pdfMode);
-          settings.setAttribute("mail.subject",
-              (String) mailsubject.getValue());
-          settings.setAttribute("mail.body", (String) mailbody.getValue());
-          settings.setAttribute("tab.selection", folder.getSelectionIndex());
+          settings.setAttribute(settingsprefix + "tab.selection", 
+              folder.getSelectionIndex());
+          saveDruckMailSettings();
 
           if (val.equals(PDF1))
           {
@@ -282,18 +191,19 @@ public class PreNotificationControl extends AbstractControl
         try
         {
           Ct1Ausgabe aa = (Ct1Ausgabe) ct1ausgabe.getValue();
-          settings.setAttribute("ct1ausgabe", aa.getKey());
+          settings.setAttribute(settingsprefix + "ct1ausgabe", aa.getKey());
           if (ausfuehrungsdatum.getValue() == null)
           {
             GUI.getStatusBar().setErrorText("Ausführungsdatum fehlt");
             return;
           }
           Date d = (Date) ausfuehrungsdatum.getValue();
-          settings.setAttribute("faelligkeitsdatum",
+          settings.setAttribute(settingsprefix + "faelligkeitsdatum",
               new JVDateFormatDATETIME().format(d));
-          settings.setAttribute("verwendungszweck",
+          settings.setAttribute(settingsprefix + "verwendungszweck",
               (String) getVerwendungszweck().getValue());
-          settings.setAttribute("tab.selection", folder.getSelectionIndex());
+          settings.setAttribute(settingsprefix + "tab.selection", 
+              folder.getSelectionIndex());
           generiere1ct(currentObject);
         }
         catch (OperationCanceledException oce)
@@ -413,7 +323,8 @@ public class PreNotificationControl extends AbstractControl
     Abrechnungslauf abrl = (Abrechnungslauf) currentObject;
     File file = null;
     Ct1Ausgabe aa = Ct1Ausgabe.getByKey(
-        settings.getInt("ct1ausgabe", Ct1Ausgabe.SEPA_DATEI.getKey()));
+        settings.getInt(settingsprefix + "ct1ausgabe", 
+            Ct1Ausgabe.SEPA_DATEI.getKey()));
     if (aa == Ct1Ausgabe.SEPA_DATEI)
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
@@ -433,7 +344,7 @@ public class PreNotificationControl extends AbstractControl
       {
         return;
       }
-      settings.setAttribute("ausgabedateiname", s);
+      settings.setAttribute(settingsprefix + "ausgabedateiname", s);
       if (!s.toLowerCase().endsWith(".xml"))
       {
         s = s + ".xml";
@@ -441,11 +352,11 @@ public class PreNotificationControl extends AbstractControl
       file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
     }
-    String faelligkeitsdatum = settings.getString("faelligkeitsdatum", null);
+    String faelligkeitsdatum = settings.getString(settingsprefix + "faelligkeitsdatum", null);
     Date faell = Datum.toDate(faelligkeitsdatum);
     Ct1Ausgabe ct1ausgabe = Ct1Ausgabe.getByKey(
-        settings.getInt("ct1ausgabe", Ct1Ausgabe.SEPA_DATEI.getKey()));
-    String verwendungszweck = settings.getString("verwendungszweck", "");
+        settings.getInt(settingsprefix + "ct1ausgabe", Ct1Ausgabe.SEPA_DATEI.getKey()));
+    String verwendungszweck = settings.getString(settingsprefix + "verwendungszweck", "");
     Ct1Ueberweisung ct1ueberweisung = new Ct1Ueberweisung();
     int anzahl = ct1ueberweisung.write(abrl, file, faell, ct1ausgabe,
         verwendungszweck);
@@ -460,8 +371,8 @@ public class PreNotificationControl extends AbstractControl
     it.addFilter("abrechnungslauf = ?", abrl.getID());
     it.addFilter("email is not null and length(email) > 0");
     it.setOrder("order by name, vorname");
-    String betr = (String) getMailSubject().getValue();
-    String text = (String) getMailBody().getValue();
+    String betr = (String) getBetreff().getValue();
+    String text = (String) getTxt().getValue();
     sendeMail(it, betr, text);
   }
 
