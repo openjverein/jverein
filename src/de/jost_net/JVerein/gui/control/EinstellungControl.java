@@ -2004,6 +2004,7 @@ public class EinstellungControl extends AbstractControl
       e.setLehrgaenge((Boolean) lehrgaenge.getValue());
       e.setJuristischePersonen((Boolean) juristischepersonen.getValue());
       e.setMitgliedfoto((Boolean) mitgliedfoto.getValue());
+      e.setAnhangSpeichern((Boolean) anhangspeichern.getValue());
       // TODO deaktiviert für Versionsbau
       // e.setInventar((Boolean) inventar.getValue());
       e.setUseLesefelder((Boolean) uselesefelder.getValue());
@@ -2121,7 +2122,6 @@ public class EinstellungControl extends AbstractControl
           .getValue());
       e.setUnterschriftdrucken((Boolean) unterschriftdrucken.getValue());
       e.setUnterschrift((byte[]) unterschrift.getValue());
-      e.setAnhangSpeichern((Boolean) anhangspeichern.getValue());
       e.store();
       Einstellungen.setEinstellung(e);
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");

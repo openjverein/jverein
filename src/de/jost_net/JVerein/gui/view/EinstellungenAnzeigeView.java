@@ -67,6 +67,7 @@ public class EinstellungenAnzeigeView extends AbstractView
     left.addLabelPair("Juristische Personen erlaubt",
         control.getJuristischePersonen());
     left.addLabelPair("Mitgliedsfoto *", control.getMitgliedfoto());
+    left.addLabelPair("Bei Mail Versand von Formularen Anhang in DB speichern", control.getAnhangSpeichern());
     // TODO Für Versionsbau deaktiviert
     // left.addLabelPair("Inventarverwaltung *", control.getInventar());
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
