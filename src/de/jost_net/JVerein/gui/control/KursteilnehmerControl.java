@@ -591,6 +591,15 @@ public class KursteilnehmerControl extends FilterControl
             new Object[] { "%" + suchN + "%" });
       }
     }
+    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
+    {
+      String tmpSuchtext = (String) getSuchtext().getValue();
+      if (tmpSuchtext.length() > 0)
+      {
+        kursteilnehmer.addFilter("(lower(vzweck1) like ?)",
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+      }
+    }
     if (isEingabedatumvonAktiv() && getEingabedatumvon().getValue() != null)
     {
       kursteilnehmer.addFilter("eingabedatum >= ?",
