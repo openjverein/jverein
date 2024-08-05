@@ -54,6 +54,11 @@ public class SpendenbescheinigungMailView extends AbstractView
       SimpleContainer right = new SimpleContainer(cl.getComposite());
       right.addLabelPair("Spendedatum von", control.getEingabedatumvon());
       right.addLabelPair("Spendedatum bis", control.getEingabedatumbis());
+      
+      ButtonArea fbuttons = new ButtonArea();
+      fbuttons.addButton(control.getResetButton());
+      fbuttons.addButton(control.getSpeichernButton());
+      group.addButtonArea(fbuttons);
     }
     else
     {
