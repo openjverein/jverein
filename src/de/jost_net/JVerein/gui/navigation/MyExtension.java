@@ -61,6 +61,7 @@ import de.jost_net.JVerein.gui.action.JubilaeenAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenExportAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenImportAction;
 import de.jost_net.JVerein.gui.action.KontoListAction;
+import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.KursteilnehmerSucheAction;
 import de.jost_net.JVerein.gui.action.LastschriftListAction;
 import de.jost_net.JVerein.gui.action.LehrgaengeListeAction;
@@ -77,6 +78,7 @@ import de.jost_net.JVerein.gui.action.ProjektListAction;
 import de.jost_net.JVerein.gui.action.ProjektSaldoAction;
 import de.jost_net.JVerein.gui.action.QIFBuchungsImportViewAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungListeAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
 import de.jost_net.JVerein.gui.action.StatistikJahrgaengeAction;
 import de.jost_net.JVerein.gui.action.StatistikMitgliedAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageListeAction;
@@ -130,15 +132,16 @@ public class MyExtension implements Extension
       
       mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new SollbuchungListeAction(), "calculator.png"));
+      mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
+          new SpendenbescheinigungListeAction(), "list.png"));      
       mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
-          new MitgliedskontoRechnungAction(), "file-invoice.png"));
+          new MitgliedskontoRechnungAction(), "document-print.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Mahnungen",
-          new MitgliedskontoMahnungAction(), "file-invoice.png"));
-      if (Einstellungen.getEinstellung().getArbeitseinsatz())
-      {
-        mitglieder.addChild(new MyItem(mitglieder, "Arbeitseinsätze prüfen",
-            new ArbeitseinsatzUeberpruefungAction(), "screwdriver.png"));
-      }
+          new MitgliedskontoMahnungAction(), "document-print.png"));
+      mitglieder.addChild(new MyItem(mitglieder, "Kontoauszüge",
+          new KontoauszugAction(), "document-print.png"));
+      mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
+          new SpendenbescheinigungSendAction(), "document-print.png"));
 
       if (Einstellungen.getEinstellung().getZusatzbetrag())
       {
@@ -157,10 +160,35 @@ public class MyExtension implements Extension
         mitglieder.addChild(new MyItem(mitglieder, "Lehrgänge",
             new LehrgaengeListeAction(), "chalkboard-teacher.png"));
       }
-      mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
-          new SpendenbescheinigungListeAction(), "file-invoice.png"));
+      if (Einstellungen.getEinstellung().getArbeitseinsatz())
+      {
+        mitglieder.addChild(new MyItem(mitglieder, "Arbeitseinsätze prüfen",
+            new ArbeitseinsatzUeberpruefungAction(), "screwdriver.png"));
+      }
       jverein.addChild(mitglieder);
 
+      NavigationItem buchfuehrung = null;
+      buchfuehrung = new MyItem(buchfuehrung, "Buchführung", null);
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Konten",
+          new KontoListAction(), "list.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbestände",
+          new AnfangsbestandListAction(), "euro-sign.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Hibiscus-Buchungen",
+          new BuchungsuebernahmeAction(), "hibiscus-icon-64x64.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
+          new BuchungsListeAction(), "euro-sign.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
+          new BuchungsTexteKorrigierenAction(), "euro-sign.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",
+          new BuchungsklasseSaldoAction(), "euro-sign.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
+          new ProjektSaldoAction(), "euro-sign.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
+          new KontensaldoAction(), "euro-sign.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
+          new JahresabschlussListAction(), "euro-sign.png"));
+      jverein.addChild(buchfuehrung);
+      
       NavigationItem abrechnung = null;
       abrechnung = new MyItem(abrechnung, "Abrechnung", null);
       abrechnung.addChild(new MyItem(abrechnung, "Abrechnung",
@@ -198,28 +226,6 @@ public class MyExtension implements Extension
           "envelope-open.png"));
       jverein.addChild(mail);
       
-      NavigationItem buchfuehrung = null;
-      buchfuehrung = new MyItem(buchfuehrung, "Buchführung", null);
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Konten",
-          new KontoListAction(), "list.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbestände",
-          new AnfangsbestandListAction(), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Hibiscus-Buchungen",
-          new BuchungsuebernahmeAction(), "hibiscus-icon-64x64.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
-          new BuchungsListeAction(), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
-          new BuchungsTexteKorrigierenAction(), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",
-          new BuchungsklasseSaldoAction(), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
-          new ProjektSaldoAction(), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
-          new KontensaldoAction(), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
-          new JahresabschlussListAction(), "euro-sign.png"));
-      jverein.addChild(buchfuehrung);
-
       NavigationItem administration = null;
       administration = new MyItem(administration, "Administration", null);
 
@@ -264,26 +270,6 @@ public class MyExtension implements Extension
               new AdministrationEinstellungenStatistikAction(), "wrench.png"));
       administration.addChild(administrationEinstellungen);
 
-      NavigationItem einstellungenbuchfuehrung = null;
-      einstellungenbuchfuehrung = new MyItem(einstellungenbuchfuehrung,
-          "Buchführung", null);
-      einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-          "Buchungsklassen", new BuchungsklasseListAction(), "ellipsis-v.png"));
-      einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-          "Buchungsarten", new BuchungsartListAction(), "ellipsis-v.png"));
-      einstellungenbuchfuehrung
-          .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Export",
-              new KontenrahmenExportAction(), "ellipsis-v.png"));
-      einstellungenbuchfuehrung
-          .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Import",
-              new KontenrahmenImportAction(), "ellipsis-v.png"));
-      einstellungenbuchfuehrung
-          .addChild(new MyItem(einstellungenbuchfuehrung, "QIF Datei-Import",
-              new QIFBuchungsImportViewAction(), "file-import.png"));
-      einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-          "Projekte", new ProjektListAction(), "screwdriver.png"));
-      administration.addChild(einstellungenbuchfuehrung);
-
       NavigationItem einstellungenmitglieder = null;
       einstellungenmitglieder = new MyItem(einstellungenmitglieder,
           "Mitglieder", null);
@@ -323,6 +309,26 @@ public class MyExtension implements Extension
             new MitgliedstypListAction(), "columns.png"));
       }
       administration.addChild(einstellungenmitglieder);
+      
+      NavigationItem einstellungenbuchfuehrung = null;
+      einstellungenbuchfuehrung = new MyItem(einstellungenbuchfuehrung,
+          "Buchführung", null);
+      einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
+          "Buchungsklassen", new BuchungsklasseListAction(), "ellipsis-v.png"));
+      einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
+          "Buchungsarten", new BuchungsartListAction(), "ellipsis-v.png"));
+      einstellungenbuchfuehrung
+          .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Export",
+              new KontenrahmenExportAction(), "ellipsis-v.png"));
+      einstellungenbuchfuehrung
+          .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Import",
+              new KontenrahmenImportAction(), "ellipsis-v.png"));
+      einstellungenbuchfuehrung
+          .addChild(new MyItem(einstellungenbuchfuehrung, "QIF Datei-Import",
+              new QIFBuchungsImportViewAction(), "file-import.png"));
+      einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
+          "Projekte", new ProjektListAction(), "screwdriver.png"));
+      administration.addChild(einstellungenbuchfuehrung);
       
       NavigationItem einstellungenerweitert = null;
       einstellungenerweitert = new MyItem(einstellungenerweitert, "Erweitert",

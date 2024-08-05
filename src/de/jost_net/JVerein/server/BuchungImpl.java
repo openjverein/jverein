@@ -36,6 +36,7 @@ import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -69,9 +70,29 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    //insertCheck();
+    try
+    {
+      if (this.getSpendenbescheinigung() != null)
+      {
+        throw new ApplicationException(
+            "Buchung kann nicht gelöscht werden weil sie zu eine "
+                + "Spendenbescheinigung gehört");
+      }
+    }
+    catch (ObjectNotFoundException e)
+    {
+      // Alles ok, es gibt keine Spendenbescheinigung
+      // Das passiert wenn sie kurz vorher gelöscht wurde aber 
+      // die ID noch im Cache gespeichert ist
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+      throw new ApplicationException(
+          "Buchung kann nicht gelöscht werden. Siehe system log");
+    }
   }
-
+  
   @Override
   protected void insertCheck() throws ApplicationException
   {
@@ -160,11 +181,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   protected Class<?> getForeignObject(String field)
   {
-    if ("mitgliedskonto".equals(field))
-    {
-      return Mitgliedskonto.class;
-    }
-    else if ("abrechnungslauf".equals(field))
+    if ("abrechnungslauf".equals(field))
     {
       return Abrechnungslauf.class;
     }
@@ -405,7 +422,14 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   public Mitgliedskonto getMitgliedskonto() throws RemoteException
   {
-    return (Mitgliedskonto) getAttribute("mitgliedskonto");
+    Object o = super.getAttribute("mitgliedskonto");
+    if (o == null)
+    {
+      return null;
+    }
+
+    Cache cache = Cache.get(Mitgliedskonto.class, true);
+    return (Mitgliedskonto) cache.get(o);
   }
 
   @Override
@@ -602,6 +626,9 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
 
     if ("konto".equals(fieldName))
       return getKonto();
+    
+    if ("mitgliedskonto".equals(fieldName))
+        return getMitgliedskonto();
 
     return super.getAttribute(fieldName);
   }

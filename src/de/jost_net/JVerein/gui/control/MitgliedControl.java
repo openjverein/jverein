@@ -129,6 +129,7 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
@@ -2069,7 +2070,7 @@ public class MitgliedControl extends FilterControl
   public TablePart getMitgliedTable(int atyp, Action detailaction)
       throws RemoteException
   {
-    part = new TablePart(new MitgliedQuery(this).get(atyp),
+    part = new TablePart(new MitgliedQuery(this).get(atyp, null),
         detailaction);
     new MitgliedSpaltenauswahl().setColumns(part, atyp);
     part.setContextMenu(new MitgliedMenu(detailaction));
@@ -2090,7 +2091,7 @@ public class MitgliedControl extends FilterControl
     }
     lastrefresh = System.currentTimeMillis();
     part.removeAll();
-    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this).get(atyp);
+    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this).get(atyp, null);
     for (Mitglied m : mitglieder)
     {
       part.addItem(m);
@@ -2478,7 +2479,7 @@ public class MitgliedControl extends FilterControl
 
   public TreePart getFamilienbeitraegeTree() throws RemoteException
   {
-    familienbeitragtree = new TreePart(new FamilienbeitragNode(),
+    familienbeitragtree = new TreePart(new FamilienbeitragNode(getMitgliedStatus()),
         new MitgliedDetailAction());
     familienbeitragtree.addColumn("Name", "name");
     familienbeitragtree.setContextMenu(new FamilienbeitragMenu());
@@ -2486,6 +2487,35 @@ public class MitgliedControl extends FilterControl
     familienbeitragtree.setRememberOrder(true);
     this.fbc = new FamilienbeitragMessageConsumer();
     Application.getMessagingFactory().registerMessageConsumer(this.fbc);
+    familienbeitragtree.setFormatter(new TreeFormatter()
+    {
+      @Override
+      public void format(TreeItem item)
+      {
+        FamilienbeitragNode fbn = (FamilienbeitragNode) item.getData();
+        try
+        {
+         if (fbn.getType() == FamilienbeitragNode.ROOT)
+           item.setImage(SWTUtil.getImage("users.png"));
+         if (fbn.getType() == FamilienbeitragNode.ZAHLER
+             && fbn.getMitglied().getAustritt() == null)
+           item.setImage(SWTUtil.getImage("user-friends.png"));
+         if (fbn.getType() == FamilienbeitragNode.ZAHLER
+             && fbn.getMitglied().getAustritt() != null)
+           item.setImage(SWTUtil.getImage("eraser.png"));
+         if (fbn.getType() == FamilienbeitragNode.ANGEHOERIGER
+             && fbn.getMitglied().getAustritt() == null)
+           item.setImage(SWTUtil.getImage("user.png"));
+         if (fbn.getType() == FamilienbeitragNode.ANGEHOERIGER
+             && fbn.getMitglied().getAustritt() != null)
+           item.setImage(SWTUtil.getImage("eraser.png"));
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler beim TreeFormatter", e);
+        }
+      }
+    });
     return familienbeitragtree;
   }
 
@@ -2494,11 +2524,15 @@ public class MitgliedControl extends FilterControl
     final IAuswertung ausw = (IAuswertung) getAusgabe().getValue();
     saveAusgabeSettings();
     saveFilterSettings();
+    String sort = null;
+    if (isSortierungAktiv() && getSortierung().getValue() != null)
+    {
+      sort = (String) getSortierung().getValue();
+    }
     ArrayList<Mitglied> list = null;
-    list = new MitgliedQuery(this).get(1);
+    list = new MitgliedQuery(this).get(1, sort);
     try
     {
-      String sort = (String) sortierung.getValue();
       String dateinamensort = "";
       if (sort.equals("Name, Vorname"))
       {
@@ -2599,6 +2633,11 @@ public class MitgliedControl extends FilterControl
     final IAuswertung ausw = (IAuswertung) getAusgabe().getValue();
     saveAusgabeSettings();
     saveFilterSettings();
+    String sort = null;
+    if (isSortierungAktiv() && getSortierung().getValue() != null)
+    {
+      sort = (String) getSortierung().getValue();
+    }
     ArrayList<Mitglied> list = null;
     Adresstyp atyp = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
     if (atyp == null)
@@ -2606,10 +2645,9 @@ public class MitgliedControl extends FilterControl
       GUI.getStatusBar().setErrorText("Bitte Mitgliedstyp auswählen");
       return;
     }
-    list = new MitgliedQuery(this).get(Integer.parseInt(atyp.getID()));
+    list = new MitgliedQuery(this).get(Integer.parseInt(atyp.getID()), sort);
     try
     {
-      String sort = (String) sortierung.getValue();
       String dateinamensort = "";
       if (sort.equals("Name, Vorname"))
       {
@@ -2696,11 +2734,6 @@ public class MitgliedControl extends FilterControl
     {
       Logger.error("Fehler", e);
     }
-  }
-
-  public Settings getSettings()
-  {
-    return settings;
   }
 
   private void starteStatistik() throws RemoteException
@@ -2804,7 +2837,7 @@ public class MitgliedControl extends FilterControl
                   FamilienbeitragMessageConsumer.this);
               return;
             }
-            familienbeitragtree.setRootObject(new FamilienbeitragNode());
+            familienbeitragtree.setRootObject(new FamilienbeitragNode(getMitgliedStatus()));
           }
           catch (Exception e)
           {
@@ -2875,6 +2908,19 @@ public class MitgliedControl extends FilterControl
         {
           refreshMitgliedTable(0);
         }
+      }
+      catch (RemoteException e1)
+      {
+        Logger.error("Fehler", e1);
+      }
+    }
+    
+    if (familienbeitragtree != null)
+    {
+      try
+      {
+        familienbeitragtree.removeAll();
+        familienbeitragtree.setRootObject(new FamilienbeitragNode(getMitgliedStatus()));
       }
       catch (RemoteException e1)
       {

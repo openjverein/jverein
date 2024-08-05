@@ -17,18 +17,18 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction;
+import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.menu.Mitgliedskonto2Menu;
+import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.util.ApplicationException;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class SollbuchungListeView extends AbstractView
 {
@@ -39,28 +39,28 @@ public class SollbuchungListeView extends AbstractView
     GUI.getView().setTitle("Sollbuchungen");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
-    LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addInput(control.getSuchName());
-    group.addLabelPair("Von",
-        control.getVondatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO));
-    group.addLabelPair("Bis",
-        control.getBisdatum(MitgliedskontoControl.DATUM_MITGLIEDSKONTO));
-    group.addLabelPair("Differenz", control.getDifferenz());
+    control.init("sollbuchung.", null, null);
     
-    ButtonArea button = new ButtonArea();
-    Button suchen = new Button("Suchen", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        control.refreshMitgliedskontoList();
-      }
-    }, null, true, "search.png");
-    button.addButton(suchen);
-    group.addButtonArea(button);
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
-    control.getMitgliedskontoList(new MitgliedDetailAction(),
-        new Mitgliedskonto2Menu(), false).paint(this.getParent());
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getSuchname());
+    left.addInput(control.getDifferenz());
+    left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
+    
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getDatumvon());
+    right.addInput(control.getDatumbis());
+    right.addInput(control.getMailauswahl());
+    
+    ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSuchenButton());
+    group.addButtonArea(fbuttons);
+
+    control.getMitgliedskontoList(new MitgliedskontoSollbuchungEditAction(),
+        new SollbuchungMenu(), false).paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

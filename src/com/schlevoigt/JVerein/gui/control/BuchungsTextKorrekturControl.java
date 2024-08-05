@@ -24,7 +24,6 @@ import com.schlevoigt.JVerein.util.Misc;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -71,7 +70,7 @@ public class BuchungsTextKorrekturControl extends AbstractControl {
 		// Buchungen holen
 		query = new BuchungsKorrekturQuery();
 		if (buchungsList == null) {
-			buchungsList = new BuchungListTablePart(query.get(), new BuchungAction(false));
+			buchungsList = new TablePart(query.get(), new BuchungAction(false));
 			buchungsList.addColumn("Nr", "id-int");
 			buchungsList.addColumn("S", "splitid", new Formatter() {
 				@Override

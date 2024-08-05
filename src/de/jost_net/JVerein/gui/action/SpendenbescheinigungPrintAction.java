@@ -243,7 +243,8 @@ public class SpendenbescheinigungPrintAction implements Action
           fa.closeFormular();
         }
       }
-      String erfolg = (spbArr.length > 1) ? "Die Spendenbescheinigungen wurden erstellt." : "Die Spendenbescheinigung wurde erstellt.";
+      String erfolg = (spbArr.length > 1) ? "Die Spendenbescheinigungen wurden erstellt und unter " + path + " gespeichert."
+                                          : "Die Spendenbescheinigung wurde erstellt und unter " + path + " gespeichert.";
       GUI.getStatusBar().setSuccessText(erfolg);
     }
     catch (Exception e)

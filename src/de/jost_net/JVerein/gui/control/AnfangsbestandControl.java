@@ -153,7 +153,8 @@ public class AnfangsbestandControl extends FilterControl
     }
     anfangsbestandList = new TablePart(getAnfangsstaende(),
         new AnfangsbestandDetailAction());
-    anfangsbestandList.addColumn("Konto", "kontotext");
+    anfangsbestandList.addColumn("Nummer", "nummer");
+    anfangsbestandList.addColumn("Bezeichnung", "bezeichnung");
     anfangsbestandList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     anfangsbestandList.addColumn("Betrag", "betrag",
@@ -199,6 +200,15 @@ public class AnfangsbestandControl extends FilterControl
       {
         anfangsbestaende.addFilter("(lower(bezeichnung) like ?)",
             new Object[] { "%" + tmpSuchname.toLowerCase() + "%"});
+      }
+    }
+    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
+    {
+      String tmpSuchtext = (String) getSuchtext().getValue();
+      if (tmpSuchtext.length() > 0)
+      {
+        anfangsbestaende.addFilter("(lower(nummer) like ?)",
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
       }
     }
     if (isDatumvonAktiv() && getDatumvon().getValue() != null)

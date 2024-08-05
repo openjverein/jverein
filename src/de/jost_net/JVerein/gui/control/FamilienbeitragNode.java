@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -30,6 +31,7 @@ import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.logging.Logger;
 
 public class FamilienbeitragNode implements GenericObjectNode
@@ -49,9 +51,12 @@ public class FamilienbeitragNode implements GenericObjectNode
   private FamilienbeitragNode parent = null;
 
   private ArrayList<FamilienbeitragNode> children;
+  
+  private Input status;
 
-  public FamilienbeitragNode() throws RemoteException
+  public FamilienbeitragNode(Input status) throws RemoteException
   {
+    this.status = status;
     this.parent = null;
     this.type = ROOT;
     this.children = new ArrayList<>();
@@ -65,7 +70,10 @@ public class FamilienbeitragNode implements GenericObjectNode
       DBIterator<Mitglied> it2 = Einstellungen.getDBService()
           .createList(Mitglied.class);
       it2.addFilter("beitragsgruppe = ?", new Object[] { bg.getID() });
-      it2.addFilter("austritt is null");
+      if (status.getValue().equals("Angemeldet"))
+        it2.addFilter("austritt is null");
+      if (status.getValue().equals("Abgemeldet"))
+        it2.addFilter("austritt is not null");
       it2.setOrder("ORDER BY name, vorname");
       while (it2.hasNext())
       {
@@ -79,6 +87,7 @@ public class FamilienbeitragNode implements GenericObjectNode
   public FamilienbeitragNode(FamilienbeitragNode parent, Mitglied m)
       throws RemoteException
   {
+    this.status = parent.status;
     this.parent = parent;
     this.mitglied = m;
     this.id = mitglied.getID();
@@ -87,7 +96,10 @@ public class FamilienbeitragNode implements GenericObjectNode
     DBIterator<Mitglied> it = Einstellungen.getDBService()
         .createList(Mitglied.class);
     it.addFilter("zahlerid = ?", new Object[] { m.getID() });
-    it.addFilter("austritt is null");
+    if (status.getValue().equals("Angemeldet"))
+      it.addFilter("austritt is null");
+    if (status.getValue().equals("Abgemeldet"))
+      it.addFilter("austritt is not null");
     while (it.hasNext())
     {
       FamilienbeitragNode fbn = new FamilienbeitragNode(this, it.next(), 1);
@@ -148,10 +160,15 @@ public class FamilienbeitragNode implements GenericObjectNode
       {
         return "Familienbeiträge";
       }
+      Date d = null;
+      if (getMitglied().getAustritt() != null)
+      {
+        d = getMitglied().getAustritt();
+      }
       JVDateFormatTTMMJJJJ jvttmmjjjj = new JVDateFormatTTMMJJJJ();
       return Adressaufbereitung.getNameVorname(mitglied)
-          + (mitglied.getGeburtsdatum() != null
-              ? ", " + jvttmmjjjj.format(mitglied.getGeburtsdatum())
+          + (d != null
+              ? ", Austritt: " + jvttmmjjjj.format(d)
               : "")
           + (mitglied.getIban().length() > 0
               ? ", " + mitglied.getBic() + ", " + mitglied.getIban()

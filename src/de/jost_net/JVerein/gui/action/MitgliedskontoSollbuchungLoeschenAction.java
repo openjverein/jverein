@@ -36,7 +36,8 @@ public class MitgliedskontoSollbuchungLoeschenAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof MitgliedskontoNode))
+    if (context == null || !((context instanceof MitgliedskontoNode)
+        || context instanceof Mitgliedskonto))
     {
       throw new ApplicationException("Keine Sollbuchung ausgewählt");
     }
@@ -60,25 +61,28 @@ public class MitgliedskontoSollbuchungLoeschenAction implements Action
     }
     MitgliedskontoNode mkn = null;
     Mitgliedskonto mk = null;
-
-    if (context != null && (context instanceof MitgliedskontoNode))
+    try
     {
-      mkn = (MitgliedskontoNode) context;
-      try
+      if (context instanceof MitgliedskontoNode)
       {
+        mkn = (MitgliedskontoNode) context;
         mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
             Mitgliedskonto.class, mkn.getID());
-        Mitglied mitglied = mk.getMitglied();
-        mk.delete();
-        GUI.getStatusBar().setSuccessText("Sollbuchung gelöscht.");
-        Application.getMessagingFactory().sendMessage(
-            new MitgliedskontoMessage(mitglied));
       }
-      catch (RemoteException e)
+      else
       {
-        throw new ApplicationException(
-            "Fehler beim Löschen einer Sollbuchung");
+        mk = (Mitgliedskonto) context;
       }
+      Mitglied mitglied = mk.getMitglied();
+      mk.delete();
+      GUI.getStatusBar().setSuccessText("Sollbuchung gelöscht.");
+      Application.getMessagingFactory().sendMessage(
+          new MitgliedskontoMessage(mitglied));
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(
+          "Fehler beim Löschen einer Sollbuchung");
     }
   }
 }

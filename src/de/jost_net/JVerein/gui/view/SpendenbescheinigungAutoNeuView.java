@@ -43,13 +43,17 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
     if (betrag == 0)
     {
       info.setText("Es wurden nur Mitglieder berücksichtigt, bei denen Strasse, "
-          + "PLZ und Ort eingetragen sind.");
+          + "PLZ und Ort eingetragen sind.\n\n"
+    	  + "Um eine neue Spende zu erstellen muss die Buchung einer Buchungsart mit Spende zugeordnet sein.\n"
+          + "Außerdem muss sie einer Sollbuchung zugeordnet sein. (ggfs. bei Nicht-Mitglieder Spender anlegen).");
     }
     else
     {
     info.setText(String.format("Es wurden nur Mitglieder berücksichtigt, bei denen Strasse, "
         + "PLZ und Ort eingetragen sind."+'\n'+"Auch wurden nur Spendenbescheinigungen "
-        + "generiert deren Betrag größer oder gleich %s Euro ist.", betrag));
+        + "generiert deren Betrag größer oder gleich %s Euro ist.\n\n"
+        + "Um eine neue Spende zu erstellen muss die Buchung einer Buchungsart mit Spende zugeordnet sein.\n"
+        + "Außerdem muss sie einer Sollbuchung zugeordnet sein. (ggfs. bei Nicht-Mitglieder Spender anlegen).", betrag));
     info.setComment("Siehe Administration->Einstellungen->Spendenbescheinigungen->Mindestbetrag");
     }
     info.paint(getParent());
