@@ -78,7 +78,7 @@ public class SpendenbescheinigungMailView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
+        DokumentationUtil.SPENDENBESCHEINIGUNGMAIL, false, "question-circle.png");
     buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
         control, false, "view-refresh.png"));
     buttons.addButton(control.getStartButton(this.getCurrentObject()));

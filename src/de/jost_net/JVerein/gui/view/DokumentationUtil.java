@@ -22,7 +22,7 @@ public class DokumentationUtil
 
   private static final String PRE = DOKU+"/";
   
-  private static final String ALLGEMEIN = "allgemein/";
+  //private static final String ALLGEMEIN = "allgemein/";
   
   private static final String FUNKTIONEN = "allgemeine-funktionen/";
   
@@ -34,118 +34,155 @@ public class DokumentationUtil
   
   private static final String BUCHF = "buchf/";
   
+  private static final String MITGLIEDER = "mitglieder/";
+  
+  private static final String DRUCKMAIL = "druckmail/";
+  
   private static final String ADMBUCHF = "admbuchf/";
 
+  private static final String ADMMITGLIEDER = "mitglieder/";
   
+  private static final String ADMERWEITERT = "erweitert/";
+  
+  
+  // Mitglieder
+  public static final String ARBEITSEINSATZ = PRE + FUNKTIONEN + MITGLIEDER + "arbeitseinsatz";
 
-  public static final String ADRESSEN = PRE + FUNKTIONEN + "adressen";
+  public static final String FAMILIENBEITRAG = PRE + FUNKTIONEN + MITGLIEDER + "familienbeitrag";
 
+  public static final String KURSTEILNEHMER = PRE + FUNKTIONEN + MITGLIEDER + "kursteilnehmer";
+
+  public static final String LEHRGANG = PRE + FUNKTIONEN + MITGLIEDER  + "lehrgange";
+
+  public static final String MITGLIEDSUCHE = PRE + FUNKTIONEN + MITGLIEDER + "content/mitglieder";
+  
+  public static final String MITGLIED = PRE + FUNKTIONEN + MITGLIEDER + "content/grunddaten";
+  
+  public static final String MITGLIEDSKONTO_AUSWAHL = PRE + FUNKTIONEN + MITGLIEDER
+      + "mitgliedskonto#mitgliedskontozuordnen";
+
+  public static final String MITGLIEDSKONTO_UEBERSICHT = PRE + FUNKTIONEN + MITGLIEDER 
+      + "mitgliedskonto#mitgliedskontouebersicht";
+  
+  public static final String ADRESSEN = PRE + FUNKTIONEN + MITGLIEDER + "nichtmitglieder";
+
+  public static final String SPENDENBESCHEINIGUNG = PRE + FUNKTIONEN + MITGLIEDER 
+      + "spendenbescheinigung";
+  
+  public static final String SUCHPROFIL = PRE + FUNKTIONEN + MITGLIEDER + "content/suchprofil";
+
+  public static final String WIEDERVORLAGE = PRE + FUNKTIONEN + MITGLIEDER  + "wiedervorlage";
+
+  public static final String ZUSATZBETRAEGE = PRE + FUNKTIONEN + MITGLIEDER  + "zusatzbetrage";
+
+  public static final String ZUSATZBETRAEGEIMPORT = PRE + FUNKTIONEN + MITGLIEDER 
+      + "zusatzbetrage-importieren";
+  
+  
+  // Buchführung
+  public static final String ANFANGSBESTAENDE = PRE + FUNKTIONEN + BUCHF + "anfangsbestand";
+
+  public static final String BUCHUNGEN = PRE + FUNKTIONEN + BUCHF + "buchungen";
+
+  public static final String BUCHUNGSIMPORT = PRE + FUNKTIONEN + BUCHF + "buchungsimport";
+
+  public static final String BUCHUNGSKLASSENSALDO = PRE + FUNKTIONEN + BUCHF + "buchungsklasse";
+
+  public static final String BUCHUNGSUEBERNAHME = PRE + FUNKTIONEN + BUCHF
+      + "buchungsubernahme";
+
+  public static final String JAHRESABSCHLUSS = PRE + FUNKTIONEN + BUCHF + "jahresabschluss";
+  
+  public static final String KONTEN = PRE + FUNKTIONEN + BUCHF + "konten";
+
+  public static final String JAHRESSALDO = PRE + FUNKTIONEN + BUCHF + "jahressaldo";
+
+  public static final String PROJEKTSALDO = PRE + FUNKTIONEN + BUCHF + "projekte";
+  
+  public static final String SPLITBUCHUNG = PRE + FUNKTIONEN + BUCHF + "splittbuchungen";
+
+
+  // Abrechnung
   public static final String ABRECHNUNG = PRE + FUNKTIONEN + ABRECH + "abrechnung";
 
   public static final String ABRECHNUNGSLAUF = PRE + FUNKTIONEN + ABRECH + "abrechnungslauf";
   
   public static final String LASTSCHRIFT = PRE + FUNKTIONEN + ABRECH + "lastschrift";
-
-  public static final String ADRESSTYPEN = PRE + FUNKTIONEN + ADMIN + "adresstypen";
-
-  public static final String ARBEITSEINSATZ = PRE + FUNKTIONEN + "arbeitseinsatz";
-
-  public static final String RECHNUNG = PRE + FUNKTIONEN + "rechnungen";
-
-  public static final String MAHNUNG = PRE + FUNKTIONEN + "mahnungen";
-
-  public static final String PRENOTIFICATION = PRE + FUNKTIONEN + ABRECH + "pre-notification";
-
+  
   public static final String SEPABUGS = PRE + FUNKTIONEN + ABRECH + "sepa-bugs";
-
+  
+  
+  // Auswertung
   public static final String AUSWERTUNGKURSTEILNEHMER = PRE + FUNKTIONEN + AUSWERTUNGEN
       + "auswertung-kursteilnehmer";
 
   public static final String AUSWERTUNGMITGLIEDER = PRE + FUNKTIONEN + AUSWERTUNGEN
       + "auswertung-mitglieder";
 
-  public static final String BEITRAGSGRUPPEN = PRE + FUNKTIONEN + ADMIN + "beitragsgruppen";
-
-  public static final String BUCHUNGSART = PRE + FUNKTIONEN + ADMIN + ADMBUCHF + "buchungsart.html";
-
-  public static final String BUCHUNGSIMPORT = PRE + FUNKTIONEN + BUCHF + "buchungsimport";
-
-  public static final String BUCHUNGSUEBERNAHME = PRE + FUNKTIONEN + BUCHF
-      + "buchungsubernahme";
-
-  public static final String BUCHUNGSKLASSEN = PRE + FUNKTIONEN + BUCHF + "buchungsklasse";
-
-  public static final String EIGENSCHAFT = PRE + FUNKTIONEN + ADMIN + "eigenschaften";
-
-  public static final String EIGENSCHAFTGRUPPE = PRE + FUNKTIONEN + ADMIN
-      + "eigenschaften-gruppen";
-
-  public static final String FAMILIENBEITRAG = PRE + ALLGEMEIN + "familientarife";
-
-  public static final String FELDDEFINITIONEN = PRE + FUNKTIONEN + ADMIN + "felddefinition";
-
-  public static final String LESEFELDER = PRE + FUNKTIONEN + ADMIN + "lesefelder";
-
-  public static final String FORMULARE = PRE + FUNKTIONEN + ADMIN + "formulare";
-
-  public static final String EINSTELLUNGEN = PRE + FUNKTIONEN + ADMIN + "einstellungen";
-
-  public static final String IMPORT = PRE + FUNKTIONEN + ADMIN + "import";
-
   public static final String JUBILAEEN = PRE + FUNKTIONEN + AUSWERTUNGEN + "jubilaen";
-
-  public static final String LEHRGANG = PRE + FUNKTIONEN + ADMIN + "lehrgange";
   
-  public static final String BEREINIGEN = PRE + FUNKTIONEN + ADMIN + "bereinigen";
-
-  public static final String KONTENRAHMEN = PRE + FUNKTIONEN + ADMIN + ADMBUCHF
-      + "kontenrahmen-import-export";
-
-  public static final String KONTOAUSZUG = PRE + FUNKTIONEN + BUCHF + "kontoauszug";
-
-  public static final String MAIL = PRE + FUNKTIONEN + "mail";
-
-  public static final String MITGLIED = PRE + FUNKTIONEN + "mitglieder";
-
-  public static final String MITGLIEDSKONTO_AUSWAHL = PRE
-      + "mitgliedskonto#mitgliedskontozuordnen";
-
-  public static final String MITGLIEDSKONTO_UEBERSICHT = PRE + FUNKTIONEN
-      + "mitgliedskonto#mitgliedskontouebersicht";
-
-  public static final String KURSTEILNEHMER = PRE + FUNKTIONEN + "kursteilnehmer";
-
-  public static final String PROJEKTE = PRE + FUNKTIONEN + BUCHF + "projekte";
-
   public static final String STATISTIKMITGLIEDER = PRE + FUNKTIONEN + AUSWERTUNGEN + "statistik";
 
   public static final String STATISTIKJAHRGAENGE = PRE + FUNKTIONEN + AUSWERTUNGEN
       + "statistik-jahrgange";
+  
 
-  public static final String SUCHPROFIL = PRE + FUNKTIONEN + "suchprofil";
+  // Druck und Mail
+  public static final String KONTOAUSZUG = PRE + FUNKTIONEN + DRUCKMAIL + "kontoauszug";
 
-  public static final String WIEDERVORLAGE = PRE + FUNKTIONEN + "wiedervorlage";
+  public static final String MAHNUNG = PRE + FUNKTIONEN + DRUCKMAIL+ "mahnungen";
 
-  public static final String ZUSATZBETRAEGE = PRE + FUNKTIONEN + "zusatzbetrage";
+  public static final String MAIL = PRE + FUNKTIONEN + DRUCKMAIL + "mail";
 
-  public static final String ZUSATZBETRAEGEIMPORT = PRE + FUNKTIONEN
-      + "zusatzbetrage-importieren";
+  public static final String MAILVORLAGE = PRE + FUNKTIONEN + DRUCKMAIL + "mailvorlagen";
 
-  public static final String KONTEN = PRE + FUNKTIONEN + BUCHF + "konten";
+  public static final String PRENOTIFICATION = PRE + FUNKTIONEN + DRUCKMAIL + "pre-notification";
 
-  public static final String ANFANGSBESTAENDE = PRE + FUNKTIONEN + BUCHF + "anfangsbestand";
+  public static final String RECHNUNG = PRE + FUNKTIONEN + DRUCKMAIL + "rechnungen";
 
-  public static final String BUCHUNGEN = PRE + FUNKTIONEN + BUCHF + "buchungen";
+  public static final String SPENDENBESCHEINIGUNGMAIL = PRE + FUNKTIONEN + DRUCKMAIL 
+      + "spendenbescheinigungen";
+  
+  
+  // Einstellungen
+  public static final String EINSTELLUNGEN = PRE + FUNKTIONEN + ADMIN + "einstellungen";
+  
+  
+  // Einstellungen Mitglieder
+  public static final String BEITRAGSGRUPPEN = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER + "beitragsgruppen";
 
-  public static final String SPLITBUCHUNG = PRE + FUNKTIONEN + BUCHF + "splittbuchungen";
+  public static final String EIGENSCHAFT = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER + "eigenschaften";
 
-  public static final String JAHRESSALDO = PRE + FUNKTIONEN + BUCHF + "jahressaldo";
+  public static final String EIGENSCHAFTGRUPPE = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER
+      + "eigenschaften-gruppen";
 
-  public static final String JAHRESABSCHLUSS = PRE + FUNKTIONEN + BUCHF + "jahresabschluss";
+  public static final String FELDDEFINITIONEN = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER + "felddefinition";
 
-  public static final String SPENDENBESCHEINIGUNG = PRE + FUNKTIONEN
-      + "spendenbescheinigung";
+  public static final String FORMULARE = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER + "formulare";
+
+  public static final String IMPORT = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER + "import";
+
+  public static final String LEHRGANGARTEN = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER  + "lehrgange";
+
+  public static final String LESEFELDER = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER + "lesefelder";
+
+  public static final String ADRESSTYPEN = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER + "mitgliedstypen";
+  
+  
+  // Einstellungen Buchführung
+  public static final String BUCHUNGSART = PRE + FUNKTIONEN + ADMIN + ADMBUCHF + "buchungsart.html";
+
+  public static final String BUCHUNGSKLASSEN = PRE + FUNKTIONEN + ADMIN + ADMBUCHF + "buchungsklasse";
+
+  public static final String KONTENRAHMEN = PRE + FUNKTIONEN + ADMIN + ADMBUCHF
+      + "kontenrahmen-import-export";
+
+  public static final String PROJEKTE = PRE + FUNKTIONEN + ADMIN + ADMBUCHF + "projekte";
 
   public static final String QIFIMPORT = PRE + FUNKTIONEN + ADMIN + ADMBUCHF + "qif-import";
 
+
+  // Einstellungen Erweitert
+  public static final String BEREINIGEN = PRE + FUNKTIONEN + ADMIN + ADMERWEITERT + "bereinigen";
+  
 }

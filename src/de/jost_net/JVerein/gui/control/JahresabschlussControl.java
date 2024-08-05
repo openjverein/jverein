@@ -166,7 +166,7 @@ public class JahresabschlussControl extends AbstractControl
     {
       return anfangsbestaende;
     }
-    anfangsbestaende = new CheckboxInput(false);
+    anfangsbestaende = new CheckboxInput(true);
     return anfangsbestaende;
   }
 
