@@ -55,7 +55,6 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
     cont.addLabelPair("Unterschrift drucken",
         control.getUnterschriftdrucken());
     cont.addLabelPair("Unterschrift", control.getUnterschrift());
-    cont.addLabelPair("Spendenbescheinigung Anhang bei Mail Versand in DB speichern", control.getAnhangSpeichern());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

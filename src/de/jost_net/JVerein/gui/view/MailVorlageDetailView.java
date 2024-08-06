@@ -42,7 +42,7 @@ public class MailVorlageDetailView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MAIL, false, "question-circle.png");
+        DokumentationUtil.MAILVORLAGE, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

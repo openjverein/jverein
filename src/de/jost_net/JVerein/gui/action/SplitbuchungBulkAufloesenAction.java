@@ -17,13 +17,18 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -34,6 +39,7 @@ import de.willuhn.util.ApplicationException;
 public class SplitbuchungBulkAufloesenAction implements Action
 {
   private ArrayList<Long> geloescht = new ArrayList<>();
+  private ArrayList<Long> schongeprueft = new ArrayList<>();
   private Long splitid;
   
   @Override
@@ -68,10 +74,66 @@ public class SplitbuchungBulkAufloesenAction implements Action
       {
         return;
       }
+      
+      boolean spendenbescheinigung = false;
+      for (Buchung splitbu : b)
+      {
+        // Es können mehrere der gleichen Splittbuchung selektiert worden sein
+        // Die Prüfung reicht einmal pro SplitId
+        if (!schongeprueft.contains(splitbu.getSplitId()))
+        {
+          // Check ob einer der Buchungen der Splittbuchung
+          // eine Spendenbescheinigung zugeordnet ist
+          final DBService service = Einstellungen.getDBService();
+          String sql = "SELECT DISTINCT buchung.id from buchung "
+              + "WHERE (splitid = ? and spendenbescheinigung IS NOT NULL) ";
+          spendenbescheinigung = (boolean) service.execute(sql,
+              new Object[] { splitbu.getSplitId() }, new ResultSetExtractor()
+          {
+            @Override
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
+            {
+              if (rs.next())
+              {
+                return true;
+              }
+              return false;
+            }
+          });
+          if (spendenbescheinigung)
+            break;
+          schongeprueft.add(splitbu.getSplitId());
+        }
+      }
+      
+      String text = "";
+      if (!spendenbescheinigung)
+      {
+        text = "Wollen Sie diese Splituchung" + (b.length > 1 ? "en" : "")
+            + " wirklich auflösen?";
+      }
+      else
+      {
+        if (b.length == 1)
+        {
+          text = "Die Splitbuchung enthält Buchungen denen eine "
+              + "Spendenbescheinigung zugeordnet ist.\n"
+              + "Sie können nur zusammen gelöscht werden.\n"
+              + "Splitbuchung auflösen und Spendenbescheinigungen löschen?";
+        }
+        else
+        {
+          text = "Mindestens eine Splitbuchung enthält Buchungen denen "
+              + "eine Spendenbescheinigung zugeordnet ist.\n"
+              + "Sie können nur zusammen gelöscht werden.\n"
+              + "Splitbuchungen auflösen und Spendenbescheinigungen löschen?";
+        }
+      }
+      
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Splitbuchung" + (b.length > 1 ? "en" : "") + " auflösen");
-      d.setText("Wollen Sie diese Splituchung" + (b.length > 1 ? "en" : "")
-          + " wirklich auflösen?");
+      d.setText(text);
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -85,6 +147,7 @@ public class SplitbuchungBulkAufloesenAction implements Action
         Logger.error("Fehler beim Auflösen der Splituchung", e);
         return;
       }
+      
       for (Buchung bu : b)
       {
         Jahresabschluss ja = bu.getJahresabschluss();

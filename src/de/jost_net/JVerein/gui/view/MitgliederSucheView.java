@@ -94,7 +94,7 @@ public class MitgliederSucheView extends AbstractMitgliedSucheView
   public Button getHilfeButton()
   {
     return new Button("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIED, false, "question-circle.png");
+        DokumentationUtil.MITGLIEDSUCHE, false, "question-circle.png");
   }
 
 }

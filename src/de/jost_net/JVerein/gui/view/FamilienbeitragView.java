@@ -21,6 +21,7 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class FamilienbeitragView extends AbstractView
 {
@@ -31,12 +32,16 @@ public class FamilienbeitragView extends AbstractView
     GUI.getView().setTitle("Familienbeitrag");
 
     final MitgliedControl control = new MitgliedControl(this);
+    control.init("familie.", null, null);
+    
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    group.addInput(control.getMitgliedStatus());
 
     control.getFamilienbeitraegeTree().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.FAMILIENBEITRAG, false, "hquestion-circle.png");
+        DokumentationUtil.FAMILIENBEITRAG, false, "question-circle.png");
     buttons.paint(this.getParent());
   }
 }

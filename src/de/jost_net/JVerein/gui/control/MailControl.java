@@ -617,6 +617,7 @@ public class MailControl extends FilterControl
       return mailsList;
     }
     mailsList = new TablePart(getMails(), new MailDetailAction());
+    mailsList.addColumn("Nr", "id");
     mailsList.addColumn("Betreff", "betreff");
     mailsList.addColumn("Bearbeitung", "bearbeitung",
         new DateFormatter(new JVDateFormatDATETIME()));

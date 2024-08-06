@@ -17,6 +17,8 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
@@ -29,6 +31,8 @@ import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -62,10 +66,43 @@ public class AbrechnungslaufDeleteAction implements Action
         throw new ApplicationException(
             "Abgeschlossene Abrechnungsläufe können nicht gelöscht werden!");
       }
+      
+      // Check ob einer der Buchungen des Abrechnungslaufs
+      // eine Spendenbescheinigung zugeordnet ist
+      final DBService service = Einstellungen.getDBService();
+      String sql = "SELECT DISTINCT buchung.id from buchung "
+          + "WHERE (abrechnungslauf = ? and spendenbescheinigung IS NOT NULL) ";
+      boolean spendenbescheinigung = (boolean) service.execute(sql,
+          new Object[] { abrl.getID() }, new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs)
+            throws RemoteException, SQLException
+        {
+          if (rs.next())
+          {
+            return true;
+          }
+          return false;
+        }
+      });
+
+      String text = "";
+      if (!spendenbescheinigung)
+      {
+        text = "Wollen Sie diesen Abrechnungslauf wirklich löschen?";
+      }
+      else
+      {
+        text = "Der Abrechnungslauf enthält Buchungen denen eine "
+            + "Spendenbescheinigung zugeordnet ist.\n"
+            + "Sie können nur zusammen gelöscht werden.\n"
+            + "Abrechnungslauf und Spendenbescheinigungen löschen?";
+      }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle(String.format("Abrechnungslauf %s löschen", abrl.getID()));
-      d.setText("Wollen Sie diesen Abrechnungslauf wirklich löschen?");
+      d.setText(text);
 
       try
       {
@@ -80,6 +117,7 @@ public class AbrechnungslaufDeleteAction implements Action
         Logger.error("Fehler beim Löschen eines Abrechnungslaufes", e);
         return;
       }
+      
       DBIterator<Buchung> it = Einstellungen.getDBService()
           .createList(Buchung.class);
       it.addFilter("abrechnungslauf = ?", new Object[] { abrl.getID() });
@@ -99,6 +137,8 @@ public class AbrechnungslaufDeleteAction implements Action
         }
         b.setMitgliedskontoID(null);
         b.store();
+        if (b.getSpendenbescheinigung() != null)
+          b.getSpendenbescheinigung().delete();
         b.delete();
       }
       it = Einstellungen.getDBService().createList(Mitgliedskonto.class);

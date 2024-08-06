@@ -46,7 +46,7 @@ public class AbrechnungslaufView extends AbstractView
     group.addInput(control.getAbgeschlossen());
     group.addInput(control.getAbrechnungsmodus());
     group.addInput(control.getFaelligkeit());
-    group.addInput(control.getStichtag());
+    group.addInput(control.getAbrechnungStichtag());
     group.addInput(control.getEingabedatum());
     group.addInput(control.getAustrittsdatum());
     group.addInput(control.getZahlungsgrund());

@@ -142,7 +142,8 @@ public class FilterControl extends AbstractControl
   public enum Mitgliedstyp {
     MITGLIED,
     NICHTMITGLIED,
-    NOT_USED
+    NOT_USED,
+    ALLE
   }
   
   
@@ -160,6 +161,11 @@ public class FilterControl extends AbstractControl
       this.additionalparamprefix1 = additionalparamprefix1;
     if(additionalparamprefix2 != null)
       this.additionalparamprefix2 = additionalparamprefix2;
+  }
+  
+  public Settings getSettings()
+  {
+    return settings;
   }
   
   public String getSettingsprefix()
@@ -199,6 +205,7 @@ public class FilterControl extends AbstractControl
         at.addFilter("jvereinid != 1 or jvereinid is null");
         break;
       case NOT_USED:
+      case ALLE:
         break;
     }
     at.setOrder("order by bezeichnung");
@@ -209,7 +216,7 @@ public class FilterControl extends AbstractControl
           .createObject(Adresstyp.class, "1");
       suchadresstyp = new SelectInput(at != null ? PseudoIterator.asList(at) : null, def);
     }
-    else if (typ == Mitgliedstyp.NICHTMITGLIED)
+    else if (typ == Mitgliedstyp.NICHTMITGLIED || typ == Mitgliedstyp.ALLE)
     {
       Adresstyp def = null;
       try

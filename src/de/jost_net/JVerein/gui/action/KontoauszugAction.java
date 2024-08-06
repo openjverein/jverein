@@ -31,5 +31,9 @@ public class KontoauszugAction implements Action
     {
       GUI.startView(KontoauszugView.class.getName(), context);
     }
+    else
+    {
+      GUI.startView(KontoauszugView.class.getName(), null);
+    }
   }
 }

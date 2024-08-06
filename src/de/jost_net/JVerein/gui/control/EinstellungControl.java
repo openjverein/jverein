@@ -2121,7 +2121,6 @@ public class EinstellungControl extends AbstractControl
           .getValue());
       e.setUnterschriftdrucken((Boolean) unterschriftdrucken.getValue());
       e.setUnterschrift((byte[]) unterschrift.getValue());
-      e.setAnhangSpeichern((Boolean) anhangspeichern.getValue());
       e.store();
       Einstellungen.setEinstellung(e);
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
@@ -2265,6 +2264,8 @@ public class EinstellungControl extends AbstractControl
 
       wallet.set("smtp_auth_pwd", e.getSmtpAuthPwd());
       wallet.set("imap_auth_pwd", e.getImapAuthPwd());
+      
+      e.setAnhangSpeichern((Boolean) anhangspeichern.getValue());
 
       e.store();
       Einstellungen.setEinstellung(e);

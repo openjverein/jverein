@@ -154,9 +154,11 @@ public class ZipMailer
                 me.setMail(ml);
                 me.setVersand(new Timestamp(new Date().getTime()));
                 me.store();
-                
-                ma.setMail(ml);
-                ma.store();
+                if (Einstellungen.getEinstellung().getAnhangSpeichern())
+                {
+                  ma.setMail(ml);
+                  ma.store();
+                }
               }
               catch (SendFailedException e1)
               {

@@ -215,6 +215,14 @@ public class AnfangsbestandImpl extends AbstractDBObject
     {
       return getKonto().getNummer() + " " + getKonto().getBezeichnung();
     }
+    else if (fieldName.equals("nummer"))
+    {
+      return getKonto().getNummer();
+    }
+    else if (fieldName.equals("bezeichnung"))
+    {
+      return getKonto().getBezeichnung();
+    }
     else
     {
       return super.getAttribute(fieldName);
