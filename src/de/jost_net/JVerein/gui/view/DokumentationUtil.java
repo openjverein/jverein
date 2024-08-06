@@ -53,8 +53,6 @@ public class DokumentationUtil
   public static final String KURSTEILNEHMER = PRE + FUNKTIONEN + MITGLIEDER + "kursteilnehmer";
 
   public static final String LEHRGANG = PRE + FUNKTIONEN + MITGLIEDER  + "lehrgange";
-
-  public static final String FREIESFORMULAR = PRE + FUNKTIONEN + DRUCKMAIL + "freiesformular";
   
   public static final String MITGLIEDSUCHE = PRE + FUNKTIONEN + MITGLIEDER + "content/mitglieder";
   
@@ -81,7 +79,7 @@ public class DokumentationUtil
       + "zusatzbetrage-importieren";
   
   
-  // BuchfÃ¼hrung
+  // Buchführung
   public static final String ANFANGSBESTAENDE = PRE + FUNKTIONEN + BUCHF + "anfangsbestand";
 
   public static final String BUCHUNGEN = PRE + FUNKTIONEN + BUCHF + "buchungen";
@@ -130,20 +128,22 @@ public class DokumentationUtil
   
 
   // Druck und Mail
-  public static final String KONTOAUSZUG = PRE + FUNKTIONEN + DRUCKMAIL + "kontoauszug";
+  public static final String RECHNUNG = PRE + FUNKTIONEN + DRUCKMAIL + "rechnungen";
 
   public static final String MAHNUNG = PRE + FUNKTIONEN + DRUCKMAIL+ "mahnungen";
 
+  public static final String KONTOAUSZUG = PRE + FUNKTIONEN + DRUCKMAIL + "kontoauszug";
+
+  public static final String FREIESFORMULAR = PRE + FUNKTIONEN + DRUCKMAIL + "freiesformular";
+  
+  public static final String SPENDENBESCHEINIGUNGMAIL = PRE + FUNKTIONEN + DRUCKMAIL 
+      + "spendenbescheinigungen";
+  
+  public static final String PRENOTIFICATION = PRE + FUNKTIONEN + DRUCKMAIL + "pre-notification";
+  
   public static final String MAIL = PRE + FUNKTIONEN + DRUCKMAIL + "mail";
 
   public static final String MAILVORLAGE = PRE + FUNKTIONEN + DRUCKMAIL + "mailvorlagen";
-
-  public static final String PRENOTIFICATION = PRE + FUNKTIONEN + DRUCKMAIL + "pre-notification";
-
-  public static final String RECHNUNG = PRE + FUNKTIONEN + DRUCKMAIL + "rechnungen";
-
-  public static final String SPENDENBESCHEINIGUNGMAIL = PRE + FUNKTIONEN + DRUCKMAIL 
-      + "spendenbescheinigungen";
   
   
   // Einstellungen
@@ -171,7 +171,7 @@ public class DokumentationUtil
   public static final String ADRESSTYPEN = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER + "mitgliedstypen";
   
   
-  // Einstellungen BuchfÃ¼hrung
+  // Einstellungen Buchführung
   public static final String BUCHUNGSART = PRE + FUNKTIONEN + ADMIN + ADMBUCHF + "buchungsart.html";
 
   public static final String BUCHUNGSKLASSEN = PRE + FUNKTIONEN + ADMIN + ADMBUCHF + "buchungsklasse";
