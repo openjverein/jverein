@@ -72,12 +72,6 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
           {
             throw new ApplicationException("Betrag nicht gültig");
           }
-          if (getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
-              && getBetrag() != 0)
-          {
-            throw new ApplicationException(
-                "Familien-Angehörige sind beitragsbefreit. Bitte als Betrag 0,00 eingeben.");
-          }
 
           break;
         case FLEXIBEL:
@@ -85,13 +79,6 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
               || getBetragHalbjaehrlich() < 0 || getBetragJaehrlich() < 0)
           {
             throw new ApplicationException("Betrag nicht gültig");
-          }
-          if (getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
-              && (getBetragMonatlich() != 0 || getBetragVierteljaehrlich() != 0
-                  || getBetragHalbjaehrlich() != 0 || getBetragJaehrlich() != 0))
-          {
-            throw new ApplicationException(
-                "Familien-Angehörige sind beitragsbefreit. Bitte als Betrag 0,00 eingeben.");
           }
 
           break;
