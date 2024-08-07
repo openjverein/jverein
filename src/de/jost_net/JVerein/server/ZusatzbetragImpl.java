@@ -97,10 +97,6 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
         throw new ApplicationException(
             "Nächste Fälligkeit liegt nicht im Intervall");
       }
-      if (getBetrag() <= 0)
-      {
-        throw new ApplicationException("Betrag nicht gültig");
-      }
     }
     catch (RemoteException e)
     {
