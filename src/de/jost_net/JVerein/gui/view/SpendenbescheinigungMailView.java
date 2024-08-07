@@ -54,6 +54,11 @@ public class SpendenbescheinigungMailView extends AbstractView
       SimpleContainer right = new SimpleContainer(cl.getComposite());
       right.addLabelPair("Spendedatum von", control.getEingabedatumvon());
       right.addLabelPair("Spendedatum bis", control.getEingabedatumbis());
+      
+      ButtonArea fbuttons = new ButtonArea();
+      fbuttons.addButton(control.getResetButton());
+      fbuttons.addButton(control.getSpeichernButton());
+      group.addButtonArea(fbuttons);
     }
     else
     {
@@ -78,7 +83,7 @@ public class SpendenbescheinigungMailView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
+        DokumentationUtil.SPENDENBESCHEINIGUNGMAIL, false, "question-circle.png");
     buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
         control, false, "view-refresh.png"));
     buttons.addButton(control.getStartButton(this.getCurrentObject()));

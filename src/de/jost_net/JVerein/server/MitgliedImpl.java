@@ -253,7 +253,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       // Person ist eingetreten
       // Zahlt jemand anderes für das Mitglied?
-      if (getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
+      if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
           && getZahlerID() != null)
       {
         // ja, suche Familien Zahler. Er darf nicht ausgetreten sein!
@@ -268,7 +268,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       }
     }
     // Check ob Beitragsart evtl. vorher FAMILIE_ZAHLER war und für andere gezahlt hat
-    if (getBeitragsgruppe().getBeitragsArt() != ArtBeitragsart.FAMILIE_ZAHLER)
+    if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() != ArtBeitragsart.FAMILIE_ZAHLER)
     {
       // Kein FAMILIE_ZAHLER und darf damit für niemanden zahlen
       DBIterator<Mitglied> famang = Einstellungen.getDBService()

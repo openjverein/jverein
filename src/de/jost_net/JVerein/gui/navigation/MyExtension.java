@@ -55,6 +55,7 @@ import de.jost_net.JVerein.gui.action.EigenschaftListeAction;
 import de.jost_net.JVerein.gui.action.FamilienbeitragAction;
 import de.jost_net.JVerein.gui.action.FelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.FormularListeAction;
+import de.jost_net.JVerein.gui.action.FreieFormulareAction;
 import de.jost_net.JVerein.gui.action.JahresabschlussListAction;
 import de.jost_net.JVerein.gui.action.KontensaldoAction;
 import de.jost_net.JVerein.gui.action.JubilaeenAction;
@@ -133,16 +134,7 @@ public class MyExtension implements Extension
       mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new SollbuchungListeAction(), "calculator.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
-          new SpendenbescheinigungListeAction(), "list.png"));      
-      mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
-          new MitgliedskontoRechnungAction(), "document-print.png"));
-      mitglieder.addChild(new MyItem(mitglieder, "Mahnungen",
-          new MitgliedskontoMahnungAction(), "document-print.png"));
-      mitglieder.addChild(new MyItem(mitglieder, "Kontoauszüge",
-          new KontoauszugAction(), "document-print.png"));
-      mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
-          new SpendenbescheinigungSendAction(), "document-print.png"));
-
+          new SpendenbescheinigungListeAction(), "file-invoice.png"));
       if (Einstellungen.getEinstellung().getZusatzbetrag())
       {
         mitglieder.addChild(new MyItem(mitglieder, "Zusatzbeträge",
@@ -219,7 +211,17 @@ public class MyExtension implements Extension
       jverein.addChild(auswertung);
 
       NavigationItem mail = null;
-      mail = new MyItem(mail, "Mail", null);
+      mail = new MyItem(mail, "Drucken & Mailen", null);
+      mail.addChild(new MyItem(mail, "Rechnungen",
+          new MitgliedskontoRechnungAction(), "document-print.png"));
+      mail.addChild(new MyItem(mail, "Mahnungen",
+          new MitgliedskontoMahnungAction(), "document-print.png"));
+      mail.addChild(new MyItem(mail, "Kontoauszüge",
+          new KontoauszugAction(), "document-print.png"));
+      mail.addChild(new MyItem(mail, "Freie Formulare",
+          new FreieFormulareAction(), "document-print.png"));
+      mail.addChild(new MyItem(mail, "Spendenbescheinigungen",
+          new SpendenbescheinigungSendAction(), "document-print.png"));
       mail.addChild(
           new MyItem(mail, "Mails", new MailListeAction(), "envelope-open.png"));
       mail.addChild(new MyItem(mail, "Mail-Vorlagen", new MailVorlagenAction(),

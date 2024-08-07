@@ -42,7 +42,7 @@ public class LehrgangsartDetailView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.LEHRGANG, false, "question-circle.png");
+        DokumentationUtil.LEHRGANGARTEN, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

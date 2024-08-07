@@ -63,6 +63,7 @@ public class EinstellungenMailView extends AbstractView
         control.getImapSentFolder());
     cont.addSeparator();
     cont.addLabelPair("Signatur", control.getMailSignatur());
+    cont.addLabelPair("Bei Mail Versand von Formularen Anhang in DB speichern", control.getAnhangSpeichern());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

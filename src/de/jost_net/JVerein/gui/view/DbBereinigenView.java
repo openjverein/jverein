@@ -35,6 +35,13 @@ public class DbBereinigenView extends AbstractView
 
     final DbBereinigenControl control = new DbBereinigenControl(this);
 
+    LabelGroup groupspendenbescheinigungen = new LabelGroup(getParent(), "Spendenbescheinigungen");
+    ColumnLayout scl = new ColumnLayout(groupspendenbescheinigungen.getComposite(), 2);
+    SimpleContainer sleft = new SimpleContainer(scl.getComposite());
+    sleft.addLabelPair("Löschen", control.getSpendenbescheinigungenLoeschen());
+    SimpleContainer sright = new SimpleContainer(scl.getComposite());
+    sright.addLabelPair("Spendedatum älter als", control.getDatumAuswahlSpendenbescheinigungen());
+    
     LabelGroup groupbuchungen = new LabelGroup(getParent(), "Buchungen");
     ColumnLayout bcl = new ColumnLayout(groupbuchungen.getComposite(), 2);
     SimpleContainer bleft = new SimpleContainer(bcl.getComposite());

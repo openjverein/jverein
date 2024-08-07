@@ -684,6 +684,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     spbList = new TablePart(getSpendenbescheinigungen(),
         new SpendenbescheinigungAction(Spendenart.SACHSPENDE));
+    spbList.addColumn("Nr", "id");
     spbList.addColumn("Bescheinigungsdatum", "bescheinigungsdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     spbList.addColumn("Spendedatum", "spendedatum",
