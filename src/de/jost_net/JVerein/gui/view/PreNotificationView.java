@@ -28,6 +28,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.TabGroup;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class PreNotificationView extends AbstractView
@@ -40,6 +41,12 @@ public class PreNotificationView extends AbstractView
 
     final PreNotificationControl control = new PreNotificationControl(this);
 
+    if (this.getCurrentObject() == null)
+    {
+      LabelGroup group = new LabelGroup(getParent(), "Filter");
+      group.addInput(control.getAbrechnungslaufAusw(10));
+    }
+    
     TabFolder folder = control.getFolder(getParent());
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
