@@ -38,7 +38,7 @@ public class SplitBuchungView extends AbstractView
 
     final BuchungsControl control = new BuchungsControl(this);
     
-    final boolean buchungabgeschlossen = control.isBuchungAbgeschlossen();
+    final boolean buchungabgeschlossen = control.isSplitBuchungAbgeschlossen();
     
     InfoPanel   info = new InfoPanel();
     info.setText(SplitbuchungsContainer.getText());
