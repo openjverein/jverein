@@ -91,6 +91,8 @@ public class DokumentationUtil
   public static final String BUCHUNGSUEBERNAHME = PRE + FUNKTIONEN + BUCHF
       + "buchungsubernahme";
 
+  public static final String BUCHUNGSKORREKTUR = PRE + FUNKTIONEN + BUCHF + "buchungskorrektur";
+  
   public static final String JAHRESABSCHLUSS = PRE + FUNKTIONEN + BUCHF + "jahresabschluss";
   
   public static final String KONTEN = PRE + FUNKTIONEN + BUCHF + "konten";
