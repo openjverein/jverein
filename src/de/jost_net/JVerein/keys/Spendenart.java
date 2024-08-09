@@ -27,6 +27,8 @@ public class Spendenart
   public static final int GELDSPENDE = 1;
 
   public static final int SACHSPENDE = 2;
+  
+  public static final int SONSTIG = 3;  // Aufwandsspende oder Vergütungsspende
 
   private int art;
 
@@ -53,6 +55,8 @@ public class Spendenart
         return "Geldspende";
       case SACHSPENDE:
         return "Sachspende";
+      case SONSTIG:
+        return "Sonstig (Aufwands-, Vergütungsspende)";
       default:
         return null;
     }
@@ -63,6 +67,7 @@ public class Spendenart
     ArrayList<Spendenart> ret = new ArrayList<>();
     ret.add(new Spendenart(GELDSPENDE));
     ret.add(new Spendenart(SACHSPENDE));
+    ret.add(new Spendenart(SONSTIG));
     return ret;
   }
 

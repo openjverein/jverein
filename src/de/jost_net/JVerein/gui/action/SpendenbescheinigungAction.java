@@ -40,7 +40,7 @@ import de.willuhn.util.ApplicationException;
 
 public class SpendenbescheinigungAction implements Action
 {
-  private int spendenart = Spendenart.SACHSPENDE;
+  private int spendenart = Spendenart.SONSTIG;
   
   private Spendenbescheinigung spb = null;
   
@@ -63,8 +63,19 @@ public class SpendenbescheinigungAction implements Action
         spb = (Spendenbescheinigung) Einstellungen.getDBService()
             .createObject(Spendenbescheinigung.class, null);
         spb.setSpendenart(spendenart);
+        switch (spendenart)
+        {
+          case Spendenart.GELDSPENDE:
+            spb.setErsatzAufwendungen(false);
+            break;
+          case Spendenart.SACHSPENDE:
+            spb.setErsatzAufwendungen(false);
+            break;
+          case Spendenart.SONSTIG:
+            spb.setErsatzAufwendungen(true);
+            break;
+        }
         spb.setAutocreate(Boolean.FALSE);
-        spb.setErsatzAufwendungen(false);
         spb.setBescheinigungsdatum(new Date());
 
         if (context != null && (context instanceof Mitglied))
@@ -113,8 +124,6 @@ public class SpendenbescheinigungAction implements Action
         }
         else
         {
-          spb.setSpendenart(Spendenart.SACHSPENDE);
-          spb.setAutocreate(Boolean.FALSE);
           Object o = GUI.getCurrentView().getCurrentObject();
           if (o != null && o instanceof Spendenbescheinigung)
           {
@@ -126,6 +135,7 @@ public class SpendenbescheinigungAction implements Action
             spb.setZeile5(von.getZeile5());
             spb.setZeile6(von.getZeile6());
             spb.setZeile7(von.getZeile7());
+            spb.setMitglied(von.getMitglied());
           }
         }
       }

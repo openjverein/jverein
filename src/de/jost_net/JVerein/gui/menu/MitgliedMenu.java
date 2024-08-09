@@ -204,6 +204,8 @@ public class MitgliedMenu extends ContextMenu
         new SpendenbescheinigungAction(Spendenart.GELDSPENDE), "file-invoice.png"));
     addItem(new CheckedSingleContextMenuItem("Sachspendenbescheinigung",
         new SpendenbescheinigungAction(Spendenart.SACHSPENDE), "file-invoice.png"));
+    addItem(new CheckedSingleContextMenuItem("Spendenbescheinigung (Sonstig)",
+        new SpendenbescheinigungAction(Spendenart.SONSTIG), "file-invoice.png"));
     addItem(new CheckedContextMenuItem("Personalbogen",
         new PersonalbogenAction(), "file-invoice.png"));
     addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift ...",

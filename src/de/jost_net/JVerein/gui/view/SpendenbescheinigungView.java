@@ -83,20 +83,16 @@ public class SpendenbescheinigungView extends AbstractView
     /*
      * Betrag kann bei Geldspenden nicht geändert werden
      */
-    if (control.getSpendenbescheinigung().getAutocreate())
+    if (control.getSpendenbescheinigung().getSpendenart()
+        == Spendenart.GELDSPENDE)
     {
-      control.getSpendenart().setEnabled(false);
       control.getBetrag().setEnabled(false);
       // Buchnungen nur für Geldspenden
       LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),
           "Buchungen");
       grBuchungen.addPart(control.getBuchungsList());
     }
-    else
-    {
-      control.getSpendenart().setEnabled(false);
-      control.getBetrag().setEnabled(true);
-    }
+    control.getSpendenart().setEnabled(false);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -105,8 +101,10 @@ public class SpendenbescheinigungView extends AbstractView
     buttons.addButton(control.getPDFStandardButton(true));
     buttons.addButton(control.getPDFIndividuellButton(false));
     buttons.addButton(control.getPDFIndividuellButton(true));
-    buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(Spendenart.SACHSPENDE), null, false,
-        "document-new.png");
+    buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(
+        Spendenart.SACHSPENDE), null, false, "document-new.png");
+    buttons.addButton("Neu (Spende (Sonstig))", new SpendenbescheinigungAction(
+        Spendenart.SONSTIG), null, false, "document-new.png");
     buttons.addButton("Speichern", new Action()
     {
 

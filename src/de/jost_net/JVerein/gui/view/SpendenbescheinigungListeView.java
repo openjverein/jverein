@@ -64,10 +64,11 @@ public class SpendenbescheinigungListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
-    buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(Spendenart.SACHSPENDE), null,
-        false, "document-new.png");
-    buttons.addButton("Neu (automatisch)",
-        new SpendenbescheinigungAutoNeuAction(), null, false,
+    buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(
+        Spendenart.SACHSPENDE), null, false, "document-new.png");
+    buttons.addButton("Neu (Spende (Sonstig))", new SpendenbescheinigungAction(
+        Spendenart.SONSTIG), null, false, "document-new.png");
+    buttons.addButton("Neu (Geldspenden)", new SpendenbescheinigungAutoNeuAction(), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

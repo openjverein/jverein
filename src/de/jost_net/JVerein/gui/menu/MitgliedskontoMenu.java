@@ -59,6 +59,8 @@ public class MitgliedskontoMenu extends ContextMenu
         new SpendenbescheinigungAction(Spendenart.GELDSPENDE), "file-invoice.png"));
     addItem(new MitgliedItem("Sachspendenbescheinigung",
         new SpendenbescheinigungAction(Spendenart.SACHSPENDE), "file-invoice.png"));
+    addItem(new MitgliedItem("Spendenbescheinigung (Sonstig)",
+        new SpendenbescheinigungAction(Spendenart.SONSTIG), "file-invoice.png"));
   }
 
   private static class MitgliedItem extends CheckedContextMenuItem
