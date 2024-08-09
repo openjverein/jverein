@@ -36,6 +36,7 @@ import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
 import de.jost_net.JVerein.gui.dialogs.ZusatzfelderAuswahlDialog;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
+import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Adresstyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Eigenschaft;
@@ -54,6 +55,7 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -138,6 +140,10 @@ public class FilterControl extends AbstractControl
   protected DateInput abbuchungsdatumbis = null;
 
   protected TextInput suchtext = null;
+  
+  protected SelectInput abrechnungslaufausw = null;
+  
+  protected IntegerInput integerausw = null;
   
   public enum Mitgliedstyp {
     MITGLIED,
@@ -906,6 +912,61 @@ public class FilterControl extends AbstractControl
     return suchtext != null;
   }
   
+  public SelectInput getAbrechnungslaufAusw(int anzahl) throws RemoteException
+  {
+    if (abrechnungslaufausw != null)
+    {
+      return abrechnungslaufausw;
+    }
+    DBIterator<Abrechnungslauf> list = Einstellungen.getDBService()
+        .createList(Abrechnungslauf.class);
+    list.setOrder("ORDER BY id desc");
+    ArrayList<Abrechnungslauf> liste = null;
+    if (list != null)
+    {
+      liste = new ArrayList<>();
+      int count = 0;
+      while (list.hasNext() && count < anzahl)
+      {
+        liste.add(list.next());
+        count++;
+      }
+    }
+    abrechnungslaufausw = new SelectInput(liste, liste.get(0));
+    abrechnungslaufausw.setName("Abrechnungslauf");
+    abrechnungslaufausw.setAttribute("idtext");
+    return abrechnungslaufausw;
+  }
+  
+  public boolean isAbrechnungslaufAuswAktiv()
+  {
+    return abrechnungslaufausw != null;
+  }
+  
+  public IntegerInput getIntegerAusw()
+  {
+    if (integerausw != null)
+    {
+      return integerausw;
+    }
+    String tmp = settings.getString(settingsprefix + "intergerauswahl", "");
+    if (tmp != null && !tmp.isEmpty())
+    {
+      integerausw = new IntegerInput(Integer.parseInt(tmp));
+    }
+    else
+    {
+      integerausw = new IntegerInput(0);
+    }
+    integerausw.setName("Auswahl");
+    return integerausw;
+  }
+  
+  public boolean isIntegerAuswAktiv()
+  {
+    return integerausw != null;
+  }
+  
   /**
    * Buttons
    */
@@ -1020,6 +1081,8 @@ public class FilterControl extends AbstractControl
           abbuchungsdatumbis.setValue(null);
         if (suchtext != null)
           suchtext.setValue("");
+        if (integerausw != null)
+          integerausw.setValue(0);
         refresh();
       }
     }, null, false, "eraser.png");
@@ -1404,6 +1467,18 @@ public class FilterControl extends AbstractControl
       }
     }
     
+    if (integerausw != null)
+    {
+      Integer tmp = (Integer) integerausw.getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute(settingsprefix + "intergerauswahl", tmp);
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "intergerauswahl", "");
+      }
+    }
   }
   
   private void saveDate(Date tmp, String setting)

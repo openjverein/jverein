@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -46,13 +47,11 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.keys.Ct1Ausgabe;
-import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.jost_net.OBanToo.StringLatin.Zeichen;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.HBCI;
 import de.willuhn.jameica.hbci.HBCIProperties;
@@ -71,22 +70,22 @@ public class Ct1Ueberweisung
   {
   }
 
-  public int write(Abrechnungslauf abrl, File file, Date faell,
+  public int write(ArrayList<Lastschrift> lastschriften, File file, Date faell,
       Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
   {
     Velocity.init();
     switch (ct1ausgabe)
     {
       case SEPA_DATEI:
-        return dateiausgabe(abrl, file, faell, ct1ausgabe, verwendungszweck);
+        return dateiausgabe(lastschriften, file, faell, ct1ausgabe, verwendungszweck);
 
       case HIBISCUS:
-        return hibiscusausgabe(abrl, file, faell, ct1ausgabe, verwendungszweck);
+        return hibiscusausgabe(lastschriften, file, faell, ct1ausgabe, verwendungszweck);
     }
     return -1;
   }
 
-  private int dateiausgabe(Abrechnungslauf abrl, File file, Date faell,
+  private int dateiausgabe(ArrayList<Lastschrift> lastschriften, File file, Date faell,
       Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
   {
     SepaVersion sepaVersion;  
@@ -115,10 +114,8 @@ public class Ct1Ueberweisung
     ls_properties.setProperty("date", ISO_DATE.format(faell) );
     ls_properties.setProperty("batchbook", "false");
     int counter = 0;
-    DBIterator<Lastschrift> it = getIterator(abrl);
-    while (it.hasNext())
+    for (Lastschrift ls : lastschriften)
     {
-      Lastschrift ls = (Lastschrift) it.next();
       ls_properties.setProperty(SepaUtil.insertIndex("dst.bic", counter),       StringUtils.trimToEmpty(ls.getBIC()));
       ls_properties.setProperty(SepaUtil.insertIndex("dst.iban", counter),      StringUtils.trimToEmpty(ls.getIBAN()));
       ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),      StringUtils.trimToEmpty(ls.getMitglied()
@@ -139,21 +136,18 @@ public class Ct1Ueberweisung
     return counter;
   }
 
-  private int hibiscusausgabe(Abrechnungslauf abrl, File file, Date faell,
+  private int hibiscusausgabe(ArrayList<Lastschrift> lastschriften, File file, Date faell,
       Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
   {
     try
     {
       de.willuhn.jameica.hbci.rmi.Konto hibk = Einstellungen.getEinstellung()
           .getHibiscusKonto();
-      DBIterator<Lastschrift> it = getIterator(abrl);
-      AuslandsUeberweisung[] ueberweisungen = new AuslandsUeberweisung[it
-          .size()];
+      AuslandsUeberweisung[] ueberweisungen = new AuslandsUeberweisung[
+          lastschriften.size()];
       int i = 0;
-
-      while (it.hasNext())
+      for (Lastschrift ls : lastschriften)
       {
-        Lastschrift ls = (Lastschrift) it.next();
         DBService service = (DBService) Application.getServiceFactory()
             .lookup(HBCI.class, "database");
 
@@ -187,16 +181,6 @@ public class Ct1Ueberweisung
       throw new ApplicationException(e);
     }
     return 1;
-  }
-
-  private DBIterator<Lastschrift> getIterator(Abrechnungslauf abrl)
-      throws RemoteException
-  {
-    DBIterator<Lastschrift> it = Einstellungen.getDBService()
-        .createList(Lastschrift.class);
-    it.addFilter("abrechnungslauf = ?", abrl.getID());
-    it.setOrder("order by name, vorname");
-    return it;
   }
 
   public String eval(Lastschrift ls, String verwendungszweck)

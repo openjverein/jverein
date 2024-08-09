@@ -54,6 +54,7 @@ public class LastschriftControl extends FilterControl
     }
     lastschriftList = new TablePart(getLastschriften(), null);
     lastschriftList.addColumn("Nr", "id");
+    lastschriftList.addColumn("Abrechnungslauf", "abrechnungslauf");
     lastschriftList.addColumn("Name", "name");
     lastschriftList.addColumn("Vorname", "vorname");
     lastschriftList.addColumn("Zweck", "verwendungszweck");
@@ -149,6 +150,11 @@ public class LastschriftControl extends FilterControl
     {
       lastschriften.addFilter("faelligkeit <= ?",
           new Object[] { (Date) getDatumbis().getValue() });
+    }
+    if (isIntegerAuswAktiv() && getIntegerAusw().getValue() != null)
+    {
+      lastschriften.addFilter("abrechnungslauf >= ?",
+          new Object[] { (Integer) getIntegerAusw().getValue() });
     }
     
     lastschriften.setOrder("ORDER BY name");
