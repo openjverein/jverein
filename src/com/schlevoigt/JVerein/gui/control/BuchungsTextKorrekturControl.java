@@ -61,7 +61,7 @@ public class BuchungsTextKorrekturControl extends AbstractControl {
 			public void handleAction(Object context) {
 				starteKorrektur();
 			}
-		}, null, true, "import_obj.gif"); // "true" defines this button as the
+		}, null, true, "walking.png"); // "true" defines this button as the
 											// default
 		return b;
 	}

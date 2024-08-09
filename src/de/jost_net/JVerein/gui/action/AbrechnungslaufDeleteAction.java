@@ -19,17 +19,15 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -66,13 +64,59 @@ public class AbrechnungslaufDeleteAction implements Action
         throw new ApplicationException(
             "Abgeschlossene Abrechnungsläufe können nicht gelöscht werden!");
       }
+
+      // Prüfe, ob einer der erzeugten Buchungen bereits abgeschlossen ist
+      final DBService service1 = Einstellungen.getDBService();
+      String sql1 = "SELECT jahresabschluss.bis from jahresabschluss "
+          + "order by jahresabschluss.bis desc";      
+      Date bis = (Date) service1.execute(sql1,
+          new Object[] { }, new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs)
+            throws RemoteException, SQLException
+        {
+          if (rs.next())
+          {
+            return rs.getDate(1);
+          }
+          return null;
+        }
+      });
+      if (bis != null)
+        // Es gibt Jahresabschlüsse und bis ist das letzte Datum
+      {
+        // Check ob eine Buchung des Abrechnungslaufen vor dem bis Datum liegt
+        DBService service2 = Einstellungen.getDBService();
+        String sql2 = "SELECT DISTINCT buchung.id from buchung "
+            + "WHERE (abrechnungslauf = ? and datum <= ?) ";
+        boolean abgeschlossen = (boolean) service2.execute(sql2,
+            new Object[] { abrl.getID(), bis }, new ResultSetExtractor()
+        {
+          @Override
+          public Object extract(ResultSet rs)
+              throws RemoteException, SQLException
+          {
+            if (rs.next())
+            {
+              return true;
+            }
+            return false;
+          }
+        });
+        if (abgeschlossen)
+        {
+          throw new ApplicationException(
+              "Der Abrechnungslauf enthält abgeschlossene Buchungen und kann darum nicht gelöscht werden!");
+        }
+      }
       
       // Check ob einer der Buchungen des Abrechnungslaufs
       // eine Spendenbescheinigung zugeordnet ist
-      final DBService service = Einstellungen.getDBService();
-      String sql = "SELECT DISTINCT buchung.id from buchung "
+      DBService service3 = Einstellungen.getDBService();
+      String sql3 = "SELECT DISTINCT buchung.id from buchung "
           + "WHERE (abrechnungslauf = ? and spendenbescheinigung IS NOT NULL) ";
-      boolean spendenbescheinigung = (boolean) service.execute(sql,
+      boolean spendenbescheinigung = (boolean) service3.execute(sql3,
           new Object[] { abrl.getID() }, new ResultSetExtractor()
       {
         @Override
@@ -124,42 +168,9 @@ public class AbrechnungslaufDeleteAction implements Action
       while (it.hasNext())
       {
         Buchung bu = it.next();
-        Buchung b = (Buchung) Einstellungen.getDBService()
-            .createObject(Buchung.class, bu.getID());
-        Jahresabschluss ja = b.getJahresabschluss();
-        if (ja != null)
-        {
-          throw new ApplicationException(
-              String.format("Buchung wurde bereits am %s von %s abgeschlossen.",
-                  new Object[] {
-                      new JVDateFormatTTMMJJJJ().format(ja.getDatum()),
-                      ja.getName() }));
-        }
-        b.setMitgliedskontoID(null);
-        b.store();
-        if (b.getSpendenbescheinigung() != null)
-          b.getSpendenbescheinigung().delete();
-        b.delete();
-      }
-      it = Einstellungen.getDBService().createList(Mitgliedskonto.class);
-      it.addFilter("abrechnungslauf = ?", new Object[] { abrl.getID() });
-      while (it.hasNext())
-      {
-        Mitgliedskonto mkt = (Mitgliedskonto) it.next();
-        DBIterator<Buchung> it2 = Einstellungen.getDBService()
-            .createList(Buchung.class);
-        it2.addFilter("mitgliedskonto = ?", new Object[] { mkt.getID() });
-        while (it2.hasNext())
-        {
-          Buchung bu = it2.next();
-          Buchung b = (Buchung) Einstellungen.getDBService()
-              .createObject(Buchung.class, bu.getID());
-          b.setMitgliedskontoID(null);
-          b.store();
-        }
-        Mitgliedskonto mk = (Mitgliedskonto) Einstellungen.getDBService()
-            .createObject(Mitgliedskonto.class, mkt.getID());
-        mk.delete();
+        if (bu.getSpendenbescheinigung() != null)
+          bu.getSpendenbescheinigung().delete();
+        bu.delete();
       }
       it = Einstellungen.getDBService()
           .createList(ZusatzbetragAbrechnungslauf.class);
@@ -176,6 +187,7 @@ public class AbrechnungslaufDeleteAction implements Action
       }
       it = Einstellungen.getDBService().createList(Lastschrift.class);
       it.addFilter("abrechnungslauf = ?", abrl.getID());
+      it.addFilter("kursteilnehmer IS NOT NULL");
       while (it.hasNext())
       {
         Lastschrift la = (Lastschrift) it.next();

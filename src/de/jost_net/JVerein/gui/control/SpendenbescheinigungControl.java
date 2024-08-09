@@ -79,7 +79,6 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -90,7 +89,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class SpendenbescheinigungControl extends FilterControl
+public class SpendenbescheinigungControl extends DruckMailControl
 {
 
   // Spendenbescheinigung View
@@ -135,19 +134,6 @@ public class SpendenbescheinigungControl extends FilterControl
   private boolean and = false;
 
   private String sql = "";
-  
-  // Mail/Drucken View
-  private TextInput mailbetreff = null;
-
-  private TextAreaInput mailtext = null;
-  
-  private TextAreaInput info = null;
-  
-  private SelectInput ausgabeart = null;
-  
-  private SelectInput art = null;
-
-  private SelectInput adressblatt = null;
   
 
   public SpendenbescheinigungControl(AbstractView view)
@@ -830,7 +816,8 @@ public class SpendenbescheinigungControl extends FilterControl
     sql += condition;
   }
   
-  //Mail/Drucken View
+  // Mail/Drucken View
+  @Override
   public String getInfoText(Object spbArray)
   {
     Spendenbescheinigung[] spbArr = (Spendenbescheinigung[]) spbArray;
@@ -865,80 +852,6 @@ public class SpendenbescheinigungControl extends FilterControl
     }
     return text;
   }
-
-  public TextAreaInput getInfo() throws RemoteException
-  {
-    if (info != null)
-    {
-      return info;
-    }
-    info = new TextAreaInput(getInfoText(getCurrentObject()), 10000);
-    info.setHeight(100);
-    info.setEnabled(false);
-    return info;
-  }
-  
-  public SelectInput getAusgabeart()
-  {
-    if (ausgabeart != null)
-    {
-      return ausgabeart;
-    }
-    ausgabeart = new SelectInput(Ausgabeart.values(),
-        Ausgabeart.valueOf(settings.getString(settingsprefix + "ausgabeart", "DRUCK")));
-    ausgabeart.setName("Ausgabe");
-    return ausgabeart;
-  }
-  
-  public SelectInput getArt()
-  {
-    if (art != null)
-    {
-      return art;
-    }
-    art = new SelectInput( 
-        new String[] { "Standard", "Individuell" },
-        settings.getString(settingsprefix + "art", "Standard"));
-    art.setName("Ausgabeart");
-    return art;
-  }
-  
-  public SelectInput getAdressblatt()
-  {
-    if (adressblatt != null)
-    {
-      return adressblatt;
-    }
-    adressblatt = new SelectInput( 
-        new String[] { "Ohne", "Mit" },
-        settings.getString(settingsprefix + "adressblatt", "Ohne"));
-    adressblatt.setName("Adressblatt");
-    return adressblatt;
-  }
-  
-  public TextInput getBetreff()
-  {
-    if (mailbetreff != null)
-    {
-      return mailbetreff;
-    }
-    mailbetreff = new TextInput(settings.
-        getString(settingsprefix + "mail.betreff", ""), 100);
-    mailbetreff.setName("Betreff");
-    return mailbetreff;
-  }
-
-  public TextAreaInput getTxt()
-  {
-    if (mailtext != null)
-    {
-      return mailtext;
-    }
-    mailtext = new TextAreaInput(settings.
-        getString(settingsprefix + "mail.text", ""), 10000);
-    mailtext.setName("Text");
-    return mailtext;
-  }
   
   public Button getStartButton(final Object currentObject)
   {
@@ -950,8 +863,7 @@ public class SpendenbescheinigungControl extends FilterControl
       {
         try
         {
-          saveSettings();
-          saveFilterSettings();
+          saveDruckMailSettings();
           Spendenbescheinigung[] spbArray = null;
           if (currentObject == null)
           {
@@ -1151,35 +1063,6 @@ public class SpendenbescheinigungControl extends FilterControl
       }
     };
     Application.getController().start(t);
-  }
-  
-  private void saveSettings()
-  {
-    if (ausgabeart != null )
-    {
-      Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
-      settings.setAttribute(settingsprefix + "ausgabeart", aa.toString());
-    }
-    if (art != null)
-    {
-      String ar = (String) getArt().getValue();
-      settings.setAttribute(settingsprefix + "art", ar);
-    }
-    if (adressblatt != null)
-    {
-      String ab = (String) getAdressblatt().getValue();
-      settings.setAttribute(settingsprefix + "adressblatt", ab);
-    }
-    if (mailbetreff != null)
-    {
-      settings.setAttribute(settingsprefix + "mail.betreff",
-          (String) getBetreff().getValue());
-    }
-    if (mailtext != null)
-    {
-      settings.setAttribute(settingsprefix + "mail.text",
-          (String) getTxt().getValue());
-    }
   }
 
 }

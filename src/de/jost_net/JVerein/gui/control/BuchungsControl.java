@@ -1696,6 +1696,37 @@ public class BuchungsControl extends AbstractControl
     }
     return false;
   }
+  
+  public boolean isSplitBuchungAbgeschlossen() throws ApplicationException
+  {
+    try
+    {
+      if (!getBuchung().isNewObject())
+      {
+        DBIterator<Buchung> it = Einstellungen.getDBService()
+            .createList(Buchung.class);
+        it.addFilter("splitid = ?", getBuchung().getSplitId());
+        while (it.hasNext())
+        {
+          Buchung buchung = (Buchung) it.next();
+          Jahresabschluss ja = buchung.getJahresabschluss();
+          if (ja != null)
+          {
+            GUI.getStatusBar().setErrorText(String.format(
+                "Buchung wurde bereits am %s von %s abgeschlossen.",
+                new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
+            return true;
+          }
+        }
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(
+          "Status der aktuellen Buchung kann nicht geprüft werden.", e);
+    }
+    return false;
+  }
 
   public Action getBuchungSpeichernAction()
   {
