@@ -150,6 +150,7 @@ public class PreNotificationControl extends DruckMailControl
       {
         try
         {
+          saveDruckMailSettings();
           Object object = currentObject;
           if (object == null)
           {
@@ -204,6 +205,7 @@ public class PreNotificationControl extends DruckMailControl
       {
         try
         {
+          saveDruckMailSettings();
           Object object = currentObject;
           if (object == null)
           {
@@ -232,7 +234,7 @@ public class PreNotificationControl extends DruckMailControl
               (String) getVerwendungszweck().getValue());
           settings.setAttribute(settingsprefix + "tab.selection", 
               folder.getSelectionIndex());
-          generiere1ct(currentObject);
+          generiere1ct(object);
         }
         catch (OperationCanceledException oce)
         {
