@@ -35,6 +35,7 @@ import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
 import de.jost_net.JVerein.gui.dialogs.ZusatzfelderAuswahlDialog;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
+import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Adresstyp;
@@ -55,7 +56,6 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -143,7 +143,7 @@ public class FilterControl extends AbstractControl
   
   protected SelectInput abrechnungslaufausw = null;
   
-  protected IntegerInput integerausw = null;
+  protected IntegerNullInput integerausw = null;
   
   public enum Mitgliedstyp {
     MITGLIED,
@@ -943,7 +943,7 @@ public class FilterControl extends AbstractControl
     return abrechnungslaufausw != null;
   }
   
-  public IntegerInput getIntegerAusw()
+  public IntegerNullInput getIntegerAusw()
   {
     if (integerausw != null)
     {
@@ -952,11 +952,11 @@ public class FilterControl extends AbstractControl
     String tmp = settings.getString(settingsprefix + "intergerauswahl", "");
     if (tmp != null && !tmp.isEmpty())
     {
-      integerausw = new IntegerInput(Integer.parseInt(tmp));
+      integerausw = new IntegerNullInput(Integer.parseInt(tmp));
     }
     else
     {
-      integerausw = new IntegerInput(0);
+      integerausw = new IntegerNullInput();
     }
     integerausw.setName("Auswahl");
     return integerausw;
@@ -1082,7 +1082,7 @@ public class FilterControl extends AbstractControl
         if (suchtext != null)
           suchtext.setValue("");
         if (integerausw != null)
-          integerausw.setValue(0);
+          integerausw.setValue(null);
         refresh();
       }
     }, null, false, "eraser.png");
