@@ -29,6 +29,7 @@ import de.jost_net.JVerein.rmi.BuchungDokument;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -72,7 +73,10 @@ public class BuchungPart implements Part
     grKontoauszug.addLabelPair("IBAN", control.getIban());
     grKontoauszug.addLabelPair("Betrag", control.getBetrag());
     grKontoauszug.addLabelPair("Verwendungszweck", control.getZweck());
-    grKontoauszug.addLabelPair("Datum", control.getDatum());
+    DateInput date = control.getDatum();
+    grKontoauszug.addLabelPair("Datum", date);
+    if (!control.getBuchung().getSpeicherung())
+      date.setEnabled(false);
     grKontoauszug.addLabelPair("Art", control.getArt());
     grKontoauszug.addLabelPair("Sollbuchung", control.getMitgliedskonto());
     grKontoauszug.addLabelPair("Kommentar", control.getKommentar());
