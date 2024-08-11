@@ -585,14 +585,12 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
       }
 
       // Wenn es mindestens eine Beitragsgruppe mit Beitragsart
-      // "Familie: Zahler"
-      // oder "Familie: Angehöriger" gibt, zeige Familienverband-Part.
+      // "Familienangehöriger" gibt, zeige Familienverband-Part.
       // Dieser Familien-Part soll über die komplette Breite angezeigt werden,
       // kann daher nicht im SimpleVerticalContainer angezeigt werden.
       DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
           .createList(Beitragsgruppe.class);
-      it.addFilter("beitragsart = ? or beitragsart = ?",
-          ArtBeitragsart.FAMILIE_ZAHLER.getKey(),
+      it.addFilter("beitragsart = ?",
           ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
       if (it.hasNext())
       {

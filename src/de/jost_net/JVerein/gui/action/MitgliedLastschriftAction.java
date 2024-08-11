@@ -24,7 +24,6 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
@@ -47,39 +46,14 @@ public class MitgliedLastschriftAction implements Action
     {
       throw new ApplicationException("kein Mitglied ausgewählt");
     }
-    Mitglied m = null; // Mitglied
-    Mitglied mZ = null; // Zahler
+    Mitglied m = null;
     SepaLastschrift sl = null;
     try
     {
       m = (Mitglied) context;
 
-      // pruefe wer der Zahler ist
-      if (m.getBeitragsgruppe() != null
-          && m.getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-      {
-        // Mitglied ist Familienangehoeriger, hat also anderen Zahler
-        mZ = (Mitglied) Einstellungen.getDBService().createObject(
-            Mitglied.class, m.getZahlerID() + "");
-
-        if (!confirmDialog("Familienangehöriger",
-            "Dieses Mitglied ist ein Familienangehöriger.\n\n"
-                + "Als Konto wird das Konto des Zahlers belastet:\n"
-                + "Zahler: " + mZ.getName() + "," + mZ.getVorname() + "\n"
-                + "Kontoinhaber des Zahlers: " + mZ.getKontoinhaber(1)))
-        {
-          return;
-        }
-
-      }
-      else
-      {
-        // Mitglied zahlt selbst
-        mZ = m;
-      }
-
       // pruefe Kontoinformationen
-      if (checkSEPA(mZ))
+      if (checkSEPA(m))
       {
         sl = (SepaLastschrift) Settings.getDBService().createObject(
             SepaLastschrift.class, null);
@@ -88,13 +62,13 @@ public class MitgliedLastschriftAction implements Action
         sl.setCreditorId(Einstellungen.getEinstellung().getGlaeubigerID());
 
         // Kontodaten: Name, BIC, IBAN
-        sl.setGegenkontoName(mZ.getKontoinhaber(1));
-        sl.setGegenkontoBLZ(mZ.getBic());
-        sl.setGegenkontoNummer(mZ.getIban());
+        sl.setGegenkontoName(m.getKontoinhaber(1));
+        sl.setGegenkontoBLZ(m.getBic());
+        sl.setGegenkontoNummer(m.getIban());
 
         // Mandat: ID, Datum, Typ
-        sl.setMandateId(mZ.getMandatID());
-        sl.setSignatureDate(mZ.getMandatDatum());
+        sl.setMandateId(m.getMandatID());
+        sl.setSignatureDate(m.getMandatDatum());
         sl.setSequenceType(SepaLastSequenceType.RCUR);
 
         // Verwendungszweck vorbelegen: "Mitgliedsnummer/Mitgliedsname"

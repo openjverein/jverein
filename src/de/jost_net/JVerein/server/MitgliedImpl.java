@@ -235,13 +235,12 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       // Person ist ausgetreten
       // Hat das Mitglied für andere gezahlt?
-      if (getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ZAHLER)
+      if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
       {
-        // ja
         DBIterator<Mitglied> famang = Einstellungen.getDBService()
             .createList(Mitglied.class);
         famang.addFilter("zahlerid = " + getID());
-        famang.addFilter("austritt is null");
+        famang.addFilter("(austritt is null or austritt > ?)",getAustritt());
         if (famang.hasNext())
         {
           throw new ApplicationException(
@@ -249,28 +248,29 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
         }
       }
     }
-    if (getAustritt() == null)
+    // Zahlt jemand anderes für das Mitglied?
+    if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
+        && getZahlerID() != null)
     {
-      // Person ist eingetreten
-      // Zahlt jemand anderes für das Mitglied?
-      if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
-          && getZahlerID() != null)
+      // ja, suche Vollzahler. Er darf nicht, bzw nicht früher, ausgetreten sein!
+      DBIterator<Mitglied> zahler = Einstellungen.getDBService()
+          .createList(Mitglied.class);
+      zahler.addFilter("id = " + getZahlerID());
+      if(getAustritt() != null)
+        zahler.addFilter("(austritt is not null and austritt < ?)",getAustritt());
+      Mitglied z = null;
+      if(zahler.hasNext())
+        z = zahler.next();
+      if (z != null && ((Mitglied) z).getAustritt() != null)
       {
-        // ja, suche Familien Zahler. Er darf nicht ausgetreten sein!
-        DBIterator<Mitglied> zahler = Einstellungen.getDBService()
-            .createList(Mitglied.class);
-        zahler.addFilter("id = " + getZahlerID());
-        if (zahler.hasNext() && ((Mitglied) zahler.next()).getAustritt() != null)
-        {
-          throw new ApplicationException(
-              "Der ausgewählte Zahler ist ausgetreten. Bitte anderen Zahler wählen!");
-        }
+        throw new ApplicationException(
+            "Der ausgewählte Vollzahler ist ausgetreten zu " + z.getAustritt() + ". Bitte anderen Vollzahler wählen!");
       }
     }
-    // Check ob Beitragsart evtl. vorher FAMILIE_ZAHLER war und für andere gezahlt hat
-    if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() != ArtBeitragsart.FAMILIE_ZAHLER)
+    // Check ob Beitragsart evtl. vorher für andere gezahlt wurde
+    if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
     {
-      // Kein FAMILIE_ZAHLER und darf damit für niemanden zahlen
+      // Angehöriger und darf damit für niemanden zahlen
       DBIterator<Mitglied> famang = Einstellungen.getDBService()
           .createList(Mitglied.class);
       famang.addFilter("zahlerid = " + getID());

@@ -23,8 +23,8 @@ package de.jost_net.JVerein.keys;
 public enum ArtBeitragsart
 {
 
-  NORMAL(0, "Normal"), FAMILIE_ZAHLER(1, "Familie: Zahler"), FAMILIE_ANGEHOERIGER(
-      2, "Familie: Angehöriger");
+  NORMAL(0, "Normal"), FAMILIE_ANGEHOERIGER(
+      2, "Familienangehöriger");
   private final String text;
 
   private final int key;
