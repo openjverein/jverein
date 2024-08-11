@@ -180,8 +180,15 @@ public class MitgliedMap
         VarTools.maskieren(m.getIban()));
     map.put(MitgliedVar.IBAN.getName(), m.getIban());
     map.put(MitgliedVar.ID.getName(), m.getID());
+    if (m.getIndividuellerBeitrag() != null)
+    {
     map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(),
         Einstellungen.DECIMALFORMAT.format(m.getIndividuellerBeitrag()));
+    }
+    else
+    {
+      map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), null);
+    }
     map.put(MitgliedVar.BANKNAME.getName(), getBankname(m));
     map.put(MitgliedVar.KONTOINHABER_ADRESSIERUNGSZUSATZ.getName(),
         m.getKtoiAdressierungszusatz());

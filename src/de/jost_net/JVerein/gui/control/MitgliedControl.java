@@ -1193,7 +1193,7 @@ public class MitgliedControl extends FilterControl
     }
     individuellerbeitrag = new DecimalInput(
         getMitglied().getIndividuellerBeitrag(), Einstellungen.DECIMALFORMAT);
-    individuellerbeitrag.setName("individueller Beitrag");
+    individuellerbeitrag.setName("Individueller Beitrag");
     return individuellerbeitrag;
   }
 
