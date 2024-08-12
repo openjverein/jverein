@@ -346,7 +346,7 @@ public class PersonalbogenAction implements Action
       {
         Mitglied mfa = (Mitglied) Einstellungen.getDBService()
             .createObject(Mitglied.class, m.getZahlerID() + "");
-        rpt.addColumn("Vollzahlendes Fmilienmitglied", Element.ALIGN_LEFT);
+        rpt.addColumn("Vollzahlendes Familienmitglied", Element.ALIGN_LEFT);
         rpt.addColumn(Adressaufbereitung.getNameVorname(mfa),
             Element.ALIGN_LEFT);
       }

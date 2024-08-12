@@ -134,9 +134,9 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
     }
     catch (RemoteException e)
     {
-      Logger.error("insert check of mitglied failed", e);
+      Logger.error("insert check of beitragsgruppe failed", e);
       throw new ApplicationException(
-          "Mitglied kann nicht gespeichert werden. Siehe system log");
+          "Beitragsgruppe kann nicht gespeichert werden. Siehe system log");
     }
   }
 
