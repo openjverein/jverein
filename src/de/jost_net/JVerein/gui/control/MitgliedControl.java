@@ -51,6 +51,7 @@ import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
+import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.menu.FamilienbeitragMenu;
@@ -120,7 +121,6 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.ImageInput;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.SpinnerInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
@@ -1514,9 +1514,12 @@ public class MitgliedControl extends FilterControl
         case Datentyp.GANZZAHL:
           if (zf.getFeldGanzzahl() == null)
           {
-            zf.setFeldGanzzahl(0);
+            zusatzfelder[i] = new IntegerNullInput();
           }
-          zusatzfelder[i] = new IntegerInput(zf.getFeldGanzzahl());
+          else
+          {
+            zusatzfelder[i] = new IntegerNullInput(zf.getFeldGanzzahl());
+          }
           break;
         case Datentyp.WAEHRUNG:
           zusatzfelder[i] = new DecimalInput(zf.getFeldWaehrung(),
@@ -2407,7 +2410,14 @@ public class MitgliedControl extends FilterControl
               zf.setFeldDatum((Date) ti.getValue());
               break;
             case Datentyp.GANZZAHL:
-              zf.setFeldGanzzahl((Integer) ti.getValue());
+              if (ti.getValue() != null)
+              {
+                zf.setFeldGanzzahl((Integer) ti.getValue());
+              }
+              else
+              {
+                zf.setFeldGanzzahl(null);
+              }
               break;
             case Datentyp.WAEHRUNG:
               if (ti.getValue() != null)
