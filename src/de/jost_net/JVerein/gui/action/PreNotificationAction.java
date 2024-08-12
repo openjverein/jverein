@@ -29,7 +29,7 @@ public class PreNotificationAction implements Action
   public void handleAction(Object context) throws ApplicationException
   {
     if (context != null && (context instanceof Abrechnungslauf ||
-        context instanceof Lastschrift))
+        context instanceof Lastschrift || context instanceof Lastschrift[]))
     {
       GUI.startView(PreNotificationView.class.getName(), context);
     }

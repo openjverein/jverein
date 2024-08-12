@@ -286,6 +286,13 @@ public class PreNotificationControl extends DruckMailControl
     else if (currentObject instanceof Lastschrift)
     {
       Lastschrift lastschrift = (Lastschrift) currentObject;
+      Abrechnungslauf abrl = (Abrechnungslauf) lastschrift.getAbrechnungslauf();
+      if (abrl.getAbgeschlossen())
+      {
+        GUI.getStatusBar().setErrorText(
+            "Die ausgewählte Lastschrift ist bereits abgeschlossen");
+        return;
+      }
       if (!mitMail && lastschrift.getEmail() != null && !lastschrift.getEmail().isEmpty())
       {
         GUI.getStatusBar().setErrorText(
@@ -295,6 +302,31 @@ public class PreNotificationControl extends DruckMailControl
       else
       {
         lastschriften.add(lastschrift);
+      }
+    }
+    else if (currentObject instanceof Lastschrift[])
+    {
+      Lastschrift[] lastschriftarray = (Lastschrift[]) currentObject;
+      for (Lastschrift lastschrift : lastschriftarray)
+      {
+        Abrechnungslauf abrl = (Abrechnungslauf) lastschrift.getAbrechnungslauf();
+        if (abrl.getAbgeschlossen())
+        {
+          GUI.getStatusBar().setErrorText(
+              "Die ausgewählte Lastschrift mit der Nr " + lastschrift.getID() 
+              + " ist bereits abgeschlossen");
+          return;
+        }
+        if (!(!mitMail && lastschrift.getEmail() != null && !lastschrift.getEmail().isEmpty()))
+        {
+          lastschriften.add(lastschrift);
+        }
+      }
+      if (lastschriften.size() == 0)
+      {
+        GUI.getStatusBar().setErrorText(
+            "Alle ausgewählten Lastschriften haben eine Mail Adresse");
+        return;
       }
     }
     else
@@ -411,7 +443,31 @@ public class PreNotificationControl extends DruckMailControl
     }
     else if (currentObject instanceof Lastschrift)
     {
+      Lastschrift lastschrift = (Lastschrift) currentObject;
+      Abrechnungslauf abrl = (Abrechnungslauf) lastschrift.getAbrechnungslauf();
+      if (abrl.getAbgeschlossen())
+      {
+        GUI.getStatusBar().setErrorText(
+            "Die ausgewählte Lastschrift ist bereits abgeschlossen");
+        return;
+      }
       lastschriften.add((Lastschrift) currentObject);
+    }
+    else if (currentObject instanceof Lastschrift[])
+    {
+      Lastschrift[] lastschriftarray = (Lastschrift[]) currentObject;
+      for (Lastschrift lastschrift : lastschriftarray)
+      {
+        Abrechnungslauf abrl = (Abrechnungslauf) lastschrift.getAbrechnungslauf();
+        if (abrl.getAbgeschlossen())
+        {
+          GUI.getStatusBar().setErrorText(
+              "Die ausgewählte Lastschrift mit der Nr " + lastschrift.getID() 
+              + " ist bereits abgeschlossen");
+          return;
+        }
+        lastschriften.add(lastschrift);
+      }
     }
     else
     {
@@ -487,6 +543,13 @@ public class PreNotificationControl extends DruckMailControl
     else if (currentObject instanceof Lastschrift)
     {
       Lastschrift lastschrift = (Lastschrift) currentObject;
+      Abrechnungslauf abrl = (Abrechnungslauf) lastschrift.getAbrechnungslauf();
+      if (abrl.getAbgeschlossen())
+      {
+        GUI.getStatusBar().setErrorText(
+            "Die ausgewählte Lastschrift ist bereits abgeschlossen");
+        return;
+      }
       if (lastschrift.getEmail() != null && !lastschrift.getEmail().isEmpty())
       {
         lastschriften.add(lastschrift);
@@ -495,6 +558,31 @@ public class PreNotificationControl extends DruckMailControl
       {
         GUI.getStatusBar().setErrorText(
             "Die ausgewählte Lastschrift hat keine Mail Adresse");
+        return;
+      }
+    }
+    else if (currentObject instanceof Lastschrift[])
+    {
+      Lastschrift[] lastschriftarray = (Lastschrift[]) currentObject;
+      for (Lastschrift lastschrift : lastschriftarray)
+      {
+        Abrechnungslauf abrl = (Abrechnungslauf) lastschrift.getAbrechnungslauf();
+        if (abrl.getAbgeschlossen())
+        {
+          GUI.getStatusBar().setErrorText(
+              "Die ausgewählte Lastschrift mit der Nr " + lastschrift.getID() 
+              + " ist bereits abgeschlossen");
+          return;
+        }
+        if (lastschrift.getEmail() != null && !lastschrift.getEmail().isEmpty())
+        {
+          lastschriften.add(lastschrift);
+        }
+      }
+      if (lastschriften.size() == 0)
+      {
+        GUI.getStatusBar().setErrorText(
+            "Keine der ausgewählten Lastschriften hat eine Mail Adresse");
         return;
       }
     }

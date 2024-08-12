@@ -16,13 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.gui.action.LastschriftDeleteAction;
 import de.jost_net.JVerein.gui.action.PreNotificationAction;
-import de.jost_net.JVerein.rmi.Abrechnungslauf;
-import de.jost_net.JVerein.rmi.Lastschrift;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
@@ -37,43 +32,9 @@ public class LastschriftMenu extends ContextMenu
    */
   public LastschriftMenu()
   {
-    addItem(new AbgeschlossenDisabledItem("Pre-Notification",
+    addItem(new CheckedContextMenuItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));
     addItem(new CheckedContextMenuItem("Löschen...", new LastschriftDeleteAction(),
         "user-trash-full.png"));
-  }
-  
-  private static class AbgeschlossenDisabledItem extends CheckedContextMenuItem
-  {
-
-    private AbgeschlossenDisabledItem(String text, Action action, String icon)
-    {
-      super(text, action, icon);
-    }
-
-    @Override
-    public boolean isEnabledFor(Object o)
-    {
-      if (o instanceof Lastschrift)
-      {
-        try
-        {
-          Abrechnungslauf abrl = (Abrechnungslauf) ((Lastschrift) o).getAbrechnungslauf();
-          if (abrl.getAbgeschlossen())
-          {
-            return false;
-          }
-          else
-          {
-            return true;
-          }
-        }
-        catch (RemoteException e)
-        {
-          return false;
-        }
-      }
-      return false;
-    }
   }
 }
