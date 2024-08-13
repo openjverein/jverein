@@ -412,7 +412,7 @@ public class AbrechnungSEPA
     if (primaer)
     {
       if (Einstellungen.getEinstellung().getIndividuelleBeitraege()
-          && m.getIndividuellerBeitrag() != null && m.getIndividuellerBeitrag() > 0)
+          && m.getIndividuellerBeitrag() != null)
       {
         betr = m.getIndividuellerBeitrag();
       }
