@@ -18,7 +18,9 @@ package de.jost_net.JVerein.server;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
+import de.jost_net.JVerein.util.VonBis;
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -122,6 +124,34 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
         throw new ApplicationException(e.getMessage());
       }
 
+      try
+      {
+        AltersgruppenParser ap = new AltersgruppenParser(getBeitragAltersstufen());
+        ArrayList<VonBis> vbs = new ArrayList<VonBis>();
+        while(ap.hasNext())
+        {
+          vbs.add(ap.getNext());
+        }
+        for(int i=0;i<100;i++)
+        {
+          boolean found = false;
+          for(VonBis vb : vbs)
+          {
+            if(i >= vb.getVon() && i <= vb.getBis())
+            {
+              found = true;
+              break;
+            }
+          }
+          if(!found)
+            throw new ApplicationException("Keine passende Altersstufe gefunden für " + i + " Jahre");
+        }
+      }
+      catch (RuntimeException e)
+      {
+        throw new ApplicationException(e.getMessage());
+      }
+      
       if (getDokumentenspeicherung())
       {
         if (!JVereinPlugin.isArchiveServiceActive())
@@ -2021,5 +2051,22 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   public void setAnhangSpeichern(Boolean anhangspeichern) throws RemoteException
   {
     setAttribute("anhangspeichern", anhangspeichern);
+  }
+
+  @Override
+  public String getBeitragAltersstufen() throws RemoteException
+  {
+    String altersstufe = (String) getAttribute("beitragaltersstufen");
+    if (altersstufe == null)
+    {
+      return "0-99";
+    }
+    return altersstufe;
+  }
+
+  @Override
+  public void setBeitragAltersstufen(String altersstufen) throws RemoteException
+  {
+    setAttribute("beitragaltersstufen", altersstufen);
   }
 }

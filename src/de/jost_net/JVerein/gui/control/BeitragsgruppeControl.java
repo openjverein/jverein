@@ -18,16 +18,26 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BeitragsgruppeDetailAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.NotizFormatter;
+import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.menu.BeitragsgruppeMenu;
+import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.util.VonBis;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -47,6 +57,10 @@ import de.willuhn.util.ApplicationException;
 
 public class BeitragsgruppeControl extends AbstractControl
 {
+  private Input[] alterstaffel;
+  
+  private CheckboxInput isAltersstaffel;
+
   private TablePart beitragsgruppeList;
 
   private Input bezeichnung;
@@ -121,6 +135,8 @@ public class BeitragsgruppeControl extends AbstractControl
     }
     betrag = new DecimalInput(getBeitragsgruppe().getBetrag(),
         Einstellungen.DECIMALFORMAT);
+    if(getBeitragsgruppe().getHasAltersstaffel())
+      betrag.disable();
     return betrag;
   }
 
@@ -132,6 +148,8 @@ public class BeitragsgruppeControl extends AbstractControl
     }
     betragmonatlich = new DecimalInput(getBeitragsgruppe().getBetragMonatlich(),
         Einstellungen.DECIMALFORMAT);
+    if(getBeitragsgruppe().getHasAltersstaffel())
+      betragmonatlich.disable();
     return betragmonatlich;
   }
 
@@ -144,6 +162,8 @@ public class BeitragsgruppeControl extends AbstractControl
     betragvierteljaehrlich = new DecimalInput(
         getBeitragsgruppe().getBetragVierteljaehrlich(),
         Einstellungen.DECIMALFORMAT);
+    if(getBeitragsgruppe().getHasAltersstaffel())
+      betragvierteljaehrlich.disable();
     return betragvierteljaehrlich;
   }
 
@@ -156,6 +176,8 @@ public class BeitragsgruppeControl extends AbstractControl
     betraghalbjaehrlich = new DecimalInput(
         getBeitragsgruppe().getBetragHalbjaehrlich(),
         Einstellungen.DECIMALFORMAT);
+    if(getBeitragsgruppe().getHasAltersstaffel())
+      betraghalbjaehrlich.disable();
     return betraghalbjaehrlich;
   }
 
@@ -167,9 +189,86 @@ public class BeitragsgruppeControl extends AbstractControl
     }
     betragjaehrlich = new DecimalInput(getBeitragsgruppe().getBetragJaehrlich(),
         Einstellungen.DECIMALFORMAT);
+    if(getBeitragsgruppe().getHasAltersstaffel())
+        betragjaehrlich.disable();
     return betragjaehrlich;
   }
 
+
+  public CheckboxInput getIsAltersstaffel() throws RemoteException
+  {
+    if (isAltersstaffel != null)
+    {
+      return isAltersstaffel;
+    }
+    isAltersstaffel = new CheckboxInput(getBeitragsgruppe().getHasAltersstaffel());
+    isAltersstaffel.addListener(new Listener()
+    {
+
+      @Override
+      public void handleEvent(Event event)
+      {
+        if (event != null && event.type == SWT.Selection)
+        {
+          Boolean b = (Boolean) isAltersstaffel.getValue();
+          
+          if(betrag != null)
+            betrag.setEnabled(!b);
+          if(betragjaehrlich != null)
+            betragjaehrlich.setEnabled(!b);
+          if(betraghalbjaehrlich != null)
+            betraghalbjaehrlich.setEnabled(!b);
+          if(betragvierteljaehrlich != null)
+            betragvierteljaehrlich.setEnabled(!b);
+          if(betragmonatlich != null)
+            betragmonatlich.setEnabled(!b);
+          
+          if (alterstaffel != null)
+          {
+            for (Input i : alterstaffel)
+            {
+              i.setEnabled(b);
+            }
+          }
+        }
+      }
+    });
+    return isAltersstaffel;
+  }
+  
+  public Input[] getAltersstaffel() throws RemoteException
+  {
+    if (alterstaffel != null)
+    {
+      return alterstaffel;
+    }
+    String stufen = Einstellungen.getEinstellung().getBeitragAltersstufen();
+    if(stufen == null || stufen == "")
+      return null;
+    AltersgruppenParser ap = new AltersgruppenParser(stufen);
+ 
+    int i = 0;
+    List<Input> list = new ArrayList<Input>();
+    while (ap.hasNext())
+    {
+      VonBis vb = ap.getNext();
+      double betrag = 0;
+      Altersstaffel a = beitrag.getAltersstaffel(i);
+      if(a != null)
+        betrag = a.getBetrag();
+      DecimalInput d = new DecimalInput(betrag,
+          Einstellungen.DECIMALFORMAT);
+      if(!getBeitragsgruppe().getHasAltersstaffel())
+        d.disable();
+      d.setData("nummer", new Integer(i));
+      d.setName(vb.getVon() + "-" + vb.getBis() + " Jahre");
+      list.add(d);
+      i++;
+    }
+    alterstaffel = list.toArray(new Input[0]);
+    return alterstaffel;
+  }
+  
   public SelectInput getBeitragsArt() throws RemoteException
   {
     if (beitragsart != null)
@@ -246,8 +345,31 @@ public class BeitragsgruppeControl extends AbstractControl
       {
         case GLEICHERTERMINFUERALLE:
         case MONATLICH12631:
-          Double d = (Double) getBetrag().getValue();
-          b.setBetrag(d.doubleValue());
+          if((Boolean)isAltersstaffel.getValue() && alterstaffel != null)
+          {
+            for (Input i : alterstaffel)
+            {
+              Altersstaffel a = null;
+              Double d = (Double)i.getValue();
+              a = beitrag.getAltersstaffel((Integer)i.getData("nummer"));
+              if(d != null && a != null) {
+                a.setBetrag(d);
+               }
+              else
+              {
+                a = (Altersstaffel)Einstellungen.getDBService().createObject(Altersstaffel.class, null);
+                a.setBeitragsgruppe(beitrag);
+                a.setBetrag(d);
+                a.setNummer((Integer)i.getData("nummer"));
+              }
+              a.store();
+            }
+          }
+          else
+          {
+            Double d = (Double) getBetrag().getValue();
+            b.setBetrag(d.doubleValue());
+          }
           break;
         case FLEXIBEL:
           Double d1 = (Double) getBetragMonatlich().getValue();
@@ -261,12 +383,7 @@ public class BeitragsgruppeControl extends AbstractControl
           break;
       }
       ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
-      // if (ba.getKey() == ArtBeitragsart.FAMILIE_ANGEHOERIGER && d != 0)
-      // {
-      // throw new ApplicationException(
-      // "Familien-Angehörige sind beitragsbefreit. Bitte als Betrag 0,00
-      // eingeben.");
-      // }
+
       b.setBeitragsArt(ba.getKey());
       Buchungsart bua = (Buchungsart) getBuchungsart().getValue();
       if (bua != null)
@@ -278,6 +395,7 @@ public class BeitragsgruppeControl extends AbstractControl
       d = (Double) getArbeitseinsatzBetrag().getValue();
       b.setArbeitseinsatzBetrag(d.doubleValue());
       b.setNotiz((String) getNotiz().getValue());
+      b.setHasAltersstaffel((Boolean)getIsAltersstaffel().getValue());
       b.store();
       GUI.getStatusBar().setSuccessText("Beitragsgruppe gespeichert");
     }
@@ -335,6 +453,8 @@ public class BeitragsgruppeControl extends AbstractControl
     }
     beitragsgruppeList.addColumn("Buchungsart", "buchungsart",
         new BuchungsartFormatter());
+    beitragsgruppeList.addColumn("Altersstaffel", "altersstaffel",
+        new JaNeinFormatter());
     beitragsgruppeList.addColumn("Notiz", "notiz", new NotizFormatter(40));
     beitragsgruppeList.setContextMenu(new BeitragsgruppeMenu());
     return beitragsgruppeList;

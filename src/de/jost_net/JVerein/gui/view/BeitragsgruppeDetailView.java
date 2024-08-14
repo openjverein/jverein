@@ -22,12 +22,16 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BeitragsgruppeSucheAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BeitragsgruppeControl;
+import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.Container;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
 
@@ -68,9 +72,28 @@ public class BeitragsgruppeDetailView extends AbstractView
         break;
       }
     }
+    
     group.addLabelPair("Beitragsart", control.getBeitragsArt());
     group.addLabelPair("Buchungsart", control.getBuchungsart());
 
+    if(Einstellungen.getEinstellung().getBeitragsmodel() != Beitragsmodel.FLEXIBEL
+        && Einstellungen.getEinstellung().getGeburtsdatumPflicht())
+    {
+      Input[] altersstaffel = control.getAltersstaffel();
+      if (altersstaffel != null)
+      {
+        Container cont = new LabelGroup(getParent(), "Altersstaffel");
+        SimpleVerticalContainer svc = new SimpleVerticalContainer(
+            cont.getComposite(), true, 3);
+        svc.addCheckbox(control.getIsAltersstaffel(), "Nach Alter gestaffelte Beiträge verwenden");
+        for (Input inp : altersstaffel)
+        {
+          svc.addInput(inp);
+        }
+        svc.arrangeVertically();
+      }
+    }
+    
     if (Einstellungen.getEinstellung().getArbeitseinsatz())
     {
       LabelGroup groupAe = new LabelGroup(getParent(), "Arbeitseinsatz");

@@ -19,6 +19,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
 
 public interface Beitragsgruppe extends DBObject
@@ -72,5 +73,13 @@ public interface Beitragsgruppe extends DBObject
   public String getNotiz() throws RemoteException;
 
   public void setNotiz(String notiz) throws RemoteException;
+
+  public boolean getHasAltersstaffel() throws RemoteException;
+  
+  public void setHasAltersstaffel(boolean b) throws RemoteException;
+
+  public DBIterator<Altersstaffel> getAltersstaffelIterator() throws RemoteException;
+
+  public Altersstaffel getAltersstaffel(int nummer) throws RemoteException;
 
 }

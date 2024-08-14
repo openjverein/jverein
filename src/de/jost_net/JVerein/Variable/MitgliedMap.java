@@ -149,7 +149,7 @@ public class MitgliedMap
                   Einstellungen.getEinstellung().getBeitragsmodel(),
                   m.getZahlungstermin(), m.getZahlungsrhythmus().getKey(),
                   m.getBeitragsgruppe(), new Date(), m.getEintritt(),
-                  m.getAustritt()))
+                  m.getAustritt(),m.getAlter()))
               : "");
     }
     catch (NullPointerException e)

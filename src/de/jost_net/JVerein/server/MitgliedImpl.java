@@ -185,7 +185,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
             Einstellungen.getEinstellung().getBeitragsmodel(),
             this.getZahlungstermin(), this.getZahlungsrhythmus().getKey(),
             this.getBeitragsgruppe(), new Date(), getEintritt(),
-            getAustritt()) > 0)
+            getAustritt(),getAlter()) > 0)
     {
       if (getBic() == null || getBic().length() == 0 || getIban() == null
           || getIban().length() == 0)

@@ -409,7 +409,7 @@ public class AbrechnungSEPA
       betr = BeitragsUtil.getBeitrag(
           Einstellungen.getEinstellung().getBeitragsmodel(),
           mZahler.getZahlungstermin(), mZahler.getZahlungsrhythmus().getKey(), bg,
-          param.stichtag, m.getEintritt(), m.getAustritt());
+          param.stichtag, m.getEintritt(), m.getAustritt(),m.getAlter());
     }
     catch (NullPointerException e)
     {

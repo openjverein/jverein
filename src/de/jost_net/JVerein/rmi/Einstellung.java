@@ -595,4 +595,8 @@ public interface Einstellung extends DBObject, IBankverbindung
   public Boolean getAnhangSpeichern() throws RemoteException;
 
   public void setAnhangSpeichern(Boolean anhangspeichern) throws RemoteException;
+  
+  public String getBeitragAltersstufen() throws RemoteException;
+
+  public void setBeitragAltersstufen(String altersstufen) throws RemoteException;
 }

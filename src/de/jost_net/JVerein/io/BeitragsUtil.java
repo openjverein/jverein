@@ -21,14 +21,16 @@ import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.util.VonBis;
 
 public class BeitragsUtil
 {
   public static double getBeitrag(Beitragsmodel bm, Zahlungstermin zt, int zr,
-      Beitragsgruppe bg, Date stichtag, Date eintritt, Date austritt)
+      Beitragsgruppe bg, Date stichtag, Date eintritt, Date austritt, Integer alter)
       throws RemoteException
   {
     double betr = 0;
@@ -43,10 +45,69 @@ public class BeitragsUtil
     switch (bm)
     {
       case GLEICHERTERMINFUERALLE:
-        betr = bg.getBetrag();
+        if(Einstellungen.getEinstellung().getGeburtsdatumPflicht() && bg.getHasAltersstaffel())
+        {
+          Einstellungen.getEinstellung().getAltersModel();
+          String stufen = Einstellungen.getEinstellung().getBeitragAltersstufen();
+          if(stufen != null && stufen != "")
+          {
+            AltersgruppenParser ap = new AltersgruppenParser(stufen);
+            int i = 0;
+            int nummer = -1;
+            while(ap.hasNext())
+            {
+              VonBis vb = ap.getNext();
+              if(alter >= vb.getVon() && alter <= vb.getBis())
+              {
+                nummer = i;
+                break;
+              }
+              i++;
+            }
+            if(nummer == -1)
+              return 0;
+            betr = bg.getAltersstaffel(nummer).getBetrag();
+          }
+          else
+            betr = bg.getBetrag();
+        }
+        else
+        {
+          betr = bg.getBetrag();
+        }
         break;
       case MONATLICH12631:
-        BigDecimal bbetr = BigDecimal.valueOf(bg.getBetrag());
+        if(Einstellungen.getEinstellung().getGeburtsdatumPflicht() && bg.getHasAltersstaffel())
+        {
+          Einstellungen.getEinstellung().getAltersModel();
+          String stufen = Einstellungen.getEinstellung().getBeitragAltersstufen();
+          if(stufen != null && stufen != "")
+          {
+            AltersgruppenParser ap = new AltersgruppenParser(stufen);
+            int i = 0;
+            int nummer = -1;
+            while(ap.hasNext())
+            {
+              VonBis vb = ap.getNext();
+              if(alter >= vb.getVon() && alter <= vb.getBis())
+              {
+                nummer = i;
+                break;
+              }
+              i++;
+            }
+            if(nummer == -1)
+              return 0;
+            betr = bg.getAltersstaffel(nummer).getBetrag();
+          }
+          else
+            betr = bg.getBetrag();
+        }
+        else
+        {
+          betr = bg.getBetrag();
+        }
+        BigDecimal bbetr = BigDecimal.valueOf(betr);
         bbetr = bbetr.setScale(2, RoundingMode.HALF_UP);
         BigDecimal bmonate = BigDecimal.valueOf(zr);
         bbetr = bbetr.multiply(bmonate);
