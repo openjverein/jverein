@@ -18,27 +18,30 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
 import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
 import de.jost_net.JVerein.gui.action.BuchungDuplizierenAction;
 import de.jost_net.JVerein.gui.action.BuchungGegenbuchungAction;
-import de.jost_net.JVerein.gui.action.SplitBuchungAction;
-import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
-import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
-import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
+import de.jost_net.JVerein.gui.action.SplitBuchungAction;
+import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
+import de.jost_net.JVerein.gui.action.SyntaxImportAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
+import de.willuhn.jameica.plugin.Plugin;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 
 /**
@@ -67,7 +70,7 @@ public class BuchungMenu extends ContextMenu
     addItem(new AufloesenItem("Auflösen", new SplitbuchungBulkAufloesenAction(),
         "unlocked.png"));
     addItem(new BuchungItem("Löschen", new BuchungDeleteAction(false),
-            "user-trash-full.png"));
+        "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     if (geldkonto)
     {
@@ -87,6 +90,15 @@ public class BuchungMenu extends ContextMenu
     if (geldkonto)
       addItem(new CheckedContextMenuItem("Kontoauszug zuordnen",
         new BuchungKontoauszugZuordnungAction(control), "view-refresh.png"));
+    Plugin syntax = Application.getPluginLoader()
+        .getPlugin("de.willuhn.jameica.fibu.Fibu");
+    if (syntax != null
+        && syntax.getManifest().getVersion().compliesTo("2.10.5+"))
+    {
+      addItem(ContextMenuItem.SEPARATOR);
+      addItem(new CheckedContextMenuItem("In SynTAX übernehmen",
+          new SyntaxImportAction(), "document-save.png"));
+    }
   }
 
   private static class SingleBuchungItem extends CheckedSingleContextMenuItem
