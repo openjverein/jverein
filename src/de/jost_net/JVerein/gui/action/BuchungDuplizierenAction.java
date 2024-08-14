@@ -30,7 +30,7 @@ public class BuchungDuplizierenAction implements Action
   {
     if (context == null || !(context instanceof Buchung))
     {
-      throw new ApplicationException("keine Buchung ausgewählt");
+      throw new ApplicationException("Keine Buchung ausgewählt");
     }
     Buchung b = null;
     try

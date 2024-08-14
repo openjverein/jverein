@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
 import de.jost_net.JVerein.gui.parts.KontoList;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.jameica.gui.Action;
@@ -49,6 +50,8 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
   
   private boolean nurAktuelleKonten;
   
+  private Kontenart art;
+  
   private CheckboxInput box = null;
   
   private KontoList konten = null;
@@ -58,10 +61,11 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
    * @param position An welcher Stelle soll der Dialog angezeigt werden?
    * @param keinkonto Darf der Dialog auch ohne Kontenauswahl geschlossen werden?
    * @param nurHibiscus Es sollen nur Hibiscus-Konten angezeigt werden
-   * @param nurAktuelleKonten Es sollen nur aktuelle Konten angezeigt werden.
+   * @param nurAktuelleKonten Es sollen nur aktuelle Konten angezeigt werden
+   * @param abschreibung Es sollen nur Anlagekonten angezeigt werden
    */
   public KontoAuswahlDialog(int position, boolean keinkonto,
-      boolean nurHibiscus, boolean nurAktuelleKonten)
+      boolean nurHibiscus, boolean nurAktuelleKonten, Kontenart art)
   {
     super(position);
     super.setSize(400, SWT.DEFAULT);
@@ -69,6 +73,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
     this.keinkonto = keinkonto;
     this.nurHibiscus = nurHibiscus;
     this.nurAktuelleKonten=nurAktuelleKonten;
+    this.art = art;
   }
 
   @Override
@@ -83,7 +88,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
     	  nurAktuelleKonten = (Boolean) box.getValue();
     	  try 
     	  { 
-    	    konten.update(nurHibiscus, nurAktuelleKonten);
+    	    konten.update(nurHibiscus, nurAktuelleKonten, art);
     	  } catch (Exception e) {}
       }
     });
@@ -115,7 +120,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
       }
     };
     konten = new de.jost_net.JVerein.gui.parts.KontoList(a,
-        nurHibiscus, nurAktuelleKonten);
+        nurHibiscus, nurAktuelleKonten, art);
     konten.setContextMenu(null);
     konten.setMulti(false);
     konten.removeFeature(FeatureSummary.class);

@@ -246,6 +246,19 @@ public class KontoImpl extends AbstractDBObject implements Konto
   }
   
   @Override
+  public Boolean getAnlagenkonto() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("anlagenkonto"));
+  }
+
+  @Override
+  public void setAnlagenkonto(Boolean anlagenkonto)
+      throws RemoteException
+  {
+    setAttribute("anlagenkonto", Boolean.valueOf(anlagenkonto));
+  }
+  
+  @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
     if ("buchungsart".equals(fieldName))

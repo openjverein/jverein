@@ -37,6 +37,7 @@ public class KontoView extends AbstractView
     LabelGroup group = new LabelGroup(getParent(), "Konto");
     group.addLabelPair("Nummer", control.getNummer());
     group.addLabelPair("Bezeichnung", control.getBezeichnung());
+    group.addLabelPair("Anlagenkonto", control.getAnlagenkonto());
     group.addLabelPair("Konto-Eröffnung", control.getEroeffnung());
     group.addLabelPair("Konto-Auflösung", control.getAufloesung());
     group.addLabelPair("Hibiscus-Konto", control.getHibiscusId());

@@ -26,6 +26,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.KontoAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.keys.BuchungsartSort;
@@ -43,6 +44,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -75,6 +77,8 @@ public class KontoControl extends AbstractControl
   private Konto konto;
   
   private SelectInput buchungsart;
+  
+  private CheckboxInput anlagenkonto;
   
   private int unterdrueckunglaenge = 0;
 
@@ -183,6 +187,7 @@ public class KontoControl extends AbstractControl
       k.setEroeffnung((Date) getEroeffnung().getValue());
       k.setAufloesung((Date) getAufloesung().getValue());
       k.setBuchungsart(getSelectedBuchungsArtId());
+      k.setAnlagenkonto((Boolean) getAnlagenkonto().getValue());
       if (getHibiscusId().getValue() == null)
       {
         k.setHibiscusId(-1);
@@ -219,6 +224,8 @@ public class KontoControl extends AbstractControl
     kontenList = new TablePart(konten, new KontoAction());
     kontenList.addColumn("Nummer", "nummer");
     kontenList.addColumn("Bezeichnung", "bezeichnung");
+    kontenList.addColumn("Anlagenkonto", "anlagenkonto", 
+        new JaNeinFormatter());
     kontenList.addColumn("Hibiscus-Konto", "hibiscusid", new Formatter()
     {
 
@@ -417,6 +424,16 @@ public class KontoControl extends AbstractControl
     {
       liste.add(ergebnis.get(i));
     }
+  }
+  
+  public CheckboxInput getAnlagenkonto() throws RemoteException
+  {
+    if (anlagenkonto != null)
+    {
+      return anlagenkonto;
+    }
+    anlagenkonto = new CheckboxInput(getKonto().getAnlagenkonto());
+    return anlagenkonto;
   }
   
 }

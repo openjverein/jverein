@@ -300,6 +300,8 @@ public class EinstellungControl extends AbstractControl
   private ImageInput unterschrift;
   
   private CheckboxInput anhangspeichern;
+  
+  private CheckboxInput summenAnlagenkonto;
 
 
   private IntegerInput qrcodesize;
@@ -1952,6 +1954,16 @@ public class EinstellungControl extends AbstractControl
     anhangspeichern = new CheckboxInput(Einstellungen.getEinstellung().getAnhangSpeichern());
     return anhangspeichern;
   }
+  
+  public CheckboxInput getSummenAnlagenkonto() throws RemoteException 
+  {
+    if (summenAnlagenkonto != null) 
+    {
+      return summenAnlagenkonto;
+    }
+    summenAnlagenkonto = new CheckboxInput(Einstellungen.getEinstellung().getSummenAnlagenkonto());
+    return summenAnlagenkonto;
+  }
 
   public void handleStoreAllgemein()
   {
@@ -2013,6 +2025,7 @@ public class EinstellungControl extends AbstractControl
       e.setDokumentenspeicherung((Boolean) dokumentenspeicherung.getValue());
       e.setIndividuelleBeitraege((Boolean) individuellebeitraege.getValue());
       e.setExterneMitgliedsnummer((Boolean) externemitgliedsnummer.getValue());
+      e.setSummenAnlagenkonto((Boolean) summenAnlagenkonto.getValue());
       Altermodel amValue = (Altermodel) altersmodel.getValue();
       e.setAltersModel(amValue.getKey());
       BuchungBuchungsartAuswahl bbaAuswahl = (BuchungBuchungsartAuswahl) buchungBuchungsartAuswahl

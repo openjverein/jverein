@@ -19,7 +19,9 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
 import de.jost_net.JVerein.gui.parts.BuchungPart;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -31,7 +33,14 @@ public class BuchungView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    final BuchungsControl control = new BuchungsControl(this);
+    Kontenart art = Kontenart.GELDKONTO;
+    if (this.getCurrentObject() != null && this.getCurrentObject() instanceof Buchung)
+    {
+      Buchung bu = (Buchung) this.getCurrentObject();
+      if (bu.getKonto() != null && bu.getKonto().getAnlagenkonto())
+        art = Kontenart.ANLAGEKONTO;
+    }
+    final BuchungsControl control = new BuchungsControl(this, art);
     GUI.getView().setTitle(control.getTitleBuchungsView());
 
     final boolean buchungabgeschlossen = control.isBuchungAbgeschlossen();
@@ -44,7 +53,7 @@ public class BuchungView extends AbstractView
         DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
     if (control.getBuchung().getSpeicherung())
     {
-      buttons.addButton("Neu", new BuchungNeuAction(), null, false, "document-new.png");
+      buttons.addButton("Neu", new BuchungNeuAction(control), null, false, "document-new.png");
     }
     Button savButton = new Button("Speichern",
         control.getBuchungSpeichernAction(), null, true, "document-save.png");

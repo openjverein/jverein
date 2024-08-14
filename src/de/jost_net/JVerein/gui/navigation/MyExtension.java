@@ -16,12 +16,17 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.navigation;
 
+import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import com.schlevoigt.JVerein.gui.action.BuchungsTexteKorrigierenAction;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AboutAction;
 import de.jost_net.JVerein.gui.action.AbrechnungSEPAAction;
 import de.jost_net.JVerein.gui.action.AbrechnunslaufListAction;
+import de.jost_net.JVerein.gui.action.AbschreibungsListeAction;
 import de.jost_net.JVerein.gui.action.AdministrationEinstellungenAbrechnungAction;
 import de.jost_net.JVerein.gui.action.AdministrationEinstellungenAllgemeinAction;
 import de.jost_net.JVerein.gui.action.AdministrationEinstellungenAnzeigeAction;
@@ -88,6 +93,8 @@ import de.jost_net.JVerein.gui.action.ZusatzbetraegeListeAction;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.NavigationItem;
 import de.willuhn.jameica.gui.extension.Extendable;
 import de.willuhn.jameica.gui.extension.Extension;
@@ -169,6 +176,35 @@ public class MyExtension implements Extension
           new BuchungsuebernahmeAction(), "hibiscus-icon-64x64.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
           new BuchungsListeAction(), "euro-sign.png"));
+      // Check ob es ein Anlagenkonto gibt
+      boolean anlagenkonto = false;
+      try
+      {
+        DBService service = Einstellungen.getDBService();
+        String sql = "SELECT konto.anlagenkonto from konto "
+            + "WHERE (anlagenkonto = true) ";
+        anlagenkonto = (boolean) service.execute(sql,
+            new Object[] { }, new ResultSetExtractor()
+        {
+          @Override
+          public Object extract(ResultSet rs)
+              throws RemoteException, SQLException
+          {
+            if (rs.next())
+            {
+              return true;
+            }
+            return false;
+          }
+        });
+      }
+      catch (Exception e)
+      {
+        ;
+      }
+      if (anlagenkonto)
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Abschreibungen",
+          new AbschreibungsListeAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
           new BuchungsTexteKorrigierenAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",

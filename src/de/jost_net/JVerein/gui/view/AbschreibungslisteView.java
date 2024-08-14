@@ -40,15 +40,15 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungslisteView extends AbstractView
+public class AbschreibungslisteView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Buchungen");
+    GUI.getView().setTitle("Abschreibungen");
     
-    final BuchungsControl control = new BuchungsControl(this, Kontenart.GELDKONTO);
+    final BuchungsControl control = new BuchungsControl(this, Kontenart.ANLAGEKONTO);
 
     LabelGroup group = new LabelGroup(getParent(), "Konto");
     group.addLabelPair("Konto", control.getSuchKonto());
@@ -66,7 +66,6 @@ public class BuchungslisteView extends AbstractView
     left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
     left.addLabelPair("Projekt", control.getSuchProjekt());
     left.addLabelPair("Betrag", control.getSuchBetrag());
-    left.addLabelPair("Mitglied zugeordnet?", control.getSuchMitgliedZugeordnet());
     right.addLabelPair("Von Datum", control.getVondatum());
     right.addLabelPair("Bis Datum", control.getBisdatum());
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
@@ -129,7 +128,6 @@ public class BuchungslisteView extends AbstractView
     buttons.addButton(control.getStartAuswertungBuchungsjournalButton());
     buttons.addButton(control.getStartAuswertungEinzelbuchungenButton());
     buttons.addButton(control.getStartAuswertungSummenButton());
-    buttons.addButton(control.getStarteBuchungMitgliedskontoZuordnungAutomatischButton());
     buttons.addButton("Neu", new BuchungNeuAction(control), control, false,
         "document-new.png");
     buttons.paint(this.getParent());

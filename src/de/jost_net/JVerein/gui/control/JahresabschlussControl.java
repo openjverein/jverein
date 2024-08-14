@@ -209,7 +209,7 @@ public class JahresabschlussControl extends AbstractControl
       {
         KontensaldoList jsl = new KontensaldoList(null,
             new Geschaeftsjahr(ja.getVon()));
-        ArrayList<SaldoZeile> zeilen = jsl.getInfo();
+        ArrayList<SaldoZeile> zeilen = jsl.getInfo(false);
         for (SaldoZeile z : zeilen)
         {
           String ktonr = (String) z.getAttribute("kontonummer");

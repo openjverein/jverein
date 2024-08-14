@@ -92,7 +92,8 @@ public class KontensaldoControl extends SaldoControl
       else
       {
         saldoList.setVonBis(getDatumvon().getDate(), getDatumbis().getDate());
-        ArrayList<SaldoZeile> zeile = saldoList.getInfo();
+        ArrayList<SaldoZeile> zeile = saldoList.
+            getInfo(Einstellungen.getEinstellung().getSummenAnlagenkonto());
         saldoList.removeAll();
         for (SaldoZeile sz : zeile)
         {
@@ -111,7 +112,8 @@ public class KontensaldoControl extends SaldoControl
   {
     try
     {
-      ArrayList<SaldoZeile> zeile = saldoList.getInfo();
+      ArrayList<SaldoZeile> zeile = saldoList.
+          getInfo(Einstellungen.getEinstellung().getSummenAnlagenkonto());
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");

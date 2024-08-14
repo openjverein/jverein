@@ -595,4 +595,8 @@ public interface Einstellung extends DBObject, IBankverbindung
   public Boolean getAnhangSpeichern() throws RemoteException;
 
   public void setAnhangSpeichern(Boolean anhangspeichern) throws RemoteException;
+  
+  public Boolean getSummenAnlagenkonto() throws RemoteException;
+
+  public void setSummenAnlagenkonto(Boolean summenanlagenkonto) throws RemoteException;
 }

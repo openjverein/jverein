@@ -52,6 +52,8 @@ public class BuchungQuery
 
   private Boolean hasMitglied;
   
+  private boolean geldkonto;
+  
   private HashMap<String, String> sortValues = new HashMap<String, String>();
 
   private void SortHashMap() {
@@ -74,7 +76,7 @@ public class BuchungQuery
 
   public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
       Buchungsart buchungsart, Projekt projekt, String text, String betrag,
-      Boolean hasMitglied)
+      Boolean hasMitglied, boolean geldkonto)
   {
     this.datumvon = datumvon;
     this.datumbis = datumbis;
@@ -84,6 +86,7 @@ public class BuchungQuery
     this.text = text;
     this.betrag = betrag;
     this.hasMitglied = hasMitglied;
+    this.geldkonto = geldkonto;
   }
   
   public String getOrder(String value) {
@@ -152,13 +155,21 @@ public class BuchungQuery
     final DBService service = Einstellungen.getDBService();
 
     DBIterator<Buchung> it = service.createList(Buchung.class);
-    it.addFilter("datum >= ? ", datumvon);
-    it.addFilter("datum <= ? ", datumbis);
-
     if (konto != null)
     {
       it.addFilter("konto = ? ", konto.getID());
     }
+    else if (!geldkonto)
+    {
+      it.join("konto");
+      it.addFilter("konto.id = buchung.konto");
+      it.addFilter("anlagenkonto = true");
+    }
+    
+    it.addFilter("datum >= ? ", datumvon);
+    it.addFilter("datum <= ? ", datumbis);
+
+
     if (buchungart != null)
     {
       if (buchungart.getNummer() == -1)

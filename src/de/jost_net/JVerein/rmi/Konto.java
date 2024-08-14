@@ -50,6 +50,11 @@ public interface Konto extends DBObject
   public Long getBuchungsartId() throws RemoteException;
 
   public void setBuchungsart(Long buchungsart) throws RemoteException;
+  
+  public Boolean getAnlagenkonto() throws RemoteException;
+
+  public void setAnlagenkonto(Boolean anlagenkonto)
+      throws RemoteException;
 
   public DBIterator<Konto> getKontenEinesJahres(Geschaeftsjahr gj)
       throws RemoteException;

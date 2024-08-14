@@ -29,6 +29,13 @@ import de.willuhn.logging.Logger;
 
 public class BuchungNeuAction implements Action
 {
+  private BuchungsControl control;
+
+  public BuchungNeuAction(BuchungsControl control)
+  {
+    this.control = control;
+  }
+  
   @Override
   public void handleAction(Object context)
   {
@@ -37,12 +44,22 @@ public class BuchungNeuAction implements Action
     {
       buch = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
           null);
-      if (context instanceof BuchungsControl)
+      Konto konto = (Konto) control.getSuchKonto().getValue();
+      if (null != konto)
       {
-        BuchungsControl control = (BuchungsControl) context;
-        Konto konto = (Konto) control.getSuchKonto().getValue();
-        if (null != konto)
-          buch.setKonto(konto);
+        buch.setKonto(konto);
+      }
+      else
+      {
+        String kontoid = control.getSettings().getString(control.getSettingsPrefix() + "kontoid", "");
+        if (kontoid != null && !kontoid.isEmpty())
+        {
+          Konto k = (Konto) Einstellungen.getDBService().createObject(Konto.class, kontoid);
+          if (null != k)
+          {
+            buch.setKonto(k);
+          }
+        }
       }
       GUI.startView(BuchungView.class, buch);
     }

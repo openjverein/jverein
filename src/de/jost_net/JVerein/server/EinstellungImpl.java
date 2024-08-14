@@ -2022,4 +2022,16 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("anhangspeichern", anhangspeichern);
   }
+  
+  @Override
+  public Boolean getSummenAnlagenkonto() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("summenanlagenkonto"));
+  }
+
+  @Override
+  public void setSummenAnlagenkonto(Boolean summenanlagenkonto) throws RemoteException
+  {
+    setAttribute("summenanlagenkonto", summenanlagenkonto);
+  }
 }
