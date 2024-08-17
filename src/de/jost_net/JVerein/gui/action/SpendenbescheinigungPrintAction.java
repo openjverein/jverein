@@ -1279,7 +1279,7 @@ public class SpendenbescheinigungPrintAction implements Action
 
     if (isSammelbestaetigung)
     {
-      rpt.add(new Paragraph(" ", Reporter.getFreeSans(12)));
+      rpt.add(new Paragraph(" ", Reporter.getFreeSans(6)));
       rpt.addLight(
           "Es wird bestätigt, dass über die in der Gesamtsumme enthaltenen Zuwendungen keine weiteren Bestätigungen, weder formelle Zuwendungsbestätigungen noch Beitragsquittungen oder ähnliches ausgestellt wurden und werden.\n",
           8);
