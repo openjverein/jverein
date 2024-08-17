@@ -608,7 +608,7 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
     {
       String betraginworten = GermanNumber.toString(dWert.longValue());
       map.put(SpendenbescheinigungVar.BETRAGINWORTEN.getName(),
-          "*" + betraginworten + "*");
+          "-" + betraginworten + "-");
     }
     catch (Exception e)
     {
