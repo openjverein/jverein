@@ -212,7 +212,7 @@ public class MyExtension implements Extension
       jverein.addChild(auswertung);
 
       NavigationItem mail = null;
-      mail = new MyItem(mail, "Drucken & Mailen", null);
+      mail = new MyItem(mail, "Druck & Mail", null);
       mail.addChild(new MyItem(mail, "Rechnungen",
           new MitgliedskontoRechnungAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Mahnungen",

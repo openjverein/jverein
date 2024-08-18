@@ -18,9 +18,9 @@ public class DruckMailControl extends FilterControl
     super(view);
   }
   
-  public static final String EMAIL = "EMail";
+  public static final String EMAIL = "Mail";
 
-  public static final String PDF1 = "PDF (Lastschriften ohne Mailadresse)";
+  public static final String PDF1 = "PDF (Lastschriften ohne Mail Empfänger)";
 
   public static final String PDF2 = "PDF (Alle)";
 
