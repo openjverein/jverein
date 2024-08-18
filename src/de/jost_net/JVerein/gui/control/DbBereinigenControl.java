@@ -24,10 +24,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.util.Datum;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -49,7 +53,9 @@ public class DbBereinigenControl extends AbstractControl
 
   private Settings settings = null;
   
-  private double anzahl = 4.0d;
+  Date defaultDate = null;
+  
+  private double anzahl = 6.0d;
   
   // Spendenbescheinigungen loeschen
   private CheckboxInput sLoeschenInput = null;
@@ -64,6 +70,14 @@ public class DbBereinigenControl extends AbstractControl
   private CheckboxInput lLoeschenInput = null;
   private DateInput lDateInput = null;
   
+  // Abrechnungslauf loeschen
+  private CheckboxInput aLoeschenInput = null;
+  private DateInput aDateInput = null;
+  
+  // Jahresabschluss loeschen
+  private CheckboxInput jLoeschenInput = null;
+  private DateInput jDateInput = null;
+  
   // Mails loeschen
   private CheckboxInput mLoeschenInput = null;
   private DateInput mDateInput = null;
@@ -73,6 +87,12 @@ public class DbBereinigenControl extends AbstractControl
     super(view);
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
+    Calendar cal = Calendar.getInstance();
+    int year = cal.get(Calendar.YEAR);
+    cal.set(Calendar.YEAR, year-11);
+    cal.set(Calendar.MONTH, Calendar.JANUARY);
+    cal.set(Calendar.DAY_OF_MONTH, 1);
+    defaultDate = new Date(cal.getTimeInMillis());
   }
 
 
@@ -91,6 +111,8 @@ public class DbBereinigenControl extends AbstractControl
               (boolean) bLoeschenInput.getValue(), (Date) bDateInput.getValue(),
               (boolean) sollLoeschenInput.getValue(),
               (boolean) lLoeschenInput.getValue(), (Date) lDateInput.getValue(),
+              (boolean) aLoeschenInput.getValue(), (Date) aDateInput.getValue(),
+              (boolean) jLoeschenInput.getValue(), (Date) jDateInput.getValue(),
               (boolean) mLoeschenInput.getValue(), (Date) mDateInput.getValue());
         }
         catch (Exception e)
@@ -107,6 +129,8 @@ public class DbBereinigenControl extends AbstractControl
   private void runDelete(final boolean sloeschen, final Date sdate,
       final boolean bloeschen, final Date bdate, final boolean sollloeschen,
       final boolean lloeschen, final Date ldate,
+      final boolean aloeschen, final Date adate,
+      final boolean jloeschen, final Date jdate,
       final boolean mloeschen, final Date mdate) throws RemoteException
   {
     BackgroundTask t = new BackgroundTask()
@@ -152,6 +176,30 @@ public class DbBereinigenControl extends AbstractControl
           else if ( lloeschen && ldate != null)
           {
             lastschriftenLoeschen(monitor, ldate);
+          }
+          monitor.setPercentComplete((int) (progress / anzahl * 100d));
+          progress++;
+          
+          // Abrechnungslauf löschen
+          if ( aloeschen && adate == null)
+          {
+            monitor.log("Abrechnungsläufe löschen: Kein gültiges Datum eingegeben");
+          }
+          else if ( aloeschen && adate != null)
+          {
+            abrechnungslaufLoeschen(monitor, adate);
+          }
+          monitor.setPercentComplete((int) (progress / anzahl * 100d));
+          progress++;
+          
+          // Jahresabschluss löschen
+          if ( jloeschen && jdate == null)
+          {
+            monitor.log("Jahresabschlüsse löschen: Kein gültiges Datum eingegeben");
+          }
+          else if ( jloeschen && jdate != null)
+          {
+            jahresabschlussLoeschen(monitor, jdate);
           }
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
@@ -209,12 +257,7 @@ public class DbBereinigenControl extends AbstractControl
     {
       return sDateInput;
     }
-    Calendar cal = Calendar.getInstance();
-    int year = cal.get(Calendar.YEAR);
-    cal.set(Calendar.YEAR, year-11);
-    cal.set(Calendar.MONTH, Calendar.JANUARY);
-    cal.set(Calendar.DAY_OF_MONTH, 1);
-    sDateInput = new DateInput(new Date(cal.getTimeInMillis()));
+    sDateInput = new DateInput(defaultDate);
     return sDateInput;
   }
 
@@ -235,12 +278,7 @@ public class DbBereinigenControl extends AbstractControl
     {
       return bDateInput;
     }
-    Calendar cal = Calendar.getInstance();
-    int year = cal.get(Calendar.YEAR);
-    cal.set(Calendar.YEAR, year-11);
-    cal.set(Calendar.MONTH, Calendar.JANUARY);
-    cal.set(Calendar.DAY_OF_MONTH, 1);
-    bDateInput = new DateInput(new Date(cal.getTimeInMillis()));
+    bDateInput = new DateInput(defaultDate);
     return bDateInput;
   }
 
@@ -271,13 +309,50 @@ public class DbBereinigenControl extends AbstractControl
     {
       return lDateInput;
     }
-    Calendar cal = Calendar.getInstance();
-    int year = cal.get(Calendar.YEAR);
-    cal.set(Calendar.YEAR, year-11);
-    cal.set(Calendar.MONTH, Calendar.JANUARY);
-    cal.set(Calendar.DAY_OF_MONTH, 1);
-    lDateInput = new DateInput(new Date(cal.getTimeInMillis()));
+    lDateInput = new DateInput(defaultDate);
     return lDateInput;
+  }
+  
+  // Abrechnungslauf loeschen
+  public CheckboxInput getAbrechnungslaufLoeschen()
+  {
+    if (aLoeschenInput != null)
+    {
+      return aLoeschenInput;
+    }
+    aLoeschenInput = new CheckboxInput(false);
+    return aLoeschenInput;
+  }
+  
+  public DateInput getDatumAuswahlAbrechnungslauf()
+  {
+    if (aDateInput != null)
+    {
+      return aDateInput;
+    }
+    aDateInput = new DateInput(defaultDate);
+    return aDateInput;
+  }
+
+  // Jahresabschluss loeschen
+  public CheckboxInput getJahresabschlussLoeschen()
+  {
+    if (jLoeschenInput != null)
+    {
+      return jLoeschenInput;
+    }
+    jLoeschenInput = new CheckboxInput(false);
+    return jLoeschenInput;
+  }
+  
+  public DateInput getDatumAuswahlJahresabschluss()
+  {
+    if (jDateInput != null)
+    {
+      return jDateInput;
+    }
+    jDateInput = new DateInput(defaultDate);
+    return jDateInput;
   }
   
   // Mails loeschen
@@ -297,12 +372,7 @@ public class DbBereinigenControl extends AbstractControl
     {
       return mDateInput;
     }
-    Calendar cal = Calendar.getInstance();
-    int year = cal.get(Calendar.YEAR);
-    cal.set(Calendar.YEAR, year-11);
-    cal.set(Calendar.MONTH, Calendar.JANUARY);
-    cal.set(Calendar.DAY_OF_MONTH, 1);
-    mDateInput = new DateInput(new Date(cal.getTimeInMillis()));
+    mDateInput = new DateInput(defaultDate);
     return mDateInput;
   }
   
@@ -314,6 +384,7 @@ public class DbBereinigenControl extends AbstractControl
       DBIterator<Spendenbescheinigung> it = Einstellungen.getDBService()
           .createList(Spendenbescheinigung.class);
       it.addFilter("spendedatum < ?", date);
+      it.setOrder("order by spendedatum"); 
       int count = 0;
       Spendenbescheinigung sp = null;
       while (it.hasNext())
@@ -386,6 +457,7 @@ public class DbBereinigenControl extends AbstractControl
       DBIterator<Buchung> it = Einstellungen.getDBService()
           .createList(Buchung.class);
       it.addFilter("datum < ?", date);
+      it.setOrder("order by datum"); 
       int countb = 0;
       int counts = 0;
       Buchung b = null;
@@ -469,6 +541,7 @@ public class DbBereinigenControl extends AbstractControl
       it.join("abrechnungslauf");
       it.addFilter("abrechnungslauf.id = lastschrift.abrechnungslauf");
       it.addFilter("faelligkeit < ?", date);
+      it.setOrder("order by faelligkeit"); 
       int count = 0;
       Lastschrift la = null;
       while (it.hasNext())
@@ -510,6 +583,226 @@ public class DbBereinigenControl extends AbstractControl
       monitor.setStatusText(fehler);
     }
   }
+
+  private void abrechnungslaufLoeschen(ProgressMonitor monitor, final Date date)
+  {
+    try
+    {
+      DBIterator<Abrechnungslauf> it = Einstellungen.getDBService()
+          .createList(Abrechnungslauf.class);
+      it.addFilter("faelligkeit < ?", date);
+      it.setOrder("order by faelligkeit"); 
+      int count = 0;
+      Abrechnungslauf al = null;
+      while (it.hasNext())
+      {
+        try
+        {
+          al = it.next();
+          // Suche Buchung des Abrechnungslaufes
+          final DBService service = Einstellungen.getDBService();
+          String sql = "SELECT buchung.id from buchung "
+              + "WHERE abrechnungslauf = ? ";      
+          boolean buchungen = (boolean) service.execute(sql,
+              new Object[] { al.getID() }, new ResultSetExtractor()
+          {
+            @Override
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
+            {
+              if (rs.next())
+              {
+                return true;
+              }
+              return false;
+            }
+          });
+          if (buchungen)
+          {
+            String fehler = "Der Abrechnungslauf mit der Nr " + al.getID() +
+                " wurde nicht gelöscht. Es existieren noch Buchungen" +
+                " zu diesem Abrechnungslauf";
+            monitor.setStatusText(fehler);
+            continue;
+          }
+
+          // Suche Sollbuchung des Abrechnungslaufes
+          final DBService service1 = Einstellungen.getDBService();
+          String sql1 = "SELECT mitgliedskonto.id from mitgliedskonto "
+              + "WHERE abrechnungslauf = ? ";      
+          boolean sollbuchungen = (boolean) service1.execute(sql1,
+              new Object[] { al.getID() }, new ResultSetExtractor()
+          {
+            @Override
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
+            {
+              if (rs.next())
+              {
+                return true;
+              }
+              return false;
+            }
+          });
+          if (sollbuchungen)
+          {
+            String fehler = "Der Abrechnungslauf mit der Nr " + al.getID() +
+                " wurde nicht gelöscht. Es existieren noch Sollbuchungen" +
+                " zu diesem Abrechnungslauf";
+            monitor.setStatusText(fehler);
+            continue;
+          }
+
+          // Suche Lastschriften des Abrechnungslaufes
+          final DBService service2 = Einstellungen.getDBService();
+          String sql2 = "SELECT lastschrift.id from lastschrift "
+              + "WHERE abrechnungslauf = ? ";      
+          boolean lastschriften = (boolean) service2.execute(sql2,
+              new Object[] { al.getID() }, new ResultSetExtractor()
+          {
+            @Override
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
+            {
+              if (rs.next())
+              {
+                return true;
+              }
+              return false;
+            }
+          });
+          if (lastschriften)
+          {
+            String fehler = "Der Abrechnungslauf mit der Nr " + al.getID() +
+                " wurde nicht gelöscht. Es existieren noch Lastschriften" +
+                " zu diesem Abrechnungslauf";
+            monitor.setStatusText(fehler);
+            continue;
+          }
+
+          al.delete();
+          count++;
+        }
+        catch (OperationCanceledException oce)
+        {
+          throw oce;
+        }
+        catch (Exception e)
+        {
+          String fehler = "Fehler beim Löschen des Abrechnungslaufs mit Nr " + 
+              al.getID() + ", " + e.getMessage();
+          monitor.setStatusText(fehler);
+        }
+      }
+      if (count > 0)
+      {
+        monitor.setStatusText(String.format(
+            "%d Abrechnungsl" + (count != 1 ? "äufe" : "auf") + " gelöscht.", count));
+      }
+      else
+      {
+        monitor.log("Keine Abrechnungsläufe im vorgegebenen Zeitraum vorhanden!");
+      }
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      String fehler = "Fehler beim Löschen von Abrechnugsläufen.";
+      monitor.setStatusText(fehler);
+    }
+  }
+  
+  private void jahresabschlussLoeschen(ProgressMonitor monitor, final Date date)
+  {
+    try
+    {
+      // Suche Datum der ältesten Buchung
+      final DBService service = Einstellungen.getDBService();
+      String sql = "SELECT buchung.datum from buchung "
+          + "WHERE datum < ? "
+          + "order by datum ";      
+      Date buchungdate = (Date) service.execute(sql,
+          new Object[] { date }, new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs)
+            throws RemoteException, SQLException
+        {
+          if (rs.next())
+          {
+            return rs.getDate(1);
+          }
+          return null;
+        }
+      });
+      
+      DBIterator<Jahresabschluss> it = Einstellungen.getDBService()
+          .createList(Jahresabschluss.class);
+      it.addFilter("bis < ?", date);
+      it.setOrder("order by bis");
+      int count = 0;
+      Jahresabschluss ja = null;
+      while (it.hasNext())
+      {
+        try
+        {
+          ja = it.next();
+          if (buchungdate != null)
+          {
+            Date bis = ja.getBis();
+            if (!bis.before(buchungdate))
+            {
+              String fehler = "Der Jahresabschluss mit der Nr " + ja.getID() +
+                  " wurde nicht gelöscht. Es existieren noch Buchungen" +
+                  " in diesem oder vorangehenden Jahresabschlüssen";
+              monitor.setStatusText(fehler);
+              continue;
+            }
+          }
+          ja.delete();
+          DBIterator<Anfangsbestand> it2 = Einstellungen.getDBService()
+              .createList(Anfangsbestand.class);
+          it2.addFilter("datum = ?", new Object[] { Datum.addTage(ja.getBis(), 1) });
+          while (it2.hasNext())
+          {
+            it2.next().delete();
+          }
+          count++;
+        }
+        catch (OperationCanceledException oce)
+        {
+          throw oce;
+        }
+        catch (Exception e)
+        {
+          String fehler = "Fehler beim Löschen des Jahresabschluss mit Nr " + 
+              ja.getID() + ", " + e.getMessage();
+          monitor.setStatusText(fehler);
+        }
+      }
+      if (count > 0)
+      {
+        monitor.setStatusText(String.format(
+            "%d Jahresabschl" + (count != 1 ? "üsse" : "uss") + " gelöscht.", count));
+      }
+      else
+      {
+        monitor.log("Keine Jahresabschlüsse im vorgegebenen Zeitraum vorhanden!");
+      }
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      String fehler = "Fehler beim Löschen von Jahresabschlüssen.";
+      monitor.setStatusText(fehler);
+    }
+  }
   
   private void mailsLoeschen(ProgressMonitor monitor, final Date date)
   {
@@ -518,6 +811,7 @@ public class DbBereinigenControl extends AbstractControl
       DBIterator<Mail> it = Einstellungen.getDBService()
           .createList(Mail.class);
       it.addFilter("versand < ?", date);
+      it.setOrder("order by versand");
       int count = 0;
       Mail mail = null;
       while (it.hasNext())
