@@ -15,6 +15,7 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
+import de.jost_net.JVerein.server.DDLTool.Index;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
@@ -31,11 +32,50 @@ public class Update0443 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     {
+      execute(addColumn("konto",
+          new Column("kommentar", COLTYPE.VARCHAR, 1024, null, false, false)));
+      
       execute(addColumn("konto", new Column("anlagenkonto",
           COLTYPE.BOOLEAN, 0, "FALSE", false, false)));
       
       execute(addColumn("einstellung", new Column("summenanlagenkonto",
           COLTYPE.BOOLEAN, 0, "FALSE", false, false)));
+      
+      execute(addColumn("konto", new Column("anlagenart",
+          COLTYPE.BIGINT, 0, null, false, false)));
+      Index idx = new Index("ixKonto2", false);
+      Column col = new Column("anlagenart", COLTYPE.BIGINT, 0, null, false,
+          false);
+      idx.add(col);
+      execute(idx.getCreateIndex("konto"));
+      execute(createForeignKey("fkKonto2", "konto",
+          "anlagenart", "buchungsart", "id", "RESTRICT", "NO ACTION"));
+      
+      execute(addColumn("konto", new Column("anlagenklasse",
+          COLTYPE.BIGINT, 0, null, false, false)));
+      idx = new Index("ixKonto3", false);
+      col = new Column("anlagenklasse", COLTYPE.BIGINT, 0, null, false,
+          false);
+      idx.add(col);
+      execute(idx.getCreateIndex("konto"));
+      execute(createForeignKey("fkKonto3", "konto",
+          "anlagenklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
+      
+      execute(addColumn("konto", new Column("afaart",
+          COLTYPE.BIGINT, 0, null, false, false)));
+      idx = new Index("ixKonto4", false);
+      col = new Column("afaart", COLTYPE.BIGINT, 0, null, false,
+          false);
+      idx.add(col);
+      execute(idx.getCreateIndex("konto"));
+      execute(createForeignKey("fkKonto4", "konto",
+          "afaart", "buchungsart", "id", "RESTRICT", "NO ACTION"));
+      
+      execute(addColumn("konto",
+          new Column("nutzungsdauer", COLTYPE.INTEGER, 1, null, false, false)));
+      
+      execute(addColumn("konto",
+          new Column("betrag", COLTYPE.DOUBLE, 1, null, false, false)));
     }
   }
 }

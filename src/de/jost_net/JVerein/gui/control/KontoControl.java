@@ -23,17 +23,25 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.KontoAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
+import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
@@ -44,10 +52,13 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
+import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -81,6 +92,19 @@ public class KontoControl extends AbstractControl
   private CheckboxInput anlagenkonto;
   
   private int unterdrueckunglaenge = 0;
+  
+  private AbstractInput anlagenart;
+  
+  private SelectInput anlagenklasse;
+  
+  private AbstractInput afaart;
+  
+  private DecimalInput betrag;
+  
+  private IntegerNullInput nutzungsdauer;
+  
+  private TextAreaInput kommentar;
+  
 
   public KontoControl(AbstractView view)
   {
@@ -187,6 +211,7 @@ public class KontoControl extends AbstractControl
       k.setEroeffnung((Date) getEroeffnung().getValue());
       k.setAufloesung((Date) getAufloesung().getValue());
       k.setBuchungsart(getSelectedBuchungsArtId());
+      k.setKommentar((String) getKommentar().getValue());
       k.setAnlagenkonto((Boolean) getAnlagenkonto().getValue());
       if (getHibiscusId().getValue() == null)
       {
@@ -198,6 +223,19 @@ public class KontoControl extends AbstractControl
             .getValue();
         k.setHibiscusId(Integer.parseInt(hkto.getID()));
       }
+      k.setAnlagenart(getSelectedAnlagenartId());
+      k.setAnlagenklasse(getSelectedAnlagenklasseId());
+      k.setAfaart(getSelectedAfaartId());
+      if (getBetrag().getValue() != null)
+      {
+        k.setBetrag((Double) getBetrag().getValue());
+      }
+      else
+      {
+        // Nötig um für den Check den letzten gesetzten Wert zu löschen
+        k.setBetragNull();
+      }
+      k.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
       k.store();
       GUI.getStatusBar().setSuccessText("Konto gespeichert");
     }
@@ -211,7 +249,7 @@ public class KontoControl extends AbstractControl
     {
       String fehler = "Fehler bei speichern des Kontos";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
     }
   }
 
@@ -433,7 +471,257 @@ public class KontoControl extends AbstractControl
       return anlagenkonto;
     }
     anlagenkonto = new CheckboxInput(getKonto().getAnlagenkonto());
+    anlagenkonto.addListener(new Listener()
+    {
+
+      @Override
+      public void handleEvent(Event event)
+      {
+        refreshGui();
+      }
+    });
     return anlagenkonto;
+  }
+  
+  
+  public Input getAnlagenart() throws RemoteException
+  {
+    if (anlagenart != null)
+    {
+      return anlagenart;
+    }
+    anlagenart = new BuchungsartInput().getBuchungsartInput( anlagenart,
+        getKonto().getAnlagenart());
+    anlagenart.addListener(new AnlagenartListener());
+    anlagenart.setMandatory(true);
+    return anlagenart;
+  }
+  
+  private Long getSelectedAnlagenartId() throws ApplicationException
+  {
+    try
+    {
+      Buchungsart buchungsArt = (Buchungsart) getAnlagenart().getValue();
+      if (null == buchungsArt)
+        return null;
+      Long id = Long.valueOf(buchungsArt.getID());
+      return id;
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählte Anlagensart kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
+  
+  public Input getAnlagenklasse() throws RemoteException
+  {
+    if (anlagenklasse != null)
+    {
+      return anlagenklasse;
+    }
+    DBIterator<Buchungsklasse> list = Einstellungen.getDBService()
+        .createList(Buchungsklasse.class);
+    list.setOrder(getBuchungartSortOrder());
+    anlagenklasse = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
+        getKonto().getAnlagenklasse());
+    anlagenklasse.setValue(getKonto().getAnlagenklasse());
+    anlagenklasse.setAttribute(getBuchungartAttribute());
+    anlagenklasse.setPleaseChoose("Bitte auswählen");
+    anlagenklasse.setEnabled(false);
+    anlagenklasse.setMandatory(true);
+    return anlagenklasse;
+  }
+  
+  private Long getSelectedAnlagenklasseId() throws ApplicationException
+  {
+    try
+    {
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getAnlagenklasse().getValue();
+      if (null == buchungsKlasse)
+        return null;
+      Long id = Long.valueOf(buchungsKlasse.getID());
+      return id;
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählte Anlagenklasse kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
+  
+  public Input getAfaart() throws RemoteException
+  {
+    if (afaart != null)
+    {
+      return afaart;
+    }
+    afaart = new BuchungsartInput().getBuchungsartInput( afaart,
+        getKonto().getAfaart());
+    afaart.addListener(new AnlagenartListener());
+    afaart.setMandatory(true);
+    return afaart;
+  }
+  
+  private Long getSelectedAfaartId() throws ApplicationException
+  {
+    try
+    {
+      Buchungsart buchungsArt = (Buchungsart) getAfaart().getValue();
+      if (null == buchungsArt)
+        return null;
+      Long id = Long.valueOf(buchungsArt.getID());
+      return id;
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählte Buchungsart kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
+
+  public DecimalInput getBetrag() throws RemoteException
+  {
+    if (betrag != null)
+    {
+      return betrag;
+    }
+    betrag = new DecimalInput(getKonto().getBetrag(),
+        Einstellungen.DECIMALFORMAT);
+    betrag.setMandatory(true);
+    return betrag;
+  }
+
+  public IntegerNullInput getNutzungsdauer() throws RemoteException
+  {
+    if (nutzungsdauer != null)
+    {
+      return nutzungsdauer;
+    }
+    if (getKonto().getNutzungsdauer() != null)
+    {
+      nutzungsdauer = new IntegerNullInput(getKonto().getNutzungsdauer());
+    }
+    else
+    {
+      nutzungsdauer = new IntegerNullInput();
+    }
+    return nutzungsdauer;
+  }
+  
+  public Input getKommentar() throws RemoteException
+  {
+    if (kommentar != null && !kommentar.getControl().isDisposed())
+    {
+      return kommentar;
+    }
+    kommentar = new TextAreaInput(getKonto().getKommentar(), 1024);
+    kommentar.setHeight(50);
+    return kommentar;
+  }
+
+  public String getBuchungartSortOrder()
+  {
+    try
+    {
+      switch (Einstellungen.getEinstellung().getBuchungsartSort())
+      {
+        case BuchungsartSort.NACH_NUMMER:
+          return "ORDER BY nummer";
+        default:
+          return "ORDER BY bezeichnung";
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Keine Buchungssortierung hinterlegt.";
+      Logger.error(fehler, e);
+      GUI.getStatusBar().setErrorText(fehler);
+    }
+    
+    return "ORDER BY bezeichnung";
+  }
+  
+  public String getBuchungartAttribute()
+  {
+    try
+    {
+      switch (Einstellungen.getEinstellung().getBuchungsartSort())
+      {
+        case BuchungsartSort.NACH_NUMMER:
+          return "nrbezeichnung";
+        case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+          return "bezeichnungnr";
+        default:
+          return "bezeichnung";
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Keine Buchungssortierung hinterlegt.";
+      Logger.error(fehler, e);
+      GUI.getStatusBar().setErrorText(fehler);
+    }
+    
+    return "bezeichnung";
+  }
+  
+  public class AnlagenartListener implements Listener
+  {
+
+    AnlagenartListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      try
+      {
+        getAnlagenklasse().setValue(((Buchungsart) getAnlagenart().getValue()).getBuchungsklasse());
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler", e);
+      }
+    }
+  }
+  
+  public void refreshGui()
+  {
+    try
+    {
+      if ((boolean) getAnlagenkonto().getValue())
+      {
+        getAnlagenart().enable();
+        getAfaart().enable();
+        getBetrag().enable();
+        getNutzungsdauer().enable();
+      }
+      else
+      {
+        getAnlagenklasse().setValue(null);
+        getAnlagenart().disable();
+        getAnlagenart().setValue(null);
+        getAfaart().disable();
+        getAfaart().setValue(null);
+        getBetrag().disable();
+        getBetrag().setValue(null);
+        getNutzungsdauer().disable();
+        getNutzungsdauer().setValue(null);
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+    }
   }
   
 }

@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.db.AbstractDBObject;
@@ -100,6 +101,29 @@ public class KontoImpl extends AbstractDBObject implements Konto
       if (getNummer() == null || getNummer().length() == 0)
       {
         throw new ApplicationException("Bitte Nummer eingeben");
+      }
+      if (getAnlagenkonto())
+      {
+        if (isBetragNull())
+        {
+          throw new ApplicationException("Bitte Wert der Anlage eingeben");
+        }
+        else if (getBetrag() < 0.0)
+        {
+          throw new ApplicationException("Wert der Anlage darf nicht negativ sein");
+        }
+        if (getAnlagenart() == null)
+        {
+          throw new ApplicationException("Bitte Anlagen Buchungsart eingeben");
+        }
+        if (getAfaart() == null)
+        {
+          throw new ApplicationException("Bitte Afa Buchungsart eingeben");
+        }
+        if (getAnlagenklasse() == null)
+        {
+          throw new ApplicationException("Bitte Anlagen Buchungsklasse eingeben");
+        }
       }
     }
     catch (RemoteException e)
@@ -259,10 +283,141 @@ public class KontoImpl extends AbstractDBObject implements Konto
   }
   
   @Override
+  public Buchungsart getAnlagenart() throws RemoteException
+  {
+    Long l = (Long) super.getAttribute("anlagenart");
+    if (l == null)
+    {
+      return null; // Keine Buchungsart zugeordnet
+    }
+
+    Cache cache = Cache.get(Buchungsart.class, true);
+    return (Buchungsart) cache.get(l);
+  }
+
+  @Override
+  public Long getAnlagenartId() throws RemoteException
+  {
+    return Long.parseLong(getAnlagenart().getID());
+  }
+
+  @Override
+  public void setAnlagenart(Long anlagenart) throws RemoteException
+  {
+    setAttribute("anlagenart", anlagenart);
+  }
+  
+  @Override
+  public Buchungsklasse getAnlagenklasse() throws RemoteException
+  {
+    Long l = (Long) super.getAttribute("anlagenklasse");
+    if (l == null)
+    {
+      return null; // Keine Buchungsart zugeordnet
+    }
+
+    Cache cache = Cache.get(Buchungsklasse.class, true);
+    return (Buchungsklasse) cache.get(l);
+  }
+
+  @Override
+  public Long getAnlagenklasseId() throws RemoteException
+  {
+    return Long.parseLong(getAnlagenklasse().getID());
+  }
+
+  @Override
+  public void setAnlagenklasse(Long anlagenklasse) throws RemoteException
+  {
+    setAttribute("anlagenklasse", anlagenklasse);
+  }
+  
+  @Override
+  public Buchungsart getAfaart() throws RemoteException
+  {
+    Long l = (Long) super.getAttribute("afaart");
+    if (l == null)
+    {
+      return null; // Keine Buchungsart zugeordnet
+    }
+
+    Cache cache = Cache.get(Buchungsart.class, true);
+    return (Buchungsart) cache.get(l);
+  }
+
+  @Override
+  public Long getAfaartId() throws RemoteException
+  {
+    return Long.parseLong(getAfaart().getID());
+  }
+
+  @Override
+  public void setAfaart(Long afaart) throws RemoteException
+  {
+    setAttribute("afaart", afaart);
+  }
+  
+  @Override
+  public Integer getNutzungsdauer() throws RemoteException
+  {
+    return (Integer) getAttribute("nutzungsdauer");
+  }
+
+  @Override
+  public void setNutzungsdauer(Integer nutzungsdauer) throws RemoteException
+  {
+    setAttribute("nutzungsdauer", nutzungsdauer);
+  }
+  
+  @Override
+  public double getBetrag() throws RemoteException
+  {
+    Double d = (Double) getAttribute("betrag");
+    if (d == null)
+      return 0;
+    return d.doubleValue();
+  }
+
+  @Override
+  public void setBetrag(double d) throws RemoteException
+  {
+    setAttribute("betrag", Double.valueOf(d));
+  }
+
+  @Override
+  public boolean isBetragNull() throws RemoteException
+  {
+    Double d = (Double) getAttribute("betrag");
+    return d == null;
+  }
+
+  @Override
+  public void setBetragNull() throws RemoteException
+  {
+    setAttribute("betrag", null);
+  }
+  
+  @Override
+  public String getKommentar() throws RemoteException
+  {
+    return (String) getAttribute("kommentar");
+  }
+
+  @Override
+  public void setKommentar(String kommentar) throws RemoteException
+  {
+    setAttribute("kommentar", kommentar);
+  }
+  
+  @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
     if ("buchungsart".equals(fieldName))
       return getBuchungsart();
+    if ("anlagenart".equals(fieldName))
+      return getAnlagenart();
+    if ("anlagenklasse".equals(fieldName))
+      return getAnlagenklasse();
 
     return super.getAttribute(fieldName);
   }

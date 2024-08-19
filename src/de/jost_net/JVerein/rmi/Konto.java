@@ -55,6 +55,40 @@ public interface Konto extends DBObject
 
   public void setAnlagenkonto(Boolean anlagenkonto)
       throws RemoteException;
+  
+  public Buchungsart getAnlagenart() throws RemoteException;
+
+  public Long getAnlagenartId() throws RemoteException;
+
+  public void setAnlagenart(Long anlagensart) throws RemoteException;
+  
+  public Buchungsklasse getAnlagenklasse() throws RemoteException;
+
+  public Long getAnlagenklasseId() throws RemoteException;
+
+  public void setAnlagenklasse(Long anlagenklasse) throws RemoteException;
+  
+  public Buchungsart getAfaart() throws RemoteException;
+
+  public Long getAfaartId() throws RemoteException;
+
+  public void setAfaart(Long afaart) throws RemoteException;
+  
+  public Integer getNutzungsdauer() throws RemoteException;
+
+  public void setNutzungsdauer(Integer auszugsnummer) throws RemoteException;
+  
+  public boolean isBetragNull() throws RemoteException;
+  
+  public void setBetragNull() throws RemoteException;
+  
+  public double getBetrag() throws RemoteException;
+
+  public void setBetrag(double betrag) throws RemoteException;
+  
+  public String getKommentar() throws RemoteException;
+
+  public void setKommentar(String kommentar) throws RemoteException;
 
   public DBIterator<Konto> getKontenEinesJahres(Geschaeftsjahr gj)
       throws RemoteException;

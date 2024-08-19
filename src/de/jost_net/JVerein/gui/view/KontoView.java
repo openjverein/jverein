@@ -42,6 +42,16 @@ public class KontoView extends AbstractView
     group.addLabelPair("Konto-Auflösung", control.getAufloesung());
     group.addLabelPair("Hibiscus-Konto", control.getHibiscusId());
     group.addLabelPair("Gegenbuchung-Buchungsart", control.getBuchungsart());
+    group.addLabelPair("Kommentar", control.getKommentar());
+
+    LabelGroup group1 = new LabelGroup(getParent(), "Anlagenkonto Daten");
+    group1.addLabelPair("Anlagen Buchungsklasse", control.getAnlagenklasse());
+    group1.addLabelPair("Anlagen Buchungsart", control.getAnlagenart());
+    group1.addLabelPair("Afa Buchungsart", control.getAfaart());
+    group1.addLabelPair("Anlagenwert", control.getBetrag());
+    group1.addLabelPair("Nutzungsdauer", control.getNutzungsdauer());
+    
+    control.refreshGui();
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
