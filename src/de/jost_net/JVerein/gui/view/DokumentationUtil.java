@@ -102,6 +102,8 @@ public class DokumentationUtil
   public static final String PROJEKTSALDO = PRE + FUNKTIONEN + BUCHF + "projekte";
   
   public static final String SPLITBUCHUNG = PRE + FUNKTIONEN + BUCHF + "splittbuchungen";
+  
+  public static final String ANLAGENLISTE = PRE + FUNKTIONEN + BUCHF + "anlagenliste";
 
 
   // Abrechnung

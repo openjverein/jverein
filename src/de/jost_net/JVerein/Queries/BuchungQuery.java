@@ -174,11 +174,11 @@ public class BuchungQuery
     {
       if (buchungart.getNummer() == -1)
       {
-        it.addFilter("buchungsart is null ");
+        it.addFilter("buchung.buchungsart is null ");
       }
       else if (buchungart.getNummer() >= 0)
       {
-        it.addFilter("buchungsart = ? ", buchungart.getID());
+        it.addFilter("buchung.buchungsart = ? ", buchungart.getID());
       }
     }
 

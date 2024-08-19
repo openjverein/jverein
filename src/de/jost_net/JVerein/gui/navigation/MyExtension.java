@@ -42,6 +42,7 @@ import de.jost_net.JVerein.gui.action.NichtMitgliedSucheAction;
 import de.jost_net.JVerein.gui.action.PreNotificationAction;
 import de.jost_net.JVerein.gui.action.MitgliedstypListAction;
 import de.jost_net.JVerein.gui.action.AnfangsbestandListAction;
+import de.jost_net.JVerein.gui.action.AnlagenlisteAction;
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzUeberpruefungAction;
 import de.jost_net.JVerein.gui.action.AuswertungAdressenAction;
 import de.jost_net.JVerein.gui.action.AuswertungKursteilnehmerAction;
@@ -112,6 +113,32 @@ public class MyExtension implements Extension
   {
     try
     {
+      // Check ob es ein Anlagenkonto gibt
+      boolean anlagenkonto = false;
+      try
+      {
+        DBService service = Einstellungen.getDBService();
+        String sql = "SELECT konto.anlagenkonto from konto "
+            + "WHERE (anlagenkonto = true) ";
+        anlagenkonto = (boolean) service.execute(sql,
+            new Object[] { }, new ResultSetExtractor()
+        {
+          @Override
+          public Object extract(ResultSet rs)
+              throws RemoteException, SQLException
+          {
+            if (rs.next())
+            {
+              return true;
+            }
+            return false;
+          }
+        });
+      }
+      catch (Exception e)
+      {
+        ;
+      }
       NavigationItem jverein = (NavigationItem) extendable;
       
       NavigationItem mitglieder = null;
@@ -177,32 +204,6 @@ public class MyExtension implements Extension
           new BuchungsuebernahmeAction(), "hibiscus-icon-64x64.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
           new BuchungsListeAction(), "euro-sign.png"));
-      // Check ob es ein Anlagenkonto gibt
-      boolean anlagenkonto = false;
-      try
-      {
-        DBService service = Einstellungen.getDBService();
-        String sql = "SELECT konto.anlagenkonto from konto "
-            + "WHERE (anlagenkonto = true) ";
-        anlagenkonto = (boolean) service.execute(sql,
-            new Object[] { }, new ResultSetExtractor()
-        {
-          @Override
-          public Object extract(ResultSet rs)
-              throws RemoteException, SQLException
-          {
-            if (rs.next())
-            {
-              return true;
-            }
-            return false;
-          }
-        });
-      }
-      catch (Exception e)
-      {
-        ;
-      }
       if (anlagenkonto)
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Abschreibungen",
           new AbschreibungsListeAction(), "euro-sign.png"));
@@ -214,6 +215,9 @@ public class MyExtension implements Extension
           new ProjektSaldoAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
           new KontensaldoAction(), "euro-sign.png"));
+      if (anlagenkonto)
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenliste",
+            new AnlagenlisteAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
           new JahresabschlussListAction(), "euro-sign.png"));
       jverein.addChild(buchfuehrung);
