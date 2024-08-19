@@ -72,7 +72,7 @@ public abstract class AbstractMitgliedskontoDokument
         file = getDateiAuswahl("pdf");
         formularaufbereitung = new FormularAufbereitung(file);
         break;
-      case EMAIL:
+      case MAIL:
         file = getDateiAuswahl("zip");
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
@@ -88,7 +88,7 @@ public abstract class AbstractMitgliedskontoDokument
         case DRUCK:
           aufbereitenFormular(mk, formularaufbereitung, formular);
           break;
-        case EMAIL:
+        case MAIL:
           File f = File.createTempFile(getDateiname(mk), ".pdf");
           formularaufbereitung = new FormularAufbereitung(f);
           aufbereitenFormular(mk, formularaufbereitung, formular);
@@ -111,7 +111,7 @@ public abstract class AbstractMitgliedskontoDokument
       case DRUCK:
         formularaufbereitung.showFormular();
         break;
-      case EMAIL:
+      case MAIL:
         zos.close();
         new ZipMailer(file, (String) control.getBetreff().getValue(),
             (String) control.getTxt().getValue(), typ.name() + ".pdf");

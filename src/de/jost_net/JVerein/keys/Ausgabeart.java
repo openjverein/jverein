@@ -18,5 +18,5 @@ package de.jost_net.JVerein.keys;
 
 public enum Ausgabeart
 {
-  DRUCK, EMAIL;
+  DRUCK, MAIL;
 }

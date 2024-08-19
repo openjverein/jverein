@@ -18,9 +18,9 @@ public class DruckMailControl extends FilterControl
     super(view);
   }
   
-  public static final String EMAIL = "EMail";
+  public static final String EMAIL = "Mail";
 
-  public static final String PDF1 = "PDF (Lastschriften ohne Mailadresse)";
+  public static final String PDF1 = "PDF (Lastschriften ohne Mail Empfänger)";
 
   public static final String PDF2 = "PDF (Alle)";
 
@@ -138,7 +138,7 @@ public class DruckMailControl extends FilterControl
       return output;
     }
     Object[] values = new Object[] { EMAIL, PDF1, PDF2 };
-    output = new SelectInput(values, settings.getString("output", PDF1));
+    output = new SelectInput(values, settings.getString(settingsprefix +"output", PDF1));
     output.setName("Ausgabe");
     return output;
   }
@@ -152,7 +152,7 @@ public class DruckMailControl extends FilterControl
     Object[] values = new Object[] { NICHT_EINZELN, EINZELN_NUMMERIERT,
         EINZELN_MITGLIEDSNUMMER, EINZELN_NUMMERIERT_UND_MNR };
     pdfModus = new SelectInput(values,
-        settings.getString("pdfModus", NICHT_EINZELN));
+        settings.getString(settingsprefix +"pdfModus", NICHT_EINZELN));
     pdfModus.setName("PDF als");
     return pdfModus;
   }

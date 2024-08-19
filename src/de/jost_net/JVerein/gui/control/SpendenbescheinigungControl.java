@@ -888,7 +888,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
           generatePdf((String) art.getValue(),
               (String) adressblatt.getValue(), spbArray);
           if (ausgabeart == null || 
-              (Ausgabeart) ausgabeart.getValue() == Ausgabeart.EMAIL)
+              (Ausgabeart) ausgabeart.getValue() == Ausgabeart.MAIL)
           {
             sendeMail((String) mailbetreff.getValue(),
                 (String) mailtext.getValue(), spbArray);
