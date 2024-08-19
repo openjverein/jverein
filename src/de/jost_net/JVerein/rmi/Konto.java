@@ -78,13 +78,9 @@ public interface Konto extends DBObject
 
   public void setNutzungsdauer(Integer auszugsnummer) throws RemoteException;
   
-  public boolean isBetragNull() throws RemoteException;
-  
-  public void setBetragNull() throws RemoteException;
-  
-  public double getBetrag() throws RemoteException;
+  public Double getBetrag() throws RemoteException;
 
-  public void setBetrag(double betrag) throws RemoteException;
+  public void setBetrag(Double betrag) throws RemoteException;
   
   public String getKommentar() throws RemoteException;
 

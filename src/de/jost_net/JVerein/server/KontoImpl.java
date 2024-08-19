@@ -104,7 +104,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
       }
       if (getAnlagenkonto())
       {
-        if (isBetragNull())
+        if (getBetrag() == null)
         {
           throw new ApplicationException("Bitte Wert der Anlage eingeben");
         }
@@ -370,31 +370,15 @@ public class KontoImpl extends AbstractDBObject implements Konto
   }
   
   @Override
-  public double getBetrag() throws RemoteException
+  public Double getBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
-    if (d == null)
-      return 0;
-    return d.doubleValue();
+    return (Double) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(double d) throws RemoteException
+  public void setBetrag(Double d) throws RemoteException
   {
-    setAttribute("betrag", Double.valueOf(d));
-  }
-
-  @Override
-  public boolean isBetragNull() throws RemoteException
-  {
-    Double d = (Double) getAttribute("betrag");
-    return d == null;
-  }
-
-  @Override
-  public void setBetragNull() throws RemoteException
-  {
-    setAttribute("betrag", null);
+    setAttribute("betrag", d);
   }
   
   @Override

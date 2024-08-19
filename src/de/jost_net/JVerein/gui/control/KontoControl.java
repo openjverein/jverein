@@ -226,15 +226,7 @@ public class KontoControl extends AbstractControl
       k.setAnlagenart(getSelectedAnlagenartId());
       k.setAnlagenklasse(getSelectedAnlagenklasseId());
       k.setAfaart(getSelectedAfaartId());
-      if (getBetrag().getValue() != null)
-      {
-        k.setBetrag((Double) getBetrag().getValue());
-      }
-      else
-      {
-        // Nötig um für den Check den letzten gesetzten Wert zu löschen
-        k.setBetragNull();
-      }
+      k.setBetrag((Double) getBetrag().getValue());
       k.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
       k.store();
       GUI.getStatusBar().setSuccessText("Konto gespeichert");
@@ -493,7 +485,6 @@ public class KontoControl extends AbstractControl
     anlagenart = new BuchungsartInput().getBuchungsartInput( anlagenart,
         getKonto().getAnlagenart());
     anlagenart.addListener(new AnlagenartListener());
-    anlagenart.setMandatory(true);
     return anlagenart;
   }
   
@@ -530,7 +521,6 @@ public class KontoControl extends AbstractControl
     anlagenklasse.setAttribute(getBuchungartAttribute());
     anlagenklasse.setPleaseChoose("Bitte auswählen");
     anlagenklasse.setEnabled(false);
-    anlagenklasse.setMandatory(true);
     return anlagenklasse;
   }
   
@@ -561,7 +551,6 @@ public class KontoControl extends AbstractControl
     afaart = new BuchungsartInput().getBuchungsartInput( afaart,
         getKonto().getAfaart());
     afaart.addListener(new AnlagenartListener());
-    afaart.setMandatory(true);
     return afaart;
   }
   
@@ -591,7 +580,6 @@ public class KontoControl extends AbstractControl
     }
     betrag = new DecimalInput(getKonto().getBetrag(),
         Einstellungen.DECIMALFORMAT);
-    betrag.setMandatory(true);
     return betrag;
   }
 
@@ -685,7 +673,11 @@ public class KontoControl extends AbstractControl
       }
       try
       {
-        getAnlagenklasse().setValue(((Buchungsart) getAnlagenart().getValue()).getBuchungsklasse());
+        Buchungsart ba = (Buchungsart) getAnlagenart().getValue();
+        if (ba != null)
+        {
+          getAnlagenklasse().setValue(ba.getBuchungsklasse());
+        }
       }
       catch (Exception e)
       {
@@ -701,21 +693,27 @@ public class KontoControl extends AbstractControl
       if ((boolean) getAnlagenkonto().getValue())
       {
         getAnlagenart().enable();
+        getAnlagenart().setMandatory(true);
         getAfaart().enable();
+        getAfaart().setMandatory(true);
         getBetrag().enable();
+        getBetrag().setMandatory(true);
         getNutzungsdauer().enable();
       }
       else
       {
         getAnlagenklasse().setValue(null);
-        getAnlagenart().disable();
+        getAnlagenart().setMandatory(false);
         getAnlagenart().setValue(null);
-        getAfaart().disable();
+        getAnlagenart().disable();
+        getAfaart().setMandatory(false);
         getAfaart().setValue(null);
-        getBetrag().disable();
+        getAfaart().disable();
+        getBetrag().setMandatory(false);
         getBetrag().setValue(null);
-        getNutzungsdauer().disable();
+        getBetrag().disable();
         getNutzungsdauer().setValue(null);
+        getNutzungsdauer().disable();
       }
     }
     catch (RemoteException e)
