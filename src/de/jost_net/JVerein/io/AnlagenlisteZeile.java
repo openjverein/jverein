@@ -58,12 +58,14 @@ public class AnlagenlisteZeile implements GenericObject
   public static final int UNDEFINED = 0;
 
   public static final int HEADER = 1;
+  
+  public static final int HEADER2 = 2;
 
-  public static final int DETAIL = 2;
+  public static final int DETAIL = 3;
 
-  public static final int SALDOFOOTER = 3;
+  public static final int SALDOFOOTER = 4;
 
-  public static final int GESAMTSALDOFOOTER = 4;
+  public static final int GESAMTSALDOFOOTER = 5;
 
 
   private int status = UNDEFINED;

@@ -216,7 +216,7 @@ public class MyExtension implements Extension
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
           new KontensaldoAction(), "euro-sign.png"));
       if (anlagenkonto)
-        buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenliste",
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenverzeichnis",
             new AnlagenlisteAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
           new JahresabschlussListAction(), "euro-sign.png"));

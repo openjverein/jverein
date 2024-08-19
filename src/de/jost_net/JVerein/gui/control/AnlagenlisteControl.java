@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.parts.AnlagenList;
 import de.jost_net.JVerein.io.AnlagenlisteZeile;
+import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
 //import de.jost_net.JVerein.io.AnlagenlisteCSV;
 //import de.jost_net.JVerein.io.AnlagenlistePDF;
 import de.jost_net.JVerein.util.Dateiname;
@@ -134,7 +135,7 @@ public class AnlagenlisteControl extends SaldoControl
   {
     try
     {
-      ArrayList<AnlagenlisteZeile> zeile = saldoList.getInfo();
+      ArrayList<AnlagenlisteZeile> zeilen = saldoList.getInfo();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
@@ -160,7 +161,7 @@ public class AnlagenlisteControl extends SaldoControl
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
 
-      auswertungSaldo(zeile, file, getDatumvon().getDate(),
+      auswertungSaldo(zeilen, file, getDatumvon().getDate(),
           getDatumbis().getDate(), type);
     }
     catch (RemoteException e)
@@ -178,21 +179,20 @@ public class AnlagenlisteControl extends SaldoControl
     {
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
-      {/*
+      {
         try
         {
-          // mit Java 1.7 k?nnte man hier eine Swich Anweisung nehmen.
-          if (type.equals(AuswertungCSV))
+          /*if (type.equals(AuswertungCSV))
             new AnlagenlisteCSV(zeile, file, datumvon, datumbis);
-          else if (type.equals(AuswertungPDF))
-            new AnlagenlistePDF(zeile, file, datumvon, datumbis);
+          else */if (type.equals(AuswertungPDF))
+            new AnlagenverzeichnisPDF(zeile, file, datumvon, datumbis);
           GUI.getCurrentView().reload();
         }
         catch (ApplicationException ae)
         {
           GUI.getStatusBar().setErrorText(ae.getMessage());
           throw ae;
-        }*/
+        }
       }
 
       @Override

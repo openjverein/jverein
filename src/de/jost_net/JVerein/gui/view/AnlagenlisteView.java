@@ -30,7 +30,7 @@ public class AnlagenlisteView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Anlagenliste");
+    GUI.getView().setTitle("Anlagenverzeichnis");
 
     final AnlagenlisteControl control = new AnlagenlisteControl(this);
   
@@ -47,7 +47,7 @@ public class AnlagenlisteView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ANLAGENLISTE, false, "question-circle.png");
     //buttons.addButton(control.getStartAuswertungCSVButton());
-    //buttons.addButton(control.getStartAuswertungButton());
+    buttons.addButton(control.getStartAuswertungButton());
     buttons.paint(this.getParent());
   }
 }

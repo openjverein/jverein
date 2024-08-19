@@ -182,7 +182,7 @@ public class AnlagenList extends TablePart implements Part
           continue;
         }
         ausgabe = true;
-        zeile.add(new AnlagenlisteZeile(AnlagenlisteZeile.HEADER,
+        zeile.add(new AnlagenlisteZeile(AnlagenlisteZeile.HEADER2,
             buchungsart));
         
         DBIterator<Konto> kontenIt = service
