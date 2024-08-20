@@ -24,6 +24,7 @@ import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.InfoPanel;
 
@@ -36,22 +37,31 @@ public class SplitBuchungView extends AbstractView
     GUI.getView().setTitle("Splitbuchungen");
 
     final BuchungsControl control = new BuchungsControl(this);
+    
+    final boolean buchungabgeschlossen = control.isSplitBuchungAbgeschlossen();
+    
     InfoPanel   info = new InfoPanel();
     info.setText(SplitbuchungsContainer.getText());
     info.setTitle("Info");
     info.setIcon("gtk-info.png");
     info.paint(getParent());
     control.getSplitBuchungsList().paint(getParent());
+    
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPLITBUCHUNG, false, "question-circle.png");
-    buttons.addButton("Neu", new SplitbuchungNeuAction(),
+    Button neu = new Button("Neu", new SplitbuchungNeuAction(),
         control.getCurrentObject(), false, "document-new.png");
-    buttons.addButton("Auflösen", new SplitbuchungAufloesenAction(control),
+    neu.setEnabled(!buchungabgeschlossen);
+    buttons.addButton(neu);
+    Button aufloesen = new Button("Auflösen", new SplitbuchungAufloesenAction(control),
         control.getCurrentObject(), false, "unlocked.png");
-    buttons.addButton(control.getSammelueberweisungButton());
-
-    buttons.addButton("Speichern", new Action()
+    aufloesen.setEnabled(!buchungabgeschlossen);
+    buttons.addButton(aufloesen);
+    Button sammel = control.getSammelueberweisungButton();
+    sammel.setEnabled(!buchungabgeschlossen);
+    buttons.addButton(sammel);
+    Button speichern = new Button("Speichern", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -76,6 +86,8 @@ public class SplitBuchungView extends AbstractView
         }
       }
     }, null, true, "document-save.png");
+    speichern.setEnabled(!buchungabgeschlossen);
+    buttons.addButton(speichern);
     buttons.paint(getParent());
   }
 }

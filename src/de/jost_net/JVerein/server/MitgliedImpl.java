@@ -287,6 +287,12 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       throw new ApplicationException("Bitte Zahler auswählen!");
     }
+    
+    // Individueller Beitrag darf nicht kleiner als 0 sein
+    if (getIndividuellerBeitrag() != null && getIndividuellerBeitrag() < 0)
+    {
+      throw new ApplicationException("Individueller Beitrag darf nicht negativ sein!");
+    }
   }
 
   /***
@@ -1047,12 +1053,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public Double getIndividuellerBeitrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("individuellerbeitrag");
-    if (d == null)
-    {
-      return Double.valueOf(0);
-    }
-    return d;
+    return (Double) getAttribute("individuellerbeitrag");
   }
 
   @Override

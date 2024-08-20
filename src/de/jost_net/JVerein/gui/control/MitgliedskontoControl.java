@@ -35,16 +35,12 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
-import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.io.Kontoauszug;
 import de.jost_net.JVerein.io.Mahnungsausgabe;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
-import de.jost_net.JVerein.keys.Ausgabeart;
-import de.jost_net.JVerein.keys.Ausgabesortierung;
-import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -84,7 +80,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoControl extends FilterControl
+public class MitgliedskontoControl extends DruckMailControl
 {
   public enum DIFFERENZ
   {
@@ -129,15 +125,6 @@ public class MitgliedskontoControl extends FilterControl
   {
     RECHNUNG, MAHNUNG
   }
-  private FormularInput formular = null;
-
-  private SelectInput ausgabeart = null;
-
-  private SelectInput ausgabesortierung = null;
-  
-  private TextInput betreff = null;
-
-  private TextAreaInput txt = null;
   
   private Mitgliedskonto mkto;
 
@@ -159,9 +146,7 @@ public class MitgliedskontoControl extends FilterControl
   private Action action;
   
   private boolean umwandeln;
-  
-  // KontoauszugView
-  private TextAreaInput  info;
+
 
   public MitgliedskontoControl(AbstractView view)
   {
@@ -280,16 +265,6 @@ public class MitgliedskontoControl extends FilterControl
     return buchungsart;
   }
 
-  public FormularInput getFormular(FormularArt mahnung) throws RemoteException
-  {
-    if (formular != null)
-    {
-      return formular;
-    }
-    formular = new FormularInput(mahnung);
-    return formular;
-  }
-
   public Object[] getCVSExportGrenzen(Mitglied selectedMitglied)
   {
     return new Object[] {
@@ -356,54 +331,6 @@ public class MitgliedskontoControl extends FilterControl
     suchname2 = new TextInput("", 30);
     suchname2.setName("Name");
     return suchname2;
-  }
-
-  public SelectInput getAusgabeart()
-  {
-    if (ausgabeart != null)
-    {
-      return ausgabeart;
-    }
-    ausgabeart = new SelectInput(Ausgabeart.values(),
-        Ausgabeart.valueOf(settings.getString(settingsprefix + "ausgabeart", "DRUCK")));
-    ausgabeart.setName("Ausgabe");
-    return ausgabeart;
-  }
-
-  public SelectInput getAusgabesortierung()
-  {
-    if (ausgabesortierung != null)
-    {
-      return ausgabesortierung;
-    }
-    ausgabesortierung = new SelectInput(Ausgabesortierung.values(),
-        Ausgabesortierung.getByKey(settings.getInt(settingsprefix + "ausgabesortierung", 1)));
-    ausgabesortierung.setName("Sortierung");
-    return ausgabesortierung;
-  }
-
-  public TextInput getBetreff()
-  {
-    if (betreff != null)
-    {
-      return betreff;
-    }
-    betreff = new TextInput(
-        settings.getString(settingsprefix + "mail.betreff", ""), 100);
-    betreff.setName("Betreff");
-    return betreff;
-  }
-
-  public TextAreaInput getTxt()
-  {
-    if (txt != null)
-    {
-      return txt;
-    }
-    txt = new TextAreaInput(settings.getString(settingsprefix + "mail.text", ""),
-        10000);
-    txt.setName("Text");
-    return txt;
   }
   
   public void handleStore()
@@ -1027,8 +954,7 @@ public class MitgliedskontoControl extends FilterControl
       {
         try
         {
-          saveSettings();
-          saveFilterSettings();
+          saveDruckMailSettings();
           new Kontoauszug(currentObject, control);
         }
         catch (Exception e)
@@ -1043,8 +969,7 @@ public class MitgliedskontoControl extends FilterControl
 
   private void generiereRechnung(Object currentObject) throws IOException
   {
-    saveSettings();
-    saveFilterSettings();
+    saveDruckMailSettings();
     new Rechnungsausgabe(this);
   }
 
@@ -1077,34 +1002,8 @@ public class MitgliedskontoControl extends FilterControl
 
   private void generiereMahnung(Object currentObject) throws IOException
   {
-    saveSettings();
-    saveFilterSettings();
+    saveDruckMailSettings();
     new Mahnungsausgabe(this);
-  }
-  
-  private void saveSettings()
-  {
-    if (ausgabeart != null )
-    {
-      Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
-      settings.setAttribute(settingsprefix + "ausgabeart", aa.toString());
-    }
-    if (ausgabesortierung != null)
-    {
-      Ausgabesortierung as = (Ausgabesortierung) getAusgabesortierung()
-          .getValue();
-      settings.setAttribute(settingsprefix + "ausgabesortierung", as.getKey());
-    }
-    if (betreff != null)
-    {
-      settings.setAttribute(settingsprefix + "mail.betreff",
-          (String) getBetreff().getValue());
-    }
-    if (txt != null)
-    {
-      settings.setAttribute(settingsprefix + "mail.text",
-          (String) getTxt().getValue());
-    }
   }
   
   // Für Sollbuchungen View
@@ -1234,19 +1133,8 @@ public class MitgliedskontoControl extends FilterControl
       });
     }
   }
-  
-  public TextAreaInput getInfo() throws RemoteException
-  {
-    if (info != null)
-    {
-      return info;
-    }
-    info = new TextAreaInput(getInfoText(getCurrentObject()), 10000);
-    info.setHeight(100);
-    info.setEnabled(false);
-    return info;
-  }
 
+  @Override
   public String getInfoText(Object selection)
   {
     Mitglied[] mitglieder = null;

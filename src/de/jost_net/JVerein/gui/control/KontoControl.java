@@ -374,7 +374,7 @@ public class KontoControl extends AbstractControl
     
     Buchungsart b = konto.getBuchungsart();
     buchungsart = new SelectInput(liste, b);
-    buchungsart.setPleaseChoose("Bitte wählen...");
+    buchungsart.setPleaseChoose("Bitte wählen");
 
     switch (Einstellungen.getEinstellung().getBuchungsartSort())
     {

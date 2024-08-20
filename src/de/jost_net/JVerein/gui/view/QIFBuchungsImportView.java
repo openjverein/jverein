@@ -70,7 +70,7 @@ public class QIFBuchungsImportView extends AbstractView
     group.addLabelPair("JVerein Konto", control.getAuswahlJVereinKonto());
 
     LabelGroup poslistGroup = new LabelGroup(getParent(),
-        "Importierbare Buchungen im gewählten Konto...", true);
+        "Importierbare Buchungen im gewählten Konto", true);
     control.getImportKontoPosList(new QIFBuchungsartAction())
         .paint(poslistGroup.getComposite());
 

@@ -31,7 +31,7 @@ public class MitgliedstypMenu extends ContextMenu
    */
   public MitgliedstypMenu()
   {
-    addItem(new CheckedContextMenuItem("Löschen...",
+    addItem(new CheckedContextMenuItem("Löschen",
         new MitgliedstypDeleteAction(), "user-trash-full.png"));
   }
 }

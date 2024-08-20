@@ -310,7 +310,7 @@ public class PersonalbogenAction implements Action
       if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
       {
         rpt.addColumn("Individueller Beitrag", Element.ALIGN_LEFT);
-        if (m.getIndividuellerBeitrag() > 0)
+        if (m.getIndividuellerBeitrag() != null)
         {
           rpt.addColumn(
               Einstellungen.DECIMALFORMAT.format(m.getIndividuellerBeitrag())

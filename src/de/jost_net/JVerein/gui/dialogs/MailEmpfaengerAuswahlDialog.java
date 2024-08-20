@@ -74,6 +74,8 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
           EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog(null,
               false, false, new MitgliedControl(null));
           EigenschaftenAuswahlParameter param = ead.open();
+          if (param == null)
+            return;
           for (EigenschaftenNode node : param.getEigenschaften())
           {
             DBIterator<Eigenschaften> it = Einstellungen.getDBService()
@@ -86,6 +88,10 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
               control.getMitgliedMitMail().setChecked(ei.getMitglied(), true);
             }
           }
+        }
+        catch (OperationCanceledException oce)
+        {
+          return;
         }
         catch (Exception e)
         {

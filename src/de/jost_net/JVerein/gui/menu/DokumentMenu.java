@@ -39,7 +39,7 @@ public class DokumentMenu extends ContextMenu
     if (enabled)
     {
       addItem(ContextMenuItem.SEPARATOR);
-      addItem(new CheckedContextMenuItem("Löschen...",
+      addItem(new CheckedContextMenuItem("Löschen",
           new DokumentDeleteAction(), "user-trash-full.png"));
     }
   }

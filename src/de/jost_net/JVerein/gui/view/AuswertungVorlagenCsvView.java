@@ -189,7 +189,7 @@ public class AuswertungVorlagenCsvView extends AbstractView
     compButtons.setLayout(new RowLayout());
 
     loadButton = new Button(compButtons, SWT.PUSH);
-    loadButton.setText("Vorlage laden...");
+    loadButton.setText("Vorlage laden");
     loadButton.addSelectionListener(new SelectionAdapter()
     {
       @Override
@@ -200,7 +200,7 @@ public class AuswertungVorlagenCsvView extends AbstractView
     });
 
     saveAsButton = new Button(compButtons, SWT.PUSH);
-    saveAsButton.setText("Vorlage speichern unter...");
+    saveAsButton.setText("Vorlage speichern unter");
     saveAsButton.addSelectionListener(new SelectionAdapter()
     {
       @Override

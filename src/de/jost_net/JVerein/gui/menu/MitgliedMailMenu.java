@@ -32,7 +32,7 @@ public class MitgliedMailMenu extends ContextMenu
    */
   public MitgliedMailMenu(MitgliedControl mc)
   {
-    addItem(new CheckedContextMenuItem("Löschen...",
+    addItem(new CheckedContextMenuItem("Löschen",
         new MailemfaengerDeleteAction(mc), "user-trash-full.png"));
   }
 }

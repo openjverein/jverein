@@ -28,6 +28,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.TabGroup;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class PreNotificationView extends AbstractView
@@ -39,7 +40,14 @@ public class PreNotificationView extends AbstractView
     GUI.getView().setTitle("SEPA Pre-Notification");
 
     final PreNotificationControl control = new PreNotificationControl(this);
+    control.init("prenotification." , null, null);
 
+    if (this.getCurrentObject() == null)
+    {
+      LabelGroup group = new LabelGroup(getParent(), "Filter");
+      group.addInput(control.getAbrechnungslaufAusw(10));
+    }
+    
     TabFolder folder = control.getFolder(getParent());
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
@@ -54,8 +62,8 @@ public class PreNotificationView extends AbstractView
 
     grtabMailPDF.addHeadline("Mail");
 
-    grtabMailPDF.addInput(control.getMailSubject());
-    grtabMailPDF.addInput(control.getMailBody());
+    grtabMailPDF.addInput(control.getBetreff());
+    grtabMailPDF.addInput(control.getTxt());
 
     ButtonArea buttons1 = new ButtonArea();
     buttons1.addButton("Hilfe", new DokumentationAction(),

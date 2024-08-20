@@ -69,6 +69,7 @@ import de.jost_net.JVerein.gui.view.IAuswertung;
 import de.jost_net.JVerein.gui.view.MitgliederSuchProfilView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.MitgliedAdressbuchExport;
+import de.jost_net.JVerein.io.MitgliedAdresslistePDF;
 import de.jost_net.JVerein.io.MitgliedAuswertungCSV;
 import de.jost_net.JVerein.io.MitgliedAuswertungPDF;
 import de.jost_net.JVerein.io.MitgliederStatistik;
@@ -1193,7 +1194,7 @@ public class MitgliedControl extends FilterControl
     }
     individuellerbeitrag = new DecimalInput(
         getMitglied().getIndividuellerBeitrag(), Einstellungen.DECIMALFORMAT);
-    individuellerbeitrag.setName("individueller Beitrag");
+    individuellerbeitrag.setName("Individueller Beitrag");
     return individuellerbeitrag;
   }
 
@@ -1849,6 +1850,7 @@ public class MitgliedControl extends FilterControl
     // erzeuge Auswertungsobjekte
     List<Object> objectList = new ArrayList<>();
     objectList.add(new MitgliedAuswertungPDF(this));
+    objectList.add(new MitgliedAdresslistePDF(this));
     objectList.add(new MitgliedAuswertungCSV());
     objectList.add(new MitgliedAdressbuchExport());
 
@@ -2025,7 +2027,7 @@ public class MitgliedControl extends FilterControl
 
   public Button getVorlagenCsvEditButton()
   {
-    Button b = new Button("CSV Vorlagen...", new Action()
+    Button b = new Button("CSV Vorlagen", new Action()
     {
       @Override
       public void handleAction(Object context)

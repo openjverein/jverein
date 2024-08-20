@@ -17,9 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
-import de.jost_net.JVerein.gui.control.PreNotificationControl;
+import de.jost_net.JVerein.gui.control.DruckMailControl;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.MailVorlagenAuswahlDialog;
 import de.jost_net.JVerein.rmi.MailVorlage;
@@ -38,9 +36,7 @@ public class MailVorlageZuweisenAction implements Action
     try
     {
       if (context != null &&
-          (context instanceof MitgliedskontoControl ||
-           context instanceof SpendenbescheinigungControl ||
-           context instanceof PreNotificationControl ||
+          (context instanceof DruckMailControl ||
            context instanceof MailControl))
       {
         MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
@@ -50,23 +46,11 @@ public class MailVorlageZuweisenAction implements Action
         MailVorlage mv = mvad.open();
         if (!mvad.getAbort() && mv != null)
         {
-          if (context instanceof MitgliedskontoControl)
+          if (context instanceof DruckMailControl)
           {
-            MitgliedskontoControl kto = (MitgliedskontoControl) context;
+            DruckMailControl kto = (DruckMailControl) context;
             kto.getBetreff().setValue(mv.getBetreff());
             kto.getTxt().setValue(mv.getTxt());
-          }
-          else if (context instanceof SpendenbescheinigungControl)
-          {
-            SpendenbescheinigungControl kto = (SpendenbescheinigungControl) context;
-            kto.getBetreff().setValue(mv.getBetreff());
-            kto.getTxt().setValue(mv.getTxt());
-          }
-          else if (context instanceof PreNotificationControl)
-          {
-            PreNotificationControl kto = (PreNotificationControl) context;
-            kto.getMailSubject().setValue(mv.getBetreff());
-            kto.getMailBody().setValue(mv.getTxt());
           }
           else if (context instanceof MailControl)
           {

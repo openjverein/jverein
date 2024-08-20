@@ -130,7 +130,7 @@ public class BuchungsartInput
             break;
         }
         ((BuchungsartSearchInput) buchungsart)
-            .setSearchString("Zum Suchen tippen ...");
+            .setSearchString("Zum Suchen tippen");
     }
     buchungsart.setValue(bart);
     return buchungsart;

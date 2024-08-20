@@ -18,6 +18,8 @@ package com.schlevoigt.JVerein.gui.view;
 
 import com.schlevoigt.JVerein.gui.control.BuchungsTextKorrekturControl;
 
+import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -33,6 +35,8 @@ public class BuchungsTexteKorrigierenView extends AbstractView {
 		control.getBuchungsList().paint(this.getParent());
 
 		ButtonArea buttons = new ButtonArea();
+    buttons.addButton("Hilfe", new DokumentationAction(),
+        DokumentationUtil.BUCHUNGSKORREKTUR, false, "question-circle.png");
 		buttons.addButton(control.getStartKorrekturButton());
 		buttons.paint(this.getParent());
 	}

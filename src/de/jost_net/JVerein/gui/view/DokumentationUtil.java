@@ -53,7 +53,7 @@ public class DokumentationUtil
   public static final String KURSTEILNEHMER = PRE + FUNKTIONEN + MITGLIEDER + "kursteilnehmer";
 
   public static final String LEHRGANG = PRE + FUNKTIONEN + MITGLIEDER  + "lehrgange";
-
+  
   public static final String MITGLIEDSUCHE = PRE + FUNKTIONEN + MITGLIEDER + "content/mitglieder";
   
   public static final String MITGLIED = PRE + FUNKTIONEN + MITGLIEDER + "content/grunddaten";
@@ -91,6 +91,8 @@ public class DokumentationUtil
   public static final String BUCHUNGSUEBERNAHME = PRE + FUNKTIONEN + BUCHF
       + "buchungsubernahme";
 
+  public static final String BUCHUNGSKORREKTUR = PRE + FUNKTIONEN + BUCHF + "buchungskorrektur";
+  
   public static final String JAHRESABSCHLUSS = PRE + FUNKTIONEN + BUCHF + "jahresabschluss";
   
   public static final String KONTEN = PRE + FUNKTIONEN + BUCHF + "konten";
@@ -128,20 +130,22 @@ public class DokumentationUtil
   
 
   // Druck und Mail
-  public static final String KONTOAUSZUG = PRE + FUNKTIONEN + DRUCKMAIL + "kontoauszug";
+  public static final String RECHNUNG = PRE + FUNKTIONEN + DRUCKMAIL + "rechnungen";
 
   public static final String MAHNUNG = PRE + FUNKTIONEN + DRUCKMAIL+ "mahnungen";
 
+  public static final String KONTOAUSZUG = PRE + FUNKTIONEN + DRUCKMAIL + "kontoauszug";
+
+  public static final String FREIESFORMULAR = PRE + FUNKTIONEN + DRUCKMAIL + "freiesformular";
+  
+  public static final String SPENDENBESCHEINIGUNGMAIL = PRE + FUNKTIONEN + DRUCKMAIL 
+      + "spendenbescheinigungen";
+  
+  public static final String PRENOTIFICATION = PRE + FUNKTIONEN + DRUCKMAIL + "pre-notification";
+  
   public static final String MAIL = PRE + FUNKTIONEN + DRUCKMAIL + "mail";
 
   public static final String MAILVORLAGE = PRE + FUNKTIONEN + DRUCKMAIL + "mailvorlagen";
-
-  public static final String PRENOTIFICATION = PRE + FUNKTIONEN + DRUCKMAIL + "pre-notification";
-
-  public static final String RECHNUNG = PRE + FUNKTIONEN + DRUCKMAIL + "rechnungen";
-
-  public static final String SPENDENBESCHEINIGUNGMAIL = PRE + FUNKTIONEN + DRUCKMAIL 
-      + "spendenbescheinigungen";
   
   
   // Einstellungen
