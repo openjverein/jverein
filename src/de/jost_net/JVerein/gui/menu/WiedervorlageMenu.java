@@ -35,7 +35,7 @@ public class WiedervorlageMenu extends ContextMenu
   {
     addItem(new CheckedContextMenuItem("Erledigt",
         new WiedervorlageErledigungAction(table), "check.png"));
-    addItem(new CheckedContextMenuItem("Löschen...",
+    addItem(new CheckedContextMenuItem("Löschen",
         new WiedervorlageDeleteAction(), "user-trash-full.png"));
   }
 }

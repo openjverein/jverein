@@ -34,7 +34,7 @@ public class KontoMenu extends ContextMenu
   {
     addItem(new CheckedContextMenuItem("Anfangsbestand",
         new AnfangsbestandNeuAction(), "document-new.png"));
-    addItem(new CheckedContextMenuItem("Löschen...", new KontoDeleteAction(),
+    addItem(new CheckedContextMenuItem("Löschen", new KontoDeleteAction(),
         "user-trash-full.png"));
   }
 }

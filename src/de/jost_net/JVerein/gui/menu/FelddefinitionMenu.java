@@ -31,7 +31,7 @@ public class FelddefinitionMenu extends ContextMenu
    */
   public FelddefinitionMenu()
   {
-    addItem(new CheckedContextMenuItem("Löschen...",
+    addItem(new CheckedContextMenuItem("Löschen",
         new FelddefinitionDeleteAction(), "user-trash-full.png"));
   }
 }

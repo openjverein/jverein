@@ -174,16 +174,16 @@ public class MitgliedMenu extends ContextMenu
     }
     if (detailaction instanceof NichtMitgliedDetailAction)
     {
-    addItem(new CheckedSingleContextMenuItem("Löschen...",
+    addItem(new CheckedSingleContextMenuItem("Löschen",
         new NichtMitgliedDeleteAction(), "user-trash-full.png"));
     }
     else
     {
-      addItem(new CheckedSingleContextMenuItem("Löschen...",
+      addItem(new CheckedSingleContextMenuItem("Löschen",
           new MitgliedDeleteAction(), "user-trash-full.png"));
     }
     addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedContextMenuItem("Mail senden ...",
+    addItem(new CheckedContextMenuItem("Mail senden",
         new MitgliedMailSendenAction(), "envelope-open.png"));
     addItem(new CheckedContextMenuItem("vCard-Datei",
         new MitgliedVCardDateiAction(), "address-card.png"));
@@ -206,7 +206,7 @@ public class MitgliedMenu extends ContextMenu
         new SpendenbescheinigungAction(Spendenart.SACHSPENDE), "file-invoice.png"));
     addItem(new CheckedContextMenuItem("Personalbogen",
         new PersonalbogenAction(), "file-invoice.png"));
-    addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift ...",
+    addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift",
         new MitgliedLastschriftAction(), "file-invoice.png"));
     DBIterator<Formular> it = Einstellungen.getDBService()
         .createList(Formular.class);

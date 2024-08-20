@@ -34,7 +34,7 @@ public class LastschriftMenu extends ContextMenu
   {
     addItem(new CheckedContextMenuItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));
-    addItem(new CheckedContextMenuItem("Löschen...", new LastschriftDeleteAction(),
+    addItem(new CheckedContextMenuItem("Löschen", new LastschriftDeleteAction(),
         "user-trash-full.png"));
   }
 }

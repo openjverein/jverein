@@ -31,7 +31,7 @@ public class BuchungsartMenu extends ContextMenu
    */
   public BuchungsartMenu()
   {
-    addItem(new CheckedContextMenuItem("Löschen...",
+    addItem(new CheckedContextMenuItem("Löschen",
         new BuchungsartDeleteAction(), "user-trash-full.png"));
   }
 }

@@ -2027,7 +2027,7 @@ public class MitgliedControl extends FilterControl
 
   public Button getVorlagenCsvEditButton()
   {
-    Button b = new Button("CSV Vorlagen...", new Action()
+    Button b = new Button("CSV Vorlagen", new Action()
     {
       @Override
       public void handleAction(Object context)

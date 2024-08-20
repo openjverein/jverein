@@ -71,7 +71,7 @@ public class BuchungMenu extends ContextMenu
         new BuchungProjektZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Kontoauszug zuordnen",
         new BuchungKontoauszugZuordnungAction(control), "view-refresh.png"));
-    addItem(new BuchungItem("Löschen...", new BuchungDeleteAction(false),
+    addItem(new BuchungItem("Löschen", new BuchungDeleteAction(false),
         "user-trash-full.png"));
   }
 

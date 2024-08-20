@@ -56,7 +56,7 @@ public class SplitBuchungMenu extends ContextMenu
         new BuchungProjektZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedSplitBuchungItem("Kontoauszug zuordnen",
         new BuchungKontoauszugZuordnungAction(control), "view-refresh.png"));*/
-    addItem(new DeleteSplitBuchungItem("Löschen...", 
+    addItem(new DeleteSplitBuchungItem("Löschen", 
         new SplitBuchungDeleteAction(control), "user-trash-full.png"));
     addItem(new RestoreSplitBuchungItem());
   }
