@@ -627,18 +627,12 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
     switch (getSpendenart())
     {
       case Spendenart.GELDSPENDE:
-        String art = "Geldzuwendungen";
-        if (Einstellungen.getEinstellung().getMitgliedsbetraege())
-        {
-          art += "/Mitgliedsbeitrag";
-        }
+      case Spendenart.SONSTIG:
+        String art = "Geldzuwendungen/Mitgliedsbeitrag";
         map.put(SpendenbescheinigungVar.SPENDEART.getName(), art);
         break;
       case Spendenart.SACHSPENDE:
         map.put(SpendenbescheinigungVar.SPENDEART.getName(), "Sachzuwendungen");
-        break;
-      case Spendenart.SONSTIG:
-        map.put(SpendenbescheinigungVar.SPENDEART.getName(), "Geldzuwendungen");
         break;
     }
     String spendedatum = new JVDateFormatTTMMJJJJ().format(getSpendedatum());
