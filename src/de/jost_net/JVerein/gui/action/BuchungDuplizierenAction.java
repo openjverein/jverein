@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.view.BuchungView;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
@@ -32,12 +33,25 @@ public class BuchungDuplizierenAction implements Action
     {
       throw new ApplicationException("keine Buchung ausgewählt");
     }
-    Buchung b = null;
+    Buchung b = (Buchung) context;
     try
     {
-      b = (Buchung) context;
-      b.setID(null);
-      GUI.startView(new BuchungView(), b);
+      Buchung bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
+          null);
+      bu.setKonto(b.getKonto());
+      bu.setName(b.getName());
+      bu.setIban(b.getIban());
+      bu.setBetrag(b.getBetrag());
+      bu.setZweck(b.getZweck());
+      bu.setDatum(b.getDatum());
+      bu.setArt(b.getArt());
+      bu.setKommentar(b.getKommentar());
+      if (b.getBuchungsart() != null)
+        bu.setBuchungsart(b.getBuchungsartId());
+      if (b.getProjekt() != null)
+        bu.setProjektID(b.getProjektID());
+      bu.setVerzicht(b.getVerzicht());
+      GUI.startView(new BuchungView(), bu);
     }
     catch (Exception e)
     {
