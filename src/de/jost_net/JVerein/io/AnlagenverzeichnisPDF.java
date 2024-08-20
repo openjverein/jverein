@@ -39,8 +39,8 @@ public class AnlagenverzeichnisPDF
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      String subtitle = new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
-          + new JVDateFormatTTMMJJJJ().format(datumbis);
+      String subtitle = "Geschäftsjahr: " + new JVDateFormatTTMMJJJJ().format(datumvon)
+          + " - " + new JVDateFormatTTMMJJJJ().format(datumbis);
       Reporter reporter = new Reporter(fos, "Anlagenverzeichnis", subtitle,
           zeile.size());
       makeHeader(reporter);
@@ -166,11 +166,11 @@ public class AnlagenverzeichnisPDF
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Anschaffungskosten", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Buchwert 01. Jan.", Element.ALIGN_CENTER, 20,
+    reporter.addHeaderColumn("Buchwert Beginn GJ", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Abschreibung", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Buchwert 31. Dez.", Element.ALIGN_CENTER, 20,
+    reporter.addHeaderColumn("Buchwert Ende GJ", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
     reporter.createHeader();
   }

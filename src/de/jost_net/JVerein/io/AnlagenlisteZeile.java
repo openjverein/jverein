@@ -34,16 +34,12 @@ public class AnlagenlisteZeile implements GenericObject
   private Buchungsart buchungsart;
 
   private String text_buchungsklasse;
-
-  private String text_buchungsart;
   
   private String bezeichnung;
   
   private Integer nutzungsdauer;
   
   private Buchungsart afaart;
-  
-  private String text_afaart;
   
   private Date anschaffung;
   
@@ -76,12 +72,10 @@ public class AnlagenlisteZeile implements GenericObject
     this.buchungsklasse = buchungsklasse;
     this.buchungsart = null;
     this.text_buchungsklasse = null;
-    this.text_buchungsart = null;
     this.bezeichnung = null;
     this.nutzungsdauer = null;
     this.anschaffung = null;
     this.afaart = null;
-    this.text_afaart = null;
     this.kosten = null;
     this.startwert = null;
     this.abschreibung = null;
@@ -94,12 +88,10 @@ public class AnlagenlisteZeile implements GenericObject
     this.buchungsklasse = null;
     this.buchungsart = buchungsart;
     this.text_buchungsklasse = null;
-    this.text_buchungsart = null;
     this.bezeichnung = null;
     this.nutzungsdauer = null;
     this.anschaffung = null;
     this.afaart = null;
-    this.text_afaart = null;
     this.kosten = null;
     this.startwert = null;
     this.abschreibung = null;
@@ -114,12 +106,10 @@ public class AnlagenlisteZeile implements GenericObject
     this.buchungsklasse = null;
     this.buchungsart = null;
     this.text_buchungsklasse = null;
-    this.text_buchungsart = null;
     this.bezeichnung = bezeichnung;
     this.nutzungsdauer = nutzungsdauer;
     this.anschaffung = anschaffung;
     this.afaart = afaart;
-    this.text_afaart = null;
     this.kosten = kosten;
     this.startwert = startwert;
     this.abschreibung = abschreibung;
@@ -133,12 +123,10 @@ public class AnlagenlisteZeile implements GenericObject
     this.buchungsklasse = null;
     this.buchungsart = null;
     this.text_buchungsklasse = text;
-    this.text_buchungsart = null;
     this.bezeichnung = null;
     this.nutzungsdauer = null;
     this.anschaffung = null;
     this.afaart = null;
-    this.text_afaart = null;
     this.kosten = null;
     this.startwert = startwert;
     this.abschreibung = abschreibung;
@@ -152,7 +140,6 @@ public class AnlagenlisteZeile implements GenericObject
     this.buchungsklasse = null;
     this.buchungsart = null;
     this.text_buchungsklasse = text;
-    this.text_buchungsart = null;
     this.bezeichnung = null;
     this.nutzungsdauer = null;
     this.anschaffung = null;
@@ -169,6 +156,17 @@ public class AnlagenlisteZeile implements GenericObject
   @Override
   public Object getAttribute(String arg0) throws RemoteException
   {
+    if (arg0.equals("anlagenart"))
+    {
+      if (buchungsklasse == null && buchungsart == null && text_buchungsklasse != null)
+        return text_buchungsklasse;
+      else if (buchungsklasse != null)
+        return buchungsklasse.getBezeichnung();
+      else if (buchungsart != null)
+        return buchungsart.getBezeichnung();
+      else
+       return "";
+    }
     if (arg0.equals("buchungsklassenbezeichnung"))
     {
       if (buchungsklasse == null && text_buchungsklasse != null)
@@ -179,25 +177,11 @@ public class AnlagenlisteZeile implements GenericObject
     }
     else if (arg0.equals("buchungsartbezeichnung"))
     {
-      if (text_buchungsart != null)
-      {
-        return text_buchungsart;
-      }
-      else
-      {
-        return (buchungsart != null ? buchungsart.getBezeichnung() : "");
-      }
+      return (buchungsart != null ? buchungsart.getBezeichnung() : "");
     }
     else if (arg0.equals("afaartbezeichnung"))
     {
-      if (text_afaart != null)
-      {
-        return text_afaart;
-      }
-      else
-      {
-        return (afaart != null ? afaart.getBezeichnung() : "");
-      }
+      return (afaart != null ? afaart.getBezeichnung() : "");
     }
     else if (arg0.equals("bezeichnung"))
     {

@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import org.eclipse.swt.widgets.Composite;
 
@@ -76,24 +77,23 @@ public class AnlagenList extends TablePart implements Part
             return;
           }
         };
-        saldoList.addColumn("Anlagenklasse", "buchungsklassenbezeichnung",
-            null, false);
-        saldoList.addColumn("Anlagenart", "buchungsartbezeichnung");
+        saldoList.addColumn("Anlagenart", "anlagenart");
         saldoList.addColumn("Bezeichnung", "bezeichnung");
-        saldoList.addColumn("Nutzungsdauer", "nutzungsdauer");
+        saldoList.addColumn("Nutzungsdauer", "nutzungsdauer",
+            null, false, Column.ALIGN_RIGHT);
         saldoList.addColumn("Afa Art", "afaartbezeichnung");
         saldoList.addColumn("Anschaffung", "anschaffung",
             new DateFormatter(new JVDateFormatTTMMJJJJ()));
         saldoList.addColumn("Anschaffungskosten", "kosten",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
-        saldoList.addColumn("Buchwert 01. Jan.", "startwert",
+        saldoList.addColumn("Buchwert Start", "startwert",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
         saldoList.addColumn("Abschreibung", "abschreibung",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
-        saldoList.addColumn("Buchwert 31. Dez.", "endwert",
+        saldoList.addColumn("Buchwert Ende", "endwert",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
         saldoList.setRememberColWidths(true);
@@ -216,11 +216,14 @@ public class AnlagenList extends TablePart implements Part
               suBukStartwert += startwert;
           }
           
+          Calendar cal = Calendar.getInstance();
+          cal.setTime(datumbis);
+          cal.add(Calendar.DATE, 1);
           anfangsbestandIt = service.createList(Anfangsbestand.class);
           anfangsbestandIt.addFilter("konto = ?",
               new Object[] { konto.getID() });
-          anfangsbestandIt.addFilter("datum >= ?",
-              new Object[] { new java.sql.Date(datumbis.getTime()) });
+          anfangsbestandIt.addFilter("datum = ?",
+              new Object[] { new java.sql.Date(cal.getTimeInMillis()) });
           anfangsbestandIt.setOrder("ORDER BY datum");
           endwert = null;
           if (anfangsbestandIt.hasNext() )

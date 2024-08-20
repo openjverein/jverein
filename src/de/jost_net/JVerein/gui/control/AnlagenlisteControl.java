@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.parts.AnlagenList;
 import de.jost_net.JVerein.io.AnlagenlisteZeile;
+import de.jost_net.JVerein.io.AnlagenverzeichnisCSV;
 import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
 //import de.jost_net.JVerein.io.AnlagenlisteCSV;
 //import de.jost_net.JVerein.io.AnlagenlistePDF;
@@ -182,9 +183,9 @@ public class AnlagenlisteControl extends SaldoControl
       {
         try
         {
-          /*if (type.equals(AuswertungCSV))
-            new AnlagenlisteCSV(zeile, file, datumvon, datumbis);
-          else */if (type.equals(AuswertungPDF))
+          if (type.equals(AuswertungCSV))
+            new AnlagenverzeichnisCSV(zeile, file, datumvon, datumbis);
+          else if (type.equals(AuswertungPDF))
             new AnlagenverzeichnisPDF(zeile, file, datumvon, datumbis);
           GUI.getCurrentView().reload();
         }
