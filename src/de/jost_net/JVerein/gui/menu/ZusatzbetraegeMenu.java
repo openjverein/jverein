@@ -46,7 +46,7 @@ public class ZusatzbetraegeMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Erneut ausführen",
         new ZusatzbetraegeResetAction(table), "view-refresh.png"));
-    addItem(new CheckedContextMenuItem("Löschen...",
+    addItem(new CheckedContextMenuItem("Löschen",
         new ZusatzbetraegeDeleteAction(), "user-trash-full.png"));
   }
 }

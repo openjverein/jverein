@@ -48,14 +48,14 @@ public class AbrechnungslaufMenu extends ContextMenu
         "calculator.png"));
     addItem(new AbgeschlossenDisabledItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));
-    addItem(new AbgeschlossenDisabledItem("Löschen...",
+    addItem(new AbgeschlossenDisabledItem("Löschen",
         new AbrechnungslaufDeleteAction(), "user-trash-full.png"));
     try
     {
       if (Einstellungen.getEinstellung().getAbrlAbschliessen())
       {
         addItem(ContextMenuItem.SEPARATOR);
-        addItem(new AbgeschlossenDisabledItem("Abschließen...",
+        addItem(new AbgeschlossenDisabledItem("Abschließen",
             new AbrechnungslaufAbschliessenAction(), "lock.png"));
       }
     }

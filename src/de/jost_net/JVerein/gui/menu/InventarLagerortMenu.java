@@ -31,7 +31,7 @@ public class InventarLagerortMenu extends ContextMenu
    */
   public InventarLagerortMenu()
   {
-    addItem(new CheckedContextMenuItem("Löschen...",
+    addItem(new CheckedContextMenuItem("Löschen",
         new InventarLagerortDeleteAction(), "user-trash-full.png"));
   }
 }
