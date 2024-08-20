@@ -124,7 +124,6 @@ public class SplitbuchungsContainer
 
   public static void add(Buchung b) throws RemoteException, ApplicationException
   {
-    b.plausi();
     b.setSpeicherung(false);
     if (!splitbuchungen.contains(b))
     {

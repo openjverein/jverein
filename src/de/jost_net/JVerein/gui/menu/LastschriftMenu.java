@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.LastschriftDeleteAction;
+import de.jost_net.JVerein.gui.action.PreNotificationAction;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
@@ -31,6 +32,8 @@ public class LastschriftMenu extends ContextMenu
    */
   public LastschriftMenu()
   {
+    addItem(new CheckedContextMenuItem("Pre-Notification",
+        new PreNotificationAction(), "document-new.png"));
     addItem(new CheckedContextMenuItem("Löschen...", new LastschriftDeleteAction(),
         "user-trash-full.png"));
   }

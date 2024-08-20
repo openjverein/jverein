@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.view.PreNotificationView;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.Lastschrift;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -27,14 +28,14 @@ public class PreNotificationAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null)
+    if (context != null && (context instanceof Abrechnungslauf ||
+        context instanceof Lastschrift || context instanceof Lastschrift[]))
     {
-      throw new ApplicationException("Keinen Abrechnunglauf ausgewählt!");
+      GUI.startView(PreNotificationView.class.getName(), context);
     }
-    if (!(context instanceof Abrechnungslauf))
+    else
     {
-      throw new ApplicationException("Programmfehler! Kein Abrechnunglauf!");
+      GUI.startView(PreNotificationView.class.getName(), null);
     }
-    GUI.startView(PreNotificationView.class.getName(), context);
   }
 }

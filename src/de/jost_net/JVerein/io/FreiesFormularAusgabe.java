@@ -57,7 +57,7 @@ public class FreiesFormularAusgabe
         file = getDateiAuswahl("pdf", formular.getBezeichnung());
         formularaufbereitung = new FormularAufbereitung(file);
         break;
-      case EMAIL:
+      case MAIL:
         file = getDateiAuswahl("zip", formular.getBezeichnung());
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
@@ -88,7 +88,7 @@ public class FreiesFormularAusgabe
         case DRUCK:
           aufbereitenFormular(m, formularaufbereitung, formular);
           break;
-        case EMAIL:
+        case MAIL:
           if (m.getEmail() == null || m.getEmail().isEmpty())
           {
             continue;
@@ -115,7 +115,7 @@ public class FreiesFormularAusgabe
       case DRUCK:
         formularaufbereitung.showFormular();
         break;
-      case EMAIL:
+      case MAIL:
         zos.close();
         new ZipMailer(file, (String) control.getBetreff().getValue(),
             (String) control.getTxt().getValue(),

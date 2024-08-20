@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeSet;
@@ -36,7 +37,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.VarTools;
-import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.io.Ct1Ueberweisung;
 import de.jost_net.JVerein.io.FormularAufbereitung;
 import de.jost_net.JVerein.io.MailSender;
@@ -53,13 +53,11 @@ import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.system.Application;
@@ -67,39 +65,12 @@ import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class PreNotificationControl extends AbstractControl
+public class PreNotificationControl extends DruckMailControl
 {
 
-  private Settings settings = null;
-
   private TabFolder folder = null;
-
-  private SelectInput output = null;
-
-  private TextInput mailsubject = null;
-
-  private TextAreaInput mailbody = null;
-
-  public static final String EMAIL = "EMail";
-
-  public static final String PDF1 = "PDF (Lastschriften ohne Mailadresse)";
-
-  public static final String PDF2 = "PDF (Alle)";
-
-  private SelectInput pdfModus = null;
-
-  public static final String NICHT_EINZELN = "Eine PDF-Datei";
-
-  public static final String EINZELN_NUMMERIERT = "Einzelne PDF-Dateien, nummeriert";
-
-  public static final String EINZELN_MITGLIEDSNUMMER = "Einzelne PDF-Dateien, mit Mitgliedsnummer";
-
-  public static final String EINZELN_NUMMERIERT_UND_MNR = "Einzelne PDF-Dateien, nummeriert mit Mitgliedsnummer";
-
-  private FormularInput formular = null;
 
   private FormularAufbereitung fa;
 
@@ -123,68 +94,8 @@ public class PreNotificationControl extends AbstractControl
       return folder;
     }
     folder = new TabFolder(parent, SWT.NONE);
-    folder.setSelection(settings.getInt("tab.selection", 0));
+    folder.setSelection(settings.getInt(settingsprefix + "tab.selection", 0));
     return folder;
-  }
-
-  public SelectInput getPdfModus()
-  {
-    if (pdfModus != null)
-    {
-      return pdfModus;
-    }
-    Object[] values = new Object[] { NICHT_EINZELN, EINZELN_NUMMERIERT,
-        EINZELN_MITGLIEDSNUMMER, EINZELN_NUMMERIERT_UND_MNR };
-    pdfModus = new SelectInput(values,
-        settings.getString("pdfModus", NICHT_EINZELN));
-    pdfModus.setName("PDF als");
-    return pdfModus;
-  }
-
-  public SelectInput getOutput()
-  {
-    if (output != null)
-    {
-      return output;
-    }
-    Object[] values = new Object[] { EMAIL, PDF1, PDF2 };
-    output = new SelectInput(values, settings.getString("output", PDF1));
-    output.setName("Ausgabe");
-    return output;
-  }
-
-  public FormularInput getFormular(FormularArt formulartyp)
-      throws RemoteException
-  {
-    if (formular != null)
-    {
-      return formular;
-    }
-    formular = new FormularInput(formulartyp);
-    return formular;
-  }
-
-  public TextInput getMailSubject()
-  {
-    if (mailsubject != null)
-    {
-      return mailsubject;
-    }
-    mailsubject = new TextInput(settings.getString("mail.subject", ""), 100);
-    mailsubject.setName("Betreff");
-    return mailsubject;
-
-  }
-
-  public TextAreaInput getMailBody() throws RemoteException
-  {
-    if (mailbody != null)
-    {
-      return mailbody;
-    }
-    mailbody = new TextAreaInput(settings.getString("mail.body", ""), 10000);
-    mailbody.setName("Text");
-    return mailbody;
   }
 
   public DateInput getAusfuehrungsdatum()
@@ -205,7 +116,8 @@ public class PreNotificationControl extends AbstractControl
       return ct1ausgabe;
     }
     Ct1Ausgabe aus = Ct1Ausgabe.getByKey(
-        settings.getInt("ct1ausgabe", Ct1Ausgabe.SEPA_DATEI.getKey()));
+        settings.getInt(settingsprefix + "ct1ausgabe", 
+            Ct1Ausgabe.SEPA_DATEI.getKey()));
     if (aus != Ct1Ausgabe.SEPA_DATEI
         && aus != Ct1Ausgabe.HIBISCUS)
     {
@@ -238,27 +150,39 @@ public class PreNotificationControl extends AbstractControl
       {
         try
         {
+          saveDruckMailSettings();
+          Object object = currentObject;
+          if (object == null)
+          {
+            if (abrechnungslaufausw != null && abrechnungslaufausw.getValue() != null)
+            {
+              object = abrechnungslaufausw.getValue();
+            }
+            else
+            {
+              GUI.getStatusBar().setErrorText(
+                  "Kein Abrechnungslauf oder keine Lastschrift ausgewählt");
+              return;
+            }
+          }
           String val = (String) getOutput().getValue();
           String pdfMode = (String) getPdfModus().getValue();
 
-          settings.setAttribute("output", val);
-          settings.setAttribute("pdfModus", pdfMode);
-          settings.setAttribute("mail.subject",
-              (String) mailsubject.getValue());
-          settings.setAttribute("mail.body", (String) mailbody.getValue());
-          settings.setAttribute("tab.selection", folder.getSelectionIndex());
+          settings.setAttribute(settingsprefix + "tab.selection", 
+              folder.getSelectionIndex());
+          saveDruckMailSettings();
 
           if (val.equals(PDF1))
           {
-            generierePDF(currentObject, false, pdfMode);
+            generierePDF(object, false, pdfMode);
           }
           if (val.equals(PDF2))
           {
-            generierePDF(currentObject, true, pdfMode);
+            generierePDF(object, true, pdfMode);
           }
           if (val.equals(EMAIL))
           {
-            generiereEMail(currentObject);
+            generiereEMail(object);
           }
         }
         catch (Exception e)
@@ -281,20 +205,36 @@ public class PreNotificationControl extends AbstractControl
       {
         try
         {
+          saveDruckMailSettings();
+          Object object = currentObject;
+          if (object == null)
+          {
+            if (abrechnungslaufausw != null && abrechnungslaufausw.getValue() != null)
+            {
+              object = abrechnungslaufausw.getValue();
+            }
+            else
+            {
+              GUI.getStatusBar().setErrorText(
+                  "Kein Abrechnungslauf oder keine Lastschrift ausgewählt");
+              return;
+            }
+          }
           Ct1Ausgabe aa = (Ct1Ausgabe) ct1ausgabe.getValue();
-          settings.setAttribute("ct1ausgabe", aa.getKey());
+          settings.setAttribute(settingsprefix + "ct1ausgabe", aa.getKey());
           if (ausfuehrungsdatum.getValue() == null)
           {
             GUI.getStatusBar().setErrorText("Ausführungsdatum fehlt");
             return;
           }
           Date d = (Date) ausfuehrungsdatum.getValue();
-          settings.setAttribute("faelligkeitsdatum",
+          settings.setAttribute(settingsprefix + "faelligkeitsdatum",
               new JVDateFormatDATETIME().format(d));
-          settings.setAttribute("verwendungszweck",
+          settings.setAttribute(settingsprefix + "verwendungszweck",
               (String) getVerwendungszweck().getValue());
-          settings.setAttribute("tab.selection", folder.getSelectionIndex());
-          generiere1ct(currentObject);
+          settings.setAttribute(settingsprefix + "tab.selection", 
+              folder.getSelectionIndex());
+          generiere1ct(object);
         }
         catch (OperationCanceledException oce)
         {
@@ -313,6 +253,89 @@ public class PreNotificationControl extends AbstractControl
   private void generierePDF(Object currentObject, boolean mitMail,
       String pdfMode) throws IOException
   {
+    ArrayList<Lastschrift> lastschriften = new ArrayList<>();
+    if (currentObject instanceof Abrechnungslauf)
+    {
+      Abrechnungslauf abrl = (Abrechnungslauf) currentObject;
+      DBIterator<Lastschrift> it = Einstellungen.getDBService()
+          .createList(Lastschrift.class);
+      it.addFilter("abrechnungslauf = ?", abrl.getID());
+      if (!mitMail)
+      {
+        it.addFilter("(email is null or length(email)=0)");
+      }
+      it.setOrder("order by name, vorname");
+      while (it.hasNext())
+      {
+        lastschriften.add((Lastschrift) it.next());
+      }
+      
+      if (lastschriften.size() == 0 && !mitMail)
+      {
+        GUI.getStatusBar().setErrorText(
+            "Der Abrechnungslauf hat keine Lastschriften ohne Mailadresse");
+        return;
+      }
+      if (lastschriften.size() == 0)
+      {
+        GUI.getStatusBar().setErrorText(
+            "Der Abrechnungslauf hat keine Lastschriften");
+        return;
+      }
+    }
+    else if (currentObject instanceof Lastschrift)
+    {
+      Lastschrift lastschrift = (Lastschrift) currentObject;
+      Abrechnungslauf abrl = (Abrechnungslauf) lastschrift.getAbrechnungslauf();
+      if (abrl.getAbgeschlossen())
+      {
+        GUI.getStatusBar().setErrorText(
+            "Die ausgewählte Lastschrift ist bereits abgeschlossen");
+        return;
+      }
+      if (!mitMail && lastschrift.getEmail() != null && !lastschrift.getEmail().isEmpty())
+      {
+        GUI.getStatusBar().setErrorText(
+            "Die ausgewählte Lastschrift hat eine Mail Adresse");
+        return;
+      }
+      else
+      {
+        lastschriften.add(lastschrift);
+      }
+    }
+    else if (currentObject instanceof Lastschrift[])
+    {
+      Lastschrift[] lastschriftarray = (Lastschrift[]) currentObject;
+      for (Lastschrift lastschrift : lastschriftarray)
+      {
+        Abrechnungslauf abrl = (Abrechnungslauf) lastschrift.getAbrechnungslauf();
+        if (abrl.getAbgeschlossen())
+        {
+          GUI.getStatusBar().setErrorText(
+              "Die ausgewählte Lastschrift mit der Nr " + lastschrift.getID() 
+              + " ist bereits abgeschlossen");
+          return;
+        }
+        if (!(!mitMail && lastschrift.getEmail() != null && !lastschrift.getEmail().isEmpty()))
+        {
+          lastschriften.add(lastschrift);
+        }
+      }
+      if (lastschriften.size() == 0)
+      {
+        GUI.getStatusBar().setErrorText(
+            "Alle ausgewählten Lastschriften haben eine Mail Adresse");
+        return;
+      }
+    }
+    else
+    {
+      GUI.getStatusBar().setErrorText(
+          "Kein Abrechnungslauf oder keine Lastschrift ausgewählt");
+      return;
+    }
+    
     boolean einzelnePdfs = false;
     if (pdfMode.equals(EINZELN_NUMMERIERT)
         || pdfMode.equals(EINZELN_MITGLIEDSNUMMER)
@@ -321,7 +344,6 @@ public class PreNotificationControl extends AbstractControl
       einzelnePdfs = true;
     }
 
-    Abrechnungslauf abrl = (Abrechnungslauf) currentObject;
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
     String path = settings.getString("lastdir",
@@ -357,23 +379,13 @@ public class PreNotificationControl extends AbstractControl
     {
       fa = new FormularAufbereitung(file);
     }
-    DBIterator<Lastschrift> it = Einstellungen.getDBService()
-        .createList(Lastschrift.class);
-    it.addFilter("abrechnungslauf = ?", abrl.getID());
-    if (!mitMail)
-    {
-      it.addFilter("(email is null or length(email)=0)");
-    }
-    it.setOrder("order by name, vorname");
-
+    
     int dateinummer = 0;
     String postfix = ".pdf";
     String prefix = s.substring(0, s.length() - postfix.length());
 
-    while (it.hasNext())
+    for (Lastschrift ls : lastschriften)
     {
-      Lastschrift ls = (Lastschrift) it.next();
-
       if (einzelnePdfs)
       {
         // schalte Dateinamen um
@@ -410,10 +422,64 @@ public class PreNotificationControl extends AbstractControl
 
   private void generiere1ct(Object currentObject) throws Exception
   {
-    Abrechnungslauf abrl = (Abrechnungslauf) currentObject;
+    ArrayList<Lastschrift> lastschriften = new ArrayList<>();
+    if (currentObject instanceof Abrechnungslauf)
+    {
+      Abrechnungslauf abrl = (Abrechnungslauf) currentObject;
+      DBIterator<Lastschrift> it = Einstellungen.getDBService()
+          .createList(Lastschrift.class);
+      it.addFilter("abrechnungslauf = ?", abrl.getID());
+      it.setOrder("order by name, vorname");
+      while (it.hasNext())
+      {
+        lastschriften.add((Lastschrift) it.next());
+      }
+      if (lastschriften.size() == 0)
+      {
+        GUI.getStatusBar().setErrorText(
+            "Der Abrechnungslauf hat keine Lastschriften");
+        return;
+      }
+    }
+    else if (currentObject instanceof Lastschrift)
+    {
+      Lastschrift lastschrift = (Lastschrift) currentObject;
+      Abrechnungslauf abrl = (Abrechnungslauf) lastschrift.getAbrechnungslauf();
+      if (abrl.getAbgeschlossen())
+      {
+        GUI.getStatusBar().setErrorText(
+            "Die ausgewählte Lastschrift ist bereits abgeschlossen");
+        return;
+      }
+      lastschriften.add((Lastschrift) currentObject);
+    }
+    else if (currentObject instanceof Lastschrift[])
+    {
+      Lastschrift[] lastschriftarray = (Lastschrift[]) currentObject;
+      for (Lastschrift lastschrift : lastschriftarray)
+      {
+        Abrechnungslauf abrl = (Abrechnungslauf) lastschrift.getAbrechnungslauf();
+        if (abrl.getAbgeschlossen())
+        {
+          GUI.getStatusBar().setErrorText(
+              "Die ausgewählte Lastschrift mit der Nr " + lastschrift.getID() 
+              + " ist bereits abgeschlossen");
+          return;
+        }
+        lastschriften.add(lastschrift);
+      }
+    }
+    else
+    {
+      GUI.getStatusBar().setErrorText(
+          "Kein Abrechnungslauf oder keine Lastschrift ausgewählt");
+      return;
+    }
+
     File file = null;
     Ct1Ausgabe aa = Ct1Ausgabe.getByKey(
-        settings.getInt("ct1ausgabe", Ct1Ausgabe.SEPA_DATEI.getKey()));
+        settings.getInt(settingsprefix + "ct1ausgabe", 
+            Ct1Ausgabe.SEPA_DATEI.getKey()));
     if (aa == Ct1Ausgabe.SEPA_DATEI)
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
@@ -433,7 +499,7 @@ public class PreNotificationControl extends AbstractControl
       {
         return;
       }
-      settings.setAttribute("ausgabedateiname", s);
+      settings.setAttribute(settingsprefix + "ausgabedateiname", s);
       if (!s.toLowerCase().endsWith(".xml"))
       {
         s = s + ".xml";
@@ -441,28 +507,95 @@ public class PreNotificationControl extends AbstractControl
       file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
     }
-    String faelligkeitsdatum = settings.getString("faelligkeitsdatum", null);
+    String faelligkeitsdatum = settings.getString(settingsprefix + "faelligkeitsdatum", null);
     Date faell = Datum.toDate(faelligkeitsdatum);
     Ct1Ausgabe ct1ausgabe = Ct1Ausgabe.getByKey(
-        settings.getInt("ct1ausgabe", Ct1Ausgabe.SEPA_DATEI.getKey()));
-    String verwendungszweck = settings.getString("verwendungszweck", "");
+        settings.getInt(settingsprefix + "ct1ausgabe", Ct1Ausgabe.SEPA_DATEI.getKey()));
+    String verwendungszweck = settings.getString(settingsprefix + "verwendungszweck", "");
     Ct1Ueberweisung ct1ueberweisung = new Ct1Ueberweisung();
-    int anzahl = ct1ueberweisung.write(abrl, file, faell, ct1ausgabe,
+    int anzahl = ct1ueberweisung.write(lastschriften, file, faell, ct1ausgabe,
         verwendungszweck);
     GUI.getStatusBar().setSuccessText("Anzahl Überweisungen: " + anzahl);
   }
 
   private void generiereEMail(Object currentObject) throws IOException
   {
-    Abrechnungslauf abrl = (Abrechnungslauf) currentObject;
-    DBIterator<Lastschrift> it = Einstellungen.getDBService()
-        .createList(Lastschrift.class);
-    it.addFilter("abrechnungslauf = ?", abrl.getID());
-    it.addFilter("email is not null and length(email) > 0");
-    it.setOrder("order by name, vorname");
-    String betr = (String) getMailSubject().getValue();
-    String text = (String) getMailBody().getValue();
-    sendeMail(it, betr, text);
+    ArrayList<Lastschrift> lastschriften = new ArrayList<>();
+    if (currentObject instanceof Abrechnungslauf)
+    {
+      Abrechnungslauf abrl = (Abrechnungslauf) currentObject;
+      DBIterator<Lastschrift> it = Einstellungen.getDBService()
+          .createList(Lastschrift.class);
+      it.addFilter("abrechnungslauf = ?", abrl.getID());
+      it.addFilter("email is not null and length(email) > 0");
+      it.setOrder("order by name, vorname");
+      while (it.hasNext())
+      {
+        lastschriften.add((Lastschrift) it.next());
+      }
+      if (lastschriften.size() == 0)
+      {
+        GUI.getStatusBar().setErrorText(
+            "Der Abrechnungslauf hat keine Lastschriften mit Mail Adresse");
+        return;
+      }
+    }
+    else if (currentObject instanceof Lastschrift)
+    {
+      Lastschrift lastschrift = (Lastschrift) currentObject;
+      Abrechnungslauf abrl = (Abrechnungslauf) lastschrift.getAbrechnungslauf();
+      if (abrl.getAbgeschlossen())
+      {
+        GUI.getStatusBar().setErrorText(
+            "Die ausgewählte Lastschrift ist bereits abgeschlossen");
+        return;
+      }
+      if (lastschrift.getEmail() != null && !lastschrift.getEmail().isEmpty())
+      {
+        lastschriften.add(lastschrift);
+      }
+      else
+      {
+        GUI.getStatusBar().setErrorText(
+            "Die ausgewählte Lastschrift hat keine Mail Adresse");
+        return;
+      }
+    }
+    else if (currentObject instanceof Lastschrift[])
+    {
+      Lastschrift[] lastschriftarray = (Lastschrift[]) currentObject;
+      for (Lastschrift lastschrift : lastschriftarray)
+      {
+        Abrechnungslauf abrl = (Abrechnungslauf) lastschrift.getAbrechnungslauf();
+        if (abrl.getAbgeschlossen())
+        {
+          GUI.getStatusBar().setErrorText(
+              "Die ausgewählte Lastschrift mit der Nr " + lastschrift.getID() 
+              + " ist bereits abgeschlossen");
+          return;
+        }
+        if (lastschrift.getEmail() != null && !lastschrift.getEmail().isEmpty())
+        {
+          lastschriften.add(lastschrift);
+        }
+      }
+      if (lastschriften.size() == 0)
+      {
+        GUI.getStatusBar().setErrorText(
+            "Keine der ausgewählten Lastschriften hat eine Mail Adresse");
+        return;
+      }
+    }
+    else
+    {
+      GUI.getStatusBar().setErrorText(
+          "Kein Abrechnungslauf oder keine Lastschrift ausgewählt");
+      return;
+    }
+
+    String betr = (String) getBetreff().getValue();
+    String text = (String) getTxt().getValue();
+    sendeMail(lastschriften, betr, text);
   }
 
   private void aufbereitenFormular(Lastschrift ls, Formular fo)
@@ -473,7 +606,7 @@ public class PreNotificationControl extends AbstractControl
     fa.writeForm(fo, map);
   }
 
-  private void sendeMail(final DBIterator<Lastschrift> it, final String betr,
+  private void sendeMail(final ArrayList<Lastschrift> lastschriften, final String betr,
       final String txt) throws RemoteException
   {
 
@@ -505,10 +638,9 @@ public class PreNotificationControl extends AbstractControl
           monitor.setPercentComplete(0);
           int sentCount = 0;
           int zae = 0;
-          int size = it.size();
-          while (it.hasNext())
+          int size = lastschriften.size();
+          for (Lastschrift ls : lastschriften)
           {
-            Lastschrift ls = (Lastschrift) it.next();
             VelocityContext context = new VelocityContext();
             context.put("dateformat", new JVDateFormatTTMMJJJJ());
             context.put("decimalformat", Einstellungen.DECIMALFORMAT);
@@ -566,12 +698,6 @@ public class PreNotificationControl extends AbstractControl
               String.format("Anzahl verschickter Mails: %d", sentCount));
           GUI.getStatusBar().setSuccessText(
               "Mail" + (sentCount > 1 ? "s" : "") + " verschickt");
-          GUI.getCurrentView().reload();
-        }
-        catch (ApplicationException ae)
-        {
-          Logger.error("", ae);
-          monitor.log(ae.getMessage());
         }
         catch (Exception re)
         {

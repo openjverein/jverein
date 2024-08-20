@@ -71,7 +71,6 @@ import de.jost_net.OBanToo.SEPA.Basislastschrift.MandatSequence;
 import de.jost_net.OBanToo.SEPA.Basislastschrift.Zahler;
 import de.jost_net.OBanToo.StringLatin.Zeichen;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.internal.action.Program;
 import de.willuhn.jameica.hbci.HBCIProperties;
@@ -413,7 +412,7 @@ public class AbrechnungSEPA
     if (primaer)
     {
       if (Einstellungen.getEinstellung().getIndividuelleBeitraege()
-          && m.getIndividuellerBeitrag() > 0)
+          && m.getIndividuellerBeitrag() != null)
       {
         betr = m.getIndividuellerBeitrag();
       }

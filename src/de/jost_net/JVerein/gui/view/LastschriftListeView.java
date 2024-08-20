@@ -46,6 +46,7 @@ public class LastschriftListeView extends AbstractView
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Fälligkeit von", control.getDatumvon());
     right.addLabelPair("Fälligkeit bis", control.getDatumbis());
+    right.addLabelPair("Abrechnungslauf ab", control.getIntegerAusw());
     
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());

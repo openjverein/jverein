@@ -123,7 +123,7 @@ public class Kontoauszug
         rpt.close();
         zeigeDokument();
         break;
-      case EMAIL:
+      case MAIL:
         init("zip");
         if (file == null)
         {

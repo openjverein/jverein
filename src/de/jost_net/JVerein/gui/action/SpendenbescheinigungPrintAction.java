@@ -30,6 +30,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
@@ -951,123 +952,144 @@ public class SpendenbescheinigungPrintAction implements Action
 
     Map<String, Object> map = spb.getMap(null);
     map = new AllgemeineMap().getMap(map);
-
     boolean isSammelbestaetigung = spb.isSammelbestaetigung();
-
     Reporter rpt = new Reporter(fos, 80, 50, 50, 50);
-    rpt.addHeaderColumn(
-        "Aussteller (Bezeichnung und Anschrift der steuerbegünstigten Einrichtung)",
-        Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
-
+    
+    // Aussteller, kein Header
+    rpt.addHeaderColumn("", Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
     rpt.createHeader();
-
-    rpt.addColumn("\n" + getAussteller() + "\n ", Element.ALIGN_LEFT);
+    rpt.addColumn("Aussteller (Bezeichnung und Anschrift der steuerbegünstigten Einrichtung)"
+        + "\n\n" + getAussteller() + "\n ", Element.ALIGN_LEFT);
     rpt.closeTable();
 
+    rpt.add(new Paragraph(" ", Reporter.getFreeSans(4)));
     if (isSammelbestaetigung)
     {
       rpt.add("Sammelbestätigung über "
-          + map.get(SpendenbescheinigungVar.SPENDEART.getName()), 10);
+          + map.get(SpendenbescheinigungVar.SPENDEART.getName()), 9);
     }
     else
     {
       rpt.add("Bestätigung über "
-          + map.get(SpendenbescheinigungVar.SPENDEART.getName()), 10);
+          + map.get(SpendenbescheinigungVar.SPENDEART.getName()), 9);
     }
-
     rpt.addLight(
-        "im Sinne des § 10b des Einkommenssteuergesetzes an eine der in § 5 Abs. 1 Nr. 9 des Körperschaftssteuergesetzes "
-            + "bezeichneten Körperschaften, Personenvereinigungen oder Vermögensmassen\n",
-        9);
-
-    rpt.addHeaderColumn("Name und Anschrift des Zuwendenden",
-        Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
+        "im Sinne des § 10b des Einkommenssteuergesetzes an eine der in § 5 Abs. 1 Nr. 9 des "
+            + "Körperschaftssteuergesetzes bezeichneten Körperschaften, Personenvereinigungen "
+            + "oder Vermögensmassen\n",  8);
+    
+    // Name und Anschrift, kein Header
+    rpt.addHeaderColumn("", Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
     rpt.createHeader();
-    rpt.addColumn(
+    rpt.addColumn("Name und Anschrift des Zuwendenden\n\n" +
         (String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()),
         Element.ALIGN_LEFT);
     rpt.closeTable();
 
-    switch (spb.getSpendenart())
-    {
-      case Spendenart.GELDSPENDE:
-        rpt.addHeaderColumn("Betrag der Zuwendung -in Ziffern-",
-            Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
-        break;
-      case Spendenart.SACHSPENDE:
-        rpt.addHeaderColumn("Wert der Zuwendung -in Ziffern-",
-            Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
-        break;
-    }
-    rpt.addHeaderColumn("-in Buchstaben-", Element.ALIGN_CENTER, 250,
-        BaseColor.LIGHT_GRAY);
+    // Betrag und Tag der Zuwendeung, kein Header
+    rpt.addHeaderColumn("", Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
+    rpt.addHeaderColumn("", Element.ALIGN_CENTER, 150, BaseColor.LIGHT_GRAY);
     if (!isSammelbestaetigung)
     {
-      rpt.addHeaderColumn("Tag der Zuwendung", Element.ALIGN_CENTER, 50,
-          BaseColor.LIGHT_GRAY);
+      rpt.addHeaderColumn("", Element.ALIGN_CENTER, 50, BaseColor.LIGHT_GRAY);
     }
     else
     {
-      rpt.addHeaderColumn("Zeitraum der Sammelbestätigung",
-          Element.ALIGN_CENTER, 75, BaseColor.LIGHT_GRAY);
+      rpt.addHeaderColumn("", Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
     }
     rpt.createHeader();
-    rpt.addColumn(
-        "*" + Einstellungen.DECIMALFORMAT
-            .format(map.get(SpendenbescheinigungVar.BETRAG.getName())) + "*",
-        Element.ALIGN_CENTER);
-    rpt.addColumn(
+    if (spb.getSpendenart() == Spendenart.SACHSPENDE)
+    {
+      rpt.addColumn("Wert der Zuwendung -in Ziffern-\n" +
+          "-" + Einstellungen.DECIMALFORMAT
+          .format(map.get(SpendenbescheinigungVar.BETRAG.getName())) + "-",
+          Element.ALIGN_CENTER);
+    }
+    else
+    {
+      rpt.addColumn("Betrag der Zuwendung -in Ziffern-\n" +
+          "-" + Einstellungen.DECIMALFORMAT
+          .format(map.get(SpendenbescheinigungVar.BETRAG.getName())) + "-",
+          Element.ALIGN_CENTER);
+    }
+    rpt.addColumn("-in Buchstaben-\n" +
         (String) map.get(SpendenbescheinigungVar.BETRAGINWORTEN.getName()),
         Element.ALIGN_CENTER);
     if (!isSammelbestaetigung)
     {
-      rpt.addColumn(
+      rpt.addColumn("Tag der Zuwendung\n" +
           (String) map.get(SpendenbescheinigungVar.SPENDEDATUM.getName()),
-          Element.ALIGN_CENTER);
+          Element.ALIGN_LEFT);
     }
     else
     {
-      rpt.addColumn(
+      rpt.addColumn("Zeitraum der Sammelbestätigung\n" +
           (String) map.get(SpendenbescheinigungVar.SPENDENZEITRAUM.getName()),
-          Element.ALIGN_CENTER);
+          Element.ALIGN_LEFT);
     }
     rpt.closeTable();
 
-    switch (spb.getSpendenart())
+    if (spb.getSpendenart() == Spendenart.SACHSPENDE)
     {
-      case Spendenart.SACHSPENDE:
-        rpt.addHeaderColumn(
-            "Genaue Bezeichnung der Sachzuwendung mit Alter, Zustand, Kaufpreis usw.",
-            Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
-        rpt.createHeader();
-        rpt.addColumn(spb.getBezeichnungSachzuwendung(), Element.ALIGN_LEFT);
-        rpt.closeTable();
-        switch (spb.getHerkunftSpende())
-        {
-          case HerkunftSpende.BETRIEBSVERMOEGEN:
-            rpt.addLight(
-                "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Betriebsvermögen. "
-                    + "Die Zuwendung wurde mit dem Wert der Entnahme (ggf. mit dem niedrigeren gemeinen "
-                    + "Wert) und nach der Umsatzsteuer, die auf die Entnahme entfällt, bewertet.\n\n",
-                9);
-            break;
-          case HerkunftSpende.PRIVATVERMOEGEN:
-            rpt.addLight(
-                "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Privatvermögen.\n\n",
-                9);
-            break;
-          case HerkunftSpende.KEINEANGABEN:
-            rpt.addLight(
-                "Der Zuwendende hat trotz Aufforderung keine Angaben zur Herkunft der Sachzuwendung gemacht.\n\n",
-                9);
-            break;
-        }
-        if (spb.getUnterlagenWertermittlung())
-        {
-          rpt.addLight(
-              "Geeignete Unterlagen, die zur Wertermittlung gedient haben, z. B. Rechnung, Gutachten, liegen vor.\n\n",
-              9);
-        }
+      rpt.addHeaderColumn("", Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
+      rpt.createHeader();
+      rpt.addColumn("Genaue Bezeichnung der Sachzuwendung mit Alter, Zustand, Kaufpreis usw.\n\n"
+          + spb.getBezeichnungSachzuwendung(), Element.ALIGN_LEFT);
+      rpt.closeTable();
+
+      Paragraph p = new Paragraph();
+      p.setFont(Reporter.getFreeSans(8));
+      p.setAlignment(Element.ALIGN_JUSTIFIED);
+      p.setFirstLineIndent((float) -17.5);
+      p.setIndentationLeft((float) 17.5);
+      p.setMultipliedLeading(1.5f);
+      if (spb.getHerkunftSpende() == HerkunftSpende.BETRIEBSVERMOEGEN)
+        p.add(new Chunk((char) 53, FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8))); // X
+      else
+        p.add(new Chunk((char) 113, FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8))); // box leer
+      p.add("     Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Betriebsvermögen. "
+          + "Die Zuwendung wurde mit dem Wert der Entnahme (ggf. mit dem niedrigeren gemeinen "
+          + "Wert) und nach der Umsatzsteuer, die auf die Entnahme entfällt, bewertet.\n");
+      rpt.add(p);
+
+      p = new Paragraph();
+      p.setFont(Reporter.getFreeSans(8));
+      p.setAlignment(Element.ALIGN_JUSTIFIED);
+      p.setFirstLineIndent((float) -17.5);
+      p.setIndentationLeft((float) 17.5);
+      p.setMultipliedLeading(1.5f);
+      if (spb.getHerkunftSpende() == HerkunftSpende.PRIVATVERMOEGEN)
+        p.add(new Chunk((char) 53, FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8))); // X
+      else
+        p.add(new Chunk((char) 113, FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8))); // box leer
+      p.add("     Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Privatvermögen.\n");
+      rpt.add(p);
+
+      p = new Paragraph();
+      p.setFont(Reporter.getFreeSans(8));
+      p.setAlignment(Element.ALIGN_JUSTIFIED);
+      p.setFirstLineIndent((float) -17.5);
+      p.setIndentationLeft((float) 17.5);
+      p.setMultipliedLeading(1.5f);
+      if (spb.getHerkunftSpende() == HerkunftSpende.KEINEANGABEN)
+        p.add(new Chunk((char) 53, FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8))); // X
+      else
+        p.add(new Chunk((char) 113, FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8))); // box leer
+      p.add("     Der Zuwendende hat trotz Aufforderung keine Angaben zur Herkunft der Sachzuwendung gemacht.\n");
+      rpt.add(p);
+      
+      p = new Paragraph();
+      p.setFont(Reporter.getFreeSans(8));
+      p.setAlignment(Element.ALIGN_JUSTIFIED);
+      p.setFirstLineIndent((float) -17.5);
+      p.setIndentationLeft((float) 17.5);
+      p.setMultipliedLeading(1.5f);
+      if (spb.getUnterlagenWertermittlung())
+        p.add(new Chunk((char) 53, FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8))); // X
+      else
+        p.add(new Chunk((char) 113, FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8))); // box leer
+      p.add("     Geeignete Unterlagen, die zur Wertermittlung gedient haben, z. B. Rechnung, Gutachten, liegen vor.\n");
+      rpt.add(p);
     }
 
     /*
@@ -1080,7 +1102,7 @@ public class SpendenbescheinigungPrintAction implements Action
 
     if (spb.getAutocreate())
     {
-      if (!isSammelbestaetigung && spb.getSpendenart() == Spendenart.GELDSPENDE)
+      if (!isSammelbestaetigung && spb.getSpendenart() != Spendenart.SACHSPENDE)
       {
         if (spb.getBuchungen().get(0).getVerzicht().booleanValue())
         {
@@ -1098,30 +1120,50 @@ public class SpendenbescheinigungPrintAction implements Action
       }
     }
 
-    if (!isSammelbestaetigung)
+    if (!isSammelbestaetigung && spb.getSpendenart() != Spendenart.SACHSPENDE )
     {
       Paragraph p = new Paragraph();
       p.setFont(Reporter.getFreeSans(8));
       p.setAlignment(Element.ALIGN_LEFT);
       p.add(new Chunk(
-          "Es handelt sich um den Verzicht auf Erstattung von Aufwendungen: "));
-      p.add(new Chunk(" Ja ", Reporter.getFreeSansBold(9)));
+          "Es handelt sich um den Verzicht auf Erstattung von Aufwendungen "));
+      p.add(new Chunk(" Ja ", Reporter.getFreeSansBold(8)));
       p.add(new Chunk(verzichtJa,
-          FontFactory.getFont(FontFactory.ZAPFDINGBATS, 10)));
-      p.add(new Chunk("   Nein ", Reporter.getFreeSansBold(9)));
+          FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8)));
+      p.add(new Chunk("   Nein ", Reporter.getFreeSansBold(8)));
       p.add(new Chunk(verzichtNein,
-          FontFactory.getFont(FontFactory.ZAPFDINGBATS, 10)));
+          FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8)));
       p.add(new Chunk("\n\n"));
       rpt.add(p);
     }
     else
     {
-      rpt.add(new Paragraph(" ", Reporter.getFreeSans(12)));
+      rpt.add(new Paragraph(" ", Reporter.getFreeSans(8)));
     }
     if (Einstellungen.getEinstellung().getVorlaeufig())
     {
       // Verein neu gegründet, hat noch keinen Bescheid
-      String txt = "Die Einhaltung der satzungsgemäßen Voraussetzungen nach den §§ 51, 59, 60 und 61 "
+      String txt = "     Wir sind wegen "
+          + "Förderung (Angabe des begünstigten Zweck / der begünstigten Zwecke) ...............\n"
+          + "nach dem Freistellungsbescheid bzw. nach der Anlage zum Körperschaftssteuerbescheid "
+          + "des Finanzamtes ..........\n"
+          + ", StNr. .........."
+          + ", vom ..........."
+          + " für den letzten Veranlagungszeitraum ........"
+          + " nach § 5 Abs. 1 Nr. 9 des Körperschaftsteuergesetzes von der Körperschaftsteuer und nach "
+          + "§ 3 Nr. 6 des Gewerbesteuergesetzes von der Gewerbesteuer befreit.\n ";
+      Paragraph p = new Paragraph();
+      p = new Paragraph();
+      p.setFont(Reporter.getFreeSans(8));
+      p.setAlignment(Element.ALIGN_JUSTIFIED);
+      p.setFirstLineIndent((float) -17.5);
+      p.setIndentationLeft((float) 17.5);
+      p.setMultipliedLeading(1.5f);
+      p.add(new Chunk((char) 113, FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8))); // box leer
+      p.add(txt);
+      rpt.add(p);
+      
+      txt = "     Die Einhaltung der satzungsgemäßen Voraussetzungen nach den §§ 51, 59, 60 und 61 "
           + "AO wurde vom Finanzamt "
           + Einstellungen.getEinstellung().getFinanzamt() + ", StNr. "
           + Einstellungen.getEinstellung().getSteuernummer()
@@ -1129,13 +1171,21 @@ public class SpendenbescheinigungPrintAction implements Action
           + new JVDateFormatTTMMJJJJ()
               .format(Einstellungen.getEinstellung().getBescheiddatum())
           + " nach § 60a AO gesondert festgestellt. Wir fördern nach unserer Satzung "
-          + Einstellungen.getEinstellung().getBeguenstigterzweck();
-      rpt.addLight(txt, 8);
+          + Einstellungen.getEinstellung().getBeguenstigterzweck() + ".";
+      p = new Paragraph();
+      p.setFont(Reporter.getFreeSans(8));
+      p.setAlignment(Element.ALIGN_JUSTIFIED);
+      p.setFirstLineIndent((float) -17.5);
+      p.setIndentationLeft((float) 17.5);
+      p.setMultipliedLeading(1.5f);
+      p.add(new Chunk((char) 53, FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8))); // X
+      p.add(txt);
+      rpt.add(p);
     }
     else
     {
       // Verein existiert und hat einen Bescheid bekommen
-      String txt = "Wir sind wegen "
+      String txt = "     Wir sind wegen "
           + Einstellungen.getEinstellung().getBeguenstigterzweck()
           + " nach dem Freistellungsbescheid bzw. nach der Anlage zum Körperschaftssteuerbescheid "
           + "des Finanzamtes " + Einstellungen.getEinstellung().getFinanzamt()
@@ -1150,60 +1200,93 @@ public class SpendenbescheinigungPrintAction implements Action
           + new JVDateFormatJJJJ()
               .format(Einstellungen.getEinstellung().getVeranlagungBis())
           + " nach § 5 Abs. 1 Nr. 9 des Körperschaftsteuergesetzes von der Körperschaftsteuer und nach "
-          + "§ 3 Nr. 6 des Gewerbesteuergesetzes von der Gewerbesteuer befreit.";
-      rpt.addLight(txt, 8);
+          + "§ 3 Nr. 6 des Gewerbesteuergesetzes von der Gewerbesteuer befreit.\n ";
+      Paragraph p = new Paragraph();
+      p = new Paragraph();
+      p.setFont(Reporter.getFreeSans(8));
+      p.setAlignment(Element.ALIGN_JUSTIFIED);
+      p.setFirstLineIndent((float) -17.5);
+      p.setIndentationLeft((float) 17.5);
+      p.setMultipliedLeading(1.5f);
+      p.add(new Chunk((char) 53, FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8))); // X
+      p.add(txt);
+      rpt.add(p);
+      txt = "     Die Einhaltung der satzungsgemäßen Voraussetzungen nach den §§ 51, 59, 60 und 61 "
+          + "AO wurde vom Finanzamt ..........\n"
+          + ", StNr. ..........."
+          + ", mit Bescheid vom ............"
+          + " nach § 60a AO gesondert festgestellt. Wir fördern nach unserer Satzung "
+          + "(Angabe des begünstigten Zweck / der begünstigten Zwecke) ............. .";
+      p = new Paragraph();
+      p.setFont(Reporter.getFreeSans(8));
+      p.setAlignment(Element.ALIGN_JUSTIFIED);
+      p.setFirstLineIndent((float) -17.5);
+      p.setIndentationLeft((float) 17.5);
+      p.setMultipliedLeading(1.5f);
+      p.add(new Chunk((char) 113, FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8))); // box leer
+      p.add(txt);
+      rpt.add(p);
+      
     }
-    rpt.addLight("\nEs wird bestätigt, dass die Zuwendung nur zur "
-        + Einstellungen.getEinstellung().getBeguenstigterzweck()
-        + " verwendet wird.\n", 8);
-    if (spb.getSpendenart() == Spendenart.GELDSPENDE)
+    
+    // Rahmen über Unterschrift
+    PdfPCell cell = new PdfPCell();
+    Paragraph p = new Paragraph();
+    p.setFont(Reporter.getFreeSans(8));
+    p.setAlignment(Element.ALIGN_LEFT);
+    p.setMultipliedLeading(1.5f);
+    p.add(new Chunk(
+        "Es wird bestätigt, dass die Zuwendung nur zur "
+            + Einstellungen.getEinstellung().getBeguenstigterzweck()
+            + " verwendet wird.\n  "));
+    cell.addElement(p);
+
+    if (spb.getSpendenart() != Spendenart.SACHSPENDE)
     {
+      p = new Paragraph();
+      p.setFont(Reporter.getFreeSansBold(8));
+      p.setAlignment(Element.ALIGN_LEFT);
+      p.setMultipliedLeading(1.5f);
+      p.add(new Chunk(
+          "Nur für steuerbegünstigte Einrichtungen, bei denen die Mitgliedsbeiträge "
+              + "steuerlich nicht abziehbar sind:\n"));
+      cell.addElement(p);
+      
+      p = new Paragraph();
+      p.setFont(Reporter.getFreeSans(8));
+      p.setAlignment(Element.ALIGN_JUSTIFIED);
+      p.setFirstLineIndent((float) -17.5);
+      p.setIndentationLeft((float) 17.5);
+      p.setMultipliedLeading(1.5f);
       char mitgliedBetraege = (char) 113; // box leer
       if (!Einstellungen.getEinstellung().getMitgliedsbetraege())
       {
         mitgliedBetraege = (char) 53; // X
       }
-      Paragraph p = new Paragraph();
-      p.setFont(Reporter.getFreeSans(8));
-      p.setAlignment(Element.ALIGN_LEFT);
-      p.add(new Chunk("\n"));
-      p.add(new Chunk(
-          "Nur für steuerbegünstigte Einrichtungen, bei denen die Mitgliedsbeiträge steuerlich nicht abziehbar sind:"));
-      rpt.add(p);
-      p = new Paragraph();
-      p.setFont(Reporter.getFreeSans(8));
-      p.setAlignment(Element.ALIGN_JUSTIFIED);
-      p.setFirstLineIndent((float) -18.5);
-      p.setIndentationLeft((float) 18.5);
       p.add(new Chunk(mitgliedBetraege,
-          FontFactory.getFont(FontFactory.ZAPFDINGBATS, 10)));
+          FontFactory.getFont(FontFactory.ZAPFDINGBATS, 8)));
       p.add(new Chunk(
-          "   Es wird bestätigt, dass es sich nicht um einen Mitgliedsbeitrag handelt, dessen Abzug nach § 10b Abs. 1 des Einkommensteuergesetzes ausgeschlossen ist."));
-      rpt.add(p);
+          "   Es wird bestätigt, dass es sich nicht um einen Mitgliedsbeitrag handelt, "
+              + "dessen Abzug nach § 10b Abs. 1 des Einkommensteuergesetzes ausgeschlossen ist."));
+      cell.addElement(p);
     }
+
+    rpt.add(new Paragraph(" ", Reporter.getFreeSans(8)));
+    rpt.addHeaderColumn("", Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
+    rpt.createHeader();
+    rpt.addColumn(cell);
+    rpt.closeTable();
 
     if (isSammelbestaetigung)
     {
-      rpt.add(new Paragraph(" ", Reporter.getFreeSans(12)));
+      rpt.add(new Paragraph(" ", Reporter.getFreeSans(6)));
       rpt.addLight(
           "Es wird bestätigt, dass über die in der Gesamtsumme enthaltenen Zuwendungen keine weiteren Bestätigungen, weder formelle Zuwendungsbestätigungen noch Beitragsquittungen oder ähnliches ausgestellt wurden und werden.\n",
           8);
       rpt.addLight(
-          "Ob es sich um den Verzicht auf Erstattung von Aufwendungen handelt, ist der Anlage zur Sammelbestätigung zu entnehmen.",
+          "\nOb es sich um den Verzicht auf Erstattung von Aufwendungen handelt, ist der Anlage zur Sammelbestätigung zu entnehmen.",
           8);
     }
-    else
-    {
-      rpt.add(new Paragraph(" ", Reporter.getFreeSans(12)));
-      rpt.add("\n\n", 8);
-      rpt.add("\n", 9);
-
-    }
-
-    rpt.add(
-        "\n\n" + Einstellungen.getEinstellung().getOrt() + ", "
-            + new JVDateFormatTTMMJJJJ().format(spb.getBescheinigungsdatum()),
-        9);
 
     if (Einstellungen.getEinstellung().getUnterschriftdrucken() &&
         Einstellungen.getEinstellung().getUnterschrift() != null)
@@ -1215,9 +1298,15 @@ public class SpendenbescheinigungPrintAction implements Action
     {
       rpt.add("\n\n\n\n", 8);
     }
-    
     rpt.add(
-        ".................................................................................\nUnterschrift des Zuwendungsempfängers",
+        "\n" + Einstellungen.getEinstellung().getOrt() + ", "
+            + new JVDateFormatTTMMJJJJ().format(spb.getBescheinigungsdatum()),
+        9);
+    
+    rpt.addLight(
+          "..............................................................................."
+        + "...............................................................................\n"
+        + "(Ort, Datum und Unterschrift des Zuwendungsempfängers)",
         8);
 
     rpt.add("\nHinweis:", 8);
