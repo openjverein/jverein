@@ -600,20 +600,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
         // oder ein leeres Composite (setShow(false))
         container.addPart(control.getFamilienverband());
       }
-      if (isBeitragsGruppeFuerZahlerAktiv() == false)
-        control.getZukuenftigeBeitraegeView().setVisible(false);
       container.addPart(control.getZukuenftigeBeitraegeView());
     }
-  }
-
-  private boolean isBeitragsGruppeFuerZahlerAktiv() throws RemoteException
-  {
-    Beitragsgruppe gruppe = control.getMitglied().getBeitragsgruppe();
-    if (null == gruppe)
-      return false;
-    if (gruppe.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-      return false;
-    return true;
   }
 
   /**
