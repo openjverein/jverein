@@ -285,7 +285,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
             .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
         && getZahlerID() == null)
     {
-      throw new ApplicationException("Bitte Zahler auswählen!");
+      throw new ApplicationException("Bitte Vollzahler auswählen!");
     }
   }
 

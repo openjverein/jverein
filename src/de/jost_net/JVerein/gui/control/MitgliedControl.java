@@ -1271,6 +1271,7 @@ public class MitgliedControl extends FilterControl
     DBIterator<Mitglied> zhl = Einstellungen.getDBService()
         .createList(Mitglied.class);
     zhl.addFilter("(" + cond.toString() + ")");
+    zhl.addFilter("id != ?",getMitglied().getID());
     MitgliedUtils.setNurAktive(zhl);
     MitgliedUtils.setMitglied(zhl);
     zhl.setOrder("ORDER BY name, vorname");
