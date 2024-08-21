@@ -1299,7 +1299,7 @@ public class MitgliedControl extends FilterControl
         try
         {
           Mitglied m = (Mitglied) zahler.getValue();
-          if (m.getID() != null)
+          if (m != null && m.getID() != null)
           {
             getMitglied().setZahlerID(Long.valueOf(m.getID()));
           }

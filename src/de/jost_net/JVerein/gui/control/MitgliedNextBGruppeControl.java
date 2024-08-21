@@ -174,12 +174,7 @@ public class MitgliedNextBGruppeControl extends AbstractControl
         .createList(Beitragsgruppe.class);
     list.setOrder("ORDER BY bezeichnung");
     list.addFilter("sekundaer = 0");
-    if (isFamilienMitglied())
-    {
-      list.addFilter("beitragsart is not null");
-      list.addFilter("beitragsart = ?", ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
-    }
-    else
+    if (!isFamilienMitglied())
     {
       list.addFilter("(beitragsart is null or beitragsart != ?)",
           ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
