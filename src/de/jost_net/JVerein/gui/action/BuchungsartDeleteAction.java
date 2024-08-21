@@ -44,6 +44,7 @@ public class BuchungsartDeleteAction implements Action
       {
         return;
       }
+      
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Buchungsart löschen");
       d.setText("Wollen Sie diese Buchungsart wirklich löschen?");
@@ -64,7 +65,7 @@ public class BuchungsartDeleteAction implements Action
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Buchungsart.";
+      String fehler = "Die Buchungsart wird bereits benutzt und kann nicht gelöscht werden";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

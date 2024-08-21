@@ -520,7 +520,6 @@ public class KontoControl extends AbstractControl
     anlagenklasse.setValue(getKonto().getAnlagenklasse());
     anlagenklasse.setAttribute(getBuchungartAttribute());
     anlagenklasse.setPleaseChoose("Bitte auswählen");
-    anlagenklasse.setEnabled(false);
     return anlagenklasse;
   }
   
@@ -676,7 +675,8 @@ public class KontoControl extends AbstractControl
         Buchungsart ba = (Buchungsart) getAnlagenart().getValue();
         if (ba != null)
         {
-          getAnlagenklasse().setValue(ba.getBuchungsklasse());
+          if (getAnlagenklasse().getValue() == null)
+            getAnlagenklasse().setValue(ba.getBuchungsklasse());
         }
       }
       catch (Exception e)
@@ -692,6 +692,8 @@ public class KontoControl extends AbstractControl
     {
       if ((boolean) getAnlagenkonto().getValue())
       {
+        getAnlagenklasse().enable();
+        getAnlagenklasse().setMandatory(true);
         getAnlagenart().enable();
         getAnlagenart().setMandatory(true);
         getAfaart().enable();
@@ -702,7 +704,9 @@ public class KontoControl extends AbstractControl
       }
       else
       {
+        getAnlagenklasse().setMandatory(false);
         getAnlagenklasse().setValue(null);
+        getAnlagenklasse().disable();
         getAnlagenart().setMandatory(false);
         getAnlagenart().setValue(null);
         getAnlagenart().disable();
