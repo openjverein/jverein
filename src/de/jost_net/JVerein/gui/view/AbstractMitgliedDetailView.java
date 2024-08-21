@@ -594,12 +594,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
           ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
       if (it.hasNext())
       {
-        // Verstecke Familienverband wenn aktuelles Mitglied nicht Teil einer
-        // Familie ist.
-        if (isBeitragsGruppeFuerFamilieAktiv() == false)
-        {
-          control.getFamilienverband().setVisible(false);
-        }
         // Container lässt nur das Hinzufügen von Parts zu.
         // Aus diesem Grund ist Part Familienverband dynamisch:
         // Entweder wird der Familienverband angezeigt (setShow(true))
@@ -618,16 +612,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
     if (null == gruppe)
       return false;
     if (gruppe.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-      return false;
-    return true;
-  }
-
-  private boolean isBeitragsGruppeFuerFamilieAktiv() throws RemoteException
-  {
-    Beitragsgruppe gruppe = control.getMitglied().getBeitragsgruppe();
-    if (null == gruppe)
-      return false;
-    if (gruppe.getBeitragsArt() == ArtBeitragsart.NORMAL)
       return false;
     return true;
   }
