@@ -463,6 +463,7 @@ public class KontoControl extends AbstractControl
       return anlagenkonto;
     }
     anlagenkonto = new CheckboxInput(getKonto().getAnlagenkonto());
+    anlagenkonto.setName(" *Beim ersten Anlagekonto bitte JVerein neu starten um die Änderungen anzuwenden");
     anlagenkonto.addListener(new Listener()
     {
 
