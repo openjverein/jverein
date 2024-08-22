@@ -83,7 +83,8 @@ public class AnlagenList extends TablePart implements Part
             null, false, Column.ALIGN_RIGHT);
         saldoList.addColumn("Afa Art", "afaartbezeichnung");
         saldoList.addColumn("Anschaffung", "anschaffung",
-            new DateFormatter(new JVDateFormatTTMMJJJJ()));
+            new DateFormatter(new JVDateFormatTTMMJJJJ()), false,
+            Column.ALIGN_RIGHT);
         saldoList.addColumn("Anschaffungskosten", "kosten",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
