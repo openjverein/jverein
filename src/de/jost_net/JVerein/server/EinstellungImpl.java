@@ -2022,4 +2022,16 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("anhangspeichern", anhangspeichern);
   }
+  
+  @Override
+  public Boolean getBuchungsklasseInBuchung() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("buchungsklasseInBuchung"));
+  }
+
+  @Override
+  public void setBuchungsklasseInBuchung(Boolean buchungsklasseInBuchung) throws RemoteException
+  {
+    setAttribute("buchungsklasseInBuchung", buchungsklasseInBuchung);
+  }
 }

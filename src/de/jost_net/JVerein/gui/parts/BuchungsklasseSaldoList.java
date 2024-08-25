@@ -161,14 +161,16 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
           buchungsklasse));
       DBIterator<Buchungsart> buchungsartenIt = service
           .createList(Buchungsart.class);
-      buchungsartenIt.addFilter("buchungsklasse = ?",
-          new Object[] { buchungsklasse.getID() });
+      if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+        buchungsartenIt.addFilter("buchungsklasse = ?",
+            new Object[] { buchungsklasse.getID() });
 
       suBukSteuersatz.clear();
       DBIterator<Buchungsart> buchungsartenSteuerIt = service
           .createList(Buchungsart.class);
-      buchungsartenSteuerIt.addFilter("buchungsklasse = ?",
-          new Object[] { buchungsklasse.getID() });
+      if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+        buchungsartenSteuerIt.addFilter("buchungsklasse = ?",
+            new Object[] { buchungsklasse.getID() });
       buchungsartenSteuerIt.addFilter("steuersatz <> 0");
       while (buchungsartenSteuerIt.hasNext())
       {
@@ -201,30 +203,71 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
       while (buchungsartenIt.hasNext())
       {
         buchungsart = (Buchungsart) buchungsartenIt.next();
-        String sqlc = "select count(*) from buchung, buchungsart "
-            + "where datum >= ? and datum <= ?  "
-            + "and buchung.buchungsart = buchungsart.id "
-            + "and buchungsart.id = ?";
-        int anz = (Integer) service.execute(sqlc,
-            new Object[] { datumvon, datumbis, buchungsart.getID() }, rsi);
+        String sqlc = null;
+        int anz = 0;
+        if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+        {
+          sqlc = "select count(*) from buchung, buchungsart "
+              + "where datum >= ? and datum <= ?  "
+              + "and buchung.buchungsart = buchungsart.id "
+              + "and buchungsart.id = ?";
+          anz = (Integer) service.execute(sqlc,
+              new Object[] { datumvon, datumbis, buchungsart.getID() }, rsi);
+        }
+        else
+        {
+          sqlc = "select count(*) from buchung, buchungsart "
+              + "where datum >= ? and datum <= ?  "
+              + "and buchung.buchungsart = buchungsart.id "
+              + "and buchungsart.id = ? "
+              + "and buchung.buchungsklasse = ? ";
+          anz = (Integer) service.execute(sqlc,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 
+                  buchungsklasse.getID() }, rsi);
+        }
+
         if (anz == 0)
         {
           continue;
         }
         ausgabe = true;
-        String sql = "select sum(betrag) from buchung, buchungsart "
-            + "where datum >= ? and datum <= ?  "
-            + "and buchung.buchungsart = buchungsart.id "
-            + "and buchungsart.id = ? " + "and buchungsart.art = ?";
-        einnahmen = (Double) service.execute(sql,
-            new Object[] { datumvon, datumbis, buchungsart.getID(), 0 }, rsd);
-        suBukEinnahmen += einnahmen;
-        ausgaben = (Double) service.execute(sql,
-            new Object[] { datumvon, datumbis, buchungsart.getID(), 1 }, rsd);
-        suBukAusgaben += ausgaben;
-        umbuchungen = (Double) service.execute(sql,
-            new Object[] { datumvon, datumbis, buchungsart.getID(), 2 }, rsd);
-        suBukUmbuchungen += umbuchungen;
+        String sql = null;
+        if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+        {
+          sql = "select sum(betrag) from buchung, buchungsart "
+              + "where datum >= ? and datum <= ?  "
+              + "and buchung.buchungsart = buchungsart.id "
+              + "and buchungsart.id = ? " + "and buchungsart.art = ?";
+          einnahmen = (Double) service.execute(sql,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 0 }, rsd);
+          suBukEinnahmen += einnahmen;
+          ausgaben = (Double) service.execute(sql,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 1 }, rsd);
+          suBukAusgaben += ausgaben;
+          umbuchungen = (Double) service.execute(sql,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 2 }, rsd);
+          suBukUmbuchungen += umbuchungen;
+        }
+        else
+        {
+          sql = "select sum(betrag) from buchung, buchungsart "
+              + "where datum >= ? and datum <= ?  "
+              + "and buchung.buchungsart = buchungsart.id "
+              + "and buchungsart.id = ? " + "and buchungsart.art = ? "
+              + "and buchung.buchungsklasse = ? ";
+          einnahmen = (Double) service.execute(sql,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 0, 
+                  buchungsklasse.getID() }, rsd);
+          suBukEinnahmen += einnahmen;
+          ausgaben = (Double) service.execute(sql,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 1, 
+                  buchungsklasse.getID() }, rsd);
+          suBukAusgaben += ausgaben;
+          umbuchungen = (Double) service.execute(sql,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 2, 
+                  buchungsklasse.getID() }, rsd);
+          suBukUmbuchungen += umbuchungen;
+        }
 
         if (buchungsart.getSteuersatz() > 0.0)
         {
@@ -324,22 +367,45 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
 
       }
     }
-    String sql = "select sum(betrag) from buchung, buchungsart "
-        + "where datum >= ? and datum <= ?  "
-        + "and buchung.buchungsart = buchungsart.id "
-        + "and buchungsart.buchungsklasse is null and buchungsart.art = ?";
-    einnahmen = (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, 0 }, rsd);
-    suBukEinnahmen += einnahmen;
-    suEinnahmen += einnahmen;
-    ausgaben = (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, 1 }, rsd);
-    suBukAusgaben += ausgaben;
-    suAusgaben += ausgaben;
-    umbuchungen = (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, 2 }, rsd);
-    suBukUmbuchungen += umbuchungen;
-    suUmbuchungen += umbuchungen;
+    String sql = null;
+    if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      sql = "select sum(betrag) from buchung, buchungsart "
+          + "where datum >= ? and datum <= ?  "
+          + "and buchung.buchungsart = buchungsart.id "
+          + "and buchungsart.buchungsklasse is null and buchungsart.art = ?";
+      einnahmen = (Double) service.execute(sql,
+          new Object[] { datumvon, datumbis, 0 }, rsd);
+      suBukEinnahmen += einnahmen;
+      suEinnahmen += einnahmen;
+      ausgaben = (Double) service.execute(sql,
+          new Object[] { datumvon, datumbis, 1 }, rsd);
+      suBukAusgaben += ausgaben;
+      suAusgaben += ausgaben;
+      umbuchungen = (Double) service.execute(sql,
+          new Object[] { datumvon, datumbis, 2 }, rsd);
+      suBukUmbuchungen += umbuchungen;
+      suUmbuchungen += umbuchungen;
+    }
+    else
+    {
+      sql = "select sum(betrag) from buchung, buchungsart "
+          + "where datum >= ? and datum <= ?  "
+          + "and buchung.buchungsart = buchungsart.id "
+          + "and buchung.buchungsklasse is null and buchungsart.art = ?";
+      einnahmen = (Double) service.execute(sql,
+          new Object[] { datumvon, datumbis, 0 }, rsd);
+      suBukEinnahmen += einnahmen;
+      suEinnahmen += einnahmen;
+      ausgaben = (Double) service.execute(sql,
+          new Object[] { datumvon, datumbis, 1 }, rsd);
+      suBukAusgaben += ausgaben;
+      suAusgaben += ausgaben;
+      umbuchungen = (Double) service.execute(sql,
+          new Object[] { datumvon, datumbis, 2 }, rsd);
+      suBukUmbuchungen += umbuchungen;
+      suUmbuchungen += umbuchungen;
+    }
     if (einnahmen != 0 || ausgaben != 0 || umbuchungen != 0)
     {
       Buchungsklasse b = (Buchungsklasse) service

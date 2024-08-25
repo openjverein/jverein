@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -43,6 +44,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.logging.Logger;
 
 /**
  * Dialog zur Zuordnung einer Buchungsart.
@@ -51,12 +53,16 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
 {
 
   private SelectInput buchungsarten = null;
+  
+  private SelectInput buchungsklassen = null;
 
   private CheckboxInput ueberschreiben = null;
 
   private LabelInput status = null;
 
   private Buchungsart buchungsart = null;
+  
+  private Buchungsklasse buchungsklasse = null;
 
   private boolean ueberschr;
   
@@ -79,6 +85,10 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   {
     LabelGroup group = new LabelGroup(parent, "");
     group.addLabelPair("Buchungsart", getBuchungsartAuswahl());
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      group.addLabelPair("Buchungsklasse", getBuchungsklasseAuswahl());
+    }
     group.addLabelPair("Buchungsarten überschreiben", getUeberschreiben());
     group.addLabelPair("", getStatus());
 
@@ -86,17 +96,37 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     buttons.addButton("Übernehmen", new Action()
     {
       @Override
-      public void handleAction(Object context)
+      public void handleAction(Object context) 
       {
         if (buchungsarten.getValue() == null)
         {
-          status.setValue("Bitte auswählen");
+          status.setValue("Bitte Buchungsart auswählen");
           status.setColor(Color.ERROR);
           return;
         }
         if (buchungsarten.getValue() instanceof Buchungsart)
         {
           buchungsart = (Buchungsart) buchungsarten.getValue();
+        }
+        try
+        {
+          if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+          {
+            if (buchungsklassen.getValue() == null)
+            {
+              status.setValue("Bitte Buchungsklasse auswählen");
+              status.setColor(Color.ERROR);
+              return;
+            }
+            if (buchungsklassen.getValue() instanceof Buchungsklasse)
+            {
+              buchungsklasse = (Buchungsklasse) buchungsklassen.getValue();
+            }
+          }
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
         }
         ueberschr = (Boolean) getUeberschreiben().getValue();
         abort = false;
@@ -110,6 +140,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       public void handleAction(Object context)
       {
         buchungsart = null;
+        buchungsklasse = null;
         abort = false;
         close();
       }
@@ -139,6 +170,11 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   public Buchungsart getBuchungsart()
   {
     return buchungsart;
+  }
+  
+  public Buchungsklasse getBuchungsklasse()
+  {
+    return buchungsklasse;
   }
 
   public boolean getOverride()
@@ -225,7 +261,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         buchungsarten.setAttribute("bezeichnung");
         break;
     }
-    buchungsarten.setPleaseChoose("Bitte Buchungsart auswählen");
+    buchungsarten.setPleaseChoose("Bitte auswählen");
     buchungsarten.addListener(new Listener()
     {
       @Override
@@ -235,6 +271,41 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       }
     });
     return buchungsarten;
+  }
+  
+  private SelectInput getBuchungsklasseAuswahl() throws RemoteException
+  {
+    if (buchungsklassen != null)
+    {
+      return buchungsklassen;
+    }
+    DBIterator<Buchungsklasse> it = Einstellungen.getDBService()
+        .createList(Buchungsklasse.class);
+    if (Einstellungen.getEinstellung()
+        .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+    {
+      it.setOrder("ORDER BY nummer");
+    }
+    else
+    {
+      it.setOrder("ORDER BY bezeichnung");
+    }
+    buchungsklassen = new SelectInput(it != null ? PseudoIterator.asList(it) : null, null);
+
+    switch (Einstellungen.getEinstellung().getBuchungsartSort())
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        buchungsklassen.setAttribute("nrbezeichnung");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        buchungsklassen.setAttribute("bezeichnungnr");
+        break;
+      default:
+        buchungsklassen.setAttribute("bezeichnung");
+        break;
+    }
+    buchungsklassen.setPleaseChoose("Bitte auswählen");
+    return buchungsklassen;
   }
 
   private LabelInput getStatus()

@@ -28,6 +28,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
@@ -393,6 +394,31 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   {
     setAttribute("buchungsart", buchungsart);
   }
+  
+  @Override
+  public Buchungsklasse getBuchungsklasse() throws RemoteException
+  {
+    Long l = (Long) super.getAttribute("buchungsklasse");
+    if (l == null)
+    {
+      return null; // Keine Buchungsklasse zugeordnet
+    }
+
+    Cache cache = Cache.get(Buchungsklasse.class, true);
+    return (Buchungsklasse) cache.get(l);
+  }
+
+  @Override
+  public Long getBuchungsklasseId() throws RemoteException
+  {
+    return Long.parseLong(getBuchungsklasse().getID());
+  }
+  
+  @Override
+  public void setBuchungsklasse(Long buchungsklasse) throws RemoteException
+  {
+    setAttribute("buchungsklasse", buchungsklasse);
+  }
 
   @Override
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException
@@ -623,6 +649,9 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
 
     if ("buchungsart".equals(fieldName))
       return getBuchungsart();
+    
+    if ("buchungsklasse".equals(fieldName))
+      return getBuchungsklasse();
 
     if ("konto".equals(fieldName))
       return getKonto();

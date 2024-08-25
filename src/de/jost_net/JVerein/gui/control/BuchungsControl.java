@@ -46,6 +46,7 @@ import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAutomatischActi
 import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
@@ -67,6 +68,7 @@ import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -153,6 +155,8 @@ public class BuchungsControl extends AbstractControl
   // Definition für beide Auswahlvarianten (SelectInput und
   // BuchungsartSearchInput)
   private AbstractInput buchungsart;
+  
+  private SelectInput buchungsklasse;
 
   private SelectInput projekt;
 
@@ -219,6 +223,7 @@ public class BuchungsControl extends AbstractControl
   public void fillBuchung(Buchung b) throws ApplicationException, RemoteException
   { 
     b.setBuchungsart(getSelectedBuchungsArtId());
+    b.setBuchungsklasse(getSelectedBuchungsKlasseId());
     b.setProjektID(getSelectedProjektId());
     b.setKonto(getSelectedKonto());
     b.setAuszugsnummer(getAuszugsnummerWert());
@@ -546,6 +551,47 @@ public class BuchungsControl extends AbstractControl
       buchungsart.setMandatory(true);
     }
     return buchungsart;
+  }
+  
+  public SelectInput getBuchungsklasse() throws RemoteException
+  {
+    if (buchungsklasse != null && !buchungsklasse.getControl().isDisposed())
+    {
+      return buchungsklasse;
+    }
+    DBIterator<Buchungsklasse> it = Einstellungen.getDBService()
+        .createList(Buchungsklasse.class);
+    if (Einstellungen.getEinstellung()
+        .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+    {
+      it.setOrder("ORDER BY nummer");
+    }
+    else
+    {
+      it.setOrder("ORDER BY bezeichnung");
+    }
+    buchungsklasse = new SelectInput(it != null ? PseudoIterator.asList(it) : null, 
+        getBuchung().getBuchungsklasse());
+
+    switch (Einstellungen.getEinstellung().getBuchungsartSort())
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        buchungsklasse.setAttribute("nrbezeichnung");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        buchungsklasse.setAttribute("bezeichnungnr");
+        break;
+      default:
+        buchungsklasse.setAttribute("bezeichnung");
+        break;
+    }
+    buchungsklasse.setPleaseChoose("Bitte auswählen");
+    if (!getBuchung().getSpeicherung() && 
+        Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      buchungsklasse.setMandatory(true);
+    }
+    return buchungsklasse;
   }
 
   public Input getProjekt() throws RemoteException
@@ -1077,6 +1123,24 @@ public class BuchungsControl extends AbstractControl
       throw new ApplicationException(meldung, ex);
     }
   }
+  
+  private Long getSelectedBuchungsKlasseId() throws ApplicationException
+  {
+    try
+    {
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
+      if (null == buchungsKlasse)
+        return null;
+      Long id = Long.valueOf(buchungsKlasse.getID());
+      return id;
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
 
   public Part getBuchungsList() throws RemoteException
   {
@@ -1166,24 +1230,7 @@ public class BuchungsControl extends AbstractControl
       });
       buchungsList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      // buchungsList.addColumn(new Column("auszugsnummer", "Auszug",
-      // new Formatter()
-      // {
-      // @Override
-      // public String format(Object o)
-      // {
-      // return o.toString();
-      // }
-      // }, false, Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
-      // buchungsList.addColumn(new Column("blattnummer", "Blatt", new
-      // Formatter()
-      // {
-      // @Override
-      // public String format(Object o)
-      // {
-      // return o.toString();
-      // }
-      // }, false, Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
+
       buchungsList.addColumn("Auszugsnummer", "auszugsnummer");
       buchungsList.addColumn("Blatt", "blattnummer");
 
@@ -1205,6 +1252,12 @@ public class BuchungsControl extends AbstractControl
           return s;
         }
       });
+      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      {
+        buchungsList.addColumn("Buchungsklasse", "buchungsklasse",
+            new BuchungsklasseFormatter());
+      }
+      
       buchungsList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
       buchungsList.addColumn("Betrag", "betrag",
