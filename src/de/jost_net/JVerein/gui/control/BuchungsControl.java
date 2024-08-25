@@ -23,6 +23,9 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -171,6 +174,8 @@ public class BuchungsControl extends AbstractControl
   private TextInput suchtext = null;
 
   private TextInput suchbetrag = null;
+  
+  private TextInput mitglied = null;
 
   private CheckboxInput verzicht;
 
@@ -193,6 +198,13 @@ public class BuchungsControl extends AbstractControl
   private Vector<Listener> changeKontoListener = new Vector<>();
   
   private int unterdrueckunglaenge = 0;
+  
+  private Calendar calendar = Calendar.getInstance();
+  
+  private enum RANGE
+  {
+    MONAT, TAG
+  }
 
   public BuchungsControl(AbstractView view)
   {
@@ -443,6 +455,16 @@ public class BuchungsControl extends AbstractControl
     }
     suchbetrag = new TextInput(settings.getString("suchbetrag", ""));
     return suchbetrag;
+  }
+  
+  public TextInput getMitglied()
+  {
+    if (mitglied != null)
+    {
+      return mitglied;
+    }
+    mitglied = new TextInput(settings.getString("mitglied", ""), 35);
+    return mitglied;
   }
 
   public CheckboxInput getVerzicht() throws RemoteException
@@ -1129,7 +1151,8 @@ public class BuchungsControl extends AbstractControl
     settings.setAttribute("suchbetrag", (String) getSuchBetrag().getValue());
 
     query = new BuchungQuery(dv, db, k, b, p, (String) getSuchtext().getValue(),
-        (String) getSuchBetrag().getValue(), m.getValue());
+        (String) getSuchBetrag().getValue(), m.getValue(),
+        (String) getMitglied().getValue());
     if (buchungsList == null)
     {
       buchungsList = new BuchungListTablePart(query.get(),
@@ -2067,6 +2090,127 @@ public class BuchungsControl extends AbstractControl
     catch (Exception ex)
     {
       Logger.error("Error filter reset", ex);
+    }
+  }
+
+  public Button getZurueckButton()
+  {
+    return new Button("", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Date von = (Date) getVondatum().getValue();
+        Date bis = (Date) getBisdatum().getValue();
+        if (getRangeTyp(von, bis) == RANGE.TAG)
+        {
+          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+          delta++;
+          calendar.setTime(von);
+          calendar.add(Calendar.DAY_OF_MONTH, -delta);
+          getVondatum().setValue(calendar.getTime());
+          calendar.setTime(bis);
+          calendar.add(Calendar.DAY_OF_MONTH, -delta);
+          getBisdatum().setValue(calendar.getTime());
+        }
+        else
+        {
+          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
+          delta++;
+          calendar.setTime(von);
+          calendar.add(Calendar.MONTH, -delta);
+          getVondatum().setValue(calendar.getTime());
+          calendar.add(Calendar.MONTH, delta);
+          calendar.add(Calendar.DAY_OF_MONTH, -1);
+          getBisdatum().setValue(calendar.getTime());
+        }
+        try
+        {
+          getBuchungsList();
+        }
+        catch (RemoteException ex)
+        {
+          throw new ApplicationException(ex.getMessage());
+        }
+      }
+    }, null, false, "go-previous.png");
+  }
+
+  public Button getVorButton()
+  {
+    return new Button("", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Date von = (Date) getVondatum().getValue();
+        Date bis = (Date) getBisdatum().getValue();
+        if (getRangeTyp(von, bis) == RANGE.TAG)
+        {
+          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+          delta++;
+          calendar.setTime(von);
+          calendar.add(Calendar.DAY_OF_MONTH, delta);
+          getVondatum().setValue(calendar.getTime());
+          calendar.setTime(bis);
+          calendar.add(Calendar.DAY_OF_MONTH, delta);
+          getBisdatum().setValue(calendar.getTime());
+        }
+        else
+        {
+          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
+          delta++;
+          calendar.setTime(von);
+          calendar.add(Calendar.MONTH, delta);
+          getVondatum().setValue(calendar.getTime());
+          calendar.add(Calendar.MONTH, delta);
+          calendar.add(Calendar.DAY_OF_MONTH, -1);
+          getBisdatum().setValue(calendar.getTime());
+        }
+        try
+        {
+          getBuchungsList();
+        }
+        catch (RemoteException ex)
+        {
+          throw new ApplicationException(ex.getMessage());
+        }
+      }
+    }, null, false, "go-next.png");
+  }
+
+  private RANGE getRangeTyp(Date von, Date bis) throws ApplicationException
+  {
+    checkDate();
+    calendar.setTime(von);
+    if (calendar.get(Calendar.DAY_OF_MONTH) != 1)
+      return RANGE.TAG;
+    calendar.setTime(bis);
+    calendar.add(Calendar.DAY_OF_MONTH, 1);
+    if (calendar.get(Calendar.DAY_OF_MONTH) != 1)
+      return RANGE.TAG;
+    return RANGE.MONAT;
+  }
+  
+  private void checkDate() throws ApplicationException
+  {
+    Date von = (Date) getVondatum().getValue();
+    Date bis = (Date) getBisdatum().getValue();
+    if (von == null)
+    {
+      throw new ApplicationException("Bitte Von Datum eingeben!");
+    }
+    if (bis == null)
+    {
+      throw new ApplicationException("Bitte Bis Datum eingeben!");
+    }
+    if (von.after(bis))
+    {
+      throw new ApplicationException("Von Datum ist nach Bis Datum!");
     }
   }
 }

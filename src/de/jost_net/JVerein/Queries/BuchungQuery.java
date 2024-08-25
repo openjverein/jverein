@@ -47,6 +47,8 @@ public class BuchungQuery
   public String text;
 
   public String betrag;
+  
+  private String mitglied;
 
   private List<Buchung> ergebnis;
 
@@ -74,7 +76,7 @@ public class BuchungQuery
 
   public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
       Buchungsart buchungsart, Projekt projekt, String text, String betrag,
-      Boolean hasMitglied)
+      Boolean hasMitglied, String mitglied)
   {
     this.datumvon = datumvon;
     this.datumbis = datumbis;
@@ -84,6 +86,7 @@ public class BuchungQuery
     this.text = text;
     this.betrag = betrag;
     this.hasMitglied = hasMitglied;
+    this.mitglied = mitglied;
   }
   
   public String getOrder(String value) {
@@ -150,10 +153,19 @@ public class BuchungQuery
   public List<Buchung> get() throws RemoteException
   {
     final DBService service = Einstellungen.getDBService();
-
     DBIterator<Buchung> it = service.createList(Buchung.class);
-    it.addFilter("datum >= ? ", datumvon);
-    it.addFilter("datum <= ? ", datumbis);
+    
+    if (mitglied != null && !mitglied.isEmpty())
+    {
+      it.join("mitgliedskonto");
+      it.addFilter("mitgliedskonto.id = mitgliedskonto");
+      it.join("mitglied");
+      it.addFilter("mitglied.id = mitgliedskonto.mitglied");
+      it.addFilter("lower(mitglied.name) like ?", "%" + mitglied.toLowerCase() + "%");
+    }
+    
+    it.addFilter("buchung.datum >= ? ", datumvon);
+    it.addFilter("buchung.datum <= ? ", datumbis);
 
     if (konto != null)
     {
@@ -204,30 +216,30 @@ public class BuchungQuery
         {
           case GLEICH:
           {
-            it.addFilter("betrag = ?", suchbetrag.getBetrag());
+            it.addFilter("buchung.betrag = ?", suchbetrag.getBetrag());
             break;
           }
           case GRÖSSER:
           {
-            it.addFilter("betrag > ?", suchbetrag.getBetrag());
+            it.addFilter("buchung.betrag > ?", suchbetrag.getBetrag());
             break;
           }
           case GRÖSSERGLEICH:
           {
-            it.addFilter("betrag >= ?", suchbetrag.getBetrag());
+            it.addFilter("buchung.betrag >= ?", suchbetrag.getBetrag());
             break;
           }
           case BEREICH:
-            it.addFilter("betrag >= ? AND betrag <= ?", suchbetrag.getBetrag(),
+            it.addFilter("buchung.betrag >= ? AND buchung.betrag <= ?", suchbetrag.getBetrag(),
                 suchbetrag.getBetrag2());
             break;
           case KEINE:
             break;
           case KLEINER:
-            it.addFilter("betrag < ?", suchbetrag.getBetrag());
+            it.addFilter("buchung.betrag < ?", suchbetrag.getBetrag());
             break;
           case KLEINERGLEICH:
-            it.addFilter("betrag <= ?", suchbetrag.getBetrag());
+            it.addFilter("buchung.betrag <= ?", suchbetrag.getBetrag());
             break;
           default:
             break;
