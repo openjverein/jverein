@@ -25,7 +25,9 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Part;
@@ -35,6 +37,8 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class ZusatzbetragPart implements Part
 {
@@ -55,6 +59,8 @@ public class ZusatzbetragPart implements Part
   private DateInput ausfuehrung = null;
 
   private AbstractInput buchungsart;
+  
+  private SelectInput buchungsklasse;
 
   public ZusatzbetragPart(Zusatzbetrag zusatzbetrag)
   {
@@ -72,6 +78,8 @@ public class ZusatzbetragPart implements Part
     group.addLabelPair("Buchungstext", getBuchungstext());
     group.addLabelPair("Betrag", getBetrag());
     group.addLabelPair("Buchungsart", getBuchungsart());
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      group.addLabelPair("Buchungsklasse", getBuchungsklasse());
   }
 
   public DateInput getFaelligkeit() throws RemoteException
@@ -243,4 +251,36 @@ public class ZusatzbetragPart implements Part
         zusatzbetrag.getBuchungsart());
     return buchungsart;
   }
+  
+  public SelectInput getBuchungsklasse() throws RemoteException
+  {
+    if (buchungsklasse != null)
+    {
+      return buchungsklasse;
+    }
+    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklasse,
+        zusatzbetrag.getBuchungsklasse());
+    return buchungsklasse;
+  }
+  
+  public Long getSelectedBuchungsKlasseId() throws ApplicationException
+  {
+    try
+    {
+      if (null == buchungsklasse)
+        return null;
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
+      if (null == buchungsKlasse)
+        return null;
+      Long id = Long.valueOf(buchungsKlasse.getID());
+      return id;
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
+  
 }

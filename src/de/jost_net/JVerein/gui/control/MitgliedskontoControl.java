@@ -35,6 +35,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
@@ -43,6 +44,7 @@ import de.jost_net.JVerein.io.Mahnungsausgabe;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -119,6 +121,8 @@ public class MitgliedskontoControl extends DruckMailControl
   private DecimalInput betrag;
 
   private AbstractInput buchungsart;
+  
+  private SelectInput buchungsklasse;
 
   // MitgliedskontoMahnung/RechnungView
   public enum TYP
@@ -264,6 +268,37 @@ public class MitgliedskontoControl extends DruckMailControl
         getMitgliedskonto().getBuchungsart());
     return buchungsart;
   }
+  
+  public SelectInput getBuchungsklasse() throws RemoteException
+  {
+    if (buchungsklasse != null)
+    {
+      return buchungsklasse;
+    }
+    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklasse,
+        getMitgliedskonto().getBuchungsklasse());
+    return buchungsklasse;
+  }
+  
+  private Long getSelectedBuchungsKlasseId() throws ApplicationException
+  {
+    try
+    {
+      if (buchungsklasse == null)
+        return null;
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
+      if (null == buchungsKlasse)
+        return null;
+      Long id = Long.valueOf(buchungsKlasse.getID());
+      return id;
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
 
   public Object[] getCVSExportGrenzen(Mitglied selectedMitglied)
   {
@@ -345,12 +380,14 @@ public class MitgliedskontoControl extends DruckMailControl
       mkto.setZweck1((String) getZweck1().getValue());
 
       double steuersatz = 0d;
+      mkto.setBuchungsklasse(getSelectedBuchungsKlasseId());
+      mkto.setBuchungsart((Buchungsart) getBuchungsart().getValue());
       if (getBuchungsart().getValue() != null)
       {
-        mkto.setBuchungsart((Buchungsart) getBuchungsart().getValue());
         Buchungsart bart = mkto.getBuchungsart();
         steuersatz = bart.getSteuersatz();
       }
+
       // Update taxes and netto amount
       mkto.setSteuersatz(steuersatz);
       double netto = ((Double) getBetrag().getValue() / (1d + (steuersatz / 100d)));

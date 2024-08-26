@@ -31,7 +31,7 @@ public class Update0444 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("einstellung", new Column("buchungsklasseInBuchung",
+    /*execute(addColumn("einstellung", new Column("buchungsklasseInBuchung",
         COLTYPE.BOOLEAN, 0, "FALSE", false, false)));
     
     execute(addColumn("buchung", new Column("buchungsklasse",
@@ -42,6 +42,46 @@ public class Update0444 extends AbstractDDLUpdate
     idx.add(col);
     execute(idx.getCreateIndex("buchung"));
     execute(createForeignKey("fkBuchung7", "buchung",
+        "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));*/
+    
+    execute(addColumn("mitgliedskonto", new Column("buchungsklasse",
+        COLTYPE.BIGINT, 0, null, false, false)));
+    Index idx = new Index("ixMitgliedkonto4", false);
+    Column col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false,
+        false);
+    idx.add(col);
+    execute(idx.getCreateIndex("mitgliedskonto"));
+    execute(createForeignKey("fkMitgliedkonto4", "mitgliedskonto",
+        "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
+    
+    execute(addColumn("zusatzabbuchung", new Column("buchungsklasse",
+        COLTYPE.BIGINT, 0, null, false, false)));
+    idx = new Index("ixZusatzabbuchung3", false);
+    col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false,
+        false);
+    idx.add(col);
+    execute(idx.getCreateIndex("zusatzabbuchung"));
+    execute(createForeignKey("fkZusatzabbuchung3", "zusatzabbuchung",
+        "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
+    
+    execute(addColumn("zusatzbetragvorlage", new Column("buchungsklasse",
+        COLTYPE.BIGINT, 0, null, false, false)));
+    idx = new Index("ixZusatzbetragvorlage3", false);
+    col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false,
+        false);
+    idx.add(col);
+    execute(idx.getCreateIndex("zusatzbetragvorlage"));
+    execute(createForeignKey("fkZusatzbetragvorlage3", "zusatzbetragvorlage",
+        "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
+    
+    execute(addColumn("beitragsgruppe", new Column("buchungsklasse",
+        COLTYPE.BIGINT, 0, null, false, false)));
+    idx = new Index("ixBeitragsgruppe2", false);
+    col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false,
+        false);
+    idx.add(col);
+    execute(idx.getCreateIndex("beitragsgruppe"));
+    execute(createForeignKey("fkBeitragsgruppe2", "beitragsgruppe",
         "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
   }
 }

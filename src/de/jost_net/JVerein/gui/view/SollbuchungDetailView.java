@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
@@ -49,6 +50,10 @@ public class SollbuchungDetailView extends AbstractView
     control.getBetrag().setMandatory(true);
     grBuchung.addLabelPair("Betrag", control.getBetrag());
     grBuchung.addLabelPair("Buchungsart", control.getBuchungsart());
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      grBuchung.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
+    }
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

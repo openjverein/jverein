@@ -70,6 +70,10 @@ public class BeitragsgruppeDetailView extends AbstractView
     }
     group.addLabelPair("Beitragsart", control.getBeitragsArt());
     group.addLabelPair("Buchungsart", control.getBuchungsart());
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
+    }
 
     if (Einstellungen.getEinstellung().getArbeitseinsatz())
     {

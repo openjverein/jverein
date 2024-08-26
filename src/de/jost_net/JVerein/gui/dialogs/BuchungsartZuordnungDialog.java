@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -279,32 +280,8 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     {
       return buchungsklassen;
     }
-    DBIterator<Buchungsklasse> it = Einstellungen.getDBService()
-        .createList(Buchungsklasse.class);
-    if (Einstellungen.getEinstellung()
-        .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
-    {
-      it.setOrder("ORDER BY nummer");
-    }
-    else
-    {
-      it.setOrder("ORDER BY bezeichnung");
-    }
-    buchungsklassen = new SelectInput(it != null ? PseudoIterator.asList(it) : null, null);
-
-    switch (Einstellungen.getEinstellung().getBuchungsartSort())
-    {
-      case BuchungsartSort.NACH_NUMMER:
-        buchungsklassen.setAttribute("nrbezeichnung");
-        break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
-        buchungsklassen.setAttribute("bezeichnungnr");
-        break;
-      default:
-        buchungsklassen.setAttribute("bezeichnung");
-        break;
-    }
-    buchungsklassen.setPleaseChoose("Bitte auswählen");
+    buchungsklassen = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklassen,
+        null);
     return buchungsklassen;
   }
 

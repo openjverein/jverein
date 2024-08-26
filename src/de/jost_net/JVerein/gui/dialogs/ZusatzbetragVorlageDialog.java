@@ -22,6 +22,8 @@ import java.rmi.RemoteException;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.menu.ZusatzbetragVorlageMenu;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -114,7 +116,11 @@ public class ZusatzbetragVorlageDialog
     tab.addColumn("Buchungstext", "buchungstext");
     tab.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    tab.addColumn("Buchungsart", "buchungsart");
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      tab.addColumn("Buchungsklasse", "buchungsklasse", 
+          new BuchungsklasseFormatter());
+    tab.addColumn("Buchungsart", "buchungsart",
+        new BuchungsartFormatter());
     tab.setContextMenu(new ZusatzbetragVorlageMenu());
     tab.setRememberColWidths(true);
     tab.setRememberOrder(true);

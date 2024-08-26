@@ -50,6 +50,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SollbuchungAuswahlInput;
 import de.jost_net.JVerein.gui.menu.BuchungMenu;
@@ -506,6 +507,10 @@ public class BuchungsControl extends AbstractControl
             {
               getBuchungsart().setValue(mk.getBuchungsart());
             }
+            if (getBuchungsklasse().getValue() == null)
+            {
+              getBuchungsklasse().setValue(mk.getBuchungsklasse());
+            }
           }
         }
         catch (RemoteException e)
@@ -559,33 +564,8 @@ public class BuchungsControl extends AbstractControl
     {
       return buchungsklasse;
     }
-    DBIterator<Buchungsklasse> it = Einstellungen.getDBService()
-        .createList(Buchungsklasse.class);
-    if (Einstellungen.getEinstellung()
-        .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
-    {
-      it.setOrder("ORDER BY nummer");
-    }
-    else
-    {
-      it.setOrder("ORDER BY bezeichnung");
-    }
-    buchungsklasse = new SelectInput(it != null ? PseudoIterator.asList(it) : null, 
+    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklasse,
         getBuchung().getBuchungsklasse());
-
-    switch (Einstellungen.getEinstellung().getBuchungsartSort())
-    {
-      case BuchungsartSort.NACH_NUMMER:
-        buchungsklasse.setAttribute("nrbezeichnung");
-        break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
-        buchungsklasse.setAttribute("bezeichnungnr");
-        break;
-      default:
-        buchungsklasse.setAttribute("bezeichnung");
-        break;
-    }
-    buchungsklasse.setPleaseChoose("Bitte auswählen");
     if (!getBuchung().getSpeicherung() && 
         Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
@@ -1128,6 +1108,8 @@ public class BuchungsControl extends AbstractControl
   {
     try
     {
+      if (null == buchungsklasse)
+        return null;
       Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
       if (null == buchungsKlasse)
         return null;
@@ -1333,6 +1315,11 @@ public class BuchungsControl extends AbstractControl
       splitbuchungsList.addColumn("Blatt", "blattnummer");
       splitbuchungsList.addColumn("Name", "name");
       splitbuchungsList.addColumn("Verwendungszweck", "zweck");
+      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      {
+        splitbuchungsList.addColumn("Buchungsklasse", "buchungsklasse",
+            new BuchungsklasseFormatter());
+      }
       splitbuchungsList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
       splitbuchungsList.addColumn("Betrag", "betrag",
