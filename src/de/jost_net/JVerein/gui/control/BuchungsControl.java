@@ -632,6 +632,7 @@ public class BuchungsControl extends AbstractControl
               b.setBetrag(ssub.getBetrag() * -1);
               b.setBlattnummer(master.getBlattnummer());
               b.setBuchungsart(master.getBuchungsartId());
+              b.setBuchungsklasse(master.getBuchungsklasseId());
               b.setDatum(su.getAusfuehrungsdatum());
               b.setKonto(master.getKonto());
               b.setName(ssub.getGegenkontoName());

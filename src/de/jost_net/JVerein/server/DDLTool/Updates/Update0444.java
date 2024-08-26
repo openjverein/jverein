@@ -31,7 +31,7 @@ public class Update0444 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    /*execute(addColumn("einstellung", new Column("buchungsklasseInBuchung",
+    execute(addColumn("einstellung", new Column("buchungsklasseInBuchung",
         COLTYPE.BOOLEAN, 0, "FALSE", false, false)));
     
     execute(addColumn("buchung", new Column("buchungsklasse",
@@ -42,12 +42,12 @@ public class Update0444 extends AbstractDDLUpdate
     idx.add(col);
     execute(idx.getCreateIndex("buchung"));
     execute(createForeignKey("fkBuchung7", "buchung",
-        "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));*/
+        "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
     
     execute(addColumn("mitgliedskonto", new Column("buchungsklasse",
         COLTYPE.BIGINT, 0, null, false, false)));
-    Index idx = new Index("ixMitgliedkonto4", false);
-    Column col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false,
+    idx = new Index("ixMitgliedkonto4", false);
+    col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false,
         false);
     idx.add(col);
     execute(idx.getCreateIndex("mitgliedskonto"));
