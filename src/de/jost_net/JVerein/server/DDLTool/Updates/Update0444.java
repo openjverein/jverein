@@ -32,7 +32,7 @@ public class Update0444 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute(addColumn("einstellung", new Column("buchungsklasseInBuchung",
-        COLTYPE.BOOLEAN, 0, "FALSE", false, false)));
+        COLTYPE.BOOLEAN, 0, null, false, false)));
     
     execute(addColumn("buchung", new Column("buchungsklasse",
         COLTYPE.BIGINT, 0, null, false, false)));
