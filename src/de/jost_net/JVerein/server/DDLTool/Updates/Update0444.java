@@ -31,7 +31,7 @@ public class Update0444 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("einstellung", new Column("buchungsklasseInBuchung",
+    execute(addColumn("einstellung", new Column("bkinbuchung",
         COLTYPE.BOOLEAN, 0, null, false, false)));
     
     execute(addColumn("buchung", new Column("buchungsklasse",

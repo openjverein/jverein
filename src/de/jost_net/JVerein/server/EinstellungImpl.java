@@ -2026,12 +2026,12 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   @Override
   public Boolean getBuchungsklasseInBuchung() throws RemoteException
   {
-    return Util.getBoolean(getAttribute("buchungsklasseInBuchung"));
+    return Util.getBoolean(getAttribute("bkinbuchung"));
   }
 
   @Override
-  public void setBuchungsklasseInBuchung(Boolean buchungsklasseInBuchung) throws RemoteException
+  public void setBuchungsklasseInBuchung(Boolean bkinbuchung) throws RemoteException
   {
-    setAttribute("buchungsklasseInBuchung", buchungsklasseInBuchung);
+    setAttribute("bkinbuchung", bkinbuchung);
   }
 }
