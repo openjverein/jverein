@@ -147,9 +147,9 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   }
 
   @Override
-  public int getBuchungsklasseId() throws RemoteException
+  public Long getBuchungsklasseId() throws RemoteException
   {
-    return Integer.parseInt(getBuchungsklasse().getID());
+    return (Long) super.getAttribute("buchungsklasse");
   }
 
   @Override

@@ -263,6 +263,11 @@ public class ZusatzbetragPart implements Part
     return buchungsklasse;
   }
   
+  public boolean isBuchungsklasseActive()
+  {
+    return buchungsklasse != null;
+  }
+  
   public Long getSelectedBuchungsKlasseId() throws ApplicationException
   {
     try

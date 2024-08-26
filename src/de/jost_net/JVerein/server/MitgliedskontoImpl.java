@@ -161,7 +161,7 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   @Override
   public Long getBuchungsklasseId() throws RemoteException
   {
-    return Long.parseLong(getBuchungsklasse().getID());
+    return (Long) super.getAttribute("buchungsklasse");
   }
   
   @Override

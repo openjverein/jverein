@@ -507,7 +507,7 @@ public class BuchungsControl extends AbstractControl
             {
               getBuchungsart().setValue(mk.getBuchungsart());
             }
-            if (getBuchungsklasse().getValue() == null)
+            if (isBuchungsklasseActive() && getBuchungsklasse().getValue() == null)
             {
               getBuchungsklasse().setValue(mk.getBuchungsklasse());
             }
@@ -572,6 +572,11 @@ public class BuchungsControl extends AbstractControl
       buchungsklasse.setMandatory(true);
     }
     return buchungsklasse;
+  }
+  
+  public boolean isBuchungsklasseActive()
+  {
+    return buchungsklasse != null;
   }
 
   public Input getProjekt() throws RemoteException
