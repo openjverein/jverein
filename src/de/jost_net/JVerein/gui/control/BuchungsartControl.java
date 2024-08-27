@@ -30,6 +30,7 @@ import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BuchungsartAction;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.BuchungsartMenu;
 import de.jost_net.JVerein.io.FileViewer;
@@ -377,10 +378,17 @@ public class BuchungsartControl extends AbstractControl
       b.setBezeichnung((String) getBezeichnung().getValue());
       ArtBuchungsart ba = (ArtBuchungsart) getArt().getValue();
       b.setArt(ba.getKey());
-      GenericObject o = (GenericObject) getBuchungsklasse().getValue();
-      if (o != null)
+      if (buchungsklasse != null)
       {
-        b.setBuchungsklasse(Integer.valueOf(o.getID()));
+        GenericObject o = (GenericObject) getBuchungsklasse().getValue();
+        if (o != null)
+        {
+          b.setBuchungsklasse(Integer.valueOf(o.getID()));
+        }
+        else
+        {
+          b.setBuchungsklasse(null);
+        }
       }
       else
       {
@@ -465,7 +473,9 @@ public class BuchungsartControl extends AbstractControl
           return "ungültig";
         }
       }, false, Column.ALIGN_LEFT);
-      buchungsartList.addColumn("Buchungsklasse", "buchungsklasse");
+      if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+        buchungsartList.addColumn("Buchungsklasse", "buchungsklasse",
+            new BuchungsklasseFormatter());
       buchungsartList.addColumn("Spende", "spende", new JaNeinFormatter());
       buchungsartList.addColumn("Steuersatz", "steuersatz", new Formatter()
       {
