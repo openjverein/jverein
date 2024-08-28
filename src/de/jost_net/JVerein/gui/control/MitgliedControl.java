@@ -566,14 +566,17 @@ public class MitgliedControl extends FilterControl
     {
       return zahlungsweg;
     }
+    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
+    if(((Beitragsgruppe) beitragsgruppe.getValue()).getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+      weg.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
     if (getMitglied().getZahlungsweg() != null)
     {
-      zahlungsweg = new SelectInput(Zahlungsweg.getArray(),
+      zahlungsweg = new SelectInput(weg,
           new Zahlungsweg(getMitglied().getZahlungsweg().intValue()));
     }
     else
     {
-      zahlungsweg = new SelectInput(Zahlungsweg.getArray(),
+      zahlungsweg = new SelectInput(weg,
           new Zahlungsweg(Einstellungen.getEinstellung().getZahlungsweg()));
     }
     zahlungsweg.setName("Zahlungsweg");
@@ -623,6 +626,16 @@ public class MitgliedControl extends FilterControl
       }
     });
     return zahlungsweg;
+  }
+  
+  private void refreshZahlungsweg() throws RemoteException
+  {
+    if(beitragsgruppe == null || zahlungsweg == null)
+      return;
+    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
+    if(((Beitragsgruppe) beitragsgruppe.getValue()).getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+      weg.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+    zahlungsweg.setList(weg);
   }
 
   // Lösche alle Daten aus der Bankverbindungsmaske
@@ -1104,8 +1117,8 @@ public class MitgliedControl extends FilterControl
               getZukuenftigeBeitraegeView().setVisible(true);
             }
           }
-
           refreshFamilienangehoerigeTable();
+          refreshZahlungsweg();
 
         }
         catch (RemoteException e)
