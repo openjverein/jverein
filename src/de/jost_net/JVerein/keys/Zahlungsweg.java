@@ -60,7 +60,7 @@ public class Zahlungsweg
       case BARZAHLUNG:
         return "Barzahlung";
       case VOLLZAHLER:
-        return "durch Vollzahler";
+        return "Durch Vollzahler";
       default:
         return null;
     }
