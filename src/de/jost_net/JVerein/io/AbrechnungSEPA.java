@@ -392,7 +392,7 @@ public class AbrechnungSEPA
     {
       if(m.getZahlerID() == null)
         throw new ApplicationException(
-          "Keine Vollzahler vorhanden: " + m.getName() + ", " + m.getVorname());
+          "Kein Vollzahler vorhanden: " + m.getName() + ", " + m.getVorname());
       mZahler = Einstellungen.getDBService().createObject(Mitglied.class, m.getZahlerID().toString());
     }
     if (Einstellungen.getEinstellung()
