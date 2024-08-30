@@ -567,8 +567,12 @@ public class MitgliedControl extends FilterControl
       return zahlungsweg;
     }
     ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
-    if(((Beitragsgruppe) beitragsgruppe.getValue()).getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-      weg.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+    if(beitragsgruppe != null)
+    {
+    	Beitragsgruppe bg = (Beitragsgruppe) beitragsgruppe.getValue();
+    	if(bg != null && bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+    		weg.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+    }
     if (getMitglied().getZahlungsweg() != null)
     {
       zahlungsweg = new SelectInput(weg,
@@ -633,7 +637,8 @@ public class MitgliedControl extends FilterControl
     if(beitragsgruppe == null || zahlungsweg == null)
       return;
     ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
-    if(((Beitragsgruppe) beitragsgruppe.getValue()).getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+    Beitragsgruppe bg = (Beitragsgruppe) beitragsgruppe.getValue();
+    if(bg != null && bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
       weg.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
     zahlungsweg.setList(weg);
   }
