@@ -44,7 +44,7 @@ public class MitgliedLastschriftAction implements Action
   {
     if (context == null || !(context instanceof Mitglied))
     {
-      throw new ApplicationException("kein Mitglied ausgewählt");
+      throw new ApplicationException("Kein Mitglied ausgewählt");
     }
     Mitglied m = null; // Mitglied
     Mitglied mZ = null; // Zahler
