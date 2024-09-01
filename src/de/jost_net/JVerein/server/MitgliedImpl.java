@@ -266,6 +266,11 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
         throw new ApplicationException(
             "Der ausgewählte Vollzahler ist ausgetreten zu " + z.getAustritt() + ". Bitte anderen Vollzahler wählen!");
       }
+      if(z != null && ((Mitglied)z).getEintritt().after(new Date()) && ((Mitglied)z).getEintritt().after(getEintritt()))
+      {
+    	throw new ApplicationException(
+    	    "Der ausgewählte Vollzahler tritt erst ein zu " + z.getEintritt() + ". Bitte anderen Vollzahler wählen!");
+      }
     }
     // Check ob Beitragsart evtl. vorher für andere gezahlt wurde
     if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)

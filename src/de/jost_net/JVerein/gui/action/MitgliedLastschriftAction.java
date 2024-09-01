@@ -46,14 +46,38 @@ public class MitgliedLastschriftAction implements Action
     {
       throw new ApplicationException("kein Mitglied ausgewählt");
     }
-    Mitglied m = null;
+    Mitglied m = null; // Mitglied
+    Mitglied mZ = null; // Zahler
     SepaLastschrift sl = null;
     try
     {
       m = (Mitglied) context;
 
+      // pruefe wer der Zahler ist
+      if (m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER && m.getZahlerID() != null)
+      {
+        // Mitglied ist Familienangehoeriger, hat also anderen Zahler
+        mZ = (Mitglied) Einstellungen.getDBService().createObject(
+            Mitglied.class, m.getZahlerID() + "");
+
+        if (!confirmDialog("Familienangehöriger",
+            "Dieses Mitglied ist ein Familienangehöriger.\n\n"
+                + "Als Konto wird das Konto des Zahlers belastet:\n"
+                + "Zahler: " + mZ.getName() + "," + mZ.getVorname() + "\n"
+                + "Kontoinhaber des Zahlers: " + mZ.getKontoinhaber(1)))
+        {
+          return;
+        }
+
+      }
+      else
+      {
+        // Mitglied zahlt selbst
+        mZ = m;
+      }
+
       // pruefe Kontoinformationen
-      if (checkSEPA(m))
+      if (checkSEPA(mZ))
       {
         sl = (SepaLastschrift) Settings.getDBService().createObject(
             SepaLastschrift.class, null);
@@ -62,13 +86,13 @@ public class MitgliedLastschriftAction implements Action
         sl.setCreditorId(Einstellungen.getEinstellung().getGlaeubigerID());
 
         // Kontodaten: Name, BIC, IBAN
-        sl.setGegenkontoName(m.getKontoinhaber(1));
-        sl.setGegenkontoBLZ(m.getBic());
-        sl.setGegenkontoNummer(m.getIban());
+        sl.setGegenkontoName(mZ.getKontoinhaber(1));
+        sl.setGegenkontoBLZ(mZ.getBic());
+        sl.setGegenkontoNummer(mZ.getIban());
 
         // Mandat: ID, Datum, Typ
-        sl.setMandateId(m.getMandatID());
-        sl.setSignatureDate(m.getMandatDatum());
+        sl.setMandateId(mZ.getMandatID());
+        sl.setSignatureDate(mZ.getMandatDatum());
         sl.setSequenceType(SepaLastSequenceType.RCUR);
 
         // Verwendungszweck vorbelegen: "Mitgliedsnummer/Mitgliedsname"
