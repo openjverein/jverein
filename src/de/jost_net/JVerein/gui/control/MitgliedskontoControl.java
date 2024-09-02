@@ -36,6 +36,7 @@ import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.io.Kontoauszug;
@@ -261,7 +262,7 @@ public class MitgliedskontoControl extends DruckMailControl
       return buchungsart;
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getMitgliedskonto().getBuchungsart());
+        getMitgliedskonto().getBuchungsart(), buchungsarttyp.BUCHUNGSART);
     return buchungsart;
   }
 

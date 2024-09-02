@@ -34,6 +34,7 @@ import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -484,7 +485,7 @@ public class KontoControl extends AbstractControl
       return anlagenart;
     }
     anlagenart = new BuchungsartInput().getBuchungsartInput( anlagenart,
-        getKonto().getAnlagenart());
+        getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART);
     anlagenart.addListener(new AnlagenartListener());
     return anlagenart;
   }
@@ -549,7 +550,7 @@ public class KontoControl extends AbstractControl
       return afaart;
     }
     afaart = new BuchungsartInput().getBuchungsartInput( afaart,
-        getKonto().getAfaart());
+        getKonto().getAfaart(), buchungsarttyp.AFAART);
     afaart.addListener(new AnlagenartListener());
     return afaart;
   }
