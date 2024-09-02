@@ -2085,6 +2085,7 @@ public class BuchungsControl extends AbstractControl
       calendar.add(Calendar.DAY_OF_MONTH, -1);
       bisdatum.setValue(calendar.getTime());
       suchtext.setValue("");
+      mitglied.setValue("");
       refreshBuchungsList();
     }
     catch (Exception ex)

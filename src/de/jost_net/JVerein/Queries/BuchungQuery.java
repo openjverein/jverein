@@ -256,7 +256,7 @@ public class BuchungQuery
       String ttext = text.toUpperCase();
       ttext = "%" + ttext + "%";
       it.addFilter(
-          "(upper(name) like ? or upper(zweck) like ? or upper(kommentar) like ?) ",
+          "(upper(buchung.name) like ? or upper(zweck) like ? or upper(kommentar) like ?) ",
           ttext, ttext, ttext);
     }
 
