@@ -253,11 +253,21 @@ public class BuchungQuery
 
     if (text.length() > 0)
     {
+      Long id = 0L;
+      try
+      {
+        id = Long.parseLong(text);
+      }
+      catch (Exception e)
+      {
+        ;
+      }
       String ttext = text.toUpperCase();
       ttext = "%" + ttext + "%";
       it.addFilter(
-          "(upper(buchung.name) like ? or upper(zweck) like ? or upper(kommentar) like ?) ",
-          ttext, ttext, ttext);
+          "(upper(buchung.name) like ? or upper(zweck) like ? "
+          + "or upper(kommentar) like ? or id = ?) ",
+          ttext, ttext, ttext, id);
     }
 
     // 20220823: sbuer: Neue Sortierfelder
