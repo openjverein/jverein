@@ -234,7 +234,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     if (getAustritt() != null)
     {
       // Person ist ausgetreten
-      // Hat das Mitglied für andere gezahlt?
+      // Ist das Mitglied Vollzahler in einem Familienverband?
       if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
       {
         DBIterator<Mitglied> famang = Einstellungen.getDBService()
@@ -244,11 +244,11 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
         if (famang.hasNext())
         {
           throw new ApplicationException(
-              "Dieses Mitglied zahlt noch für andere Mitglieder. Zunächst Beitragsart der Angehörigen ändern!");
+              "Dieses Mitglied ist Vollzahler für andere. Zunächst Beitragsart der Angehörigen ändern!");
         }
       }
     }
-    // Zahlt jemand anderes für das Mitglied?
+    // Ist das Mitglied Teil eines Familienverbandes?
     if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
         && getZahlerID() != null)
     {
@@ -272,17 +272,17 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     	    "Der ausgewählte Vollzahler tritt erst ein zu " + z.getEintritt() + ". Bitte anderen Vollzahler wählen!");
       }
     }
-    // Check ob Beitragsart evtl. vorher für andere gezahlt wurde
+    // Check ob das Mitglied vorher ein Vollzahler eines Familienverbandes war
     if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
     {
-      // Angehöriger und darf damit für niemanden zahlen
+      // Es darf keine Familienangehörigen geben
       DBIterator<Mitglied> famang = Einstellungen.getDBService()
           .createList(Mitglied.class);
       famang.addFilter("zahlerid = " + getID());
       if (famang.hasNext())
       {
         throw new ApplicationException(
-            "Dieses Mitglied zahlt noch für andere Mitglieder. Zunächst Beitragsart der Angehörigen ändern!");
+            "Dieses Mitglied ist Vollzahler in einem Familienverband.. Zunächst Beitragsart der Angehörigen ändern!");
       }
     }
     if (getBeitragsgruppe() != null
