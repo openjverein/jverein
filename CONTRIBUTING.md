@@ -28,6 +28,7 @@ Build und Test sind hier beschrieben: https://www.willuhn.de/wiki/doku.php?id=de
 # Einrichtung der IDE
 ## Eclipse 
 Die Einrichtung von Eclipse ist hier: https://www.willuhn.de/wiki/doku.php?id=develop:eclipse und hier: https://www.willuhn.de/wiki/doku.php?id=develop:jameica:faq beschrieben.
+Die Einrichtung von Eclipse ist hier: https://www.willuhn.de/wiki/doku.php?id=develop:eclipse und hier: https://www.willuhn.de/wiki/doku.php?id=develop:jameica:faq beschrieben.
 
 ## IntelliJ
 Für die Verwendung von IntelliJ folge diesen Schritten:
@@ -39,13 +40,15 @@ Für die Verwendung von IntelliJ folge diesen Schritten:
 ### Projekt-Struktur
 1. Um das JVerein-Projekt anzulegen, folge dieser Anleitung: https://www.jetbrains.com/help/idea/import-project-from-eclipse-page-1.html#import-project (Unter dem Punkt "Import a project with settings") und wähle den JVerein Ordner aus.
 2. Importiere die entpackten Nightly-Build Ordner als Module nach dieser Anleitung: https://www.jetbrains.com/help/idea/import-project-from-eclipse-page-1.html#import-as-module (Unter dem Punkt "Import an Eclipse project as a module")
-3. Führe einen Build des Projekts aus (Strg + F9)
-4. Behebe die Build-Fehler, in dem du mit der Maus über die markierten Importe fährst und in den Quick-Fixes jeweils "Add library <xy> to classpath" auswählst. Führe danach den Build erneut aus.
-5. Lege eine neue Run/Debug Configuration an. Wähle dort "Application".
-6. In der Configuration wähle als Modul "jameica" und als Main Class "de.willuhn.jameica.Main". Für die Program Arguments siehe https://www.willuhn.de/wiki/doku.php?id=develop:eclipse#launch-konfiguration_anlegen. Als Working Directory wähle jameica-<version>-nightly.src/jameica.
+3. Jetzt muss sichergestellt werden, dass die richtige SWT ausgewählt wurde. Dazu öffne File->Project Structure. Wähle in diesem Menü swt.jar aus. Dort drückst du auf das "+" und lokalisierst wie hier: https://www.willuhn.de/wiki/doku.php?id=develop:eclipse#classpath_anpassen beschrieben, die für dein System passende SWT aus.
+4. Führe einen Build des Projekts aus (Strg + F9)
+5. Behebe die Build-Fehler, in dem du mit der Maus über die markierten Importe fährst und in den Quick-Fixes jeweils "Add library <xy> to classpath" auswählst. Führe danach den Build erneut aus.
+6. Lege eine neue Run/Debug Configuration an. Wähle dort "Application".
+7. In der Configuration wähle als Modul "jameica" und als Main Class "de.willuhn.jameica.Main". Für die Program Arguments siehe https://www.willuhn.de/wiki/doku.php?id=develop:eclipse#launch-konfiguration_anlegen. Als Working Directory wähle jameica-<version>-nightly.src/jameica.
 
 ### Erster Start
 1. Führe die eben erstellte Configuration aus. Noch sind keine Plugins installiert, schließe daher Jameica wieder.
 2. Navigiere in den erstellten jameica.test Ordner und öffne die Datei cfg/de.willuhn.jameica.system.Config.properties in einem Text-Editor.
 3. Füge die Zeilen "jameica.plugin.dir.0=../../hibiscus-<version>-nightly.src/hibiscus" und "jameica.plugin.dir.1=../../jverein" in die Datei ein.
-4. Führe nun die Jameica-Configuration erneut aus und die Plugins werden jetzt geladen. Die Einrichtung ist nun abgeschlossen und du kannst anfangen an diesem Projekt mitzuwirken.
+4. Führe nun die Jameica-Configuration erneut aus und die Plugins werden jetzt geladen. Die Einrichtung ist abgeschlossen und du kannst anfangen an diesem Projekt mitzuwirken.
+5. Wenn du etwas am Code geändert hast und du deine Änderungen testen willst, musst du vor dem erneuten Ausführen der Run-Configuration einen Rebuild des Projekts durchführen.
