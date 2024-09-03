@@ -28,7 +28,6 @@ Build und Test sind hier beschrieben: https://www.willuhn.de/wiki/doku.php?id=de
 # Einrichtung der IDE
 ## Eclipse 
 Die Einrichtung von Eclipse ist hier: https://www.willuhn.de/wiki/doku.php?id=develop:eclipse und hier: https://www.willuhn.de/wiki/doku.php?id=develop:jameica:faq beschrieben.
-Die Einrichtung von Eclipse ist hier: https://www.willuhn.de/wiki/doku.php?id=develop:eclipse und hier: https://www.willuhn.de/wiki/doku.php?id=develop:jameica:faq beschrieben.
 
 ## IntelliJ
 Für die Verwendung von IntelliJ folge diesen Schritten:
