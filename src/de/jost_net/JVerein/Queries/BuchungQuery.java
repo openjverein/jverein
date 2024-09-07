@@ -157,11 +157,13 @@ public class BuchungQuery
     
     if (mitglied != null && !mitglied.isEmpty())
     {
+      String mitgliedsuche = "%" + mitglied.toLowerCase() + "%";
       it.join("mitgliedskonto");
       it.addFilter("mitgliedskonto.id = mitgliedskonto");
       it.join("mitglied");
       it.addFilter("mitglied.id = mitgliedskonto.mitglied");
-      it.addFilter("lower(mitglied.name) like ?", "%" + mitglied.toLowerCase() + "%");
+      it.addFilter("(lower(mitglied.name) like ? or lower(mitglied.vorname) like ?)",
+          new Object[] { mitgliedsuche, mitgliedsuche });
     }
     
     it.addFilter("buchung.datum >= ? ", datumvon);
@@ -265,8 +267,8 @@ public class BuchungQuery
       String ttext = text.toUpperCase();
       ttext = "%" + ttext + "%";
       it.addFilter(
-          "(upper(buchung.name) like ? or upper(zweck) like ? "
-          + "or upper(kommentar) like ? or id = ?) ",
+          "(upper(buchung.name) like ? or upper(buchung.zweck) like ? "
+          + "or upper(buchung.kommentar) like ? or buchung.id = ?) ",
           ttext, ttext, ttext, id);
     }
 
