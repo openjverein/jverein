@@ -125,7 +125,7 @@ public class MyExtension implements Extension
       DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
           .createList(Beitragsgruppe.class);
       it.addFilter("beitragsart = ?",
-          new Object[] { ArtBeitragsart.FAMILIE_ZAHLER.getKey() });
+          new Object[] { ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey() });
       if (it.size() > 0)
       {
         mitglieder.addChild(new MyItem(mitglieder, "Familienbeitrag",

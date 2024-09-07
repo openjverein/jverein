@@ -52,7 +52,7 @@ public class VCardTool
       Date geburtsdatum = m.getGeburtsdatum();
       if (!geburtsdatum.equals(Einstellungen.NODATE))
       {
-        Birthday bd = new Birthday(geburtsdatum);
+        Birthday bd = new Birthday(geburtsdatum.toString());
         vcard.setBirthday(bd);
       }
 

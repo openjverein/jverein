@@ -31,10 +31,8 @@ import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
-import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
@@ -79,14 +77,8 @@ public class MitgliedQuery
     sql += "from mitglied ";
     Settings settings = control.getSettings();
     char synonym = 'a';
-    DBIterator<Felddefinition> fdit = Einstellungen.getDBService()
-        .createList(Felddefinition.class);
     if (control.isZusatzfelderAuswahlAktiv())
     {
-      if (settings.getInt(zusatzfelder + "selected", 0) > fdit.size())
-      {
-        settings.setAttribute(zusatzfelder + "selected", 0);
-      }
       if (settings.getInt(zusatzfelder + "selected", 0) > 0)
       {
         for (int i = 1; i <= settings.getInt(zusatzfelder + "counter", 0); i++)
@@ -138,10 +130,14 @@ public class MitgliedQuery
           }
           case Datentyp.GANZZAHL:
           {
-            int value = settings.getInt(zusatzfeld + i + ".value",
-                Integer.MIN_VALUE);
+            Integer value = null;
+            String tmp = settings.getString(zusatzfeld + i + ".value", "");
+            if (tmp != null && !tmp.isEmpty())
+            {
+              value = Integer.parseInt(tmp);
+            }
             String cond = settings.getString(zusatzfeld + i + ".cond", null);
-            if (value != Integer.MIN_VALUE)
+            if (value != null)
             {
               sql += "join zusatzfelder " + synonym + " on " + synonym
                   + ".mitglied = mitglied.id  and " + synonym + ".FELDGANZZAHL "

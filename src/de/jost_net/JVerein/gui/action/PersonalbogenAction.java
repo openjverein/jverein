@@ -323,12 +323,12 @@ public class PersonalbogenAction implements Action
         }
       }
       if (m.getBeitragsgruppe()
-          .getBeitragsArt() == ArtBeitragsart.FAMILIE_ZAHLER)
+          .getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
       {
         DBIterator<Mitglied> itbg = Einstellungen.getDBService()
             .createList(Mitglied.class);
         itbg.addFilter("zahlerid = ?", m.getID());
-        rpt.addColumn("Zahler für", Element.ALIGN_LEFT);
+        rpt.addColumn("Vollzahler mit Angehörigen", Element.ALIGN_LEFT);
         String zahltfuer = "";
         while (itbg.hasNext())
         {
@@ -346,7 +346,7 @@ public class PersonalbogenAction implements Action
       {
         Mitglied mfa = (Mitglied) Einstellungen.getDBService()
             .createObject(Mitglied.class, m.getZahlerID() + "");
-        rpt.addColumn("Zahler", Element.ALIGN_LEFT);
+        rpt.addColumn("Vollzahlendes Familienmitglied", Element.ALIGN_LEFT);
         rpt.addColumn(Adressaufbereitung.getNameVorname(mfa),
             Element.ALIGN_LEFT);
       }

@@ -2,6 +2,9 @@ package de.jost_net.JVereinJUnit.VCard;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.ZoneOffset;
 
 import javax.xml.transform.TransformerException;
 
@@ -32,8 +35,8 @@ public class VCardTest
     VCard[] vcard = { createVCard(), createVCard() };
 
     // write vCard
-    File file = new File("john-doe.vcf");
-    System.out.println("Writing " + file.getName() + "...");
+    Path file = Paths.get("john-doe.vcf");
+    System.out.println("Writing " + file.getFileName() + "...");
     Ezvcard.write(vcard).version(VCardVersion.V4_0).go(file);
   }
 
@@ -94,8 +97,7 @@ public class VCardTest
 
     vcard.setGeo(37.6, -95.67);
 
-    java.util.TimeZone tz = java.util.TimeZone.getTimeZone("America/New_York");
-    vcard.setTimezone(new Timezone(tz));
+    vcard.setTimezone(new Timezone(ZoneOffset.ofHours(-5), "America/New_York"));
 
     vcard.setUid(Uid.random());
 

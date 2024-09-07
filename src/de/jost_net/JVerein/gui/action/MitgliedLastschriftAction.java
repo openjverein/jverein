@@ -24,7 +24,6 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
@@ -45,7 +44,7 @@ public class MitgliedLastschriftAction implements Action
   {
     if (context == null || !(context instanceof Mitglied))
     {
-      throw new ApplicationException("kein Mitglied ausgewählt");
+      throw new ApplicationException("Kein Mitglied ausgewählt");
     }
     Mitglied m = null; // Mitglied
     Mitglied mZ = null; // Zahler
@@ -55,8 +54,7 @@ public class MitgliedLastschriftAction implements Action
       m = (Mitglied) context;
 
       // pruefe wer der Zahler ist
-      if (m.getBeitragsgruppe() != null
-          && m.getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+      if (m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER && m.getZahlerID() != null)
       {
         // Mitglied ist Familienangehoeriger, hat also anderen Zahler
         mZ = (Mitglied) Einstellungen.getDBService().createObject(

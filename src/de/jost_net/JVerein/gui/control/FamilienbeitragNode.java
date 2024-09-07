@@ -19,6 +19,8 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -62,8 +64,25 @@ public class FamilienbeitragNode implements GenericObjectNode
     this.children = new ArrayList<>();
     DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
         .createList(Beitragsgruppe.class);
-    it.addFilter("beitragsart = ?",
-        new Object[] { ArtBeitragsart.FAMILIE_ZAHLER.getKey() });
+    it.addFilter("beitragsart != ?",
+        new Object[] { ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey() });
+    
+    Set<String> set = new HashSet<String>();
+    DBIterator<Mitglied> angIt = Einstellungen.getDBService()
+        .createList(Mitglied.class);
+    angIt.addFilter("zahlerid is not null and zahlerid != 0");
+    if (status.getValue().equals("Angemeldet"))
+      angIt.addFilter("austritt is null");
+    if (status.getValue().equals("Abgemeldet"))
+      angIt.addFilter("austritt is not null");
+    while(angIt.hasNext())
+    {
+      Mitglied a = angIt.next();
+      if(!set.contains(a.getZahlerID().toString()))
+      {
+        set.add(a.getZahlerID().toString());
+      }
+    }
     while (it.hasNext())
     {
       Beitragsgruppe bg = it.next();
@@ -78,6 +97,9 @@ public class FamilienbeitragNode implements GenericObjectNode
       while (it2.hasNext())
       {
         Mitglied m = it2.next();
+        //nur anzeigen wenn es angehörige gibt
+        if(!set.contains(m.getID()))
+          continue;
         FamilienbeitragNode fbn = new FamilienbeitragNode(this, m);
         children.add(fbn);
       }

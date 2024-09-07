@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Messaging.FamilienbeitragMessage;
 import de.jost_net.JVerein.gui.control.FamilienbeitragNode;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
@@ -81,6 +82,8 @@ public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
     LabelGroup lgBank = new LabelGroup(parent, "Bankverbindung");
     lgBank.addLabelPair("IBAN", control.getIban());
     lgBank.addLabelPair("BIC", control.getBic());
+    LabelGroup lgZahlungsweg = new LabelGroup(parent, "Zahlungsweg");
+    lgZahlungsweg.addLabelPair("Zahlungsweg", control.getZahlungsweg());
     // lgBank.addLabelPair("Kontoinhaber", control.getKontoinhaber());
     ButtonArea b = new ButtonArea();
     b.addButton("Weiter", new Action()
@@ -102,6 +105,9 @@ public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
           // m.setKontoinhaber((String) control.getKontoinhaber().getValue());
           m.setZahlerID(null);
           m.setLetzteAenderung();
+          m.setIban(control.getIban().getValue().toString());
+          m.setBic(control.getBic().getValue().toString());
+          m.setZahlungsweg(((Zahlungsweg)control.getZahlungsweg().getValue()).getKey());
           m.store();
           Application.getMessagingFactory().sendMessage(
               new FamilienbeitragMessage(m));

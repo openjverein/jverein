@@ -161,7 +161,7 @@ public class MitgliedNextBGruppeControl extends AbstractControl
   {
     Mitglied mitglied = getMitglied();
     Beitragsgruppe beitragsGruppe = mitglied.getBeitragsgruppe();
-    return (beitragsGruppe.getBeitragsArt() == ArtBeitragsart.FAMILIE_ZAHLER);
+    return (beitragsGruppe.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER);
   }
 
   public Input getBeitragsgruppeInput() throws RemoteException
@@ -173,15 +173,10 @@ public class MitgliedNextBGruppeControl extends AbstractControl
     DBIterator<Beitragsgruppe> list = Einstellungen.getDBService()
         .createList(Beitragsgruppe.class);
     list.setOrder("ORDER BY bezeichnung");
-    if (isFamilienMitglied())
+    list.addFilter("sekundaer = 0");
+    if (!isFamilienMitglied())
     {
-      list.addFilter("beitragsart is not null");
-      list.addFilter("beitragsart = ?", ArtBeitragsart.FAMILIE_ZAHLER.getKey());
-    }
-    else
-    {
-      list.addFilter("beitragsart is null or beitragsart not in (?,?)",
-          ArtBeitragsart.FAMILIE_ZAHLER.getKey(),
+      list.addFilter("(beitragsart is null or beitragsart != ?)",
           ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
     }
     beitragsgruppe = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
