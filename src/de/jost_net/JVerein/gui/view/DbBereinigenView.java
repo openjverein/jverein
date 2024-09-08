@@ -56,6 +56,20 @@ public class DbBereinigenView extends AbstractView
     lleft.addLabelPair("Löschen", control.getLastschriftenLoeschen());
     SimpleContainer lright = new SimpleContainer(lcl.getComposite());
     lright.addLabelPair("Fälligkeit älter als", control.getDatumAuswahlLastschriften());
+    
+    LabelGroup groupabrechnungslauf = new LabelGroup(getParent(), "Abrechnungsläufe");
+    ColumnLayout acl = new ColumnLayout(groupabrechnungslauf.getComposite(), 2);
+    SimpleContainer aleft = new SimpleContainer(acl.getComposite());
+    aleft.addLabelPair("Löschen", control.getAbrechnungslaufLoeschen());
+    SimpleContainer aright = new SimpleContainer(acl.getComposite());
+    aright.addLabelPair("Fälligkeit älter als", control.getDatumAuswahlAbrechnungslauf());
+    
+    LabelGroup groupjahresabschluss = new LabelGroup(getParent(), "Jahresabschlüsse");
+    ColumnLayout jcl = new ColumnLayout(groupjahresabschluss.getComposite(), 2);
+    SimpleContainer jleft = new SimpleContainer(jcl.getComposite());
+    jleft.addLabelPair("Löschen", control.getJahresabschlussLoeschen());
+    SimpleContainer jright = new SimpleContainer(jcl.getComposite());
+    jright.addLabelPair("Bis Datum älter als", control.getDatumAuswahlJahresabschluss());
 
     LabelGroup groupmails = new LabelGroup(getParent(), "Mails");
     ColumnLayout mcl = new ColumnLayout(groupmails.getComposite(), 2);

@@ -22,6 +22,8 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
@@ -289,6 +291,14 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
   {
     Mitglied mitglied = mitgliedBeitraege.getMitglied();
     Beitragsgruppe beitragsGruppe = mitgliedBeitraege.getBeitragsgruppe();
+    //Wenn es bisher ein angehöriger war und jetzt nicht mehr zahlerid entfernen
+    if(mitglied.getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER && beitragsGruppe.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+    {
+      mitglied.setZahlerID(null);
+      //Bei Zahlung über Vollzahler Zahlungsweg umstellen
+      if(mitglied.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        mitglied.setZahlungsweg(Einstellungen.getEinstellung().getZahlungsweg());
+    }
     mitglied.setBeitragsgruppe(Integer.valueOf(beitragsGruppe.getID()));
     mitglied.store();
     mitgliedBeitraege.delete();

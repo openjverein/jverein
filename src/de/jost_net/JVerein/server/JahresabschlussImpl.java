@@ -55,28 +55,6 @@ public class JahresabschlussImpl extends AbstractDBObject
   }
 
   @Override
-  protected void deleteCheck() throws ApplicationException
-  {
-    try
-    {
-      DBIterator<Jahresabschluss> it = Einstellungen.getDBService()
-          .createList(Jahresabschluss.class);
-      it.addFilter("von > ?", new Object[] { getVon() });
-      if (it.hasNext())
-      {
-        throw new ApplicationException(
-            "Jahresabschluss kann nicht gelöscht werden. Es existieren neuere Abschlüsse!");
-      }
-    }
-    catch (RemoteException e)
-    {
-      String msg = "Jahresabschluss kann nicht gelöscht werden. Siehe system log";
-      throw new ApplicationException(msg);
-    }
-
-  }
-
-  @Override
   protected void insertCheck() throws ApplicationException
   {
     try

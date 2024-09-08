@@ -585,53 +585,23 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
       }
 
       // Wenn es mindestens eine Beitragsgruppe mit Beitragsart
-      // "Familie: Zahler"
-      // oder "Familie: Angehöriger" gibt, zeige Familienverband-Part.
+      // "Familienangehöriger" gibt, zeige Familienverband-Part.
       // Dieser Familien-Part soll über die komplette Breite angezeigt werden,
       // kann daher nicht im SimpleVerticalContainer angezeigt werden.
       DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
           .createList(Beitragsgruppe.class);
-      it.addFilter("beitragsart = ? or beitragsart = ?",
-          ArtBeitragsart.FAMILIE_ZAHLER.getKey(),
+      it.addFilter("beitragsart = ?",
           ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
       if (it.hasNext())
       {
-        // Verstecke Familienverband wenn aktuelles Mitglied nicht Teil einer
-        // Familie ist.
-        if (isBeitragsGruppeFuerFamilieAktiv() == false)
-        {
-          control.getFamilienverband().setVisible(false);
-        }
         // Container lässt nur das Hinzufügen von Parts zu.
         // Aus diesem Grund ist Part Familienverband dynamisch:
         // Entweder wird der Familienverband angezeigt (setShow(true))
         // oder ein leeres Composite (setShow(false))
         container.addPart(control.getFamilienverband());
       }
-      if (isBeitragsGruppeFuerZahlerAktiv() == false)
-        control.getZukuenftigeBeitraegeView().setVisible(false);
       container.addPart(control.getZukuenftigeBeitraegeView());
     }
-  }
-
-  private boolean isBeitragsGruppeFuerZahlerAktiv() throws RemoteException
-  {
-    Beitragsgruppe gruppe = control.getMitglied().getBeitragsgruppe();
-    if (null == gruppe)
-      return false;
-    if (gruppe.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-      return false;
-    return true;
-  }
-
-  private boolean isBeitragsGruppeFuerFamilieAktiv() throws RemoteException
-  {
-    Beitragsgruppe gruppe = control.getMitglied().getBeitragsgruppe();
-    if (null == gruppe)
-      return false;
-    if (gruppe.getBeitragsArt() == ArtBeitragsart.NORMAL)
-      return false;
-    return true;
   }
 
   /**

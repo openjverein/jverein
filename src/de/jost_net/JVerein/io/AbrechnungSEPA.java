@@ -42,7 +42,6 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
-import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
@@ -341,7 +340,7 @@ public class AbrechnungSEPA
         }
       }
 
-      list.setOrder("ORDER BY name, vorname");
+      list.setOrder("ORDER BY zahlungsweg, name, vorname");
 
       // Sätze im Resultset
       int count = 0;
@@ -387,11 +386,19 @@ public class AbrechnungSEPA
   {
     Double betr = 0d;
     JVereinZahler zahler = null;
+    Mitglied mZahler = m;
+    if(m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+    {
+      if(m.getZahlerID() == null)
+        throw new ApplicationException(
+          "Kein Vollzahler vorhanden: " + m.getName() + ", " + m.getVorname());
+      mZahler = Einstellungen.getDBService().createObject(Mitglied.class, m.getZahlerID().toString());
+    }
     if (Einstellungen.getEinstellung()
         .getBeitragsmodel() == Beitragsmodel.FLEXIBEL)
     {
-      if (m.getZahlungstermin() != null
-          && !m.getZahlungstermin().isAbzurechnen(param.abrechnungsmonat))
+      if (mZahler.getZahlungstermin() != null
+          && !mZahler.getZahlungstermin().isAbzurechnen(param.abrechnungsmonat))
       {
         return zahler;
       }
@@ -401,7 +408,7 @@ public class AbrechnungSEPA
     {
       betr = BeitragsUtil.getBeitrag(
           Einstellungen.getEinstellung().getBeitragsmodel(),
-          m.getZahlungstermin(), m.getZahlungsrhythmus().getKey(), bg,
+          mZahler.getZahlungstermin(), mZahler.getZahlungsrhythmus().getKey(), bg,
           param.stichtag, m.getEintritt(), m.getAustritt());
     }
     catch (NullPointerException e)
@@ -421,7 +428,7 @@ public class AbrechnungSEPA
     {
       return zahler;
     }
-    if (!checkSEPA(m, monitor))
+    if (!checkSEPA(mZahler, monitor))
     {
       return zahler;
     }
@@ -441,54 +448,38 @@ public class AbrechnungSEPA
     writeMitgliedskonto(m,
         param.faelligkeit,
         primaer ? vzweck : bg.getBezeichnung(), betr, abrl,
-        m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT, konto,
+        mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT, konto,
         bg.getBuchungsart());
-    if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+    if (mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
     {
       try
       {
         zahler = new JVereinZahler();
-        zahler.setPersonId(m.getID());
+        zahler.setPersonId(mZahler.getID());
         zahler.setPersonTyp(JVereinZahlerTyp.MITGLIED);
         zahler.setBetrag(
             BigDecimal.valueOf(betr).setScale(2, RoundingMode.HALF_UP));
-        new BIC(m.getBic()); // Prüfung des BIC
-        zahler.setBic(m.getBic());
-        new IBAN(m.getIban()); // Prüfung der IBAN
-        zahler.setIban(m.getIban());
-        zahler.setMandatid(m.getMandatID());
-        zahler.setMandatdatum(m.getMandatDatum());
+        new BIC(mZahler.getBic()); // Prüfung des BIC
+        zahler.setBic(mZahler.getBic());
+        new IBAN(mZahler.getIban()); // Prüfung der IBAN
+        zahler.setIban(mZahler.getIban());
+        zahler.setMandatid(mZahler.getMandatID());
+        zahler.setMandatdatum(mZahler.getMandatDatum());
         zahler.setMandatsequence(MandatSequence.RCUR);
         zahler.setFaelligkeit(param.faelligkeit);
-        if (primaer)
+        if (primaer && m.getZahlungsweg() != Zahlungsweg.VOLLZAHLER)
         {
-          zahler.setVerwendungszweck(getVerwendungszweck2(m) + " " + vzweck);
+          zahler.setVerwendungszweck(getVerwendungszweck2(mZahler) + " " + vzweck);
         }
         else
         {
           zahler.setVerwendungszweck(bg.getBezeichnung());
         }
-        if (m.getBeitragsgruppe()
-            .getBeitragsArt() == ArtBeitragsart.FAMILIE_ZAHLER)
+        if(m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
         {
-          DBIterator<Mitglied> angeh = Einstellungen.getDBService()
-              .createList(Mitglied.class);
-          angeh.addFilter("zahlerid = ?", m.getID());
-          String an = "";
-          int i = 0;
-          while (angeh.hasNext())
-          {
-            Mitglied a = (Mitglied) angeh.next();
-            if (i > 0)
-            {
-              an += ", ";
-            }
-            i++;
-            an += a.getVorname();
-          }
-          zahler.setVerwendungszweck(zahler.getVerwendungszweck() + " " + an);
+          zahler.setVerwendungszweck(zahler.getVerwendungszweck() + " " + m.getVorname());
         }
-        zahler.setName(m.getKontoinhaber(1));
+        zahler.setName(mZahler.getKontoinhaber(1));
       }
       catch (Exception e)
       {
@@ -521,7 +512,12 @@ public class AbrechnungSEPA
         {
           continue;
         }
-        if (!checkSEPA(m, monitor))
+        Mitglied mZahler = m;
+        if(m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        {
+          mZahler = Einstellungen.getDBService().createObject(Mitglied.class, m.getZahlerID().toString());
+        }
+        if (!checkSEPA(mZahler, monitor))
         {
           continue;
         }
@@ -538,24 +534,24 @@ public class AbrechnungSEPA
         {
           Logger.error("Fehler bei der Aufbereitung der Variablen", e);
         }
-        if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+        if (mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
         {
           try
           {
             JVereinZahler zahler = new JVereinZahler();
-            zahler.setPersonId(m.getID());
+            zahler.setPersonId(mZahler.getID());
             zahler.setPersonTyp(JVereinZahlerTyp.MITGLIED);
             zahler.setBetrag(BigDecimal.valueOf(z.getBetrag()).setScale(2,
                 RoundingMode.HALF_UP));
-            new BIC(m.getBic());
-            new IBAN(m.getIban());
-            zahler.setBic(m.getBic());
-            zahler.setIban(m.getIban());
-            zahler.setMandatid(m.getMandatID());
-            zahler.setMandatdatum(m.getMandatDatum());
+            new BIC(mZahler.getBic());
+            new IBAN(mZahler.getIban());
+            zahler.setBic(mZahler.getBic());
+            zahler.setIban(mZahler.getIban());
+            zahler.setMandatid(mZahler.getMandatID());
+            zahler.setMandatdatum(mZahler.getMandatDatum());
             zahler.setMandatsequence(MandatSequence.RCUR);
             zahler.setFaelligkeit(param.faelligkeit);
-            zahler.setName(m.getKontoinhaber(1));
+            zahler.setName(mZahler.getKontoinhaber(1));
             zahler.setVerwendungszweck(vzweck);
             lastschrift.add(zahler);
           }
@@ -600,7 +596,7 @@ public class AbrechnungSEPA
         writeMitgliedskonto(m,
             param.faelligkeit,
             vzweck, z.getBetrag(), abrl,
-            m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT, konto,
+            mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT, konto,
             z.getBuchungsart());
       }
     }

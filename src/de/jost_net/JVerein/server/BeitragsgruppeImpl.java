@@ -22,7 +22,10 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -72,12 +75,6 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
           {
             throw new ApplicationException("Betrag nicht gültig");
           }
-          if (getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
-              && getBetrag() != 0)
-          {
-            throw new ApplicationException(
-                "Familien-Angehörige sind beitragsbefreit. Bitte als Betrag 0,00 eingeben.");
-          }
 
           break;
         case FLEXIBEL:
@@ -86,22 +83,60 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
           {
             throw new ApplicationException("Betrag nicht gültig");
           }
-          if (getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
-              && (getBetragMonatlich() != 0 || getBetragVierteljaehrlich() != 0
-                  || getBetragHalbjaehrlich() != 0 || getBetragJaehrlich() != 0))
-          {
-            throw new ApplicationException(
-                "Familien-Angehörige sind beitragsbefreit. Bitte als Betrag 0,00 eingeben.");
-          }
 
           break;
+      }
+      Beitragsgruppe gruppeAlt = (Beitragsgruppe) Einstellungen.getDBService().createObject(Beitragsgruppe.class,getID());
+      if(getBeitragsArt() != null) {
+        //Dases die Beitragsart ZAHLER nicht mehr gibt sie aber noch in der Datenbank stehen kann, müssen wir auf null prüfen
+        ArtBeitragsart artAlt = gruppeAlt.getBeitragsArt();
+        if(artAlt == null)
+            artAlt = ArtBeitragsart.NORMAL;
+        if(gruppeAlt != null && artAlt.getKey() != getBeitragsArt().getKey()) {
+          DBIterator<Mitglied> list = Einstellungen.getDBService()
+              .createList(Mitglied.class);
+          list.addFilter("beitragsgruppe = ?", getID());
+          if(list.hasNext()) {
+            throw new ApplicationException("Es existieren Mitglieder mit diesem Beitrag, Beitragsart kann nicht geändert werden!");
+          }
+        }
+        if(getSekundaer() && getBeitragsArt().getKey() == ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey())
+        {
+          throw new ApplicationException("Sekundäre Beitragsgrupe kann nicht Beitragsart Familienangehöriger haben!");
+        }
+      }
+      if(getSekundaer() != null) {
+        if(gruppeAlt != null && gruppeAlt.getSekundaer() != getSekundaer()) {
+          if(gruppeAlt.getSekundaer())
+          {
+            DBIterator<SekundaereBeitragsgruppe> list = Einstellungen.getDBService()
+                .createList(SekundaereBeitragsgruppe.class);
+            list.addFilter("beitragsgruppe = ?", getID());
+            if(list.hasNext()) {
+              throw new ApplicationException("Es existieren Mitglieder mit diesem sekundären Beitrag, Sekundär kann nicht geändert werden!");
+            }
+          }
+          else
+          {
+            DBIterator<Mitglied> list = Einstellungen.getDBService()
+                .createList(Mitglied.class);
+            list.addFilter("beitragsgruppe = ?", getID());
+            if(list.hasNext()) {
+              throw new ApplicationException("Es existieren Mitglieder mit diesem Beitrag, Sekundär kann nicht geändert werden!");
+            }
+          }
+        }
+        if(getSekundaer() && getBeitragsArt().getKey() == ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey())
+        {
+          throw new ApplicationException("Sekundäre Beitragsgrupe kann nicht Beitragsart Angehöriger haben!");
+        }
       }
     }
     catch (RemoteException e)
     {
-      Logger.error("insert check of mitglied failed", e);
+      Logger.error("insert check of beitragsgruppe failed", e);
       throw new ApplicationException(
-          "Mitglied kann nicht gespeichert werden. Siehe system log");
+          "Beitragsgruppe kann nicht gespeichert werden. Siehe system log");
     }
   }
 

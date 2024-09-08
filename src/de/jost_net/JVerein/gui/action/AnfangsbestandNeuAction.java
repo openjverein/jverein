@@ -55,8 +55,6 @@ public class AnfangsbestandNeuAction implements Action
           context = d.open();
           if (context == null)
           {
-            GUI.getStatusBar().setErrorText(
-                "Kein Konto ausgewählt. Vorgang abgebrochen.");
             return;
           }
           k = (Konto) context;
@@ -64,8 +62,7 @@ public class AnfangsbestandNeuAction implements Action
         }
         catch (OperationCanceledException oce)
         {
-          GUI.getStatusBar().setErrorText("Vorgang abgebrochen");
-          return;
+          throw oce;
         }
         catch (Exception e)
         {

@@ -24,6 +24,7 @@ import java.util.Date;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -85,7 +86,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
           group.addInput(input);
           counter++;
           settings.setAttribute(zusatzfeld + counter + ".name",
-              fd.getName());
+              input.getName());
           settings.setAttribute(zusatzfeld + counter + ".cond", "LIKE");
           settings.setAttribute(zusatzfeld + counter + ".datentyp",
               fd.getDatentyp());
@@ -103,7 +104,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
           group.addInput(inputvon);
           counter++;
           settings.setAttribute(zusatzfeld + counter + ".name",
-              fd.getName());
+              inputvon.getName());
           settings.setAttribute(zusatzfeld + counter + ".cond", ">=");
           settings.setAttribute(zusatzfeld + counter + ".datentyp",
               fd.getDatentyp());
@@ -128,7 +129,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
           group.addInput(inputbis);
           counter++;
           settings.setAttribute(zusatzfeld + counter + ".name",
-              fd.getName());
+              inputbis.getName());
           settings.setAttribute(zusatzfeld + counter + ".cond", "<=");
           settings.setAttribute(zusatzfeld + counter + ".datentyp",
               fd.getDatentyp());
@@ -150,35 +151,49 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
         }
         case Datentyp.GANZZAHL:
         {
-          IntegerInput inputvon = new IntegerInput(-1);
+          IntegerNullInput inputvon = new IntegerNullInput();
           inputvon.setName(fd.getLabel() + " von");
           felder.add(inputvon);
           group.addInput(inputvon);
           counter++;
           settings.setAttribute(zusatzfeld + counter + ".name",
-              fd.getName());
+              inputvon.getName());
           settings.setAttribute(zusatzfeld + counter + ".cond", ">=");
           settings.setAttribute(zusatzfeld + counter + ".datentyp",
               fd.getDatentyp());
           settings.setAttribute(zusatzfeld + counter + ".definition",
               fd.getID());
-          inputvon.setValue(
-              settings.getInt(zusatzfeld + counter + ".value", -1));
+          String tmp = settings.getString(zusatzfeld + counter + ".value", "");
+          if (tmp != null && !tmp.isEmpty())
+          {
+            inputvon.setValue(Integer.parseInt(tmp));
+          }
+          else
+          {
+            inputvon.setValue(null);
+          }
 
-          IntegerInput inputbis = new IntegerInput(-1);
+          IntegerNullInput inputbis = new IntegerNullInput();
           inputbis.setName(fd.getLabel() + " bis");
           felder.add(inputbis);
           group.addInput(inputbis);
           counter++;
           settings.setAttribute(zusatzfeld + counter + ".name",
-              fd.getName());
+              inputbis.getName());
           settings.setAttribute(zusatzfeld + counter + ".cond", "<=");
           settings.setAttribute(zusatzfeld + counter + ".datentyp",
               fd.getDatentyp());
           settings.setAttribute(zusatzfeld + counter + ".definition",
               fd.getID());
-          inputbis.setValue(
-              settings.getInt(zusatzfeld + counter + ".value", -1));
+          tmp = settings.getString(zusatzfeld + counter + ".value", "");
+          if (tmp != null && !tmp.isEmpty())
+          {
+            inputbis.setValue(Integer.parseInt(tmp));
+          }
+          else
+          {
+            inputbis.setValue(null);
+          }
           break;
         }
         case Datentyp.JANEIN:
@@ -189,7 +204,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
           group.addInput(input);
           counter++;
           settings.setAttribute(zusatzfeld + counter + ".name",
-              fd.getName());
+              input.getName());
           settings.setAttribute(zusatzfeld + counter + ".cond", "=");
           settings.setAttribute(zusatzfeld + counter + ".datentyp",
               fd.getDatentyp());
@@ -207,7 +222,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
           group.addInput(inputvon);
           counter++;
           settings.setAttribute(zusatzfeld + counter + ".name",
-              fd.getName());
+              inputvon.getName());
           settings.setAttribute(zusatzfeld + counter + ".cond", ">=");
           settings.setAttribute(zusatzfeld + counter + ".datentyp",
               fd.getDatentyp());
@@ -235,7 +250,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
           group.addInput(inputbis);
           counter++;
           settings.setAttribute(zusatzfeld + counter + ".name",
-              fd.getName());
+              inputbis.getName());
           settings.setAttribute(zusatzfeld + counter + ".cond", "<=");
           settings.setAttribute(zusatzfeld + counter + ".datentyp",
               fd.getDatentyp());
@@ -298,8 +313,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
               }
               else
               {
-                String s = null;
-                settings.setAttribute(zusatzfeld + counter + ".value", s);
+                settings.setAttribute(zusatzfeld + counter + ".value", "");
               }
               break;
             }
@@ -372,9 +386,9 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
             }
             case Datentyp.GANZZAHL:
             {
-              settings.setAttribute(zusatzfeld + counter + ".value", -1);
+              settings.setAttribute(zusatzfeld + counter + ".value", "");
               counter++;
-              settings.setAttribute(zusatzfeld + counter + ".value", -1);
+              settings.setAttribute(zusatzfeld + counter + ".value", "");
               break;
             }
             case Datentyp.JANEIN:
@@ -407,8 +421,8 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
         }
         else if (f instanceof IntegerInput)
         {
-          settings.setAttribute(zusatzfeld + counter + ".value", -1);
-          f.setValue(-1);
+          settings.setAttribute(zusatzfeld + counter + ".value", "");
+          f.setValue(null);
         }
         else if (f instanceof DecimalInput)
         {

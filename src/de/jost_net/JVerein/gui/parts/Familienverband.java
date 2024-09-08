@@ -95,11 +95,11 @@ public class Familienverband implements Part
       tab.setLayoutData(g);
       TabGroup tg1 = new TabGroup(tab, "Familienverband");
       control.getFamilienangehoerigenTable().paint(tg1.getComposite());
-      TabGroup tg2 = new TabGroup(tab, "Zahlendes Familienmitglied");
+      TabGroup tg2 = new TabGroup(tab, "Vollzahlendes Familienmitglied");
       // erstelle neuen zahler: (force == true)
       control.getZahler(true).setComment(
-          "Nur für Beitragsgruppenart: \"Familie: Angehörige\"");
-      tg2.addLabelPair("Zahler", control.getZahler());
+          "Nur für Beitragsgruppenart: \"Familienangehörige\"");
+      tg2.addLabelPair("Vollzahler", control.getZahler());
 
       if (gruppe != null)
       {
@@ -132,7 +132,7 @@ public class Familienverband implements Part
       return;
     try
     {
-      if (gruppe.getBeitragsArt() == ArtBeitragsart.FAMILIE_ZAHLER)
+      if (gruppe.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
         tab.setSelection(0);
       else if (gruppe.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
         tab.setSelection(1);

@@ -87,8 +87,10 @@ public class DruckMailControl extends FilterControl
     {
       return ausgabeart;
     }
-    ausgabeart = new SelectInput(Ausgabeart.values(),
-        Ausgabeart.valueOf(settings.getString(settingsprefix + "ausgabeart", "DRUCK")));
+    String art = settings.getString(settingsprefix + "ausgabeart", "DRUCK");
+    if (art.equals("EMAIL"))
+      art = "MAIL";
+    ausgabeart = new SelectInput(Ausgabeart.values(), Ausgabeart.valueOf(art));
     ausgabeart.setName("Ausgabe");
     return ausgabeart;
   }
@@ -138,7 +140,10 @@ public class DruckMailControl extends FilterControl
       return output;
     }
     Object[] values = new Object[] { EMAIL, PDF1, PDF2 };
-    output = new SelectInput(values, settings.getString(settingsprefix +"output", PDF1));
+    String out = settings.getString(settingsprefix + "output", PDF1);
+    if (out.equals("EMail"))
+      out = "Mail";
+    output = new SelectInput(values, out);
     output.setName("Ausgabe");
     return output;
   }
