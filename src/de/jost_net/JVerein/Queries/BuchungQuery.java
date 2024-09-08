@@ -47,6 +47,8 @@ public class BuchungQuery
   public String text;
 
   public String betrag;
+  
+  private String mitglied;
 
   private List<Buchung> ergebnis;
 
@@ -76,7 +78,7 @@ public class BuchungQuery
 
   public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
       Buchungsart buchungsart, Projekt projekt, String text, String betrag,
-      Boolean hasMitglied, boolean geldkonto)
+      Boolean hasMitglied, String mitglied, boolean geldkonto)
   {
     this.datumvon = datumvon;
     this.datumbis = datumbis;
@@ -87,6 +89,7 @@ public class BuchungQuery
     this.betrag = betrag;
     this.hasMitglied = hasMitglied;
     this.geldkonto = geldkonto;
+    this.mitglied = mitglied;
   }
   
   public String getOrder(String value) {
@@ -153,8 +156,22 @@ public class BuchungQuery
   public List<Buchung> get() throws RemoteException
   {
     final DBService service = Einstellungen.getDBService();
-
     DBIterator<Buchung> it = service.createList(Buchung.class);
+    
+    if (mitglied != null && !mitglied.isEmpty())
+    {
+      String mitgliedsuche = "%" + mitglied.toLowerCase() + "%";
+      it.join("mitgliedskonto");
+      it.addFilter("mitgliedskonto.id = mitgliedskonto");
+      it.join("mitglied");
+      it.addFilter("mitglied.id = mitgliedskonto.mitglied");
+      it.addFilter("(lower(mitglied.name) like ? or lower(mitglied.vorname) like ?)",
+          new Object[] { mitgliedsuche, mitgliedsuche });
+    }
+    
+    it.addFilter("buchung.datum >= ? ", datumvon);
+    it.addFilter("buchung.datum <= ? ", datumbis);
+
     if (konto != null)
     {
       it.addFilter("konto = ? ", konto.getID());
@@ -165,9 +182,6 @@ public class BuchungQuery
       it.addFilter("konto.id = buchung.konto");
       it.addFilter("anlagenkonto = true");
     }
-    
-    it.addFilter("datum >= ? ", datumvon);
-    it.addFilter("datum <= ? ", datumbis);
 
 
     if (buchungart != null)
@@ -215,30 +229,30 @@ public class BuchungQuery
         {
           case GLEICH:
           {
-            it.addFilter("betrag = ?", suchbetrag.getBetrag());
+            it.addFilter("buchung.betrag = ?", suchbetrag.getBetrag());
             break;
           }
           case GRÖSSER:
           {
-            it.addFilter("betrag > ?", suchbetrag.getBetrag());
+            it.addFilter("buchung.betrag > ?", suchbetrag.getBetrag());
             break;
           }
           case GRÖSSERGLEICH:
           {
-            it.addFilter("betrag >= ?", suchbetrag.getBetrag());
+            it.addFilter("buchung.betrag >= ?", suchbetrag.getBetrag());
             break;
           }
           case BEREICH:
-            it.addFilter("betrag >= ? AND betrag <= ?", suchbetrag.getBetrag(),
+            it.addFilter("buchung.betrag >= ? AND buchung.betrag <= ?", suchbetrag.getBetrag(),
                 suchbetrag.getBetrag2());
             break;
           case KEINE:
             break;
           case KLEINER:
-            it.addFilter("betrag < ?", suchbetrag.getBetrag());
+            it.addFilter("buchung.betrag < ?", suchbetrag.getBetrag());
             break;
           case KLEINERGLEICH:
-            it.addFilter("betrag <= ?", suchbetrag.getBetrag());
+            it.addFilter("buchung.betrag <= ?", suchbetrag.getBetrag());
             break;
           default:
             break;
@@ -252,11 +266,21 @@ public class BuchungQuery
 
     if (text.length() > 0)
     {
+      Long id = 0L;
+      try
+      {
+        id = Long.parseLong(text);
+      }
+      catch (Exception e)
+      {
+        ;
+      }
       String ttext = text.toUpperCase();
       ttext = "%" + ttext + "%";
       it.addFilter(
-          "(upper(name) like ? or upper(zweck) like ? or upper(kommentar) like ?) ",
-          ttext, ttext, ttext);
+          "(upper(buchung.name) like ? or upper(buchung.zweck) like ? "
+          + "or upper(buchung.kommentar) like ? or buchung.id = ?) ",
+          ttext, ttext, ttext, id);
     }
 
     // 20220823: sbuer: Neue Sortierfelder
