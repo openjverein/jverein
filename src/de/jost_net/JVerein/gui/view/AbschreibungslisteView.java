@@ -71,6 +71,8 @@ public class AbschreibungslisteView extends AbstractView
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
     
     ButtonArea buttons1 = new ButtonArea();
+    buttons1.addButton(control.getZurueckButton());
+    buttons1.addButton(control.getVorButton());
     Button reset = new Button("Filter-Reset", new Action()
     {
       @Override
