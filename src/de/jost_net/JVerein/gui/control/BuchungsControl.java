@@ -1521,6 +1521,8 @@ public class BuchungsControl extends AbstractControl
       
       // 20220823: sbuer: Statische Variablen fuer neue Sortiermöglichkeiten
       String sort = djs.open();
+      if (djs.getClosed())
+        return;
       query.setOrdername(sort);
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
