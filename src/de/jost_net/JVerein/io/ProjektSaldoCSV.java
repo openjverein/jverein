@@ -37,7 +37,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsklassesaldoCSV
+public class ProjektSaldoCSV
 {
 
   private static CellProcessor[] getProcessors()
@@ -55,7 +55,7 @@ public class BuchungsklassesaldoCSV
     return processors;
   }
 
-  public BuchungsklassesaldoCSV(ArrayList<BuchungsklasseSaldoZeile> zeile,
+  public ProjektSaldoCSV(ArrayList<ProjektSaldoZeile> zeile,
       final File file, Date datumvon, Date datumbis) throws ApplicationException
   {
     ICsvMapWriter writer = null;
@@ -74,75 +74,56 @@ public class BuchungsklassesaldoCSV
       csvzeile.put(header[0], subtitle);
       writer.write(csvzeile, header, processors);
 
-      for (BuchungsklasseSaldoZeile bkz : zeile)
+      for (ProjektSaldoZeile pz : zeile)
       {
         csvzeile = new HashMap<>();
-        switch (bkz.getStatus())
+        switch (pz.getStatus())
         {
-          case BuchungsklasseSaldoZeile.HEADER:
+          case ProjektSaldoZeile.HEADER:
           {
             csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"));
+                (String) pz.getAttribute("projektbezeichnung"));
             break;
           }
-          case BuchungsklasseSaldoZeile.DETAIL:
+          case ProjektSaldoZeile.DETAIL:
           {
             csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsartbezeichnung"));
-            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
-            csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
+                (String) pz.getAttribute("buchungsartbezeichnung"));
+            csvzeile.put(header[1], (Double) pz.getAttribute("einnahmen"));
+            csvzeile.put(header[2], (Double) pz.getAttribute("ausgaben"));
+            csvzeile.put(header[3], (Double) pz.getAttribute("umbuchungen"));
             break;
           }
-          case BuchungsklasseSaldoZeile.SALDOFOOTER:
+          case ProjektSaldoZeile.SALDOFOOTER:
           {
             csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"));
-            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
-            csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
+                (String) pz.getAttribute("projektbezeichnung"));
+            csvzeile.put(header[1], (Double) pz.getAttribute("einnahmen"));
+            csvzeile.put(header[2], (Double) pz.getAttribute("ausgaben"));
+            csvzeile.put(header[3], (Double) pz.getAttribute("umbuchungen"));
             break;
           }
-          case BuchungsklasseSaldoZeile.GESAMTSALDOFOOTER:
+          case ProjektSaldoZeile.GESAMTSALDOFOOTER:
           {
             csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"));
-            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
-            csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
+                (String) pz.getAttribute("projektbezeichnung"));
+            csvzeile.put(header[1], (Double) pz.getAttribute("einnahmen"));
+            csvzeile.put(header[2], (Double) pz.getAttribute("ausgaben"));
+            csvzeile.put(header[3], (Double) pz.getAttribute("umbuchungen"));
             break;
           }
-          case BuchungsklasseSaldoZeile.GESAMTGEWINNVERLUST:
-          case BuchungsklasseSaldoZeile.SALDOGEWINNVERLUST:
+          case ProjektSaldoZeile.SALDOGEWINNVERLUST:
+          case ProjektSaldoZeile.GESAMTSALDOGEWINNVERLUST:
           {
             csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"));
-            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
+                (String) pz.getAttribute("projektbezeichnung"));
+            csvzeile.put(header[1], (Double) pz.getAttribute("einnahmen"));
             break;
           }
-          case BuchungsklasseSaldoZeile.STEUERHEADER:
+          case ProjektSaldoZeile.NICHTZUGEORDNETEBUCHUNGEN:
           {
             csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsklassenbezeichnung") + " - "
-                    + (String) bkz.getAttribute("buchungsartbezeichnung"));
-            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
-            csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            break;
-          }
-          case BuchungsklasseSaldoZeile.STEUER:
-          {
-            csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsartbezeichnung"));
-            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
-            csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            break;
-          }
-          case BuchungsklasseSaldoZeile.NICHTZUGEORDNETEBUCHUNGEN:
-          {
-            csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"));
-            csvzeile.put(header[1],
-                (Integer) bkz.getAttribute("anzahlbuchungen"));
+                (String) pz.getAttribute("projektbezeichnung"));
             break;
           }
           default:
