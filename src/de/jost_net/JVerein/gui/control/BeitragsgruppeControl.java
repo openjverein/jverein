@@ -135,7 +135,7 @@ public class BeitragsgruppeControl extends AbstractControl
     }
     betrag = new DecimalInput(getBeitragsgruppe().getBetrag(),
         Einstellungen.DECIMALFORMAT);
-    if(getBeitragsgruppe().getHasAltersstaffel())
+    if(getBeitragsgruppe().getID() != null && getBeitragsgruppe().getHasAltersstaffel())
       betrag.disable();
     return betrag;
   }
@@ -345,7 +345,7 @@ public class BeitragsgruppeControl extends AbstractControl
       {
         case GLEICHERTERMINFUERALLE:
         case MONATLICH12631:
-          if((Boolean)isAltersstaffel.getValue() && alterstaffel != null)
+          if(isAltersstaffel != null && (Boolean)isAltersstaffel.getValue() && alterstaffel != null)
           {
             for (Input i : alterstaffel)
             {
@@ -364,11 +364,13 @@ public class BeitragsgruppeControl extends AbstractControl
               }
               a.store();
             }
+            b.setHasAltersstaffel(true);
           }
           else
           {
             Double d = (Double) getBetrag().getValue();
             b.setBetrag(d.doubleValue());
+            b.setHasAltersstaffel(false);
           }
           break;
         case FLEXIBEL:
@@ -380,6 +382,7 @@ public class BeitragsgruppeControl extends AbstractControl
           b.setBetragHalbjaehrlich(d6.doubleValue());
           Double d12 = (Double) getBetragJaehrlich().getValue();
           b.setBetragJaehrlich(d12.doubleValue());
+          b.setHasAltersstaffel(false);
           break;
       }
       ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
@@ -395,7 +398,6 @@ public class BeitragsgruppeControl extends AbstractControl
       d = (Double) getArbeitseinsatzBetrag().getValue();
       b.setArbeitseinsatzBetrag(d.doubleValue());
       b.setNotiz((String) getNotiz().getValue());
-      b.setHasAltersstaffel((Boolean)getIsAltersstaffel().getValue());
       b.store();
       GUI.getStatusBar().setSuccessText("Beitragsgruppe gespeichert");
     }
