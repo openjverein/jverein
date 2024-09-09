@@ -91,14 +91,14 @@ public class KontenSaldoCSV
 
         writer.write(csvzeile, header, processors);
       }
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+      GUI.getStatusBar().setSuccessText("Auswertung fertig");
       writer.close();
 
       FileViewer.show(file);
     }
     catch (Exception e)
     {
-      Logger.error("error while creating report", e);
+      Logger.error("Error while creating report", e);
       throw new ApplicationException("Fehler", e);
     }
     finally
@@ -111,7 +111,7 @@ public class KontenSaldoCSV
         }
         catch (Exception e)
         {
-          Logger.error("error while creating report", e);
+          Logger.error("Error while creating report", e);
           throw new ApplicationException("Fehler", e);
         }
       }
