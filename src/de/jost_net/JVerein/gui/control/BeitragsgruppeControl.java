@@ -260,7 +260,7 @@ public class BeitragsgruppeControl extends AbstractControl
           Einstellungen.DECIMALFORMAT);
       if(!getBeitragsgruppe().getHasAltersstaffel())
         d.disable();
-      d.setData("nummer", new Integer(i));
+      d.setData("nummer", Integer.valueOf(i));
       d.setName(vb.getVon() + "-" + vb.getBis() + " Jahre");
       list.add(d);
       i++;

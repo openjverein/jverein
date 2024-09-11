@@ -20,13 +20,14 @@ import java.sql.Connection;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
+import de.jost_net.JVerein.server.DDLTool.Index;
 import de.jost_net.JVerein.server.DDLTool.Table;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class Update0445 extends AbstractDDLUpdate
+public class Update0443 extends AbstractDDLUpdate
 {
-  public Update0445(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0443(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -49,12 +50,17 @@ public class Update0445 extends AbstractDDLUpdate
     t.setPrimaryKey(pk);
     execute(this.createTable(t));
     
-    execute(this.createForeignKey("fk_altersstaffel",
-        "altersstaffel", "beitragsgruppe", "beitragsgruppe", "id",
-        "RESTRICT", "CASCADE"));
+    Column col = new Column("altersstaffel",
+            COLTYPE.BOOLEAN, 0, "FALSE", true, false);
+    execute(addColumn("beitragsgruppe", col));
     
-    execute(addColumn("beitragsgruppe", new Column("altersstaffel",
-        COLTYPE.BOOLEAN, 0, "FALSE", true, false)));
+    Index idx = new Index("ixAltersstaffel1", false);
+    idx.add(col);
+    execute(idx.getCreateIndex("beitragsgruppe"));
+    
+    execute(this.createForeignKey("fk_altersstaffel",
+            "altersstaffel", "beitragsgruppe", "beitragsgruppe", "id",
+            "RESTRICT", "CASCADE"));
     
     execute(addColumn("einstellung", new Column("beitragaltersstufen",
         COLTYPE.VARCHAR, 200, "'0-6,7-12,13-18,19-99'", false, false)));
