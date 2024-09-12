@@ -60,7 +60,7 @@ public class Update0443 extends AbstractDDLUpdate
     
     execute(this.createForeignKey("fk_altersstaffel",
             "altersstaffel", "beitragsgruppe", "beitragsgruppe", "id",
-            "RESTRICT", "CASCADE"));
+            "CASCADE", "NO ACTION"));
     
     execute(addColumn("einstellung", new Column("beitragaltersstufen",
         COLTYPE.VARCHAR, 200, "'0-6,7-12,13-18,19-99'", false, false)));

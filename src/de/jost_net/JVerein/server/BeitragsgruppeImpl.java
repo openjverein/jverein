@@ -352,7 +352,10 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public boolean getHasAltersstaffel() throws RemoteException
   {
-    return (boolean) getAttribute("altersstaffel");
+	Object o = getAttribute("altersstaffel");
+	if(o == null)
+		return false;
+    return (boolean)o;
   }
   
   @Override
