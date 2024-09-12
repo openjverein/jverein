@@ -189,7 +189,7 @@ public class Datum
     {
       --alter;
     }
-    if (alter < 1)
+    if (alter < 0)
       return null;
     return Integer.valueOf(alter);
   }

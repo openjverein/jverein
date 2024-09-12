@@ -149,7 +149,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
       }
       catch (RuntimeException e)
       {
-        throw new ApplicationException(e.getMessage());
+        throw new ApplicationException(e.getMessage().replace("\n", " "));
       }
       
       if (getDokumentenspeicherung())

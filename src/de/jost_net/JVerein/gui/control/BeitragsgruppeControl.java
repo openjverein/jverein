@@ -341,6 +341,23 @@ public class BeitragsgruppeControl extends AbstractControl
       {
         b.setSekundaer(false);
       }
+      ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
+
+      b.setBeitragsArt(ba.getKey());
+      Buchungsart bua = (Buchungsart) getBuchungsart().getValue();
+      if (bua != null)
+      {
+        b.setBuchungsart(bua);
+      }
+      Double d = (Double) getArbeitseinsatzStunden().getValue();
+      b.setArbeitseinsatzStunden(d.doubleValue());
+      d = (Double) getArbeitseinsatzBetrag().getValue();
+      b.setArbeitseinsatzBetrag(d.doubleValue());
+      b.setNotiz((String) getNotiz().getValue());
+      //Die Beitragsgruppe in die DB schreiben damit sie evtl für Altersstaffel verfügbar ist
+      b.setHasAltersstaffel(false);
+      b.store();
+      
       switch (Einstellungen.getEinstellung().getBeitragsmodel())
       {
         case GLEICHERTERMINFUERALLE:
@@ -350,10 +367,10 @@ public class BeitragsgruppeControl extends AbstractControl
             for (Input i : alterstaffel)
             {
               Altersstaffel a = null;
-              Double d = (Double)i.getValue();
+              Double betrag = (Double)i.getValue();
               a = beitrag.getAltersstaffel((Integer)i.getData("nummer"));
-              if(d != null && a != null) {
-                a.setBetrag(d);
+              if(betrag != null && a != null) {
+                a.setBetrag(betrag);
                }
               else
               {
@@ -368,8 +385,8 @@ public class BeitragsgruppeControl extends AbstractControl
           }
           else
           {
-            Double d = (Double) getBetrag().getValue();
-            b.setBetrag(d.doubleValue());
+            Double betrag = (Double) getBetrag().getValue();
+            b.setBetrag(betrag.doubleValue());
             b.setHasAltersstaffel(false);
           }
           break;
@@ -385,19 +402,6 @@ public class BeitragsgruppeControl extends AbstractControl
           b.setHasAltersstaffel(false);
           break;
       }
-      ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
-
-      b.setBeitragsArt(ba.getKey());
-      Buchungsart bua = (Buchungsart) getBuchungsart().getValue();
-      if (bua != null)
-      {
-        b.setBuchungsart(bua);
-      }
-      Double d = (Double) getArbeitseinsatzStunden().getValue();
-      b.setArbeitseinsatzStunden(d.doubleValue());
-      d = (Double) getArbeitseinsatzBetrag().getValue();
-      b.setArbeitseinsatzBetrag(d.doubleValue());
-      b.setNotiz((String) getNotiz().getValue());
       b.store();
       GUI.getStatusBar().setSuccessText("Beitragsgruppe gespeichert");
     }
