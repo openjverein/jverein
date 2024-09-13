@@ -478,7 +478,7 @@ public class BeitragsgruppeControl extends AbstractControl
 					while(it.hasNext())
 					{
 						Altersstaffel a = it.next();
-						text = text + "|" + a.getBetrag();
+						text = text + "|" + Einstellungen.DECIMALFORMAT.format(a.getBetrag());
 					}
 					item.setText(1,text.substring(1));
 				}
