@@ -57,17 +57,23 @@ public class BeitragsUtil
         		throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Geburtsdatum nicht vorhanden");
             AltersgruppenParser ap = new AltersgruppenParser(stufen);
             int i = 0;
+            int nummer = -1;
             VonBis vb = null;
             while(ap.hasNext())
             {
               vb = ap.getNext();
               if(m.getAlter() >= vb.getVon() && m.getAlter() <= vb.getBis())
+              {
+                nummer = i;
                 break;
+              }
               i++;
             }
+            if(nummer == -1)
+            	throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": keine passende Altersstufe gefunden: " + m.getAlter() + " Jahre");
             try
             {
-            	betr = bg.getAltersstaffel(i).getBetrag();
+            	betr = bg.getAltersstaffel(nummer).getBetrag();
             }
             catch (NullPointerException e)
             {
@@ -94,22 +100,28 @@ public class BeitragsUtil
           	  throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Geburtsdatum nicht vorhanden");
             AltersgruppenParser ap = new AltersgruppenParser(stufen);
             int i = 0;
+            int nummer = -1;
             VonBis vb = null;
             while(ap.hasNext())
             {
               vb = ap.getNext();
               if(m.getAlter() >= vb.getVon() && m.getAlter() <= vb.getBis())
+              {
+                nummer = i;
                 break;
+              }
               i++;
             }
+            if(nummer == -1)
+            	throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": keine passende Altersstufe gefunden: " + m.getAlter() + " Jahre");
             try
             {
-            	betr = bg.getAltersstaffel(i).getBetrag();
+            	betr = bg.getAltersstaffel(nummer).getBetrag();
             }
             catch (NullPointerException e)
             {
             	throw new ApplicationException(
-          	          "Altersstufe " + vb.getVon() + "-" + vb.getBis() + " in Beitragsgruppe " + bg.getBezeichnung() + " nicht vorhanden");
+            	          "Altersstufe " + vb.getVon() + "-" + vb.getBis() + " in Beitragsgruppe " + bg.getBezeichnung() + " nicht vorhanden");
             }
           }
           else
