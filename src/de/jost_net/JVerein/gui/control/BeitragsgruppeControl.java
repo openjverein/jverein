@@ -24,6 +24,7 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BeitragsgruppeDetailAction;
@@ -44,6 +45,7 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
+import de.willuhn.jameica.gui.formatter.TableFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -463,6 +465,28 @@ public class BeitragsgruppeControl extends AbstractControl
         new JaNeinFormatter());
     beitragsgruppeList.addColumn("Notiz", "notiz", new NotizFormatter(40));
     beitragsgruppeList.setContextMenu(new BeitragsgruppeMenu());
+    beitragsgruppeList.setFormatter(new TableFormatter() {
+		
+		@Override
+		public void format(TableItem item) {
+			Beitragsgruppe b = (Beitragsgruppe)item.getData();
+			try {
+				if(b.getHasAltersstaffel())
+				{
+					String text = "";
+					DBIterator<Altersstaffel> it = b.getAltersstaffelIterator();
+					while(it.hasNext())
+					{
+						Altersstaffel a = it.next();
+						text = text + "|" + a.getBetrag();
+					}
+					item.setText(1,text.substring(1));
+				}
+			} catch (RemoteException e) {
+				Logger.error("unable to format line", e);
+			}
+		}
+	});
     return beitragsgruppeList;
   }
 }
