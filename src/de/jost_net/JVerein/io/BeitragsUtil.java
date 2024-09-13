@@ -25,20 +25,22 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.VonBis;
+import de.willuhn.util.ApplicationException;
 
 public class BeitragsUtil
 {
   public static double getBeitrag(Beitragsmodel bm, Zahlungstermin zt, int zr,
-      Beitragsgruppe bg, Date stichtag, Date eintritt, Date austritt, Integer alter)
-      throws RemoteException
+      Beitragsgruppe bg, Date stichtag, Mitglied m)
+      throws RemoteException, ApplicationException
   {
     double betr = 0;
-    if (eintritt != null && eintritt.after(stichtag))
+    if (m.getEintritt() != null && m.getEintritt().after(stichtag))
     {
       return 0;
     }
-    if (austritt != null && austritt.before(stichtag))
+    if (m.getAustritt() != null && m.getAustritt().before(stichtag))
     {
       return 0;
     }
@@ -51,22 +53,29 @@ public class BeitragsUtil
           String stufen = Einstellungen.getEinstellung().getBeitragAltersstufen();
           if(stufen != null && stufen != "")
           {
+        	if(m.getAlter() == null)
+        		throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Geburtsdatum nicht vorhanden");
             AltersgruppenParser ap = new AltersgruppenParser(stufen);
-            int i = 0;
-            int nummer = -1;
+            int i = -1;
+            VonBis vb = null;
             while(ap.hasNext())
             {
-              VonBis vb = ap.getNext();
-              if(alter >= vb.getVon() && alter <= vb.getBis())
-              {
-                nummer = i;
+              vb = ap.getNext();
+              if(m.getAlter() >= vb.getVon() && m.getAlter() <= vb.getBis())
                 break;
-              }
               i++;
             }
-            if(nummer == -1)
+            if(i == -1)
               return 0;
-            betr = bg.getAltersstaffel(nummer).getBetrag();
+            try
+            {
+            	betr = bg.getAltersstaffel(i).getBetrag();
+            }
+            catch (NullPointerException e)
+            {
+            	throw new ApplicationException(
+            	          "Altersstufe " + vb.getVon() + "-" + vb.getBis() + " in Beitragsgruppe " + bg.getBezeichnung() + " nicht vorhanden");
+            }
           }
           else
             betr = bg.getBetrag();
@@ -83,22 +92,29 @@ public class BeitragsUtil
           String stufen = Einstellungen.getEinstellung().getBeitragAltersstufen();
           if(stufen != null && stufen != "")
           {
+        	if(m.getAlter() == null)
+          	  throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Geburtsdatum nicht vorhanden");
             AltersgruppenParser ap = new AltersgruppenParser(stufen);
             int i = 0;
-            int nummer = -1;
+            VonBis vb = null;
             while(ap.hasNext())
             {
-              VonBis vb = ap.getNext();
-              if(alter >= vb.getVon() && alter <= vb.getBis())
-              {
-                nummer = i;
+              vb = ap.getNext();
+              if(m.getAlter() >= vb.getVon() && m.getAlter() <= vb.getBis())
                 break;
-              }
               i++;
             }
-            if(nummer == -1)
+            if(i == -1)
               return 0;
-            betr = bg.getAltersstaffel(nummer).getBetrag();
+            try
+            {
+            	betr = bg.getAltersstaffel(i).getBetrag();
+            }
+            catch (NullPointerException e)
+            {
+            	throw new ApplicationException(
+          	          "Altersstufe " + vb.getVon() + "-" + vb.getBis() + " in Beitragsgruppe " + bg.getBezeichnung() + " nicht vorhanden");
+            }
           }
           else
             betr = bg.getBetrag();
