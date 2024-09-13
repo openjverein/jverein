@@ -56,7 +56,7 @@ public class BeitragsUtil
         	if(m.getAlter() == null)
         		throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Geburtsdatum nicht vorhanden");
             AltersgruppenParser ap = new AltersgruppenParser(stufen);
-            int i = -1;
+            int i = 0;
             VonBis vb = null;
             while(ap.hasNext())
             {
@@ -65,8 +65,6 @@ public class BeitragsUtil
                 break;
               i++;
             }
-            if(i == -1)
-              return 0;
             try
             {
             	betr = bg.getAltersstaffel(i).getBetrag();
@@ -104,8 +102,6 @@ public class BeitragsUtil
                 break;
               i++;
             }
-            if(i == -1)
-              return 0;
             try
             {
             	betr = bg.getAltersstaffel(i).getBetrag();
