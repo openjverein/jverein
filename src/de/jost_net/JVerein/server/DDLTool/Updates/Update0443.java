@@ -50,13 +50,12 @@ public class Update0443 extends AbstractDDLUpdate
     t.setPrimaryKey(pk);
     execute(this.createTable(t));
     
-    Column col = new Column("altersstaffel",
-            COLTYPE.BOOLEAN, 0, "FALSE", true, false);
-    execute(addColumn("beitragsgruppe", col));
+    execute(addColumn("beitragsgruppe", new Column("altersstaffel",
+            COLTYPE.BOOLEAN, 0, "FALSE", true, false)));
     
     Index idx = new Index("ixAltersstaffel1", false);
-    idx.add(col);
-    execute(idx.getCreateIndex("beitragsgruppe"));
+    idx.add(beitragsgruppe);
+    execute(idx.getCreateIndex("altersstaffel"));
     
     execute(this.createForeignKey("fk_altersstaffel",
             "altersstaffel", "beitragsgruppe", "beitragsgruppe", "id",
