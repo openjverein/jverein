@@ -255,7 +255,7 @@ public class JahresabschlussControl extends AbstractControl
     jahresabschluesse.setOrder("ORDER BY von desc");
 
     jahresabschlussList = new TablePart(jahresabschluesse, null);
-    jahresabschlussList.addColumn("Nr", "id");
+    jahresabschlussList.addColumn("Nr", "id-int");
     jahresabschlussList.addColumn("Von", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     jahresabschlussList.addColumn("Bis", "bis",

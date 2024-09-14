@@ -47,6 +47,7 @@ public class ProjektSaldoView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.PROJEKTSALDO, false, "question-circle.png");
+    buttons.addButton(control.getStartAuswertungCSVButton());
     buttons.addButton(control.getStartAuswertungButton());
     buttons.paint(this.getParent());
   }
