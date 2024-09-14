@@ -266,6 +266,22 @@ public class MitgliedskontoControl extends DruckMailControl
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         getMitgliedskonto().getBuchungsart());
+    buchungsart.addListener(new Listener()
+    {
+      @Override
+      public void handleEvent(Event event)
+      {
+        try
+        {
+          if (buchungsklasse != null && buchungsklasse.getValue() == null)
+            buchungsklasse.setValue(((Buchungsart) buchungsart.getValue()).getBuchungsklasse());
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+    });
     return buchungsart;
   }
   

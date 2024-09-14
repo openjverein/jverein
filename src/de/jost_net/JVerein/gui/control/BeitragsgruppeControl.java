@@ -19,6 +19,9 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BeitragsgruppeDetailAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -220,6 +223,22 @@ public class BeitragsgruppeControl extends AbstractControl
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         getBeitragsgruppe().getBuchungsart());
+    buchungsart.addListener(new Listener()
+    {
+      @Override
+      public void handleEvent(Event event)
+      {
+        try
+        {
+          if (buchungsklasse != null && buchungsklasse.getValue() == null)
+            buchungsklasse.setValue(((Buchungsart) buchungsart.getValue()).getBuchungsklasse());
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+    });
     return buchungsart;
   }
   

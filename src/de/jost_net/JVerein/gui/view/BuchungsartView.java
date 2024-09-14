@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsartControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -39,8 +38,7 @@ public class BuchungsartView extends AbstractView
     group.addLabelPair("Nummer", control.getNummer(true));
     group.addLabelPair("Bezeichnung", control.getBezeichnung());
     group.addLabelPair("Art", control.getArt());
-    if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-      group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
+    group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     group.addLabelPair("Spende", control.getSpende());
     group.addLabelPair("Steuersatz", control.getSteuersatz());
     group.addLabelPair("Steuer Buchungsart", control.getSteuerBuchungsart());

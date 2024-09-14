@@ -268,7 +268,16 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       @Override
       public void handleEvent(Event event)
       {
-        status.setValue("");
+        try
+        {
+          status.setValue("");
+          if (buchungsklassen != null && buchungsklassen.getValue() == null)
+            buchungsklassen.setValue(((Buchungsart) buchungsarten.getValue()).getBuchungsklasse());
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
       }
     });
     return buchungsarten;
@@ -282,6 +291,14 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     }
     buchungsklassen = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklassen,
         null);
+    buchungsklassen.addListener(new Listener()
+    {
+      @Override
+      public void handleEvent(Event event)
+      {
+        status.setValue("");
+      }
+    });
     return buchungsklassen;
   }
 

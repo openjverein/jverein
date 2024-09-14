@@ -473,9 +473,8 @@ public class BuchungsartControl extends AbstractControl
           return "ungültig";
         }
       }, false, Column.ALIGN_LEFT);
-      if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-        buchungsartList.addColumn("Buchungsklasse", "buchungsklasse",
-            new BuchungsklasseFormatter());
+      buchungsartList.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
       buchungsartList.addColumn("Spende", "spende", new JaNeinFormatter());
       buchungsartList.addColumn("Steuersatz", "steuersatz", new Formatter()
       {
