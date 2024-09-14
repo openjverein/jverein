@@ -466,27 +466,33 @@ public class BeitragsgruppeControl extends AbstractControl
     beitragsgruppeList.addColumn("Notiz", "notiz", new NotizFormatter(40));
     beitragsgruppeList.setContextMenu(new BeitragsgruppeMenu());
     beitragsgruppeList.setFormatter(new TableFormatter() {
-		
-		@Override
-		public void format(TableItem item) {
-			Beitragsgruppe b = (Beitragsgruppe)item.getData();
-			try {
-				if(b.getHasAltersstaffel())
-				{
-					String text = "";
-					DBIterator<Altersstaffel> it = b.getAltersstaffelIterator();
-					while(it.hasNext())
-					{
-						Altersstaffel a = it.next();
-						text = text + "|" + Einstellungen.DECIMALFORMAT.format(a.getBetrag());
-					}
-					item.setText(1,text.substring(1));
-				}
-			} catch (RemoteException e) {
-				Logger.error("unable to format line", e);
-			}
-		}
-	});
+      @Override
+      public void format(TableItem item)
+      {
+        Beitragsgruppe b = (Beitragsgruppe) item.getData();
+        try
+        {
+          if (b.getHasAltersstaffel())
+          {
+            AltersgruppenParser ap = new AltersgruppenParser(Einstellungen.getEinstellung().getBeitragAltersstufen());
+            String text = "";
+            DBIterator<Altersstaffel> it = b.getAltersstaffelIterator();
+            while (it.hasNext() && ap.hasNext())
+            {
+              ap.getNext();
+              Altersstaffel a = it.next();
+              text = text + "|"
+                  + Einstellungen.DECIMALFORMAT.format(a.getBetrag());
+            }
+            item.setText(1, text.substring(1));
+          }
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("unable to format line", e);
+        }
+      }
+    });
     return beitragsgruppeList;
   }
 }
