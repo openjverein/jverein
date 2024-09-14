@@ -70,7 +70,7 @@ public class BeitragsUtil
               i++;
             }
             if(nummer == -1)
-            	throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": keine passende Altersstufe gefunden: " + m.getAlter() + " Jahre");
+            	throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Keine passende Altersstufe gefunden: " + m.getAlter() + " Jahre");
             try
             {
             	betr = bg.getAltersstaffel(nummer).getBetrag();
@@ -113,7 +113,7 @@ public class BeitragsUtil
               i++;
             }
             if(nummer == -1)
-            	throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": keine passende Altersstufe gefunden: " + m.getAlter() + " Jahre");
+            	throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Keine passende Altersstufe gefunden: " + m.getAlter() + " Jahre");
             try
             {
             	betr = bg.getAltersstaffel(nummer).getBetrag();
