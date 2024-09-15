@@ -464,7 +464,28 @@ public class KontoControl extends AbstractControl
       return anlagenkonto;
     }
     anlagenkonto = new CheckboxInput(getKonto().getAnlagenkonto());
-    anlagenkonto.setName(" *Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
+    DBService service = Einstellungen.getDBService();
+    String sql = "SELECT DISTINCT konto.id from konto "
+        + "WHERE (anlagenkonto = TRUE) ";
+    boolean exist = (boolean) service.execute(sql,
+        new Object[] { }, new ResultSetExtractor()
+    {
+      @Override
+      public Object extract(ResultSet rs)
+          throws RemoteException, SQLException
+      {
+        if (rs.next())
+        {
+          return true;
+        }
+        return false;
+      }
+    });
+    if (!exist)
+    {
+      anlagenkonto.setName(" *Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
+    }
+   
     anlagenkonto.addListener(new Listener()
     {
 
