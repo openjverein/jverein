@@ -47,6 +47,7 @@ public class KontensaldoView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.JAHRESSALDO, false, "question-circle.png");
+    buttons.addButton(control.getStartAuswertungCSVButton());
     buttons.addButton(control.getStartAuswertungButton());
     buttons.paint(this.getParent());
   }

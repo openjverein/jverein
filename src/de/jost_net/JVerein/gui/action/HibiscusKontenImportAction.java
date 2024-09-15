@@ -55,18 +55,17 @@ public class HibiscusKontenImportAction implements Action
       }
       catch (OperationCanceledException oce)
       {
-        GUI.getStatusBar().setErrorText("Vorgang abgebrochen");
-        return;
+        throw oce;
       }
       catch (Exception e)
       {
-        Logger.error("error while choosing konto", e);
+        Logger.error("Error while choosing konto", e);
         GUI.getStatusBar().setErrorText("Fehler bei der Auswahl des Kontos.");
       }
     }
 
     if (context == null || !(context instanceof Konto))
-      throw new ApplicationException("Kein Konto ausgewählt");
+      return;
 
     final Konto k = (Konto) context;
     try
