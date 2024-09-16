@@ -30,6 +30,7 @@ import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BuchungsartAction;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.BuchungsartMenu;
@@ -576,29 +577,8 @@ public class BuchungsartControl extends AbstractControl
           return "ungültig";
         }
       }, false, Column.ALIGN_RIGHT);
-      buchungsartList.addColumn("Steuer Buchungsart", "steuer_buchungsart", new Formatter()
-      {
-        @Override
-        public String format(Object o)
-        {
-          if (o == null)
-          {
-            return "";
-          }
-          if (o instanceof String)
-          {
-            try {
-              DBIterator<Buchungsart> steuer_buchungsart = Einstellungen.getDBService().createList(Buchungsart.class);
-              steuer_buchungsart.addFilter("id = " + (String) o);
-              return steuer_buchungsart.next().getNummer() + "";
-              
-            } catch (RemoteException e) {
-              return "";
-            }
-          }
-          return "ungültig";
-        }
-      }, false, Column.ALIGN_RIGHT);
+      buchungsartList.addColumn("Steuer Buchungsart", "steuerbuchungsart",
+          new BuchungsartFormatter());
       buchungsartList.addColumn("Status", "status", new Formatter()
       {
         @Override

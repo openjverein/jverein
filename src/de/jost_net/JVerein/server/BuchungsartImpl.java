@@ -69,7 +69,7 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
       }
       if (getSteuersatz() > 0 && getSteuerBuchungsart() == null)
       {
-        throw new ApplicationException("Bitte Buchungsart auswählen.");
+        throw new ApplicationException("Bitte Steuer Buchungsart auswählen.");
       }
     }
     catch (RemoteException e)
@@ -263,6 +263,10 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
       stb.append(" ");
       stb.append(getBezeichnung());
       return stb.toString();
+    }
+    else if (fieldName.equals("steuerbuchungsart"))
+    {
+      return getSteuerBuchungsart();
     }
     else
     {
