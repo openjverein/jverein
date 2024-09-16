@@ -139,6 +139,23 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   {
     setAttribute("art", art);
   }
+  
+  @Override
+  public int getStatus() throws RemoteException
+  {
+    Integer i = (Integer) getAttribute("status");
+    if (i == null)
+    {
+      return 0;
+    }
+    return i.intValue();
+  }
+
+  @Override
+  public void setStatus(int status) throws RemoteException
+  {
+    setAttribute("status", status);
+  }
 
   @Override
   public Buchungsklasse getBuchungsklasse() throws RemoteException

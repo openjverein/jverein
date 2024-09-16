@@ -83,5 +83,8 @@ public class Update0444 extends AbstractDDLUpdate
     execute(idx.getCreateIndex("beitragsgruppe"));
     execute(createForeignKey("fkBeitragsgruppe2", "beitragsgruppe",
         "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
+    
+    execute(addColumn("buchungsart", new Column("status",
+        COLTYPE.INTEGER, 0, "2", false, false)));
   }
 }

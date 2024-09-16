@@ -26,6 +26,7 @@ import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -63,8 +64,9 @@ public class BuchungsartSearchInput extends SearchInput
         cal.add(Calendar.MONTH, - unterdrueckunglaenge);
         Date dv = cal.getTime();
         String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
-        sql += "WHERE buchung.buchungsart = buchungsart.id ";
+        sql += "WHERE (buchung.buchungsart = buchungsart.id ";
         sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
+        sql += "AND buchungsart.status = ?) OR buchungsart.status = ? ";
         if (text != null)
         {
           text = "%" + text.toUpperCase() + "%";
@@ -98,14 +100,16 @@ public class BuchungsartSearchInput extends SearchInput
         {
           @SuppressWarnings("unchecked")
           ArrayList<Buchungsart> result = (ArrayList<Buchungsart>) service.execute(sql,
-              new Object[] { dv, db, text, text }, rs);
+              new Object[] { dv, db, StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE,
+                  text, text }, rs);
           return result;
         }
         else
         {
           @SuppressWarnings("unchecked")
           ArrayList<Buchungsart> result = (ArrayList<Buchungsart>) service.execute(sql,
-              new Object[] { dv, db }, rs);
+              new Object[] { dv, db, StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE
+                  }, rs);
           return result;
         }
       }
@@ -113,6 +117,7 @@ public class BuchungsartSearchInput extends SearchInput
       {
         DBIterator result = Einstellungen.getDBService()
             .createList(Buchungsart.class);
+        result.addFilter("buchungsart.status != ?", StatusBuchungsart.INACTIVE);
         if (text != null)
         {
           text = "%" + text.toUpperCase() + "%";

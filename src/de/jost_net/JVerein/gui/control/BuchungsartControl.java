@@ -38,6 +38,7 @@ import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.util.Dateiname;
@@ -89,6 +90,10 @@ public class BuchungsartControl extends AbstractControl
   private TextInput suchtext;
 
   private Buchungsart buchungsart;
+  
+  private SelectInput status;
+  
+  private SelectInput suchstatus;
 
   public BuchungsartControl(AbstractView view)
   {
@@ -140,6 +145,55 @@ public class BuchungsartControl extends AbstractControl
     art = new SelectInput(ArtBuchungsart.getArray(),
         new ArtBuchungsart(getBuchungsart().getArt()));
     return art;
+  }
+  
+  public SelectInput getStatus() throws RemoteException
+  {
+    if (status != null)
+    {
+      return status;
+    }
+    status = new SelectInput(StatusBuchungsart.getArray(),
+        new StatusBuchungsart(getBuchungsart().getStatus()));
+    return status;
+  }
+  
+  public SelectInput getSuchStatus() throws RemoteException
+  {
+    if (suchstatus != null)
+    {
+      return suchstatus;
+    }
+    suchstatus = new SelectInput(
+        new String[] { "Alle", "Ohne Deaktiviert" },
+        settings.getString("suchstatus", "Alle"));
+    suchstatus.addListener(new FilterListener());
+    return suchstatus;
+  }
+  
+  public class FilterListener implements Listener
+  {
+
+    FilterListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      try
+      {
+        getBuchungsartList();
+      }
+      catch (RemoteException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
+    }
   }
 
   public CheckboxInput getSpende() throws RemoteException
@@ -405,6 +459,8 @@ public class BuchungsartControl extends AbstractControl
       {
         b.setSteuerBuchungsart(null);
       }
+      StatusBuchungsart st = (StatusBuchungsart) getStatus().getValue();
+      b.setStatus(st.getKey());
 
       try
       {
@@ -437,11 +493,39 @@ public class BuchungsartControl extends AbstractControl
   @SuppressWarnings("unchecked")
   public Part getBuchungsartList() throws RemoteException
   {
-
+    if (suchstatus != null)
+    {
+      String tmp = (String) suchstatus.getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute("suchstatus", tmp);
+      }
+      else
+      {
+        settings.setAttribute("suchstatus", "");
+      }
+    }
+    
+    if (suchtext != null)
+    {
+      String tmp = (String) suchtext.getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute("suchtext", tmp);
+      }
+      else
+      {
+        settings.setAttribute("suchtext", "");
+      }
+    }
+    
     DBService service = Einstellungen.getDBService();
     DBIterator<Buchungsart> buchungsarten = service
         .createList(Buchungsart.class);
     buchungsarten.addFilter("nummer >= 0");
+    if (suchstatus != null && 
+        suchstatus.getValue().toString().equalsIgnoreCase("Ohne Deaktiviert"))
+      buchungsarten.addFilter("status != ?", new Object[] { StatusBuchungsart.INACTIVE });
     if (!getSuchtext().getValue().equals(""))
     {
       String text = "%" + ((String) getSuchtext().getValue()).toUpperCase()
@@ -515,6 +599,22 @@ public class BuchungsartControl extends AbstractControl
           return "ungültig";
         }
       }, false, Column.ALIGN_RIGHT);
+      buchungsartList.addColumn("Status", "status", new Formatter()
+      {
+        @Override
+        public String format(Object o)
+        {
+          if (o == null)
+          {
+            return "";
+          }
+          if (o instanceof Integer)
+          {
+            return StatusBuchungsart.get((Integer) o);
+          }
+          return "ungültig";
+        }
+      }, false, Column.ALIGN_LEFT);
       buchungsartList.setContextMenu(new BuchungsartMenu());
       buchungsartList.setRememberColWidths(true);
       buchungsartList.setRememberOrder(true);

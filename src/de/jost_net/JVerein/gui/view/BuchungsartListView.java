@@ -41,6 +41,7 @@ public class BuchungsartListView extends AbstractView
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     group.addLabelPair("Suche", control.getSuchtext());
+    group.addLabelPair("Status", control.getSuchStatus());
 
     ButtonArea buttons1 = new ButtonArea();
     Button button = new Button("Suchen", new Action()

@@ -222,7 +222,8 @@ public class BeitragsgruppeControl extends AbstractControl
       return buchungsart;
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getBeitragsgruppe().getBuchungsart());
+        getBeitragsgruppe().getBuchungsart(),
+        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
     buchungsart.addListener(new Listener()
     {
       @Override

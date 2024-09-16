@@ -17,11 +17,6 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -29,17 +24,15 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
-import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
-import de.willuhn.datasource.pseudo.PseudoIterator;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -53,7 +46,7 @@ import de.willuhn.logging.Logger;
 public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
 {
 
-  private SelectInput buchungsarten = null;
+  private AbstractInput buchungsarten = null;
   
   private SelectInput buchungsklassen = null;
 
@@ -66,8 +59,6 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   private Buchungsklasse buchungsklasse = null;
 
   private boolean ueberschr;
-  
-  private int unterdrueckunglaenge = 0;
   
   private boolean abort = true;
 
@@ -188,81 +179,14 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     return abort;
   }
 
-  private SelectInput getBuchungsartAuswahl() throws RemoteException
+  private Input getBuchungsartAuswahl() throws RemoteException
   {
     if (buchungsarten != null)
     {
       return buchungsarten;
     }
-    unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
-    if (unterdrueckunglaenge > 0) 
-    {
-      final DBService service = Einstellungen.getDBService();
-      Calendar cal = Calendar.getInstance();
-      Date db = cal.getTime();
-      cal.add(Calendar.MONTH, - unterdrueckunglaenge);
-      Date dv = cal.getTime();
-      String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
-      sql += "WHERE buchung.buchungsart = buchungsart.id ";
-      sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
-      if (Einstellungen.getEinstellung()
-          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
-      {
-        sql += "ORDER BY nummer";
-      }
-      else
-      {
-        sql += "ORDER BY bezeichnung";
-      }
-      ResultSetExtractor rs = new ResultSetExtractor()
-      {
-        @Override
-        public Object extract(ResultSet rs) throws RemoteException, SQLException
-        {
-          ArrayList<Buchungsart> list = new ArrayList<Buchungsart>();
-          while (rs.next())
-          {
-            list.add(
-              (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
-          }
-          return list;
-        }
-      };
-      @SuppressWarnings("unchecked")
-      ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-          new Object[] { dv, db }, rs);
-      buchungsarten = new SelectInput(ergebnis.toArray(), null);
-    }
-    else
-    {
-      DBIterator<Buchungsart> it = Einstellungen.getDBService()
-          .createList(Buchungsart.class);
-      if (Einstellungen.getEinstellung()
-          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
-      {
-        it.setOrder("ORDER BY nummer");
-      }
-      else
-      {
-        it.setOrder("ORDER BY bezeichnung");
-      }
-      buchungsarten = new SelectInput(it != null ? PseudoIterator.asList(it) : null, null);
-    }
-
-    buchungsarten.setValue(null);
-    switch (Einstellungen.getEinstellung().getBuchungsartSort())
-    {
-      case BuchungsartSort.NACH_NUMMER:
-        buchungsarten.setAttribute("nrbezeichnung");
-        break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
-        buchungsarten.setAttribute("bezeichnungnr");
-        break;
-      default:
-        buchungsarten.setAttribute("bezeichnung");
-        break;
-    }
-    buchungsarten.setPleaseChoose("Bitte auswählen");
+    buchungsarten = new BuchungsartInput().getBuchungsartInput(buchungsarten, null,
+        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
     buchungsarten.addListener(new Listener()
     {
       @Override

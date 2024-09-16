@@ -20,8 +20,6 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -66,7 +64,7 @@ import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
-import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.BuchungBuchungsartAuswahl;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -84,8 +82,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -201,8 +197,6 @@ public class BuchungsControl extends AbstractControl
   public static final String MITGLIEDZUGEORDNET = "suchmitgliedzugeordnet";
 
   private Vector<Listener> changeKontoListener = new Vector<>();
-  
-  private int unterdrueckunglaenge = 0;
   
   private Calendar calendar = Calendar.getInstance();
   
@@ -572,7 +566,8 @@ public class BuchungsControl extends AbstractControl
       return buchungsart;
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getBuchung().getBuchungsart());
+        getBuchung().getBuchungsart(),
+        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
     if (!getBuchung().getSpeicherung())
     {
       buchungsart.setMandatory(true);
@@ -596,7 +591,7 @@ public class BuchungsControl extends AbstractControl
     return buchungsart;
   }
   
-  public SelectInput getBuchungsklasse() throws RemoteException
+  public Input getBuchungsklasse() throws RemoteException
   {
     if (buchungsklasse != null && !buchungsklasse.getControl().isDisposed())
     {
@@ -729,89 +724,28 @@ public class BuchungsControl extends AbstractControl
     return suchprojekt;
   }
 
-  public Input getSuchBuchungsart() throws RemoteException
+  public SelectInput getSuchBuchungsart() throws RemoteException
   {
     if (suchbuchungsart != null)
     {
       return suchbuchungsart;
     }
 
+    suchbuchungsart = (SelectInput) new BuchungsartInput().
+        getBuchungsartInput(suchbuchungsart, null,
+            BuchungBuchungsartAuswahl.ComboBox);
+    
+    @SuppressWarnings("unchecked")
+    List<Buchungsart> suchliste = (List<Buchungsart>) suchbuchungsart.getList();
     ArrayList<Buchungsart> liste = new ArrayList<>();
-    Buchungsart b1 = (Buchungsart) Einstellungen.getDBService()
-        .createObject(Buchungsart.class, null);
-    b1.setNummer(-2);
-    b1.setBezeichnung("Alle Buchungsarten");
-    b1.setArt(-2);
-    liste.add(b1);
     Buchungsart b2 = (Buchungsart) Einstellungen.getDBService()
         .createObject(Buchungsart.class, null);
     b2.setNummer(-1);
     b2.setBezeichnung("Ohne Buchungsart");
     b2.setArt(-1);
     liste.add(b2);
-    
-    unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
-    if (unterdrueckunglaenge > 0)
-    {
-      final DBService service = Einstellungen.getDBService();
-      Calendar cal = Calendar.getInstance();
-      Date db = cal.getTime();
-      cal.add(Calendar.MONTH, - unterdrueckunglaenge);
-      Date dv = cal.getTime();
-      String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
-      sql += "WHERE buchung.buchungsart = buchungsart.id ";
-      sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
-      if (Einstellungen.getEinstellung()
-          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
-      {
-        sql += "ORDER BY nummer";
-      }
-      else
-      {
-        sql += "ORDER BY bezeichnung";
-      }
-      ResultSetExtractor rs = new ResultSetExtractor()
-      {
-        @Override
-        public Object extract(ResultSet rs) throws RemoteException, SQLException
-        {
-          ArrayList<Buchungsart> list = new ArrayList<Buchungsart>();
-          while (rs.next())
-          {
-            list.add(
-              (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
-          }
-          return list;
-        }
-      };
-      @SuppressWarnings("unchecked")
-      ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-          new Object[] { dv, db }, rs);
-      int size = ergebnis.size();
-      for (int i = 0; i < size; i++)
-      {
-         liste.add(ergebnis.get(i));
-      }
-    }
-    else
-    {
-      DBIterator<Buchungsart> list = Einstellungen.getDBService()
-          .createList(Buchungsart.class);
-      if (Einstellungen.getEinstellung()
-          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
-      {
-        list.setOrder("ORDER BY nummer");
-      }
-      else
-      {
-        list.setOrder("ORDER BY bezeichnung");
-      }
-      
-      while (list.hasNext())
-      {
-        liste.add(list.next());
-      }
-    }
+    for (Buchungsart ba : suchliste)
+      liste.add(ba);
     
     int bwert = settings.getInt(BUCHUNGSART, -2);
     Buchungsart b = null;
@@ -824,22 +758,9 @@ public class BuchungsControl extends AbstractControl
         break;
       }
     }
-    suchbuchungsart = new SelectInput(liste, b);
+    suchbuchungsart.setList(liste);
+    suchbuchungsart.setValue(b);
     suchbuchungsart.addListener(new FilterListener());
-
-    switch (Einstellungen.getEinstellung().getBuchungsartSort())
-    {
-      case BuchungsartSort.NACH_NUMMER:
-        suchbuchungsart.setAttribute("nrbezeichnung");
-        break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
-        suchbuchungsart.setAttribute("bezeichnungnr");
-        break;
-      default:
-        suchbuchungsart.setAttribute("bezeichnung");
-        break;
-    }
-
     return suchbuchungsart;
   }
 

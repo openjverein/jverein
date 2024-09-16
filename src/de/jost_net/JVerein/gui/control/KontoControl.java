@@ -29,6 +29,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Konto;
@@ -305,9 +306,10 @@ public class KontoControl extends AbstractControl
       {
         sql += "WHERE (k.buchungsart IS NULL OR k.buchungsart = ?) ";
       }
-      sql += "AND ba.id IS NOT NULL AND ba.id = bu.buchungsart ";
+      sql += "AND ba.id IS NOT NULL AND ba.art = ? ";
+      sql += "AND ((ba.id = bu.buchungsart ";
       sql += "AND bu.datum >= ? AND bu.datum <= ? ";
-      sql += "AND ba.art = ? ";
+      sql += "AND ba.status = ?) OR ba.status = ?) ";
       if (Einstellungen.getEinstellung()
           .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
       {
@@ -322,14 +324,16 @@ public class KontoControl extends AbstractControl
       {
         @SuppressWarnings("unchecked")
         ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-            new Object[] { dv, db, ArtBuchungsart.UMBUCHUNG }, rs);    
+            new Object[] { ArtBuchungsart.UMBUCHUNG, dv, db,  
+                StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE }, rs);    
         addToList(liste, ergebnis);
       }
       else
       {
         @SuppressWarnings("unchecked")
         ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-            new Object[] { konto.getBuchungsartId(), dv, db, ArtBuchungsart.UMBUCHUNG }, rs);
+            new Object[] { konto.getBuchungsartId(), ArtBuchungsart.UMBUCHUNG, dv, db,  
+                StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE}, rs);
         addToList(liste, ergebnis);
       }
     }
@@ -345,7 +349,7 @@ public class KontoControl extends AbstractControl
       {
         sql += "WHERE (k.buchungsart IS NULL OR k.buchungsart = ?) ";
       }
-      sql += "AND ba.art = ? ";
+      sql += "AND ba.art = ? AND ba.status != ? ";
       if (Einstellungen.getEinstellung()
           .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
       {
@@ -360,19 +364,22 @@ public class KontoControl extends AbstractControl
       {
         @SuppressWarnings("unchecked")
         ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-            new Object[] { ArtBuchungsart.UMBUCHUNG }, rs);    
+            new Object[] { ArtBuchungsart.UMBUCHUNG, StatusBuchungsart.INACTIVE }, rs);    
         addToList(liste, ergebnis);
       }
       else
       {
         @SuppressWarnings("unchecked")
         ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-            new Object[] { konto.getBuchungsartId(), ArtBuchungsart.UMBUCHUNG }, rs);
+            new Object[] { konto.getBuchungsartId(), ArtBuchungsart.UMBUCHUNG, 
+                StatusBuchungsart.INACTIVE }, rs);
         addToList(liste, ergebnis);
       }
     }
     
     Buchungsart b = konto.getBuchungsart();
+    if (liste != null && b != null && !liste.contains(b))
+      liste.add(b);
     buchungsart = new SelectInput(liste, b);
     buchungsart.setPleaseChoose("Bitte wählen");
 

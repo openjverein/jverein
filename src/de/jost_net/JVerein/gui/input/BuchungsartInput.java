@@ -26,8 +26,8 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.BuchungBuchungsartAuswahl;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -39,9 +39,9 @@ public class BuchungsartInput
   private int unterdrueckunglaenge = 0;
   
   public AbstractInput getBuchungsartInput(AbstractInput buchungsart,
-      Buchungsart bart) throws RemoteException
+      Buchungsart bart, int auswahl) throws RemoteException
   {
-    switch (Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl())
+    switch (auswahl)
     {
       case BuchungBuchungsartAuswahl.ComboBox:
         unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
@@ -53,8 +53,9 @@ public class BuchungsartInput
           cal.add(Calendar.MONTH, - unterdrueckunglaenge);
           Date dv = cal.getTime();
           String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
-          sql += "WHERE buchung.buchungsart = buchungsart.id ";
+          sql += "WHERE (buchung.buchungsart = buchungsart.id ";
           sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
+          sql += "AND buchungsart.status = ?) OR buchungsart.status = ? ";
           if (Einstellungen.getEinstellung()
               .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
           {
@@ -80,13 +81,16 @@ public class BuchungsartInput
           };
           @SuppressWarnings("unchecked")
           ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-              new Object[] { dv, db }, rs);
-          buchungsart = new SelectInput(ergebnis.toArray(), bart);
+              new Object[] { dv, db, StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE}, rs);
+          if (bart != null && ergebnis != null && !ergebnis.contains(bart))
+            ergebnis.add(bart);
+          buchungsart = new SelectInput(ergebnis, bart);
         }
         else
         {
           DBIterator<Buchungsart> it = Einstellungen.getDBService()
               .createList(Buchungsart.class);
+          it.addFilter("buchungsart.status != ?", StatusBuchungsart.INACTIVE);
           if (Einstellungen.getEinstellung()
               .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
           {
@@ -96,7 +100,12 @@ public class BuchungsartInput
           {
             it.setOrder("ORDER BY bezeichnung");
           }
-          buchungsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, bart);
+          ArrayList<Buchungsart> ergebnis = new ArrayList<Buchungsart>();
+          while (it.hasNext())
+            ergebnis.add(it.next());
+          if (bart != null && ergebnis != null && !ergebnis.contains(bart))
+            ergebnis.add(bart);
+          buchungsart = new SelectInput(ergebnis, bart);
         }
         
         switch (Einstellungen.getEinstellung().getBuchungsartSort())

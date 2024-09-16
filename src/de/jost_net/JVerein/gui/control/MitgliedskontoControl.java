@@ -265,7 +265,8 @@ public class MitgliedskontoControl extends DruckMailControl
       return buchungsart;
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getMitgliedskonto().getBuchungsart());
+        getMitgliedskonto().getBuchungsart(),
+        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
     buchungsart.addListener(new Listener()
     {
       @Override
