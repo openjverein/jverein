@@ -12,15 +12,10 @@
     <tstamp>
       <format property="build.timestamp" pattern="yyyyMMdd" />
     </tstamp>
-    <loadfile property="plugin_version" srcFile="${build.dir}/RELEASE">
-      <filterchain>
-        <striplinebreaks/>
-      </filterchain>
-    </loadfile>
 
     <loadproperties srcfile="${build.dir}/build.properties" />
 
-  	<echo message="VERSION: ${plugin_version}" level="info"/>
+  	<echo message="VERSION: ${plugin.version}" level="info"/>
     <echo message="BUILD  : ${build.number}" level="info"/>
     <echo message="JAVA   : ${java.version}" level="info"/>
 
@@ -64,7 +59,7 @@
 		</javac>
   </target>
 
-  <target name="jar" depends="init,compile" description="generates the jar file">
+  <target name="jar" depends="init,compile" description="Generates the jar file">
     <mkdir dir="${project.zipdir}" />
     <tstamp />
     <jar destfile="${project.zipdir}/${define.jarfilename}">
@@ -72,7 +67,7 @@
         <attribute name="Built-By" value="${user.name}" />
         <attribute name="Built-Date" value="${DSTAMP}" />
         <attribute name="Implementation-Title" value="${plugin.name}" />
-        <attribute name="Implementation-Version" value="${plugin_version}" />
+        <attribute name="Implementation-Version" value="${plugin.version}" />
         <attribute name="Implementation-Buildnumber" value="${build.number}" />
         <attribute name="Class-Path" value="lang help lib" />
       </manifest>
@@ -89,7 +84,6 @@
 
     <copy todir="${project.zipdir}" file="plugin.xml" />
     <replace file="${project.zipdir}/plugin.xml">
-      <replacefilter token="[VERSION]" value="${plugin_version}"/>
       <replacefilter token="[PLUGIN_ZIP]" value="${project.zipfilename}"/>
     </replace>
 
@@ -102,7 +96,7 @@
     </zip>
   </target>
 
-  <target name="javadoc" depends="init" description="creates the api doc">
+  <target name="javadoc" depends="init" description="Creates the api doc">
     <mkdir dir="${project.javadoc}" />
     <javadoc destdir="${project.javadoc}" packagenames="${define.package}.*" encoding="${define.encoding}">
       <classpath refid="compilepath" />
@@ -125,7 +119,7 @@
     </junit>
   </target>
 -->
-  <target name="src" description="build source package, depends compile target to make sure, the code has no errors">
+  <target name="src" description="Build an source package, depends compile target to make sure, the code has no errors">
     <mkdir dir="${project.release}" />
     <mkdir dir="${project.tmp}/${plugin.name}" />
     <copy todir="${project.tmp}/${plugin.name}">
@@ -144,7 +138,7 @@
     </zip>
   </target>
 
-  <target name="clean" description="cleanup">
+  <target name="clean" description="Cleanup">
     <delete dir="${project.tmp}" />
     <delete dir="${class.dir}" />
   </target>
@@ -154,17 +148,17 @@
     <copy file="${project.zipdir}/${define.jarfilename}" tofile="releases/jverein-lib.jar" />
   </target>
 
-  <target name="all" depends="init,jar,javadoc,src,clean" description="build an official release">
-  	<echo message="SELECTED_VERSION=${plugin_version}" />
+  <target name="all" depends="init,jar,javadoc,src,clean" description="Build an official openjverein release">
+  	<echo message="SELECTED_VERSION=${plugin.version}" />
   	<echo message="SELECTED_PATH=${project.release}/${project.zipfilename}" />
   	<echo message="SELECTED_FILENAME=${project.zipfilename}" />
   </target>
 
-  <target name="fast" depends="init,jar,src" description="Entwicklerversion bauen">
+  <target name="fast" depends="init,jar,src" description="Build an development release">
     <move file="${project.release}/${project.zipfilename}" tofile="${project.release}/${project.zipfilename}" />
   </target>
 
-  <target name="nightly" depends="init,compile,jar,javadoc,src" description="build nightly release">
+  <target name="nightly" depends="init,compile,jar,javadoc,src" description="Build an nightly release">
     <mkdir dir="${project.release.nightly}" />
 
     <copy file="${project.release}/${project.zipfilename}" tofile="${project.release.nightly}/${project.zipfilename.nightly}" />
@@ -174,7 +168,7 @@
 
     <delete dir="${project.release}" />
 
-  	<echo message="SELECTED_VERSION=${plugin_version}-nightly" />
+  	<echo message="SELECTED_VERSION=${plugin.version}-nightly" />
   	<echo message="SELECTED_PATH=${project.release.nightly}/${project.zipfilename.nightly}" />
   	<echo message="SELECTED_FILENAME=${project.zipfilename.nightly}" />
   </target>
