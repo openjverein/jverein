@@ -2050,7 +2050,7 @@ public class BuchungsControl extends AbstractControl
   {
     try
     {
-      suchbuchungsart.setValue(suchbuchungsart.getList().get(0));
+      suchbuchungsart.setValue(null);
       suchprojekt.setValue(null);
       suchbetrag.setValue("");
       hasmitglied.setValue(hasmitglied.getList().get(2));
