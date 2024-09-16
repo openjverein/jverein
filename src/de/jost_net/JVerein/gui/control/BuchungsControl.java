@@ -716,8 +716,27 @@ public class BuchungsControl extends AbstractControl
     {
       projektliste.add(list.next());
     }
+    
+    int pwert = settings.getInt(PROJEKT, -2);
+    Projekt p = null;
+    if (pwert == 0)
+    {
+      p = projektliste.get(0);
+    }
+    else
+    {
+      int size = projektliste.size();
+      for (int i = 1; i < size; i++)
+      {
+        if (projektliste.get(i).getID().equalsIgnoreCase(String.valueOf(pwert)))
+        {
+          p = projektliste.get(i);
+          break;
+        }
+      }
+    }
 
-    suchprojekt = new SelectInput(projektliste, null);
+    suchprojekt = new SelectInput(projektliste, p);
     suchprojekt.addListener(new FilterListener());
     suchprojekt.setAttribute("bezeichnung");
     suchprojekt.setPleaseChoose("Keine Einschränkung");
@@ -1123,14 +1142,19 @@ public class BuchungsControl extends AbstractControl
     Buchungsart b = (Buchungsart) getSuchBuchungsart().getValue();
     if (b != null && b.getNummer() != 0)
     {
-      b = (Buchungsart) getSuchBuchungsart().getValue();
       settings.setAttribute(BuchungsControl.BUCHUNGSART, b.getNummer());
+    }
+    else
+    {
+      settings.setAttribute(BuchungsControl.BUCHUNGSART, -2);
     }
     Projekt p = (Projekt) getSuchProjekt().getValue();
     if (p != null)
     {
-      p = (Projekt) getSuchProjekt().getValue();
-      settings.setAttribute(BuchungsControl.PROJEKT, p.getID());
+      if (p.getID() == null)
+        settings.setAttribute(BuchungsControl.PROJEKT, 0);
+      else
+        settings.setAttribute(BuchungsControl.PROJEKT, p.getID());
     }
     else
     {
