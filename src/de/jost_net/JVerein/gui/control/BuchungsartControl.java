@@ -392,6 +392,7 @@ public class BuchungsartControl extends AbstractControl
     if (getBuchungsart().getID() != null) it.addFilter("id != " + getBuchungsart().getID());
     it.addFilter("(spende = false OR spende IS NULL)");
     it.addFilter("(steuersatz = 0 OR steuersatz IS NULL)");
+    it.addFilter("buchungsart.status != ?", StatusBuchungsart.INACTIVE);
 
     return it;
   }
@@ -663,6 +664,9 @@ public class BuchungsartControl extends AbstractControl
     final File file = new File(s);
     final DBIterator<Buchungsart> it = Einstellungen.getDBService()
         .createList(Buchungsart.class);
+    if (suchstatus != null && 
+        suchstatus.getValue().toString().equalsIgnoreCase("Ohne Deaktiviert"))
+      it.addFilter("status != ?", new Object[] { StatusBuchungsart.INACTIVE });
     it.setOrder("ORDER BY nummer");
     settings.setAttribute("lastdir", file.getParent());
     BackgroundTask t = new BackgroundTask()

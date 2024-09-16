@@ -1390,33 +1390,31 @@ public class BuchungsControl extends AbstractControl
 
     try
     {
-      DBIterator<Buchungsart> list = Einstellungen.getDBService()
-          .createList(Buchungsart.class);
-      if (query.getBuchungsart() != null
-          && query.getBuchungsart().getArt() != -2)
-      {
-        list.addFilter("id = ?",
-            new Object[] { query.getBuchungsart().getID() });
-      }
-      if (query.getBuchungsart() != null
-          && query.getBuchungsart().getArt() == -1)
-      {
-        list.addFilter("id = ?", -1);
-      }
-      list.setOrder("ORDER BY nummer");
       ArrayList<Buchungsart> buchungsarten = new ArrayList<>();
-      while (list.hasNext())
+      if (!(query.getBuchungsart() != null
+          && query.getBuchungsart().getID() == null))
       {
-        buchungsarten.add(list.next());
+        DBIterator<Buchungsart> list = Einstellungen.getDBService()
+            .createList(Buchungsart.class);
+        if (query.getBuchungsart() != null
+            && query.getBuchungsart().getID() != null)
+        {
+          list.addFilter("id = ?",
+              new Object[] { query.getBuchungsart().getID() });
+        }
+
+        list.setOrder("ORDER BY nummer");
+        
+        while (list.hasNext())
+        {
+          buchungsarten.add(list.next());
+        }
       }
-      if (buchungsarten.size() > 1)
-      {
-        Buchungsart ohnezuordnung = (Buchungsart) Einstellungen.getDBService()
-            .createObject(Buchungsart.class, null);
-        ohnezuordnung.setBezeichnung("Ohne Zuordnung");
-        ohnezuordnung.setArt(-1);
-        buchungsarten.add(ohnezuordnung);
-      }
+      Buchungsart ohnezuordnung = (Buchungsart) Einstellungen.getDBService()
+          .createObject(Buchungsart.class, null);
+      ohnezuordnung.setBezeichnung("Ohne Zuordnung");
+      ohnezuordnung.setArt(-1);
+      buchungsarten.add(ohnezuordnung);
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
