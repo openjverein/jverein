@@ -19,6 +19,7 @@ package de.jost_net.JVerein.io;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -58,6 +59,17 @@ public class KontenrahmenImportXML implements Importer
 
     // Root-Element "kontenrahmen" ermitteln
     IXMLElement root = (IXMLElement) parser.parse();
+    
+    // Version lesen
+    @SuppressWarnings("rawtypes")
+    Enumeration enu = root.enumerateChildren();
+    IXMLElement ele = (IXMLElement) enu.nextElement();
+    if (ele != null && ele.hasAttribute("version"))
+    {
+      String version = ele.getAttribute("version", "");
+      if (version != null && !version.isEmpty() && !version.equalsIgnoreCase("1"))
+        throw new ApplicationException("Versions Mismatch: Version 1 erwartet, Version " + version + " gelesen");
+    }
 
     // Element "buchungsklassen" holen
     IXMLElement buchungsklassen = root.getFirstChildNamed("buchungsklassen");
@@ -74,6 +86,8 @@ public class KontenrahmenImportXML implements Importer
       IXMLElement buchungsarten = element.getFirstChildNamed("buchungsarten");
       @SuppressWarnings("rawtypes")
       Enumeration enubua = buchungsarten.enumerateChildren();
+      HashMap<String, Double> mapsatz = new HashMap<String, Double>();
+      HashMap<String, String> mapst = new HashMap<String, String>();
       while (enubua.hasMoreElements())
       {
         IXMLElement buaelement = (IXMLElement) enubua.nextElement();
@@ -88,18 +102,37 @@ public class KontenrahmenImportXML implements Importer
         {
           buchungsart.setSpende(true);
         }
-        buchungsart.setSteuersatz(buaelement.getAttribute("steuersatz", 0));        
-        buchungsart.setSteuerBuchungsart(buaelement.getAttribute("steuer_buchungsart", null));
+        buchungsart.setStatus(buaelement.getAttribute("status", 0));
         buchungsart.store();
+        Double steuersatz = Double.valueOf(buaelement.getAttribute("steuersatz", "0.00"));
+        if (steuersatz != 0)
+        {
+          mapsatz.put(buchungsart.getID(), steuersatz);
+          String start = buaelement.getAttribute("steuer_buchungsart", "");
+          mapst.put(buchungsart.getID(), start);
+        }
       }
-
+      for (String id : mapsatz.keySet())
+      {
+        DBIterator<Buchungsart> buait = Einstellungen.getDBService()
+            .createList(Buchungsart.class);
+        buait.addFilter("ID = " + id);
+        Buchungsart bua = buait.next();
+        bua.setSteuersatz(mapsatz.get(id));
+        DBIterator<Buchungsart> stbuait = Einstellungen.getDBService()
+            .createList(Buchungsart.class);
+        stbuait.addFilter("nummer = ?", mapst.get(id));
+        Buchungsart stbua = stbuait.next();
+        bua.setSteuerBuchungsart(stbua.getID());
+        bua.store();
+      }
     }
   }
 
   @Override
   public String getName()
   {
-    return "Kontenrahmen-Import XML";
+    return "Kontenrahmen-Import XML V1";
   }
 
   public boolean hasFileDialog()

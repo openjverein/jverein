@@ -42,11 +42,13 @@ public class KontenrahmenExportXML extends KontenrahmenExport
   private IXMLElement xmlkl;
 
   private IXMLElement xmlklbarten;
+  
+  private IXMLElement xmlversion;
 
   @Override
   public String getName()
   {
-    return "Kontenrahmen XML-Export";
+    return "Kontenrahmen XML-Export V1";
   }
 
   @Override
@@ -88,6 +90,9 @@ public class KontenrahmenExportXML extends KontenrahmenExport
   {
     output = new FileWriter(file);
     xmltree = new XMLElement("kontenrahmen");
+    xmlversion = new XMLElement("version");
+    xmlversion.setAttribute("version", "1");
+    xmltree.addChild(xmlversion);
     xmltreeklassen = xmltree.createElement("buchungsklassen");
     xmltree.addChild(xmltreeklassen);
     xmlwriter = new XMLWriter(output);
@@ -112,6 +117,12 @@ public class KontenrahmenExportXML extends KontenrahmenExport
     xmlba.setAttribute("bezeichnung", buchungsart.getBezeichnung());
     xmlba.setAttribute("art", buchungsart.getArt() + "");
     xmlba.setAttribute("spende", buchungsart.getSpende().toString());
+    xmlba.setAttribute("steuersatz", buchungsart.getSteuersatz() + "");
+    if (buchungsart.getSteuerBuchungsart() != null)
+      xmlba.setAttribute("steuer_buchungsart", buchungsart.getSteuerBuchungsart().getNummer() + "");
+    else
+      xmlba.setAttribute("steuer_buchungsart", "");
+    xmlba.setAttribute("status", buchungsart.getStatus() + "");
     xmlklbarten.addChild(xmlba);
   }
 
