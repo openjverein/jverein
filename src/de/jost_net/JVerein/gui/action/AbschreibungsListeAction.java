@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.AbschreibungslisteView;
+import de.jost_net.JVerein.gui.view.AnlagenbuchungenListeView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 
@@ -25,6 +25,6 @@ public class AbschreibungsListeAction implements Action
   @Override
   public void handleAction(Object context)
   {
-    GUI.startView(AbschreibungslisteView.class.getName(), null);
+    GUI.startView(AnlagenbuchungenListeView.class.getName(), null);
   }
 }

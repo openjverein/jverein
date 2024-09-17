@@ -40,13 +40,13 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.util.ApplicationException;
 
-public class AbschreibungslisteView extends AbstractView
+public class AnlagenbuchungenListeView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Abschreibungen");
+    GUI.getView().setTitle("Anlagenbuchungen");
     
     final BuchungsControl control = new BuchungsControl(this, Kontenart.ANLAGEKONTO);
 

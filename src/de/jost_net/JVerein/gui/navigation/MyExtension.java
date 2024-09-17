@@ -205,7 +205,7 @@ public class MyExtension implements Extension
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
           new BuchungsListeAction(), "euro-sign.png"));
       if (anlagenkonto)
-        buchfuehrung.addChild(new MyItem(buchfuehrung, "Abschreibungen",
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenbuchungen",
           new AbschreibungsListeAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
           new BuchungsTexteKorrigierenAction(), "euro-sign.png"));
