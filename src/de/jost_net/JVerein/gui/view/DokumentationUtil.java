@@ -83,6 +83,8 @@ public class DokumentationUtil
   public static final String ANFANGSBESTAENDE = PRE + FUNKTIONEN + BUCHF + "anfangsbestand";
 
   public static final String BUCHUNGEN = PRE + FUNKTIONEN + BUCHF + "buchungen";
+  
+  public static final String ANLAGENBUCHUNGEN = PRE + FUNKTIONEN + BUCHF + "anlagenbuchungen";
 
   public static final String BUCHUNGSIMPORT = PRE + FUNKTIONEN + BUCHF + "buchungsimport";
 
@@ -103,7 +105,7 @@ public class DokumentationUtil
   
   public static final String SPLITBUCHUNG = PRE + FUNKTIONEN + BUCHF + "splittbuchungen";
   
-  public static final String ANLAGENLISTE = PRE + FUNKTIONEN + BUCHF + "anlagenliste";
+  public static final String ANLAGENLISTE = PRE + FUNKTIONEN + BUCHF + "anlagenverzeichnis";
 
 
   // Abrechnung
