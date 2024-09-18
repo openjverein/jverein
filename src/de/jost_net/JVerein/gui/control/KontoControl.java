@@ -106,6 +106,8 @@ public class KontoControl extends AbstractControl
   
   private TextAreaInput kommentar;
   
+  private DateInput anschaffung;
+  
 
   public KontoControl(AbstractView view)
   {
@@ -155,6 +157,17 @@ public class KontoControl extends AbstractControl
     eroeffnung = new DateInput(getKonto().getEroeffnung(),
         new JVDateFormatTTMMJJJJ());
     return eroeffnung;
+  }
+  
+  public DateInput getAnschaffung() throws RemoteException
+  {
+    if (anschaffung != null)
+    {
+      return anschaffung;
+    }
+    anschaffung = new DateInput(getKonto().getAnschaffung(),
+        new JVDateFormatTTMMJJJJ());
+    return anschaffung;
   }
 
   public DateInput getAufloesung() throws RemoteException
@@ -231,6 +244,7 @@ public class KontoControl extends AbstractControl
       k.setAfaart(getSelectedAfaartId());
       k.setBetrag((Double) getBetrag().getValue());
       k.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
+      k.setAnschaffung((Date) getAnschaffung().getValue());
       k.store();
       GUI.getStatusBar().setSuccessText("Konto gespeichert");
     }
@@ -730,6 +744,7 @@ public class KontoControl extends AbstractControl
         getBetrag().enable();
         getBetrag().setMandatory(true);
         getNutzungsdauer().enable();
+        getAnschaffung().enable();
       }
       else
       {
@@ -747,6 +762,8 @@ public class KontoControl extends AbstractControl
         getBetrag().disable();
         getNutzungsdauer().setValue(null);
         getNutzungsdauer().disable();
+        getAnschaffung().setValue(null);
+        getAnschaffung().disable();
       }
     }
     catch (RemoteException e)

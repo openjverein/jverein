@@ -85,6 +85,10 @@ public interface Konto extends DBObject
   public String getKommentar() throws RemoteException;
 
   public void setKommentar(String kommentar) throws RemoteException;
+  
+  public Date getAnschaffung() throws RemoteException;
+
+  public void setAnschaffung(Date anschaffung) throws RemoteException;
 
   public DBIterator<Konto> getKontenEinesJahres(Geschaeftsjahr gj)
       throws RemoteException;

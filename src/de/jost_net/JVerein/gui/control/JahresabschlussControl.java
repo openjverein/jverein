@@ -281,5 +281,66 @@ public class JahresabschlussControl extends AbstractControl
       jahresabschlussList.addItem(jahresabschluesse.next());
     }
   }
+  
+  public String getInfo()
+  {
+    String text = "";
+    try
+    {
+      Date vongj = (Date) getVon().getValue();
+      Date bisgj = (Date) getBis().getValue();
+      DBService service = Einstellungen.getDBService();
+      DBIterator<Konto> kontenIt = service.createList(Konto.class);
+      kontenIt.addFilter("anlagenkonto = TRUE");
+      kontenIt.addFilter("(eroeffnung IS NULL OR eroeffnung <= ?)",
+          new Object[] { new java.sql.Date(bisgj.getTime()) });
+      kontenIt.addFilter("(aufloesung IS NULL OR aufloesung >= ?)",
+          new Object[] { new java.sql.Date(vongj.getTime()) });
+      while (kontenIt.hasNext())
+      {
+        Konto konto = (Konto) kontenIt.next();
+        if (konto.getEroeffnung() == null)
+        {
+          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer() 
+          + "hat kein Eröffnungsdatum\n";
+        }
+        if (konto.getAnschaffung() == null)
+        {
+          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer() 
+          + "hat kein Anschaffungsdatum. Bitte auf Plausibilität prüfen!\n";
+        }
+        else if (konto.getAnschaffung().after(Datum.addTage(vongj, -1)) &&
+            konto.getAnschaffung().before(Datum.addTage(bisgj, 1)))
+        {
+          Double betrag = 0d;
+          DBService service2 = Einstellungen.getDBService();
+          DBIterator<Buchung> buchungenIt = service2.createList(Buchung.class);
+          buchungenIt.addFilter("konto = ?",
+              new Object[] { konto.getID() });
+          buchungenIt.addFilter("buchungsart != ?",
+              new Object[] { konto.getAfaartId() });
+          buchungenIt.addFilter("datum <= ?",
+              new Object[] { new java.sql.Date(bisgj.getTime()) });
+          while (buchungenIt.hasNext())
+          {
+            betrag += ((Buchung) buchungenIt.next()).getBetrag();
+          }
+          if (Math.abs(betrag - konto.getBetrag()) > Double.MIN_NORMAL)
+          {
+            text = text + "Für das Anlagenkonto mit der Nummer " + konto.getNummer() 
+            + " stimmt die Summe der Buchungen (" + betrag + ") nicht mit den Anschaffungskosten (" 
+            + konto.getBetrag() + ") überein. Bitte auf Plausibilität prüfen!\n";
+          }
+        }
+      }
+    }
+    catch (Exception e)
+    {
+      String fehler = "Fehler beim Initialisieren der Anzeige";
+      Logger.error(fehler, e);
+      GUI.getStatusBar().setErrorText(fehler);
+    }
+    return text;
+  }
 
 }

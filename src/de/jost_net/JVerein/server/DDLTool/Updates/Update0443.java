@@ -76,6 +76,9 @@ public class Update0443 extends AbstractDDLUpdate
       
       execute(addColumn("konto",
           new Column("betrag", COLTYPE.DOUBLE, 1, null, false, false)));
+      
+      execute(addColumn("konto",
+          new Column("anschaffung", COLTYPE.DATE, 10, null, false, false)));
     }
   }
 }

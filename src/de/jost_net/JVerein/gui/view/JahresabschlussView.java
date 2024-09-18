@@ -22,6 +22,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.parts.InfoPanel;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class JahresabschlussView extends AbstractView
@@ -34,6 +35,16 @@ public class JahresabschlussView extends AbstractView
 
     final JahresabschlussControl control = new JahresabschlussControl(this);
 
+    String text = control.getInfo();
+    if (text != null && !text.isEmpty())
+    {
+      InfoPanel   info = new InfoPanel();
+      info.setText(text);
+      info.setTitle("Info");
+      info.setIcon("gtk-info.png");
+      info.paint(getParent());
+    }
+    
     LabelGroup group = new LabelGroup(getParent(), "Jahresabschluss");
     group.addLabelPair("Von", control.getVon());
     group.addLabelPair("Bis", control.getBis());

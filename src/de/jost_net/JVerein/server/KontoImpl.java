@@ -393,6 +393,19 @@ public class KontoImpl extends AbstractDBObject implements Konto
     setAttribute("kommentar", kommentar);
   }
   
+
+  @Override
+  public Date getAnschaffung() throws RemoteException
+  {
+    return (Date) getAttribute("anschaffung");
+  }
+
+  @Override
+  public void setAnschaffung(Date anschaffung) throws RemoteException
+  {
+    setAttribute("anschaffung", anschaffung);
+  }
+  
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {

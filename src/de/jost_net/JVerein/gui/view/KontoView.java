@@ -50,6 +50,7 @@ public class KontoView extends AbstractView
     group1.addLabelPair("Afa Buchungsart", control.getAfaart());
     group1.addLabelPair("Anlagenwert", control.getBetrag());
     group1.addLabelPair("Nutzungsdauer", control.getNutzungsdauer());
+    group1.addLabelPair("Anschaffung", control.getAnschaffung());
     
     control.refreshGui();
 
