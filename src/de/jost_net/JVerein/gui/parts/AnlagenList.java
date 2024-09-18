@@ -169,8 +169,6 @@ public class AnlagenList extends TablePart implements Part
           buchungsklasse));
       DBIterator<Buchungsart> buchungsartenIt = service
           .createList(Buchungsart.class);
-      buchungsartenIt.addFilter("buchungsklasse = ?",
-          new Object[] { buchungsklasse.getID() });
       buchungsartenIt.setOrder("order by nummer");
       
       suBukStartwert = null;
@@ -336,7 +334,7 @@ public class AnlagenList extends TablePart implements Part
 
           zeile.add(new AnlagenlisteZeile(AnlagenlisteZeile.DETAIL,
               konto.getBezeichnung(), konto.getNutzungsdauer(),
-              konto.getEroeffnung(), konto.getAfaart(), konto.getBetrag(),
+              konto.getAnschaffung(), konto.getAfaart(), konto.getBetrag(),
               startwert, zugang, abschreibung, abgang, endwert));
         }
       }
