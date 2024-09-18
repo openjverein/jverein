@@ -48,6 +48,10 @@ public class AnlagenlisteZeile implements GenericObject
   private Double startwert;
 
   private Double abschreibung;
+  
+  private Double zugang;
+
+  private Double abgang;
 
   private Double endwert;
 
@@ -79,6 +83,8 @@ public class AnlagenlisteZeile implements GenericObject
     this.kosten = null;
     this.startwert = null;
     this.abschreibung = null;
+    this.zugang = null;
+    this.abgang = null;
     this.endwert = null;
   }
   
@@ -95,12 +101,15 @@ public class AnlagenlisteZeile implements GenericObject
     this.kosten = null;
     this.startwert = null;
     this.abschreibung = null;
+    this.zugang = null;
+    this.abgang = null;
     this.endwert = null;
   }
 
   public AnlagenlisteZeile(int status, String bezeichnung, 
       Integer nutzungsdauer, Date anschaffung, Buchungsart afaart, 
-      Double kosten, Double startwert, Double abschreibung, Double endwert)
+      Double kosten, Double startwert, Double zugang, 
+      Double abschreibung, Double abgang, Double endwert)
   {
     this.status = status;
     this.buchungsklasse = null;
@@ -113,11 +122,14 @@ public class AnlagenlisteZeile implements GenericObject
     this.kosten = kosten;
     this.startwert = startwert;
     this.abschreibung = abschreibung;
+    this.zugang = zugang;
+    this.abgang = abgang;
     this.endwert = endwert;
   }
 
   public AnlagenlisteZeile(int status, String text, 
-      Double startwert, Double abschreibung, Double endwert)
+      Double startwert, Double zugang, Double abschreibung, 
+      Double abgang, Double endwert)
   {
     this.status = status;
     this.buchungsklasse = null;
@@ -130,6 +142,8 @@ public class AnlagenlisteZeile implements GenericObject
     this.kosten = null;
     this.startwert = startwert;
     this.abschreibung = abschreibung;
+    this.zugang = zugang;
+    this.abgang = abgang;
     this.endwert = endwert;
   }
   
@@ -145,6 +159,8 @@ public class AnlagenlisteZeile implements GenericObject
     this.anschaffung = null;
     this.startwert = null;
     this.abschreibung = null;
+    this.zugang = null;
+    this.abgang = null;
     this.endwert = null;
   }
 
@@ -203,9 +219,17 @@ public class AnlagenlisteZeile implements GenericObject
     {
       return startwert;
     }
+    else if (arg0.equals("zugang"))
+    {
+      return zugang;
+    }
     else if (arg0.equals("abschreibung"))
     {
       return abschreibung;
+    }
+    else if (arg0.equals("abgang"))
+    {
+      return abgang;
     }
     else if (arg0.equals("endwert"))
     {

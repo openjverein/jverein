@@ -50,7 +50,9 @@ public class AnlagenverzeichnisCSV
         new ConvertNullTo(""), // Anschaffung
         new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Kosten
         new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Startwert
+        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Zugang
         new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Abschreibung
+        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Abgang
         new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)) // Endwert
     };
 
@@ -68,8 +70,9 @@ public class AnlagenverzeichnisCSV
       final CellProcessor[] processors = getProcessors();
       Map<String, Object> csvzeile = new HashMap<>();
 
-      String[] header = { "Anlagenart", "Bezeichnung", "Nutzungsdauer", "Afa Art", "Anschaffung",
-          "Anschaffungskosten", "Buchwert Beginn GJ", "Abschreibung", "Buchwert Ende GJ"};
+      String[] header = { "Anlagenart", "Bezeichnung", "Nutzungsdauer", "Afa Art", 
+          "Anschaffung", "Anschaffungskosten", "Buchwert Beginn GJ", "Zugang", 
+          "Abschreibung", "Abgang", "Buchwert Ende GJ"};
       writer.writeHeader(header);
 
       String subtitle = new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
@@ -102,8 +105,10 @@ public class AnlagenverzeichnisCSV
             csvzeile.put(header[4], (Date) akz.getAttribute("anschaffung"));
             csvzeile.put(header[5], (Double) akz.getAttribute("kosten"));
             csvzeile.put(header[6], (Double) akz.getAttribute("startwert"));
-            csvzeile.put(header[7], (Double) akz.getAttribute("abschreibung"));
-            csvzeile.put(header[8], (Double) akz.getAttribute("endwert"));
+            csvzeile.put(header[7], (Double) akz.getAttribute("zugang"));
+            csvzeile.put(header[8], (Double) akz.getAttribute("abschreibung"));
+            csvzeile.put(header[9], (Double) akz.getAttribute("abgang"));
+            csvzeile.put(header[10], (Double) akz.getAttribute("endwert"));
             break;
           }
           case AnlagenlisteZeile.SALDOFOOTER:
@@ -111,8 +116,10 @@ public class AnlagenverzeichnisCSV
             csvzeile.put(header[0],
                 (String) akz.getAttribute("buchungsklassenbezeichnung"));
             csvzeile.put(header[6], (Double) akz.getAttribute("startwert"));
-            csvzeile.put(header[7], (Double) akz.getAttribute("abschreibung"));
-            csvzeile.put(header[8], (Double) akz.getAttribute("endwert"));
+            csvzeile.put(header[7], (Double) akz.getAttribute("zugang"));
+            csvzeile.put(header[8], (Double) akz.getAttribute("abschreibung"));
+            csvzeile.put(header[9], (Double) akz.getAttribute("abgang"));
+            csvzeile.put(header[10], (Double) akz.getAttribute("endwert"));
             break;
           }
           case AnlagenlisteZeile.GESAMTSALDOFOOTER:
@@ -120,8 +127,10 @@ public class AnlagenverzeichnisCSV
             csvzeile.put(header[0],
                 (String) akz.getAttribute("buchungsklassenbezeichnung"));
             csvzeile.put(header[6], (Double) akz.getAttribute("startwert"));
-            csvzeile.put(header[7], (Double) akz.getAttribute("abschreibung"));
-            csvzeile.put(header[8], (Double) akz.getAttribute("endwert"));
+            csvzeile.put(header[7], (Double) akz.getAttribute("zugang"));
+            csvzeile.put(header[8], (Double) akz.getAttribute("abschreibung"));
+            csvzeile.put(header[9], (Double) akz.getAttribute("abgang"));
+            csvzeile.put(header[10], (Double) akz.getAttribute("endwert"));
             break;
           }
           case AnlagenlisteZeile.UNDEFINED:

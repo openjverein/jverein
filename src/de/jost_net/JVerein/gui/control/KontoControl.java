@@ -131,6 +131,7 @@ public class KontoControl extends AbstractControl
       return nummer;
     }
     nummer = new TextInput(getKonto().getNummer(), 35);
+    nummer.setMandatory(true);
     return nummer;
   }
 
@@ -141,6 +142,7 @@ public class KontoControl extends AbstractControl
       return bezeichnung;
     }
     bezeichnung = new TextInput(getKonto().getBezeichnung(), 255);
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -508,6 +510,7 @@ public class KontoControl extends AbstractControl
     anlagenart = new BuchungsartInput().getBuchungsartInput( anlagenart,
         getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART);
     anlagenart.addListener(new AnlagenartListener());
+    anlagenart.setMandatory(true);
     return anlagenart;
   }
   
@@ -543,6 +546,7 @@ public class KontoControl extends AbstractControl
     anlagenklasse.setValue(getKonto().getAnlagenklasse());
     anlagenklasse.setAttribute(getBuchungartAttribute());
     anlagenklasse.setPleaseChoose("Bitte auswählen");
+    anlagenklasse.setMandatory(true);
     return anlagenklasse;
   }
   
@@ -573,6 +577,7 @@ public class KontoControl extends AbstractControl
     afaart = new BuchungsartInput().getBuchungsartInput( afaart,
         getKonto().getAfaart(), buchungsarttyp.AFAART);
     afaart.addListener(new AnlagenartListener());
+    afaart.setMandatory(true);
     return afaart;
   }
   
@@ -602,6 +607,7 @@ public class KontoControl extends AbstractControl
     }
     betrag = new DecimalInput(getKonto().getBetrag(),
         Einstellungen.DECIMALFORMAT);
+    betrag.setMandatory(true);
     return betrag;
   }
 

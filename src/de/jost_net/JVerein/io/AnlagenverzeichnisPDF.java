@@ -53,21 +53,21 @@ public class AnlagenverzeichnisPDF
           {
             reporter.addColumn(
                 (String) akz.getAttribute("buchungsklassenbezeichnung"),
-                Element.ALIGN_LEFT, new BaseColor(220, 220, 220), 8);
+                Element.ALIGN_LEFT, new BaseColor(220, 220, 220), 10);
             break;
           }
           case AnlagenlisteZeile.HEADER2:
           {
             reporter.addColumn(
                 (String) akz.getAttribute("buchungsartbezeichnung"),
-                Element.ALIGN_LEFT, 8);
+                Element.ALIGN_LEFT, 10);
             break;
           }
           case AnlagenlisteZeile.DETAIL:
           {
             reporter.addColumn(
                 (String) akz.getAttribute("bezeichnung"),
-                Element.ALIGN_RIGHT);
+                Element.ALIGN_LEFT);
             if (akz.getAttribute("nutzungsdauer") == null)
               reporter.addColumn("", Element.ALIGN_LEFT);
             else
@@ -90,10 +90,18 @@ public class AnlagenverzeichnisPDF
               reporter.addColumn("", Element.ALIGN_LEFT);
             else
               reporter.addColumn((Double) akz.getAttribute("startwert"));
+            if (akz.getAttribute("zugang") == null)
+              reporter.addColumn("", Element.ALIGN_LEFT);
+            else
+              reporter.addColumn((Double) akz.getAttribute("zugang"));
             if (akz.getAttribute("abschreibung") == null)
               reporter.addColumn("", Element.ALIGN_LEFT);
             else
               reporter.addColumn((Double) akz.getAttribute("abschreibung"));
+            if (akz.getAttribute("abgang") == null)
+              reporter.addColumn("", Element.ALIGN_LEFT);
+            else
+              reporter.addColumn((Double) akz.getAttribute("abgang"));
             if (akz.getAttribute("endwert") == null)
               reporter.addColumn("", Element.ALIGN_LEFT);
             else
@@ -109,10 +117,18 @@ public class AnlagenverzeichnisPDF
               reporter.addColumn("", Element.ALIGN_LEFT);
             else
               reporter.addColumn((Double) akz.getAttribute("startwert"));
+            if (akz.getAttribute("zugang") == null)
+              reporter.addColumn("", Element.ALIGN_LEFT);
+            else
+              reporter.addColumn((Double) akz.getAttribute("zugang"));
             if (akz.getAttribute("abschreibung") == null)
               reporter.addColumn("", Element.ALIGN_LEFT);
             else
               reporter.addColumn((Double) akz.getAttribute("abschreibung"));
+            if (akz.getAttribute("abgang") == null)
+              reporter.addColumn("", Element.ALIGN_LEFT);
+            else
+              reporter.addColumn((Double) akz.getAttribute("abgang"));
             if (akz.getAttribute("endwert") == null)
               reporter.addColumn("", Element.ALIGN_LEFT);
             else
@@ -121,7 +137,7 @@ public class AnlagenverzeichnisPDF
           }
           case AnlagenlisteZeile.GESAMTSALDOFOOTER:
           {
-            reporter.addColumn("Gesamt", Element.ALIGN_LEFT, 8);
+            reporter.addColumn("Gesamt", Element.ALIGN_LEFT, 10);
             reporter.addColumn(
                 (String) akz.getAttribute("buchungsklassenbezeichnung"),
                 Element.ALIGN_RIGHT, 5);
@@ -129,10 +145,18 @@ public class AnlagenverzeichnisPDF
               reporter.addColumn("", Element.ALIGN_LEFT);
             else
               reporter.addColumn((Double) akz.getAttribute("startwert"));
+            if (akz.getAttribute("zugang") == null)
+              reporter.addColumn("", Element.ALIGN_LEFT);
+            else
+              reporter.addColumn((Double) akz.getAttribute("zugang"));
             if (akz.getAttribute("abschreibung") == null)
               reporter.addColumn("", Element.ALIGN_LEFT);
             else
               reporter.addColumn((Double) akz.getAttribute("abschreibung"));
+            if (akz.getAttribute("abgang") == null)
+              reporter.addColumn("", Element.ALIGN_LEFT);
+            else
+              reporter.addColumn((Double) akz.getAttribute("abgang"));
             if (akz.getAttribute("endwert") == null)
               reporter.addColumn("", Element.ALIGN_LEFT);
             else
@@ -156,11 +180,11 @@ public class AnlagenverzeichnisPDF
 
   private void makeHeader(Reporter reporter) throws DocumentException
   {
-    reporter.addHeaderColumn("Bezeichnung", Element.ALIGN_CENTER, 50,
+    reporter.addHeaderColumn("Bezeichnung", Element.ALIGN_CENTER, 25,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("ND", Element.ALIGN_CENTER, 10,
         BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Afa Art", Element.ALIGN_CENTER, 50,
+    reporter.addHeaderColumn("Afa Art", Element.ALIGN_CENTER, 25,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Anschaffung", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
@@ -168,7 +192,11 @@ public class AnlagenverzeichnisPDF
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Buchwert Beginn GJ", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
+    reporter.addHeaderColumn("Zugang", Element.ALIGN_CENTER, 20,
+        BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Abschreibung", Element.ALIGN_CENTER, 20,
+        BaseColor.LIGHT_GRAY);
+    reporter.addHeaderColumn("Abgang", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Buchwert Ende GJ", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);

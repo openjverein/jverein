@@ -88,13 +88,19 @@ public class AnlagenList extends TablePart implements Part
         saldoList.addColumn("Anschaffungskosten", "kosten",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
-        saldoList.addColumn("Buchwert Start", "startwert",
+        saldoList.addColumn("Buchwert Start GJ", "startwert",
+            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+            Column.ALIGN_RIGHT);
+        saldoList.addColumn("Zugang", "zugang",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
         saldoList.addColumn("Abschreibung", "abschreibung",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
-        saldoList.addColumn("Buchwert Ende", "endwert",
+        saldoList.addColumn("Abgang", "abgang",
+            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+            Column.ALIGN_RIGHT);
+        saldoList.addColumn("Buchwert Ende GJ", "endwert",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
         saldoList.setRememberColWidths(true);
@@ -123,13 +129,19 @@ public class AnlagenList extends TablePart implements Part
     Buchungsart buchungsart = null;
     Konto konto = null;
     Double startwert = null;
+    Double zugang = null;
     Double abschreibung = null;
+    Double abgang = null;
     Double endwert = null;
     Double suBukStartwert = null;
     Double suBukAbschreibung = null;
+    Double suBukZugang = null;
+    Double suBukAbgang = null;
     Double suBukEndwert = null;
     Double suStartwert = null;
     Double suAbschreibung = null;
+    Double suZugang = null;
+    Double suAbgang = null;
     Double suEndwert = null;
 
 
@@ -236,6 +248,7 @@ public class AnlagenList extends TablePart implements Part
               suBukEndwert += endwert;
           }
           
+          // Abschreibung
           DBIterator<Buchung> buchungenIt = service
               .createList(Buchung.class);
           buchungenIt.addFilter("konto = ?",
@@ -262,11 +275,69 @@ public class AnlagenList extends TablePart implements Part
             else
               suBukAbschreibung += abschreibung;
           }
+          
+          // Zugang
+          buchungenIt = service
+              .createList(Buchung.class);
+          buchungenIt.addFilter("konto = ?",
+              new Object[] { konto.getID() });
+          buchungenIt.addFilter("buchungsart != ?",
+              new Object[] { konto.getAfaartId() });
+          buchungenIt.addFilter("betrag > 0");
+          buchungenIt.addFilter("datum <= ?",
+              new Object[] { new java.sql.Date(datumbis.getTime()) });
+          buchungenIt.addFilter("datum >= ?",
+              new Object[] { new java.sql.Date(datumvon.getTime()) });
+          
+          zugang = null;
+          while (buchungenIt.hasNext())
+          {
+            if (zugang == null)
+              zugang = ((Buchung) buchungenIt.next()).getBetrag();
+            else
+              zugang += ((Buchung) buchungenIt.next()).getBetrag();
+          }
+          if (zugang != null)
+          {
+            if (suBukZugang == null)
+              suBukZugang = zugang;
+            else
+              suBukZugang += zugang;
+          }
+          
+          // Abgang
+          buchungenIt = service
+              .createList(Buchung.class);
+          buchungenIt.addFilter("konto = ?",
+              new Object[] { konto.getID() });
+          buchungenIt.addFilter("buchungsart != ?",
+              new Object[] { konto.getAfaartId() });
+          buchungenIt.addFilter("betrag < 0");
+          buchungenIt.addFilter("datum <= ?",
+              new Object[] { new java.sql.Date(datumbis.getTime()) });
+          buchungenIt.addFilter("datum >= ?",
+              new Object[] { new java.sql.Date(datumvon.getTime()) });
+          
+          abgang = null;
+          while (buchungenIt.hasNext())
+          {
+            if (abgang == null)
+              abgang = ((Buchung) buchungenIt.next()).getBetrag();
+            else
+              abgang += ((Buchung) buchungenIt.next()).getBetrag();
+          }
+          if (abgang != null)
+          {
+            if (suBukAbgang == null)
+              suBukAbgang = abgang;
+            else
+              suBukAbgang += abgang;
+          }
 
           zeile.add(new AnlagenlisteZeile(AnlagenlisteZeile.DETAIL,
               konto.getBezeichnung(), konto.getNutzungsdauer(),
               konto.getEroeffnung(), konto.getAfaart(), konto.getBetrag(),
-              startwert, abschreibung, endwert));
+              startwert, zugang, abschreibung, abgang, endwert));
         }
       }
 
@@ -291,6 +362,20 @@ public class AnlagenList extends TablePart implements Part
         else
           suAbschreibung += suBukAbschreibung;
       }
+      if (suBukZugang != null)
+      {
+        if (suZugang == null)
+          suZugang = suBukZugang;
+        else
+          suZugang += suBukZugang;
+      }
+      if (suBukAbgang != null)
+      {
+        if (suAbgang == null)
+          suAbgang = suBukAbgang;
+        else
+          suAbgang += suBukAbgang;
+      }
       if (suBukEndwert != null)
       {
         if (suEndwert == null)
@@ -301,12 +386,12 @@ public class AnlagenList extends TablePart implements Part
       zeile.add(
           new AnlagenlisteZeile(AnlagenlisteZeile.SALDOFOOTER,
               "Saldo" + " " + buchungsklasse.getBezeichnung(), 
-              suBukStartwert, suBukAbschreibung, suBukEndwert));
+              suBukStartwert, suBukZugang, suBukAbschreibung, suBukAbgang, suBukEndwert));
     }
     
     zeile.add(new AnlagenlisteZeile(
         AnlagenlisteZeile.GESAMTSALDOFOOTER, "Saldo Gesamt",
-        suStartwert, suAbschreibung, suEndwert));
+        suStartwert, suZugang, suAbschreibung, suAbgang, suEndwert));
 
     // Leerzeile am Ende wegen Scrollbar
     zeile.add(new AnlagenlisteZeile(AnlagenlisteZeile.UNDEFINED, ""));
