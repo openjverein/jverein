@@ -173,6 +173,8 @@ public class AnlagenList extends TablePart implements Part
       
       suBukStartwert = null;
       suBukAbschreibung = null;
+      suBukZugang = null;
+      suBukAbgang = null;
       suBukEndwert = null;
       boolean ausgabe = false;
       
