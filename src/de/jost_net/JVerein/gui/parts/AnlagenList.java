@@ -251,10 +251,11 @@ public class AnlagenList extends TablePart implements Part
           // Abschreibung
           DBIterator<Buchung> buchungenIt = service
               .createList(Buchung.class);
+          buchungenIt.join("buchungsart");
+          buchungenIt.addFilter("buchungsart.id = buchung.buchungsart");
           buchungenIt.addFilter("konto = ?",
               new Object[] { konto.getID() });
-          buchungenIt.addFilter("buchungsart = ?",
-              new Object[] { konto.getAfaartId() });
+          buchungenIt.addFilter("buchungsart.abschreibung = TRUE");
           buchungenIt.addFilter("datum <= ?",
               new Object[] { new java.sql.Date(datumbis.getTime()) });
           buchungenIt.addFilter("datum >= ?",
@@ -279,10 +280,11 @@ public class AnlagenList extends TablePart implements Part
           // Zugang
           buchungenIt = service
               .createList(Buchung.class);
+          buchungenIt.join("buchungsart");
+          buchungenIt.addFilter("buchungsart.id = buchung.buchungsart");
           buchungenIt.addFilter("konto = ?",
               new Object[] { konto.getID() });
-          buchungenIt.addFilter("buchungsart != ?",
-              new Object[] { konto.getAfaartId() });
+          buchungenIt.addFilter("buchungsart.abschreibung = FALSE");
           buchungenIt.addFilter("betrag > 0");
           buchungenIt.addFilter("datum <= ?",
               new Object[] { new java.sql.Date(datumbis.getTime()) });
@@ -308,10 +310,11 @@ public class AnlagenList extends TablePart implements Part
           // Abgang
           buchungenIt = service
               .createList(Buchung.class);
+          buchungenIt.join("buchungsart");
+          buchungenIt.addFilter("buchungsart.id = buchung.buchungsart");
           buchungenIt.addFilter("konto = ?",
               new Object[] { konto.getID() });
-          buchungenIt.addFilter("buchungsart != ?",
-              new Object[] { konto.getAfaartId() });
+          buchungenIt.addFilter("buchungsart.abschreibung = FALSE");
           buchungenIt.addFilter("betrag < 0");
           buchungenIt.addFilter("datum <= ?",
               new Object[] { new java.sql.Date(datumbis.getTime()) });

@@ -104,11 +104,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
       }
       if (getAnlagenkonto())
       {
-        if (getBetrag() == null)
-        {
-          throw new ApplicationException("Bitte Wert der Anlage eingeben");
-        }
-        else if (getBetrag() < 0.0)
+        if (getBetrag() != null && getBetrag() < 0.0)
         {
           throw new ApplicationException("Wert der Anlage darf nicht negativ sein");
         }

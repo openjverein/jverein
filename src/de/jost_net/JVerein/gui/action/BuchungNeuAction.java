@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
+import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
@@ -47,6 +48,11 @@ public class BuchungNeuAction implements Action
       Konto konto = (Konto) control.getSuchKonto().getValue();
       if (null != konto)
       {
+        if (konto.getAnlagenkonto())
+        {
+          buch.setBuchungsart(konto.getAfaartId());
+        }
+        buch.setDatum(new Date());
         buch.setKonto(konto);
       }
       else
@@ -57,6 +63,11 @@ public class BuchungNeuAction implements Action
           Konto k = (Konto) Einstellungen.getDBService().createObject(Konto.class, kontoid);
           if (null != k)
           {
+            if (k.getAnlagenkonto())
+            {
+              buch.setBuchungsart(k.getAfaartId());
+            }
+            buch.setDatum(new Date());
             buch.setKonto(k);
           }
         }

@@ -38,6 +38,7 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
@@ -49,6 +50,7 @@ import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -61,6 +63,7 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
@@ -107,6 +110,8 @@ public class KontoControl extends AbstractControl
   private TextAreaInput kommentar;
   
   private DateInput anschaffung;
+  
+  Button autobutton;
   
 
   public KontoControl(AbstractView view)
@@ -621,7 +626,22 @@ public class KontoControl extends AbstractControl
     }
     betrag = new DecimalInput(getKonto().getBetrag(),
         Einstellungen.DECIMALFORMAT);
-    betrag.setMandatory(true);
+    betrag.addListener(new Listener(){
+      public void handleEvent (Event e) {
+        try
+        {
+          if (getBetrag().getValue() != null)
+            getAutobutton().setEnabled(false);
+          else
+            getAutobutton().setEnabled(true);
+        }
+        catch (RemoteException e1)
+        {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+      }
+     });
     return betrag;
   }
 
@@ -742,7 +762,6 @@ public class KontoControl extends AbstractControl
         getAfaart().enable();
         getAfaart().setMandatory(true);
         getBetrag().enable();
-        getBetrag().setMandatory(true);
         getNutzungsdauer().enable();
         getAnschaffung().enable();
       }
@@ -757,7 +776,6 @@ public class KontoControl extends AbstractControl
         getAfaart().setMandatory(false);
         getAfaart().setValue(null);
         getAfaart().disable();
-        getBetrag().setMandatory(false);
         getBetrag().setValue(null);
         getBetrag().disable();
         getNutzungsdauer().setValue(null);
@@ -772,4 +790,66 @@ public class KontoControl extends AbstractControl
     }
   }
   
+  public Button getAutobutton()
+  {
+    if (autobutton != null)
+      return autobutton;
+    
+    autobutton = new Button("Auto Anlagenwert", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        handleAuto();
+      }
+    }, null, true, "view-refresh.png");
+
+    try
+    {
+      if (getBetrag().getValue() != null)
+        autobutton.setEnabled(false);
+    }
+    catch (RemoteException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return autobutton;
+  }
+  
+  private void handleAuto()
+  {
+    Double betrag = 0d;
+    DBService service;
+    try
+    {
+      service = Einstellungen.getDBService();
+      DBIterator<Buchung> buchungenIt = service.createList(Buchung.class);
+      buchungenIt.join("buchungsart");
+      buchungenIt.addFilter("buchungsart.id = buchung.buchungsart");
+      buchungenIt.addFilter("konto = ?",
+          new Object[] { konto.getID() });
+      buchungenIt.addFilter("buchungsart.abschreibung = FALSE");
+      buchungenIt.addFilter("datum <= ?",
+          new Object[] { new java.sql.Date(new Date().getTime()) });
+      buchungenIt.setOrder("order by datum");
+      Date d = new Date();
+      Buchung b;
+      while (buchungenIt.hasNext())
+      {
+        b = (Buchung) buchungenIt.next();
+        betrag += b.getBetrag();
+        d = b.getDatum();
+      }
+      getBetrag().setValue(betrag);
+      if (getAnschaffung().getValue() == null)
+        getAnschaffung().setValue(d);
+    }
+    catch (RemoteException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
 }

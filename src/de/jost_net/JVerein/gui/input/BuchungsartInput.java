@@ -63,6 +63,7 @@ public class BuchungsartInput
           {
             sql = "SELECT DISTINCT buchungsart.* from buchungsart, konto ";
             sql += "WHERE (konto.anlagenart = buchungsart.id) ";
+            sql += "AND (buchungsart.abschreibung = FALSE) ";
             sql += "AND (konto.aufloesung IS NULL OR "
                 + "(konto.aufloesung >= ? AND konto.aufloesung <= ?)) ";
           }
@@ -70,6 +71,7 @@ public class BuchungsartInput
           {
             sql = "SELECT DISTINCT buchungsart.* from buchungsart, konto ";
             sql += "WHERE (konto.afaart = buchungsart.id) ";
+            sql += "AND (buchungsart.abschreibung = TRUE) ";
             sql += "AND (konto.aufloesung IS NULL OR "
                 + "(konto.aufloesung >= ? AND konto.aufloesung <= ?)) ";
           }
@@ -112,6 +114,15 @@ public class BuchungsartInput
         {
           DBIterator<Buchungsart> it = Einstellungen.getDBService()
               .createList(Buchungsart.class);
+          if (art == buchungsarttyp.ANLAGENART)
+          {
+            it.addFilter("buchungsart.abschreibung = FALSE");
+          }
+          else if (art == buchungsarttyp.AFAART)
+          {
+            it.addFilter("buchungsart.abschreibung = TRUE");
+          }
+
           if (Einstellungen.getEinstellung()
               .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
           {

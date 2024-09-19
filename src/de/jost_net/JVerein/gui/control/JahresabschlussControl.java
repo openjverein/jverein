@@ -302,12 +302,12 @@ public class JahresabschlussControl extends AbstractControl
         if (konto.getEroeffnung() == null)
         {
           text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer() 
-          + "hat kein Eröffnungsdatum\n";
+          + " hat kein Eröffnungsdatum\n";
         }
         if (konto.getAnschaffung() == null)
         {
           text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer() 
-          + "hat kein Anschaffungsdatum. Bitte auf Plausibilität prüfen!\n";
+          + " hat kein Anschaffungsdatum. Bitte auf Plausibilität prüfen!\n";
         }
         else if (konto.getAnschaffung().after(Datum.addTage(vongj, -1)) &&
             konto.getAnschaffung().before(Datum.addTage(bisgj, 1)))
@@ -315,10 +315,11 @@ public class JahresabschlussControl extends AbstractControl
           Double betrag = 0d;
           DBService service2 = Einstellungen.getDBService();
           DBIterator<Buchung> buchungenIt = service2.createList(Buchung.class);
+          buchungenIt.join("buchungsart");
+          buchungenIt.addFilter("buchungsart.id = buchung.buchungsart");
           buchungenIt.addFilter("konto = ?",
               new Object[] { konto.getID() });
-          buchungenIt.addFilter("buchungsart != ?",
-              new Object[] { konto.getAfaartId() });
+          buchungenIt.addFilter("buchungsart.abschreibung = FALSE");
           buchungenIt.addFilter("datum <= ?",
               new Object[] { new java.sql.Date(bisgj.getTime()) });
           while (buchungenIt.hasNext())

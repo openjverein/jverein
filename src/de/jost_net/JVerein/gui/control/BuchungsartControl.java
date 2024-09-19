@@ -80,6 +80,8 @@ public class BuchungsartControl extends AbstractControl
   private SelectInput buchungsklasse;
 
   private CheckboxInput spende;
+  
+  private CheckboxInput abschreibung;
 
   private SelectInput steuersatz;
   
@@ -182,6 +184,16 @@ public class BuchungsartControl extends AbstractControl
       }
     });
     return spende;
+  }
+  
+  public CheckboxInput getAbschreibung() throws RemoteException
+  {
+    if (abschreibung != null)
+    {
+      return abschreibung;
+    }
+    abschreibung = new CheckboxInput(getBuchungsart().getAbschreibung());
+    return abschreibung;
   }
 
   public SelectInput getSteuersatz() throws RemoteException
@@ -387,6 +399,7 @@ public class BuchungsartControl extends AbstractControl
         b.setBuchungsklasse(null);
       }
       b.setSpende((Boolean) spende.getValue());
+      b.setAbschreibung((Boolean) abschreibung.getValue());
       double steuersatzValue = (SteuersatzBuchungsart) steuersatz.getValue() == null ? 0 : ((SteuersatzBuchungsart) steuersatz.getValue()).getSteuersatz();
       b.setSteuersatz(steuersatzValue);
       if (steuer_buchungsart.getValue() instanceof Buchungsart) 
@@ -467,6 +480,8 @@ public class BuchungsartControl extends AbstractControl
       }, false, Column.ALIGN_LEFT);
       buchungsartList.addColumn("Buchungsklasse", "buchungsklasse");
       buchungsartList.addColumn("Spende", "spende", new JaNeinFormatter());
+      buchungsartList.addColumn("Abschreibung", "abschreibung",
+          new JaNeinFormatter(), false, Column.ALIGN_RIGHT);
       buchungsartList.addColumn("Steuersatz", "steuersatz", new Formatter()
       {
         @Override

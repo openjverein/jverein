@@ -79,6 +79,9 @@ public class Update0443 extends AbstractDDLUpdate
       
       execute(addColumn("konto",
           new Column("anschaffung", COLTYPE.DATE, 10, null, false, false)));
+      
+      execute(addColumn("buchungsart", new Column("abschreibung",
+          COLTYPE.BOOLEAN, 0, "FALSE", false, false)));
     }
   }
 }

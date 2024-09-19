@@ -51,4 +51,8 @@ public interface Buchungsart extends DBObject
   public Buchungsart getSteuerBuchungsart() throws RemoteException;
 
   public void setSteuerBuchungsart(String steuer_buchungsart) throws RemoteException;
+  
+  public Boolean getAbschreibung() throws RemoteException;
+
+  public void setAbschreibung(Boolean abschreibung) throws RemoteException;
 }

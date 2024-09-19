@@ -54,6 +54,10 @@ public class KontoView extends AbstractView
     
     control.refreshGui();
 
+    ButtonArea anlagenbuttons = new ButtonArea();
+    anlagenbuttons.addButton(control.getAutobutton());
+    group1.addButtonArea(anlagenbuttons);
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KONTEN, false, "question-circle.png");
