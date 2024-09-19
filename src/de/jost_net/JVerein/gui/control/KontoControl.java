@@ -764,6 +764,7 @@ public class KontoControl extends AbstractControl
         getBetrag().enable();
         getNutzungsdauer().enable();
         getAnschaffung().enable();
+        getAutobutton().setEnabled(true);
       }
       else
       {
@@ -782,6 +783,7 @@ public class KontoControl extends AbstractControl
         getNutzungsdauer().disable();
         getAnschaffung().setValue(null);
         getAnschaffung().disable();
+        getAutobutton().setEnabled(false);
       }
     }
     catch (RemoteException e)
