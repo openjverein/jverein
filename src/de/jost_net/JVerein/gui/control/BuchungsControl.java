@@ -2272,15 +2272,32 @@ public class BuchungsControl extends AbstractControl
     DBService service;
     try
     {
+      Calendar calendar = Calendar.getInstance();
+      int jahr = calendar.get(Calendar.YEAR);
       service = Einstellungen.getDBService();
       DBIterator<Konto> kontenIt = service.createList(Konto.class);
       kontenIt.addFilter("anlagenkonto = TRUE");
       kontenIt.addFilter("afastart IS NOT NULL");
       kontenIt.addFilter("afadauer IS NOT NULL");
       kontenIt.addFilter("anschaffung IS NOT NULL");
+      kontenIt.addFilter("nutzungsdauer IS NOT NULL");
+      kontenIt.addFilter("(eroeffnung IS NULL OR eroeffnung <= ?)",
+          new Object[] { new java.sql.Date(calendar.getTimeInMillis())  });
+      kontenIt.addFilter("(aufloesung IS NULL OR aufloesung >= ?)",
+          new Object[] { new java.sql.Date(calendar.getTimeInMillis())  });
       while (kontenIt.hasNext())
       {
         Konto konto = kontenIt.next();
+        calendar.setTime(konto.getAnschaffung());
+        int anschaffung = calendar.get(Calendar.YEAR);
+        // Check ob ausserhalb des Abschreibungszeitraums
+        if (jahr < anschaffung || jahr > anschaffung + konto.getNutzungsdauer())
+          continue;
+        // Check ob Anschaffung im Januar, dann keine Restabschreibung
+        if (jahr == anschaffung + konto.getNutzungsdauer() && 
+            calendar.get(Calendar.MONTH) == 0)
+          continue;
+        
         Buchung buchung = (Buchung) Einstellungen.getDBService().
             createObject(Buchung.class, null);
         buchung.setKonto(konto);
@@ -2288,14 +2305,12 @@ public class BuchungsControl extends AbstractControl
         buchung.setZweck(konto.getAfaart().getBezeichnung());
         buchung.setDatum(new Date());
         buchung.setBuchungsart(konto.getAfaartId());
-        Calendar calendar = Calendar.getInstance();
-        int jahr = calendar.get(Calendar.YEAR);
-        calendar.setTime(konto.getAnschaffung());
-        int anschaffung = calendar.get(Calendar.YEAR);
-        if (anschaffung == jahr)
+        if (jahr == anschaffung)
           buchung.setBetrag(konto.getAfaStart());
-        else
+        else if (jahr < anschaffung + konto.getNutzungsdauer())
           buchung.setBetrag(konto.getAfaDauer());
+        else
+          buchung.setBetrag(konto.getAfaDauer() - konto.getAfaStart());
         buchung.store();
       }
       refreshBuchungen();
