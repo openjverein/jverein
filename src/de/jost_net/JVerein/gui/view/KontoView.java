@@ -47,15 +47,19 @@ public class KontoView extends AbstractView
     LabelGroup group1 = new LabelGroup(getParent(), "Anlagenkonto Daten");
     group1.addLabelPair("Anlagen Buchungsklasse", control.getAnlagenklasse());
     group1.addLabelPair("Anlagen Buchungsart", control.getAnlagenart());
-    group1.addLabelPair("Afa Buchungsart", control.getAfaart());
+    group1.addLabelPair("AfA Buchungsart", control.getAfaart());
     group1.addLabelPair("Anlagenwert", control.getBetrag());
-    group1.addLabelPair("Nutzungsdauer", control.getNutzungsdauer());
     group1.addLabelPair("Anschaffung", control.getAnschaffung());
+    group1.addLabelPair("Nutzungsdauer", control.getNutzungsdauer());
+    group1.addLabelPair("AfA Erstes Jahr", control.getAfaStart());
+    group1.addLabelPair("AfA Folgejahre", control.getAfaDauer());
+    group1.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
     
     control.refreshGui();
 
     ButtonArea anlagenbuttons = new ButtonArea();
     anlagenbuttons.addButton(control.getAutobutton());
+    anlagenbuttons.addButton(control.getAfabutton());
     group1.addButtonArea(anlagenbuttons);
 
     ButtonArea buttons = new ButtonArea();

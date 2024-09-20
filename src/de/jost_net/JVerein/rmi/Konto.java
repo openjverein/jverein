@@ -89,6 +89,18 @@ public interface Konto extends DBObject
   public Date getAnschaffung() throws RemoteException;
 
   public void setAnschaffung(Date anschaffung) throws RemoteException;
+  
+  public Double getAfaStart() throws RemoteException;
+
+  public void setAfaStart(Double afastart) throws RemoteException;
+  
+  public Double getAfaDauer() throws RemoteException;
+
+  public void setAfaDauer(Double afadauer) throws RemoteException;
+  
+  public Double getAfaRestwert() throws RemoteException;
+
+  public void setAfaRestwert(Double afarestwert) throws RemoteException;
 
   public DBIterator<Konto> getKontenEinesJahres(Geschaeftsjahr gj)
       throws RemoteException;

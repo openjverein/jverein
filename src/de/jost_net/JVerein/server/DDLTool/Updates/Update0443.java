@@ -82,6 +82,15 @@ public class Update0443 extends AbstractDDLUpdate
       
       execute(addColumn("buchungsart", new Column("abschreibung",
           COLTYPE.BOOLEAN, 0, "FALSE", false, false)));
+      
+      execute(addColumn("konto",
+          new Column("afastart", COLTYPE.DOUBLE, 1, null, false, false)));
+      
+      execute(addColumn("konto",
+          new Column("afadauer", COLTYPE.DOUBLE, 1, null, false, false)));
+      
+      execute(addColumn("konto",
+          new Column("afarestwert", COLTYPE.DOUBLE, 1, null, false, false)));
     }
   }
 }

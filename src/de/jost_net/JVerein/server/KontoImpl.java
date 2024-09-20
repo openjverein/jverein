@@ -403,6 +403,42 @@ public class KontoImpl extends AbstractDBObject implements Konto
   }
   
   @Override
+  public Double getAfaStart() throws RemoteException
+  {
+    return (Double) getAttribute("afastart");
+  }
+
+  @Override
+  public void setAfaStart(Double afastart) throws RemoteException
+  {
+    setAttribute("afastart", afastart);
+  }
+  
+  @Override
+  public Double getAfaDauer() throws RemoteException
+  {
+    return (Double) getAttribute("afadauer");
+  }
+
+  @Override
+  public void setAfaDauer(Double afadauer) throws RemoteException
+  {
+    setAttribute("afadauer", afadauer);
+  }
+  
+  @Override
+  public Double getAfaRestwert() throws RemoteException
+  {
+    return (Double) getAttribute("afarestwert");
+  }
+
+  @Override
+  public void setAfaRestwert(Double afarestwert) throws RemoteException
+  {
+    setAttribute("afarestwert", afarestwert);
+  }
+  
+  @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
     if ("buchungsart".equals(fieldName))

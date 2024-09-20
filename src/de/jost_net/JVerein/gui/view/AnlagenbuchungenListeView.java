@@ -124,6 +124,8 @@ public class AnlagenbuchungenListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ANLAGENBUCHUNGEN, false, "question-circle.png");
+    if (!control.getGeldkonto())
+      buttons.addButton(control.getAfaButton());
     buttons.addButton("Import", new BuchungImportAction(), null, false,
         "file-import.png");
     buttons.addButton(control.getStartCSVAuswertungButton());

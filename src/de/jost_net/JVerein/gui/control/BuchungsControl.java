@@ -922,6 +922,20 @@ public class BuchungsControl extends AbstractControl
     }, null, false, "file-pdf.png");
     return b;
   }
+  
+  public Button getAfaButton()
+  {
+    Button b = new Button("Erzeuge Abschreibungen", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        startAbschreibung();
+      }
+    }, null, false, "document-new.png");
+    return b;
+  }
 
   private void handleStore() throws ApplicationException
   {
@@ -2251,5 +2265,50 @@ public class BuchungsControl extends AbstractControl
     {
       throw new ApplicationException("Von Datum ist nach Bis Datum!");
     }
+  }
+  
+  private void startAbschreibung()
+  {
+    DBService service;
+    try
+    {
+      service = Einstellungen.getDBService();
+      DBIterator<Konto> kontenIt = service.createList(Konto.class);
+      kontenIt.addFilter("anlagenkonto = TRUE");
+      kontenIt.addFilter("afastart IS NOT NULL");
+      kontenIt.addFilter("afadauer IS NOT NULL");
+      kontenIt.addFilter("anschaffung IS NOT NULL");
+      while (kontenIt.hasNext())
+      {
+        Konto konto = kontenIt.next();
+        Buchung buchung = (Buchung) Einstellungen.getDBService().
+            createObject(Buchung.class, null);
+        buchung.setKonto(konto);
+        buchung.setName(Einstellungen.getEinstellung().getName());
+        buchung.setZweck(konto.getAfaart().getBezeichnung());
+        buchung.setDatum(new Date());
+        buchung.setBuchungsart(konto.getAfaartId());
+        Calendar calendar = Calendar.getInstance();
+        int jahr = calendar.get(Calendar.YEAR);
+        calendar.setTime(konto.getAnschaffung());
+        int anschaffung = calendar.get(Calendar.YEAR);
+        if (anschaffung == jahr)
+          buchung.setBetrag(konto.getAfaStart());
+        else
+          buchung.setBetrag(konto.getAfaDauer());
+        buchung.store();
+      }
+      refreshBuchungen();
+      GUI.getStatusBar().setSuccessText("Abschreibungen erfolgreich erstellt");
+    }
+    catch (RemoteException e)
+    {
+      GUI.getStatusBar().setErrorText("Fehler bei der Erstellung der Abschreibungen");
+    }
+    catch (ApplicationException ex)
+    {
+      GUI.getStatusBar().setErrorText(ex.getLocalizedMessage());
+    }
+
   }
 }

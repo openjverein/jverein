@@ -59,14 +59,12 @@ public class BuchungMenu extends ContextMenu
     addItem(new SingleBuchungItem("Duplizieren", new BuchungDuplizierenAction(),
         "edit-copy.png"));
     if (geldkonto)
-    {
       addItem(new SingleGegenBuchungItem("Gegenbuchung", new BuchungGegenbuchungAction(),
           "edit-copy.png"));
-      addItem(new SplitBuchungItem("Splitbuchung", new SplitBuchungAction(),
-          "edit-copy.png"));
-      addItem(new AufloesenItem("Auflösen", new SplitbuchungBulkAufloesenAction(),
-          "unlocked.png"));
-    }
+    addItem(new SplitBuchungItem("Splitbuchung", new SplitBuchungAction(),
+        "edit-copy.png"));
+    addItem(new AufloesenItem("Auflösen", new SplitbuchungBulkAufloesenAction(),
+        "unlocked.png"));
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
     if (geldkonto)

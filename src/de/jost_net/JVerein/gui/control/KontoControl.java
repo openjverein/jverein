@@ -111,7 +111,15 @@ public class KontoControl extends AbstractControl
   
   private DateInput anschaffung;
   
+  private DecimalInput afastart;
+  
+  private DecimalInput afadauer;
+  
+  private DecimalInput afarestwert;
+  
   Button autobutton;
+  
+  Button afabutton;
   
 
   public KontoControl(AbstractView view)
@@ -250,6 +258,9 @@ public class KontoControl extends AbstractControl
       k.setBetrag((Double) getBetrag().getValue());
       k.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
       k.setAnschaffung((Date) getAnschaffung().getValue());
+      k.setAfaStart((Double) getAfaStart().getValue());
+      k.setAfaDauer((Double) getAfaDauer().getValue());
+      k.setAfaRestwert((Double) getAfaRestwert().getValue());
       k.store();
       GUI.getStatusBar().setSuccessText("Konto gespeichert");
     }
@@ -672,6 +683,39 @@ public class KontoControl extends AbstractControl
     kommentar.setHeight(50);
     return kommentar;
   }
+  
+  public DecimalInput getAfaStart() throws RemoteException
+  {
+    if (afastart != null)
+    {
+      return afastart;
+    }
+    afastart = new DecimalInput(getKonto().getAfaStart(),
+        Einstellungen.DECIMALFORMAT);
+    return afastart;
+  }
+  
+  public DecimalInput getAfaDauer() throws RemoteException
+  {
+    if (afadauer != null)
+    {
+      return afadauer;
+    }
+    afadauer = new DecimalInput(getKonto().getAfaDauer(),
+        Einstellungen.DECIMALFORMAT);
+    return afadauer;
+  }
+  
+  public DecimalInput getAfaRestwert() throws RemoteException
+  {
+    if (afarestwert != null)
+    {
+      return afarestwert;
+    }
+    afarestwert = new DecimalInput(getKonto().getAfaRestwert(),
+        Einstellungen.DECIMALFORMAT);
+    return afarestwert;
+  }
 
   public String getBuchungartSortOrder()
   {
@@ -764,7 +808,14 @@ public class KontoControl extends AbstractControl
         getBetrag().enable();
         getNutzungsdauer().enable();
         getAnschaffung().enable();
-        getAutobutton().setEnabled(true);
+        getAfaStart().enable();
+        getAfaDauer().enable();
+        getAfaRestwert().enable();
+        if (getAfaRestwert().getValue() == null)
+          getAfaRestwert().setValue(0);
+        if (getBetrag().getValue() == null)
+          getAutobutton().setEnabled(true);
+        getAfabutton().setEnabled(true);
       }
       else
       {
@@ -783,7 +834,14 @@ public class KontoControl extends AbstractControl
         getNutzungsdauer().disable();
         getAnschaffung().setValue(null);
         getAnschaffung().disable();
+        getAfaStart().setValue(null);
+        getAfaStart().disable();
+        getAfaDauer().setValue(null);
+        getAfaDauer().disable();
+        getAfaRestwert().setValue(null);
+        getAfaRestwert().disable();
         getAutobutton().setEnabled(false);
+        getAfabutton().setEnabled(false);
       }
     }
     catch (RemoteException e)
@@ -820,6 +878,23 @@ public class KontoControl extends AbstractControl
     return autobutton;
   }
   
+  public Button getAfabutton()
+  {
+    if (afabutton != null)
+      return afabutton;
+    
+    afabutton = new Button("Auto AfA", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        handleAfa();
+      }
+    }, null, true, "view-refresh.png");
+    return afabutton;
+  }
+  
   private void handleAuto()
   {
     Double betrag = 0d;
@@ -854,4 +929,45 @@ public class KontoControl extends AbstractControl
       e.printStackTrace();
     }
   }
+  
+  private void handleAfa()
+  {
+    try
+    {
+      Double betrag = (Double) getBetrag().getValue();
+      if (betrag == null)
+      {
+        GUI.getStatusBar().setErrorText("Anlagenwert fehlt, bitte eingeben!");
+        return;
+      }
+      Date anschaffung = (Date) getAnschaffung().getValue();
+      if (anschaffung == null)
+      {
+        GUI.getStatusBar().setErrorText("Anschaffung fehlt, bitte eingeben!");
+        return;
+      }
+      Integer nutzungsdauer = (Integer) getNutzungsdauer().getValue();
+      if (nutzungsdauer == null)
+      {
+        GUI.getStatusBar().setErrorText("Nutzungsdauer fehlt, bitte eingeben!");
+        return;
+      }
+      Double restwert = (Double) getAfaRestwert().getValue();
+      if (restwert == null)
+      {
+        GUI.getStatusBar().setErrorText("Restwert fehlt, bitte eingeben!");
+        return;
+      }
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(anschaffung);
+      Integer monate = 12 - calendar.get(Calendar.MONTH);
+      getAfaStart().setValue(((betrag - restwert)*monate)/(nutzungsdauer*12));
+      getAfaDauer().setValue((betrag - restwert)/nutzungsdauer);
+    }
+    catch (RemoteException e)
+    {
+      GUI.getStatusBar().setErrorText("Fehler bei der AfA Berechnung");
+    }
+  }
+  
 }
