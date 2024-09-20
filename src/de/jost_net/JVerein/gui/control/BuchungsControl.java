@@ -2294,8 +2294,10 @@ public class BuchungsControl extends AbstractControl
         if (jahr < anschaffung || jahr > anschaffung + konto.getNutzungsdauer())
           continue;
         // Check ob Anschaffung im Januar, dann keine Restabschreibung
-        if (jahr == anschaffung + konto.getNutzungsdauer() && 
-            calendar.get(Calendar.MONTH) == 0)
+        // Wenn Nutzungsdauer 0 dann direktabschreibung
+        if ((jahr == anschaffung + konto.getNutzungsdauer() && 
+            calendar.get(Calendar.MONTH) == 0) &&
+            konto.getNutzungsdauer() != 0)
           continue;
         
         Buchung buchung = (Buchung) Einstellungen.getDBService().
@@ -2308,6 +2310,8 @@ public class BuchungsControl extends AbstractControl
         if (jahr == anschaffung)
           buchung.setBetrag(konto.getAfaStart());
         else if (jahr < anschaffung + konto.getNutzungsdauer())
+          buchung.setBetrag(konto.getAfaDauer());
+        else if (konto.getNutzungsdauer() == 1)
           buchung.setBetrag(konto.getAfaDauer());
         else
           buchung.setBetrag(konto.getAfaDauer() - konto.getAfaStart());

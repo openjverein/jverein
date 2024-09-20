@@ -961,8 +961,23 @@ public class KontoControl extends AbstractControl
       Calendar calendar = Calendar.getInstance();
       calendar.setTime(anschaffung);
       Integer monate = 12 - calendar.get(Calendar.MONTH);
-      getAfaStart().setValue(((betrag - restwert)*monate)/(nutzungsdauer*12));
-      getAfaDauer().setValue((betrag - restwert)/nutzungsdauer);
+      if (nutzungsdauer == 0)
+      {
+        getAfaStart().setValue(betrag);
+        getAfaDauer().setValue(0);
+        getAfaRestwert().setValue(0);
+      }
+      else if (nutzungsdauer == 1)
+      {
+        Double start = ((betrag - restwert)*monate)/(nutzungsdauer*12);
+        getAfaStart().setValue(start);
+        getAfaDauer().setValue(betrag - start - restwert);
+      }
+      else
+      {
+        getAfaStart().setValue(((betrag - restwert)*monate)/(nutzungsdauer*12));
+        getAfaDauer().setValue((betrag - restwert)/nutzungsdauer);
+      }
     }
     catch (RemoteException e)
     {
