@@ -42,6 +42,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -680,7 +681,7 @@ public class KontoControl extends AbstractControl
       return kommentar;
     }
     kommentar = new TextAreaInput(getKonto().getKommentar(), 1024);
-    kommentar.setHeight(50);
+    kommentar.setHeight(100);
     return kommentar;
   }
   
@@ -960,7 +961,17 @@ public class KontoControl extends AbstractControl
       }
       Calendar calendar = Calendar.getInstance();
       calendar.setTime(anschaffung);
-      Integer monate = 12 - calendar.get(Calendar.MONTH);
+      Integer monatAnschaffung = calendar.get(Calendar.MONTH);
+      Integer year = calendar.get(Calendar.YEAR);
+      Date startGJ = Datum.toDate(Einstellungen.getEinstellung()
+          .getBeginnGeschaeftsjahr() + year);
+      calendar.setTime(startGJ);
+      Integer monatStartGJ = calendar.get(Calendar.MONTH);
+      Integer monate = 12;
+      if (monatAnschaffung < monatStartGJ)
+        monate = monatStartGJ - monatAnschaffung;
+      else if (monatAnschaffung > monatStartGJ)
+        monate = monatStartGJ - monatAnschaffung + 12;
       if (nutzungsdauer == 0)
       {
         getAfaStart().setValue(betrag);
@@ -969,17 +980,20 @@ public class KontoControl extends AbstractControl
       }
       else if (nutzungsdauer == 1)
       {
-        Double start = ((betrag - restwert)*monate)/(nutzungsdauer*12);
+        Double start = ((betrag - restwert)*monate)/12;
         getAfaStart().setValue(start);
         getAfaDauer().setValue(betrag - start - restwert);
       }
       else
       {
-        getAfaStart().setValue(((betrag - restwert)*monate)/(nutzungsdauer*12));
+        if(monate == 12)
+          getAfaStart().setValue(((betrag - restwert))/(nutzungsdauer));
+        else
+          getAfaStart().setValue(((betrag - restwert)*monate)/(nutzungsdauer*12));
         getAfaDauer().setValue((betrag - restwert)/nutzungsdauer);
       }
     }
-    catch (RemoteException e)
+    catch (Exception e)
     {
       GUI.getStatusBar().setErrorText("Fehler bei der AfA Berechnung");
     }
