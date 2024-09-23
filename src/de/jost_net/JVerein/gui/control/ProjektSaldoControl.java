@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.parts.ProjektSaldoList;
+import de.jost_net.JVerein.io.ProjektSaldoCSV;
 import de.jost_net.JVerein.io.ProjektSaldoPDF;
 import de.jost_net.JVerein.io.ProjektSaldoZeile;
 import de.jost_net.JVerein.util.Dateiname;
@@ -45,6 +46,10 @@ public class ProjektSaldoControl extends SaldoControl
 {
 
   private ProjektSaldoList saldoList;
+  
+  final static String AuswertungPDF = "PDF";
+
+  final static String AuswertungCSV = "CSV";
 
   public ProjektSaldoControl(AbstractView view)
   {
@@ -58,9 +63,23 @@ public class ProjektSaldoControl extends SaldoControl
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
-        starteAuswertung();
+        starteAuswertung(AuswertungPDF);
       }
     }, null, false, "file-pdf.png");
+    // button
+    return b;
+  }
+  
+  public Button getStartAuswertungCSVButton()
+  {
+    Button b = new Button("CSV", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        starteAuswertung(AuswertungCSV);
+      }
+    }, null, false, "xsd.png");
     // button
     return b;
   }
@@ -110,7 +129,7 @@ public class ProjektSaldoControl extends SaldoControl
     return saldoList.getSaldoList();
   }
 
-  private void starteAuswertung() throws ApplicationException
+  private void starteAuswertung(String type) throws ApplicationException
   {
     try
     {
@@ -128,7 +147,7 @@ public class ProjektSaldoControl extends SaldoControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("projektsaldo", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          Einstellungen.getEinstellung().getDateinamenmuster(), type).get());
 
       final String s = fd.open();
 
@@ -139,8 +158,8 @@ public class ProjektSaldoControl extends SaldoControl
 
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
-      auswertungSaldoPDF(zeile, file, getDatumvon().getDate(),
-          getDatumbis().getDate());
+      auswertungSaldo(zeile, file, getDatumvon().getDate(),
+          getDatumbis().getDate(), type);
     }
     catch (RemoteException e)
     {
@@ -149,8 +168,9 @@ public class ProjektSaldoControl extends SaldoControl
     }
   }
 
-  private void auswertungSaldoPDF(final ArrayList<ProjektSaldoZeile> zeile,
-      final File file, final Date datumvon, final Date datumbis)
+  private void auswertungSaldo(final ArrayList<ProjektSaldoZeile> zeile,
+      final File file, final Date datumvon, final Date datumbis,
+      final String type)
   {
     BackgroundTask t = new BackgroundTask()
     {
@@ -159,7 +179,15 @@ public class ProjektSaldoControl extends SaldoControl
       {
         try
         {
-          new ProjektSaldoPDF(zeile, file, datumvon, datumbis);
+          switch (type)
+          {
+          case AuswertungCSV: 
+            new ProjektSaldoCSV(zeile, file, datumvon, datumbis);
+            break;
+          case AuswertungPDF:
+            new ProjektSaldoPDF(zeile, file, datumvon, datumbis);
+            break;
+          }
           GUI.getCurrentView().reload();
         }
         catch (ApplicationException ae)

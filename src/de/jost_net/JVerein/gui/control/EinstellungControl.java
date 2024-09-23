@@ -1986,10 +1986,20 @@ public class EinstellungControl extends AbstractControl
     }
     catch (RemoteException e)
     {
+      try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (ApplicationException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2041,10 +2051,20 @@ public class EinstellungControl extends AbstractControl
     }
     catch (RemoteException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (ApplicationException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2081,10 +2101,20 @@ public class EinstellungControl extends AbstractControl
     }
     catch (RemoteException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (ApplicationException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2104,10 +2134,20 @@ public class EinstellungControl extends AbstractControl
     }
     catch (RemoteException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (ApplicationException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2141,10 +2181,20 @@ public class EinstellungControl extends AbstractControl
     }
     catch (RemoteException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (ApplicationException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2173,10 +2223,20 @@ public class EinstellungControl extends AbstractControl
     }
     catch (RemoteException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (ApplicationException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2211,10 +2271,20 @@ public class EinstellungControl extends AbstractControl
     }
     catch (RemoteException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (ApplicationException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2228,6 +2298,11 @@ public class EinstellungControl extends AbstractControl
     }
     catch (RemoteException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2288,6 +2363,11 @@ public class EinstellungControl extends AbstractControl
     }
     catch (Exception e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2310,10 +2390,20 @@ public class EinstellungControl extends AbstractControl
     }
     catch (RemoteException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (ApplicationException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2367,10 +2457,20 @@ public class EinstellungControl extends AbstractControl
     }
     catch (RemoteException e)
     {
+	  try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (ApplicationException e)
     {
+      try {
+		Einstellungen.reloadEinstellung();
+	  } catch (RemoteException e1) {
+		  Logger.error("Reload der Einstellungen felgeschlagen");
+	  }
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }

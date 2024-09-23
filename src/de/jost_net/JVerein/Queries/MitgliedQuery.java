@@ -309,8 +309,10 @@ public class MitgliedQuery
       String tmpSuchname = (String) control.getSuchname().getValue();
       if (tmpSuchname.length() > 0)
       {
-        addCondition("(lower(name) like ?)");
-        bedingungen.add(tmpSuchname.toLowerCase() + "%");
+        tmpSuchname = tmpSuchname.toLowerCase() + "%";
+        addCondition("(lower(name) like ? or lower(vorname) like ?) ");
+        bedingungen.add(tmpSuchname);
+        bedingungen.add(tmpSuchname);
       }
     }
 

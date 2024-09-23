@@ -225,6 +225,11 @@ public class Einstellungen
   {
     einstellung = einst;
   }
+  
+  public static void reloadEinstellung() throws RemoteException
+  {
+	  einstellung = (Einstellung) getDBService().createObject(Einstellung.class, "1");
+  }
 
   /**
    * Prueft, ob die MD5-Checksumme der Datenbank geprueft werden soll.

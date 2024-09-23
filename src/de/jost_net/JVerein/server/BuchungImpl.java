@@ -27,6 +27,7 @@ import de.jost_net.JVerein.Variable.BuchungVar;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.BuchungDokument;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
@@ -38,6 +39,9 @@ import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.jameica.messaging.QueryMessage;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -722,4 +726,21 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   {
     return delete;
   }
+  
+  @Override
+  public void delete() throws RemoteException, ApplicationException
+  {
+    DBService service = Einstellungen.getDBService();
+    DBIterator<BuchungDokument> docs = service.createList(BuchungDokument.class);
+    docs.addFilter("referenz = ?", new Object[] { this.getID() });
+    while (docs.hasNext())
+    {
+      QueryMessage qm = new QueryMessage(
+          ((BuchungDokument) docs.next()).getUUID(), null);
+      Application.getMessagingFactory().getMessagingQueue(
+          "jameica.messaging.del").sendSyncMessage(qm);
+    }
+    super.delete();
+  }
+  
 }

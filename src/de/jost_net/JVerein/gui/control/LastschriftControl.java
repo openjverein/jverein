@@ -53,7 +53,7 @@ public class LastschriftControl extends FilterControl
       return lastschriftList;
     }
     lastschriftList = new TablePart(getLastschriften(), null);
-    lastschriftList.addColumn("Nr", "id");
+    lastschriftList.addColumn("Nr", "id-int");
     lastschriftList.addColumn("Abrechnungslauf", "abrechnungslauf");
     lastschriftList.addColumn("Name", "name");
     lastschriftList.addColumn("Vorname", "vorname");

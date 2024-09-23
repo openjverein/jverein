@@ -350,6 +350,18 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
+    if ("id-int".equals(fieldName))
+    {
+      try
+      {
+        return Integer.valueOf(getID());
+      }
+      catch (Exception e)
+      {
+        Logger.error("unable to parse id: " + getID());
+        return getID();
+      }
+    }
     return super.getAttribute(fieldName);
   }
 
@@ -366,20 +378,6 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
         b.store();
       }
     }
-  }
-
-  @Override
-  public void delete() throws RemoteException, ApplicationException
-  {
-    if (getSpendenart() == Spendenart.GELDSPENDE)
-    {
-      for (Buchung b : getBuchungen())
-      {
-        b.setSpendenbescheinigungId(null);
-        b.store();
-      }
-    }
-    super.delete();
   }
 
   @Override

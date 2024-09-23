@@ -52,9 +52,11 @@ public class BuchungsjournalSortDialog extends AbstractDialog<String>
   public final static String DATUM_BLATTNUMMER_ID = "Datum, Blattnummer, Id";
   public final static String DATUM_AUSGZUGSNUMMER_BLATTNUMMER_ID = "Datum, Auszugsnummer, Blattnummer, Id";
 
-  private String selected = DATUM;
+  private String selected = DATUM_AUSGZUGSNUMMER_BLATTNUMMER_ID;
 
   private SelectInput sortierung = null;
+  
+  private boolean closed = true;
 
   public BuchungsjournalSortDialog(int position)
   {
@@ -75,6 +77,7 @@ public class BuchungsjournalSortDialog extends AbstractDialog<String>
       @Override
       public void handleAction(Object context)
       {
+        closed = false;
         close();
       }
     }, null, false, "go-next.png");
@@ -119,5 +122,10 @@ public class BuchungsjournalSortDialog extends AbstractDialog<String>
       }
     });
     return this.sortierung;
+  }
+  
+  public boolean getClosed()
+  {
+    return closed;
   }
 }

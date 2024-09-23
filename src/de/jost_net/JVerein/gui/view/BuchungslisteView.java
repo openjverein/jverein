@@ -69,8 +69,11 @@ public class BuchungslisteView extends AbstractView
     right.addLabelPair("Von Datum", control.getVondatum());
     right.addLabelPair("Bis Datum", control.getBisdatum());
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
+    right.addLabelPair("Mitglied Name", control.getMitglied());
     
     ButtonArea buttons1 = new ButtonArea();
+    buttons1.addButton(control.getZurueckButton());
+    buttons1.addButton(control.getVorButton());
     Button reset = new Button("Filter-Reset", new Action()
     {
       @Override

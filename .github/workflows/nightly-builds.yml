@@ -62,7 +62,6 @@ jobs:
         text="${ant_output#*${ssa}}"
         text="${text%${ssb}*}.zip"
         tmp_version=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-        tmp_version=$tmp_version
 
         ssa="SELECTED_FILENAME="
         text="${ant_output#*${ssa}}"
