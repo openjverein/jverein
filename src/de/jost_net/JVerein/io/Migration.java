@@ -66,7 +66,7 @@ import de.willuhn.util.ProgressMonitor;
  * 
  * 
  */
-public class Import
+public class Migration
 {
 
   /* Variablen fuer Eigenschaften */
@@ -87,7 +87,7 @@ public class Import
    * 
    * @param monitor
    */
-  public Import(final ProgressMonitor monitor)
+  public Migration(final ProgressMonitor monitor)
   {
     if (monitor == null)
       throw new NullPointerException("Monitor may not be null");

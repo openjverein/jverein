@@ -71,7 +71,7 @@ import de.jost_net.JVerein.gui.action.LehrgangsartListeAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.MailListeAction;
 import de.jost_net.JVerein.gui.action.MailVorlagenAction;
-import de.jost_net.JVerein.gui.action.MitgliedImportAction;
+import de.jost_net.JVerein.gui.action.MitgliedMigrationAction;
 import de.jost_net.JVerein.gui.action.MitgliedSucheAction;
 import de.jost_net.JVerein.gui.action.SollbuchungListeAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoMahnungAction;
@@ -306,8 +306,6 @@ public class MyExtension implements Extension
         einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Lehrgangsarten",
             new LehrgangsartListeAction(), "chalkboard-teacher.png"));
       }
-      einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Import",
-          new MitgliedImportAction(), "file-import.png"));
       if (Einstellungen.getEinstellung().getZusatzadressen())
       {
         einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Mitgliedstypen",
@@ -338,6 +336,8 @@ public class MyExtension implements Extension
       NavigationItem einstellungenerweitert = null;
       einstellungenerweitert = new MyItem(einstellungenerweitert, "Erweitert",
           null);
+      einstellungenerweitert.addChild(new MyItem(einstellungenerweitert, "Migration",
+          new MitgliedMigrationAction(), "file-import.png"));
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,
           "Datenbank bereinigen", new DbBereinigenAction(), "placeholder-loading.png"));
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,

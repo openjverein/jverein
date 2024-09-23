@@ -56,7 +56,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.io.AssignedColumnsIO;
 import de.jost_net.JVerein.io.CSVConnection;
 import de.jost_net.JVerein.io.CSVFileHelper;
-import de.jost_net.JVerein.io.Import;
+import de.jost_net.JVerein.io.Migration;
 import de.jost_net.JVerein.io.InternalColumns;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.util.TableColumnReplacer;
@@ -82,7 +82,7 @@ import de.willuhn.util.ProgressMonitor;
  * @author Christian
  * 
  */
-public class ImportView extends AbstractView
+public class MigrationView extends AbstractView
 {
 
   /* keeps all columns and their corresponding replacement saved */
@@ -103,7 +103,7 @@ public class ImportView extends AbstractView
    * Default Constructor
    * 
    */
-  public ImportView()
+  public MigrationView()
   {
 
     csvConn = new CSVConnection();
@@ -413,7 +413,7 @@ public class ImportView extends AbstractView
           if (cvsHelper.checkCSVIntegrity(monitor, csvConn.getCSVFile()))
           {
 
-            Import imp = new Import(monitor);
+            Migration imp = new Migration(monitor);
             imp.importFile(csvConn.getData(), csvConn.getNumberOfRows(),
                 colMap);
 
