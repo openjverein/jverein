@@ -949,7 +949,7 @@ public class KontoControl extends AbstractControl
         getAfaRestwert().setValue(Einstellungen.getEinstellung().getAfaRestwert());
         if (getBetrag().getValue() == null)
           getAutobutton().setEnabled(true);
-        getAfabutton().setEnabled(true);
+        getAfabutton().setEnabled(false);
         getAfaMode().enable();
         getAfaMode().setValue(new AfaMode(AfaMode.AUTO));
         getAfaMode().setMandatory(true);
@@ -972,8 +972,10 @@ public class KontoControl extends AbstractControl
         getNutzungsdauer().disable();
         getAnschaffung().setValue(null);
         getAnschaffung().disable();
+        getAfaStart().setMandatory(false);
         getAfaStart().setValue(null);
         getAfaStart().disable();
+        getAfaDauer().setMandatory(false);
         getAfaDauer().setValue(null);
         getAfaDauer().disable();
         getAfaRestwert().setValue(null);
@@ -1039,7 +1041,9 @@ public class KontoControl extends AbstractControl
     }, null, true, "view-refresh.png");
     try
     {
-      if (!((boolean) getAnlagenkonto().getValue()))
+      if (!((boolean) getAnlagenkonto().getValue()) ||
+          getAfaMode().getValue() == null ||
+          ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
       {
         afabutton.setEnabled(false);
       }
@@ -1132,7 +1136,6 @@ public class KontoControl extends AbstractControl
       {
         getAfaStart().setValue(betrag);
         getAfaDauer().setValue(0);
-        getAfaRestwert().setValue(0);
       }
       else if (nutzungsdauer == 1)
       {

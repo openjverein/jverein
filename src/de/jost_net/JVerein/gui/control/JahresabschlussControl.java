@@ -25,6 +25,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
 import de.jost_net.JVerein.gui.parts.KontensaldoList;
+import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.io.SaldoZeile;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -68,6 +69,8 @@ public class JahresabschlussControl extends AbstractControl
   private Jahresabschluss jahresabschluss;
 
   private CheckboxInput anfangsbestaende;
+  
+  private CheckboxInput afaberechnung;
 
   public JahresabschlussControl(AbstractView view)
   {
@@ -169,6 +172,16 @@ public class JahresabschlussControl extends AbstractControl
     anfangsbestaende = new CheckboxInput(true);
     return anfangsbestaende;
   }
+  
+  public CheckboxInput getAfaberechnung()
+  {
+    if (afaberechnung != null)
+    {
+      return afaberechnung;
+    }
+    afaberechnung = new CheckboxInput(false);
+    return afaberechnung;
+  }
 
   public Part getJahresabschlussSaldo() throws RemoteException
   {
@@ -225,6 +238,10 @@ public class JahresabschlussControl extends AbstractControl
             anf.store();
           }
         }
+      }
+      if ((Boolean) getAfaberechnung().getValue())
+      {
+        new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
       }
       GUI.getStatusBar().setSuccessText("Jahresabschluss gespeichert");
     }

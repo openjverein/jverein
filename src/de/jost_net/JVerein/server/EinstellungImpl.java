@@ -2046,4 +2046,17 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("afarestwert", afarestwert);
   }
+  
+  @Override
+  public Boolean getAfaInJahresabschluss() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("afainjahresabschluss"));
+  }
+
+  @Override
+  public void setAfaInJahresabschluss(Boolean afainjahresabschluss)
+      throws RemoteException
+  {
+    setAttribute("afainjahresabschluss", afainjahresabschluss);
+  }
 }

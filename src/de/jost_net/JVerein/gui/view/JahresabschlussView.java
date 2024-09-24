@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.JahresabschlussControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -52,6 +53,8 @@ public class JahresabschlussView extends AbstractView
     group.addLabelPair("Name", control.getName());
     group.addLabelPair("Anfangsbestände Folgejahr",
         control.getAnfangsbestaende());
+    if (Einstellungen.getEinstellung().getAfaInJahresabschluss())
+      group.addLabelPair("Erzeuge Abschreibungen", control.getAfaberechnung());
     group.addPart(control.getJahresabschlussSaldo());
 
     ButtonArea buttons = new ButtonArea();

@@ -32,6 +32,7 @@ import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.SEPALandInput;
 import de.jost_net.JVerein.gui.input.SEPALandObject;
+import de.jost_net.JVerein.keys.AfaOrt;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -325,6 +326,8 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput qrcodekuerzen;
   
   private DecimalInput afarestwert;
+  
+  private SelectInput afaort;
 
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
@@ -1977,6 +1980,20 @@ public class EinstellungControl extends AbstractControl
         new DecimalFormat("###0.00"));
     return afarestwert;
   }
+  
+  public SelectInput getAfaOrt() throws RemoteException
+  {
+    if (afaort != null)
+    {
+      return afaort;
+    }
+    Boolean isinjahresabschluss = Einstellungen.getEinstellung().getAfaInJahresabschluss();
+    if (isinjahresabschluss)
+      afaort = new SelectInput(AfaOrt.getArray(), new AfaOrt(AfaOrt.JAHRESABSCHLUSS));
+    else
+      afaort = new SelectInput(AfaOrt.getArray(),  new AfaOrt(AfaOrt.ANLAGENBUCHUNGEN));
+    return afaort;
+  }
 
   public void handleStoreAllgemein()
   {
@@ -2056,6 +2073,10 @@ public class EinstellungControl extends AbstractControl
       e.setBuchungBuchungsartAuswahl(bbaAuswahl.getKey());
       e.setBuchungsartSort(((BuchungsartSort) buchungsartsort.getValue())
           .getKey());
+      if (((AfaOrt) afaort.getValue()).getKey() == 0)
+        e.setAfaInJahresabschluss(false);
+      else
+        e.setAfaInJahresabschluss(true);
 
       e.store();
       Einstellungen.setEinstellung(e);

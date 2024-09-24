@@ -18,63 +18,58 @@ package de.jost_net.JVerein.keys;
 
 import java.util.ArrayList;
 
-public class AfaMode
+public class AfaOrt
 {
 
-  public static final int MANUELL = 1;
+  public static final int ANLAGENBUCHUNGEN = 0;
 
-  public static final int AUTO = 2;
-
-  public static final int ANGEPASST = 3;
+  public static final int JAHRESABSCHLUSS = 1;
   
 
-  private int afamode;
+  private int afaort;
 
-  public AfaMode(int key)
+  public AfaOrt(int key)
   {
-    this.afamode = key;
+    this.afaort = key;
   }
 
   public int getKey()
   {
-    return afamode;
+    return afaort;
   }
 
   public String getText()
   {
-    return get(afamode);
+    return get(afaort);
   }
 
   public static String get(int key)
   {
     switch (key)
     {
-      case MANUELL:
-        return "Manuelles AfA";
-      case AUTO:
-        return "Auto AfA";
-      case ANGEPASST:
-        return "Angepasstes AfA";
+      case ANLAGENBUCHUNGEN:
+        return "Button in Anlagen Buchungen";
+      case JAHRESABSCHLUSS:
+        return "Checkbox in Jahresabschluss";
       default:
         return null;
     }
   }
 
-  public static ArrayList<AfaMode> getArray()
+  public static ArrayList<AfaOrt> getArray()
   {
-    ArrayList<AfaMode> ret = new ArrayList<>();
-    ret.add(new AfaMode(MANUELL));
-    ret.add(new AfaMode(AUTO));
-    ret.add(new AfaMode(ANGEPASST));
+    ArrayList<AfaOrt> ret = new ArrayList<>();
+    ret.add(new AfaOrt(JAHRESABSCHLUSS));
+    ret.add(new AfaOrt(ANLAGENBUCHUNGEN));
     return ret;
   }
 
   @Override
   public boolean equals(Object obj)
   {
-    if (obj instanceof AfaMode)
+    if (obj instanceof AfaOrt)
     {
-      AfaMode v = (AfaMode) obj;
+      AfaOrt v = (AfaOrt) obj;
       return (getKey() == v.getKey());
     }
     return false;
@@ -83,12 +78,12 @@ public class AfaMode
   @Override
   public int hashCode()
   {
-    return afamode;
+    return afaort;
   }
 
   @Override
   public String toString()
   {
-    return get(afamode);
+    return get(afaort);
   }
 }

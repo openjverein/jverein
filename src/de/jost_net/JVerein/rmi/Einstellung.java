@@ -603,4 +603,8 @@ public interface Einstellung extends DBObject, IBankverbindung
   public Double getAfaRestwert() throws RemoteException;
 
   public void setAfaRestwert(Double afarestwert) throws RemoteException;
+  
+  public Boolean getAfaInJahresabschluss() throws RemoteException;
+
+  public void setAfaInJahresabschluss(Boolean afainjahresabschluss) throws RemoteException;
 }

@@ -138,13 +138,13 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     }
 
     Jahresabschluss ja = getJahresabschluss();
-    if (ja != null)
+    if (ja != null && getAbschlussID() == null)
     {
       throw new ApplicationException(
           "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
     }
 
-    /* Pr?fung des Projektes */
+    /* Prüfung des Projektes */
     Projekt projekt = getProjekt();
     if (projekt != null)
     {
@@ -421,14 +421,21 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   
   @Override
   public Jahresabschluss getAbschluss() throws RemoteException
-  {
-    return (Jahresabschluss) getAttribute("abschluss");
+  { 
+    Object o = super.getAttribute("abschluss");
+    if (o == null)
+    {
+      return null;
+    }
+
+    Cache cache = Cache.get(Jahresabschluss.class, true);
+    return (Jahresabschluss) cache.get(o);
   }
 
   @Override
   public Long getAbschlussID() throws RemoteException
   {
-    return Long.parseLong(getAbschluss().getID());
+    return (Long) getAttribute("abschluss");
   }
 
   @Override

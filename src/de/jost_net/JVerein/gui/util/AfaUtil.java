@@ -24,6 +24,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.AfaMode;
+import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
@@ -67,9 +68,9 @@ public class AfaUtil
           DBIterator<Konto> kontenIt = service.createList(Konto.class);
           kontenIt.addFilter("anlagenkonto = TRUE");
           kontenIt.addFilter("(eroeffnung IS NULL OR eroeffnung <= ?)",
-              new Object[] { new java.sql.Date(calendar.getTimeInMillis())  });
+              new Object[] { new java.sql.Date(aktuellesGJ.getEndeGeschaeftsjahr().getTime()) });
           kontenIt.addFilter("(aufloesung IS NULL OR aufloesung >= ?)",
-              new Object[] { new java.sql.Date(calendar.getTimeInMillis())  });
+              new Object[] { new java.sql.Date(aktuellesGJ.getBeginnGeschaeftsjahr().getTime()) });
           while (kontenIt.hasNext())
           {
             Konto konto = kontenIt.next();
@@ -78,11 +79,20 @@ public class AfaUtil
               monitor.setStatusText("Konto " + konto.getNummer() + ": Afa Mode nicht gesetzt");
               continue;
             }
+            if (konto.getAfaMode() != null && konto.getAfaMode() == AfaMode.MANUELL)
+            {
+              monitor.setStatusText("Konto " + konto.getNummer() + ": Afa Mode ist manuell, keine automatische Generierung");
+              continue;
+            }
             switch(konto.getAfaMode())
             {
               case AfaMode.ANGEPASST:
                 anzahlBuchungen += doAbschreibungAngepasst(konto, aktuellesJahr, 
                     ersterMonatAktuellesGJ, afaBuchungDatum, abschluss, monitor);
+                break;
+              case AfaMode.AUTO:
+                anzahlBuchungen += doAbschreibungAuto(konto, aktuellesJahr, 
+                    ersterMonatAktuellesGJ, afaBuchungDatum, aktuellesGJ, abschluss, monitor);
                 break;
             }
           }
@@ -144,26 +154,216 @@ public class AfaUtil
         konto.getNutzungsdauer() != 0)
       return 0;
     
+    int monate = 0;
+    calendar.setTime(anschaffungGJ.getBeginnGeschaeftsjahr());
+    int monatStartGJ = calendar.get(Calendar.MONTH);
+    if (monatAnschaffung < monatStartGJ)
+      monate = monatStartGJ - monatAnschaffung;
+    else if (monatAnschaffung > monatStartGJ)
+      monate = monatStartGJ - monatAnschaffung + 12;
+    
     Buchung buchung = (Buchung) Einstellungen.getDBService().
         createObject(Buchung.class, null);
+    double restwert = getRestwert(konto, monitor);
+    double restbuchungswert = konto.getAfaRestwert();
+    double betrag = 0d;
+
+    // GWGs voll abschreiben
+    if (aktuellesJahr == anschaffungsJahr && konto.getNutzungsdauer() == 0)
+    {
+      if (restwert <= 0d)
+        return 0; // bereits abgeschrieben
+      betrag = konto.getBetrag();
+      if (betrag > restwert)
+        betrag = restwert;
+      buchung.setBetrag(-betrag);
+      buchung.setZweck("GWG-Abschreibung");
+    }
+
+    if (konto.getNutzungsdauer() > 0)
+    {
+      if (restwert <= konto.getAfaRestwert())
+        return 0; // bereits abgeschrieben
+
+      if (aktuellesJahr == anschaffungsJahr)
+      {
+        betrag = konto.getAfaStart();
+        if ((restwert - restbuchungswert) < betrag)
+          betrag = restwert - restbuchungswert;
+        buchung.setZweck("Anteilige Abschreibung für "  + monate  + " Monate");
+      }
+      else
+      {
+        betrag = konto.getAfaDauer();
+        if (betrag < restwert - restbuchungswert)
+        {
+          buchung.setZweck("Abschreibung");
+        }
+        else
+        {
+          betrag = restwert - restbuchungswert;
+          buchung.setZweck("Restwertbuchung");
+        }
+      }
+    }
     buchung.setKonto(konto);
     buchung.setName(Einstellungen.getEinstellung().getName());
-    buchung.setZweck(konto.getAfaart().getBezeichnung());
     buchung.setDatum(afaBuchungDatum);
+    buchung.setBetrag(-betrag);
     buchung.setBuchungsart(konto.getAfaartId());
-    if (aktuellesJahr == anschaffungsJahr)
-      buchung.setBetrag(-konto.getAfaStart());
-    else if (aktuellesJahr < anschaffungsJahr + konto.getNutzungsdauer())
-      buchung.setBetrag(-konto.getAfaDauer());
-    else if (konto.getNutzungsdauer() == 1)
-      buchung.setBetrag(-konto.getAfaDauer());
-    else
-      buchung.setBetrag(-konto.getAfaDauer() + konto.getAfaStart());
     if (abschluss != null)
       buchung.setAbschluss(abschluss);
     buchung.store();
     monitor.setStatusText("Konto " + konto.getNummer() + ": AfA Buchung erzeugt");
     return 1;
+  }
+  
+  private int doAbschreibungAuto(Konto konto, int aktuellesJahr, 
+      int ersterMonatAktuellesGJ, Date afaBuchungDatum, 
+      Geschaeftsjahr jahr, Jahresabschluss abschluss, ProgressMonitor monitor) 
+          throws RemoteException, ParseException, ApplicationException
+  {
+    if (checkKonto(konto, monitor))
+      return 0;
+    int anschaffungsJahr;
+    int monatAnschaffung;
+    Calendar calendar = Calendar.getInstance();
+    Geschaeftsjahr anschaffungGJ = new Geschaeftsjahr(konto.getAnschaffung());
+    anschaffungsJahr = anschaffungGJ.getBeginnGeschaeftsjahrjahr();
+    calendar.setTime(konto.getAnschaffung());
+    monatAnschaffung = calendar.get(Calendar.MONTH);
+    // Check ob ausserhalb des Abschreibungszeitraums
+    if (aktuellesJahr < anschaffungsJahr || 
+        aktuellesJahr > anschaffungsJahr + konto.getNutzungsdauer())
+      return 0;
+    // Check ob Anschaffung im ersten Monaz des GJ, dann keine Restabschreibung
+    // Wenn Nutzungsdauer 0 dann direktabschreibung
+    if ((aktuellesJahr == anschaffungsJahr + konto.getNutzungsdauer() && 
+        ersterMonatAktuellesGJ == monatAnschaffung) &&
+        konto.getNutzungsdauer() != 0)
+      return 0;
+    
+    double restwert = getRestwert(konto, monitor);
+    double restbuchungswert = konto.getAfaRestwert();
+    double betrag = 0d;
+    String zweck = "Abschreibung";
+
+    // Datum des Nutzungsende ermitteln
+    final Calendar cal = Calendar.getInstance();
+    cal.setTime(konto.getAnschaffung());
+    cal.add(Calendar.YEAR, konto.getNutzungsdauer());
+    final Date nutzungsende = cal.getTime();
+
+    // GWGs voll abschreiben
+    if (konto.getNutzungsdauer() == 0)
+    {
+      zweck = "GWG-Abschreibung";
+      betrag = konto.getBetrag();
+      if (betrag > restwert)
+        betrag = restwert;
+      if (restwert <= 0d)
+        return 0; // bereits abgeschrieben
+    }
+    else
+    {
+      if (restwert <= restbuchungswert)
+        return 0; // bereits abgeschrieben
+      
+      // Im Anschaffungsjahr haben wir die volle Restlaufzeit.
+      int restnutzungsdauer = 0;
+      if(aktuellesJahr == anschaffungsJahr)
+      {
+        restnutzungsdauer = Math.max(getMonths(konto.getAnschaffung(),nutzungsende) - 1,0); 
+        // Ein Monat abziehen, weil der letzte nicht mitzaehlt
+      }
+      else
+      {
+        restnutzungsdauer = Math.max(getMonths(jahr.getBeginnGeschaeftsjahr(),nutzungsende) - 1,0); 
+        // Ein Monat abziehen, weil der letzte nicht mitzaehlt
+      }
+
+      double abbetrag = (restwert - restbuchungswert) / (restnutzungsdauer / 12d);
+      betrag = Math.round(abbetrag);
+
+      // Anteilig abschreiben, wenn wir uns im Anschaffungsjahr befinden
+      if (aktuellesJahr == anschaffungsJahr)
+      {      
+        int months = getMonths(konto.getAnschaffung(),jahr.getEndeGeschaeftsjahr());
+        zweck = "Anteilige Abschreibung für "  + months  + " Monate";
+        betrag = Math.round((abbetrag / 12d) * months);
+        double startwert = getStartwert(konto, monitor);
+        betrag = betrag + (startwert - (int)startwert);
+      }
+
+      // Abzuschreibender Betrag >= Restwert -> Restwertbuchung
+      if (abbetrag >= restwert - restbuchungswert)
+      {
+        zweck = "Restwertbuchung";
+        betrag = restwert - restbuchungswert;
+      }
+    }
+    
+    Buchung buchung = (Buchung) Einstellungen.getDBService().
+        createObject(Buchung.class, null);
+    buchung.setKonto(konto);
+    buchung.setName(Einstellungen.getEinstellung().getName());
+    buchung.setZweck(zweck);
+    buchung.setDatum(afaBuchungDatum);
+    buchung.setBuchungsart(konto.getAfaartId());
+    buchung.setBetrag(-betrag);
+    if (abschluss != null)
+      buchung.setAbschluss(abschluss);
+    buchung.store();
+    monitor.setStatusText("Konto " + konto.getNummer() + ": AfA Buchung erzeugt");
+    return 1;
+  }
+  
+  private double getRestwert(Konto konto, ProgressMonitor monitor) throws RemoteException
+  {
+    double restwert = getStartwert(konto, monitor);
+    
+    DBIterator<Buchung> buchungsIt = Einstellungen.getDBService().createList(Buchung.class);
+    buchungsIt.addFilter("konto = ?", konto.getID());
+    buchungsIt.join("buchungsart");
+    buchungsIt.addFilter("buchungsart.id = buchung.buchungsart");
+    buchungsIt.addFilter("buchungsart.abschreibung = ?", true);
+    while (buchungsIt.hasNext())
+    {
+      Buchung afa = (Buchung) buchungsIt.next();
+      restwert += afa.getBetrag();
+    }
+    
+    return restwert;
+  }
+  
+  private double getStartwert(Konto konto, ProgressMonitor monitor) throws RemoteException
+  {
+    double startwert = konto.getBetrag();
+    Anfangsbestand anfangsbestand = null;
+    
+    // Bestimmen ob ein Anfangsbetrag zur Konto Eröffnung existiert
+    DBIterator<Anfangsbestand> anfangsbestandsIt = Einstellungen.getDBService().createList(Anfangsbestand.class);
+    anfangsbestandsIt.addFilter("konto = ?", konto.getID());
+    anfangsbestandsIt.setOrder("ORDER BY datum");
+    if (anfangsbestandsIt.hasNext())
+      anfangsbestand = (Anfangsbestand) anfangsbestandsIt.next();
+    if (anfangsbestand == null)
+    {
+      monitor.setStatusText("Konto " + konto.getNummer() + ": "
+          + "Für das Konto existieren keine Anfangsbestände");
+      return 0d;
+    }
+    if (!anfangsbestand.getDatum().equals(konto.getEroeffnung()))
+    {
+      monitor.setStatusText("Konto " + konto.getNummer() + ": "
+          + "Für das Konto existiert kein Anfangsbestand zum Eröffnungsdatum");
+      return 0d;
+    }
+    Double anfangsbetrag = anfangsbestand.getBetrag();
+    // Es existiert ein Anfangsbetrag zur Konto Eröffnung, dann ab diesem Wert rechnen
+    if (anfangsbetrag != null && anfangsbetrag != 0)
+      startwert = anfangsbetrag;
+    return startwert;
   }
   
   private boolean checkKonto(Konto konto, ProgressMonitor monitor) throws RemoteException 
@@ -206,6 +406,36 @@ public class AfaUtil
       fehler = true;
     }
     return fehler;
+  }
+  
+  /**
+   * Liefert die Anzahl der Monate von einem zum anderen Datum.
+   * Die Funktion liefert immer ganze Monate incl. des Monats aus "from".
+   * Von Juli bis Dezember sind also 6 Monate - egal, welche Tage des Monats.
+   * Die Funktion wird fuer die jahresanteilige Abschreibung verwendet.
+   * @param from Start-Datum.
+   * @param end End-Datum.
+   * @return die Anzahl der Monate.
+   */
+  private int getMonths(final Date from, final Date end)
+  {
+    if (from == null || end == null)
+      return 0;
+
+    int count = 0;
+    final Calendar cal = Calendar.getInstance();
+    cal.setTime(from);
+    while (count < 1000) // Groessere Zeitraeume waren Unsinn.
+    {
+      Date test = cal.getTime();
+      if (test.after(end))
+        return count;
+
+      cal.add(Calendar.MONTH,1);
+      count++;
+    }
+
+    return count;
   }
 
 }

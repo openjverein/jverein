@@ -87,6 +87,7 @@ public class EinstellungenAnzeigeView extends AbstractView
     right.addLabelPair("Buchungsart Auswahl",
         control.getBuchungBuchungsartAuswahl());
     right.addLabelPair("Buchungsart Sortierung", control.getBuchungsartSort());
+    right.addLabelPair("Ort der Abschreibung", control.getAfaOrt());
 
     right.addHeadline("* " + "Änderung erfordert Neustart");
     cont.addSeparator();
