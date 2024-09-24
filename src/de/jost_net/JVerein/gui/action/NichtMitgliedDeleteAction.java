@@ -16,12 +16,23 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Mail;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -46,7 +57,13 @@ public class NichtMitgliedDeleteAction implements Action
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Nicht-Mitglied löschen");
-      d.setText("Wollen Sie dieses Nicht-Mitglied wirklich löschen?");
+      d.setPanelText("Nicht-Mitglied löschen?");
+      d.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
+      String text = "Wollen Sie dieses Nicht-Mitglied wirklich löschen?"
+          + "\nDies löscht auch alle Nicht-Mitglied bezogenen Daten wie"
+          + "\nz.B. Sollbuchungen, Spendenbescheinigungen, Mails etc."
+          + "\nDiese Daten können nicht wieder hergestellt werden!";
+      d.setText(text);
 
       try
       {
@@ -59,6 +76,43 @@ public class NichtMitgliedDeleteAction implements Action
         Logger.error("Fehler beim Löschen des Nicht-Mitglied", e);
         return;
       }
+      
+      // Suche Mails mit mehr als einem Empfänger
+      final DBService service = Einstellungen.getDBService();
+      String sql = "SELECT mail , count(id) anzahl from mailempfaenger ";
+      sql += "group by mailempfaenger.mail ";
+      sql += "HAVING anzahl > 1 ";
+      ResultSetExtractor rs = new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs) throws RemoteException, SQLException
+        {
+          ArrayList<BigDecimal> list = new ArrayList<BigDecimal>();
+          while (rs.next())
+          {
+            list.add(rs.getBigDecimal(1));
+          }
+          return list;
+        }
+      };
+      @SuppressWarnings("unchecked")
+      ArrayList<BigDecimal> ergebnis = (ArrayList<BigDecimal>) service.execute(sql,
+          new Object[] { }, rs);
+      
+      // Alle Mails an das Nicht-Mitglied löschen wenn nur ein Empfänger vorhanden
+      DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
+          .createList(MailEmpfaenger.class);
+      it.addFilter("mitglied = ?", m.getID());
+      while (it.hasNext())
+      {
+        Mail ma = ((MailEmpfaenger) it.next()).getMail();
+        if (!ergebnis.contains(new BigDecimal(ma.getID())))
+        {
+          // Die Mail hat keinen weiteren Empfänger also löschen
+          ma.delete();
+        }
+      }
+      
       m.delete();
       GUI.getStatusBar().setSuccessText("Nicht-Mitglied gelöscht.");
     }

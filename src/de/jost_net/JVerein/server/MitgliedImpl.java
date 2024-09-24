@@ -37,6 +37,7 @@ import de.jost_net.JVerein.rmi.Adresstyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.MitgliedDokument;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.Datum;
@@ -48,7 +49,10 @@ import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.jost_net.OBanToo.SEPA.SEPAException.Fehler;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
+import de.willuhn.jameica.messaging.QueryMessage;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -1300,4 +1304,20 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     return d;
   }
 
+  @Override
+  public void delete() throws RemoteException, ApplicationException
+  {
+    DBService service = Einstellungen.getDBService();
+    DBIterator<MitgliedDokument> docs = service.createList(MitgliedDokument.class);
+    docs.addFilter("referenz = ?", new Object[] { this.getID() });
+    while (docs.hasNext())
+    {
+      QueryMessage qm = new QueryMessage(
+          ((MitgliedDokument) docs.next()).getUUID(), null);
+      Application.getMessagingFactory().getMessagingQueue(
+          "jameica.messaging.del").sendSyncMessage(qm);
+    }
+    super.delete();
+  }
+  
 }
