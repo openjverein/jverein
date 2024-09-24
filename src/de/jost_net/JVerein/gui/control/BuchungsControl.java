@@ -933,22 +933,14 @@ public class BuchungsControl extends AbstractControl
       @Override
       public void handleAction(Object context)
       {
-        int anzahlBuchungen = 0;
         try
         {
-          anzahlBuchungen = AfaUtil.doAbschreibung(new Geschaeftsjahr(new Date()));
-          if (anzahlBuchungen > 0)
-          {
-            refreshBuchungen();
-          }
+          new AfaUtil(new Geschaeftsjahr(new Date()), null);
+          refreshBuchungen();
         }
         catch (RemoteException e)
         {
           GUI.getStatusBar().setErrorText("Fehler bei der Erstellung der Abschreibungen");
-        }
-        catch (ApplicationException ex)
-        {
-          GUI.getStatusBar().setErrorText(ex.getLocalizedMessage());
         }
         catch (ParseException ex)
         {

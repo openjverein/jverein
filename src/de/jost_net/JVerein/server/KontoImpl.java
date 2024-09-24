@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
@@ -123,6 +124,17 @@ public class KontoImpl extends AbstractDBObject implements Konto
         if (getAfaMode() == null)
         {
           throw new ApplicationException("Bitte Afa Mode eingeben");
+        }
+        if (getAfaMode() != null && getAfaMode() == AfaMode.ANGEPASST)
+        {
+          if (getAfaStart() == null)
+          {
+            throw new ApplicationException("Bitte Afa Erstes Jahr eingeben");
+          }
+          if (getAfaDauer() == null)
+          {
+            throw new ApplicationException("Bitte Afa Folgejahre eingeben");
+          }
         }
       }
     }

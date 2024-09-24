@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.util;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -24,71 +25,109 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
 public class AfaUtil
 {
 
-  public static int doAbschreibung(Geschaeftsjahr aktuellesGJ)
-      throws RemoteException, ParseException, ApplicationException
+  public AfaUtil(final Geschaeftsjahr aktuellesGJ, 
+      final Jahresabschluss abschluss)
   {
-    DBService service;
-    int anzahlBuchungen = 0;
-
-    Calendar calendar = Calendar.getInstance();
-    // Aktuelles Geschäftsjahr bestimmen
-    int aktuellesJahr = aktuellesGJ.getBeginnGeschaeftsjahrjahr();
-    calendar.setTime(aktuellesGJ.getBeginnGeschaeftsjahr());
-    int ersterMonatAktuellesGJ = calendar.get(Calendar.MONTH);
-    // AfA Buchungen zu Ende des aktuellen GJ
-    Date afaBuchungDatum = aktuellesGJ.getEndeGeschaeftsjahr();
-
-    service = Einstellungen.getDBService();
-    DBIterator<Konto> kontenIt = service.createList(Konto.class);
-    kontenIt.addFilter("anlagenkonto = TRUE");
-    kontenIt.addFilter("anschaffung IS NOT NULL");
-    kontenIt.addFilter("nutzungsdauer IS NOT NULL");
-    kontenIt.addFilter("(eroeffnung IS NULL OR eroeffnung <= ?)",
-        new Object[] { new java.sql.Date(calendar.getTimeInMillis())  });
-    kontenIt.addFilter("(aufloesung IS NULL OR aufloesung >= ?)",
-        new Object[] { new java.sql.Date(calendar.getTimeInMillis())  });
-    while (kontenIt.hasNext())
+    BackgroundTask t = new BackgroundTask()
     {
-      Konto konto = kontenIt.next();
-      switch(konto.getAfaMode())
+      @Override
+      public void run(ProgressMonitor monitor) throws ApplicationException
       {
-        case AfaMode.ANGEPASST:
-          anzahlBuchungen += doAbschreibungAngepasst(konto, aktuellesJahr, 
-              ersterMonatAktuellesGJ, afaBuchungDatum);
-          break;
+        try
+        {
+          monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
+          monitor.setPercentComplete(0);
+          monitor.setStatusText("Genreriere Abschreibungen");
+          
+          int anzahlBuchungen = 0;
+          DBService service;
+          Calendar calendar = Calendar.getInstance();
+          // Aktuelles Geschäftsjahr bestimmen
+          int aktuellesJahr = aktuellesGJ.getBeginnGeschaeftsjahrjahr();
+          calendar.setTime(aktuellesGJ.getBeginnGeschaeftsjahr());
+          int ersterMonatAktuellesGJ = calendar.get(Calendar.MONTH);
+          // AfA Buchungen zu Ende des aktuellen GJ
+          Date afaBuchungDatum = aktuellesGJ.getEndeGeschaeftsjahr();
+
+          service = Einstellungen.getDBService();
+          DBIterator<Konto> kontenIt = service.createList(Konto.class);
+          kontenIt.addFilter("anlagenkonto = TRUE");
+          kontenIt.addFilter("(eroeffnung IS NULL OR eroeffnung <= ?)",
+              new Object[] { new java.sql.Date(calendar.getTimeInMillis())  });
+          kontenIt.addFilter("(aufloesung IS NULL OR aufloesung >= ?)",
+              new Object[] { new java.sql.Date(calendar.getTimeInMillis())  });
+          while (kontenIt.hasNext())
+          {
+            Konto konto = kontenIt.next();
+            if (konto.getAfaMode() == null)
+            {
+              monitor.setStatusText("Konto " + konto.getNummer() + ": Afa Mode nicht gesetzt");
+              continue;
+            }
+            switch(konto.getAfaMode())
+            {
+              case AfaMode.ANGEPASST:
+                anzahlBuchungen += doAbschreibungAngepasst(konto, aktuellesJahr, 
+                    ersterMonatAktuellesGJ, afaBuchungDatum, abschluss, monitor);
+                break;
+            }
+          }
+          monitor.setPercentComplete(100);
+          monitor.setStatus(ProgressMonitor.STATUS_DONE);
+          monitor.setStatusText(
+              String.format("Anzahl generierter Buchungen: %d", anzahlBuchungen));
+          GUI.getCurrentView().reload();
+        }
+        catch (IOException e)
+        {
+          e.printStackTrace();
+        }
+        catch (ParseException e)
+        {
+          e.printStackTrace();
+        }
+      } // Ende Run
+
+      @Override
+      public void interrupt()
+      {
+        //
       }
-    }
-    if (anzahlBuchungen > 0)
-    {
-      GUI.getStatusBar().setSuccessText("Abschreibungen erfolgreich erstellt");
-    }
-    else
-    {
-      GUI.getStatusBar().setSuccessText("Keine Abschreibung im aktuellen Geschäftjahr nötig");
-    }
-    return anzahlBuchungen;
+
+      @Override
+      public boolean isInterrupted()
+      {
+        return false;
+      }
+    };
+    Application.getController().start(t);
   }
 
-  private static int doAbschreibungAngepasst(Konto konto, int aktuellesJahr, 
-      int ersterMonatAktuellesGJ, Date afaBuchungDatum) 
+  private int doAbschreibungAngepasst(Konto konto, int aktuellesJahr, 
+      int ersterMonatAktuellesGJ, Date afaBuchungDatum, Jahresabschluss abschluss,
+      ProgressMonitor monitor) 
           throws RemoteException, ParseException, ApplicationException
   {
-    if (konto.getAfaStart() == null || konto.getAfaDauer() == null || 
-        konto.getAfaRestwert() == null)
-      throw new ApplicationException("Daten für angepasste Abschreibung fehlen ";
+    if (checkKonto(konto, monitor))
+      return 0;
+    if (checkAfa(konto, monitor))
+      return 0;
     int anschaffungsJahr;
     int monatAnschaffung;
-    int anzahlBuchungen = 0;
     Calendar calendar = Calendar.getInstance();
     Geschaeftsjahr anschaffungGJ = new Geschaeftsjahr(konto.getAnschaffung());
     anschaffungsJahr = anschaffungGJ.getBeginnGeschaeftsjahrjahr();
@@ -120,9 +159,53 @@ public class AfaUtil
       buchung.setBetrag(-konto.getAfaDauer());
     else
       buchung.setBetrag(-konto.getAfaDauer() + konto.getAfaStart());
+    if (abschluss != null)
+      buchung.setAbschluss(abschluss);
     buchung.store();
-    anzahlBuchungen++;
-    return anzahlBuchungen;
+    monitor.setStatusText("Konto " + konto.getNummer() + ": AfA Buchung erzeugt");
+    return 1;
+  }
+  
+  private boolean checkKonto(Konto konto, ProgressMonitor monitor) throws RemoteException 
+  {
+    boolean fehler = false;
+    if (konto.getBetrag() == null)
+    {
+      monitor.setStatusText("Konto " + konto.getNummer() + ": Anlagenwert nicht gesetzt");
+      fehler = true;
+    }
+    if (konto.getAnschaffung() == null)
+    {
+      monitor.setStatusText("Konto " + konto.getNummer() + ": Anschaffungsdatum nicht gesetzt");
+      fehler = true;
+    }
+    if (konto.getNutzungsdauer() == null)
+    {
+      monitor.setStatusText("Konto " + konto.getNummer() + ": Nutzungsdauer nicht gesetzt");
+      fehler = true;
+    }
+    if (konto.getAfaRestwert() == null)
+    {
+      monitor.setStatusText("Konto " + konto.getNummer() + ": Anlagen Restwert nicht gesetzt");
+      fehler = true;
+    }
+    return fehler;
+  }
+  
+  private boolean checkAfa(Konto konto, ProgressMonitor monitor) throws RemoteException 
+  {
+    boolean fehler = false;
+    if (konto.getAfaStart() == null)
+    {
+      monitor.setStatusText("Konto " + konto.getNummer() + ": Afa Erstes Jahr nicht gesetzt");
+      fehler = true;
+    }
+    if (konto.getAfaDauer() == null)
+    {
+      monitor.setStatusText("Konto " + konto.getNummer() + ": Afa Folgejahr nicht gesetzt");
+      fehler = true;
+    }
+    return fehler;
   }
 
 }

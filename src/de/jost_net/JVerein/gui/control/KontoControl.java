@@ -747,8 +747,13 @@ public class KontoControl extends AbstractControl
         getAfaMode().getValue() == null ||
         ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
     {
+      afastart.setMandatory(false);
       afastart.setValue(null);
       afastart.disable();
+    }
+    else
+    {
+      afastart.setMandatory(true);
     }
     return afastart;
   }
@@ -765,8 +770,13 @@ public class KontoControl extends AbstractControl
         getAfaMode().getValue() == null ||
         ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
     {
+      afadauer.setMandatory(false);
       afadauer.setValue(null);
       afadauer.disable();
+    }
+    else
+    {
+      afadauer.setMandatory(true);
     }
     return afadauer;
   }
@@ -808,13 +818,17 @@ public class KontoControl extends AbstractControl
               AfaMode.ANGEPASST)
           {
             getAfaStart().enable();
+            getAfaStart().setMandatory(true);
             getAfaDauer().enable();
+            getAfaDauer().setMandatory(true);
             getAfabutton().setEnabled(true);
           }
           else
           {
+            getAfaStart().setMandatory(false);
             getAfaStart().setValue(null);
             getAfaStart().disable();
+            getAfaDauer().setMandatory(false);
             getAfaDauer().setValue(null);
             getAfaDauer().disable();
             getAfabutton().setEnabled(false);
