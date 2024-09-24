@@ -47,6 +47,7 @@ public class EinstellungenAbrechnungView extends AbstractView
         control.getSepaVersion());
     cont.addLabelPair("Arbeitsstunden Modell",
         control.getArbeitsstundenmodel());
+    cont.addLabelPair("Altersstufen für gestaffelte Beiträge",control.getBeitragAltersgruppen());
     cont.addLabelPair("Abrechnungslauf abschließen",
         control.getAbrlAbschliessen());
     cont.addSeparator();

@@ -216,7 +216,7 @@ public class PersonalbogenAction implements Action
   }
 
   private void generiereMitglied(Reporter rpt, Mitglied m)
-      throws DocumentException, MalformedURLException, IOException
+      throws DocumentException, MalformedURLException, IOException, ApplicationException
   {
     rpt.addHeaderColumn("Feld", Element.ALIGN_LEFT, 50, BaseColor.LIGHT_GRAY);
     rpt.addHeaderColumn("Inhalt", Element.ALIGN_LEFT, 140,
@@ -382,7 +382,7 @@ public class PersonalbogenAction implements Action
   }
 
   private void printBeitragsgruppe(Reporter rpt, Mitglied m, Beitragsgruppe bg,
-      boolean sek) throws RemoteException
+      boolean sek) throws RemoteException, ApplicationException
   {
     rpt.addColumn((sek ? "Sekundäre " : "") + "Beitragsgruppe",
         Element.ALIGN_LEFT);
@@ -390,7 +390,7 @@ public class PersonalbogenAction implements Action
         + Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
             Einstellungen.getEinstellung().getBeitragsmodel(),
             m.getZahlungstermin(), m.getZahlungsrhythmus().getKey(), bg,
-            new Date(), m.getEintritt(), m.getAustritt()))
+            new Date(), m))
         + " EUR";
     rpt.addColumn(beitragsgruppe, Element.ALIGN_LEFT);
   }

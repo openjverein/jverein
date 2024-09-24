@@ -43,6 +43,7 @@ import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class MitgliedMap
 {
@@ -148,9 +149,12 @@ public class MitgliedMap
               ? Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
                   Einstellungen.getEinstellung().getBeitragsmodel(),
                   m.getZahlungstermin(), m.getZahlungsrhythmus().getKey(),
-                  m.getBeitragsgruppe(), new Date(), m.getEintritt(),
-                  m.getAustritt()))
+                  m.getBeitragsgruppe(), new Date(), m))
               : "");
+    }
+    catch (ApplicationException e)
+    {
+      Logger.error("AplicationException:" + e.getMessage());
     }
     catch (NullPointerException e)
     {

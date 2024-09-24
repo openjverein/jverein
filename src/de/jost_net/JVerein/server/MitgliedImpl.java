@@ -188,8 +188,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
         && BeitragsUtil.getBeitrag(
             Einstellungen.getEinstellung().getBeitragsmodel(),
             this.getZahlungstermin(), this.getZahlungsrhythmus().getKey(),
-            this.getBeitragsgruppe(), new Date(), getEintritt(),
-            getAustritt()) > 0)
+            this.getBeitragsgruppe(), new Date(), this ) > 0)
     {
       if (getBic() == null || getBic().length() == 0 || getIban() == null
           || getIban().length() == 0)

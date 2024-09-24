@@ -323,6 +323,8 @@ public class EinstellungControl extends AbstractControl
   private TextInput qrcodeintro;
 
   private CheckboxInput qrcodekuerzen;
+  
+  private TextInput beitragaltersstufen;
 
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
@@ -855,6 +857,17 @@ public class EinstellungControl extends AbstractControl
         new ArbeitsstundenModel(Einstellungen.getEinstellung()
             .getArbeitsstundenmodel()));
     return arbeitsstundenmodel;
+  }
+  
+  public Input getBeitragAltersgruppen() throws RemoteException
+  {
+    if (beitragaltersstufen != null)
+    {
+      return beitragaltersstufen;
+    }
+    beitragaltersstufen = new TextInput(Einstellungen.getEinstellung()
+        .getBeitragAltersstufen(), 200);
+    return beitragaltersstufen;
   }
 
   public SelectInput getSepamandatidsourcemodel() throws RemoteException
@@ -2093,6 +2106,7 @@ public class EinstellungControl extends AbstractControl
       e.setCt1SepaVersion((SepaVersion) ct1sepaversion.getValue());
       e.setSEPADatumOffset((Integer) sepadatumoffset.getValue());
       e.setAbrlAbschliessen((Boolean) abrlabschliessen.getValue());
+      e.setBeitragAltersstufen((String)beitragaltersstufen.getValue());
       e.store();
       Einstellungen.setEinstellung(e);
 
