@@ -323,6 +323,8 @@ public class EinstellungControl extends AbstractControl
   private TextInput qrcodeintro;
 
   private CheckboxInput qrcodekuerzen;
+  
+  private DecimalInput afarestwert;
 
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
@@ -1964,6 +1966,17 @@ public class EinstellungControl extends AbstractControl
     summenAnlagenkonto = new CheckboxInput(Einstellungen.getEinstellung().getSummenAnlagenkonto());
     return summenAnlagenkonto;
   }
+  
+  public DecimalInput getAfaRestwert() throws RemoteException
+  {
+    if (afarestwert != null)
+    {
+      return afarestwert;
+    }
+    afarestwert = new DecimalInput(Einstellungen.getEinstellung().getAfaRestwert(),
+        new DecimalFormat("###0.00"));
+    return afarestwert;
+  }
 
   public void handleStoreAllgemein()
   {
@@ -2213,6 +2226,7 @@ public class EinstellungControl extends AbstractControl
       e.setUnterdrueckungLaenge(ulength);
       Integer klength = (Integer) unterdrueckungkonten.getValue();
       e.setUnterdrueckungKonten(klength);
+      e.setAfaRestwert((Double) afarestwert.getValue());
       e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());
       e.setOptiert((Boolean) getOptiert().getValue());
       e.store();

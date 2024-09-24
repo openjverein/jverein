@@ -2034,4 +2034,16 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("summenanlagenkonto", summenanlagenkonto);
   }
+  
+  @Override
+  public Double getAfaRestwert() throws RemoteException
+  {
+    return (Double) getAttribute("afarestwert");
+  }
+
+  @Override
+  public void setAfaRestwert(Double afarestwert) throws RemoteException
+  {
+    setAttribute("afarestwert", afarestwert);
+  }
 }

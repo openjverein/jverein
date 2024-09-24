@@ -91,6 +91,25 @@ public class Update0443 extends AbstractDDLUpdate
       
       execute(addColumn("konto",
           new Column("afarestwert", COLTYPE.DOUBLE, 1, null, false, false)));
+      
+      execute(addColumn("konto",
+          new Column("afamode", COLTYPE.INTEGER, 1, null, false, false)));
+      
+      execute(addColumn("einstellung",
+          new Column("afarestwert", COLTYPE.DOUBLE, 1, null, false, false)));
+      
+      execute(addColumn("einstellung", new Column("afainjahresabschluss",
+          COLTYPE.BOOLEAN, 0, "TRUE", false, false)));
+      
+      execute(addColumn("buchung", new Column("abschluss",
+          COLTYPE.BIGINT, 0, null, false, false)));
+      idx = new Index("ixBuchung8", false);
+      col = new Column("abschluss", COLTYPE.BIGINT, 0, null, false,
+          false);
+      idx.add(col);
+      execute(idx.getCreateIndex("buchung"));
+      execute(createForeignKey("fkBuchung8", "buchung",
+          "abschluss", "jahresabschluss", "id", "CASCADE", "NO ACTION"));
     }
   }
 }

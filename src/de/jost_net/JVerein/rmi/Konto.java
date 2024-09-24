@@ -101,6 +101,10 @@ public interface Konto extends DBObject
   public Double getAfaRestwert() throws RemoteException;
 
   public void setAfaRestwert(Double afarestwert) throws RemoteException;
+  
+  public Integer getAfaMode() throws RemoteException;
+
+  public void setAfaMode(Integer afamode) throws RemoteException;
 
   public DBIterator<Konto> getKontenEinesJahres(Geschaeftsjahr gj)
       throws RemoteException;

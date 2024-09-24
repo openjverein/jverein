@@ -120,6 +120,10 @@ public class KontoImpl extends AbstractDBObject implements Konto
         {
           throw new ApplicationException("Bitte Anlagen Buchungsklasse eingeben");
         }
+        if (getAfaMode() == null)
+        {
+          throw new ApplicationException("Bitte Afa Mode eingeben");
+        }
       }
     }
     catch (RemoteException e)
@@ -436,6 +440,18 @@ public class KontoImpl extends AbstractDBObject implements Konto
   public void setAfaRestwert(Double afarestwert) throws RemoteException
   {
     setAttribute("afarestwert", afarestwert);
+  }
+  
+  @Override
+  public Integer getAfaMode() throws RemoteException
+  {
+    return (Integer) getAttribute("afamode");
+  }
+
+  @Override
+  public void setAfaMode(Integer afamode) throws RemoteException
+  {
+    setAttribute("afamode", afamode);
   }
   
   @Override

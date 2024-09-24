@@ -418,6 +418,31 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   {
     setAttribute("abrechnungslauf", Long.valueOf(abrechnungslauf.getID()));
   }
+  
+  @Override
+  public Jahresabschluss getAbschluss() throws RemoteException
+  {
+    return (Jahresabschluss) getAttribute("abschluss");
+  }
+
+  @Override
+  public Long getAbschlussID() throws RemoteException
+  {
+    return Long.parseLong(getAbschluss().getID());
+  }
+
+  @Override
+  public void setAbschluss(Long abschluss) throws RemoteException
+  {
+    setAttribute("abschluss", abschluss);
+  }
+
+  @Override
+  public void setAbschluss(Jahresabschluss abschluss)
+      throws RemoteException
+  {
+    setAttribute("abschluss", Long.valueOf(abschluss.getID()));
+  }
 
   @Override
   public Mitgliedskonto getMitgliedskonto() throws RemoteException

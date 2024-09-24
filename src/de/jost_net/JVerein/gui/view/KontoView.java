@@ -61,7 +61,7 @@ public class KontoView extends AbstractView
     left1.addLabelPair("Anlagen Buchungsart", control.getAnlagenart());
     left1.addLabelPair("AfA Buchungsart", control.getAfaart());
     left1.addLabelPair("Anlagenwert", control.getBetrag());
-    left1.addLabelPair("Anschaffung", control.getAnschaffung());
+    left1.addLabelPair("Anschaffungsdatum", control.getAnschaffung());
     ButtonArea anlagenbuttons = new ButtonArea();
     anlagenbuttons.addButton(control.getAutobutton());
     left1.addButtonArea(anlagenbuttons);
@@ -69,13 +69,12 @@ public class KontoView extends AbstractView
     SimpleContainer right1 = new SimpleContainer(cl1.getComposite());
     right1.addLabelPair("Nutzungsdauer", control.getNutzungsdauer());
     right1.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
+    right1.addLabelPair("Afa Mode", control.getAfaMode());
     right1.addLabelPair("AfA Erstes Jahr", control.getAfaStart());
     right1.addLabelPair("AfA Folgejahre", control.getAfaDauer());
     ButtonArea afabuttons = new ButtonArea();
     afabuttons.addButton(control.getAfabutton());
     right1.addButtonArea(afabuttons);
-    
-    control.refreshGui();
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

@@ -59,6 +59,7 @@ import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.SplitbuchungListTablePart;
+import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.io.BuchungAuswertungCSV;
 import de.jost_net.JVerein.io.BuchungAuswertungPDF;
 import de.jost_net.JVerein.io.BuchungsjournalPDF;
@@ -932,7 +933,27 @@ public class BuchungsControl extends AbstractControl
       @Override
       public void handleAction(Object context)
       {
-        startAbschreibung();
+        int anzahlBuchungen = 0;
+        try
+        {
+          anzahlBuchungen = AfaUtil.doAbschreibung(new Geschaeftsjahr(new Date()));
+          if (anzahlBuchungen > 0)
+          {
+            refreshBuchungen();
+          }
+        }
+        catch (RemoteException e)
+        {
+          GUI.getStatusBar().setErrorText("Fehler bei der Erstellung der Abschreibungen");
+        }
+        catch (ApplicationException ex)
+        {
+          GUI.getStatusBar().setErrorText(ex.getLocalizedMessage());
+        }
+        catch (ParseException ex)
+        {
+          GUI.getStatusBar().setErrorText(ex.getLocalizedMessage());
+        }
       }
     }, null, false, "document-new.png");
     return b;
@@ -2266,94 +2287,5 @@ public class BuchungsControl extends AbstractControl
     {
       throw new ApplicationException("Von Datum ist nach Bis Datum!");
     }
-  }
-  
-  private void startAbschreibung()
-  {
-    DBService service;
-    try
-    {
-      Calendar calendar = Calendar.getInstance();
-      // Aktuelles Geschäftsjahr bestimmen
-      Geschaeftsjahr aktuellesGJ = new Geschaeftsjahr(new Date());
-      int aktuellesJahr = aktuellesGJ.getBeginnGeschaeftsjahrjahr();
-      calendar.setTime(aktuellesGJ.getBeginnGeschaeftsjahr());
-      int ersterMonatAktuellesGJ = calendar.get(Calendar.MONTH);
-      // AfA Buchungen zu Ende des aktuellen GJ
-      Date afaBuchungDatum = aktuellesGJ.getEndeGeschaeftsjahr();
-
-      int anschaffungsJahr;
-      int monatAnschaffung;
-      int anzahlBuchungen = 0;
-      service = Einstellungen.getDBService();
-      DBIterator<Konto> kontenIt = service.createList(Konto.class);
-      kontenIt.addFilter("anlagenkonto = TRUE");
-      kontenIt.addFilter("afastart IS NOT NULL");
-      kontenIt.addFilter("afadauer IS NOT NULL");
-      kontenIt.addFilter("anschaffung IS NOT NULL");
-      kontenIt.addFilter("nutzungsdauer IS NOT NULL");
-      kontenIt.addFilter("(eroeffnung IS NULL OR eroeffnung <= ?)",
-          new Object[] { new java.sql.Date(calendar.getTimeInMillis())  });
-      kontenIt.addFilter("(aufloesung IS NULL OR aufloesung >= ?)",
-          new Object[] { new java.sql.Date(calendar.getTimeInMillis())  });
-      while (kontenIt.hasNext())
-      {
-        Konto konto = kontenIt.next();
-        Geschaeftsjahr anschaffungGJ = new Geschaeftsjahr(konto.getAnschaffung());
-        anschaffungsJahr = anschaffungGJ.getBeginnGeschaeftsjahrjahr();
-        calendar.setTime(konto.getAnschaffung());
-        monatAnschaffung = calendar.get(Calendar.MONTH);
-        // Check ob ausserhalb des Abschreibungszeitraums
-        if (aktuellesJahr < anschaffungsJahr || 
-            aktuellesJahr > anschaffungsJahr + konto.getNutzungsdauer())
-          continue;
-        // Check ob Anschaffung im ersten Monaz des GJ, dann keine Restabschreibung
-        // Wenn Nutzungsdauer 0 dann direktabschreibung
-        if ((aktuellesJahr == anschaffungsJahr + konto.getNutzungsdauer() && 
-            ersterMonatAktuellesGJ == monatAnschaffung) &&
-            konto.getNutzungsdauer() != 0)
-          continue;
-        
-        Buchung buchung = (Buchung) Einstellungen.getDBService().
-            createObject(Buchung.class, null);
-        buchung.setKonto(konto);
-        buchung.setName(Einstellungen.getEinstellung().getName());
-        buchung.setZweck(konto.getAfaart().getBezeichnung());
-        buchung.setDatum(afaBuchungDatum);
-        buchung.setBuchungsart(konto.getAfaartId());
-        if (aktuellesJahr == anschaffungsJahr)
-          buchung.setBetrag(-konto.getAfaStart());
-        else if (aktuellesJahr < anschaffungsJahr + konto.getNutzungsdauer())
-          buchung.setBetrag(-konto.getAfaDauer());
-        else if (konto.getNutzungsdauer() == 1)
-          buchung.setBetrag(-konto.getAfaDauer());
-        else
-          buchung.setBetrag(-konto.getAfaDauer() + konto.getAfaStart());
-        buchung.store();
-        anzahlBuchungen++;
-      }
-      if (anzahlBuchungen > 0)
-      {
-        refreshBuchungen();
-        GUI.getStatusBar().setSuccessText("Abschreibungen erfolgreich erstellt");
-      }
-      else
-      {
-        GUI.getStatusBar().setSuccessText("Keine Abschreibung im aktuellen Geschäftjahr nötig");
-      }
-    }
-    catch (RemoteException e)
-    {
-      GUI.getStatusBar().setErrorText("Fehler bei der Erstellung der Abschreibungen");
-    }
-    catch (ApplicationException ex)
-    {
-      GUI.getStatusBar().setErrorText(ex.getLocalizedMessage());
-    }
-    catch (ParseException ex)
-    {
-      GUI.getStatusBar().setErrorText(ex.getLocalizedMessage());
-    }
-
   }
 }

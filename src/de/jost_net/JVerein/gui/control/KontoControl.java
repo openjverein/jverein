@@ -37,6 +37,7 @@ import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -118,6 +119,8 @@ public class KontoControl extends AbstractControl
   
   private DecimalInput afarestwert;
   
+  private SelectInput afamode;
+  
   Button autobutton;
   
   Button afabutton;
@@ -181,6 +184,11 @@ public class KontoControl extends AbstractControl
     }
     anschaffung = new DateInput(getKonto().getAnschaffung(),
         new JVDateFormatTTMMJJJJ());
+    if (!((boolean) getAnlagenkonto().getValue()))
+    {
+      anschaffung.setValue(null);
+      anschaffung.disable();
+    }
     return anschaffung;
   }
 
@@ -262,6 +270,12 @@ public class KontoControl extends AbstractControl
       k.setAfaStart((Double) getAfaStart().getValue());
       k.setAfaDauer((Double) getAfaDauer().getValue());
       k.setAfaRestwert((Double) getAfaRestwert().getValue());
+      if (getAfaMode().getValue() == null)
+        k.setAfaMode(null);
+      else
+      {
+        k.setAfaMode(Integer.valueOf(((AfaMode) getAfaMode().getValue()).getKey()));
+      }
       k.store();
       GUI.getStatusBar().setSuccessText("Konto gespeichert");
     }
@@ -445,7 +459,7 @@ public class KontoControl extends AbstractControl
     
     Buchungsart b = konto.getBuchungsart();
     buchungsart = new SelectInput(liste, b);
-    buchungsart.setPleaseChoose("Bitte wählen");
+    buchungsart.setPleaseChoose("Bitte auswählen");
 
     switch (Einstellungen.getEinstellung().getBuchungsartSort())
     {
@@ -541,7 +555,16 @@ public class KontoControl extends AbstractControl
     anlagenart = new BuchungsartInput().getBuchungsartInput( anlagenart,
         getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART);
     anlagenart.addListener(new AnlagenartListener());
-    anlagenart.setMandatory(true);
+    if ((boolean) getAnlagenkonto().getValue())
+    {
+      anlagenart.setMandatory(true);
+    }
+    else
+    {
+      anlagenart.setMandatory(false);
+      anlagenart.setValue(null);
+      anlagenart.disable();
+    }
     return anlagenart;
   }
   
@@ -574,10 +597,18 @@ public class KontoControl extends AbstractControl
     list.setOrder(getBuchungartSortOrder());
     anlagenklasse = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
         getKonto().getAnlagenklasse());
-    anlagenklasse.setValue(getKonto().getAnlagenklasse());
     anlagenklasse.setAttribute(getBuchungartAttribute());
     anlagenklasse.setPleaseChoose("Bitte auswählen");
-    anlagenklasse.setMandatory(true);
+    if ((boolean) getAnlagenkonto().getValue())
+    {
+      anlagenklasse.setMandatory(true);
+    }
+    else
+    {
+      anlagenklasse.setMandatory(false);
+      anlagenklasse.setValue(null);
+      anlagenklasse.disable();
+    }
     return anlagenklasse;
   }
   
@@ -608,7 +639,16 @@ public class KontoControl extends AbstractControl
     afaart = new BuchungsartInput().getBuchungsartInput( afaart,
         getKonto().getAfaart(), buchungsarttyp.AFAART);
     afaart.addListener(new AnlagenartListener());
-    afaart.setMandatory(true);
+    if ((boolean) getAnlagenkonto().getValue())
+    {
+      afaart.setMandatory(true);
+    }
+    else
+    {
+      afaart.setMandatory(false);
+      afaart.setValue(null);
+      afaart.disable();
+    }
     return afaart;
   }
   
@@ -654,6 +694,11 @@ public class KontoControl extends AbstractControl
         }
       }
      });
+    if (!((boolean) getAnlagenkonto().getValue()))
+    {
+      betrag.setValue(null);
+      betrag.disable();
+    }
     return betrag;
   }
 
@@ -670,6 +715,11 @@ public class KontoControl extends AbstractControl
     else
     {
       nutzungsdauer = new IntegerNullInput();
+    }
+    if (!((boolean) getAnlagenkonto().getValue()))
+    {
+      nutzungsdauer.setValue(null);
+      nutzungsdauer.disable();
     }
     return nutzungsdauer;
   }
@@ -693,6 +743,13 @@ public class KontoControl extends AbstractControl
     }
     afastart = new DecimalInput(getKonto().getAfaStart(),
         Einstellungen.DECIMALFORMAT);
+    if (!((boolean) getAnlagenkonto().getValue()) ||
+        getAfaMode().getValue() == null ||
+        ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
+    {
+      afastart.setValue(null);
+      afastart.disable();
+    }
     return afastart;
   }
   
@@ -704,6 +761,13 @@ public class KontoControl extends AbstractControl
     }
     afadauer = new DecimalInput(getKonto().getAfaDauer(),
         Einstellungen.DECIMALFORMAT);
+    if (!((boolean) getAnlagenkonto().getValue()) ||
+        getAfaMode().getValue() == null ||
+        ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
+    {
+      afadauer.setValue(null);
+      afadauer.disable();
+    }
     return afadauer;
   }
   
@@ -715,7 +779,65 @@ public class KontoControl extends AbstractControl
     }
     afarestwert = new DecimalInput(getKonto().getAfaRestwert(),
         Einstellungen.DECIMALFORMAT);
+    if (!((boolean) getAnlagenkonto().getValue()))
+    {
+      afarestwert.setValue(null);
+      afarestwert.disable();
+    }
     return afarestwert;
+  }
+  
+  public SelectInput getAfaMode() throws RemoteException
+  {
+    if (afamode != null)
+    {
+      return afamode;
+    }
+    if (getKonto().getAfaMode() == null)
+      afamode = new SelectInput(AfaMode.getArray(), null);
+    else
+      afamode = new SelectInput(AfaMode.getArray(), 
+        new AfaMode(getKonto().getAfaMode()));
+    afamode.setPleaseChoose("Bitte auswählen");
+    afamode.addListener(new Listener(){
+      public void handleEvent (Event e) {
+        try
+        {
+          if (getAfaMode().getValue() != null &&
+              ((AfaMode) getAfaMode().getValue()).getKey() ==
+              AfaMode.ANGEPASST)
+          {
+            getAfaStart().enable();
+            getAfaDauer().enable();
+            getAfabutton().setEnabled(true);
+          }
+          else
+          {
+            getAfaStart().setValue(null);
+            getAfaStart().disable();
+            getAfaDauer().setValue(null);
+            getAfaDauer().disable();
+            getAfabutton().setEnabled(false);
+          }
+        }
+        catch (RemoteException e1)
+        {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+      }
+    });
+    if ((boolean) getAnlagenkonto().getValue())
+    {
+      afamode.setMandatory(true);
+    }
+    else
+    {
+      afamode.setMandatory(false);
+      afamode.setValue(null);
+      afamode.disable();
+    }
+    return afamode;
   }
 
   public String getBuchungartSortOrder()
@@ -809,14 +931,15 @@ public class KontoControl extends AbstractControl
         getBetrag().enable();
         getNutzungsdauer().enable();
         getAnschaffung().enable();
-        getAfaStart().enable();
-        getAfaDauer().enable();
         getAfaRestwert().enable();
-        if (getAfaRestwert().getValue() == null)
-          getAfaRestwert().setValue(0);
+        getAfaRestwert().setValue(Einstellungen.getEinstellung().getAfaRestwert());
         if (getBetrag().getValue() == null)
           getAutobutton().setEnabled(true);
         getAfabutton().setEnabled(true);
+        getAfaMode().enable();
+        getAfaMode().setValue(new AfaMode(AfaMode.AUTO));
+        getAfaMode().setMandatory(true);
+        getAfaMode().setEnabled(true);
       }
       else
       {
@@ -843,6 +966,9 @@ public class KontoControl extends AbstractControl
         getAfaRestwert().disable();
         getAutobutton().setEnabled(false);
         getAfabutton().setEnabled(false);
+        getAfaMode().setMandatory(false);
+        getAfaMode().setValue(null);
+        getAfaMode().disable();
       }
     }
     catch (RemoteException e)
@@ -870,6 +996,10 @@ public class KontoControl extends AbstractControl
     {
       if (getBetrag().getValue() != null)
         autobutton.setEnabled(false);
+      if (!((boolean) getAnlagenkonto().getValue()))
+      {
+        autobutton.setEnabled(false);
+      }
     }
     catch (RemoteException e)
     {
@@ -893,6 +1023,18 @@ public class KontoControl extends AbstractControl
         handleAfa();
       }
     }, null, true, "view-refresh.png");
+    try
+    {
+      if (!((boolean) getAnlagenkonto().getValue()))
+      {
+        afabutton.setEnabled(false);
+      }
+    }
+    catch (RemoteException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     return afabutton;
   }
   
@@ -944,7 +1086,7 @@ public class KontoControl extends AbstractControl
       Date anschaffung = (Date) getAnschaffung().getValue();
       if (anschaffung == null)
       {
-        GUI.getStatusBar().setErrorText("Anschaffung fehlt, bitte eingeben!");
+        GUI.getStatusBar().setErrorText("Anschaffungsdatum fehlt, bitte eingeben!");
         return;
       }
       Integer nutzungsdauer = (Integer) getNutzungsdauer().getValue();
