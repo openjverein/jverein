@@ -21,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.BuchungImportAction;
+import de.jost_net.JVerein.gui.action.MitgliederImportAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Adresstyp;
@@ -103,6 +105,8 @@ public abstract class AbstractMitgliedSucheView extends AbstractView
     if (anzahlbeitragsgruppe > 0)
     {
       buttons.addButton("Neu", getDetailAction(), null, false, "document-new.png");
+      buttons.addButton("Import", new MitgliederImportAction(), null, false,
+          "file-import.png");
     }
     buttons.paint(this.getParent());
   }

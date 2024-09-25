@@ -58,6 +58,9 @@ public class DokumentationUtil
   
   public static final String MITGLIED = PRE + FUNKTIONEN + MITGLIEDER + "content/grunddaten";
   
+  public static final String MITGLIEDIMPORT = PRE + FUNKTIONEN + MITGLIEDER + "import";
+
+  
   public static final String MITGLIEDSKONTO_AUSWAHL = PRE + FUNKTIONEN + MITGLIEDER
       + "mitgliedskonto#mitgliedskontozuordnen";
 
@@ -187,6 +190,5 @@ public class DokumentationUtil
 
 
   // Einstellungen Erweitert
-  public static final String BEREINIGEN = PRE + FUNKTIONEN + ADMIN + ADMERWEITERT + "bereinigen";
-  
+  public static final String BEREINIGEN = PRE + FUNKTIONEN + ADMIN + ADMERWEITERT + "bereinigen";  
 }
