@@ -137,6 +137,10 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
       throw new ApplicationException("Buchungsdatum liegt mehr als 10 Jahre zurück");
     }
 
+    // Wird eine Abschreibung während des Jahresabschlusses generiert muss zuerst der 
+    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung gespeichert 
+    // werden kann. Dann muss man die Buchung auch bei bestehendem Jahresabschluss speichern 
+    // können. In diesem Fall ist das Attribut abschluss nicht null.
     Jahresabschluss ja = getJahresabschluss();
     if (ja != null && getAbschlussID() == null)
     {
@@ -439,16 +443,23 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   }
 
   @Override
-  public void setAbschluss(Long abschluss) throws RemoteException
+  public void setAbschlussID(Long abschlussID) throws RemoteException
   {
-    setAttribute("abschluss", abschluss);
+    setAttribute("abschluss", abschlussID);
   }
 
   @Override
   public void setAbschluss(Jahresabschluss abschluss)
       throws RemoteException
   {
-    setAttribute("abschluss", Long.valueOf(abschluss.getID()));
+    if (abschluss != null)
+    {
+      setAttribute("abschluss", Long.valueOf(abschluss.getID()));
+    }
+    else
+    {
+      setAttribute("abschluss", null);
+    }
   }
 
   @Override

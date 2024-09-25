@@ -154,13 +154,8 @@ public class AfaUtil
         konto.getNutzungsdauer() != 0)
       return 0;
     
-    int monate = 0;
-    calendar.setTime(anschaffungGJ.getBeginnGeschaeftsjahr());
-    int monatStartGJ = calendar.get(Calendar.MONTH);
-    if (monatAnschaffung < monatStartGJ)
-      monate = monatStartGJ - monatAnschaffung;
-    else if (monatAnschaffung > monatStartGJ)
-      monate = monatStartGJ - monatAnschaffung + 12;
+    int monate = getMonths(konto.getAnschaffung(), 
+        anschaffungGJ.getEndeGeschaeftsjahr());
     
     Buchung buchung = (Buchung) Einstellungen.getDBService().
         createObject(Buchung.class, null);
@@ -211,8 +206,7 @@ public class AfaUtil
     buchung.setDatum(afaBuchungDatum);
     buchung.setBetrag(-betrag);
     buchung.setBuchungsart(konto.getAfaartId());
-    if (abschluss != null)
-      buchung.setAbschluss(abschluss);
+    buchung.setAbschluss(abschluss);
     buchung.store();
     monitor.setStatusText("Konto " + konto.getNummer() + ": AfA Buchung erzeugt");
     return 1;
@@ -237,7 +231,7 @@ public class AfaUtil
         aktuellesJahr > anschaffungsJahr + konto.getNutzungsdauer())
       return 0;
     // Check ob Anschaffung im ersten Monaz des GJ, dann keine Restabschreibung
-    // Wenn Nutzungsdauer 0 dann direktabschreibung
+    // Wenn Nutzungsdauer 0 dann Direktabschreibung
     if ((aktuellesJahr == anschaffungsJahr + konto.getNutzungsdauer() && 
         ersterMonatAktuellesGJ == monatAnschaffung) &&
         konto.getNutzungsdauer() != 0)
@@ -257,12 +251,12 @@ public class AfaUtil
     // GWGs voll abschreiben
     if (konto.getNutzungsdauer() == 0)
     {
+      if (restwert <= 0d)
+        return 0; // bereits abgeschrieben
       zweck = "GWG-Abschreibung";
       betrag = konto.getBetrag();
       if (betrag > restwert)
         betrag = restwert;
-      if (restwert <= 0d)
-        return 0; // bereits abgeschrieben
     }
     else
     {
@@ -292,6 +286,8 @@ public class AfaUtil
         zweck = "Anteilige Abschreibung für "  + months  + " Monate";
         betrag = Math.round((abbetrag / 12d) * months);
         double startwert = getStartwert(konto, monitor);
+        // Nachkommastellen der Anschaffungskosten addieren, das ergiebt einen
+        // geraden Betrag für den neuen Anlagenwert
         betrag = betrag + (startwert - (int)startwert);
       }
 
@@ -311,8 +307,7 @@ public class AfaUtil
     buchung.setDatum(afaBuchungDatum);
     buchung.setBuchungsart(konto.getAfaartId());
     buchung.setBetrag(-betrag);
-    if (abschluss != null)
-      buchung.setAbschluss(abschluss);
+    buchung.setAbschluss(abschluss);
     buchung.store();
     monitor.setStatusText("Konto " + konto.getNummer() + ": AfA Buchung erzeugt");
     return 1;

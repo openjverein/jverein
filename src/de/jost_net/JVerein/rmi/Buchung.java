@@ -88,7 +88,7 @@ public interface Buchung extends DBObject
   public void setAbschluss(Jahresabschluss abschluss)
       throws RemoteException;
 
-  public void setAbschluss(Long abschluss) throws RemoteException;
+  public void setAbschlussID(Long abschlussID) throws RemoteException;
   
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException;
 
