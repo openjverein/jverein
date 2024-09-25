@@ -239,7 +239,7 @@ public class JahresabschlussControl extends AbstractControl
           }
         }
       }
-      if ((Boolean) getAfaberechnung().getValue())
+      if (afaberechnung != null && (Boolean) getAfaberechnung().getValue())
       {
         new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
       }

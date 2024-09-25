@@ -159,5 +159,7 @@ public interface Buchung extends DBObject
   public boolean isToDelete() throws RemoteException;
 
   public void plausi() throws RemoteException, ApplicationException;
+  
+  public void store(boolean check) throws RemoteException, ApplicationException;
 
 }
