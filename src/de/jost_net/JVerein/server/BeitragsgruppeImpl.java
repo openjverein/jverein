@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -346,5 +347,46 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   public Object getAttribute(String fieldName) throws RemoteException
   {
     return super.getAttribute(fieldName);
+  }
+
+  @Override
+  public boolean getHasAltersstaffel() throws RemoteException
+  {
+	Object o = getAttribute("altersstaffel");
+	if(o == null)
+		return false;
+    return (boolean)o;
+  }
+  
+  @Override
+  public DBIterator<Altersstaffel> getAltersstaffelIterator()
+      throws RemoteException
+  {
+    DBIterator<Altersstaffel> a = Einstellungen.getDBService()
+        .createList(Altersstaffel.class);
+    a.addFilter("beitragsgruppe = ?", getID());
+    a.setOrder("order by nummer");
+    return a;
+  }
+  
+
+  @Override
+  public Altersstaffel getAltersstaffel(int nummer)
+      throws RemoteException
+  {
+    DBIterator<Altersstaffel> a = Einstellungen.getDBService()
+        .createList(Altersstaffel.class);
+    a.addFilter("beitragsgruppe = ?", getID());
+    a.addFilter("nummer = ?",nummer);
+    if(a.hasNext())
+      return a.next();
+    else
+      return null;
+  }
+
+  @Override
+  public void setHasAltersstaffel(boolean b) throws RemoteException
+  {
+    setAttribute("altersstaffel", b);
   }
 }

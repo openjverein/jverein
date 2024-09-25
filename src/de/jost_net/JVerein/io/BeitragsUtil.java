@@ -21,32 +21,117 @@ import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.util.VonBis;
+import de.willuhn.util.ApplicationException;
 
 public class BeitragsUtil
 {
   public static double getBeitrag(Beitragsmodel bm, Zahlungstermin zt, int zr,
-      Beitragsgruppe bg, Date stichtag, Date eintritt, Date austritt)
-      throws RemoteException
+      Beitragsgruppe bg, Date stichtag, Mitglied m)
+      throws RemoteException, ApplicationException
   {
     double betr = 0;
-    if (eintritt != null && eintritt.after(stichtag))
+    if (m.getEintritt() != null && m.getEintritt().after(stichtag))
     {
       return 0;
     }
-    if (austritt != null && austritt.before(stichtag))
+    if (m.getAustritt() != null && m.getAustritt().before(stichtag))
     {
       return 0;
     }
     switch (bm)
     {
       case GLEICHERTERMINFUERALLE:
-        betr = bg.getBetrag();
+        if(Einstellungen.getEinstellung().getGeburtsdatumPflicht() && bg.getHasAltersstaffel())
+        {
+          Einstellungen.getEinstellung().getAltersModel();
+          String stufen = Einstellungen.getEinstellung().getBeitragAltersstufen();
+          if(stufen != null && stufen != "")
+          {
+        	if(m.getAlter() == null)
+        		throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Geburtsdatum nicht vorhanden");
+            AltersgruppenParser ap = new AltersgruppenParser(stufen);
+            int i = 0;
+            int nummer = -1;
+            VonBis vb = null;
+            while(ap.hasNext())
+            {
+              vb = ap.getNext();
+              if(m.getAlter() >= vb.getVon() && m.getAlter() <= vb.getBis())
+              {
+                nummer = i;
+                break;
+              }
+              i++;
+            }
+            if(nummer == -1)
+            	throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Keine passende Altersstufe gefunden: " + m.getAlter() + " Jahre");
+            try
+            {
+            	betr = bg.getAltersstaffel(nummer).getBetrag();
+            }
+            catch (NullPointerException e)
+            {
+            	throw new ApplicationException(
+            	          "Altersstufe " + vb.getVon() + "-" + vb.getBis() + " in Beitragsgruppe " + bg.getBezeichnung() + " nicht vorhanden");
+            }
+          }
+          else
+            betr = bg.getBetrag();
+        }
+        else
+        {
+          betr = bg.getBetrag();
+        }
         break;
       case MONATLICH12631:
-        BigDecimal bbetr = BigDecimal.valueOf(bg.getBetrag());
+        if(Einstellungen.getEinstellung().getGeburtsdatumPflicht() && bg.getHasAltersstaffel())
+        {
+          Einstellungen.getEinstellung().getAltersModel();
+          String stufen = Einstellungen.getEinstellung().getBeitragAltersstufen();
+          if(stufen != null && stufen != "")
+          {
+        	if(m.getAlter() == null)
+          	  throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Geburtsdatum nicht vorhanden");
+            AltersgruppenParser ap = new AltersgruppenParser(stufen);
+            int i = 0;
+            int nummer = -1;
+            VonBis vb = null;
+            while(ap.hasNext())
+            {
+              vb = ap.getNext();
+              if(m.getAlter() >= vb.getVon() && m.getAlter() <= vb.getBis())
+              {
+                nummer = i;
+                break;
+              }
+              i++;
+            }
+            if(nummer == -1)
+            	throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Keine passende Altersstufe gefunden: " + m.getAlter() + " Jahre");
+            try
+            {
+            	betr = bg.getAltersstaffel(nummer).getBetrag();
+            }
+            catch (NullPointerException e)
+            {
+            	throw new ApplicationException(
+            	          "Altersstufe " + vb.getVon() + "-" + vb.getBis() + " in Beitragsgruppe " + bg.getBezeichnung() + " nicht vorhanden");
+            }
+          }
+          else
+            betr = bg.getBetrag();
+        }
+        else
+        {
+          betr = bg.getBetrag();
+        }
+        BigDecimal bbetr = BigDecimal.valueOf(betr);
         bbetr = bbetr.setScale(2, RoundingMode.HALF_UP);
         BigDecimal bmonate = BigDecimal.valueOf(zr);
         bbetr = bbetr.multiply(bmonate);

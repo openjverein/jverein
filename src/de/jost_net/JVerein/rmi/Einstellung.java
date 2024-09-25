@@ -607,4 +607,9 @@ public interface Einstellung extends DBObject, IBankverbindung
   public Boolean getAfaInJahresabschluss() throws RemoteException;
 
   public void setAfaInJahresabschluss(Boolean afainjahresabschluss) throws RemoteException;
+
+  public String getBeitragAltersstufen() throws RemoteException;
+
+  public void setBeitragAltersstufen(String altersstufen) throws RemoteException;
+
 }
