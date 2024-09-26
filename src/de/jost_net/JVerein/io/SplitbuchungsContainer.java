@@ -188,7 +188,7 @@ public class SplitbuchungsContainer
     if (!differenz.equals(BigDecimal.valueOf(0).setScale(2)))
     {
       throw new RemoteException(
-          "Differenz zwischen Hauptbuchung und Gegenbuchungen: " + differenz);
+          "Differenz zwischen Hauptbuchung und Splitbuchungen: " + differenz);
     }
 
     Buchungsart ba_haupt = null;

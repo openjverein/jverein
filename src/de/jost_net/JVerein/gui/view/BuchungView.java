@@ -18,9 +18,12 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.gui.parts.BuchungPart;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -44,12 +47,55 @@ public class BuchungView extends AbstractView
         DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
     if (control.getBuchung().getSpeicherung())
     {
-      buttons.addButton("Neu", new BuchungNeuAction(), null, false, "document-new.png");
+      buttons.addButton("Neu", new BuchungNeuAction(), null, false,
+          "document-new.png");
     }
-    Button savButton = new Button("Speichern",
-        control.getBuchungSpeichernAction(), null, true, "document-save.png");
-    savButton.setEnabled(!buchungabgeschlossen);
-    buttons.addButton(savButton);
+    Button saveButton = null;
+    if (control.getBuchung().getSplitTyp() != null)
+    {
+      Button savebackButton = new Button("Speichern und zurück", new Action()
+      {
+        @Override
+        public void handleAction(Object context)
+        {
+          try
+          {
+            control.getBuchungSpeichernAction().handleAction(context);
+            GUI.startView(SplitBuchungView.class.getName(), SplitbuchungsContainer.getMaster());
+          }
+          catch (Exception e)
+          {
+            GUI.getStatusBar().setErrorText(e.getMessage());
+          }
+        }
+      }, null, true, "go-previous.png");
+      savebackButton.setEnabled(!buchungabgeschlossen);
+      buttons.addButton(savebackButton);
+      
+      saveButton = new Button("Speichern und nächste", new Action()
+      {
+        @Override
+        public void handleAction(Object context)
+        {
+          try
+          {
+            control.getBuchungSpeichernAction().handleAction(context);
+            new SplitbuchungNeuAction().handleAction(context);
+          }
+          catch (Exception e)
+          {
+            GUI.getStatusBar().setErrorText(e.getMessage());
+          }
+        }
+      }, null, true, "document-save.png");
+    }
+    else
+    {
+      saveButton = new Button("Speichern", control.getBuchungSpeichernAction(),
+          null, true, "document-save.png");
+    }
+    saveButton.setEnabled(!buchungabgeschlossen);
+    buttons.addButton(saveButton);
     buttons.paint(getParent());
   }
 }
