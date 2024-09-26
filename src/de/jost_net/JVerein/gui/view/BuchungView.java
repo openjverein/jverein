@@ -53,7 +53,7 @@ public class BuchungView extends AbstractView
     Button saveButton = null;
     if (control.getBuchung().getSplitTyp() != null)
     {
-      Button savebackButton = new Button("Speichern und zurück", new Action()
+      saveButton = new Button("Speichern", new Action()
       {
         @Override
         public void handleAction(Object context)
@@ -68,11 +68,11 @@ public class BuchungView extends AbstractView
             GUI.getStatusBar().setErrorText(e.getMessage());
           }
         }
-      }, null, true, "go-previous.png");
-      savebackButton.setEnabled(!buchungabgeschlossen);
-      buttons.addButton(savebackButton);
+      }, null, true, "document-save.png");
+      saveButton.setEnabled(!buchungabgeschlossen);
+      buttons.addButton(saveButton);
       
-      saveButton = new Button("Speichern und nächste", new Action()
+      Button saveNextButton = new Button("Speichern und nächste", new Action()
       {
         @Override
         public void handleAction(Object context)
@@ -87,15 +87,17 @@ public class BuchungView extends AbstractView
             GUI.getStatusBar().setErrorText(e.getMessage());
           }
         }
-      }, null, true, "document-save.png");
+      }, null, true, "go-next.png");
+      saveNextButton.setEnabled(!buchungabgeschlossen);
+      buttons.addButton(saveNextButton);
     }
     else
     {
       saveButton = new Button("Speichern", control.getBuchungSpeichernAction(),
           null, true, "document-save.png");
+      saveButton.setEnabled(!buchungabgeschlossen);
+      buttons.addButton(saveButton);
     }
-    saveButton.setEnabled(!buchungabgeschlossen);
-    buttons.addButton(saveButton);
     buttons.paint(getParent());
   }
 }
