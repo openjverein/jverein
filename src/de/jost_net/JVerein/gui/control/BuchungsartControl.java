@@ -235,7 +235,7 @@ public class BuchungsartControl extends AbstractControl
             DBIterator<Buchungsart> it = getFilteredBuchungsart();
             @SuppressWarnings("unchecked")
             List<Buchungsart> buchungsartenListe = it != null ? PseudoIterator.asList(it) : null;
-            steuer_buchungsart.setPleaseChoose("Bitte wählen");
+            steuer_buchungsart.setPleaseChoose("Bitte auswählen");
             steuer_buchungsart.setAttribute(getBuchungartAttribute());
             steuer_buchungsart.setList(buchungsartenListe);
             steuer_buchungsart.enable();
@@ -267,7 +267,7 @@ public class BuchungsartControl extends AbstractControl
       @SuppressWarnings("unchecked")
       List<Buchungsart> buchungsartenListe = it != null ? PseudoIterator.asList(it) : null;
       steuer_buchungsart.setAttribute(getBuchungartAttribute());
-      steuer_buchungsart.setPleaseChoose("Bitte wählen");
+      steuer_buchungsart.setPleaseChoose("Bitte auswählen");
       steuer_buchungsart.setPreselected(getBuchungsart().getSteuerBuchungsart());
       steuer_buchungsart.setList(buchungsartenListe);
       steuer_buchungsart.setMandatory(true);
