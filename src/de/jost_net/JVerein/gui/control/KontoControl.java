@@ -731,7 +731,7 @@ public class KontoControl extends AbstractControl
       return kommentar;
     }
     kommentar = new TextAreaInput(getKonto().getKommentar(), 1024);
-    kommentar.setHeight(100);
+    kommentar.setHeight(90);
     return kommentar;
   }
   
