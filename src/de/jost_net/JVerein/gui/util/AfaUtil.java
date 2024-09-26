@@ -280,14 +280,14 @@ public class AfaUtil
       }
 
       double abbetrag = (restwert - restbuchungswert) / (restnutzungsdauer / 12d);
-      betrag = Math.round(abbetrag);
+      betrag = Math.ceil(abbetrag);
 
       // Anteilig abschreiben, wenn wir uns im Anschaffungsjahr befinden
       if (aktuellesJahr == anschaffungsJahr)
       {      
         int months = getMonths(konto.getAnschaffung(),jahr.getEndeGeschaeftsjahr());
         zweck = "Anteilige Abschreibung für "  + months  + " Monate";
-        betrag = Math.round((abbetrag / 12d) * months);
+        betrag = Math.ceil((abbetrag / 12d) * months);
         double startwert = getStartwert(konto, monitor);
         // Nachkommastellen der Anschaffungskosten addieren, das ergiebt einen
         // geraden Betrag für den neuen Anlagenwert
