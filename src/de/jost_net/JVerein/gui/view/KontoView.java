@@ -40,18 +40,16 @@ public class KontoView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     
     SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addLabelPair("Anlagenkonto", control.getAnlagenkonto());
     left.addLabelPair("Nummer", control.getNummer());
     left.addLabelPair("Bezeichnung", control.getBezeichnung());
-    left.addLabelPair("Konto-Eröffnung", control.getEroeffnung());
-    left.addLabelPair("Konto-Auflösung", control.getAufloesung());
-
-
-    SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addLabelPair("Anlagenkonto", control.getAnlagenkonto());
-    right.addLabelPair("Hibiscus-Konto", control.getHibiscusId());
-    right.addLabelPair("Gegenbuchung-Buchungsart", control.getBuchungsart());
+    left.addLabelPair("Eröffnungsdatum", control.getEroeffnung());
+    left.addLabelPair("Auflösungsdatum", control.getAufloesung());
     
-    group.addLabelPair("Kommentar", control.getKommentar());
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addLabelPair("Hibiscus-Konto", control.getHibiscusId());
+    right.addLabelPair("GB-Buchungsart", control.getBuchungsart());
+    right.addLabelPair("Kommentar", control.getKommentar());
     
     LabelGroup group1 = new LabelGroup(getParent(), "Anlagenkonto Daten");
     ColumnLayout cl1 = new ColumnLayout(group1.getComposite(), 2);

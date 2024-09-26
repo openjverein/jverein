@@ -179,7 +179,7 @@ public class JahresabschlussControl extends AbstractControl
     {
       return afaberechnung;
     }
-    afaberechnung = new CheckboxInput(false);
+    afaberechnung = new CheckboxInput(true);
     return afaberechnung;
   }
 

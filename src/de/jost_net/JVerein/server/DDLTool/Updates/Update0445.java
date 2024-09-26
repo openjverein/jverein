@@ -96,7 +96,7 @@ public class Update0445 extends AbstractDDLUpdate
           new Column("afamode", COLTYPE.INTEGER, 1, null, false, false)));
       
       execute(addColumn("einstellung",
-          new Column("afarestwert", COLTYPE.DOUBLE, 1, null, false, false)));
+          new Column("afarestwert", COLTYPE.DOUBLE, 1, "1.0", false, false)));
       
       execute(addColumn("einstellung", new Column("afainjahresabschluss",
           COLTYPE.BOOLEAN, 0, "TRUE", false, false)));
