@@ -304,9 +304,9 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   }
   
   @Override
-  public void setBuchungsklasse(Long buchungsklasse) throws RemoteException
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException
   {
-    setAttribute("buchungsklasse", buchungsklasse);
+    setAttribute("buchungsklasse", buchungsklasseId);
   }
 
   @Override

@@ -419,9 +419,9 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   }
   
   @Override
-  public void setBuchungsklasse(Long buchungsklasse) throws RemoteException
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException
   {
-    setAttribute("buchungsklasse", buchungsklasse);
+    setAttribute("buchungsklasse", buchungsklasseId);
   }
 
   @Override

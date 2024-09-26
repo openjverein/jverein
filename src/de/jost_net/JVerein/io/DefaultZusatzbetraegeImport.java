@@ -309,7 +309,7 @@ public class DefaultZusatzbetraegeImport implements Importer
                     buchungsklasse));
                 fehlerInDaten = true;
               }
-              zus.setBuchungsklasse(Long.valueOf(buchungsklasse));
+              zus.setBuchungsklasseId(Long.valueOf(buchungsklasse));
             }
             catch (SQLException e)
             {

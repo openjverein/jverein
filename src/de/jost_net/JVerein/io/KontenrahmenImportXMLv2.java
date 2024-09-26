@@ -115,7 +115,7 @@ public class KontenrahmenImportXMLv2 implements Importer
             .createList(Buchungsklasse.class);
         bklait.addFilter("nummer = ?", buklanr);
         Buchungsklasse bkla = bklait.next();
-        buchungsart.setBuchungsklasse(Integer.valueOf(bkla.getID()));
+        buchungsart.setBuchungsklasseId(Long.valueOf(bkla.getID()));
       }
       buchungsart.setStatus(buaelement.getAttribute("status", 0));
       buchungsart.store();

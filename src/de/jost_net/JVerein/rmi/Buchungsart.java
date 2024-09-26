@@ -38,7 +38,7 @@ public interface Buchungsart extends DBObject
 
   public Long getBuchungsklasseId() throws RemoteException;
 
-  public void setBuchungsklasse(Integer buchungsklasse) throws RemoteException;
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
 
   public Boolean getSpende() throws RemoteException;
 

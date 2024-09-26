@@ -272,9 +272,9 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   }
   
   @Override
-  public void setBuchungsklasse(Long buchungsklasse) throws RemoteException
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException
   {
-    setAttribute("buchungsklasse", buchungsklasse);
+    setAttribute("buchungsklasse", buchungsklasseId);
   }
 
   @Override

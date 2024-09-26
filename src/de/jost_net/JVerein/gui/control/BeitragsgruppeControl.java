@@ -402,7 +402,7 @@ public class BeitragsgruppeControl extends AbstractControl
 
       b.setBeitragsArt(ba.getKey());
       b.setBuchungsart((Buchungsart) getBuchungsart().getValue());
-      b.setBuchungsklasse(getSelectedBuchungsKlasseId());
+      b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
       Double d = (Double) getArbeitseinsatzStunden().getValue();
       b.setArbeitseinsatzStunden(d.doubleValue());
       d = (Double) getArbeitseinsatzBetrag().getValue();

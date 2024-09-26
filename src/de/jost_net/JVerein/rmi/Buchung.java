@@ -85,7 +85,7 @@ public interface Buchung extends DBObject
   
   public Long getBuchungsklasseId() throws RemoteException;
 
-  public void setBuchungsklasse(Long buchungsklasse) throws RemoteException;
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
 
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException;
 

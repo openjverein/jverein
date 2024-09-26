@@ -439,16 +439,16 @@ public class BuchungsartControl extends AbstractControl
         GenericObject o = (GenericObject) getBuchungsklasse().getValue();
         if (o != null)
         {
-          b.setBuchungsklasse(Integer.valueOf(o.getID()));
+          b.setBuchungsklasseId(Long.valueOf(o.getID()));
         }
         else
         {
-          b.setBuchungsklasse(null);
+          b.setBuchungsklasseId(null);
         }
       }
       else
       {
-        b.setBuchungsklasse(null);
+        b.setBuchungsklasseId(null);
       }
       b.setSpende((Boolean) spende.getValue());
       double steuersatzValue = (SteuersatzBuchungsart) steuersatz.getValue() == null ? 0 : ((SteuersatzBuchungsart) steuersatz.getValue()).getSteuersatz();

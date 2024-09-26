@@ -397,7 +397,7 @@ public class MitgliedskontoControl extends DruckMailControl
       mkto.setZweck1((String) getZweck1().getValue());
 
       double steuersatz = 0d;
-      mkto.setBuchungsklasse(getSelectedBuchungsKlasseId());
+      mkto.setBuchungsklasseId(getSelectedBuchungsKlasseId());
       mkto.setBuchungsart((Buchungsart) getBuchungsart().getValue());
       if (getBuchungsart().getValue() != null)
       {

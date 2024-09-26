@@ -200,7 +200,7 @@ public class ZusatzbetragControl extends AbstractControl
       Double d = (Double) getZusatzbetragPart().getBetrag().getValue();
       z.setBuchungsart(
           (Buchungsart) getZusatzbetragPart().getBuchungsart().getValue());
-      z.setBuchungsklasse(getZusatzbetragPart().getSelectedBuchungsKlasseId());
+      z.setBuchungsklasseId(getZusatzbetragPart().getSelectedBuchungsKlasseId());
       z.setBetrag(d.doubleValue());
       z.store();
       if (getVorlage().getValue().equals(MITDATUM)
@@ -218,7 +218,7 @@ public class ZusatzbetragControl extends AbstractControl
           zv.setStartdatum(z.getStartdatum());
         }
         zv.setBuchungsart(z.getBuchungsart());
-        zv.setBuchungsklasse(z.getBuchungsklasseId());
+        zv.setBuchungsklasseId(z.getBuchungsklasseId());
         zv.store();
       }
       GUI.getStatusBar().setSuccessText("Zusatzbetrag gespeichert");

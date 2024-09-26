@@ -820,7 +820,7 @@ public class AbrechnungSEPA
         mk.setBuchungsart(buchungsart);
         steuersatz = buchungsart.getSteuersatz();
       }
-      mk.setBuchungsklasse(buchungsklasseId);
+      mk.setBuchungsklasseId(buchungsklasseId);
       // Set tax rate
       mk.setSteuersatz(steuersatz);
       // Set bill amount without taxes
@@ -850,7 +850,7 @@ public class AbrechnungSEPA
       {
         buchung.setBuchungsart(Long.valueOf(buchungsart.getID()));
       }
-      buchung.setBuchungsklasse(buchungsklasseId);
+      buchung.setBuchungsklasseId(buchungsklasseId);
       buchung.store();
     }
   }

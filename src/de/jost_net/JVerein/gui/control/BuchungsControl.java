@@ -230,7 +230,7 @@ public class BuchungsControl extends AbstractControl
   public void fillBuchung(Buchung b) throws ApplicationException, RemoteException
   { 
     b.setBuchungsart(getSelectedBuchungsArtId());
-    b.setBuchungsklasse(getSelectedBuchungsKlasseId());
+    b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
     b.setProjektID(getSelectedProjektId());
     b.setKonto(getSelectedKonto());
     b.setAuszugsnummer(getAuszugsnummerWert());
@@ -670,7 +670,7 @@ public class BuchungsControl extends AbstractControl
               b.setBetrag(ssub.getBetrag() * -1);
               b.setBlattnummer(master.getBlattnummer());
               b.setBuchungsart(master.getBuchungsartId());
-              b.setBuchungsklasse(master.getBuchungsklasseId());
+              b.setBuchungsklasseId(master.getBuchungsklasseId());
               b.setDatum(su.getAusfuehrungsdatum());
               b.setKonto(master.getKonto());
               b.setName(ssub.getGegenkontoName());

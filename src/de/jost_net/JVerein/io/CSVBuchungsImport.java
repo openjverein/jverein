@@ -193,7 +193,7 @@ public class CSVBuchungsImport implements Importer
                   .format("Buchungsklasse %d existiert nicht in JVerein!", bukl));
             }
             Buchungsklasse b1 = (Buchungsklasse) bit.next();
-            bu.setBuchungsklasse(Long.valueOf(b1.getID()));
+            bu.setBuchungsklasseId(Long.valueOf(b1.getID()));
           }
           catch (SQLException e)
           {
