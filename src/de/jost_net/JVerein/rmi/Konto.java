@@ -49,7 +49,7 @@ public interface Konto extends DBObject
 
   public Long getBuchungsartId() throws RemoteException;
 
-  public void setBuchungsart(Long buchungsart) throws RemoteException;
+  public void setBuchungsartId(Long buchungsartId) throws RemoteException;
   
   public Boolean getAnlagenkonto() throws RemoteException;
 
@@ -60,19 +60,19 @@ public interface Konto extends DBObject
 
   public Long getAnlagenartId() throws RemoteException;
 
-  public void setAnlagenart(Long anlagensart) throws RemoteException;
+  public void setAnlagenartId(Long anlagensartId) throws RemoteException;
   
   public Buchungsklasse getAnlagenklasse() throws RemoteException;
 
   public Long getAnlagenklasseId() throws RemoteException;
 
-  public void setAnlagenklasse(Long anlagenklasse) throws RemoteException;
+  public void setAnlagenklasseId(Long anlagenklasseId) throws RemoteException;
   
   public Buchungsart getAfaart() throws RemoteException;
 
   public Long getAfaartId() throws RemoteException;
 
-  public void setAfaart(Long afaart) throws RemoteException;
+  public void setAfaartId(Long afaartId) throws RemoteException;
   
   public Integer getNutzungsdauer() throws RemoteException;
 

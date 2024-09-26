@@ -272,13 +272,13 @@ public class KontoImpl extends AbstractDBObject implements Konto
   @Override
   public Long getBuchungsartId() throws RemoteException
   {
-    return Long.parseLong(getBuchungsart().getID());
+    return (Long) super.getAttribute("buchungsart");
   }
 
   @Override
-  public void setBuchungsart(Long buchungsart) throws RemoteException
+  public void setBuchungsartId(Long buchungsartId) throws RemoteException
   {
-    setAttribute("buchungsart", buchungsart);
+    setAttribute("buchungsart", buchungsartId);
   }
   
   @Override
@@ -310,13 +310,13 @@ public class KontoImpl extends AbstractDBObject implements Konto
   @Override
   public Long getAnlagenartId() throws RemoteException
   {
-    return Long.parseLong(getAnlagenart().getID());
+    return (Long) super.getAttribute("anlagenart");
   }
 
   @Override
-  public void setAnlagenart(Long anlagenart) throws RemoteException
+  public void setAnlagenartId(Long anlagenartId) throws RemoteException
   {
-    setAttribute("anlagenart", anlagenart);
+    setAttribute("anlagenart", anlagenartId);
   }
   
   @Override
@@ -325,7 +325,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
     Long l = (Long) super.getAttribute("anlagenklasse");
     if (l == null)
     {
-      return null; // Keine Buchungsart zugeordnet
+      return null; // Keine Buchungsklasse zugeordnet
     }
 
     Cache cache = Cache.get(Buchungsklasse.class, true);
@@ -335,13 +335,13 @@ public class KontoImpl extends AbstractDBObject implements Konto
   @Override
   public Long getAnlagenklasseId() throws RemoteException
   {
-    return Long.parseLong(getAnlagenklasse().getID());
+    return (Long) super.getAttribute("anlagenklasse");
   }
 
   @Override
-  public void setAnlagenklasse(Long anlagenklasse) throws RemoteException
+  public void setAnlagenklasseId(Long anlagenklasseId) throws RemoteException
   {
-    setAttribute("anlagenklasse", anlagenklasse);
+    setAttribute("anlagenklasse", anlagenklasseId);
   }
   
   @Override
@@ -360,13 +360,13 @@ public class KontoImpl extends AbstractDBObject implements Konto
   @Override
   public Long getAfaartId() throws RemoteException
   {
-    return Long.parseLong(getAfaart().getID());
+    return (Long) super.getAttribute("afaart");
   }
 
   @Override
-  public void setAfaart(Long afaart) throws RemoteException
+  public void setAfaartId(Long afaartId) throws RemoteException
   {
-    setAttribute("afaart", afaart);
+    setAttribute("afaart", afaartId);
   }
   
   @Override
@@ -471,11 +471,6 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     if ("buchungsart".equals(fieldName))
       return getBuchungsart();
-    if ("anlagenart".equals(fieldName))
-      return getAnlagenart();
-    if ("anlagenklasse".equals(fieldName))
-      return getAnlagenklasse();
-
     return super.getAttribute(fieldName);
   }
 }

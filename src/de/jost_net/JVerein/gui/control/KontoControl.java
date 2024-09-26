@@ -248,7 +248,7 @@ public class KontoControl extends AbstractControl
       k.setBezeichnung((String) getBezeichnung().getValue());
       k.setEroeffnung((Date) getEroeffnung().getValue());
       k.setAufloesung((Date) getAufloesung().getValue());
-      k.setBuchungsart(getSelectedBuchungsArtId());
+      k.setBuchungsartId(getSelectedBuchungsArtId());
       k.setKommentar((String) getKommentar().getValue());
       k.setAnlagenkonto((Boolean) getAnlagenkonto().getValue());
       if (getHibiscusId().getValue() == null)
@@ -261,9 +261,9 @@ public class KontoControl extends AbstractControl
             .getValue();
         k.setHibiscusId(Integer.parseInt(hkto.getID()));
       }
-      k.setAnlagenart(getSelectedAnlagenartId());
-      k.setAnlagenklasse(getSelectedAnlagenklasseId());
-      k.setAfaart(getSelectedAfaartId());
+      k.setAnlagenartId(getSelectedAnlagenartId());
+      k.setAnlagenklasseId(getSelectedAnlagenklasseId());
+      k.setAfaartId(getSelectedAfaartId());
       k.setBetrag((Double) getBetrag().getValue());
       k.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
       k.setAnschaffung((Date) getAnschaffung().getValue());
@@ -325,9 +325,9 @@ public class KontoControl extends AbstractControl
         return "nein";
       }
     }, false, Column.ALIGN_LEFT);
-    kontenList.addColumn("Konto-Eröffnung", "eroeffnung",
+    kontenList.addColumn("Eröffnungsdatum", "eroeffnung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    kontenList.addColumn("Konto-Auflösung", "aufloesung",
+    kontenList.addColumn("Auflösungsdatum", "aufloesung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart", 
         new BuchungsartFormatter());

@@ -430,15 +430,15 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   }
 
   @Override
-  public Long getAbschlussID() throws RemoteException
+  public Long getAbschlussId() throws RemoteException
   {
-    return (Long) getAttribute("abschluss");
+    return (Long) super.getAttribute("abschluss");
   }
 
   @Override
-  public void setAbschlussID(Long abschlussID) throws RemoteException
+  public void setAbschlussId(Long abschlussId) throws RemoteException
   {
-    setAttribute("abschluss", abschlussID);
+    setAttribute("abschluss", abschlussId);
   }
 
   @Override
