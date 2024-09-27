@@ -70,7 +70,7 @@ public class BuchungsTextKorrekturControl extends AbstractControl {
 		// Buchungen holen
 		query = new BuchungsKorrekturQuery();
 		if (buchungsList == null) {
-			buchungsList = new TablePart(query.get(), null);
+			buchungsList = new TablePart(query.get(), new BuchungAction(false));
 			buchungsList.addColumn("Nr", "id-int");
 			buchungsList.addColumn("S", "splitid", new Formatter() {
 				@Override
