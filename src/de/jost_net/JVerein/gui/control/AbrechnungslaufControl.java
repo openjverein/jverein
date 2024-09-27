@@ -371,7 +371,7 @@ public class AbrechnungslaufControl extends FilterControl
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       abrechnungslaufList.addColumn("Stichtag", "stichtag",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      abrechnungslaufList.addColumn("Eingabedatum", "eingabedatum",
+      abrechnungslaufList.addColumn("Eintrittsdatum", "eingabedatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       abrechnungslaufList.addColumn("Austrittsdatum", "austrittsdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
