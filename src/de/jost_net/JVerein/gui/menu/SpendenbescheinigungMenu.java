@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungDeleteAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungDuplizierenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungEmailAction;
@@ -39,6 +40,8 @@ public class SpendenbescheinigungMenu extends ContextMenu
    */
   public SpendenbescheinigungMenu()
   {
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new SpendenbescheinigungAction(0), "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("PDF (Standard)",
         new SpendenbescheinigungPrintAction(true, false), "file-pdf.png"));
     addItem(new CheckedContextMenuItem("PDF (Standard, Mit Adressblatt)",

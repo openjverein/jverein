@@ -16,9 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import de.jost_net.JVerein.gui.action.MitgliedstypAction;
 import de.jost_net.JVerein.gui.action.MitgliedstypDeleteAction;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 /**
  * Kontext-Menu zu den Mitgliedstypen.
@@ -31,6 +33,8 @@ public class MitgliedstypMenu extends ContextMenu
    */
   public MitgliedstypMenu()
   {
+    addItem(new ContextMenuItem("Bearbeiten", new MitgliedstypAction(),
+        "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new MitgliedstypDeleteAction(), "user-trash-full.png"));
   }

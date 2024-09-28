@@ -16,9 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.action.AnfangsbestandDeleteAction;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.jost_net.JVerein.gui.action.AnfangsbestandDetailAction;
+import de.jost_net.JVerein.rmi.Anfangsbestand;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.logging.Logger;
 
 /**
  * Kontext-Menu zu den Anfangsbeständen.
@@ -31,7 +37,35 @@ public class AnfangsbestandMenu extends ContextMenu
    */
   public AnfangsbestandMenu()
   {
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new SingleAnfangsbestandItem("Bearbeiten", new AnfangsbestandDetailAction(),
+        "text-x-generic.png"));
+    addItem(new SingleAnfangsbestandItem("Löschen",
         new AnfangsbestandDeleteAction(), "user-trash-full.png"));
+  }
+  
+  private static class SingleAnfangsbestandItem extends CheckedSingleContextMenuItem
+  {
+    private SingleAnfangsbestandItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof Anfangsbestand)
+      {
+        Anfangsbestand a = (Anfangsbestand) o;
+        try
+        {
+          return a.getJahresabschluss() == null;
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+      return false;
+    }
   }
 }

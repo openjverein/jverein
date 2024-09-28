@@ -17,7 +17,9 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.MailVorlageDeleteAction;
+import de.jost_net.JVerein.gui.action.MailVorlageDetailAction;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
@@ -28,6 +30,8 @@ public class MailVorlageMenu extends ContextMenu
 
   public MailVorlageMenu()
   {
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new MailVorlageDetailAction(),
+        "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new MailVorlageDeleteAction(), "user-trash-full.png"));
   }

@@ -25,7 +25,6 @@ import de.jost_net.JVerein.gui.action.BuchungDuplizierenAction;
 import de.jost_net.JVerein.gui.action.BuchungGegenbuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
@@ -37,7 +36,6 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.logging.Logger;
 
 /**
@@ -51,8 +49,6 @@ public class BuchungMenu extends ContextMenu
 
   public BuchungMenu(BuchungsControl control)
   {
-    addItem(new ContextMenuItem("Neue Buchung", new BuchungNeuAction(),
-        "document-new.png"));
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new BuchungAction(false), "text-x-generic.png"));
     addItem(new SingleBuchungItem("Duplizieren", new BuchungDuplizierenAction(),
