@@ -18,9 +18,7 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.FreiesFormularAction;
-import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -32,12 +30,8 @@ import de.willuhn.jameica.gui.parts.ContextMenu;
 public class FreieFormulareMenu extends ContextMenu
 {
 
-  public FreieFormulareMenu() throws RemoteException
+  public FreieFormulareMenu(DBIterator<Formular> it) throws RemoteException
   {
-    DBIterator<Formular> it = Einstellungen.getDBService()
-        .createList(Formular.class);
-    it.addFilter("art = ?",
-        new Object[] { FormularArt.FREIESFORMULAR.getKey() });
     while (it.hasNext())
     {
       Formular f = (Formular) it.next();

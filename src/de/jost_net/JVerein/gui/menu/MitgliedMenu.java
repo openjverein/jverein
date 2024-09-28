@@ -214,7 +214,7 @@ public class MitgliedMenu extends ContextMenu
     if (it.hasNext())
     {
       addItem(ContextMenuItem.SEPARATOR);
-      ContextMenu freieformularemenu = new FreieFormulareMenu();
+      ContextMenu freieformularemenu = new FreieFormulareMenu(it);
       freieformularemenu.setText("Freie Formulare");
       addMenu(freieformularemenu);
     }
