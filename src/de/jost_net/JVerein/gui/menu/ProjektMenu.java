@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.menu;
 import de.jost_net.JVerein.gui.action.ProjektAction;
 import de.jost_net.JVerein.gui.action.ProjektDeleteAction;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
@@ -33,7 +34,7 @@ public class ProjektMenu extends ContextMenu
    */
   public ProjektMenu()
   {
-    addItem(new ContextMenuItem("Bearbeiten", new ProjektAction(),
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new ProjektAction(),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen", new ProjektDeleteAction(),
         "user-trash-full.png"));
