@@ -18,8 +18,6 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.KursteilnehmerDeleteAction;
-import de.jost_net.JVerein.gui.action.KursteilnehmerDetailAction;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -72,10 +70,6 @@ public class KursteilnehmerDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
-    buttons.addButton("Neu", new KursteilnehmerDetailAction(), null, false,
-        "document-new.png");
-    buttons.addButton("Löschen", new KursteilnehmerDeleteAction(),
-        control.getCurrentObject(), false, "user-trash-full.png");
     buttons.addButton("Speichern", new Action()
     {
 
