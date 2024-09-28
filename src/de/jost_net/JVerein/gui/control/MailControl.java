@@ -395,7 +395,7 @@ public class MailControl extends FilterControl
       {
         handleStore(false);
       }
-    }, null, true, "envelope-open.png");
+    }, null, true, "document-save.png");
     return b;
   }
 

@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
@@ -45,13 +44,8 @@ public class BuchungView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
-    if (control.getBuchung().getSpeicherung())
-    {
-      buttons.addButton("Neu", new BuchungNeuAction(), null, false,
-          "document-new.png");
-    }
     Button saveButton = null;
-    if (control.getBuchung().getSplitTyp() != null)
+    if (!control.getBuchung().getSpeicherung())
     {
       saveButton = new Button("Speichern", new Action()
       {
