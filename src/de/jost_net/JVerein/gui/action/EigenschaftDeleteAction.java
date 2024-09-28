@@ -25,6 +25,7 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.SimpleDialog;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -77,6 +78,20 @@ public class EigenschaftDeleteAction implements Action
         return;
       }
 
+      try
+      {
+        YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+        dialog.setTitle("Eigenschaft löschen");
+        dialog.setText("Wollen Sie diese Eigenschaft wirklich löschen?");
+        Boolean choice = (Boolean) dialog.open();
+        if (!choice.booleanValue())
+          return;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Löschen der Eigenschaft", e);
+        return;
+      }
       ei.delete();
       GUI.getStatusBar().setSuccessText("Eigenschaft gelöscht.");
     }

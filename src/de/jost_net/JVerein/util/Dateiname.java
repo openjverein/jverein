@@ -174,6 +174,7 @@ public class Dateiname
                                         // zur Kompatibilität benötigt.
       ret = ret.replace("n$", mitgliedName);
       ret = ret.replace("v$", mitgliedVorname);
+      ret = ret.replace("/", " ");
       return ret + "." + extension;
     }
     return "";

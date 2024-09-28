@@ -37,6 +37,7 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -275,6 +276,10 @@ public class LesefeldDetailView extends AbstractView implements Listener
         d.setContextMenu(menu);
         d.setDoubleClickAction(menu.getCopyToClipboardAction());
         d.open();
+      }
+      catch (OperationCanceledException e)
+      {
+        
       }
       catch (Exception e)
       {

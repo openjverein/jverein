@@ -44,7 +44,7 @@ public interface Abrechnungslauf extends DBObject
 
   public void setStichtag(Date stichtag) throws RemoteException;
 
-  public Date getEingabedatum() throws RemoteException;
+  public Date getEintrittsdatum() throws RemoteException;
 
   public void setEingabedatum(Date eingabedatum) throws RemoteException;
 
