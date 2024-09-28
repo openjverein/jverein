@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.WiedervorlageAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageDeleteAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageErledigungAction;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -37,6 +38,8 @@ public class WiedervorlageMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten", new WiedervorlageAction(null),
         "text-x-generic.png"));
+    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+        new MitgliedDetailAction(), "user-friends.png"));
     addItem(new CheckedContextMenuItem("Erledigt",
         new WiedervorlageErledigungAction(table), "check.png"));
     addItem(new CheckedContextMenuItem("Löschen",
