@@ -40,7 +40,7 @@ public class KursteilnehmerMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Abbuchungsdatum löschen",
         new KursteilnehmerAbuResetAction(table), "user-trash-full.png"));
-    addItem(new CheckedContextMenuItem("Zu Mitglied umwandeln",
+    addItem(new CheckedContextMenuItem("Zu Mitglied übernehmen",
         new KursteilnehmerWirdMitgliedAction(), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new KursteilnehmerDeleteAction(), "user-trash-full.png"));
