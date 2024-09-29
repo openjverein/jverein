@@ -104,7 +104,7 @@ public class CSVFileHelper
       if (!headerComplete)
       {
         monitor.setStatusText(
-            "Keine Daten oder keine Kopfzeile oder Encoding falsch. Siehe "+DokumentationUtil.IMPORT);
+            "Keine Daten oder keine Kopfzeile oder Encoding falsch. Siehe "+DokumentationUtil.MITGRATION);
         valid = false;
       }
 
