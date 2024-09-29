@@ -57,6 +57,8 @@ public class MitgliedArbeitseinsatzZuordnungAction implements Action
     try
     {
       Arbeitseinsatz part = maz.open();
+      if(part == null)
+        return;
       int count = 0;
       for (Mitglied mit : m)
       {
