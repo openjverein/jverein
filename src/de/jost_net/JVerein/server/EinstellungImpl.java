@@ -21,6 +21,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import de.jost_net.JVerein.util.VonBis;
+import de.jost_net.OBanToo.SEPA.IBAN;
+import de.jost_net.OBanToo.SEPA.SEPAException;
+
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -151,6 +154,17 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
       catch (RuntimeException e)
       {
         throw new ApplicationException(e.getMessage().replace("\n", " "));
+      }
+      if(getIban() != null)
+      {
+        try
+        {
+          new IBAN(getIban());
+        }
+        catch (SEPAException e)
+        {
+          throw new ApplicationException(e.getMessage());
+        }
       }
       
       if (getDokumentenspeicherung())

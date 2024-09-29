@@ -459,10 +459,13 @@ public class AbrechnungSEPA
         zahler.setPersonTyp(JVereinZahlerTyp.MITGLIED);
         zahler.setBetrag(
             BigDecimal.valueOf(betr).setScale(2, RoundingMode.HALF_UP));
-        new BIC(mZahler.getBic()); // Prüfung des BIC
-        zahler.setBic(mZahler.getBic());
-        new IBAN(mZahler.getIban()); // Prüfung der IBAN
+        IBAN i = new IBAN(mZahler.getIban()); // Prüfung der IBAN
         zahler.setIban(mZahler.getIban());
+        //Wenn BIC nicht vorhanden versuchen sie automatisch zu ermitteln
+        if(mZahler.getBic() == null || mZahler.getBic().length() == 0)
+          zahler.setBic(i.getBIC());
+        else zahler.setBic(mZahler.getBic());
+        new BIC(zahler.getBic()); // Prüfung des BIC
         zahler.setMandatid(mZahler.getMandatID());
         zahler.setMandatdatum(mZahler.getMandatDatum());
         zahler.setMandatsequence(MandatSequence.RCUR);
