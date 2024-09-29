@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.willuhn.jameica.gui.AbstractView;
@@ -43,6 +44,8 @@ public class ZusatzbetragView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
+    buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
+        null, false, "clone.png");
     buttons.addButton("Speichern", new Action()
     {
 
