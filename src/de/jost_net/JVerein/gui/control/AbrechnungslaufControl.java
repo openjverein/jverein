@@ -224,8 +224,8 @@ public class AbrechnungslaufControl extends FilterControl
   public LabelInput getStatistikBuchungen() throws RemoteException
   {
     // Summe und Anzahl der Buchungen. Es gibt einen weiterer Datensatz
-    // wo die Buchungsart NULL ist, es handelt sich um die Gegenbuchung
-    // mit umgekehrten Vorzeichen.
+    // wo  wo der name "JVerein" und der zweck "Gegenbuchung" ist,
+    // es handelt sich um die Gegenbuchung mit umgekehrten Vorzeichen.
 
     if (statistikbuchungen != null)
     {
@@ -255,7 +255,7 @@ public class AbrechnungslaufControl extends FilterControl
     };
 
     String sql = "SELECT SUM(betrag), COUNT(id) " + "FROM buchung "
-        + "WHERE abrechnungslauf=? AND buchungsart IS NOT NULL";
+        + "WHERE abrechnungslauf=? AND (name != 'JVerein' or zweck != 'Gegenbuchung')";
     StatData data = (StatData) Einstellungen.getDBService().execute(sql,
         new Object[] { getAbrechnungslaeufe().getID() }, rs);
 
