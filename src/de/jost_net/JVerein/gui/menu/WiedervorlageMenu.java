@@ -16,14 +16,20 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.WiedervorlageAction;
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.WiedervorlageAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageDeleteAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageErledigungAction;
+import de.jost_net.JVerein.gui.action.WiedervorlageErledigungDeleteAction;
+import de.jost_net.JVerein.rmi.Wiedervorlage;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.logging.Logger;
 
 /**
  * Kontext-Menu zu den Wiedervorlagen.
@@ -40,9 +46,63 @@ public class WiedervorlageMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
-    addItem(new CheckedContextMenuItem("Erledigt",
+    addItem(new WiedervorlageNichtErledigtItem("Erledigung setzen",
         new WiedervorlageErledigungAction(table), "check.png"));
+    addItem(new WiedervorlageErledigtItem("Erledigung löschen",
+        new WiedervorlageErledigungDeleteAction(table), "user-trash-full.png"));
     addItem(new CheckedContextMenuItem("Löschen",
-        new WiedervorlageDeleteAction(), "user-trash-full.png"));
+        new WiedervorlageDeleteAction(), "list-remove.png"));
+  }
+  
+  private static class WiedervorlageErledigtItem extends CheckedSingleContextMenuItem
+  {
+    private WiedervorlageErledigtItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof Wiedervorlage)
+      {
+        Wiedervorlage w = (Wiedervorlage) o;
+        try
+        {
+          return w.getErledigung() != null;
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+      return false;
+    }
+  }
+  
+  private static class WiedervorlageNichtErledigtItem extends CheckedSingleContextMenuItem
+  {
+    private WiedervorlageNichtErledigtItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof Wiedervorlage)
+      {
+        Wiedervorlage w = (Wiedervorlage) o;
+        try
+        {
+          return w.getErledigung() == null;
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+      return false;
+    }
   }
 }
