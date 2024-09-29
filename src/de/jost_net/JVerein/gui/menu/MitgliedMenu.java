@@ -79,7 +79,7 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedInZwischenablageKopierenAction(), "edit-copy.png"));
     if (detailaction instanceof NichtMitgliedDetailAction)
     {
-      addItem(new CheckedContextMenuItem("Zu Mitglied umwandeln", new Action()
+      addItem(new CheckedSingleContextMenuItem("Zu Mitglied umwandeln", new Action()
       {
 
         @Override
@@ -115,7 +115,7 @@ public class MitgliedMenu extends ContextMenu
     }
     else
     {
-      addItem(new CheckedContextMenuItem("Zu Nicht-Mitglied umwandeln", new Action()
+      addItem(new CheckedSingleContextMenuItem("Zu Nicht-Mitglied umwandeln", new Action()
       {
 
         @Override
