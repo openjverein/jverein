@@ -72,7 +72,7 @@ public class MitgliedArbeitseinsatzZuordnungAction implements Action
         count++;
       }
       GUI.getStatusBar().setSuccessText(
-          String.format("%d Zusatzbeträge gespeichert.", count));
+          String.format("%d Arbeitseinsätze gespeichert.", count));
     }
     catch (ApplicationException e)
     {

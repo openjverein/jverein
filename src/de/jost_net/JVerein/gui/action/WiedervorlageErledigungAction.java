@@ -22,7 +22,6 @@ import java.util.Date;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -57,33 +56,15 @@ public class WiedervorlageErledigungAction implements Action
       if (w.getErledigung() == null)
       {
         w.setErledigung(new Date());
+        int ind = table.removeItem(w);
+        w.store();
+        table.addItem(w, ind);
+        GUI.getStatusBar().setSuccessText("Erledigungsdatum gesetzt.");
       }
-      else
-      {
-        YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-        d.setTitle("Wiedervorlage");
-        d.setText("Wollen Sie das Erledigungsdatum der Wiedervorlage wirklich entfernen?");
-        try
-        {
-          Boolean choice = (Boolean) d.open();
-          if (!choice.booleanValue())
-            return;
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler beim entfernen des Erledigungsdatums", e);
-          return;
-        }
-        w.setErledigung(null);
-      }
-      int ind = table.removeItem(w);
-      w.store();
-      table.addItem(w, ind);
-      GUI.getStatusBar().setSuccessText("Erledigungsdatum bearbeitet.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Verändern des Erledigungsdatums.";
+      String fehler = "Fehler beim setzen des Erledigungsdatums.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }
