@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.AbrechnungslaufBuchungenAction;
+import de.jost_net.JVerein.gui.action.AbrechnungslaufDetailAction;
 import de.jost_net.JVerein.gui.formatter.AbrechnungsmodusFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.AbrechnungslaufMenu;
@@ -361,7 +361,7 @@ public class AbrechnungslaufControl extends FilterControl
     if (abrechnungslaufList == null)
     {
       abrechnungslaufList = new TablePart(abrechnungslaeufe,
-          new AbrechnungslaufBuchungenAction());
+          new AbrechnungslaufDetailAction());
       abrechnungslaufList.addColumn("Nr", "nr");
       abrechnungslaufList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
