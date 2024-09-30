@@ -553,7 +553,8 @@ public class MitgliedControl extends FilterControl
     {
       return geschlecht;
     }
-    geschlecht = new GeschlechtInput(getMitglied().getGeschlecht());
+    String g = getMitglied().getGeschlecht();
+    geschlecht = new GeschlechtInput(g==null?"o":getMitglied().getGeschlecht());
     geschlecht.setName("Geschlecht");
     geschlecht.setPleaseChoose("Bitte auswählen");
     geschlecht.setMandatory(true);
