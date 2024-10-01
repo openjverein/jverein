@@ -3,6 +3,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.input.FormularInput;
+import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.Ausgabesortierung;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -126,9 +127,8 @@ public class DruckMailControl extends FilterControl
     {
       return adressblatt;
     }
-    adressblatt = new SelectInput( 
-        new String[] { "Ohne", "Mit" },
-        settings.getString(settingsprefix + "adressblatt", "Ohne"));
+    adressblatt = new SelectInput( Adressblatt.values(),
+        Adressblatt.getByKey(settings.getInt(settingsprefix + "adressblatt", 1)));
     adressblatt.setName("Adressblatt");
     return adressblatt;
   }
@@ -200,8 +200,8 @@ public class DruckMailControl extends FilterControl
     }
     if (adressblatt != null)
     {
-      String ab = (String) getAdressblatt().getValue();
-      settings.setAttribute(settingsprefix + "adressblatt", ab);
+      Adressblatt ab = (Adressblatt) getAdressblatt().getValue();
+      settings.setAttribute(settingsprefix + "adressblatt", ab.getKey());
     }
     if (ausgabesortierung != null)
     {
