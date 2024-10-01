@@ -46,7 +46,7 @@ public class FormularDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
-    buttons.addButton("Forularfelder", new FormularfelderListeAction(),
+    buttons.addButton("Formularfelder", new FormularfelderListeAction(),
         control.getFormular(), true, "file-invoice.png");
     buttons.addButton("Speichern", new Action()
     {
