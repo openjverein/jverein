@@ -224,8 +224,8 @@ public class AbrechnungslaufControl extends FilterControl
   public LabelInput getStatistikBuchungen() throws RemoteException
   {
     // Summe und Anzahl der Buchungen. Es gibt einen weiterer Datensatz
-    // wo  wo der name "JVerein" und der zweck "Gegenbuchung" ist,
-    // es handelt sich um die Gegenbuchung mit umgekehrten Vorzeichen.
+    // bei dem der Name "JVerein" und der Zweck "Gegenbuchung" ist.
+    // Es handelt sich um die Gegenbuchung mit umgekehrten Vorzeichen.
 
     if (statistikbuchungen != null)
     {
