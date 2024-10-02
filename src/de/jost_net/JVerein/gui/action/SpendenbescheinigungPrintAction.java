@@ -1460,16 +1460,24 @@ public class SpendenbescheinigungPrintAction implements Action
       // Anschreiben
       rpt.add("\n\n\n", 12);
       Mitglied m = spb.getMitglied();
-      VelocityContext context = new VelocityContext();
-      context.put("dateformat", new JVDateFormatTTMMJJJJ());
-      context.put("decimalformat", Einstellungen.DECIMALFORMAT);
-      context.put("email", m.getEmail());
-      Map<String, Object> mmap = new MitgliedMap().getMap(m, null);
-      mmap = new AllgemeineMap().getMap(mmap);
-      VarTools.add(context, mmap);
-      StringWriter wtext = new StringWriter();
-      Velocity.evaluate(context, wtext, "LOG", text);
-      rpt.addLight(wtext.getBuffer().toString(), 10);
+      if (m != null)
+      {
+        VelocityContext context = new VelocityContext();
+        context.put("dateformat", new JVDateFormatTTMMJJJJ());
+        context.put("decimalformat", Einstellungen.DECIMALFORMAT);
+        if (m.getEmail() != null)
+          context.put("email", m.getEmail());
+        Map<String, Object> mmap = new MitgliedMap().getMap(m, null);
+        mmap = new AllgemeineMap().getMap(mmap);
+        VarTools.add(context, mmap);
+        StringWriter wtext = new StringWriter();
+        Velocity.evaluate(context, wtext, "LOG", text);
+        rpt.addLight(wtext.getBuffer().toString(), 10);
+      }
+      else
+      {
+        rpt.addLight(text, 10);
+      }
     }
     
     rpt.close();

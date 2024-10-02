@@ -553,18 +553,26 @@ public class FormularAufbereitung
     {
       doc.add(new Paragraph("\n\n\n",  Reporter.getFreeSans(12)));
       Mitglied m = spb.getMitglied();
-      VelocityContext context = new VelocityContext();
-      context.put("dateformat", new JVDateFormatTTMMJJJJ());
-      context.put("decimalformat", Einstellungen.DECIMALFORMAT);
-      context.put("email", m.getEmail());
-      Map<String, Object> mmap = new MitgliedMap().getMap(m, null);
-      mmap = new AllgemeineMap().getMap(mmap);
-      VarTools.add(context, mmap);
-      StringWriter wtext = new StringWriter();
-      Velocity.evaluate(context, wtext, "LOG", text);
-      Paragraph p = new Paragraph(
-          new Paragraph(wtext.getBuffer().toString(), Reporter.getFreeSans(10)));
-      p.setIndentationLeft(40);;
+      Paragraph p = null;
+      if (m != null)
+      {
+        VelocityContext context = new VelocityContext();
+        context.put("dateformat", new JVDateFormatTTMMJJJJ());
+        context.put("decimalformat", Einstellungen.DECIMALFORMAT);
+        if (m.getEmail() != null)
+          context.put("email", m.getEmail());
+        Map<String, Object> mmap = new MitgliedMap().getMap(m, null);
+        mmap = new AllgemeineMap().getMap(mmap);
+        VarTools.add(context, mmap);
+        StringWriter wtext = new StringWriter();
+        Velocity.evaluate(context, wtext, "LOG", text);
+        p = new Paragraph(wtext.getBuffer().toString(), Reporter.getFreeSans(10));
+      }
+      else
+      {
+        p = new Paragraph(text, Reporter.getFreeSans(10));
+      }
+      p.setIndentationLeft(40);
       doc.add(p);
     }
     catch (DocumentException e)
