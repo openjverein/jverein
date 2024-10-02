@@ -74,7 +74,7 @@ public class SpendenbescheinigungMailView extends AbstractView
     cont2.addInput(control.getAdressblatt());
     
     SimpleContainer cont = new SimpleContainer(getParent(), true);
-    cont.addHeadline("Mail");
+    cont.addHeadline("Mail / Anschreiben");
     cont.addInput(control.getBetreff());
     cont.addInput(control.getTxt());
 
