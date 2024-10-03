@@ -22,7 +22,6 @@ import org.eclipse.swt.SWT;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.FreiesFormularAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
@@ -79,7 +78,7 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedInZwischenablageKopierenAction(), "edit-copy.png"));
     if (detailaction instanceof NichtMitgliedDetailAction)
     {
-      addItem(new CheckedContextMenuItem("Zu Mitglied umwandeln", new Action()
+      addItem(new CheckedSingleContextMenuItem("Zu Mitglied umwandeln", new Action()
       {
 
         @Override
@@ -111,11 +110,11 @@ public class MitgliedMenu extends ContextMenu
             throw new ApplicationException(e);
           }
         }
-      }, "arrows-alt-h.png"));
+      }, "view-refresh.png"));
     }
     else
     {
-      addItem(new CheckedContextMenuItem("Zu Nicht-Mitglied umwandeln", new Action()
+      addItem(new CheckedSingleContextMenuItem("Zu Nicht-Mitglied umwandeln", new Action()
       {
 
         @Override
@@ -170,7 +169,7 @@ public class MitgliedMenu extends ContextMenu
             throw new ApplicationException(e);
           }
         }
-      }, "arrows-alt-h.png"));
+      }, "view-refresh.png"));
     }
     if (detailaction instanceof NichtMitgliedDetailAction)
     {
@@ -191,7 +190,7 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedVCardQRCodeAction(), "qr-code.png"));
     addItem(new CheckedContextMenuItem("Eigenschaften",
         new MitgliedEigenschaftZuordnungAction(), "document-properties.png"));
-    if (Einstellungen.getEinstellung().getArbeitseinsatz())
+    if (Einstellungen.getEinstellung().getArbeitseinsatz() && !(detailaction instanceof NichtMitgliedDetailAction))
     {
       addItem(new CheckedContextMenuItem("Arbeitseinsätze zuweisen",
           new MitgliedArbeitseinsatzZuordnungAction(), "screwdriver.png"));
@@ -212,11 +211,12 @@ public class MitgliedMenu extends ContextMenu
         .createList(Formular.class);
     it.addFilter("art = ?",
         new Object[] { FormularArt.FREIESFORMULAR.getKey() });
-    while (it.hasNext())
+    if (it.hasNext())
     {
-      Formular f = (Formular) it.next();
-      addItem(new CheckedContextMenuItem(f.getBezeichnung(),
-          new FreiesFormularAction(f.getID()), "file-invoice.png"));
+      addItem(ContextMenuItem.SEPARATOR);
+      ContextMenu freieformularemenu = new FreieFormulareMenu(it);
+      freieformularemenu.setText("Freie Formulare");
+      addMenu(freieformularemenu);
     }
   }
 }

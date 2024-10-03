@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import de.jost_net.JVerein.gui.action.FormularAction;
 import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
 import de.jost_net.JVerein.gui.action.FormularDeleteAction;
 import de.jost_net.JVerein.gui.action.FormularDuplizierenAction;
@@ -37,6 +38,8 @@ public class FormularMenu extends ContextMenu
    */
   public FormularMenu(FormularControl control)
   {
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new FormularAction(),
+        "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Formularfelder",
         new FormularfelderListeAction(), "file-invoice.png"));
     addItem(new CheckedContextMenuItem("Anzeigen", new FormularAnzeigeAction(),

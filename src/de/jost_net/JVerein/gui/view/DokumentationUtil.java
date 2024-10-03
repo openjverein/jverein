@@ -167,8 +167,6 @@ public class DokumentationUtil
 
   public static final String FORMULARE = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER + "formulare";
 
-  public static final String IMPORT = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER + "import";
-
   public static final String LEHRGANGARTEN = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER  + "lehrgange";
 
   public static final String LESEFELDER = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER + "lesefelder";
@@ -186,9 +184,11 @@ public class DokumentationUtil
 
   public static final String PROJEKTE = PRE + FUNKTIONEN + ADMIN + ADMBUCHF + "projekte";
 
-  public static final String QIFIMPORT = PRE + FUNKTIONEN + ADMIN + ADMBUCHF + "qif-import";
-
 
   // Einstellungen Erweitert
   public static final String BEREINIGEN = PRE + FUNKTIONEN + ADMIN + ADMERWEITERT + "bereinigen";  
+  
+  public static final String MITGRATION = PRE + FUNKTIONEN + ADMIN + ADMERWEITERT + "migration";
+  
+  public static final String QIFIMPORT = PRE + FUNKTIONEN + ADMIN + ADMERWEITERT + "qif-import";
 }

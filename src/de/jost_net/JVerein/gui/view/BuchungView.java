@@ -16,11 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.io.SplitbuchungsContainer;
+import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.gui.parts.BuchungPart;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -42,14 +45,62 @@ public class BuchungView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
-    if (control.getBuchung().getSpeicherung())
+    Button saveButton = null;
+    if (!control.getBuchung().getSpeicherung())
     {
-      buttons.addButton("Neu", new BuchungNeuAction(), null, false, "document-new.png");
+      saveButton = new Button("Speichern", new Action()
+      {
+        @Override
+        public void handleAction(Object context)
+        {
+          try
+          {
+            control.getBuchungSpeichernAction().handleAction(context);
+            GUI.startView(SplitBuchungView.class.getName(),
+                SplitbuchungsContainer.getMaster());
+          }
+          catch (Exception e)
+          {
+            GUI.getStatusBar().setErrorText(e.getMessage());
+          }
+        }
+      }, null, true, "document-save.png");
+      saveButton.setEnabled(!buchungabgeschlossen);
+      buttons.addButton(saveButton);
+
+      Button saveNextButton = new Button("Speichern und nächste", new Action()
+      {
+        @Override
+        public void handleAction(Object context)
+        {
+          try
+          {
+            control.getBuchungSpeichernAction().handleAction(context);
+            if (Math.abs(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT)
+                .doubleValue()
+                - SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT)
+                    .doubleValue()) >= .01d)
+              new SplitbuchungNeuAction().handleAction(context);
+            else
+              GUI.startView(SplitBuchungView.class.getName(),
+                  SplitbuchungsContainer.getMaster());
+          }
+          catch (Exception e)
+          {
+            GUI.getStatusBar().setErrorText(e.getMessage());
+          }
+        }
+      }, null, true, "go-next.png");
+      saveNextButton.setEnabled(!buchungabgeschlossen);
+      buttons.addButton(saveNextButton);
     }
-    Button savButton = new Button("Speichern",
-        control.getBuchungSpeichernAction(), null, true, "document-save.png");
-    savButton.setEnabled(!buchungabgeschlossen);
-    buttons.addButton(savButton);
+    else
+    {
+      saveButton = new Button("Speichern", control.getBuchungSpeichernAction(),
+          null, true, "document-save.png");
+      saveButton.setEnabled(!buchungabgeschlossen);
+      buttons.addButton(saveButton);
+    }
     buttons.paint(getParent());
   }
 }

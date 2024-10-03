@@ -16,26 +16,27 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.FelddefinitionDeleteAction;
-import de.jost_net.JVerein.gui.action.FelddefinitionDetailAction;
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.gui.action.FreiesFormularAction;
+import de.jost_net.JVerein.rmi.Formular;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
-import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
- * Kontext-Menu zu den Felddefinitionen.
+ * Kontext-Menu zu den Mails.
  */
-public class FelddefinitionMenu extends ContextMenu
+public class FreieFormulareMenu extends ContextMenu
 {
 
-  /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Beitragsgruppen.
-   */
-  public FelddefinitionMenu()
+  public FreieFormulareMenu(DBIterator<Formular> it) throws RemoteException
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new FelddefinitionDetailAction(),
-        "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new FelddefinitionDeleteAction(), "user-trash-full.png"));
+    while (it.hasNext())
+    {
+      Formular f = (Formular) it.next();
+      addItem(new CheckedContextMenuItem(f.getBezeichnung(),
+          new FreiesFormularAction(f.getID()), "file-invoice.png"));
+    }
   }
 }

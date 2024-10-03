@@ -28,12 +28,8 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
-import de.jost_net.JVerein.gui.action.NichtMitgliedDeleteAction;
-import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
-import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
-import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedMailSendenAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
@@ -207,15 +203,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
     }
     buttons.addButton("Mail", new MitgliedMailSendenAction(),
         getCurrentObject(), false, "envelope-open.png");
-    // buttons.addButton("neue Mail", new MailDetailAction(),
-    // control.getCurrentObject(), false, "document-new.png");
-    buttons.addButton("Neu", (isMitgliedDetail() ? new MitgliedDetailAction()
-        : new NichtMitgliedDetailAction()), null, false, "document-new.png");
-
-    buttons.addButton("Löschen",
-        (isMitgliedDetail() ? new MitgliedDeleteAction()
-            : new NichtMitgliedDeleteAction()),
-        control.getCurrentObject(), false, "user-trash-full.png");
     buttons.addButton("Speichern", new Action()
     {
 

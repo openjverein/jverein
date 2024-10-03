@@ -100,6 +100,7 @@ public class VonBisPart implements Part
             calendar.add(Calendar.DAY_OF_MONTH, -1);
             control.getSuchDatumbis().setValue(calendar.getTime());
           }
+          refresh();
         }
       }, null, false, "go-previous.png");
       buttons.addButton(zurueck);
@@ -135,6 +136,7 @@ public class VonBisPart implements Part
             calendar.add(Calendar.DAY_OF_MONTH, -1);
             control.getSuchDatumbis().setValue(calendar.getTime());
           }
+          refresh();
         }
       }, null, false, "go-next.png");
       buttons.addButton(vor);
@@ -144,24 +146,29 @@ public class VonBisPart implements Part
         @Override
         public void handleAction(Object context) throws ApplicationException
         {
-          checkDate();
-          control.getDatumvon().setDate((Date) control.getSuchDatumvon().getValue());
-          control.getDatumbis().setDate((Date) control.getSuchDatumbis().getValue());
-          Integer year = control.isGeschaeftsjahr();
-          if (year != 0)
-          {
-            control.getGeschaeftsjahr().setValue(year.toString());
-          }
-          else
-          {
-            control.getGeschaeftsjahr().setValue("");
-          }
-          control.getSaldoList();
+          refresh();
         }
       }, null, true, "search.png");
       buttons.addButton(suchen);
       sgroup.addButtonArea(buttons);
     }
+  }
+  
+  private void refresh() throws ApplicationException
+  {
+    checkDate();
+    control.getDatumvon().setDate((Date) control.getSuchDatumvon().getValue());
+    control.getDatumbis().setDate((Date) control.getSuchDatumbis().getValue());
+    Integer year = control.isGeschaeftsjahr();
+    if (year != 0)
+    {
+      control.getGeschaeftsjahr().setValue(year.toString());
+    }
+    else
+    {
+      control.getGeschaeftsjahr().setValue("");
+    }
+    control.getSaldoList();
   }
 
   private void checkDate() throws ApplicationException

@@ -259,7 +259,7 @@ public class MigrationView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.IMPORT, false, "question-circle.png");
+        DokumentationUtil.MITGRATION, false, "question-circle.png");
 
     /* Import Button */
     de.willuhn.jameica.gui.parts.Button importbt = new de.willuhn.jameica.gui.parts.Button(

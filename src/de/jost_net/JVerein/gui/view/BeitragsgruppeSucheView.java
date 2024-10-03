@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.BeitragsgruppeDeleteAction;
 import de.jost_net.JVerein.gui.action.BeitragsgruppeDetailAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BeitragsgruppeControl;
@@ -39,8 +38,6 @@ public class BeitragsgruppeSucheView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BEITRAGSGRUPPEN, false, "question-circle.png");
-    buttons.addButton("Löschen", new BeitragsgruppeDeleteAction(),
-        control.getBeitragsgruppeTable(), false, "user-trash-full.png");
     buttons.addButton("Neu", new BeitragsgruppeDetailAction(), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
