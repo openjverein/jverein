@@ -16,13 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungDeleteAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungDuplizierenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungEmailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
-import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -39,6 +37,8 @@ public class SpendenbescheinigungMenu extends ContextMenu
    */
   public SpendenbescheinigungMenu()
   {
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new SpendenbescheinigungAction(0), "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("PDF (Standard)",
         new SpendenbescheinigungPrintAction(true, false), "file-pdf.png"));
     addItem(new CheckedContextMenuItem("PDF (Standard, Mit Adressblatt)",
@@ -53,40 +53,8 @@ public class SpendenbescheinigungMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Spendenbescheinigungen versenden",
         new SpendenbescheinigungSendAction(), "envelope-open.png"));
     addItem(ContextMenuItem.SEPARATOR);
-    addItem(new DuplicateMenuItem("Als Vorlage für neue Spende",
-        new SpendenbescheinigungDuplizierenAction(), "edit-copy.png"));
-    addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Löschen",
         new SpendenbescheinigungDeleteAction(), "user-trash-full.png"));
-  }
-
-  private static class DuplicateMenuItem extends CheckedContextMenuItem
-  {
-
-    /**
-     * @param text
-     * @param action
-     * @param icon
-     *          Optionale Angabe eines Icons.
-     */
-    private DuplicateMenuItem(String text, Action action, String icon)
-    {
-      super(text, action, icon);
-    }
-
-    @Override
-    public boolean isEnabledFor(Object o)
-    {
-      if (o instanceof Spendenbescheinigung)
-      {
-        return true;
-      }
-      if (o instanceof Spendenbescheinigung[])
-      {
-        return false;
-      }
-      return super.isEnabledFor(o);
-    }
   }
 
 }

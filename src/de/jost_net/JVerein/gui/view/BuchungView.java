@@ -22,6 +22,7 @@ import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
+import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.gui.parts.BuchungPart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.AbstractView;
@@ -59,7 +60,7 @@ public class BuchungView extends AbstractView
       buttons.addButton("Neu", new BuchungNeuAction(control), null, false, "document-new.png");
     }
     Button saveButton = null;
-    if (control.getBuchung().getSplitTyp() != null)
+    if (!control.getBuchung().getSpeicherung())
     {
       saveButton = new Button("Speichern", new Action()
       {
@@ -69,7 +70,8 @@ public class BuchungView extends AbstractView
           try
           {
             control.getBuchungSpeichernAction().handleAction(context);
-            GUI.startView(SplitBuchungView.class.getName(), SplitbuchungsContainer.getMaster());
+            GUI.startView(SplitBuchungView.class.getName(),
+                SplitbuchungsContainer.getMaster());
           }
           catch (Exception e)
           {
@@ -79,7 +81,7 @@ public class BuchungView extends AbstractView
       }, null, true, "document-save.png");
       saveButton.setEnabled(!buchungabgeschlossen);
       buttons.addButton(saveButton);
-      
+
       Button saveNextButton = new Button("Speichern und nächste", new Action()
       {
         @Override
@@ -88,7 +90,14 @@ public class BuchungView extends AbstractView
           try
           {
             control.getBuchungSpeichernAction().handleAction(context);
-            new SplitbuchungNeuAction().handleAction(context);
+            if (Math.abs(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT)
+                .doubleValue()
+                - SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT)
+                    .doubleValue()) >= .01d)
+              new SplitbuchungNeuAction().handleAction(context);
+            else
+              GUI.startView(SplitBuchungView.class.getName(),
+                  SplitbuchungsContainer.getMaster());
           }
           catch (Exception e)
           {

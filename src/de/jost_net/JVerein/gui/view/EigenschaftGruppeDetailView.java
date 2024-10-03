@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.EigenschaftGruppeListeAction;
 import de.jost_net.JVerein.gui.control.EigenschaftGruppeControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -43,8 +42,6 @@ public class EigenschaftGruppeDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EIGENSCHAFTGRUPPE, false, "question-circle.png");
-    buttons.addButton("Suche", new EigenschaftGruppeListeAction(), null, false,
-        "search.png");
     buttons.addButton("Speichern", new Action()
     {
 

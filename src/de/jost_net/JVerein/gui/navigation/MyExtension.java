@@ -90,7 +90,6 @@ import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
 import de.jost_net.JVerein.gui.action.StatistikJahrgaengeAction;
 import de.jost_net.JVerein.gui.action.StatistikMitgliedAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageListeAction;
-import de.jost_net.JVerein.gui.action.ZusatzbetraegeImportAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeListeAction;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -174,8 +173,6 @@ public class MyExtension implements Extension
       {
         mitglieder.addChild(new MyItem(mitglieder, "Zusatzbeträge",
             new ZusatzbetraegeListeAction(), "euro-sign.png"));
-        mitglieder.addChild(new MyItem(mitglieder, "Zusatzbeträge importieren",
-            new ZusatzbetraegeImportAction(), "file-import.png"));
       }
       if (Einstellungen.getEinstellung().getWiedervorlage())
       {
@@ -366,9 +363,6 @@ public class MyExtension implements Extension
       einstellungenbuchfuehrung
           .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Import",
               new KontenrahmenImportAction(), "ellipsis-v.png"));
-      einstellungenbuchfuehrung
-          .addChild(new MyItem(einstellungenbuchfuehrung, "QIF Datei-Import",
-              new QIFBuchungsImportViewAction(), "file-import.png"));
       einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
           "Projekte", new ProjektListAction(), "screwdriver.png"));
       administration.addChild(einstellungenbuchfuehrung);
@@ -378,6 +372,9 @@ public class MyExtension implements Extension
           null);
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert, "Migration",
           new MitgliedMigrationAction(), "file-import.png"));
+      einstellungenerweitert
+      .addChild(new MyItem(einstellungenerweitert, "QIF Datei-Import",
+          new QIFBuchungsImportViewAction(), "file-import.png"));
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,
           "Datenbank bereinigen", new DbBereinigenAction(), "placeholder-loading.png"));
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,

@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.EigenschaftGruppeDeleteAction;
 import de.jost_net.JVerein.gui.action.EigenschaftGruppeDetailAction;
 import de.jost_net.JVerein.gui.control.EigenschaftGruppeControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -39,8 +38,6 @@ public class EigenschaftGruppeListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EIGENSCHAFTGRUPPE, false, "question-circle.png");
-    buttons.addButton("Löschen", new EigenschaftGruppeDeleteAction(),
-        control.getEigenschaftGruppeList(), false, "user-trash-full.png");
     buttons.addButton("Neu", new EigenschaftGruppeDetailAction(true), null,
         false, "document-new.png");
     buttons.paint(this.getParent());
