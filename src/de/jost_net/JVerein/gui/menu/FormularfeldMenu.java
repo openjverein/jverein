@@ -16,8 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import de.jost_net.JVerein.gui.action.FormularfeldAction;
 import de.jost_net.JVerein.gui.action.FormularfeldDeleteAction;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
@@ -31,6 +33,8 @@ public class FormularfeldMenu extends ContextMenu
    */
   public FormularfeldMenu()
   {
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new FormularfeldAction(),
+        "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new FormularfeldDeleteAction(), "user-trash-full.png"));
   }

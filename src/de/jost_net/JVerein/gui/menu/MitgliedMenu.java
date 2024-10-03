@@ -78,7 +78,7 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedInZwischenablageKopierenAction(), "edit-copy.png"));
     if (detailaction instanceof NichtMitgliedDetailAction)
     {
-      addItem(new CheckedContextMenuItem("Zu Mitglied umwandeln", new Action()
+      addItem(new CheckedSingleContextMenuItem("Zu Mitglied umwandeln", new Action()
       {
 
         @Override
@@ -114,7 +114,7 @@ public class MitgliedMenu extends ContextMenu
     }
     else
     {
-      addItem(new CheckedContextMenuItem("Zu Nicht-Mitglied umwandeln", new Action()
+      addItem(new CheckedSingleContextMenuItem("Zu Nicht-Mitglied umwandeln", new Action()
       {
 
         @Override
@@ -190,7 +190,7 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedVCardQRCodeAction(), "qr-code.png"));
     addItem(new CheckedContextMenuItem("Eigenschaften",
         new MitgliedEigenschaftZuordnungAction(), "document-properties.png"));
-    if (Einstellungen.getEinstellung().getArbeitseinsatz())
+    if (Einstellungen.getEinstellung().getArbeitseinsatz() && !(detailaction instanceof NichtMitgliedDetailAction))
     {
       addItem(new CheckedContextMenuItem("Arbeitseinsätze zuweisen",
           new MitgliedArbeitseinsatzZuordnungAction(), "screwdriver.png"));

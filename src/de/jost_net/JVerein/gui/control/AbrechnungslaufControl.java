@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.AbrechnungslaufBuchungenAction;
+import de.jost_net.JVerein.gui.action.AbrechnungslaufDetailAction;
 import de.jost_net.JVerein.gui.formatter.AbrechnungsmodusFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.AbrechnungslaufMenu;
@@ -224,8 +224,8 @@ public class AbrechnungslaufControl extends FilterControl
   public LabelInput getStatistikBuchungen() throws RemoteException
   {
     // Summe und Anzahl der Buchungen. Es gibt einen weiterer Datensatz
-    // wo die Buchungsart NULL ist, es handelt sich um die Gegenbuchung
-    // mit umgekehrten Vorzeichen.
+    // bei dem der Name "JVerein" und der Zweck "Gegenbuchung" ist.
+    // Es handelt sich um die Gegenbuchung mit umgekehrten Vorzeichen.
 
     if (statistikbuchungen != null)
     {
@@ -255,7 +255,7 @@ public class AbrechnungslaufControl extends FilterControl
     };
 
     String sql = "SELECT SUM(betrag), COUNT(id) " + "FROM buchung "
-        + "WHERE abrechnungslauf=? AND buchungsart IS NOT NULL";
+        + "WHERE abrechnungslauf=? AND (name != 'JVerein' or zweck != 'Gegenbuchung')";
     StatData data = (StatData) Einstellungen.getDBService().execute(sql,
         new Object[] { getAbrechnungslaeufe().getID() }, rs);
 
@@ -361,7 +361,7 @@ public class AbrechnungslaufControl extends FilterControl
     if (abrechnungslaufList == null)
     {
       abrechnungslaufList = new TablePart(abrechnungslaeufe,
-          new AbrechnungslaufBuchungenAction());
+          new AbrechnungslaufDetailAction());
       abrechnungslaufList.addColumn("Nr", "nr");
       abrechnungslaufList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));

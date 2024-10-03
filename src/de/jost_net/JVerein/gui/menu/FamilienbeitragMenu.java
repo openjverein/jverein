@@ -17,9 +17,11 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.FamilienmitgliedEntfernenAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.control.FamilienbeitragNode;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
@@ -30,6 +32,8 @@ public class FamilienbeitragMenu extends ContextMenu
 
   public FamilienbeitragMenu()
   {
+    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen", new MitgliedDetailAction(),
+        "user-friends.png"));
     addItem(new AngehoerigerItem("Aus Familienverband entfernen",
         new FamilienmitgliedEntfernenAction(), "user-trash-full.png"));
   }

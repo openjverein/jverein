@@ -17,6 +17,8 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.FormularfeldAction;
+import de.jost_net.JVerein.gui.action.FormularfelderListeAction;
 import de.jost_net.JVerein.gui.control.FormularControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -44,6 +46,8 @@ public class FormularDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
+    buttons.addButton("Formularfelder", new FormularfelderListeAction(),
+        control.getFormular(), true, "file-invoice.png");
     buttons.addButton("Speichern", new Action()
     {
 

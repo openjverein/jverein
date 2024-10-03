@@ -19,8 +19,8 @@ package de.jost_net.JVerein.gui.menu;
 import de.jost_net.JVerein.gui.action.EigenschaftGruppeDeleteAction;
 import de.jost_net.JVerein.gui.action.EigenschaftGruppeDetailAction;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 /**
  * Kontext-Menu zu den EigenschaftenGruppen.
@@ -33,8 +33,8 @@ public class EigenschaftGruppeMenu extends ContextMenu
    */
   public EigenschaftGruppeMenu()
   {
-    addItem(new ContextMenuItem("Neu", new EigenschaftGruppeDetailAction(true),
-        "document-new.png"));
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new EigenschaftGruppeDetailAction(false),
+        "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new EigenschaftGruppeDeleteAction(), "user-trash-full.png"));
   }
