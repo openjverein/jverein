@@ -27,7 +27,9 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class FormularDetailView extends AbstractView
 {
@@ -40,11 +42,16 @@ public class FormularDetailView extends AbstractView
     final FormularControl control = new FormularControl(this, (Formular) getCurrentObject());
 
     LabelGroup group = new LabelGroup(getParent(), "Formular");
-    group.addLabelPair("Bezeichnung", control.getBezeichnung(true));
-    group.addLabelPair("Art", control.getArt());
-    group.addLabelPair("Datei", control.getDatei());
-    group.addLabelPair("Fortlaufende Nr.", control.getZaehler());
-    group.addLabelPair("Formularverknüpfung", control.getFormlink());
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addLabelPair("Bezeichnung", control.getBezeichnung(true));
+    left.addLabelPair("Art", control.getArt());
+    left.addLabelPair("Datei", control.getDatei());
+    
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addLabelPair("Fortlaufende Nr.", control.getZaehler());
+    right.addLabelPair("Formularverknüpfung", control.getFormlink());
     
     LabelGroup cont = new LabelGroup(getParent(), "Formularfelder", true);
     control.getFormularfeldList().paint(cont.getComposite());
