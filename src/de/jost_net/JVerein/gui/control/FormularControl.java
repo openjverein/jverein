@@ -33,7 +33,6 @@ import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.server.FormularImpl;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -47,7 +46,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FormularControl extends AbstractControl
+public class FormularControl extends FormularPartControl
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -66,9 +65,9 @@ public class FormularControl extends AbstractControl
 
   private SelectInput formlink;
 
-  public FormularControl(AbstractView view)
+  public FormularControl(AbstractView view, Formular formular)
   {
-    super(view);
+    super(view, formular);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
@@ -268,7 +267,7 @@ public class FormularControl extends AbstractControl
     return formularList;
   }
 
-  public void refreshTable() throws RemoteException
+  public void refreshFormularTable() throws RemoteException
   {
     formularList.removeAll();
     DBIterator<Formular> formulare = Einstellungen.getDBService()

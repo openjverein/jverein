@@ -17,9 +17,12 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
 import de.jost_net.JVerein.gui.action.FormularfeldAction;
-import de.jost_net.JVerein.gui.action.FormularfelderListeAction;
+import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
+import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
 import de.jost_net.JVerein.gui.control.FormularControl;
+import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -34,7 +37,7 @@ public class FormularDetailView extends AbstractView
   {
     GUI.getView().setTitle("Formular");
 
-    final FormularControl control = new FormularControl(this);
+    final FormularControl control = new FormularControl(this, (Formular) getCurrentObject());
 
     LabelGroup group = new LabelGroup(getParent(), "Formular");
     group.addLabelPair("Bezeichnung", control.getBezeichnung(true));
@@ -42,12 +45,25 @@ public class FormularDetailView extends AbstractView
     group.addLabelPair("Datei", control.getDatei());
     group.addLabelPair("Fortlaufende Nr.", control.getZaehler());
     group.addLabelPair("Formularverknüpfung", control.getFormlink());
+    
+    LabelGroup cont = new LabelGroup(getParent(), "Formularfelder", true);
+    control.getFormularfeldList().paint(cont.getComposite());
+    
+    ButtonArea buttons1 = new ButtonArea();
+    buttons1.addButton("Export", new FormularfelderExportAction(),
+        getCurrentObject(), false, "document-save.png");
+    buttons1.addButton("Import", new FormularfelderImportAction(control),
+        getCurrentObject(), false, "file-import.png");
+    buttons1.addButton("Neu", new FormularfeldAction(), getCurrentObject(),
+        false, "document-new.png");
+    cont.addButtonArea(buttons1);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
-    buttons.addButton("Formularfelder", new FormularfelderListeAction(),
-        control.getFormular(), true, "file-invoice.png");
+    buttons.addButton("Anzeigen", new FormularAnzeigeAction(),
+        getCurrentObject(), false, "edit-copy.png");
+
     buttons.addButton("Speichern", new Action()
     {
 
