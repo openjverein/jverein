@@ -128,7 +128,7 @@ public class DruckMailControl extends FilterControl
       return adressblatt;
     }
     adressblatt = new SelectInput( Adressblatt.values(),
-        Adressblatt.getByKey(settings.getInt(settingsprefix + "adressblatt", 1)));
+        Adressblatt.getByKey(settings.getInt(settingsprefix + "adressblatt.key", 1)));
     adressblatt.setName("Adressblatt");
     return adressblatt;
   }
@@ -201,7 +201,7 @@ public class DruckMailControl extends FilterControl
     if (adressblatt != null)
     {
       Adressblatt ab = (Adressblatt) getAdressblatt().getValue();
-      settings.setAttribute(settingsprefix + "adressblatt", ab.getKey());
+      settings.setAttribute(settingsprefix + "adressblatt.key", ab.getKey());
     }
     if (ausgabesortierung != null)
     {
