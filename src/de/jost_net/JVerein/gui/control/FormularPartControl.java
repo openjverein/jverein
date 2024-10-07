@@ -58,8 +58,8 @@ public class FormularPartControl extends AbstractControl
     formularfelderList.addColumn("Seite", "seite");
     formularfelderList.addColumn("Von links", "x");
     formularfelderList.addColumn("Von unten", "y");
-    formularfelderList.addColumn("Font", "font");
-    formularfelderList.addColumn("Fonthöhe", "fontsize");
+    formularfelderList.addColumn("Schriftart", "font");
+    formularfelderList.addColumn("Schriftgröße", "fontsize");
 
     formularfelderList.setRememberColWidths(true);
     formularfelderList.setContextMenu(new FormularfeldMenu());
