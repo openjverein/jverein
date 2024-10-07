@@ -56,11 +56,7 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
   protected void paint(Composite parent) throws Exception
   {
 
-    control.getMailVorlageTable().paint(parent);
-
-    ButtonArea b = new ButtonArea();
-    
-    b.addButton("Verwenden", new Action()
+    Action action = new Action()
     {
 
       @Override
@@ -68,7 +64,7 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
       {
         try
         {
-          retval = (MailVorlage) control.getMailVorlageTable().getSelection();
+          retval = (MailVorlage) control.getMailVorlageTable(null).getSelection();
         }
         catch (RemoteException e)
         {
@@ -77,7 +73,12 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
         abort = false;
         close();
       }
-    }, null, true, "ok.png");
+    };
+    control.getMailVorlageTable(action).paint(parent);
+
+    ButtonArea b = new ButtonArea();
+    
+    b.addButton("Verwenden", action , null, true, "ok.png");
     
     if (mailsenden)
     {

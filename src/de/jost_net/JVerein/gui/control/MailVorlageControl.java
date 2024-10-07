@@ -26,6 +26,7 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -110,7 +111,7 @@ public class MailVorlageControl extends AbstractControl
     }
   }
 
-  public TablePart getMailVorlageTable() throws RemoteException
+  public TablePart getMailVorlageTable(Action action) throws RemoteException
   {
     if (mailvorlageList != null)
     {
@@ -118,7 +119,7 @@ public class MailVorlageControl extends AbstractControl
     }
     DBService service = Einstellungen.getDBService();
     DBIterator<MailVorlage> fdef = service.createList(MailVorlage.class);
-    mailvorlageList = new TablePart(fdef, new MailVorlageDetailAction());
+    mailvorlageList = new TablePart(fdef, action);
     mailvorlageList.addColumn("Betreff", "betreff");
     mailvorlageList.setContextMenu(new MailVorlageMenu());
     return mailvorlageList;
