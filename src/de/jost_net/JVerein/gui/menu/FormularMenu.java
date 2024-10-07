@@ -20,7 +20,6 @@ import de.jost_net.JVerein.gui.action.FormularAction;
 import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
 import de.jost_net.JVerein.gui.action.FormularDeleteAction;
 import de.jost_net.JVerein.gui.action.FormularDuplizierenAction;
-import de.jost_net.JVerein.gui.action.FormularfelderListeAction;
 import de.jost_net.JVerein.gui.control.FormularControl;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -40,8 +39,6 @@ public class FormularMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten", new FormularAction(),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Formularfelder",
-        new FormularfelderListeAction(), "file-invoice.png"));
     addItem(new CheckedContextMenuItem("Anzeigen", new FormularAnzeigeAction(),
         "edit-copy.png"));
     addItem(new CheckedSingleContextMenuItem("Duplizieren",

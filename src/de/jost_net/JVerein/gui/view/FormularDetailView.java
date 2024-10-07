@@ -54,7 +54,6 @@ public class FormularDetailView extends AbstractView
     right.addLabelPair("Formularverknüpfung", control.getFormlink());
     
     LabelGroup cont = new LabelGroup(getParent(), "Formularfelder", true);
-    control.getFormularfeldList().paint(cont.getComposite());
     
     ButtonArea buttons1 = new ButtonArea();
     buttons1.addButton("Export", new FormularfelderExportAction(),
@@ -64,6 +63,8 @@ public class FormularDetailView extends AbstractView
     buttons1.addButton("Neu", new FormularfeldAction(), getCurrentObject(),
         false, "document-new.png");
     cont.addButtonArea(buttons1);
+    
+    control.getFormularfeldList().paint(cont.getComposite());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
