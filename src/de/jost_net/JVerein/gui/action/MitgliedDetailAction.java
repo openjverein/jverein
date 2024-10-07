@@ -22,8 +22,11 @@ import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
+import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Wiedervorlage;
+import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -56,6 +59,21 @@ public class MitgliedDetailAction implements Action
       {
         Mitgliedskonto mk = (Mitgliedskonto) context;
         m = mk.getMitglied();
+      }
+      else if (context != null && (context instanceof Wiedervorlage))
+      {
+        Wiedervorlage w = (Wiedervorlage) context;
+        m = w.getMitglied();
+      }
+      else if (context != null && (context instanceof Zusatzbetrag))
+      {
+        Zusatzbetrag z = (Zusatzbetrag) context;
+        m = z.getMitglied();
+      }
+      else if (context != null && (context instanceof Lehrgang))
+      {
+        Lehrgang l = (Lehrgang) context;
+        m = l.getMitglied();
       }
       else
       {

@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.view;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.BeitragsgruppeSucheAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BeitragsgruppeControl;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
@@ -106,8 +105,6 @@ public class BeitragsgruppeDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BEITRAGSGRUPPEN, false, "question-circle.png");
-    buttons.addButton("Suche", new BeitragsgruppeSucheAction(), null, false,
-        "search.png");
     buttons.addButton("Speichern", new Action()
     {
       @Override

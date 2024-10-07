@@ -93,11 +93,8 @@ public class LesefeldDetailView extends AbstractView implements Listener
     button = new Button("Variablen anzeigen (F6)",
         new OpenInsertVariableDialogAction(), null, false, "zuordnung.png");
     buttonArea.addButton(button);
-    button = new Button("Speichern und zurück", new SaveLesefeldAction(), null,
+    button = new Button("Speichern", new SaveLesefeldAction(), null,
         false, "document-save.png");
-    buttonArea.addButton(button);
-    button = new Button("Abbrechen und zurück", new AbortEditLesefeldAction(),
-        null, false, "process-stop.png");
     buttonArea.addButton(button);
     buttonArea.paint(this.getParent());
   }
@@ -219,16 +216,6 @@ public class LesefeldDetailView extends AbstractView implements Listener
     }
   }
 
-  private final class AbortEditLesefeldAction implements Action
-  {
-
-    @Override
-    public void handleAction(Object context)
-    {
-      GUI.startPreviousView();
-    }
-  }
-
   private final class SaveLesefeldAction implements Action
   {
 
@@ -244,7 +231,6 @@ public class LesefeldDetailView extends AbstractView implements Listener
         {
           lesefeld.store();
           GUI.getStatusBar().setSuccessText("Skript gespeichert.");
-          GUI.startPreviousView();
         }
         catch (RemoteException e)
         {

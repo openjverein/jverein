@@ -16,8 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import de.jost_net.JVerein.gui.action.LehrgangsartAction;
 import de.jost_net.JVerein.gui.action.LehrgangsartDeleteAction;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
@@ -31,6 +33,8 @@ public class LehrgangsartMenu extends ContextMenu
    */
   public LehrgangsartMenu()
   {
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new LehrgangsartAction(),
+        "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new LehrgangsartDeleteAction(), "user-trash-full.png"));
   }

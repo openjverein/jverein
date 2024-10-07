@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.FelddefinitionenAction;
 import de.jost_net.JVerein.gui.control.FelddefinitionControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -44,7 +43,6 @@ public class FelddefinitionDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FELDDEFINITIONEN, false, "question-circle.png");
-    buttons.addButton("Übersicht", new FelddefinitionenAction(), null, false, "list.png");
     buttons.addButton("Speichern", new Action()
     {
 

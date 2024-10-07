@@ -46,13 +46,13 @@ public class SollbuchungMenu extends ContextMenu
    */
   public SollbuchungMenu()
   {
-    addItem(new CheckedSingleContextMenuItem("Sollbuchung bearbeiten",
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new MitgliedskontoSollbuchungEditAction(), "text-x-generic.png"));
-    addItem(new SollOhneIstItem("Sollbuchung löschen",
+    addItem(new SollOhneIstItem("Löschen",
         new MitgliedskontoSollbuchungLoeschenAction(), "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-        new MitgliedDetailAction(), "text-x-generic.png"));
+        new MitgliedDetailAction(), "user-friends.png"));
     addItem(new CheckedContextMenuItem("Rechnung erstellen",
         new MitgliedskontoRechnungAction(), "file-invoice.png"));
     addItem(new CheckedContextMenuItem("Mahnung erstellen",
