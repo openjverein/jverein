@@ -387,7 +387,7 @@ public class AbrechnungSEPA
     Double betr = 0d;
     JVereinZahler zahler = null;
     Mitglied mZahler = m;
-    if(m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+    if(m.getZahlungsweg() != null && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
     {
       if(m.getZahlerID() == null)
         throw new ApplicationException(
