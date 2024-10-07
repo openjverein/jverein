@@ -16,6 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
 import de.jost_net.JVerein.gui.action.FormularfeldAction;
@@ -62,9 +67,16 @@ public class FormularDetailView extends AbstractView
         getCurrentObject(), false, "file-import.png");
     buttons1.addButton("Neu", new FormularfeldAction(), getCurrentObject(),
         false, "document-new.png");
-    cont.addButtonArea(buttons1);
+
+    // Diese Zeilen werden gebraucht um die Buttons rechts zu plazieren
+    GridLayout layout = new GridLayout();
+    Composite comp = new Composite(cont.getComposite(), SWT.NONE);
+    comp.setLayout(layout);
+    comp.setLayoutData(new GridData(GridData.END));
     
-    control.getFormularfeldList().paint(cont.getComposite());
+    buttons1.paint(cont.getComposite());
+    
+    cont.addPart(control.getFormularfeldList());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
