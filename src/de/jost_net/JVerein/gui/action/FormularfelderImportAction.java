@@ -25,7 +25,7 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.control.FormularfeldControl;
+import de.jost_net.JVerein.gui.control.FormularPartControl;
 import de.jost_net.JVerein.gui.dialogs.ImportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Formularfeld;
@@ -40,9 +40,9 @@ import de.willuhn.util.ApplicationException;
 
 public class FormularfelderImportAction implements Action
 {
-  FormularfeldControl control;
+  FormularPartControl control;
 
-  public FormularfelderImportAction(FormularfeldControl control)
+  public FormularfelderImportAction(FormularPartControl control)
   {
     this.control = control;
   }

@@ -63,7 +63,7 @@ public class AbrechnungslaufControl extends FilterControl
 
   private LabelInput astichtag;
 
-  private LabelInput eingabedatum;
+  private LabelInput eintrittsdatum;
 
   private LabelInput austrittsdatum;
 
@@ -154,17 +154,19 @@ public class AbrechnungslaufControl extends FilterControl
     return astichtag;
   }
 
-  public LabelInput getEingabedatum() throws RemoteException
+  public LabelInput getEintrittsdatum() throws RemoteException
   {
-    if (eingabedatum != null)
+    if (eintrittsdatum != null)
     {
-      return eingabedatum;
+      return eintrittsdatum;
     }
-    Date ed = getAbrechnungslaeufe().getEingabedatum();
-    // TODO ungültige Daten ausfiltern
-    eingabedatum = new LabelInput(new JVDateFormatTTMMJJJJ().format(ed));
-    eingabedatum.setName("Eingabedatum");
-    return eingabedatum;
+    Date ed = getAbrechnungslaeufe().getEintrittsdatum();
+    if(ed.equals(Einstellungen.NODATE))
+      eintrittsdatum = new LabelInput(null);
+    else
+      eintrittsdatum = new LabelInput(new JVDateFormatTTMMJJJJ().format(ed));
+    eintrittsdatum.setName("Eintrittsdatum");
+    return eintrittsdatum;
   }
 
   public LabelInput getAustrittsdatum() throws RemoteException
@@ -174,7 +176,10 @@ public class AbrechnungslaufControl extends FilterControl
       return austrittsdatum;
     }
     Date ed = getAbrechnungslaeufe().getAustrittsdatum();
-    austrittsdatum = new LabelInput(new JVDateFormatTTMMJJJJ().format(ed));
+    if(ed.equals(Einstellungen.NODATE))
+      austrittsdatum = new LabelInput(null);
+    else
+      austrittsdatum = new LabelInput(new JVDateFormatTTMMJJJJ().format(ed));
     austrittsdatum.setName("Austrittsdatum");
     return austrittsdatum;
   }

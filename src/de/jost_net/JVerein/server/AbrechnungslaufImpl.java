@@ -143,7 +143,7 @@ public class AbrechnungslaufImpl extends AbstractDBObject implements
   }
 
   @Override
-  public Date getEingabedatum() throws RemoteException
+  public Date getEintrittsdatum() throws RemoteException
   {
     Date d = (Date) getAttribute("eingabedatum");
     if (d == null)

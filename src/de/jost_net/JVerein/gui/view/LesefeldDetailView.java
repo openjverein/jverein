@@ -37,6 +37,7 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -90,7 +91,7 @@ public class LesefeldDetailView extends AbstractView implements Listener
     }, null, false, "view-refresh.png");
     buttonArea.addButton(button);
     button = new Button("Variablen anzeigen (F6)",
-        new OpenInsertVariableDialogAction(), null, false, "zuordnung.png");
+        new OpenInsertVariableDialogAction(), null, false, "bookmark.png");
     buttonArea.addButton(button);
     button = new Button("Speichern", new SaveLesefeldAction(), null,
         false, "document-save.png");
@@ -261,6 +262,10 @@ public class LesefeldDetailView extends AbstractView implements Listener
         d.setContextMenu(menu);
         d.setDoubleClickAction(menu.getCopyToClipboardAction());
         d.open();
+      }
+      catch (OperationCanceledException e)
+      {
+        
       }
       catch (Exception e)
       {

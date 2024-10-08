@@ -27,34 +27,26 @@ import de.jost_net.JVerein.Variable.LastschriftVar;
 import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.MitgliedskontoVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
-import de.jost_net.JVerein.gui.action.FormularfeldAction;
-import de.jost_net.JVerein.gui.menu.FormularfeldMenu;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
+
 import de.willuhn.logging.Logger;
 
-public class FormularfeldControl extends AbstractControl
+public class FormularfeldControl extends FormularPartControl
 {
 
   private de.willuhn.jameica.system.Settings settings;
-
-  private TablePart formularfelderList;
 
   private SelectInput name;
 
@@ -67,8 +59,6 @@ public class FormularfeldControl extends AbstractControl
   private SelectInput font;
 
   private IntegerInput fontsize;
-
-  private Formular formular;
 
   private Formularfeld formularfeld;
 
@@ -149,10 +139,9 @@ public class FormularfeldControl extends AbstractControl
 
   public FormularfeldControl(AbstractView view, Formular formular)
   {
-    super(view);
+    super(view, formular);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
-    this.formular = formular;
   }
 
   public Input getFormularTyp() throws RemoteException
@@ -372,7 +361,8 @@ public class FormularfeldControl extends AbstractControl
       f.setFont((String) getFont().getValue());
       f.setFontsize((Integer) getFontsize().getValue());
       f.store();
-
+      if (GUI.hasPreviousView())
+        GUI.startPreviousView();
       GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
     }
     catch (RemoteException e)
@@ -384,43 +374,6 @@ public class FormularfeldControl extends AbstractControl
     catch (Exception e)
     {
       GUI.getStatusBar().setErrorText(e.getMessage());
-    }
-  }
-
-  public Part getFormularfeldList() throws RemoteException
-  {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Formularfeld> formularfelder = service
-        .createList(Formularfeld.class);
-    formularfelder.addFilter("formular = ?", new Object[] { formular.getID() });
-    formularfelder.setOrder("ORDER BY seite, x, y");
-
-    formularfelderList = new TablePart(formularfelder,
-        new FormularfeldAction());
-    formularfelderList.addColumn("Name", "name");
-    formularfelderList.addColumn("Seite", "seite");
-    formularfelderList.addColumn("Von links", "x");
-    formularfelderList.addColumn("Von unten", "y");
-    formularfelderList.addColumn("Font", "font");
-    formularfelderList.addColumn("Fonthöhe", "fontsize");
-
-    formularfelderList.setRememberColWidths(true);
-    formularfelderList.setContextMenu(new FormularfeldMenu());
-    formularfelderList.setRememberOrder(true);
-    formularfelderList.removeFeature(FeatureSummary.class);
-    return formularfelderList;
-  }
-
-  public void refreshTable() throws RemoteException
-  {
-    formularfelderList.removeAll();
-    DBIterator<Formularfeld> formularfelder = Einstellungen.getDBService()
-        .createList(Formularfeld.class);
-    formularfelder.addFilter("formular = ?", new Object[] { formular.getID() });
-    formularfelder.setOrder("ORDER BY x, y");
-    while (formularfelder.hasNext())
-    {
-      formularfelderList.addItem(formularfelder.next());
     }
   }
 

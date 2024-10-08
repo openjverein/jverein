@@ -16,15 +16,25 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
 import de.jost_net.JVerein.gui.action.FormularfeldAction;
-import de.jost_net.JVerein.gui.action.FormularfelderListeAction;
+import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
+import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
 import de.jost_net.JVerein.gui.control.FormularControl;
+import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class FormularDetailView extends AbstractView
 {
@@ -34,20 +44,46 @@ public class FormularDetailView extends AbstractView
   {
     GUI.getView().setTitle("Formular");
 
-    final FormularControl control = new FormularControl(this);
+    final FormularControl control = new FormularControl(this, (Formular) getCurrentObject());
 
     LabelGroup group = new LabelGroup(getParent(), "Formular");
-    group.addLabelPair("Bezeichnung", control.getBezeichnung(true));
-    group.addLabelPair("Art", control.getArt());
-    group.addLabelPair("Datei", control.getDatei());
-    group.addLabelPair("Fortlaufende Nr.", control.getZaehler());
-    group.addLabelPair("Formularverknüpfung", control.getFormlink());
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addLabelPair("Bezeichnung", control.getBezeichnung(true));
+    left.addLabelPair("Art", control.getArt());
+    left.addLabelPair("Datei", control.getDatei());
+    
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addLabelPair("Fortlaufende Nr.", control.getZaehler());
+    right.addLabelPair("Formularverknüpfung", control.getFormlink());
+    
+    LabelGroup cont = new LabelGroup(getParent(), "Formularfelder", true);
+    
+    ButtonArea buttons1 = new ButtonArea();
+    buttons1.addButton("Export", new FormularfelderExportAction(),
+        getCurrentObject(), false, "document-save.png");
+    buttons1.addButton("Import", new FormularfelderImportAction(control),
+        getCurrentObject(), false, "file-import.png");
+    buttons1.addButton("Neu", new FormularfeldAction(), getCurrentObject(),
+        false, "document-new.png");
+
+    // Diese Zeilen werden gebraucht um die Buttons rechts zu plazieren
+    GridLayout layout = new GridLayout();
+    Composite comp = new Composite(cont.getComposite(), SWT.NONE);
+    comp.setLayout(layout);
+    comp.setLayoutData(new GridData(GridData.END));
+    
+    buttons1.paint(cont.getComposite());
+    
+    cont.addPart(control.getFormularfeldList());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
-    buttons.addButton("Formularfelder", new FormularfelderListeAction(),
-        control.getFormular(), true, "file-invoice.png");
+    buttons.addButton("Anzeigen", new FormularAnzeigeAction(),
+        getCurrentObject(), false, "edit-copy.png");
+
     buttons.addButton("Speichern", new Action()
     {
 
