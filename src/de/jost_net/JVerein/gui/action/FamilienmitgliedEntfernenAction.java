@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import de.jost_net.JVerein.gui.control.FamilienbeitragNode;
 import de.jost_net.JVerein.gui.dialogs.FamilienmitgliedEntfernenDialog;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -39,7 +40,10 @@ public class FamilienmitgliedEntfernenAction implements Action
     {
       fed.open();
     }
-
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
     catch (Exception e)
     {
       Logger.error("Fehler", e);

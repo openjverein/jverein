@@ -25,8 +25,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import de.jost_net.JVerein.gui.control.MailControl;
@@ -68,16 +66,6 @@ public class MailVorschauDialog extends AbstractDialog<Object>
     this.empf = mitglied;
     setTitle("Mail-Vorschau");
     setSize(settings.getInt("width", 550), settings.getInt("height", 450));
-    addCloseListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        settings.setAttribute("width", getShell().getSize().x);
-        settings.setAttribute("height", getShell().getSize().y);
-      }
-    });
 
     try
     {

@@ -190,10 +190,10 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
             this.getZahlungstermin(), this.getZahlungsrhythmus().getKey(),
             this.getBeitragsgruppe(), new Date(), this ) > 0)
     {
-      if (getBic() == null || getBic().length() == 0 || getIban() == null
+      if (getIban() == null
           || getIban().length() == 0)
       {
-        throw new ApplicationException("Bitte BIC und IBAN eingeben");
+        throw new ApplicationException("Bitte IBAN eingeben");
       }
     }
     if (getIban() != null && getIban().length() != 0)

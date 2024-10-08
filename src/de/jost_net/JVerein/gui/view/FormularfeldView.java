@@ -42,8 +42,8 @@ public class FormularfeldView extends AbstractView
     group.addLabelPair("Seite", control.getSeite());
     group.addLabelPair("Von links", control.getX());
     group.addLabelPair("Von unten", control.getY());
-    group.addLabelPair("Font", control.getFont());
-    group.addLabelPair("Font-Höhe", control.getFontsize());
+    group.addLabelPair("Schriftart", control.getFont());
+    group.addLabelPair("Schriftgröße", control.getFontsize());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
