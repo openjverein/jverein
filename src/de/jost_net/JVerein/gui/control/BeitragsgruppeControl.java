@@ -45,6 +45,7 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.formatter.TableFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -463,6 +464,17 @@ public class BeitragsgruppeControl extends AbstractControl
         new BuchungsartFormatter());
     beitragsgruppeList.addColumn("Altersstaffel", "altersstaffel",
         new JaNeinFormatter());
+    beitragsgruppeList.addColumn("Sekundär", "sekundaer",
+        new JaNeinFormatter());
+    beitragsgruppeList.addColumn("Beitragsart", "beitragsart",
+        new Formatter() {
+
+          @Override
+          public String format(Object o)
+          {
+            return ArtBeitragsart.getByKey((Integer)o).getText();
+          }
+    });
     beitragsgruppeList.addColumn("Notiz", "notiz", new NotizFormatter(40));
     beitragsgruppeList.setContextMenu(new BeitragsgruppeMenu());
     beitragsgruppeList.setFormatter(new TableFormatter() {
