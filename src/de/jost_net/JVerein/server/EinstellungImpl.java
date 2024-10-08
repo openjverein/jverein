@@ -18,9 +18,15 @@ package de.jost_net.JVerein.server;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.VonBis;
+import de.jost_net.OBanToo.SEPA.IBAN;
+import de.jost_net.OBanToo.SEPA.SEPAException;
+
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -152,7 +158,31 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
       {
         throw new ApplicationException(e.getMessage().replace("\n", " "));
       }
-      
+
+      if(getBeginnGeschaeftsjahr() != null)
+      {
+        try
+        {
+          Datum.toDate(getBeginnGeschaeftsjahr()+ 2000);
+        }
+        catch (ParseException e)
+        {
+          throw new ApplicationException("Ungültiges Datumsformat: " + getBeginnGeschaeftsjahr());
+        }
+      }
+
+      if(getIban() != null)
+      {
+        try
+        {
+          new IBAN(getIban());
+        }
+        catch (SEPAException e)
+        {
+          throw new ApplicationException(e.getMessage());
+        }
+      }
+
       if (getDokumentenspeicherung())
       {
         if (!JVereinPlugin.isArchiveServiceActive())
@@ -164,6 +194,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
       try
       {
         new JubilaeenParser(getJubilaeen());
+        new JubilaeenParser(getAltersjubilaeen());
       }
       catch (RuntimeException e)
       {

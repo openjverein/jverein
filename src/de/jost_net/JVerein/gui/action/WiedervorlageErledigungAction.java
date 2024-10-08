@@ -56,19 +56,15 @@ public class WiedervorlageErledigungAction implements Action
       if (w.getErledigung() == null)
       {
         w.setErledigung(new Date());
+        int ind = table.removeItem(w);
+        w.store();
+        table.addItem(w, ind);
+        GUI.getStatusBar().setSuccessText("Erledigungsdatum gesetzt.");
       }
-      else
-      {
-        w.setErledigung(null);
-      }
-      int ind = table.removeItem(w);
-      w.store();
-      table.addItem(w, ind);
-      GUI.getStatusBar().setSuccessText("Erledigungsdatum bearbeitet.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Verändern des Erledigungsdatums.";
+      String fehler = "Fehler beim setzen des Erledigungsdatums.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

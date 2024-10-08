@@ -725,8 +725,6 @@ public class MitgliedControl extends FilterControl
       return bic;
     }
     bic = new BICInput(getMitglied().getBic());
-    bic.setMandatory(getMitglied().getZahlungsweg() == null || getMitglied()
-        .getZahlungsweg().intValue() == Zahlungsweg.BASISLASTSCHRIFT);
     return bic;
   }
 
