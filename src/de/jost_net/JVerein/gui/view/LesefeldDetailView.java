@@ -91,7 +91,7 @@ public class LesefeldDetailView extends AbstractView implements Listener
     }, null, false, "view-refresh.png");
     buttonArea.addButton(button);
     button = new Button("Variablen anzeigen (F6)",
-        new OpenInsertVariableDialogAction(), null, false, "zuordnung.png");
+        new OpenInsertVariableDialogAction(), null, false, "bookmark.png");
     buttonArea.addButton(button);
     button = new Button("Speichern", new SaveLesefeldAction(), null,
         false, "document-save.png");
