@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
 import de.jost_net.JVerein.gui.dialogs.KontoAuswahlDialog;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
@@ -68,7 +69,7 @@ public class KontoauswahlInput
    * @throws RemoteException
    */
   public DialogInput getKontoAuswahl(boolean keinkonto, String kontoid,
-      boolean onlyHibiscus, boolean nurAktuelleKunden) throws RemoteException
+      boolean onlyHibiscus, boolean nurAktuelleKonten, Kontenart art) throws RemoteException
   {
     if (kontoAuswahl != null)
     {
@@ -77,7 +78,7 @@ public class KontoauswahlInput
     this.keinkonto = keinkonto;
     KontoAuswahlDialog d = new KontoAuswahlDialog(
         KontoAuswahlDialog.POSITION_MOUSE, keinkonto, onlyHibiscus,
-        nurAktuelleKunden);
+        nurAktuelleKonten, art);
     d.addCloseListener(new KontoListener());
 
     if (kontoid == null || kontoid.length() == 0)
@@ -132,8 +133,8 @@ public class KontoauswahlInput
           try
           {
             // TODO warum wird das doppelt aufgerufen?
-            getKontoAuswahl(keinkonto, "", false, false).setText("");
-            getKontoAuswahl(keinkonto, "", false, false).setComment("");
+            getKontoAuswahl(keinkonto, "", false, false, Kontenart.ALLE).setText("");
+            getKontoAuswahl(keinkonto, "", false, false, Kontenart.ALLE).setComment("");
             settings.setAttribute("kontoid", "");
           }
           catch (RemoteException e)
@@ -147,8 +148,8 @@ public class KontoauswahlInput
       try
       {
         String b = konto.getBezeichnung();
-        getKontoAuswahl(keinkonto, "", false, false).setText(konto.getNummer());
-        getKontoAuswahl(keinkonto, "", false, false).setComment(
+        getKontoAuswahl(keinkonto, "", false, false, Kontenart.ALLE).setText(konto.getNummer());
+        getKontoAuswahl(keinkonto, "", false, false, Kontenart.ALLE).setComment(
             b == null ? "" : b);
         settings.setAttribute("kontoid", konto.getID());
       }

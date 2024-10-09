@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -44,8 +45,15 @@ import de.willuhn.logging.Logger;
  */
 public class BuchungsartSearchInput extends SearchInput
 {
+  public BuchungsartSearchInput(buchungsarttyp art)
+  {
+    super();
+    this.art = art;
+  }
   
   private int unterdrueckunglaenge = 0;
+  
+  private  buchungsarttyp art;
   
   @Override
   @SuppressWarnings("rawtypes")
@@ -62,9 +70,29 @@ public class BuchungsartSearchInput extends SearchInput
         Date db = cal.getTime();
         cal.add(Calendar.MONTH, - unterdrueckunglaenge);
         Date dv = cal.getTime();
-        String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
-        sql += "WHERE buchung.buchungsart = buchungsart.id ";
-        sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
+        String sql;
+        if (art == buchungsarttyp.ANLAGENART)
+        {
+          sql = "SELECT DISTINCT buchungsart.* from buchungsart, konto ";
+          sql += "WHERE (konto.anlagenart = buchungsart.id) ";
+          sql += "AND (buchungsart.abschreibung = FALSE) ";
+          sql += "AND (konto.aufloesung IS NULL OR "
+              + "(konto.aufloesung >= ? AND konto.aufloesung <= ?)) ";
+        }
+        else if (art == buchungsarttyp.AFAART)
+        {
+          sql = "SELECT DISTINCT buchungsart.* from buchungsart, konto ";
+          sql += "WHERE (konto.afaart = buchungsart.id) ";
+          sql += "AND (buchungsart.abschreibung = TRUE) ";
+          sql += "AND (konto.aufloesung IS NULL OR "
+              + "(konto.aufloesung >= ? AND konto.aufloesung <= ?)) ";
+        }
+        else
+        {
+          sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
+          sql += "WHERE buchung.buchungsart = buchungsart.id ";
+          sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
+        }
         if (text != null)
         {
           text = "%" + text.toUpperCase() + "%";
@@ -113,6 +141,14 @@ public class BuchungsartSearchInput extends SearchInput
       {
         DBIterator result = Einstellungen.getDBService()
             .createList(Buchungsart.class);
+        if (art == buchungsarttyp.ANLAGENART)
+        {
+          result.addFilter("buchungsart.abschreibung = FALSE");
+        }
+        else if (art == buchungsarttyp.AFAART)
+        {
+          result.addFilter("buchungsart.abschreibung = TRUE");
+        }
         if (text != null)
         {
           text = "%" + text.toUpperCase() + "%";

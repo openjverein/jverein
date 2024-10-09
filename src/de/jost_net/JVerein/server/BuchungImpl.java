@@ -141,14 +141,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
       throw new ApplicationException("Buchungsdatum liegt mehr als 10 Jahre zurück");
     }
 
-    Jahresabschluss ja = getJahresabschluss();
-    if (ja != null)
-    {
-      throw new ApplicationException(
-          "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
-    }
-
-    /* Pr?fung des Projektes */
+    /* Prüfung des Projektes */
     Projekt projekt = getProjekt();
     if (projekt != null)
     {
@@ -421,6 +414,45 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
       throws RemoteException
   {
     setAttribute("abrechnungslauf", Long.valueOf(abrechnungslauf.getID()));
+  }
+  
+  @Override
+  public Jahresabschluss getAbschluss() throws RemoteException
+  { 
+    Object o = super.getAttribute("abschluss");
+    if (o == null)
+    {
+      return null;
+    }
+
+    Cache cache = Cache.get(Jahresabschluss.class, true);
+    return (Jahresabschluss) cache.get(o);
+  }
+
+  @Override
+  public Long getAbschlussId() throws RemoteException
+  {
+    return (Long) super.getAttribute("abschluss");
+  }
+
+  @Override
+  public void setAbschlussId(Long abschlussId) throws RemoteException
+  {
+    setAttribute("abschluss", abschlussId);
+  }
+
+  @Override
+  public void setAbschluss(Jahresabschluss abschluss)
+      throws RemoteException
+  {
+    if (abschluss != null)
+    {
+      setAttribute("abschluss", Long.valueOf(abschluss.getID()));
+    }
+    else
+    {
+      setAttribute("abschluss", null);
+    }
   }
 
   @Override
@@ -741,6 +773,31 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
           "jameica.messaging.del").sendSyncMessage(qm);
     }
     super.delete();
+  }
+  
+  @Override
+  public void store() throws RemoteException, ApplicationException
+  {
+    store(true);
+  }
+  
+  @Override
+  public void store(boolean check) throws RemoteException, ApplicationException
+  {
+    if (check)
+    {
+      Jahresabschluss ja = getJahresabschluss();
+      if (ja != null)
+      {
+        throw new ApplicationException(
+            "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
+      }
+    }
+    // Wird eine Abschreibung während des Jahresabschlusses generiert muss zuerst der 
+    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung gespeichert 
+    // werden kann. Dann muss man die Buchung auch bei bestehendem Jahresabschluss speichern 
+    // können. In diesem Fall wird mit check false gespeichert.
+    super.store();
   }
   
 }

@@ -17,8 +17,13 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -44,6 +49,53 @@ public class BuchungsklasseDeleteAction implements Action
       {
         return;
       }
+      // Prüfen ob Buchungsklasse schon verwendet wird
+      DBService service = Einstellungen.getDBService();
+      String sql = "SELECT buchungsart.id from buchungsart "
+          + "WHERE (buchungsklasse = ?) ";
+      boolean benutzt = (boolean) service.execute(sql,
+          new Object[] { b.getID() }, new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs)
+            throws RemoteException, SQLException
+        {
+          if (rs.next())
+          {
+            return true;
+          }
+          return false;
+        }
+      });
+      if (benutzt)
+      {
+        throw new ApplicationException(
+            "Die Buchungsklasse wird von einer Buchungsart benutzt und kann nicht gelöscht werden");
+      }
+      
+      service = Einstellungen.getDBService();
+      sql = "SELECT konto.id from konto "
+          + "WHERE (anlagenklasse = ?) ";
+      benutzt = (boolean) service.execute(sql,
+          new Object[] { b.getID() }, new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs)
+            throws RemoteException, SQLException
+        {
+          if (rs.next())
+          {
+            return true;
+          }
+          return false;
+        }
+      });
+      if (benutzt)
+      {
+        throw new ApplicationException(
+            "Die Buchungsklasse wird von einem Anlagenkonto benutzt und kann nicht gelöscht werden");
+      }
+      
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Buchungsklasse löschen");
       d.setText("Wollen Sie diese Buchungsklasse wirklich löschen?");

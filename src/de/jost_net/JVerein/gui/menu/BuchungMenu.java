@@ -49,23 +49,27 @@ public class BuchungMenu extends ContextMenu
 
   public BuchungMenu(BuchungsControl control)
   {
+    boolean geldkonto = control.getGeldkonto();
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new BuchungAction(false), "text-x-generic.png"));
     addItem(new SingleBuchungItem("Duplizieren", new BuchungDuplizierenAction(),
         "edit-copy.png"));
-    addItem(new SingleGegenBuchungItem("Gegenbuchung", new BuchungGegenbuchungAction(),
-        "edit-copy.png"));
+    if (geldkonto)
+      addItem(new SingleGegenBuchungItem("Gegenbuchung", new BuchungGegenbuchungAction(),
+          "edit-copy.png"));
     addItem(new SplitBuchungItem("Splitbuchung", new SplitBuchungAction(),
         "edit-copy.png"));
     addItem(new AufloesenItem("Auflösen", new SplitbuchungBulkAufloesenAction(),
         "unlocked.png"));
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
-    addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
+    if (geldkonto)
+      addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
         new BuchungSollbuchungZuordnungAction(control), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Projekt zuordnen",
         new BuchungProjektZuordnungAction(control), "view-refresh.png"));
-    addItem(new CheckedContextMenuItem("Kontoauszug zuordnen",
+    if (geldkonto)
+      addItem(new CheckedContextMenuItem("Kontoauszug zuordnen",
         new BuchungKontoauszugZuordnungAction(control), "view-refresh.png"));
     addItem(new BuchungItem("Löschen", new BuchungDeleteAction(false),
         "user-trash-full.png"));

@@ -22,7 +22,9 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class KontoView extends AbstractView
 {
@@ -35,12 +37,42 @@ public class KontoView extends AbstractView
     final KontoControl control = new KontoControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Konto");
-    group.addLabelPair("Nummer", control.getNummer());
-    group.addLabelPair("Bezeichnung", control.getBezeichnung());
-    group.addLabelPair("Konto-Eröffnung", control.getEroeffnung());
-    group.addLabelPair("Konto-Auflösung", control.getAufloesung());
-    group.addLabelPair("Hibiscus-Konto", control.getHibiscusId());
-    group.addLabelPair("Gegenbuchung-Buchungsart", control.getBuchungsart());
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addLabelPair("Anlagenkonto", control.getAnlagenkonto());
+    left.addLabelPair("Nummer", control.getNummer());
+    left.addLabelPair("Bezeichnung", control.getBezeichnung());
+    left.addLabelPair("Eröffnungsdatum", control.getEroeffnung());
+    left.addLabelPair("Auflösungsdatum", control.getAufloesung());
+    
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addLabelPair("Hibiscus-Konto", control.getHibiscusId());
+    right.addLabelPair("GB-Buchungsart", control.getBuchungsart());
+    right.addLabelPair("Kommentar", control.getKommentar());
+    
+    LabelGroup group1 = new LabelGroup(getParent(), "Anlagenkonto Daten");
+    ColumnLayout cl1 = new ColumnLayout(group1.getComposite(), 2);
+    
+    SimpleContainer left1 = new SimpleContainer(cl1.getComposite());
+    left1.addLabelPair("Anlagen Buchungsklasse", control.getAnlagenklasse());
+    left1.addLabelPair("Anlagen Buchungsart", control.getAnlagenart());
+    left1.addLabelPair("AfA Buchungsart", control.getAfaart());
+    left1.addLabelPair("Anlagenwert", control.getBetrag());
+    left1.addLabelPair("Anschaffungsdatum", control.getAnschaffung());
+    ButtonArea anlagenbuttons = new ButtonArea();
+    anlagenbuttons.addButton(control.getAutobutton());
+    left1.addButtonArea(anlagenbuttons);
+    
+    SimpleContainer right1 = new SimpleContainer(cl1.getComposite());
+    right1.addLabelPair("Nutzungsdauer", control.getNutzungsdauer());
+    right1.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
+    right1.addLabelPair("Afa Mode", control.getAfaMode());
+    right1.addLabelPair("AfA Erstes Jahr", control.getAfaStart());
+    right1.addLabelPair("AfA Folgejahre", control.getAfaDauer());
+    ButtonArea afabuttons = new ButtonArea();
+    afabuttons.addButton(control.getAfabutton());
+    right1.addButtonArea(afabuttons);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

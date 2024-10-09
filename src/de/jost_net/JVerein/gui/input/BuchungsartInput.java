@@ -38,8 +38,14 @@ public class BuchungsartInput
 {
   private int unterdrueckunglaenge = 0;
   
+  public enum buchungsarttyp {
+    BUCHUNGSART,
+    ANLAGENART,
+    AFAART
+  }
+  
   public AbstractInput getBuchungsartInput(AbstractInput buchungsart,
-      Buchungsart bart) throws RemoteException
+      Buchungsart bart, buchungsarttyp art) throws RemoteException
   {
     switch (Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl())
     {
@@ -52,9 +58,30 @@ public class BuchungsartInput
           Date db = cal.getTime();
           cal.add(Calendar.MONTH, - unterdrueckunglaenge);
           Date dv = cal.getTime();
-          String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
-          sql += "WHERE buchung.buchungsart = buchungsart.id ";
-          sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
+          String sql;
+          if (art == buchungsarttyp.ANLAGENART)
+          {
+            sql = "SELECT DISTINCT buchungsart.* from buchungsart, konto ";
+            sql += "WHERE (konto.anlagenart = buchungsart.id) ";
+            sql += "AND (buchungsart.abschreibung = FALSE) ";
+            sql += "AND (konto.aufloesung IS NULL OR "
+                + "(konto.aufloesung >= ? AND konto.aufloesung <= ?)) ";
+          }
+          else if (art == buchungsarttyp.AFAART)
+          {
+            sql = "SELECT DISTINCT buchungsart.* from buchungsart, konto ";
+            sql += "WHERE (konto.afaart = buchungsart.id) ";
+            sql += "AND (buchungsart.abschreibung = TRUE) ";
+            sql += "AND (konto.aufloesung IS NULL OR "
+                + "(konto.aufloesung >= ? AND konto.aufloesung <= ?)) ";
+          }
+          else
+          {
+            sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
+            sql += "WHERE buchung.buchungsart = buchungsart.id ";
+            sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
+          }
+
           if (Einstellungen.getEinstellung()
               .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
           {
@@ -87,6 +114,15 @@ public class BuchungsartInput
         {
           DBIterator<Buchungsart> it = Einstellungen.getDBService()
               .createList(Buchungsart.class);
+          if (art == buchungsarttyp.ANLAGENART)
+          {
+            it.addFilter("buchungsart.abschreibung = FALSE");
+          }
+          else if (art == buchungsarttyp.AFAART)
+          {
+            it.addFilter("buchungsart.abschreibung = TRUE");
+          }
+
           if (Einstellungen.getEinstellung()
               .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
           {
@@ -116,7 +152,7 @@ public class BuchungsartInput
       case BuchungBuchungsartAuswahl.SearchInput:
       default: // default soll SearchInput sein. Eigentlich sollten die
         // Settings immer gesetzt sein, aber man weiss ja nie.
-        buchungsart = new BuchungsartSearchInput();
+        buchungsart = new BuchungsartSearchInput(art);
         switch (Einstellungen.getEinstellung().getBuchungsartSort())
         {
           case BuchungsartSort.NACH_NUMMER:

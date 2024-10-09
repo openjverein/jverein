@@ -17,45 +17,37 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.BuchungsartControl;
+import de.jost_net.JVerein.gui.control.AnlagenlisteControl;
+import de.jost_net.JVerein.gui.parts.QuickAccessPart;
+import de.jost_net.JVerein.gui.parts.VonBisPart;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class BuchungsartView extends AbstractView
+public class AnlagenlisteView extends AbstractView
 {
-
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Buchungsart");
+    GUI.getView().setTitle("Anlagenverzeichnis");
 
-    final BuchungsartControl control = new BuchungsartControl(this);
+    final AnlagenlisteControl control = new AnlagenlisteControl(this);
+  
+    VonBisPart vpart = new VonBisPart(control, false);
+    vpart.paint(this.getParent());
+    
+    QuickAccessPart qpart = new QuickAccessPart(control, false);
+    qpart.paint(this.getParent());
 
-    LabelGroup group = new LabelGroup(getParent(), "Buchungsart");
-    group.addLabelPair("Nummer", control.getNummer(true));
-    group.addLabelPair("Bezeichnung", control.getBezeichnung());
-    group.addLabelPair("Art", control.getArt());
-    group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
-    group.addLabelPair("Spende", control.getSpende());
-    group.addLabelPair("Abschreibung", control.getAbschreibung());
-    group.addLabelPair("Steuersatz", control.getSteuersatz());
-    group.addLabelPair("Steuer Buchungsart", control.getSteuerBuchungsart());
-    // TODO Jo Dokumentation nachpflegen
+    LabelGroup group = new LabelGroup(getParent(), "Liste", true);
+    group.addPart(control.getSaldoList());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.BUCHUNGSART, false, "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
+        DokumentationUtil.ANLAGENLISTE, false, "question-circle.png");
+    buttons.addButton(control.getStartAuswertungCSVButton());
+    buttons.addButton(control.getStartAuswertungButton());
     buttons.paint(this.getParent());
   }
 }

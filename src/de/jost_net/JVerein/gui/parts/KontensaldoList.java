@@ -63,7 +63,7 @@ public class KontensaldoList extends TablePart implements Part
     ArrayList<SaldoZeile> zeile = null;
     try
     {
-      zeile = getInfo();
+      zeile = getInfo(Einstellungen.getEinstellung().getSummenAnlagenkonto());
 
       if (saldoList == null)
       {
@@ -106,7 +106,7 @@ public class KontensaldoList extends TablePart implements Part
     return saldoList;
   }
 
-  public ArrayList<SaldoZeile> getInfo() throws RemoteException
+  public ArrayList<SaldoZeile> getInfo(boolean summensaldo) throws RemoteException
   {
     ArrayList<SaldoZeile> zeile = new ArrayList<>();
     Konto k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
@@ -118,27 +118,56 @@ public class KontensaldoList extends TablePart implements Part
     double umbuchungen = 0;
     double endbestand = 0;
     double jahressaldo = 0;
+    double sanfangsbestand = 0;
+    double seinnahmen = 0;
+    double sausgaben = 0;
+    double sumbuchungen = 0;
+    double sendbestand = 0;
+    Konto konto = null;
+    
     if (von != null)
     {
       SaldoZeile sz = null;
       while (konten.hasNext())
       {
-        sz = new SaldoZeile(von, bis, (Konto) konten.next());
-        anfangsbestand += (Double) sz.getAttribute("anfangsbestand");
-        einnahmen += (Double) sz.getAttribute("einnahmen");
-        ausgaben += (Double) sz.getAttribute("ausgaben");
-        umbuchungen += (Double) sz.getAttribute("umbuchungen");
-        endbestand += (Double) sz.getAttribute("endbestand");
-        jahressaldo += (Double) sz.getAttribute("endbestand")
-            - (Double) sz.getAttribute("anfangsbestand");
-        zeile.add(sz);
+        konto = konten.next();
+        sz = new SaldoZeile(von, bis, konto);
+        if (summensaldo && konto.getAnlagenkonto())
+        {
+          sanfangsbestand += (Double) sz.getAttribute("anfangsbestand");
+          seinnahmen += (Double) sz.getAttribute("einnahmen");
+          sausgaben += (Double) sz.getAttribute("ausgaben");
+          sumbuchungen += (Double) sz.getAttribute("umbuchungen");
+          sendbestand += (Double) sz.getAttribute("endbestand");
+          jahressaldo += (Double) sz.getAttribute("endbestand")
+              - (Double) sz.getAttribute("anfangsbestand");
+        }
+        else
+        {
+          anfangsbestand += (Double) sz.getAttribute("anfangsbestand");
+          einnahmen += (Double) sz.getAttribute("einnahmen");
+          ausgaben += (Double) sz.getAttribute("ausgaben");
+          umbuchungen += (Double) sz.getAttribute("umbuchungen");
+          endbestand += (Double) sz.getAttribute("endbestand");
+          jahressaldo += (Double) sz.getAttribute("endbestand")
+              - (Double) sz.getAttribute("anfangsbestand");
+          zeile.add(sz);
+        }
       }
+    }
+    if (summensaldo)
+    {
+      k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
+      k.setNummer("");
+      k.setBezeichnung("Summe Anlagenkonten");
+      zeile.add(new SaldoZeile(k, sanfangsbestand, seinnahmen, sausgaben,
+          sumbuchungen, sendbestand));
     }
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
     k.setNummer("");
-    k.setBezeichnung("Summe");
-    zeile.add(new SaldoZeile(k, anfangsbestand, einnahmen, ausgaben,
-        umbuchungen, endbestand));
+    k.setBezeichnung("Summe aller Konten");
+    zeile.add(new SaldoZeile(k, anfangsbestand + sanfangsbestand, einnahmen + seinnahmen, 
+        ausgaben + sausgaben, umbuchungen + sumbuchungen, endbestand + sendbestand));
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
     k.setNummer("");
     k.setBezeichnung("Überschuss/Verlust(-)");

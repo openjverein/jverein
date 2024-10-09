@@ -55,9 +55,9 @@ public class KontenSaldoPDF
           BaseColor.LIGHT_GRAY);
       reporter.addHeaderColumn("Um-\nbuchungen", Element.ALIGN_CENTER, 45,
           BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Endbestand", Element.ALIGN_CENTER, 45,
+      reporter.addHeaderColumn("Endbestand", Element.ALIGN_CENTER, 55,
           BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Bemerkung", Element.ALIGN_CENTER, 100,
+      reporter.addHeaderColumn("Bemerkung", Element.ALIGN_CENTER, 90,
           BaseColor.LIGHT_GRAY);
       reporter.createHeader();
 

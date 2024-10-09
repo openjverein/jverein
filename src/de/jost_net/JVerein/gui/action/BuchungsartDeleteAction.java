@@ -78,7 +78,7 @@ public class BuchungsartDeleteAction implements Action
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Buchungsart.";
+      String fehler = "Die Buchungsart wird bereits benutzt und kann nicht gelöscht werden";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

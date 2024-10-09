@@ -49,7 +49,62 @@ public interface Konto extends DBObject
 
   public Long getBuchungsartId() throws RemoteException;
 
-  public void setBuchungsart(Long buchungsart) throws RemoteException;
+  public void setBuchungsartId(Long buchungsartId) throws RemoteException;
+  
+  public Boolean getAnlagenkonto() throws RemoteException;
+
+  public void setAnlagenkonto(Boolean anlagenkonto)
+      throws RemoteException;
+  
+  public Buchungsart getAnlagenart() throws RemoteException;
+
+  public Long getAnlagenartId() throws RemoteException;
+
+  public void setAnlagenartId(Long anlagensartId) throws RemoteException;
+  
+  public Buchungsklasse getAnlagenklasse() throws RemoteException;
+
+  public Long getAnlagenklasseId() throws RemoteException;
+
+  public void setAnlagenklasseId(Long anlagenklasseId) throws RemoteException;
+  
+  public Buchungsart getAfaart() throws RemoteException;
+
+  public Long getAfaartId() throws RemoteException;
+
+  public void setAfaartId(Long afaartId) throws RemoteException;
+  
+  public Integer getNutzungsdauer() throws RemoteException;
+
+  public void setNutzungsdauer(Integer auszugsnummer) throws RemoteException;
+  
+  public Double getBetrag() throws RemoteException;
+
+  public void setBetrag(Double betrag) throws RemoteException;
+  
+  public String getKommentar() throws RemoteException;
+
+  public void setKommentar(String kommentar) throws RemoteException;
+  
+  public Date getAnschaffung() throws RemoteException;
+
+  public void setAnschaffung(Date anschaffung) throws RemoteException;
+  
+  public Double getAfaStart() throws RemoteException;
+
+  public void setAfaStart(Double afastart) throws RemoteException;
+  
+  public Double getAfaDauer() throws RemoteException;
+
+  public void setAfaDauer(Double afadauer) throws RemoteException;
+  
+  public Double getAfaRestwert() throws RemoteException;
+
+  public void setAfaRestwert(Double afarestwert) throws RemoteException;
+  
+  public Integer getAfaMode() throws RemoteException;
+
+  public void setAfaMode(Integer afamode) throws RemoteException;
 
   public DBIterator<Konto> getKontenEinesJahres(Geschaeftsjahr gj)
       throws RemoteException;
