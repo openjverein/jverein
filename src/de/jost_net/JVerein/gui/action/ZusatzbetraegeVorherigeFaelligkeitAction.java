@@ -69,8 +69,8 @@ public class ZusatzbetraegeVorherigeFaelligkeitAction implements Action
             e);
         return;
       }
-      int ind = table.removeItem(z);
       z.vorherigeFaelligkeit();
+      int ind = table.removeItem(z);
       z.store();
       table.addItem(z, ind);
       GUI.getStatusBar().setSuccessText("Fälligkeitsdatum gesetzt.");
