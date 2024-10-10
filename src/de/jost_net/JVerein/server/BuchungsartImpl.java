@@ -314,4 +314,21 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
     super.store();
     Cache.get(Buchungsart.class, false).put(this); // Cache aktualisieren
   }
+  
+  public boolean equals(Object bart)
+  {
+    try
+    {
+      if (this.getID().equalsIgnoreCase(((Buchungsart) bart).getID()))
+        return true;
+      else
+        return false;
+    }
+    catch (RemoteException e)
+    {
+      // Auto-generated catch block
+      e.printStackTrace();
+      return false;
+    }
+  }
 }

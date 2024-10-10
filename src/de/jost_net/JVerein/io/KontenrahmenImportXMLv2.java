@@ -118,6 +118,11 @@ public class KontenrahmenImportXMLv2 implements Importer
         buchungsart.setBuchungsklasseId(Long.valueOf(bkla.getID()));
       }
       buchungsart.setStatus(buaelement.getAttribute("status", 0));
+      String abschreibung = buaelement.getAttribute("abschreibung", "false");
+      if (abschreibung.equalsIgnoreCase("true"))
+      {
+        buchungsart.setAbschreibung(true);
+      }
       buchungsart.store();
       Double steuersatz = Double.valueOf(buaelement.getAttribute("steuersatz", "0.00"));
       if (steuersatz != 0)

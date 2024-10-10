@@ -123,6 +123,7 @@ public class KontenrahmenExportXML extends KontenrahmenExport
     else
       xmlba.setAttribute("steuer_buchungsart", "");
     xmlba.setAttribute("status", buchungsart.getStatus() + "");
+    xmlba.setAttribute("abschreibung", buchungsart.getAbschreibung().toString());
     xmlklbarten.addChild(xmlba);
   }
 

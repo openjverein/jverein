@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.willuhn.jameica.gui.Action;
@@ -186,6 +187,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       return buchungsarten;
     }
     buchungsarten = new BuchungsartInput().getBuchungsartInput(buchungsarten, null,
+        buchungsarttyp.BUCHUNGSART,
         Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
     buchungsarten.addListener(new Listener()
     {
