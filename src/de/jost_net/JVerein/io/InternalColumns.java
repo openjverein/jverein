@@ -25,8 +25,7 @@ public enum InternalColumns
   ADRZUSATZ("Adressierungszusatz", false), //
   ANREDE("Anrede", true), //
   AUSTRITTSDATUM("Austritt", true), //
-  BIC("BIC", false), // TODO true), //
-  BLZ("Bankleitzahl", true), //
+  BIC("BIC", false),  //
   BEITRAG("Beitrag_1", true), //
   BEITRAGSART("Beitragsart_1", true), //
   BEITRAGINDI("Individuellerbeitrag", false), //
@@ -35,7 +34,6 @@ public enum InternalColumns
   GEBDATUM("Geburtsdatum", true), //
   GESCHLECHT("Geschlecht", true), //
   IBAN("IBAN", true), //
-  KONTONR("Kontonummer", true), //
   KTOIPERSONENART("KtoiPersonenart", false), //
   KTOIANREDE("KtoiAnrede", false), //
   KTOITITEL("KtoiTitel", false), //

@@ -31,6 +31,8 @@ import org.eclipse.swt.widgets.FileDialog;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.EigenschaftGruppe;
+import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatJJJJMMTT;
 import de.willuhn.datasource.BeanUtil;
@@ -42,10 +44,8 @@ import de.willuhn.datasource.serialize.Reader;
 import de.willuhn.datasource.serialize.XmlReader;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.hbci.rmi.Protokoll;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
-import de.willuhn.logging.Level;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -72,13 +72,13 @@ public class BackupRestoreAction implements Action
         return;
       }
 
-      // Vom System eingefügte Sätze löschen. Ansonsten gibt es duplicate keys
-      DBIterator<Adresstyp> itatyp = Einstellungen.getDBService()
-          .createList(Adresstyp.class);
-      while (itatyp.hasNext())
+      // Vom System eingefügte Sätze löschen. Ansonsten gibt es duplicate keys      
+      DBIterator<EigenschaftGruppe> iteigr = Einstellungen.getDBService()
+          .createList(EigenschaftGruppe.class);
+      while (iteigr.hasNext())
       {
-        Adresstyp a = (Adresstyp) itatyp.next();
-        a.delete();
+        EigenschaftGruppe gr = (EigenschaftGruppe) iteigr.next();
+        gr.delete();
       }
 
     }
@@ -112,6 +112,7 @@ public class BackupRestoreAction implements Action
       /**
        * @see de.willuhn.jameica.system.BackgroundTask#run(de.willuhn.util.ProgressMonitor)
        */
+      @SuppressWarnings("unused")
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
@@ -150,27 +151,31 @@ public class BackupRestoreAction implements Action
 
           long count = 1;
           GenericObject o = null;
+          String classOld = null;
           while ((o = reader.read()) != null)
           {
+            if(classOld != null && !o.getClass().getSimpleName().equals(classOld))
+            {
+              monitor.setStatusText(String.format("%s importiert", classOld));
+              classOld = o.getClass().getSimpleName();
+            }
+            if(classOld == null)
+            {
+              classOld = o.getClass().getSimpleName();
+            }
+            
             try
             {
               ((AbstractDBObject) o).insert();
+              if(o instanceof Einstellung)
+              {
+                Einstellungen.reloadEinstellung();
+              }
             }
             catch (Exception e)
             {
-              if (o instanceof Protokoll)
-              {
-                // Bei den Protokollen kann das passieren. Denn beim Import der
-                // Datei werden vorher
-                // die Konten importiert. Und deren Anlage fuehrt auch bereits
-                // zur Erstellung von
-                // Protokollen, deren IDs dann im Konflikt zu diesen hier
-                // stehen.
-                Logger.write(Level.DEBUG, "unable to import "
-                    + o.getClass().getName() + ":" + o.getID() + ", skipping",
-                    e);
-              }
-              else
+              //Fehler Bei Adresstyp ignorieren, da hier bereits "Spender" und "Mitglied" existiert und es einen DUPLICATE KEY gibt
+              if(!(o instanceof Adresstyp))
               {
                 Logger.error("unable to import " + o.getClass().getName() + ":"
                     + o.getID() + ", skipping", e);
@@ -178,9 +183,12 @@ public class BackupRestoreAction implements Action
                     BeanUtil.toString(o), e.getMessage()));
               }
             }
-            if (count++ % 100 == 0)
+
+            if (count++ % 1000 == 0)
               monitor.addPercentComplete(1);
           }
+          if(o != null)
+            monitor.setStatusText(String.format("%s importiert", o.getClass().getSimpleName()));
 
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
           monitor.setStatusText("Backup importiert");

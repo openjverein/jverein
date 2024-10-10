@@ -53,6 +53,8 @@ import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.OBanToo.SEPA.IBAN;
+import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -168,6 +170,7 @@ public class Migration
         beitragsgruppe.length() > 30 ? beitragsgruppe.substring(0, 29)
             : beitragsgruppe);
     b.setBetrag(beitrag);
+    b.setHasAltersstaffel(false);
     b.store();
 
     return (Integer.valueOf(b.getID())).intValue();
@@ -634,7 +637,7 @@ public class Migration
       else if (m.getAnrede().startsWith("Herr"))
         geschlecht = GeschlechtInput.MAENNLICH;
       else
-        geschlecht = "";
+        geschlecht = GeschlechtInput.OHNEANGABE;
     }
     m.setGeschlecht(geschlecht);
 
@@ -680,8 +683,8 @@ public class Migration
        */
       zahlweg = Zahlungsweg.BASISLASTSCHRIFT;
 
-      boolean neuebankverbindung = iban != null && bic != null
-          && iban.length() > 0 && bic.length() > 0;
+      boolean neuebankverbindung = iban != null
+          && iban.length() > 0;
 
       if (!neuebankverbindung)
       {
@@ -707,7 +710,27 @@ public class Migration
           .log(String.format("%s: ungueltige Zahlungsart. Bar wird angenommen.",
               Adressaufbereitung.getNameVorname(m)));
     }
-    m.setBic(bic);
+    if (bic != null && bic.length() != 0)
+    {
+      m.setBic(bic);
+    }
+    else
+    {
+      if (m.getBic() == "" && m.getIban() != null)
+      {
+        IBAN i;
+        try
+        {
+          i = new IBAN(iban);
+        }
+        catch (SEPAException e)
+        {
+          throw new ApplicationException(String.format(
+              "%s: IBAN ungültig!", Adressaufbereitung.getNameVorname(m)));
+        }
+        m.setBic(i.getBIC());
+      }
+    }
     m.setIban(iban);
     m.setMandatVersion(1);
     String m_d = getResultFrom(results, InternalColumns.MANDATDATUM);
