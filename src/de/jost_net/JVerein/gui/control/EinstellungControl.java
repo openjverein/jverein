@@ -32,6 +32,7 @@ import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.SEPALandInput;
 import de.jost_net.JVerein.gui.input.SEPALandObject;
+import de.jost_net.JVerein.keys.AfaOrt;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -303,6 +304,8 @@ public class EinstellungControl extends AbstractControl
   
   private CheckboxInput freiebuchungsklasse;
 
+  private CheckboxInput summenAnlagenkonto;
+
 
   private IntegerInput qrcodesize;
 
@@ -324,6 +327,10 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput qrcodekuerzen;
   
+  private DecimalInput afarestwert;
+  
+  private SelectInput afaort;
+
   private TextInput beitragaltersstufen;
 
   /**
@@ -1978,6 +1985,41 @@ public class EinstellungControl extends AbstractControl
     anhangspeichern = new CheckboxInput(Einstellungen.getEinstellung().getAnhangSpeichern());
     return anhangspeichern;
   }
+  
+  public CheckboxInput getSummenAnlagenkonto() throws RemoteException 
+  {
+    if (summenAnlagenkonto != null) 
+    {
+      return summenAnlagenkonto;
+    }
+    summenAnlagenkonto = new CheckboxInput(Einstellungen.getEinstellung().getSummenAnlagenkonto());
+    return summenAnlagenkonto;
+  }
+  
+  public DecimalInput getAfaRestwert() throws RemoteException
+  {
+    if (afarestwert != null)
+    {
+      return afarestwert;
+    }
+    afarestwert = new DecimalInput(Einstellungen.getEinstellung().getAfaRestwert(),
+        new DecimalFormat("###0.00"));
+    return afarestwert;
+  }
+  
+  public SelectInput getAfaOrt() throws RemoteException
+  {
+    if (afaort != null)
+    {
+      return afaort;
+    }
+    Boolean isinjahresabschluss = Einstellungen.getEinstellung().getAfaInJahresabschluss();
+    if (isinjahresabschluss)
+      afaort = new SelectInput(AfaOrt.getArray(), new AfaOrt(AfaOrt.JAHRESABSCHLUSS));
+    else
+      afaort = new SelectInput(AfaOrt.getArray(),  new AfaOrt(AfaOrt.ANLAGENBUCHUNGEN));
+    return afaort;
+  }
 
   public void handleStoreAllgemein()
   {
@@ -2049,6 +2091,7 @@ public class EinstellungControl extends AbstractControl
       e.setDokumentenspeicherung((Boolean) dokumentenspeicherung.getValue());
       e.setIndividuelleBeitraege((Boolean) individuellebeitraege.getValue());
       e.setExterneMitgliedsnummer((Boolean) externemitgliedsnummer.getValue());
+      e.setSummenAnlagenkonto((Boolean) summenAnlagenkonto.getValue());
       Altermodel amValue = (Altermodel) altersmodel.getValue();
       e.setAltersModel(amValue.getKey());
       BuchungBuchungsartAuswahl bbaAuswahl = (BuchungBuchungsartAuswahl) buchungBuchungsartAuswahl
@@ -2056,6 +2099,10 @@ public class EinstellungControl extends AbstractControl
       e.setBuchungBuchungsartAuswahl(bbaAuswahl.getKey());
       e.setBuchungsartSort(((BuchungsartSort) buchungsartsort.getValue())
           .getKey());
+      if (((AfaOrt) afaort.getValue()).getKey() == 0)
+        e.setAfaInJahresabschluss(false);
+      else
+        e.setAfaInJahresabschluss(true);
 
       e.store();
       Einstellungen.setEinstellung(e);
@@ -2227,6 +2274,7 @@ public class EinstellungControl extends AbstractControl
       e.setUnterdrueckungLaenge(ulength);
       Integer klength = (Integer) unterdrueckungkonten.getValue();
       e.setUnterdrueckungKonten(klength);
+      e.setAfaRestwert((Double) afarestwert.getValue());
       e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());
       e.setOptiert((Boolean) getOptiert().getValue());
       e.setBuchungsklasseInBuchung((Boolean) getFreieBuchungsklasse().getValue());

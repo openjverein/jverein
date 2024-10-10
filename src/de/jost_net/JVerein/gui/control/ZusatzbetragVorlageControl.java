@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
@@ -199,8 +200,9 @@ public class ZusatzbetragVorlageControl extends AbstractControl
       return buchungsart;
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getZusatzbetragVorlage().getBuchungsart(),
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+      getZusatzbetragVorlage().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
+      Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+
     return buchungsart;
   }
 

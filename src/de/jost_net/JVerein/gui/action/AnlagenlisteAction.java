@@ -16,40 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
-import de.jost_net.JVerein.gui.dialogs.SplitBuchungDialog;
-import de.willuhn.jameica.gui.AbstractView;
+import de.jost_net.JVerein.gui.view.AnlagenlisteView;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
+import de.willuhn.jameica.gui.GUI;
 
-public class SplitBuchungDetailAction implements Action
+public class AnlagenlisteAction implements Action
 {
-  private BuchungsControl control;
-
-  private AbstractView view;
-
-  public SplitBuchungDetailAction(BuchungsControl control, AbstractView view)
-  {
-    this.control = control;
-    this.view = view;
-  }
-
   @Override
-  public void handleAction(Object context) throws ApplicationException
+  public void handleAction(Object context)
   {
-    BuchungsControl bc = new BuchungsControl(view, Kontenart.GELDKONTO);
-    SplitBuchungDialog spd = new SplitBuchungDialog(bc, view);
-    try
-    {
-      spd.open();
-      control.refreshSplitbuchungen();
-    }
-    catch (Exception e)
-    {
-      Logger.error("Fehler", e);
-      throw new ApplicationException(e);
-    }
+    GUI.startView(AnlagenlisteView.class.getName(), null);
   }
 }

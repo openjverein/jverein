@@ -87,6 +87,15 @@ public interface Buchung extends DBObject
 
   public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
 
+  public Jahresabschluss getAbschluss() throws RemoteException;
+
+  public Long getAbschlussId() throws RemoteException;
+
+  public void setAbschluss(Jahresabschluss abschluss)
+      throws RemoteException;
+
+  public void setAbschlussId(Long abschlussId) throws RemoteException;
+  
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException;
 
   public Long getAbrechnungslaufID() throws RemoteException;
@@ -156,5 +165,7 @@ public interface Buchung extends DBObject
   public boolean isToDelete() throws RemoteException;
 
   public void plausi() throws RemoteException, ApplicationException;
+  
+  public void store(boolean check) throws RemoteException, ApplicationException;
 
 }

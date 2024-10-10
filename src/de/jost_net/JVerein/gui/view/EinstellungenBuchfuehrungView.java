@@ -42,6 +42,7 @@ public class EinstellungenBuchfuehrungView extends AbstractView
         control.getUnterdrueckungKonten());
     cont.addLabelPair("Buchungsarten die seit x Monaten nicht benutzt werden unterdrücken",
         control.getUnterdrueckungLaenge());
+    cont.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
     cont.addInput(control.getAutoBuchunguebernahme());
     cont.addInput(control.getAutomatischeBuchungskorrekturHibiscus());
     cont.addInput(control.getUnterdrueckungOhneBuchung());

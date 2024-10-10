@@ -54,6 +54,8 @@ public class BuchungQuery
 
   private Boolean hasMitglied;
   
+  private boolean geldkonto;
+  
   private HashMap<String, String> sortValues = new HashMap<String, String>();
 
   private void SortHashMap() {
@@ -76,7 +78,7 @@ public class BuchungQuery
 
   public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
       Buchungsart buchungsart, Projekt projekt, String text, String betrag,
-      Boolean hasMitglied, String mitglied)
+      Boolean hasMitglied, String mitglied, boolean geldkonto)
   {
     this.datumvon = datumvon;
     this.datumbis = datumbis;
@@ -86,6 +88,7 @@ public class BuchungQuery
     this.text = text;
     this.betrag = betrag;
     this.hasMitglied = hasMitglied;
+    this.geldkonto = geldkonto;
     this.mitglied = mitglied;
   }
   
@@ -173,15 +176,23 @@ public class BuchungQuery
     {
       it.addFilter("konto = ? ", konto.getID());
     }
+    else if (!geldkonto)
+    {
+      it.join("konto");
+      it.addFilter("konto.id = buchung.konto");
+      it.addFilter("anlagenkonto = true");
+    }
+
+
     if (buchungart != null)
     {
       if (buchungart.getNummer() == -1)
       {
-        it.addFilter("buchungsart is null ");
+        it.addFilter("buchung.buchungsart is null ");
       }
       else if (buchungart.getNummer() >= 0)
       {
-        it.addFilter("buchungsart = ? ", buchungart.getID());
+        it.addFilter("buchung.buchungsart = ? ", buchungart.getID());
       }
     }
 

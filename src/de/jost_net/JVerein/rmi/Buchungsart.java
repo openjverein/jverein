@@ -55,4 +55,9 @@ public interface Buchungsart extends DBObject
   public int getStatus() throws RemoteException;
 
   public void setStatus(int status) throws RemoteException;
+
+  public Boolean getAbschreibung() throws RemoteException;
+
+  public void setAbschreibung(Boolean abschreibung) throws RemoteException;
+
 }

@@ -21,6 +21,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BuchungImportAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
@@ -40,15 +41,15 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungslisteView extends AbstractView
+public class AnlagenbuchungenListeView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Buchungen");
+    GUI.getView().setTitle("Anlagenbuchungen");
     
-    final BuchungsControl control = new BuchungsControl(this, Kontenart.GELDKONTO);
+    final BuchungsControl control = new BuchungsControl(this, Kontenart.ANLAGEKONTO);
 
     LabelGroup group = new LabelGroup(getParent(), "Konto");
     group.addLabelPair("Konto", control.getSuchKonto());
@@ -66,11 +67,9 @@ public class BuchungslisteView extends AbstractView
     left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
     left.addLabelPair("Projekt", control.getSuchProjekt());
     left.addLabelPair("Betrag", control.getSuchBetrag());
-    left.addLabelPair("Mitglied zugeordnet?", control.getSuchMitgliedZugeordnet());
     right.addLabelPair("Von Datum", control.getVondatum());
     right.addLabelPair("Bis Datum", control.getBisdatum());
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
-    right.addLabelPair("Mitglied Name", control.getMitglied());
     
     ButtonArea buttons1 = new ButtonArea();
     buttons1.addButton(control.getZurueckButton());
@@ -125,14 +124,15 @@ public class BuchungslisteView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
+        DokumentationUtil.ANLAGENBUCHUNGEN, false, "question-circle.png");
+    if (!control.getGeldkonto() && !Einstellungen.getEinstellung().getAfaInJahresabschluss())
+      buttons.addButton(control.getAfaButton());
     buttons.addButton("Import", new BuchungImportAction(), null, false,
         "file-import.png");
     buttons.addButton(control.getStartCSVAuswertungButton());
     buttons.addButton(control.getStartAuswertungBuchungsjournalButton());
     buttons.addButton(control.getStartAuswertungEinzelbuchungenButton());
     buttons.addButton(control.getStartAuswertungSummenButton());
-    buttons.addButton(control.getStarteBuchungMitgliedskontoZuordnungAutomatischButton());
     buttons.addButton("Neu", new BuchungNeuAction(control), control, false,
         "document-new.png");
     buttons.paint(this.getParent());

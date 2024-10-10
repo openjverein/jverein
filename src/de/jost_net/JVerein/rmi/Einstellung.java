@@ -600,6 +600,18 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public void setBuchungsklasseInBuchung(Boolean bkinbuchung) throws RemoteException;
 
+  public Boolean getSummenAnlagenkonto() throws RemoteException;
+
+  public void setSummenAnlagenkonto(Boolean summenanlagenkonto) throws RemoteException;
+  
+  public Double getAfaRestwert() throws RemoteException;
+
+  public void setAfaRestwert(Double afarestwert) throws RemoteException;
+  
+  public Boolean getAfaInJahresabschluss() throws RemoteException;
+
+  public void setAfaInJahresabschluss(Boolean afainjahresabschluss) throws RemoteException;
+
   public String getBeitragAltersstufen() throws RemoteException;
 
   public void setBeitragAltersstufen(String altersstufen) throws RemoteException;

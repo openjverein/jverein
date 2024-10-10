@@ -18,7 +18,6 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.view.BuchungView;
 import de.jost_net.JVerein.gui.view.SplitBuchungView;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
@@ -47,16 +46,7 @@ public class BuchungAction implements Action
     }
     else
     {
-      try
-      {
-        b = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
-            null);
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung einer neuen Buchung", e);
-      }
+      throw new ApplicationException("Keine Buchung ausgewählt");
     }
     try
     {

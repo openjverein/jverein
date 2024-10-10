@@ -83,6 +83,8 @@ public class BuchungsartControl extends AbstractControl
   private SelectInput buchungsklasse;
 
   private CheckboxInput spende;
+  
+  private CheckboxInput abschreibung;
 
   private SelectInput steuersatz;
   
@@ -239,6 +241,16 @@ public class BuchungsartControl extends AbstractControl
     });
     return spende;
   }
+  
+  public CheckboxInput getAbschreibung() throws RemoteException
+  {
+    if (abschreibung != null)
+    {
+      return abschreibung;
+    }
+    abschreibung = new CheckboxInput(getBuchungsart().getAbschreibung());
+    return abschreibung;
+  }
 
   public SelectInput getSteuersatz() throws RemoteException
   {
@@ -279,7 +291,7 @@ public class BuchungsartControl extends AbstractControl
             DBIterator<Buchungsart> it = getFilteredBuchungsart();
             @SuppressWarnings("unchecked")
             List<Buchungsart> buchungsartenListe = it != null ? PseudoIterator.asList(it) : null;
-            steuer_buchungsart.setPleaseChoose("Bitte wählen");
+            steuer_buchungsart.setPleaseChoose("Bitte auswählen");
             steuer_buchungsart.setAttribute(getBuchungartAttribute());
             steuer_buchungsart.setList(buchungsartenListe);
             steuer_buchungsart.enable();
@@ -311,7 +323,7 @@ public class BuchungsartControl extends AbstractControl
       @SuppressWarnings("unchecked")
       List<Buchungsart> buchungsartenListe = it != null ? PseudoIterator.asList(it) : null;
       steuer_buchungsart.setAttribute(getBuchungartAttribute());
-      steuer_buchungsart.setPleaseChoose("Bitte wählen");
+      steuer_buchungsart.setPleaseChoose("Bitte auswählen");
       steuer_buchungsart.setPreselected(getBuchungsart().getSteuerBuchungsart());
       steuer_buchungsart.setList(buchungsartenListe);
       steuer_buchungsart.setMandatory(true);
@@ -451,6 +463,7 @@ public class BuchungsartControl extends AbstractControl
         b.setBuchungsklasseId(null);
       }
       b.setSpende((Boolean) spende.getValue());
+      b.setAbschreibung((Boolean) abschreibung.getValue());
       double steuersatzValue = (SteuersatzBuchungsart) steuersatz.getValue() == null ? 0 : ((SteuersatzBuchungsart) steuersatz.getValue()).getSteuersatz();
       b.setSteuersatz(steuersatzValue);
       if (steuer_buchungsart.getValue() instanceof Buchungsart) 
@@ -562,6 +575,8 @@ public class BuchungsartControl extends AbstractControl
       buchungsartList.addColumn("Buchungsklasse", "buchungsklasse",
           new BuchungsklasseFormatter());
       buchungsartList.addColumn("Spende", "spende", new JaNeinFormatter());
+      buchungsartList.addColumn("Abschreibung", "abschreibung",
+          new JaNeinFormatter(), false, Column.ALIGN_RIGHT);
       buchungsartList.addColumn("Steuersatz", "steuersatz", new Formatter()
       {
         @Override

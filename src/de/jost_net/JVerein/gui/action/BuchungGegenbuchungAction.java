@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
 import de.jost_net.JVerein.gui.dialogs.KontoAuswahlDialog;
 import de.jost_net.JVerein.gui.view.BuchungView;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -53,7 +54,7 @@ public class BuchungGegenbuchungAction implements Action
       if (konto == null)
       {
         KontoAuswahlDialog d = new KontoAuswahlDialog(
-            KontoAuswahlDialog.POSITION_CENTER, false, false, true);
+            KontoAuswahlDialog.POSITION_CENTER, false, false, true, Kontenart.ALLE);
         konto = (Konto) d.open();
       }
       if (konto != null)
