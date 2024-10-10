@@ -21,11 +21,15 @@ import java.awt.Image;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -44,12 +48,17 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.MitgliedskontoVar;
+import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -509,13 +518,18 @@ public class FormularAufbereitung
     return stringVal.toString();
   }
   
+  public void printNeueSeite()
+  {
+    // Neue Seite mit Anschrift für Fenster in querem Brief
+      doc.newPage();
+  }
+  
   public void printAdressfenster(String aussteller, String empfaenger)
       throws RemoteException
   {
     // Neue Seite mit Anschrift für Fenster in querem Brief
     try
     {
-      doc.newPage();
       doc.add(new Paragraph(" ", Reporter.getFreeSans(12)));
       doc.add(new Paragraph("\n\n\n\n\n\n", Reporter.getFreeSans(12)));
       Paragraph paragraph = new Paragraph(aussteller, Reporter.getFreeSansUnderline(8));
@@ -524,6 +538,42 @@ public class FormularAufbereitung
       paragraph = new Paragraph(empfaenger, Reporter.getFreeSans(9));
       paragraph.setIndentationLeft(40);
       doc.add(paragraph);
+    }
+    catch (DocumentException e)
+    {
+      throw new RemoteException("Fehler", e);
+    }
+  }
+  
+  public void printAnschreiben(Spendenbescheinigung spb, String text)
+      throws RemoteException
+  {
+    // Anschreiben drucken
+    try
+    {
+      doc.add(new Paragraph("\n\n\n",  Reporter.getFreeSans(12)));
+      Mitglied m = spb.getMitglied();
+      Paragraph p = null;
+      if (m != null)
+      {
+        VelocityContext context = new VelocityContext();
+        context.put("dateformat", new JVDateFormatTTMMJJJJ());
+        context.put("decimalformat", Einstellungen.DECIMALFORMAT);
+        if (m.getEmail() != null)
+          context.put("email", m.getEmail());
+        Map<String, Object> mmap = new MitgliedMap().getMap(m, null);
+        mmap = new AllgemeineMap().getMap(mmap);
+        VarTools.add(context, mmap);
+        StringWriter wtext = new StringWriter();
+        Velocity.evaluate(context, wtext, "LOG", text);
+        p = new Paragraph(wtext.getBuffer().toString(), Reporter.getFreeSans(10));
+      }
+      else
+      {
+        p = new Paragraph(text, Reporter.getFreeSans(10));
+      }
+      p.setIndentationLeft(40);
+      doc.add(p);
     }
     catch (DocumentException e)
     {
