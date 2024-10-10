@@ -17,16 +17,23 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
+
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeDeleteAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeNaechsteFaelligkeitAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeResetAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeVorherigeFaelligkeitAction;
+import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.rmi.Zusatzbetrag;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.logging.Logger;
 
 /**
  * Kontext-Menu zu den Zusatzbeträgen.
@@ -43,16 +50,68 @@ public class ZusatzbetraegeMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
-    addItem(new CheckedSingleContextMenuItem("Vorheriges Fälligkeitsdatum",
+    addItem(new ZusatzbetragWiederholtItem("Vorheriges Fälligkeitsdatum",
         new ZusatzbetraegeVorherigeFaelligkeitAction(table),
         "office-calendar.png"));
-    addItem(new CheckedSingleContextMenuItem("Nächstes Fälligkeitsdatum",
+    addItem(new ZusatzbetragWiederholtItem("Nächstes Fälligkeitsdatum",
         new ZusatzbetraegeNaechsteFaelligkeitAction(table),
         "office-calendar.png"));
     addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedSingleContextMenuItem("Erneut ausführen",
+    addItem(new ZusatzbetragEinmaligItem("Erneut ausführen",
         new ZusatzbetraegeResetAction(table), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new ZusatzbetraegeDeleteAction(), "user-trash-full.png"));
+  }
+  
+  private static class ZusatzbetragEinmaligItem extends CheckedSingleContextMenuItem
+  {
+    private ZusatzbetragEinmaligItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof Zusatzbetrag)
+      {
+        Zusatzbetrag z = (Zusatzbetrag) o;
+        try
+        {
+          return z.getIntervall() == IntervallZusatzzahlung.KEIN ;
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+      return false;
+    }
+  }
+  
+  private static class ZusatzbetragWiederholtItem extends CheckedSingleContextMenuItem
+  {
+    private ZusatzbetragWiederholtItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof Zusatzbetrag)
+      {
+        Zusatzbetrag z = (Zusatzbetrag) o;
+        try
+        {
+          return z.getIntervall() != IntervallZusatzzahlung.KEIN ;
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+      return false;
+    }
   }
 }
