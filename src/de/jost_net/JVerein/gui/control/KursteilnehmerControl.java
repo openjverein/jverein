@@ -387,6 +387,7 @@ public class KursteilnehmerControl extends FilterControl
     part.addColumn("Abbuchungsdatum", "abbudatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     part.setContextMenu(new KursteilnehmerMenu(part));
+    part.setMulti(true);
 
     return part;
   }

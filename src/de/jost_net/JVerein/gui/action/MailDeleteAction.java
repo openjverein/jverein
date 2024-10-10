@@ -16,8 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.rmi.Mail;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -40,42 +38,49 @@ public class MailDeleteAction implements Action
       TablePart tp = (TablePart) context;
       context = tp.getSelection();
     }
-    if (context == null || !(context instanceof Mail))
+    if (context == null)
     {
       throw new ApplicationException("Keine Mail ausgewählt");
     }
+    Mail[] mails = null;
+    if(context instanceof Mail)
+    {
+      mails = new Mail[] { (Mail) context};
+    }
+    else if(context instanceof Mail[])
+    {
+      mails = (Mail[])context;
+    }
+    else
+    {
+      return;
+    }
+    String mehrzahl = mails.length > 1 ? "s" : "";
+    YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+    d.setTitle("Mail" + mehrzahl + " löschen");
+    d.setText("Wollen Sie diese Mail" + mehrzahl + " wirklich löschen?");
+
     try
     {
-      Mail m = (Mail) context;
-      if (m.isNewObject())
+      Boolean choice = (Boolean) d.open();
+      if (!choice.booleanValue())
       {
         return;
       }
-      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Mail löschen");
-      d.setText("Wollen Sie diese Mail wirklich löschen?");
-
-      try
+      for (Mail m : mails)
       {
-        Boolean choice = (Boolean) d.open();
-        if (!choice.booleanValue())
+        if (m.isNewObject())
         {
-          return;
+          continue;
         }
         m.delete();
       }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Löschen der Mail", e);
-        return;
-      }
-      GUI.getStatusBar().setSuccessText("Mail gelöscht.");
     }
-    catch (RemoteException e)
+    catch (Exception e)
     {
-      String fehler = "Fehler beim Löschen der Mail";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
+      Logger.error("Fehler beim Löschen der Mail", e);
+      return;
     }
+    GUI.getStatusBar().setSuccessText("Mail gelöscht.");
   }
 }

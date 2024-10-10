@@ -173,12 +173,12 @@ public class MitgliedMenu extends ContextMenu
     }
     if (detailaction instanceof NichtMitgliedDetailAction)
     {
-    addItem(new CheckedSingleContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("Löschen",
         new NichtMitgliedDeleteAction(), "user-trash-full.png"));
     }
     else
     {
-      addItem(new CheckedSingleContextMenuItem("Löschen",
+      addItem(new CheckedContextMenuItem("Löschen",
           new MitgliedDeleteAction(), "user-trash-full.png"));
     }
     addItem(ContextMenuItem.SEPARATOR);

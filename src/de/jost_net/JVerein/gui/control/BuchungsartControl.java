@@ -522,6 +522,7 @@ public class BuchungsartControl extends AbstractControl
         }
       }, false, Column.ALIGN_RIGHT);
       buchungsartList.setContextMenu(new BuchungsartMenu());
+      buchungsartList.setMulti(true);
       buchungsartList.setRememberColWidths(true);
       buchungsartList.setRememberOrder(true);
       buchungsartList.setRememberState(true);

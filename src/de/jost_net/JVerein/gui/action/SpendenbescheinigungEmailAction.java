@@ -16,6 +16,8 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.Action;
@@ -37,7 +39,8 @@ public class SpendenbescheinigungEmailAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Spendenbescheinigung spb = null;
+    ArrayList<Mitglied> mitglieder = new ArrayList<>();
+    Spendenbescheinigung[] bescheinigungen = null;
     if (context instanceof TablePart)
     {
       TablePart tp = (TablePart) context;
@@ -49,7 +52,11 @@ public class SpendenbescheinigungEmailAction implements Action
     }
     else if (context instanceof Spendenbescheinigung)
     {
-      spb = (Spendenbescheinigung) context;
+      bescheinigungen = new Spendenbescheinigung[] {(Spendenbescheinigung) context};
+    }
+    else if (context instanceof Spendenbescheinigung[])
+    {
+      bescheinigungen = (Spendenbescheinigung[]) context;
     }
     else
     {
@@ -57,23 +64,20 @@ public class SpendenbescheinigungEmailAction implements Action
     }
     try
     {
-      Mitglied member = spb.getMitglied();
-      if (member == null)
+      for(Spendenbescheinigung spb:bescheinigungen)
       {
-        String fehler = "Kein Mitglied zugewiesen";
-        GUI.getStatusBar().setErrorText(fehler);
-        Logger.error(fehler);
-        return;
-      }
-      if (member.getEmail() == null || member.getEmail().length() == 0)
-      {
-        String fehler = "Mitglied hat keine E-Mail Adresse";
-        GUI.getStatusBar().setErrorText(fehler);
-        Logger.error(fehler);
-        return;
+        Mitglied member = spb.getMitglied();
+        if (member == null)
+        {
+          String fehler = spb.getZeile1() + spb.getZeile2() + ": Kein Mitglied zugewiesen";
+          GUI.getStatusBar().setErrorText(fehler);
+          Logger.error(fehler);
+          return;
+        }
+        mitglieder.add(spb.getMitglied());
       }
       MitgliedMailSendenAction mailSendenAction = new MitgliedMailSendenAction();
-      mailSendenAction.handleAction(member);
+      mailSendenAction.handleAction(mitglieder.toArray(new Mitglied[mitglieder.size()]));
     }
     catch (RemoteException e)
     {
