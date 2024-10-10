@@ -87,18 +87,29 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
 
           break;
       }
-      Beitragsgruppe gruppeAlt = (Beitragsgruppe) Einstellungen.getDBService().createObject(Beitragsgruppe.class,getID());
+      Beitragsgruppe gruppeAlt = null;
+      try
+      {
+        gruppeAlt = (Beitragsgruppe) Einstellungen.getDBService().createObject(Beitragsgruppe.class,getID());
+      }
+      catch (RemoteException e)
+      {
+        //Alte Beitragsgruppe nicht gefunden
+      }
       if(getBeitragsArt() != null) {
-        //Dases die Beitragsart ZAHLER nicht mehr gibt sie aber noch in der Datenbank stehen kann, müssen wir auf null prüfen
-        ArtBeitragsart artAlt = gruppeAlt.getBeitragsArt();
-        if(artAlt == null)
-            artAlt = ArtBeitragsart.NORMAL;
-        if(gruppeAlt != null && artAlt.getKey() != getBeitragsArt().getKey()) {
-          DBIterator<Mitglied> list = Einstellungen.getDBService()
-              .createList(Mitglied.class);
-          list.addFilter("beitragsgruppe = ?", getID());
-          if(list.hasNext()) {
-            throw new ApplicationException("Es existieren Mitglieder mit diesem Beitrag, Beitragsart kann nicht geändert werden!");
+        if(gruppeAlt != null)
+        {
+          //Da es die Beitragsart ZAHLER nicht mehr gibt sie aber noch in der Datenbank stehen kann, müssen wir auf null prüfen
+          ArtBeitragsart artAlt = gruppeAlt.getBeitragsArt();
+          if(artAlt == null)
+              artAlt = ArtBeitragsart.NORMAL;
+          if(artAlt.getKey() != getBeitragsArt().getKey()) {
+            DBIterator<Mitglied> list = Einstellungen.getDBService()
+                .createList(Mitglied.class);
+            list.addFilter("beitragsgruppe = ?", getID());
+            if(list.hasNext()) {
+              throw new ApplicationException("Es existieren Mitglieder mit diesem Beitrag, Beitragsart kann nicht geändert werden!");
+            }
           }
         }
         if(getSekundaer() && getBeitragsArt().getKey() == ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey())
