@@ -236,7 +236,11 @@ public class MitgliedskontoControl extends DruckMailControl
     {
       z = getMitgliedskonto().getZahlungsweg();
     }
-    zahlungsweg = new SelectInput(Zahlungsweg.getArray(),
+    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
+    if(getMitgliedskonto().getMitglied().getZahlerID() == null)
+      weg.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+
+    zahlungsweg = new SelectInput(weg,
         z == null
             ? new Zahlungsweg(Einstellungen.getEinstellung().getZahlungsweg())
             : new Zahlungsweg(getMitgliedskonto().getZahlungsweg()));
