@@ -99,15 +99,15 @@ public class KontenrahmenImportXML implements Importer
         buchungsart.setNummer(buaelement.getAttribute("nummer", 0));
         String spende = buaelement.getAttribute("spende", "false");
         if (spende.equalsIgnoreCase("true"))
-        {
           buchungsart.setSpende(true);
-        }
+        else
+          buchungsart.setSpende(false);
         buchungsart.setStatus(buaelement.getAttribute("status", 0));
         String abschreibung = buaelement.getAttribute("abschreibung", "false");
         if (abschreibung.equalsIgnoreCase("true"))
-        {
           buchungsart.setAbschreibung(true);
-        }
+        else
+          buchungsart.setAbschreibung(false);
         buchungsart.store();
         Double steuersatz = Double.valueOf(buaelement.getAttribute("steuersatz", "0.00"));
         if (steuersatz != 0)
