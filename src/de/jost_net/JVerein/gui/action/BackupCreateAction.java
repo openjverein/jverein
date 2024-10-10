@@ -287,16 +287,16 @@ public class BackupCreateAction implements Action
           backup(ArbeitseinsatzImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
+          monitor.setStatusText("Speichere Jahresabschlüsse");
+          backup(JahresabschlussImpl.class, writer, monitor);
+          monitor.addPercentComplete(1);
+          
           monitor.setStatusText("Speichere Buchungen");
           backup(BuchungImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Dokumente zu Buchungen");
           backup(BuchungDokumentImpl.class, writer, monitor);
-          monitor.addPercentComplete(1);
-
-          monitor.setStatusText("Speichere Jahresabschlüsse");
-          backup(JahresabschlussImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Eigenschaften der Mitglieder");
