@@ -81,7 +81,7 @@ public class SpendenbescheinigungView extends AbstractView
     /*
      * Betrag kann bei Geldspenden nicht geändert werden
      */
-    if (control.getSpendenbescheinigung().getAutocreate())
+    if (control.getSpendenbescheinigung().getSpendenart() == Spendenart.GELDSPENDE)
     {
       control.getSpendenart().setEnabled(false);
       control.getBetrag().setEnabled(false);

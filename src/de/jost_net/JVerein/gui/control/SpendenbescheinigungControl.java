@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -44,6 +45,7 @@ import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
@@ -325,8 +327,29 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       return ersatzaufwendungen;
     }
-    ersatzaufwendungen = new CheckboxInput(
-        getSpendenbescheinigung().getErsatzAufwendungen());
+    List<Buchung> buchungen = getSpendenbescheinigung().getBuchungen();
+    boolean check = false;
+    if (buchungen != null && buchungen.size() == 1)
+    {
+      // Es ist keine Sachspende und keine Sammelspendenbescheinigung
+      if (getSpendenbescheinigung().getAutocreate())
+      {
+        // Verzicht aus Buchung lesen
+        check = buchungen.get(0).getVerzicht();
+      }
+      else
+      {
+        // Wegen Kompabilität zu früher
+        check = getSpendenbescheinigung().getErsatzAufwendungen();
+      }
+    }
+    ersatzaufwendungen = new CheckboxInput(check);
+    if (buchungen != null && buchungen.size() > 1)
+    {
+      // Sammelspendenbescheinigung
+      ersatzaufwendungen.setName("*siehe Buchungsliste");
+    }
+    ersatzaufwendungen.disable();
     return ersatzaufwendungen;
   }
 
@@ -423,6 +446,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       buchungsList.addColumn("Mitglied", "mitgliedskonto",
           new MitgliedskontoFormatter());
+      buchungsList.addColumn("Ersatz für Aufwendungen", "verzicht", new JaNeinFormatter());
       buchungsList.setMulti(true);
       // buchungsList.setContextMenu(new BuchungMenu(this));
       buchungsList.setRememberColWidths(true);
