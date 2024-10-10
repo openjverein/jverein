@@ -53,5 +53,10 @@ public interface ZusatzbetragVorlage extends DBObject
   public void setBuchungsart(Buchungsart buchungsart) throws RemoteException;
 
   public Buchungsart getBuchungsart() throws RemoteException;
+  
+  public Buchungsklasse getBuchungsklasse() throws RemoteException;
+  
+  public Long getBuchungsklasseId() throws RemoteException;
 
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
 }

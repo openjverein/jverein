@@ -37,6 +37,8 @@ import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.io.FileViewer;
@@ -196,11 +198,9 @@ public class ZusatzbetragControl extends AbstractControl
       z.setBuchungstext(
           (String) getZusatzbetragPart().getBuchungstext().getValue());
       Double d = (Double) getZusatzbetragPart().getBetrag().getValue();
-      if (getZusatzbetragPart().getBuchungsart().getValue() != null)
-      {
-        z.setBuchungsart(
-            (Buchungsart) getZusatzbetragPart().getBuchungsart().getValue());
-      }
+      z.setBuchungsart(
+          (Buchungsart) getZusatzbetragPart().getBuchungsart().getValue());
+      z.setBuchungsklasseId(getZusatzbetragPart().getSelectedBuchungsKlasseId());
       z.setBetrag(d.doubleValue());
       z.store();
       if (getVorlage().getValue().equals(MITDATUM)
@@ -218,6 +218,7 @@ public class ZusatzbetragControl extends AbstractControl
           zv.setStartdatum(z.getStartdatum());
         }
         zv.setBuchungsart(z.getBuchungsart());
+        zv.setBuchungsklasseId(z.getBuchungsklasseId());
         zv.store();
       }
       GUI.getStatusBar().setSuccessText("Zusatzbetrag gespeichert");
@@ -277,7 +278,13 @@ public class ZusatzbetragControl extends AbstractControl
       zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
       zusatzbetraegeList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      zusatzbetraegeList.addColumn("Buchungsart", "buchungsart");
+      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      {
+        zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
+            new BuchungsklasseFormatter());
+      }
+      zusatzbetraegeList.addColumn("Buchungsart", "buchungsart",
+          new BuchungsartFormatter());
       zusatzbetraegeList
           .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
       zusatzbetraegeList.setRememberColWidths(true);

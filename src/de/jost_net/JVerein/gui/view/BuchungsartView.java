@@ -44,6 +44,7 @@ public class BuchungsartView extends AbstractView
     group.addLabelPair("Steuersatz", control.getSteuersatz());
     group.addLabelPair("Steuer Buchungsart", control.getSteuerBuchungsart());
     // TODO Jo Dokumentation nachpflegen
+    group.addLabelPair("Status", control.getStatus());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

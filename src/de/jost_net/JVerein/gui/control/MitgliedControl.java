@@ -47,6 +47,8 @@ import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedNextBGruppeBearbeitenAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
@@ -1696,7 +1698,13 @@ public class MitgliedControl extends FilterControl
     zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
     zusatzbetraegeList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    zusatzbetraegeList.addColumn("Buchungsart", "buchungsart");
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
+    }
+    zusatzbetraegeList.addColumn("Buchungsart", "buchungsart",
+        new BuchungsartFormatter());
     zusatzbetraegeList
         .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
     return zusatzbetraegeList;

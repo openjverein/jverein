@@ -21,6 +21,7 @@ import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.BuchungsartZuordnungDialog;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -78,12 +79,14 @@ public class BuchungBuchungsartZuordnungAction implements Action
       if (!baz.getAbort())
       {
         Buchungsart ba = baz.getBuchungsart();
+        Buchungsklasse bk = baz.getBuchungsklasse();
         int counter = 0;
         if (ba == null)
         {
           for (Buchung buchung : b)
           {
             buchung.setBuchungsart(null);
+            buchung.setBuchungsklasseId(null);
             buchung.store();
           }
         }
@@ -100,6 +103,10 @@ public class BuchungBuchungsartZuordnungAction implements Action
             else
             {
               buchung.setBuchungsart(Long.valueOf(ba.getID()));
+              if (bk != null)
+               buchung.setBuchungsklasseId(Long.valueOf(bk.getID()));
+              else
+                buchung.setBuchungsklasseId(null);
               buchung.store();
             }
           }

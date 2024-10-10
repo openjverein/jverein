@@ -28,7 +28,7 @@ import net.n3.nanoxml.IXMLElement;
 import net.n3.nanoxml.XMLElement;
 import net.n3.nanoxml.XMLWriter;
 
-public class KontenrahmenExportXML extends KontenrahmenExport
+public class KontenrahmenExportXMLv2 extends KontenrahmenExport
 {
 
   private Writer output;
@@ -48,7 +48,7 @@ public class KontenrahmenExportXML extends KontenrahmenExport
   @Override
   public String getName()
   {
-    return "Kontenrahmen XML-Export V1";
+    return "Kontenrahmen XML-Export V2";
   }
 
   @Override
@@ -64,7 +64,7 @@ public class KontenrahmenExportXML extends KontenrahmenExport
       @Override
       public String getName()
       {
-        return KontenrahmenExportXML.this.getName();
+        return KontenrahmenExportXMLv2.this.getName();
       }
 
       /**
@@ -91,10 +91,12 @@ public class KontenrahmenExportXML extends KontenrahmenExport
     output = new FileWriter(file);
     xmltree = new XMLElement("kontenrahmen");
     xmlversion = new XMLElement("version");
-    xmlversion.setAttribute("version", "1");
+    xmlversion.setAttribute("version", "2");
     xmltree.addChild(xmlversion);
     xmltreeklassen = xmltree.createElement("buchungsklassen");
     xmltree.addChild(xmltreeklassen);
+    xmlklbarten = xmltree.createElement("buchungsarten");
+    xmltree.addChild(xmlklbarten);
     xmlwriter = new XMLWriter(output);
   }
 
@@ -105,8 +107,6 @@ public class KontenrahmenExportXML extends KontenrahmenExport
     xmlkl.setAttribute("bezeichnung", klasse.getBezeichnung());
     xmlkl.setAttribute("nummer", klasse.getNummer() + "");
     xmltreeklassen.addChild(xmlkl);
-    xmlklbarten = xmlkl.createElement("buchungsarten");
-    xmlkl.addChild(xmlklbarten);
   }
 
   @Override
@@ -117,6 +117,7 @@ public class KontenrahmenExportXML extends KontenrahmenExport
     xmlba.setAttribute("bezeichnung", buchungsart.getBezeichnung());
     xmlba.setAttribute("art", buchungsart.getArt() + "");
     xmlba.setAttribute("spende", buchungsart.getSpende().toString());
+    xmlba.setAttribute("buchungsklasse", buchungsart.getBuchungsklasse().getNummer() + "");
     xmlba.setAttribute("steuersatz", buchungsart.getSteuersatz() + "");
     if (buchungsart.getSteuerBuchungsart() != null)
       xmlba.setAttribute("steuer_buchungsart", buchungsart.getSteuerBuchungsart().getNummer() + "");

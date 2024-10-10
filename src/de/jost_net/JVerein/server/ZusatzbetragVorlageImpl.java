@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
@@ -189,6 +190,31 @@ public class ZusatzbetragVorlageImpl extends AbstractDBObject implements
   {
     return (Buchungsart) getAttribute("buchungsart");
   }
+  
+  @Override
+  public Buchungsklasse getBuchungsklasse() throws RemoteException
+  {
+    Long l = (Long) super.getAttribute("buchungsklasse");
+    if (l == null)
+    {
+      return null; // Keine Buchungsklasse zugeordnet
+    }
+
+    Cache cache = Cache.get(Buchungsklasse.class, true);
+    return (Buchungsklasse) cache.get(l);
+  }
+
+  @Override
+  public Long getBuchungsklasseId() throws RemoteException
+  {
+    return (Long) super.getAttribute("buchungsklasse");
+  }
+  
+  @Override
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException
+  {
+    setAttribute("buchungsklasse", buchungsklasseId);
+  }
 
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
@@ -196,6 +222,10 @@ public class ZusatzbetragVorlageImpl extends AbstractDBObject implements
     if (fieldName.equals("intervalltext"))
     {
       return getIntervallText();
+    }
+    if (fieldName.equals("buchungsklasse"))
+    {
+      return getBuchungsklasse();
     }
     return super.getAttribute(fieldName);
   }

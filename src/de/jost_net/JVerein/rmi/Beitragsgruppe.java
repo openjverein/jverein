@@ -69,6 +69,12 @@ public interface Beitragsgruppe extends DBObject
   public Buchungsart getBuchungsart() throws RemoteException;
 
   public void setBuchungsart(Buchungsart buchungsart) throws RemoteException;
+  
+  public Buchungsklasse getBuchungsklasse() throws RemoteException;
+  
+  public Long getBuchungsklasseId() throws RemoteException;
+
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
 
   public String getNotiz() throws RemoteException;
 

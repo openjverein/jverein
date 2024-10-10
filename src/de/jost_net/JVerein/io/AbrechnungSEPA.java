@@ -244,7 +244,7 @@ public class AbrechnungSEPA
     if (!summemitgliedskonto.equals(BigDecimal.valueOf(0)))
     {
       writeMitgliedskonto(null, new Date(), "Gegenbuchung",
-          summemitgliedskonto.doubleValue() * -1, abrl, true, getKonto(), null);
+          summemitgliedskonto.doubleValue() * -1, abrl, true, getKonto(), null, null);
     }
     if (param.abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
     {
@@ -450,7 +450,7 @@ public class AbrechnungSEPA
         param.faelligkeit,
         primaer ? vzweck : bg.getBezeichnung(), betr, abrl,
         mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT, konto,
-        bg.getBuchungsart());
+        bg.getBuchungsart(), bg.getBuchungsklasseId());
     if (mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
     {
       try
@@ -602,7 +602,8 @@ public class AbrechnungSEPA
             param.faelligkeit,
             vzweck, z.getBetrag(), abrl,
             mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT, konto,
-            z.getBuchungsart());
+            z.getBuchungsart(),
+            z.getBuchungsklasseId());
         monitor.setStatusText(String.format("Zusatzbetrag von %s, %s abgerechnet" , m.getName(), m.getVorname()));
       }
       monitor.setPercentComplete((int) ((double) count++ / (double) list.size() * 100d));
@@ -642,7 +643,7 @@ public class AbrechnungSEPA
         kt.setAbbudatum(param.faelligkeit);
         kt.store();
         writeMitgliedskonto(kt, param.faelligkeit, kt.getVZweck1(), 
-            zahler.getBetrag().doubleValue(), abrl, true, konto, null);
+            zahler.getBetrag().doubleValue(), abrl, true, konto, null, null);
         monitor.setStatusText(String.format("Kursteilnehmer %s, %s abgerechnet" , kt.getName(), kt.getVorname()));
         monitor.setPercentComplete((int) ((double) count++ / (double) list.size() * 100d));
       }
@@ -806,7 +807,7 @@ public class AbrechnungSEPA
 
   private void writeMitgliedskonto(Object mitglied, Date datum, String zweck1,
       double betrag, Abrechnungslauf abrl, boolean haben, Konto konto,
-      Buchungsart buchungsart) throws ApplicationException, RemoteException
+      Buchungsart buchungsart, Long buchungsklasseId) throws ApplicationException, RemoteException
   {
     Mitgliedskonto mk = null;
     if (mitglied != null && mitglied instanceof Mitglied) /*
@@ -829,6 +830,7 @@ public class AbrechnungSEPA
         mk.setBuchungsart(buchungsart);
         steuersatz = buchungsart.getSteuersatz();
       }
+      mk.setBuchungsklasseId(buchungsklasseId);
       // Set tax rate
       mk.setSteuersatz(steuersatz);
       // Set bill amount without taxes
@@ -858,6 +860,7 @@ public class AbrechnungSEPA
       {
         buchung.setBuchungsart(Long.valueOf(buchungsart.getID()));
       }
+      buchung.setBuchungsklasseId(buchungsklasseId);
       buchung.store();
     }
   }

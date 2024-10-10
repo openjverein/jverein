@@ -302,6 +302,8 @@ public class EinstellungControl extends AbstractControl
   
   private CheckboxInput anhangspeichern;
   
+  private CheckboxInput freiebuchungsklasse;
+
   private CheckboxInput summenAnlagenkonto;
 
 
@@ -817,6 +819,17 @@ public class EinstellungControl extends AbstractControl
     optiert = new CheckboxInput(Einstellungen.getEinstellung().getOptiert());
     optiert.setName("Umsatzsteueroption");
     return optiert;
+  }
+  
+  public CheckboxInput getFreieBuchungsklasse() throws RemoteException 
+  {
+    if (freiebuchungsklasse != null) 
+    {
+      return freiebuchungsklasse;
+    }
+    freiebuchungsklasse = new CheckboxInput(Einstellungen.getEinstellung().getBuchungsklasseInBuchung());
+    freiebuchungsklasse.setName("Keine feste Zuordnung von Buchungsklasse zu Buchungsart z.B. SKR 42");
+    return freiebuchungsklasse;
   }
 
   public CheckboxInput getExterneMitgliedsnummer() throws RemoteException
@@ -2264,6 +2277,7 @@ public class EinstellungControl extends AbstractControl
       e.setAfaRestwert((Double) afarestwert.getValue());
       e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());
       e.setOptiert((Boolean) getOptiert().getValue());
+      e.setBuchungsklasseInBuchung((Boolean) getFreieBuchungsklasse().getValue());
       e.store();
       Einstellungen.setEinstellung(e);
 

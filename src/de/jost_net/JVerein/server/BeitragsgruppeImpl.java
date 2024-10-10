@@ -23,6 +23,7 @@ import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.willuhn.datasource.db.AbstractDBObject;
@@ -282,6 +283,31 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   {
     setAttribute("beitragsart", art);
   }
+  
+  @Override
+  public Buchungsklasse getBuchungsklasse() throws RemoteException
+  {
+    Long l = (Long) super.getAttribute("buchungsklasse");
+    if (l == null)
+    {
+      return null; // Keine Buchungsklasse zugeordnet
+    }
+
+    Cache cache = Cache.get(Buchungsklasse.class, true);
+    return (Buchungsklasse) cache.get(l);
+  }
+
+  @Override
+  public Long getBuchungsklasseId() throws RemoteException
+  {
+    return (Long) super.getAttribute("buchungsklasse");
+  }
+  
+  @Override
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException
+  {
+    setAttribute("buchungsklasse", buchungsklasseId);
+  }
 
   @Override
   public double getArbeitseinsatzStunden() throws RemoteException
@@ -346,6 +372,10 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
+    if (fieldName.equals("buchungsklasse"))
+    {
+      return getBuchungsklasse();
+    }
     return super.getAttribute(fieldName);
   }
 

@@ -66,4 +66,9 @@ public interface Mitgliedskonto extends DBObject
 
   public void setBuchungsart(Buchungsart buchungsart) throws RemoteException;
 
+  public Buchungsklasse getBuchungsklasse() throws RemoteException;
+  
+  public Long getBuchungsklasseId() throws RemoteException;
+
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
 }
