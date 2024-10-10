@@ -259,8 +259,10 @@ public class ZusatzbetragPart implements Part
       {
         try
         {
-          if (buchungsklasse != null && buchungsklasse.getValue() == null)
-            buchungsklasse.setValue(((Buchungsart) buchungsart.getValue()).getBuchungsklasse());
+          Buchungsart bua = (Buchungsart) buchungsart.getValue();
+          if (buchungsklasse != null && buchungsklasse.getValue() == null &&
+              bua != null)
+            buchungsklasse.setValue(bua.getBuchungsklasse());
         }
         catch (RemoteException e)
         {
