@@ -62,6 +62,20 @@ public class FormularAnzeigeAction implements Action
     if (context != null && (context instanceof Formular))
     {
       formular = (Formular) context;
+      try
+      {
+        if (formular.isNewObject())
+        {
+          throw new ApplicationException(
+              "Vor der Anzeige des Formulars muss dieses gespeichert werden!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+        throw new ApplicationException(
+            "Fehler bei der Anzeige eines Formulars", e);
+      }
     }
     else
     {
