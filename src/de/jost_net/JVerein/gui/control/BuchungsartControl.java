@@ -442,7 +442,7 @@ public class BuchungsartControl extends AbstractControl
   @SuppressWarnings("unchecked")
   public Part getBuchungsartList() throws RemoteException
   {
-
+    settings.setAttribute("suchtext", (String) getSuchtext().getValue());
     DBService service = Einstellungen.getDBService();
     DBIterator<Buchungsart> buchungsarten = service
         .createList(Buchungsart.class);

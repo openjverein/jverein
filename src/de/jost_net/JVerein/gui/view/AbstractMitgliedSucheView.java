@@ -113,7 +113,8 @@ public abstract class AbstractMitgliedSucheView extends AbstractView
   @Override
   public void unbind()
   {
-    p.removeAll();
+    if (p != null)
+      p.removeAll();
   }
 
 
