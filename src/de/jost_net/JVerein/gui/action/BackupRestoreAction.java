@@ -30,10 +30,11 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.rmi.Adresstyp;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Einstellung;
-import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Version;
 import de.jost_net.JVerein.util.JVDateFormatJJJJMMTT;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.GenericObject;
@@ -64,7 +65,7 @@ public class BackupRestoreAction implements Action
   {
     try
     {
-      if (Einstellungen.getDBService().createList(Mitglied.class).size() > 0)
+      if (Einstellungen.getDBService().createList(Einstellung.class).size() > 0)
       {
         String text = "Die JVerein-Datenbank enthält bereits Daten.\n"
             + "Das Backup kann nur in eine neue JVerein-Installation importiert werden.";
@@ -72,6 +73,8 @@ public class BackupRestoreAction implements Action
         return;
       }
 
+      DBTransaction.starten();
+      
       // Vom System eingefügte Sätze löschen. Ansonsten gibt es duplicate keys      
       DBIterator<EigenschaftGruppe> iteigr = Einstellungen.getDBService()
           .createList(EigenschaftGruppe.class);
@@ -84,6 +87,7 @@ public class BackupRestoreAction implements Action
     }
     catch (Exception e1)
     {
+      DBTransaction.rollback();
       Logger.error("Fehler: ", e1);
     }
 
@@ -95,12 +99,14 @@ public class BackupRestoreAction implements Action
     String f = fd.open();
     if (f == null || f.length() == 0)
     {
+      DBTransaction.rollback();
       return;
     }
 
     final File file = new File(f);
     if (!file.exists())
     {
+      DBTransaction.rollback();
       return;
     }
 
@@ -154,6 +160,14 @@ public class BackupRestoreAction implements Action
           String classOld = null;
           while ((o = reader.read()) != null)
           {
+            if(isInterrupted())
+            {
+              monitor.setStatus(ProgressMonitor.STATUS_ERROR);
+              monitor.setStatusText("Backup abgebrochen");
+              monitor.setPercentComplete(100);
+              DBTransaction.rollback();
+              return;
+            }
             if(classOld != null && !o.getClass().getSimpleName().equals(classOld))
             {
               monitor.setStatusText(String.format("%s importiert", classOld));
@@ -166,6 +180,23 @@ public class BackupRestoreAction implements Action
             
             try
             {
+              if(o instanceof Version)
+              {
+                int vBackup = ((Version)o).getVersion();
+                int vDB = ((Version)Einstellungen.getDBService().createObject(Version.class, "1")).getVersion();
+                if(vBackup != vDB)
+                {
+                  String text = "Die Datenbank Version (" + vDB + ") entspricht nicht der des Backups (" + vBackup +").\n"
+                      + "Das Backup kann nur in eine identische Datenbank Version importiert werden.";
+                  Application.getCallback().notifyUser(text);
+                  monitor.setStatus(ProgressMonitor.STATUS_ERROR);
+                  monitor.setStatusText("Backup abgebrochen");
+                  monitor.setPercentComplete(100);
+                  DBTransaction.rollback();
+                  return;
+                }
+                continue;
+              }
               ((AbstractDBObject) o).insert();
               if(o instanceof Einstellung)
               {
@@ -190,12 +221,14 @@ public class BackupRestoreAction implements Action
           if(o != null)
             monitor.setStatusText(String.format("%s importiert", o.getClass().getSimpleName()));
 
+          DBTransaction.commit();;
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
           monitor.setStatusText("Backup importiert");
           monitor.setPercentComplete(100);
         }
         catch (Exception e)
         {
+          DBTransaction.rollback();
           Logger.error("error while importing data", e);
           throw new ApplicationException(e.getMessage());
         }

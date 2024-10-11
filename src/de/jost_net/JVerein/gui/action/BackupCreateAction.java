@@ -67,6 +67,7 @@ import de.jost_net.JVerein.server.ProjektImpl;
 import de.jost_net.JVerein.server.QIFImportHeadImpl;
 import de.jost_net.JVerein.server.QIFImportPosImpl;
 import de.jost_net.JVerein.server.SpendenbescheinigungImpl;
+import de.jost_net.JVerein.server.VersionImpl;
 import de.jost_net.JVerein.server.WiedervorlageImpl;
 import de.jost_net.JVerein.server.ZusatzbetragImpl;
 import de.jost_net.JVerein.server.ZusatzfelderImpl;
@@ -149,6 +150,10 @@ public class BackupCreateAction implements Action
           writer = new XmlWriter(
               new BufferedOutputStream(new FileOutputStream(file)));
 
+          monitor.setStatusText("Speichere Version");
+          backup(VersionImpl.class, writer, monitor);
+          monitor.addPercentComplete(1);
+          
           monitor.setStatusText("Speichere Einstellungen");
           backup(EinstellungImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
@@ -326,8 +331,6 @@ public class BackupCreateAction implements Action
           monitor.setStatusText("Speichere Zusatzbetrag Vorlagen");
           backup(ZusatzbetragVorlage.class, writer, monitor);
           monitor.addPercentComplete(1);
-          
-          // Die Versionstabelle wird nicht mit kopiert
 
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
           monitor.setStatusText("Backup erstellt");
