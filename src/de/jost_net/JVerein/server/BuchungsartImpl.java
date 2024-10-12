@@ -207,6 +207,18 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   {
     setAttribute("steuer_buchungsart", steuer_buchungsart);
   }
+  
+  @Override
+  public Boolean getAbschreibung() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("abschreibung"));
+  }
+
+  @Override
+  public void setAbschreibung(Boolean abschreibung) throws RemoteException
+  {
+    setAttribute("abschreibung",abschreibung);
+  }
 
   @Override
   public Object getAttribute(String fieldName) throws RemoteException

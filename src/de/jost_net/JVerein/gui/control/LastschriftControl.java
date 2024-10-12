@@ -57,6 +57,7 @@ public class LastschriftControl extends FilterControl
     lastschriftList.addColumn("Abrechnungslauf", "abrechnungslauf");
     lastschriftList.addColumn("Name", "name");
     lastschriftList.addColumn("Vorname", "vorname");
+    lastschriftList.addColumn("Email","email");
     lastschriftList.addColumn("Zweck", "verwendungszweck");
     lastschriftList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));

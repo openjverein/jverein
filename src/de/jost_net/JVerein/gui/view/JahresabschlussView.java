@@ -16,12 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.JahresabschlussControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.parts.InfoPanel;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class JahresabschlussView extends AbstractView
@@ -34,6 +36,16 @@ public class JahresabschlussView extends AbstractView
 
     final JahresabschlussControl control = new JahresabschlussControl(this);
 
+    String text = control.getInfo();
+    if (text != null && !text.isEmpty())
+    {
+      InfoPanel   info = new InfoPanel();
+      info.setText(text);
+      info.setTitle("Info");
+      info.setIcon("gtk-info.png");
+      info.paint(getParent());
+    }
+    
     LabelGroup group = new LabelGroup(getParent(), "Jahresabschluss");
     group.addLabelPair("Von", control.getVon());
     group.addLabelPair("Bis", control.getBis());
@@ -41,6 +53,8 @@ public class JahresabschlussView extends AbstractView
     group.addLabelPair("Name", control.getName());
     group.addLabelPair("Anfangsbestände Folgejahr",
         control.getAnfangsbestaende());
+    if (Einstellungen.getEinstellung().getAfaInJahresabschluss())
+      group.addLabelPair("Erzeuge Abschreibungen", control.getAfaberechnung());
     group.addPart(control.getJahresabschlussSaldo());
 
     ButtonArea buttons = new ButtonArea();

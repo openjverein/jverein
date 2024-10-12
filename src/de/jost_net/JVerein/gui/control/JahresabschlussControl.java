@@ -25,6 +25,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
 import de.jost_net.JVerein.gui.parts.KontensaldoList;
+import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.io.SaldoZeile;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -68,6 +69,8 @@ public class JahresabschlussControl extends AbstractControl
   private Jahresabschluss jahresabschluss;
 
   private CheckboxInput anfangsbestaende;
+  
+  private CheckboxInput afaberechnung;
 
   public JahresabschlussControl(AbstractView view)
   {
@@ -169,6 +172,16 @@ public class JahresabschlussControl extends AbstractControl
     anfangsbestaende = new CheckboxInput(true);
     return anfangsbestaende;
   }
+  
+  public CheckboxInput getAfaberechnung()
+  {
+    if (afaberechnung != null)
+    {
+      return afaberechnung;
+    }
+    afaberechnung = new CheckboxInput(true);
+    return afaberechnung;
+  }
 
   public Part getJahresabschlussSaldo() throws RemoteException
   {
@@ -209,7 +222,7 @@ public class JahresabschlussControl extends AbstractControl
       {
         KontensaldoList jsl = new KontensaldoList(null,
             new Geschaeftsjahr(ja.getVon()));
-        ArrayList<SaldoZeile> zeilen = jsl.getInfo();
+        ArrayList<SaldoZeile> zeilen = jsl.getInfo(false);
         for (SaldoZeile z : zeilen)
         {
           String ktonr = (String) z.getAttribute("kontonummer");
@@ -225,6 +238,10 @@ public class JahresabschlussControl extends AbstractControl
             anf.store();
           }
         }
+      }
+      if (afaberechnung != null && (Boolean) getAfaberechnung().getValue())
+      {
+        new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
       }
       GUI.getStatusBar().setSuccessText("Jahresabschluss gespeichert");
     }
@@ -280,6 +297,68 @@ public class JahresabschlussControl extends AbstractControl
     {
       jahresabschlussList.addItem(jahresabschluesse.next());
     }
+  }
+  
+  public String getInfo()
+  {
+    String text = "";
+    try
+    {
+      Date vongj = (Date) getVon().getValue();
+      Date bisgj = (Date) getBis().getValue();
+      DBService service = Einstellungen.getDBService();
+      DBIterator<Konto> kontenIt = service.createList(Konto.class);
+      kontenIt.addFilter("anlagenkonto = TRUE");
+      kontenIt.addFilter("(eroeffnung IS NULL OR eroeffnung <= ?)",
+          new Object[] { new java.sql.Date(bisgj.getTime()) });
+      kontenIt.addFilter("(aufloesung IS NULL OR aufloesung >= ?)",
+          new Object[] { new java.sql.Date(vongj.getTime()) });
+      while (kontenIt.hasNext())
+      {
+        Konto konto = (Konto) kontenIt.next();
+        if (konto.getEroeffnung() == null)
+        {
+          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer() 
+          + " hat kein Eröffnungsdatum\n";
+        }
+        if (konto.getAnschaffung() == null)
+        {
+          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer() 
+          + " hat kein Anschaffungsdatum. Bitte auf Plausibilität prüfen!\n";
+        }
+        else if (konto.getAnschaffung().after(Datum.addTage(vongj, -1)) &&
+            konto.getAnschaffung().before(Datum.addTage(bisgj, 1)))
+        {
+          Double betrag = 0d;
+          DBService service2 = Einstellungen.getDBService();
+          DBIterator<Buchung> buchungenIt = service2.createList(Buchung.class);
+          buchungenIt.join("buchungsart");
+          buchungenIt.addFilter("buchungsart.id = buchung.buchungsart");
+          buchungenIt.addFilter("konto = ?",
+              new Object[] { konto.getID() });
+          buchungenIt.addFilter("buchungsart.abschreibung = FALSE");
+          buchungenIt.addFilter("datum <= ?",
+              new Object[] { new java.sql.Date(bisgj.getTime()) });
+          while (buchungenIt.hasNext())
+          {
+            betrag += ((Buchung) buchungenIt.next()).getBetrag();
+          }
+          if (Math.abs(betrag - konto.getBetrag()) > Double.MIN_NORMAL)
+          {
+            text = text + "Für das Anlagenkonto mit der Nummer " + konto.getNummer() 
+            + " stimmt die Summe der Buchungen (" + betrag + ") nicht mit den Anschaffungskosten (" 
+            + konto.getBetrag() + ") überein. Bitte auf Plausibilität prüfen!\n";
+          }
+        }
+      }
+    }
+    catch (Exception e)
+    {
+      String fehler = "Fehler beim Initialisieren der Anzeige";
+      Logger.error(fehler, e);
+      GUI.getStatusBar().setErrorText(fehler);
+    }
+    return text;
   }
 
 }

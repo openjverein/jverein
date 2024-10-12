@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -240,7 +241,7 @@ public class ZusatzbetragPart implements Part
       return buchungsart;
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        zusatzbetrag.getBuchungsart());
+        zusatzbetrag.getBuchungsart(), buchungsarttyp.BUCHUNGSART);
     return buchungsart;
   }
 }

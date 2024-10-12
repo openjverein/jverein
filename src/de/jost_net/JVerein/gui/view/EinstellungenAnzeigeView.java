@@ -68,7 +68,7 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getJuristischePersonen());
     left.addLabelPair("Mitgliedsfoto *", control.getMitgliedfoto());
     // TODO Für Versionsbau deaktiviert
-    // left.addLabelPair("Inventarverwaltung *", control.getInventar());
+    //left.addLabelPair("Inventarverwaltung *", control.getInventar());
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
     right.addLabelPair("Lesefelder anzeigen *", control.getUseLesefelder());
     right.addLabelPair("Nicht-Mitglieder anzeigen *", control.getZusatzadressen());
@@ -80,12 +80,14 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getIndividuelleBeitraege());
     right.addLabelPair("Externe Mitgliedsnummer",
         control.getExterneMitgliedsnummer());
+    right.addLabelPair("Summen Anlagenkonto in Kontensaldo", control.getSummenAnlagenkonto());
     right.addLabelPair("Basis für Berechnung des Alters",
         control.getAltersModel());
     // Einstellung zum Buchungsdialog
     right.addLabelPair("Buchungsart Auswahl",
         control.getBuchungBuchungsartAuswahl());
     right.addLabelPair("Buchungsart Sortierung", control.getBuchungsartSort());
+    right.addLabelPair("Ort der Abschreibung", control.getAfaOrt());
 
     right.addHeadline("* " + "Änderung erfordert Neustart");
     cont.addSeparator();

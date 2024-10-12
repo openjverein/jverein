@@ -2084,6 +2084,43 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("anhangspeichern", anhangspeichern);
   }
+  
+  @Override
+  public Boolean getSummenAnlagenkonto() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("summenanlagenkonto"));
+  }
+
+  @Override
+  public void setSummenAnlagenkonto(Boolean summenanlagenkonto) throws RemoteException
+  {
+    setAttribute("summenanlagenkonto", summenanlagenkonto);
+  }
+  
+  @Override
+  public Double getAfaRestwert() throws RemoteException
+  {
+    return (Double) getAttribute("afarestwert");
+  }
+
+  @Override
+  public void setAfaRestwert(Double afarestwert) throws RemoteException
+  {
+    setAttribute("afarestwert", afarestwert);
+  }
+  
+  @Override
+  public Boolean getAfaInJahresabschluss() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("afainjahresabschluss"));
+  }
+
+  @Override
+  public void setAfaInJahresabschluss(Boolean afainjahresabschluss)
+      throws RemoteException
+  {
+    setAttribute("afainjahresabschluss", afainjahresabschluss);
+  }
 
   @Override
   public String getBeitragAltersstufen() throws RemoteException

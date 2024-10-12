@@ -17,18 +17,27 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
+import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.view.BuchungView;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 
 public class BuchungNeuAction implements Action
 {
+  private BuchungsControl control;
+
+  public BuchungNeuAction(BuchungsControl control)
+  {
+    this.control = control;
+  }
+  
   @Override
   public void handleAction(Object context)
   {
@@ -37,12 +46,40 @@ public class BuchungNeuAction implements Action
     {
       buch = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
           null);
-      if (context instanceof BuchungsControl)
+      Konto konto = (Konto) control.getSuchKonto().getValue();
+      if (null != konto)
       {
-        BuchungsControl control = (BuchungsControl) context;
-        Konto konto = (Konto) control.getSuchKonto().getValue();
-        if (null != konto)
-          buch.setKonto(konto);
+        if (konto.getAnlagenkonto())
+        {
+          buch.setBuchungsart(konto.getAfaartId());
+        }
+        buch.setDatum(new Date());
+        buch.setKonto(konto);
+      }
+      else
+      {
+        String kontoid = control.getSettings().getString(control.getSettingsPrefix() + "kontoid", "");
+        if (kontoid != null && !kontoid.isEmpty())
+        {
+          Konto k = null;
+          try
+          {
+            k = (Konto) Einstellungen.getDBService().createObject(Konto.class, kontoid);
+            if (null != k)
+            {
+              if (k.getAnlagenkonto())
+              {
+                buch.setBuchungsart(k.getAfaartId());
+              }
+              buch.setDatum(new Date());
+              buch.setKonto(k);
+            }
+          }
+          catch (ObjectNotFoundException ex)
+          {
+            // Das Konto aus den Settings gibt es nicht!
+          }
+        }
       }
       GUI.startView(BuchungView.class, buch);
     }

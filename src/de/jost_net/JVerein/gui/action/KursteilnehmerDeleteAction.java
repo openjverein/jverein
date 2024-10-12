@@ -34,20 +34,28 @@ public class KursteilnehmerDeleteAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof Kursteilnehmer))
+    Kursteilnehmer[] kursteilnehmer = null;
+    if (context == null)
     {
       throw new ApplicationException("Keinen Kursteilnehmer ausgewählt");
     }
+    else if(context instanceof Kursteilnehmer)
+    {
+      kursteilnehmer = new Kursteilnehmer[] {(Kursteilnehmer)context};
+    }
+    else if(context instanceof Kursteilnehmer[])
+    {
+      kursteilnehmer = (Kursteilnehmer[])context;
+    }
+    else
+    {
+      return;
+    }
     try
     {
-      Kursteilnehmer kt = (Kursteilnehmer) context;
-      if (kt.isNewObject())
-      {
-        return;
-      }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Kursteilnehmer löschen");
-      d.setText("Wollen Sie diesen Kursteilnehmer wirklich löschen?");
+      d.setText("Wollen Sie diese" + (kursteilnehmer.length > 1?"":"n")+ " Kursteilnehmer wirklich löschen?");
 
       try
       {
@@ -60,7 +68,12 @@ public class KursteilnehmerDeleteAction implements Action
         Logger.error("Fehler beim Löschen des Kursteilnehmers", e);
         return;
       }
-      kt.delete();
+      for(Kursteilnehmer kt:kursteilnehmer)
+      {
+        if(kt.isNewObject())
+          continue;
+        kt.delete();
+      }
       GUI.getStatusBar().setSuccessText("Kursteilnehmer gelöscht.");
     }
     catch (RemoteException e)

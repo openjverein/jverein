@@ -74,7 +74,7 @@ public class CSVBuchungsImport implements Importer
       while (results.next())
       {
         anz++;
-        monitor.setStatus(anz);
+        monitor.setPercentComplete(anz);
 
         try
         {

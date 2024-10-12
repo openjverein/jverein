@@ -23,30 +23,49 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.KontoAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
+import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
+import de.willuhn.jameica.gui.input.AbstractInput;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
@@ -76,7 +95,36 @@ public class KontoControl extends AbstractControl
   
   private SelectInput buchungsart;
   
+  private CheckboxInput anlagenkonto;
+  
   private int unterdrueckunglaenge = 0;
+  
+  private AbstractInput anlagenart;
+  
+  private SelectInput anlagenklasse;
+  
+  private AbstractInput afaart;
+  
+  private DecimalInput betrag;
+  
+  private IntegerNullInput nutzungsdauer;
+  
+  private TextAreaInput kommentar;
+  
+  private DateInput anschaffung;
+  
+  private DecimalInput afastart;
+  
+  private DecimalInput afadauer;
+  
+  private DecimalInput afarestwert;
+  
+  private SelectInput afamode;
+  
+  Button autobutton;
+  
+  Button afabutton;
+  
 
   public KontoControl(AbstractView view)
   {
@@ -102,6 +150,7 @@ public class KontoControl extends AbstractControl
       return nummer;
     }
     nummer = new TextInput(getKonto().getNummer(), 35);
+    nummer.setMandatory(true);
     return nummer;
   }
 
@@ -112,6 +161,7 @@ public class KontoControl extends AbstractControl
       return bezeichnung;
     }
     bezeichnung = new TextInput(getKonto().getBezeichnung(), 255);
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -124,6 +174,22 @@ public class KontoControl extends AbstractControl
     eroeffnung = new DateInput(getKonto().getEroeffnung(),
         new JVDateFormatTTMMJJJJ());
     return eroeffnung;
+  }
+  
+  public DateInput getAnschaffung() throws RemoteException
+  {
+    if (anschaffung != null)
+    {
+      return anschaffung;
+    }
+    anschaffung = new DateInput(getKonto().getAnschaffung(),
+        new JVDateFormatTTMMJJJJ());
+    if (!((boolean) getAnlagenkonto().getValue()))
+    {
+      anschaffung.setValue(null);
+      anschaffung.disable();
+    }
+    return anschaffung;
   }
 
   public DateInput getAufloesung() throws RemoteException
@@ -182,7 +248,9 @@ public class KontoControl extends AbstractControl
       k.setBezeichnung((String) getBezeichnung().getValue());
       k.setEroeffnung((Date) getEroeffnung().getValue());
       k.setAufloesung((Date) getAufloesung().getValue());
-      k.setBuchungsart(getSelectedBuchungsArtId());
+      k.setBuchungsartId(getSelectedBuchungsArtId());
+      k.setKommentar((String) getKommentar().getValue());
+      k.setAnlagenkonto((Boolean) getAnlagenkonto().getValue());
       if (getHibiscusId().getValue() == null)
       {
         k.setHibiscusId(-1);
@@ -192,6 +260,21 @@ public class KontoControl extends AbstractControl
         de.willuhn.jameica.hbci.rmi.Konto hkto = (de.willuhn.jameica.hbci.rmi.Konto) getHibiscusId()
             .getValue();
         k.setHibiscusId(Integer.parseInt(hkto.getID()));
+      }
+      k.setAnlagenartId(getSelectedAnlagenartId());
+      k.setAnlagenklasseId(getSelectedAnlagenklasseId());
+      k.setAfaartId(getSelectedAfaartId());
+      k.setBetrag((Double) getBetrag().getValue());
+      k.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
+      k.setAnschaffung((Date) getAnschaffung().getValue());
+      k.setAfaStart((Double) getAfaStart().getValue());
+      k.setAfaDauer((Double) getAfaDauer().getValue());
+      k.setAfaRestwert((Double) getAfaRestwert().getValue());
+      if (getAfaMode().getValue() == null)
+        k.setAfaMode(null);
+      else
+      {
+        k.setAfaMode(Integer.valueOf(((AfaMode) getAfaMode().getValue()).getKey()));
       }
       k.store();
       GUI.getStatusBar().setSuccessText("Konto gespeichert");
@@ -206,7 +289,7 @@ public class KontoControl extends AbstractControl
     {
       String fehler = "Fehler bei speichern des Kontos";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
     }
   }
 
@@ -219,6 +302,8 @@ public class KontoControl extends AbstractControl
     kontenList = new TablePart(konten, new KontoAction());
     kontenList.addColumn("Nummer", "nummer");
     kontenList.addColumn("Bezeichnung", "bezeichnung");
+    kontenList.addColumn("Anlagenkonto", "anlagenkonto", 
+        new JaNeinFormatter());
     kontenList.addColumn("Hibiscus-Konto", "hibiscusid", new Formatter()
     {
 
@@ -240,9 +325,9 @@ public class KontoControl extends AbstractControl
         return "nein";
       }
     }, false, Column.ALIGN_LEFT);
-    kontenList.addColumn("Konto-Eröffnung", "eroeffnung",
+    kontenList.addColumn("Eröffnungsdatum", "eroeffnung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    kontenList.addColumn("Konto-Auflösung", "aufloesung",
+    kontenList.addColumn("Auflösungsdatum", "aufloesung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart", 
         new BuchungsartFormatter());
@@ -374,7 +459,7 @@ public class KontoControl extends AbstractControl
     
     Buchungsart b = konto.getBuchungsart();
     buchungsart = new SelectInput(liste, b);
-    buchungsart.setPleaseChoose("Bitte wählen");
+    buchungsart.setPleaseChoose("Bitte auswählen");
 
     switch (Einstellungen.getEinstellung().getBuchungsartSort())
     {
@@ -416,6 +501,660 @@ public class KontoControl extends AbstractControl
     for (int i = 0; i < size; i++)
     {
       liste.add(ergebnis.get(i));
+    }
+  }
+  
+  public CheckboxInput getAnlagenkonto() throws RemoteException
+  {
+    if (anlagenkonto != null)
+    {
+      return anlagenkonto;
+    }
+    anlagenkonto = new CheckboxInput(getKonto().getAnlagenkonto());
+    DBService service = Einstellungen.getDBService();
+    String sql = "SELECT DISTINCT konto.id from konto "
+        + "WHERE (anlagenkonto = TRUE) ";
+    boolean exist = (boolean) service.execute(sql,
+        new Object[] { }, new ResultSetExtractor()
+    {
+      @Override
+      public Object extract(ResultSet rs)
+          throws RemoteException, SQLException
+      {
+        if (rs.next())
+        {
+          return true;
+        }
+        return false;
+      }
+    });
+    if (!exist)
+    {
+      anlagenkonto.setName(" *Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
+    }
+   
+    anlagenkonto.addListener(new Listener()
+    {
+
+      @Override
+      public void handleEvent(Event event)
+      {
+        refreshGui();
+      }
+    });
+    return anlagenkonto;
+  }
+  
+  
+  public Input getAnlagenart() throws RemoteException
+  {
+    if (anlagenart != null)
+    {
+      return anlagenart;
+    }
+    anlagenart = new BuchungsartInput().getBuchungsartInput( anlagenart,
+        getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART);
+    anlagenart.addListener(new AnlagenartListener());
+    if ((boolean) getAnlagenkonto().getValue())
+    {
+      anlagenart.setMandatory(true);
+    }
+    else
+    {
+      anlagenart.setMandatory(false);
+      anlagenart.setValue(null);
+      anlagenart.disable();
+    }
+    return anlagenart;
+  }
+  
+  private Long getSelectedAnlagenartId() throws ApplicationException
+  {
+    try
+    {
+      Buchungsart buchungsArt = (Buchungsart) getAnlagenart().getValue();
+      if (null == buchungsArt)
+        return null;
+      Long id = Long.valueOf(buchungsArt.getID());
+      return id;
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählte Anlagensart kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
+  
+  public Input getAnlagenklasse() throws RemoteException
+  {
+    if (anlagenklasse != null)
+    {
+      return anlagenklasse;
+    }
+    DBIterator<Buchungsklasse> list = Einstellungen.getDBService()
+        .createList(Buchungsklasse.class);
+    list.setOrder(getBuchungartSortOrder());
+    anlagenklasse = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
+        getKonto().getAnlagenklasse());
+    anlagenklasse.setAttribute(getBuchungartAttribute());
+    anlagenklasse.setPleaseChoose("Bitte auswählen");
+    if ((boolean) getAnlagenkonto().getValue())
+    {
+      anlagenklasse.setMandatory(true);
+    }
+    else
+    {
+      anlagenklasse.setMandatory(false);
+      anlagenklasse.setValue(null);
+      anlagenklasse.disable();
+    }
+    return anlagenklasse;
+  }
+  
+  private Long getSelectedAnlagenklasseId() throws ApplicationException
+  {
+    try
+    {
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getAnlagenklasse().getValue();
+      if (null == buchungsKlasse)
+        return null;
+      Long id = Long.valueOf(buchungsKlasse.getID());
+      return id;
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählte Anlagenklasse kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
+  
+  public Input getAfaart() throws RemoteException
+  {
+    if (afaart != null)
+    {
+      return afaart;
+    }
+    afaart = new BuchungsartInput().getBuchungsartInput( afaart,
+        getKonto().getAfaart(), buchungsarttyp.AFAART);
+    afaart.addListener(new AnlagenartListener());
+    if ((boolean) getAnlagenkonto().getValue())
+    {
+      afaart.setMandatory(true);
+    }
+    else
+    {
+      afaart.setMandatory(false);
+      afaart.setValue(null);
+      afaart.disable();
+    }
+    return afaart;
+  }
+  
+  private Long getSelectedAfaartId() throws ApplicationException
+  {
+    try
+    {
+      Buchungsart buchungsArt = (Buchungsart) getAfaart().getValue();
+      if (null == buchungsArt)
+        return null;
+      Long id = Long.valueOf(buchungsArt.getID());
+      return id;
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählte Buchungsart kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
+
+  public DecimalInput getBetrag() throws RemoteException
+  {
+    if (betrag != null)
+    {
+      return betrag;
+    }
+    betrag = new DecimalInput(getKonto().getBetrag(),
+        Einstellungen.DECIMALFORMAT);
+    betrag.addListener(new Listener(){
+      public void handleEvent (Event e) {
+        try
+        {
+          if (getBetrag().getValue() != null)
+            getAutobutton().setEnabled(false);
+          else
+            getAutobutton().setEnabled(true);
+        }
+        catch (RemoteException e1)
+        {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+      }
+     });
+    if (!((boolean) getAnlagenkonto().getValue()))
+    {
+      betrag.setValue(null);
+      betrag.disable();
+    }
+    return betrag;
+  }
+
+  public IntegerNullInput getNutzungsdauer() throws RemoteException
+  {
+    if (nutzungsdauer != null)
+    {
+      return nutzungsdauer;
+    }
+    if (getKonto().getNutzungsdauer() != null)
+    {
+      nutzungsdauer = new IntegerNullInput(getKonto().getNutzungsdauer());
+    }
+    else
+    {
+      nutzungsdauer = new IntegerNullInput();
+    }
+    if (!((boolean) getAnlagenkonto().getValue()))
+    {
+      nutzungsdauer.setValue(null);
+      nutzungsdauer.disable();
+    }
+    return nutzungsdauer;
+  }
+  
+  public Input getKommentar() throws RemoteException
+  {
+    if (kommentar != null && !kommentar.getControl().isDisposed())
+    {
+      return kommentar;
+    }
+    kommentar = new TextAreaInput(getKonto().getKommentar(), 1024);
+    kommentar.setHeight(90);
+    return kommentar;
+  }
+  
+  public DecimalInput getAfaStart() throws RemoteException
+  {
+    if (afastart != null)
+    {
+      return afastart;
+    }
+    afastart = new DecimalInput(getKonto().getAfaStart(),
+        Einstellungen.DECIMALFORMAT);
+    if (!((boolean) getAnlagenkonto().getValue()) ||
+        getAfaMode().getValue() == null ||
+        ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
+    {
+      afastart.setMandatory(false);
+      afastart.setValue(null);
+      afastart.disable();
+    }
+    else
+    {
+      afastart.setMandatory(true);
+    }
+    return afastart;
+  }
+  
+  public DecimalInput getAfaDauer() throws RemoteException
+  {
+    if (afadauer != null)
+    {
+      return afadauer;
+    }
+    afadauer = new DecimalInput(getKonto().getAfaDauer(),
+        Einstellungen.DECIMALFORMAT);
+    if (!((boolean) getAnlagenkonto().getValue()) ||
+        getAfaMode().getValue() == null ||
+        ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
+    {
+      afadauer.setMandatory(false);
+      afadauer.setValue(null);
+      afadauer.disable();
+    }
+    else
+    {
+      afadauer.setMandatory(true);
+    }
+    return afadauer;
+  }
+  
+  public DecimalInput getAfaRestwert() throws RemoteException
+  {
+    if (afarestwert != null)
+    {
+      return afarestwert;
+    }
+    afarestwert = new DecimalInput(getKonto().getAfaRestwert(),
+        Einstellungen.DECIMALFORMAT);
+    if (!((boolean) getAnlagenkonto().getValue()))
+    {
+      afarestwert.setValue(null);
+      afarestwert.disable();
+    }
+    return afarestwert;
+  }
+  
+  public SelectInput getAfaMode() throws RemoteException
+  {
+    if (afamode != null)
+    {
+      return afamode;
+    }
+    if (getKonto().getAfaMode() == null)
+      afamode = new SelectInput(AfaMode.getArray(), null);
+    else
+      afamode = new SelectInput(AfaMode.getArray(), 
+        new AfaMode(getKonto().getAfaMode()));
+    afamode.setPleaseChoose("Bitte auswählen");
+    afamode.addListener(new Listener(){
+      public void handleEvent (Event e) {
+        try
+        {
+          if (getAfaMode().getValue() != null &&
+              ((AfaMode) getAfaMode().getValue()).getKey() ==
+              AfaMode.ANGEPASST)
+          {
+            getAfaStart().enable();
+            getAfaStart().setMandatory(true);
+            getAfaDauer().enable();
+            getAfaDauer().setMandatory(true);
+            getAfabutton().setEnabled(true);
+          }
+          else
+          {
+            getAfaStart().setMandatory(false);
+            getAfaStart().setValue(null);
+            getAfaStart().disable();
+            getAfaDauer().setMandatory(false);
+            getAfaDauer().setValue(null);
+            getAfaDauer().disable();
+            getAfabutton().setEnabled(false);
+          }
+        }
+        catch (RemoteException e1)
+        {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+      }
+    });
+    if ((boolean) getAnlagenkonto().getValue())
+    {
+      afamode.setMandatory(true);
+    }
+    else
+    {
+      afamode.setMandatory(false);
+      afamode.setValue(null);
+      afamode.disable();
+    }
+    return afamode;
+  }
+
+  public String getBuchungartSortOrder()
+  {
+    try
+    {
+      switch (Einstellungen.getEinstellung().getBuchungsartSort())
+      {
+        case BuchungsartSort.NACH_NUMMER:
+          return "ORDER BY nummer";
+        default:
+          return "ORDER BY bezeichnung";
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Keine Buchungssortierung hinterlegt.";
+      Logger.error(fehler, e);
+      GUI.getStatusBar().setErrorText(fehler);
+    }
+    
+    return "ORDER BY bezeichnung";
+  }
+  
+  public String getBuchungartAttribute()
+  {
+    try
+    {
+      switch (Einstellungen.getEinstellung().getBuchungsartSort())
+      {
+        case BuchungsartSort.NACH_NUMMER:
+          return "nrbezeichnung";
+        case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+          return "bezeichnungnr";
+        default:
+          return "bezeichnung";
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Keine Buchungssortierung hinterlegt.";
+      Logger.error(fehler, e);
+      GUI.getStatusBar().setErrorText(fehler);
+    }
+    
+    return "bezeichnung";
+  }
+  
+  public class AnlagenartListener implements Listener
+  {
+
+    AnlagenartListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      try
+      {
+        Buchungsart ba = (Buchungsart) getAnlagenart().getValue();
+        if (ba != null)
+        {
+          if (getAnlagenklasse().getValue() == null)
+            getAnlagenklasse().setValue(ba.getBuchungsklasse());
+        }
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler", e);
+      }
+    }
+  }
+  
+  public void refreshGui()
+  {
+    try
+    {
+      if ((boolean) getAnlagenkonto().getValue())
+      {
+        getAnlagenklasse().enable();
+        getAnlagenklasse().setMandatory(true);
+        getAnlagenart().enable();
+        getAnlagenart().setMandatory(true);
+        getAfaart().enable();
+        getAfaart().setMandatory(true);
+        getBetrag().enable();
+        getNutzungsdauer().enable();
+        getAnschaffung().enable();
+        getAfaRestwert().enable();
+        getAfaRestwert().setValue(Einstellungen.getEinstellung().getAfaRestwert());
+        if (getBetrag().getValue() == null)
+          getAutobutton().setEnabled(true);
+        getAfabutton().setEnabled(false);
+        getAfaMode().enable();
+        getAfaMode().setValue(new AfaMode(AfaMode.AUTO));
+        getAfaMode().setMandatory(true);
+        getAfaMode().setEnabled(true);
+      }
+      else
+      {
+        getAnlagenklasse().setMandatory(false);
+        getAnlagenklasse().setValue(null);
+        getAnlagenklasse().disable();
+        getAnlagenart().setMandatory(false);
+        getAnlagenart().setValue(null);
+        getAnlagenart().disable();
+        getAfaart().setMandatory(false);
+        getAfaart().setValue(null);
+        getAfaart().disable();
+        getBetrag().setValue(null);
+        getBetrag().disable();
+        getNutzungsdauer().setValue(null);
+        getNutzungsdauer().disable();
+        getAnschaffung().setValue(null);
+        getAnschaffung().disable();
+        getAfaStart().setMandatory(false);
+        getAfaStart().setValue(null);
+        getAfaStart().disable();
+        getAfaDauer().setMandatory(false);
+        getAfaDauer().setValue(null);
+        getAfaDauer().disable();
+        getAfaRestwert().setValue(null);
+        getAfaRestwert().disable();
+        getAutobutton().setEnabled(false);
+        getAfabutton().setEnabled(false);
+        getAfaMode().setMandatory(false);
+        getAfaMode().setValue(null);
+        getAfaMode().disable();
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+    }
+  }
+  
+  public Button getAutobutton()
+  {
+    if (autobutton != null)
+      return autobutton;
+    
+    autobutton = new Button("Auto Anlagenwert", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        handleAuto();
+      }
+    }, null, true, "view-refresh.png");
+
+    try
+    {
+      if (getBetrag().getValue() != null)
+        autobutton.setEnabled(false);
+      if (!((boolean) getAnlagenkonto().getValue()))
+      {
+        autobutton.setEnabled(false);
+      }
+    }
+    catch (RemoteException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return autobutton;
+  }
+  
+  public Button getAfabutton()
+  {
+    if (afabutton != null)
+      return afabutton;
+    
+    afabutton = new Button("Auto AfA", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        handleAfa();
+      }
+    }, null, true, "view-refresh.png");
+    try
+    {
+      if (!((boolean) getAnlagenkonto().getValue()) ||
+          getAfaMode().getValue() == null ||
+          ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
+      {
+        afabutton.setEnabled(false);
+      }
+    }
+    catch (RemoteException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return afabutton;
+  }
+  
+  private void handleAuto()
+  {
+    Double betrag = 0d;
+    DBService service;
+    try
+    {
+      service = Einstellungen.getDBService();
+      DBIterator<Buchung> buchungenIt = service.createList(Buchung.class);
+      buchungenIt.join("buchungsart");
+      buchungenIt.addFilter("buchungsart.id = buchung.buchungsart");
+      buchungenIt.addFilter("konto = ?",
+          new Object[] { konto.getID() });
+      buchungenIt.addFilter("buchungsart.abschreibung = FALSE");
+      buchungenIt.addFilter("datum <= ?",
+          new Object[] { new java.sql.Date(new Date().getTime()) });
+      buchungenIt.setOrder("order by datum");
+      Date d = new Date();
+      Buchung b;
+      while (buchungenIt.hasNext())
+      {
+        b = (Buchung) buchungenIt.next();
+        betrag += b.getBetrag();
+        d = b.getDatum();
+      }
+      getBetrag().setValue(betrag);
+      if (getAnschaffung().getValue() == null)
+        getAnschaffung().setValue(d);
+    }
+    catch (RemoteException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+  
+  private void handleAfa()
+  {
+    try
+    {
+      Double betrag = (Double) getBetrag().getValue();
+      if (betrag == null)
+      {
+        GUI.getStatusBar().setErrorText("Anlagenwert fehlt, bitte eingeben!");
+        return;
+      }
+      Date anschaffung = (Date) getAnschaffung().getValue();
+      if (anschaffung == null)
+      {
+        GUI.getStatusBar().setErrorText("Anschaffungsdatum fehlt, bitte eingeben!");
+        return;
+      }
+      Integer nutzungsdauer = (Integer) getNutzungsdauer().getValue();
+      if (nutzungsdauer == null)
+      {
+        GUI.getStatusBar().setErrorText("Nutzungsdauer fehlt, bitte eingeben!");
+        return;
+      }
+      Double restwert = (Double) getAfaRestwert().getValue();
+      if (restwert == null)
+      {
+        GUI.getStatusBar().setErrorText("Restwert fehlt, bitte eingeben!");
+        return;
+      }
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(anschaffung);
+      Integer monatAnschaffung = calendar.get(Calendar.MONTH);
+      Integer year = calendar.get(Calendar.YEAR);
+      Date startGJ = Datum.toDate(Einstellungen.getEinstellung()
+          .getBeginnGeschaeftsjahr() + year);
+      calendar.setTime(startGJ);
+      Integer monatStartGJ = calendar.get(Calendar.MONTH);
+      Integer monate = 12;
+      if (monatAnschaffung < monatStartGJ)
+        monate = monatStartGJ - monatAnschaffung;
+      else if (monatAnschaffung > monatStartGJ)
+        monate = monatStartGJ - monatAnschaffung + 12;
+      if (nutzungsdauer == 0)
+      {
+        getAfaStart().setValue(betrag);
+        getAfaDauer().setValue(0);
+      }
+      else if (nutzungsdauer == 1)
+      {
+        Double start = ((betrag - restwert)*monate)/12;
+        getAfaStart().setValue(start);
+        getAfaDauer().setValue(betrag - start - restwert);
+      }
+      else
+      {
+        if(monate == 12)
+          getAfaStart().setValue(((betrag - restwert))/(nutzungsdauer));
+        else
+          getAfaStart().setValue(((betrag - restwert)*monate)/(nutzungsdauer*12));
+        getAfaDauer().setValue((betrag - restwert)/nutzungsdauer);
+      }
+    }
+    catch (Exception e)
+    {
+      GUI.getStatusBar().setErrorText("Fehler bei der AfA Berechnung");
     }
   }
   

@@ -32,6 +32,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.NotizFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.BeitragsgruppeMenu;
 import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
@@ -45,6 +46,7 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.formatter.TableFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -313,7 +315,7 @@ public class BeitragsgruppeControl extends AbstractControl
       return buchungsart;
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getBeitragsgruppe().getBuchungsart());
+        getBeitragsgruppe().getBuchungsart(), buchungsarttyp.BUCHUNGSART);
     return buchungsart;
   }
 
@@ -463,6 +465,17 @@ public class BeitragsgruppeControl extends AbstractControl
         new BuchungsartFormatter());
     beitragsgruppeList.addColumn("Altersstaffel", "altersstaffel",
         new JaNeinFormatter());
+    beitragsgruppeList.addColumn("Sekundär", "sekundaer",
+        new JaNeinFormatter());
+    beitragsgruppeList.addColumn("Beitragsart", "beitragsart",
+        new Formatter() {
+
+          @Override
+          public String format(Object o)
+          {
+            return ArtBeitragsart.getByKey((Integer)o).getText();
+          }
+    });
     beitragsgruppeList.addColumn("Notiz", "notiz", new NotizFormatter(40));
     beitragsgruppeList.setContextMenu(new BeitragsgruppeMenu());
     beitragsgruppeList.setFormatter(new TableFormatter() {

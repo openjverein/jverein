@@ -138,7 +138,7 @@ public class AbrechnungSEPA
     }
     if (param.kursteilnehmer)
     {
-      abbuchenKursteilnehmer(param, lastschrift, abrl, konto);
+      abbuchenKursteilnehmer(param, lastschrift, abrl, konto, monitor);
     }
 
     monitor.log(counter + " abgerechnete Fälle");
@@ -346,7 +346,6 @@ public class AbrechnungSEPA
       int count = 0;
       while (list.hasNext())
       {
-        monitor.setStatus((int) ((double) count / (double) list.size() * 100d));
         Mitglied m = (Mitglied) list.next();
 
         JVereinZahler z = abrechnungMitgliederSub(param, monitor,
@@ -376,6 +375,8 @@ public class AbrechnungSEPA
         {
           lastschrift.add(z);
         }
+        monitor.setPercentComplete((int) ((double) count++ / (double) list.size() * 100d));
+        monitor.setStatusText(String.format("%s, %s abgerechnet" , m.getName(), m.getVorname()));
       }
     }
   }
@@ -498,6 +499,7 @@ public class AbrechnungSEPA
       ProgressMonitor monitor)
       throws NumberFormatException, IOException, ApplicationException
   {
+    int count = 0;
     DBIterator<Zusatzbetrag> list = Einstellungen.getDBService()
         .createList(Zusatzbetrag.class);
     while (list.hasNext())
@@ -516,7 +518,7 @@ public class AbrechnungSEPA
           continue;
         }
         Mitglied mZahler = m;
-        if(m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        if(m.getZahlungsweg() != null && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
         {
           mZahler = Einstellungen.getDBService().createObject(Mitglied.class, m.getZahlerID().toString());
         }
@@ -601,14 +603,17 @@ public class AbrechnungSEPA
             vzweck, z.getBetrag(), abrl,
             mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT, konto,
             z.getBuchungsart());
+        monitor.setStatusText(String.format("Zusatzbetrag von %s, %s abgerechnet" , m.getName(), m.getVorname()));
       }
+      monitor.setPercentComplete((int) ((double) count++ / (double) list.size() * 100d));
     }
   }
 
   private void abbuchenKursteilnehmer(AbrechnungSEPAParam param,
-      Basislastschrift lastschrift, Abrechnungslauf abrl, Konto konto)
+      Basislastschrift lastschrift, Abrechnungslauf abrl, Konto konto, ProgressMonitor monitor)
       throws ApplicationException, IOException
   {
+    int count = 0;
     DBIterator<Kursteilnehmer> list = Einstellungen.getDBService()
         .createList(Kursteilnehmer.class);
     list.addFilter("abbudatum is null");
@@ -638,6 +643,8 @@ public class AbrechnungSEPA
         kt.store();
         writeMitgliedskonto(kt, param.faelligkeit, kt.getVZweck1(), 
             zahler.getBetrag().doubleValue(), abrl, true, konto, null);
+        monitor.setStatusText(String.format("Kursteilnehmer %s, %s abgerechnet" , kt.getName(), kt.getVorname()));
+        monitor.setPercentComplete((int) ((double) count++ / (double) list.size() * 100d));
       }
       catch (Exception e)
       {
