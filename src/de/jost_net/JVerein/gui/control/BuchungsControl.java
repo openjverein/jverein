@@ -485,7 +485,7 @@ public class BuchungsControl extends AbstractControl
     {
       return mitglied;
     }
-    mitglied = new TextInput(settings.getString("mitglied", ""), 35);
+    mitglied = new TextInput(settings.getString(settingsprefix + "mitglied", ""), 35);
     return mitglied;
   }
 
@@ -741,7 +741,7 @@ public class BuchungsControl extends AbstractControl
       projektliste.add(list.next());
     }
     
-    int pwert = settings.getInt(PROJEKT, -2);
+    int pwert = settings.getInt(settingsprefix + PROJEKT, -2);
     Projekt p = null;
     if (pwert == 0)
     {
@@ -1196,12 +1196,15 @@ public class BuchungsControl extends AbstractControl
     }
     else
     {
-      settings.setAttribute(BuchungsControl.BUCHUNGSART, -2);
+      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART, -2);
     }
     Projekt p = (Projekt) getSuchProjekt().getValue();
     if (p != null)
     {
-      settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, p.getID());
+      if(p.isNewObject())
+        settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, 0);
+      else
+        settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, p.getID());
     }
     else
     {
