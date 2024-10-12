@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.math.BigDecimal;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
@@ -45,22 +46,31 @@ public class MitgliedDeleteAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof Mitglied))
+    Mitglied[] mitglieder = null;
+    if (context == null)
     {
       throw new ApplicationException("Kein Mitglied ausgewählt");
     }
+    else if(context instanceof Mitglied)
+    {
+      mitglieder = new Mitglied[] {(Mitglied)context};
+    }
+    else if(context instanceof Mitglied[])
+    {
+      mitglieder = (Mitglied[])context;
+    }
+    else
+    {
+      return;
+    }
     try
     {
-      final Mitglied m = (Mitglied) context;
-      if (m.isNewObject())
-      {
-        return;
-      }
+      String mehrzahl = mitglieder.length > 1 ? "er" : "";
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Mitglied löschen");
-      d.setPanelText("Mitglied löschen?");
+      d.setTitle("Mitglied" + mehrzahl + " löschen");
+      d.setPanelText("Mitglied" + mehrzahl + " löschen?");
       d.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
-      String text = "Wollen Sie dieses Mitglied wirklich löschen?"
+      String text = "Wollen Sie diese" + (mitglieder.length > 1 ? "":"s") + " Mitglied" + mehrzahl + " wirklich löschen?"
           + "\nDies löscht auch alle Mitglied bezogenen Daten wie"
           + "\nz.B. Sollbuchungen, Spendenbescheinigungen, Mails etc."
           + "\nDiese Daten können nicht wieder hergestellt werden!";
@@ -78,47 +88,58 @@ public class MitgliedDeleteAction implements Action
         return;
       }
       
-      // Suche Mails mit mehr als einem Empfänger
       final DBService service = Einstellungen.getDBService();
-      String sql = "SELECT mail , count(id) anzahl from mailempfaenger ";
-      sql += "group by mailempfaenger.mail ";
-      sql += "HAVING anzahl > 1 ";
-      ResultSetExtractor rs = new ResultSetExtractor()
+      DBTransaction.starten();
+      for(Mitglied m:mitglieder)
       {
-        @Override
-        public Object extract(ResultSet rs) throws RemoteException, SQLException
+        if (m.isNewObject())
         {
-          ArrayList<BigDecimal> list = new ArrayList<BigDecimal>();
-          while (rs.next())
+          continue;
+        }
+        
+        // Suche Mails mit mehr als einem Empfänger
+        String sql = "SELECT mail , count(id) anzahl from mailempfaenger ";
+        sql += "group by mailempfaenger.mail ";
+        sql += "HAVING anzahl > 1 ";
+        ResultSetExtractor rs = new ResultSetExtractor()
+        {
+          @Override
+          public Object extract(ResultSet rs) throws RemoteException, SQLException
           {
-            list.add(rs.getBigDecimal(1));
+            ArrayList<BigDecimal> list = new ArrayList<BigDecimal>();
+            while (rs.next())
+            {
+              list.add(rs.getBigDecimal(1));
+            }
+            return list;
           }
-          return list;
-        }
-      };
-      @SuppressWarnings("unchecked")
-      ArrayList<BigDecimal> ergebnis = (ArrayList<BigDecimal>) service.execute(sql,
-          new Object[] { }, rs);
-      
-      // Alle Mails an das Mitglied löschen wenn nur ein Empfänger vorhanden
-      DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
-          .createList(MailEmpfaenger.class);
-      it.addFilter("mitglied = ?", m.getID());
-      while (it.hasNext())
-      {
-        Mail ma = ((MailEmpfaenger) it.next()).getMail();
-        if (!ergebnis.contains(new BigDecimal(ma.getID())))
+        };
+        @SuppressWarnings("unchecked")
+        ArrayList<BigDecimal> ergebnis = (ArrayList<BigDecimal>) service.execute(sql,
+            new Object[] { }, rs);
+        
+        // Alle Mails an das Mitglied löschen wenn nur ein Empfänger vorhanden
+        DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
+            .createList(MailEmpfaenger.class);
+        it.addFilter("mitglied = ?", m.getID());
+        while (it.hasNext())
         {
-          // Die Mail hat keinen weiteren Empfänger also löschen
-          ma.delete();
+          Mail ma = ((MailEmpfaenger) it.next()).getMail();
+          if (!ergebnis.contains(new BigDecimal(ma.getID())))
+          {
+            // Die Mail hat keinen weiteren Empfänger also löschen
+            ma.delete();
+          }
         }
+        
+        m.delete();
       }
-      
-      m.delete();
-      GUI.getStatusBar().setSuccessText("Mitglied gelöscht.");
+      DBTransaction.commit();
+      GUI.getStatusBar().setSuccessText("Mitglied" + mehrzahl + " gelöscht.");
     }
     catch (RemoteException e)
     {
+      DBTransaction.rollback();
       String fehler = "Fehler beim Löschen des Mitgliedes";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);

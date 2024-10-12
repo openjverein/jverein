@@ -508,6 +508,7 @@ public class BuchungsartControl extends AbstractControl
   @SuppressWarnings("unchecked")
   public Part getBuchungsartList() throws RemoteException
   {
+
     if (suchstatus != null)
     {
       String tmp = (String) suchstatus.getValue();
@@ -612,6 +613,7 @@ public class BuchungsartControl extends AbstractControl
         }
       }, false, Column.ALIGN_LEFT);
       buchungsartList.setContextMenu(new BuchungsartMenu());
+      buchungsartList.setMulti(true);
       buchungsartList.setRememberColWidths(true);
       buchungsartList.setRememberOrder(true);
       buchungsartList.setRememberState(true);
