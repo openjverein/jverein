@@ -36,9 +36,9 @@ public interface Buchungsart extends DBObject
 
   public Buchungsklasse getBuchungsklasse() throws RemoteException;
 
-  public int getBuchungsklasseId() throws RemoteException;
+  public Long getBuchungsklasseId() throws RemoteException;
 
-  public void setBuchungsklasse(Integer buchungsklasse) throws RemoteException;
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
 
   public Boolean getSpende() throws RemoteException;
 
@@ -52,7 +52,12 @@ public interface Buchungsart extends DBObject
 
   public void setSteuerBuchungsart(String steuer_buchungsart) throws RemoteException;
   
+  public int getStatus() throws RemoteException;
+
+  public void setStatus(int status) throws RemoteException;
+
   public Boolean getAbschreibung() throws RemoteException;
 
   public void setAbschreibung(Boolean abschreibung) throws RemoteException;
+
 }

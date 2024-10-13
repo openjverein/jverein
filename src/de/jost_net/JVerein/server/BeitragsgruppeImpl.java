@@ -23,6 +23,7 @@ import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.willuhn.datasource.db.AbstractDBObject;
@@ -87,18 +88,29 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
 
           break;
       }
-      Beitragsgruppe gruppeAlt = (Beitragsgruppe) Einstellungen.getDBService().createObject(Beitragsgruppe.class,getID());
+      Beitragsgruppe gruppeAlt = null;
+      try
+      {
+        gruppeAlt = (Beitragsgruppe) Einstellungen.getDBService().createObject(Beitragsgruppe.class,getID());
+      }
+      catch (RemoteException e)
+      {
+        //Alte Beitragsgruppe nicht gefunden
+      }
       if(getBeitragsArt() != null) {
-        //Dases die Beitragsart ZAHLER nicht mehr gibt sie aber noch in der Datenbank stehen kann, müssen wir auf null prüfen
-        ArtBeitragsart artAlt = gruppeAlt.getBeitragsArt();
-        if(artAlt == null)
-            artAlt = ArtBeitragsart.NORMAL;
-        if(gruppeAlt != null && artAlt.getKey() != getBeitragsArt().getKey()) {
-          DBIterator<Mitglied> list = Einstellungen.getDBService()
-              .createList(Mitglied.class);
-          list.addFilter("beitragsgruppe = ?", getID());
-          if(list.hasNext()) {
-            throw new ApplicationException("Es existieren Mitglieder mit diesem Beitrag, Beitragsart kann nicht geändert werden!");
+        if(gruppeAlt != null)
+        {
+          //Da es die Beitragsart ZAHLER nicht mehr gibt sie aber noch in der Datenbank stehen kann, müssen wir auf null prüfen
+          ArtBeitragsart artAlt = gruppeAlt.getBeitragsArt();
+          if(artAlt == null)
+              artAlt = ArtBeitragsart.NORMAL;
+          if(artAlt.getKey() != getBeitragsArt().getKey()) {
+            DBIterator<Mitglied> list = Einstellungen.getDBService()
+                .createList(Mitglied.class);
+            list.addFilter("beitragsgruppe = ?", getID());
+            if(list.hasNext()) {
+              throw new ApplicationException("Es existieren Mitglieder mit diesem Beitrag, Beitragsart kann nicht geändert werden!");
+            }
           }
         }
         if(getSekundaer() && getBeitragsArt().getKey() == ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey())
@@ -282,6 +294,31 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   {
     setAttribute("beitragsart", art);
   }
+  
+  @Override
+  public Buchungsklasse getBuchungsklasse() throws RemoteException
+  {
+    Long l = (Long) super.getAttribute("buchungsklasse");
+    if (l == null)
+    {
+      return null; // Keine Buchungsklasse zugeordnet
+    }
+
+    Cache cache = Cache.get(Buchungsklasse.class, true);
+    return (Buchungsklasse) cache.get(l);
+  }
+
+  @Override
+  public Long getBuchungsklasseId() throws RemoteException
+  {
+    return (Long) super.getAttribute("buchungsklasse");
+  }
+  
+  @Override
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException
+  {
+    setAttribute("buchungsklasse", buchungsklasseId);
+  }
 
   @Override
   public double getArbeitseinsatzStunden() throws RemoteException
@@ -346,6 +383,10 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
+    if (fieldName.equals("buchungsklasse"))
+    {
+      return getBuchungsklasse();
+    }
     return super.getAttribute(fieldName);
   }
 

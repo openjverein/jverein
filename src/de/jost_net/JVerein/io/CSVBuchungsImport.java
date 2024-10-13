@@ -30,6 +30,7 @@ import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.Variable.BuchungVar;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.system.Application;
@@ -174,6 +175,25 @@ public class CSVBuchungsImport implements Importer
             }
             Buchungsart b1 = (Buchungsart) bit.next();
             bu.setBuchungsart(Long.valueOf(b1.getID()));
+          }
+          catch (SQLException e)
+          {
+            // Optionales Feld
+          }
+          try
+          {
+            Integer bukl = results
+                .getInt(BuchungVar.BUCHUNGSKLASSENUMMER.getName());
+            DBIterator<Buchungsklasse> bit = Einstellungen.getDBService()
+                .createList(Buchungsklasse.class);
+            bit.addFilter("nummer = ?", bukl);
+            if (bit.size() != 1)
+            {
+              throw new ApplicationException(String
+                  .format("Buchungsklasse %d existiert nicht in JVerein!", bukl));
+            }
+            Buchungsklasse b1 = (Buchungsklasse) bit.next();
+            bu.setBuchungsklasseId(Long.valueOf(b1.getID()));
           }
           catch (SQLException e)
           {

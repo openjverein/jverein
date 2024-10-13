@@ -30,6 +30,8 @@ import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BuchungsartAction;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.BuchungsartMenu;
 import de.jost_net.JVerein.io.FileViewer;
@@ -37,6 +39,7 @@ import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.util.Dateiname;
@@ -90,6 +93,10 @@ public class BuchungsartControl extends AbstractControl
   private TextInput suchtext;
 
   private Buchungsart buchungsart;
+  
+  private SelectInput status;
+  
+  private SelectInput suchstatus;
 
   public BuchungsartControl(AbstractView view)
   {
@@ -141,6 +148,55 @@ public class BuchungsartControl extends AbstractControl
     art = new SelectInput(ArtBuchungsart.getArray(),
         new ArtBuchungsart(getBuchungsart().getArt()));
     return art;
+  }
+  
+  public SelectInput getStatus() throws RemoteException
+  {
+    if (status != null)
+    {
+      return status;
+    }
+    status = new SelectInput(StatusBuchungsart.getArray(),
+        new StatusBuchungsart(getBuchungsart().getStatus()));
+    return status;
+  }
+  
+  public SelectInput getSuchStatus() throws RemoteException
+  {
+    if (suchstatus != null)
+    {
+      return suchstatus;
+    }
+    suchstatus = new SelectInput(
+        new String[] { "Alle", "Ohne Deaktiviert" },
+        settings.getString("suchstatus", "Alle"));
+    suchstatus.addListener(new FilterListener());
+    return suchstatus;
+  }
+  
+  public class FilterListener implements Listener
+  {
+
+    FilterListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      try
+      {
+        getBuchungsartList();
+      }
+      catch (RemoteException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
+    }
   }
 
   public CheckboxInput getSpende() throws RemoteException
@@ -348,6 +404,7 @@ public class BuchungsartControl extends AbstractControl
     if (getBuchungsart().getID() != null) it.addFilter("id != " + getBuchungsart().getID());
     it.addFilter("(spende = false OR spende IS NULL)");
     it.addFilter("(steuersatz = 0 OR steuersatz IS NULL)");
+    it.addFilter("buchungsart.status != ?", StatusBuchungsart.INACTIVE);
 
     return it;
   }
@@ -389,14 +446,21 @@ public class BuchungsartControl extends AbstractControl
       b.setBezeichnung((String) getBezeichnung().getValue());
       ArtBuchungsart ba = (ArtBuchungsart) getArt().getValue();
       b.setArt(ba.getKey());
-      GenericObject o = (GenericObject) getBuchungsklasse().getValue();
-      if (o != null)
+      if (buchungsklasse != null)
       {
-        b.setBuchungsklasse(Integer.valueOf(o.getID()));
+        GenericObject o = (GenericObject) getBuchungsklasse().getValue();
+        if (o != null)
+        {
+          b.setBuchungsklasseId(Long.valueOf(o.getID()));
+        }
+        else
+        {
+          b.setBuchungsklasseId(null);
+        }
       }
       else
       {
-        b.setBuchungsklasse(null);
+        b.setBuchungsklasseId(null);
       }
       b.setSpende((Boolean) spende.getValue());
       b.setAbschreibung((Boolean) abschreibung.getValue());
@@ -410,6 +474,8 @@ public class BuchungsartControl extends AbstractControl
       {
         b.setSteuerBuchungsart(null);
       }
+      StatusBuchungsart st = (StatusBuchungsart) getStatus().getValue();
+      b.setStatus(st.getKey());
 
       try
       {
@@ -442,11 +508,40 @@ public class BuchungsartControl extends AbstractControl
   @SuppressWarnings("unchecked")
   public Part getBuchungsartList() throws RemoteException
   {
-    settings.setAttribute("suchtext", (String) getSuchtext().getValue());
+
+    if (suchstatus != null)
+    {
+      String tmp = (String) suchstatus.getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute("suchstatus", tmp);
+      }
+      else
+      {
+        settings.setAttribute("suchstatus", "");
+      }
+    }
+    
+    if (suchtext != null)
+    {
+      String tmp = (String) suchtext.getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute("suchtext", tmp);
+      }
+      else
+      {
+        settings.setAttribute("suchtext", "");
+      }
+    }
+    
     DBService service = Einstellungen.getDBService();
     DBIterator<Buchungsart> buchungsarten = service
         .createList(Buchungsart.class);
     buchungsarten.addFilter("nummer >= 0");
+    if (suchstatus != null && 
+        suchstatus.getValue().toString().equalsIgnoreCase("Ohne Deaktiviert"))
+      buchungsarten.addFilter("status != ?", new Object[] { StatusBuchungsart.INACTIVE });
     if (!getSuchtext().getValue().equals(""))
     {
       String text = "%" + ((String) getSuchtext().getValue()).toUpperCase()
@@ -478,7 +573,8 @@ public class BuchungsartControl extends AbstractControl
           return "ungültig";
         }
       }, false, Column.ALIGN_LEFT);
-      buchungsartList.addColumn("Buchungsklasse", "buchungsklasse");
+      buchungsartList.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
       buchungsartList.addColumn("Spende", "spende", new JaNeinFormatter());
       buchungsartList.addColumn("Abschreibung", "abschreibung",
           new JaNeinFormatter(), false, Column.ALIGN_RIGHT);
@@ -498,7 +594,9 @@ public class BuchungsartControl extends AbstractControl
           return "ungültig";
         }
       }, false, Column.ALIGN_RIGHT);
-      buchungsartList.addColumn("Steuer Buchungsart", "steuer_buchungsart", new Formatter()
+      buchungsartList.addColumn("Steuer Buchungsart", "steuerbuchungsart",
+          new BuchungsartFormatter());
+      buchungsartList.addColumn("Status", "status", new Formatter()
       {
         @Override
         public String format(Object o)
@@ -507,20 +605,13 @@ public class BuchungsartControl extends AbstractControl
           {
             return "";
           }
-          if (o instanceof String)
+          if (o instanceof Integer)
           {
-            try {
-              DBIterator<Buchungsart> steuer_buchungsart = Einstellungen.getDBService().createList(Buchungsart.class);
-              steuer_buchungsart.addFilter("id = " + (String) o);
-              return steuer_buchungsart.next().getNummer() + "";
-              
-            } catch (RemoteException e) {
-              return "";
-            }
+            return StatusBuchungsart.get((Integer) o);
           }
           return "ungültig";
         }
-      }, false, Column.ALIGN_RIGHT);
+      }, false, Column.ALIGN_LEFT);
       buchungsartList.setContextMenu(new BuchungsartMenu());
       buchungsartList.setMulti(true);
       buchungsartList.setRememberColWidths(true);
@@ -590,6 +681,9 @@ public class BuchungsartControl extends AbstractControl
     final File file = new File(s);
     final DBIterator<Buchungsart> it = Einstellungen.getDBService()
         .createList(Buchungsart.class);
+    if (suchstatus != null && 
+        suchstatus.getValue().toString().equalsIgnoreCase("Ohne Deaktiviert"))
+      it.addFilter("status != ?", new Object[] { StatusBuchungsart.INACTIVE });
     it.setOrder("ORDER BY nummer");
     settings.setAttribute("lastdir", file.getParent());
     BackgroundTask t = new BackgroundTask()

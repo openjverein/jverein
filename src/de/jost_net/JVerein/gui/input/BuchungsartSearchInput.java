@@ -27,6 +27,7 @@ import java.util.List;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -61,7 +62,6 @@ public class BuchungsartSearchInput extends SearchInput
   {
     try
     {
-
       unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
       if (unterdrueckunglaenge > 0 )
       {
@@ -70,29 +70,34 @@ public class BuchungsartSearchInput extends SearchInput
         Date db = cal.getTime();
         cal.add(Calendar.MONTH, - unterdrueckunglaenge);
         Date dv = cal.getTime();
+
         String sql;
         if (art == buchungsarttyp.ANLAGENART)
         {
           sql = "SELECT DISTINCT buchungsart.* from buchungsart, konto ";
-          sql += "WHERE (konto.anlagenart = buchungsart.id) ";
-          sql += "AND (buchungsart.abschreibung = FALSE) ";
+          sql += "WHERE (((konto.anlagenart = buchungsart.id) ";
           sql += "AND (konto.aufloesung IS NULL OR "
               + "(konto.aufloesung >= ? AND konto.aufloesung <= ?)) ";
+          sql += "AND buchungsart.status = ?) OR buchungsart.status = ?) ";
+          sql += "AND (buchungsart.abschreibung = FALSE) ";
         }
         else if (art == buchungsarttyp.AFAART)
         {
           sql = "SELECT DISTINCT buchungsart.* from buchungsart, konto ";
-          sql += "WHERE (konto.afaart = buchungsart.id) ";
-          sql += "AND (buchungsart.abschreibung = TRUE) ";
+          sql += "WHERE (((konto.afaart = buchungsart.id) ";
           sql += "AND (konto.aufloesung IS NULL OR "
               + "(konto.aufloesung >= ? AND konto.aufloesung <= ?)) ";
+          sql += "AND buchungsart.status = ?) OR buchungsart.status = ?) ";
+          sql += "AND (buchungsart.abschreibung = TRUE) ";
         }
         else
         {
           sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
-          sql += "WHERE buchung.buchungsart = buchungsart.id ";
+          sql += "WHERE ((buchung.buchungsart = buchungsart.id ";
           sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
+          sql += "AND buchungsart.status = ?) OR buchungsart.status = ?) ";
         }
+
         if (text != null)
         {
           text = "%" + text.toUpperCase() + "%";
@@ -116,7 +121,7 @@ public class BuchungsartSearchInput extends SearchInput
             while (rs.next())
             {
               list.add(
-                (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
+                  (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
             }
             return list;
           }
@@ -126,14 +131,16 @@ public class BuchungsartSearchInput extends SearchInput
         {
           @SuppressWarnings("unchecked")
           ArrayList<Buchungsart> result = (ArrayList<Buchungsart>) service.execute(sql,
-              new Object[] { dv, db, text, text }, rs);
+              new Object[] { dv, db, StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE,
+                  text, text }, rs);
           return result;
         }
         else
         {
           @SuppressWarnings("unchecked")
           ArrayList<Buchungsart> result = (ArrayList<Buchungsart>) service.execute(sql,
-              new Object[] { dv, db }, rs);
+              new Object[] { dv, db, StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE
+                  }, rs);
           return result;
         }
       }
@@ -141,6 +148,8 @@ public class BuchungsartSearchInput extends SearchInput
       {
         DBIterator result = Einstellungen.getDBService()
             .createList(Buchungsart.class);
+
+        result.addFilter("buchungsart.status != ?", StatusBuchungsart.INACTIVE);
         if (art == buchungsarttyp.ANLAGENART)
         {
           result.addFilter("buchungsart.abschreibung = FALSE");
@@ -149,6 +158,7 @@ public class BuchungsartSearchInput extends SearchInput
         {
           result.addFilter("buchungsart.abschreibung = TRUE");
         }
+
         if (text != null)
         {
           text = "%" + text.toUpperCase() + "%";

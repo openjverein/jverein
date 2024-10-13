@@ -20,8 +20,6 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -49,9 +47,11 @@ import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAutomatischActi
 import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SollbuchungAuswahlInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -66,12 +66,13 @@ import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
-import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.BuchungBuchungsartAuswahl;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -84,8 +85,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -159,6 +158,8 @@ public class BuchungsControl extends AbstractControl
   // Definition für beide Auswahlvarianten (SelectInput und
   // BuchungsartSearchInput)
   private AbstractInput buchungsart;
+  
+  private SelectInput buchungsklasse;
 
   private SelectInput projekt;
 
@@ -200,8 +201,6 @@ public class BuchungsControl extends AbstractControl
 
   private Vector<Listener> changeKontoListener = new Vector<>();
   
-  private int unterdrueckunglaenge = 0;
-  
   protected String settingsprefix = "geldkonto.";
   
   private Kontenart kontoart = Kontenart.ALLE;
@@ -214,6 +213,7 @@ public class BuchungsControl extends AbstractControl
     ANLAGEKONTO,
     ALLE
   }
+
   private Calendar calendar = Calendar.getInstance();
   
   private enum RANGE
@@ -252,6 +252,7 @@ public class BuchungsControl extends AbstractControl
   public void fillBuchung(Buchung b) throws ApplicationException, RemoteException
   { 
     b.setBuchungsart(getSelectedBuchungsArtId());
+    b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
     b.setProjektID(getSelectedProjektId());
     b.setKonto(getSelectedKonto());
     b.setAuszugsnummer(getAuszugsnummerWert());
@@ -484,7 +485,7 @@ public class BuchungsControl extends AbstractControl
     {
       return mitglied;
     }
-    mitglied = new TextInput(settings.getString("mitglied", ""), 35);
+    mitglied = new TextInput(settings.getString(settingsprefix + "mitglied", ""), 35);
     return mitglied;
   }
 
@@ -544,6 +545,10 @@ public class BuchungsControl extends AbstractControl
             {
               getBuchungsart().setValue(mk.getBuchungsart());
             }
+            if (isBuchungsklasseActive() && getBuchungsklasse().getValue() == null)
+            {
+              getBuchungsklasse().setValue(mk.getBuchungsklasse());
+            }
           }
         }
         catch (RemoteException e)
@@ -583,12 +588,52 @@ public class BuchungsControl extends AbstractControl
       return buchungsart;
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getBuchung().getBuchungsart(), buchungsarttyp.BUCHUNGSART);
+      getBuchung().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
+      Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
     if (!getBuchung().getSpeicherung())
     {
       buchungsart.setMandatory(true);
     }
+    buchungsart.addListener(new Listener()
+    {
+      @Override
+      public void handleEvent(Event event)
+      {
+        try
+        {
+          Buchungsart bua = (Buchungsart) buchungsart.getValue();
+          if (buchungsklasse != null && buchungsklasse.getValue() == null &&
+              bua != null)
+            buchungsklasse.setValue(bua.getBuchungsklasse());
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+    });
     return buchungsart;
+  }
+  
+  public Input getBuchungsklasse() throws RemoteException
+  {
+    if (buchungsklasse != null && !buchungsklasse.getControl().isDisposed())
+    {
+      return buchungsklasse;
+    }
+    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklasse,
+        getBuchung().getBuchungsklasse());
+    if (!getBuchung().getSpeicherung() && 
+        Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      buchungsklasse.setMandatory(true);
+    }
+    return buchungsklasse;
+  }
+  
+  public boolean isBuchungsklasseActive()
+  {
+    return buchungsklasse != null;
   }
 
   public Input getProjekt() throws RemoteException
@@ -649,6 +694,7 @@ public class BuchungsControl extends AbstractControl
               b.setBetrag(ssub.getBetrag() * -1);
               b.setBlattnummer(master.getBlattnummer());
               b.setBuchungsart(master.getBuchungsartId());
+              b.setBuchungsklasseId(master.getBuchungsklasseId());
               b.setDatum(su.getAusfuehrungsdatum());
               b.setKonto(master.getKonto());
               b.setName(ssub.getGegenkontoName());
@@ -694,97 +740,55 @@ public class BuchungsControl extends AbstractControl
     {
       projektliste.add(list.next());
     }
+    
+    int pwert = settings.getInt(settingsprefix + PROJEKT, -2);
+    Projekt p = null;
+    if (pwert == 0)
+    {
+      p = projektliste.get(0);
+    }
+    else
+    {
+      int size = projektliste.size();
+      for (int i = 1; i < size; i++)
+      {
+        if (projektliste.get(i).getID().equalsIgnoreCase(String.valueOf(pwert)))
+        {
+          p = projektliste.get(i);
+          break;
+        }
+      }
+    }
 
-    suchprojekt = new SelectInput(projektliste, null);
+    suchprojekt = new SelectInput(projektliste, p);
     suchprojekt.addListener(new FilterListener());
     suchprojekt.setAttribute("bezeichnung");
     suchprojekt.setPleaseChoose("Keine Einschränkung");
     return suchprojekt;
   }
 
-  public Input getSuchBuchungsart() throws RemoteException
+  public SelectInput getSuchBuchungsart() throws RemoteException
   {
     if (suchbuchungsart != null)
     {
       return suchbuchungsart;
     }
 
+    suchbuchungsart = (SelectInput) new BuchungsartInput().
+        getBuchungsartInput(suchbuchungsart, null,
+        buchungsarttyp.BUCHUNGSART, BuchungBuchungsartAuswahl.ComboBox);
+    
+    @SuppressWarnings("unchecked")
+    List<Buchungsart> suchliste = (List<Buchungsart>) suchbuchungsart.getList();
     ArrayList<Buchungsart> liste = new ArrayList<>();
-    Buchungsart b1 = (Buchungsart) Einstellungen.getDBService()
-        .createObject(Buchungsart.class, null);
-    b1.setNummer(-2);
-    b1.setBezeichnung("Alle Buchungsarten");
-    b1.setArt(-2);
-    liste.add(b1);
     Buchungsart b2 = (Buchungsart) Einstellungen.getDBService()
         .createObject(Buchungsart.class, null);
     b2.setNummer(-1);
     b2.setBezeichnung("Ohne Buchungsart");
     b2.setArt(-1);
     liste.add(b2);
-    
-    unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
-    if (unterdrueckunglaenge > 0)
-    {
-      final DBService service = Einstellungen.getDBService();
-      Calendar cal = Calendar.getInstance();
-      Date db = cal.getTime();
-      cal.add(Calendar.MONTH, - unterdrueckunglaenge);
-      Date dv = cal.getTime();
-      String sql = "SELECT DISTINCT buchungsart.* from buchungsart, buchung ";
-      sql += "WHERE buchung.buchungsart = buchungsart.id ";
-      sql += "AND buchung.datum >= ? AND buchung.datum <= ? ";
-      if (Einstellungen.getEinstellung()
-          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
-      {
-        sql += "ORDER BY nummer";
-      }
-      else
-      {
-        sql += "ORDER BY bezeichnung";
-      }
-      ResultSetExtractor rs = new ResultSetExtractor()
-      {
-        @Override
-        public Object extract(ResultSet rs) throws RemoteException, SQLException
-        {
-          ArrayList<Buchungsart> list = new ArrayList<Buchungsart>();
-          while (rs.next())
-          {
-            list.add(
-              (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
-          }
-          return list;
-        }
-      };
-      @SuppressWarnings("unchecked")
-      ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-          new Object[] { dv, db }, rs);
-      int size = ergebnis.size();
-      for (int i = 0; i < size; i++)
-      {
-         liste.add(ergebnis.get(i));
-      }
-    }
-    else
-    {
-      DBIterator<Buchungsart> list = Einstellungen.getDBService()
-          .createList(Buchungsart.class);
-      if (Einstellungen.getEinstellung()
-          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
-      {
-        list.setOrder("ORDER BY nummer");
-      }
-      else
-      {
-        list.setOrder("ORDER BY bezeichnung");
-      }
-      
-      while (list.hasNext())
-      {
-        liste.add(list.next());
-      }
-    }
+    for (Buchungsart ba : suchliste)
+      liste.add(ba);
     
     int bwert = settings.getInt(settingsprefix + BUCHUNGSART, -2);
     Buchungsart b = null;
@@ -797,22 +801,9 @@ public class BuchungsControl extends AbstractControl
         break;
       }
     }
-    suchbuchungsart = new SelectInput(liste, b);
+    suchbuchungsart.setList(liste);
+    suchbuchungsart.setValue(b);
     suchbuchungsart.addListener(new FilterListener());
-
-    switch (Einstellungen.getEinstellung().getBuchungsartSort())
-    {
-      case BuchungsartSort.NACH_NUMMER:
-        suchbuchungsart.setAttribute("nrbezeichnung");
-        break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
-        suchbuchungsart.setAttribute("bezeichnungnr");
-        break;
-      default:
-        suchbuchungsart.setAttribute("bezeichnung");
-        break;
-    }
-
     return suchbuchungsart;
   }
 
@@ -1146,6 +1137,26 @@ public class BuchungsControl extends AbstractControl
       throw new ApplicationException(meldung, ex);
     }
   }
+  
+  private Long getSelectedBuchungsKlasseId() throws ApplicationException
+  {
+    try
+    {
+      if (null == buchungsklasse)
+        return null;
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
+      if (null == buchungsKlasse)
+        return null;
+      Long id = Long.valueOf(buchungsKlasse.getID());
+      return id;
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
 
   public Part getBuchungsList() throws RemoteException
   {
@@ -1181,14 +1192,19 @@ public class BuchungsControl extends AbstractControl
     Buchungsart b = (Buchungsart) getSuchBuchungsart().getValue();
     if (b != null && b.getNummer() != 0)
     {
-      b = (Buchungsart) getSuchBuchungsart().getValue();
       settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART, b.getNummer());
+    }
+    else
+    {
+      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART, -2);
     }
     Projekt p = (Projekt) getSuchProjekt().getValue();
     if (p != null)
     {
-      p = (Projekt) getSuchProjekt().getValue();
-      settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, p.getID());
+      if(p.isNewObject())
+        settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, 0);
+      else
+        settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, p.getID());
     }
     else
     {
@@ -1238,24 +1254,7 @@ public class BuchungsControl extends AbstractControl
       });
       buchungsList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      // buchungsList.addColumn(new Column("auszugsnummer", "Auszug",
-      // new Formatter()
-      // {
-      // @Override
-      // public String format(Object o)
-      // {
-      // return o.toString();
-      // }
-      // }, false, Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
-      // buchungsList.addColumn(new Column("blattnummer", "Blatt", new
-      // Formatter()
-      // {
-      // @Override
-      // public String format(Object o)
-      // {
-      // return o.toString();
-      // }
-      // }, false, Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
+
       if (geldkonto)
       {
         buchungsList.addColumn("Auszugsnummer", "auszugsnummer");
@@ -1281,6 +1280,12 @@ public class BuchungsControl extends AbstractControl
           return s;
         }
       });
+      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      {
+        buchungsList.addColumn("Buchungsklasse", "buchungsklasse",
+            new BuchungsklasseFormatter());
+      }
+      
       buchungsList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
       buchungsList.addColumn("Betrag", "betrag",
@@ -1357,6 +1362,11 @@ public class BuchungsControl extends AbstractControl
       splitbuchungsList.addColumn("Blatt", "blattnummer");
       splitbuchungsList.addColumn("Name", "name");
       splitbuchungsList.addColumn("Verwendungszweck", "zweck");
+      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      {
+        splitbuchungsList.addColumn("Buchungsklasse", "buchungsklasse",
+            new BuchungsklasseFormatter());
+      }
       splitbuchungsList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
       splitbuchungsList.addColumn("Betrag", "betrag",
@@ -1437,33 +1447,31 @@ public class BuchungsControl extends AbstractControl
 
     try
     {
-      DBIterator<Buchungsart> list = Einstellungen.getDBService()
-          .createList(Buchungsart.class);
-      if (query.getBuchungsart() != null
-          && query.getBuchungsart().getArt() != -2)
-      {
-        list.addFilter("id = ?",
-            new Object[] { query.getBuchungsart().getID() });
-      }
-      if (query.getBuchungsart() != null
-          && query.getBuchungsart().getArt() == -1)
-      {
-        list.addFilter("id = ?", -1);
-      }
-      list.setOrder("ORDER BY nummer");
       ArrayList<Buchungsart> buchungsarten = new ArrayList<>();
-      while (list.hasNext())
+      if (!(query.getBuchungsart() != null
+          && query.getBuchungsart().getID() == null))
       {
-        buchungsarten.add(list.next());
+        DBIterator<Buchungsart> list = Einstellungen.getDBService()
+            .createList(Buchungsart.class);
+        if (query.getBuchungsart() != null
+            && query.getBuchungsart().getID() != null)
+        {
+          list.addFilter("id = ?",
+              new Object[] { query.getBuchungsart().getID() });
+        }
+
+        list.setOrder("ORDER BY nummer");
+        
+        while (list.hasNext())
+        {
+          buchungsarten.add(list.next());
+        }
       }
-      if (buchungsarten.size() > 1)
-      {
-        Buchungsart ohnezuordnung = (Buchungsart) Einstellungen.getDBService()
-            .createObject(Buchungsart.class, null);
-        ohnezuordnung.setBezeichnung("Ohne Zuordnung");
-        ohnezuordnung.setArt(-1);
-        buchungsarten.add(ohnezuordnung);
-      }
+      Buchungsart ohnezuordnung = (Buchungsart) Einstellungen.getDBService()
+          .createObject(Buchungsart.class, null);
+      ohnezuordnung.setBezeichnung("Ohne Zuordnung");
+      ohnezuordnung.setArt(-1);
+      buchungsarten.add(ohnezuordnung);
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
@@ -2121,7 +2129,7 @@ public class BuchungsControl extends AbstractControl
   {
     try
     {
-      suchbuchungsart.setValue(suchbuchungsart.getList().get(0));
+      suchbuchungsart.setValue(null);
       suchprojekt.setValue(null);
       suchbetrag.setValue("");
       hasmitglied.setValue(hasmitglied.getList().get(2));

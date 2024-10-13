@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
 import de.jost_net.JVerein.keys.Adressblatt;
+import de.jost_net.JVerein.keys.Spendenart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -82,7 +83,7 @@ public class SpendenbescheinigungView extends AbstractView
     /*
      * Betrag kann bei Geldspenden nicht geändert werden
      */
-    if (control.getSpendenbescheinigung().getAutocreate())
+    if (control.getSpendenbescheinigung().getSpendenart() == Spendenart.GELDSPENDE)
     {
       control.getSpendenart().setEnabled(false);
       control.getBetrag().setEnabled(false);

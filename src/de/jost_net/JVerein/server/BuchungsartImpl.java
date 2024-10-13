@@ -69,7 +69,7 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
       }
       if (getSteuersatz() > 0 && getSteuerBuchungsart() == null)
       {
-        throw new ApplicationException("Bitte Buchungsart auswählen.");
+        throw new ApplicationException("Bitte Steuer Buchungsart auswählen.");
       }
     }
     catch (RemoteException e)
@@ -139,6 +139,23 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   {
     setAttribute("art", art);
   }
+  
+  @Override
+  public int getStatus() throws RemoteException
+  {
+    Integer i = (Integer) getAttribute("status");
+    if (i == null)
+    {
+      return 0;
+    }
+    return i.intValue();
+  }
+
+  @Override
+  public void setStatus(int status) throws RemoteException
+  {
+    setAttribute("status", status);
+  }
 
   @Override
   public Buchungsklasse getBuchungsklasse() throws RemoteException
@@ -147,15 +164,15 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   }
 
   @Override
-  public int getBuchungsklasseId() throws RemoteException
+  public Long getBuchungsklasseId() throws RemoteException
   {
-    return Integer.parseInt(getBuchungsklasse().getID());
+    return (Long) super.getAttribute("buchungsklasse");
   }
 
   @Override
-  public void setBuchungsklasse(Integer buchungsklasse) throws RemoteException
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException
   {
-    setAttribute("buchungsklasse", buchungsklasse);
+    setAttribute("buchungsklasse", buchungsklasseId);
   }
 
   @Override
@@ -259,6 +276,10 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
       stb.append(getBezeichnung());
       return stb.toString();
     }
+    else if (fieldName.equals("steuerbuchungsart"))
+    {
+      return getSteuerBuchungsart();
+    }
     else
     {
       return super.getAttribute(fieldName);
@@ -292,5 +313,22 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   {
     super.store();
     Cache.get(Buchungsart.class, false).put(this); // Cache aktualisieren
+  }
+  
+  public boolean equals(Object bart)
+  {
+    try
+    {
+      if (this.getID().equalsIgnoreCase(((Buchungsart) bart).getID()))
+        return true;
+      else
+        return false;
+    }
+    catch (RemoteException e)
+    {
+      // Auto-generated catch block
+      e.printStackTrace();
+      return false;
+    }
   }
 }

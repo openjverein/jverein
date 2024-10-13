@@ -18,63 +18,64 @@ package de.jost_net.JVerein.keys;
 
 import java.util.ArrayList;
 
-public class AfaMode
+/**
+ * Art der Buchungsart
+ */
+public class StatusBuchungsart
 {
+  public static final int ACTIVE = 0;
 
-  public static final int MANUELL = 1;
+  public static final int INACTIVE = 1;
 
   public static final int AUTO = 2;
 
-  public static final int ANGEPASST = 3;
-  
+  private int art;
 
-  private int afamode;
-
-  public AfaMode(int key)
+  public StatusBuchungsart(int key)
   {
-    this.afamode = key;
+    this.art = key;
   }
 
   public int getKey()
   {
-    return afamode;
+    return art;
   }
 
   public String getText()
   {
-    return get(afamode);
+    return get(art);
   }
 
   public static String get(int key)
   {
     switch (key)
     {
-      case MANUELL:
-        return "Manuelle AfA";
+      case ACTIVE:
+        return "Aktiv";
+      case INACTIVE:
+        return "Deaktiviert";
       case AUTO:
-        return "Auto AfA";
-      case ANGEPASST:
-        return "Angepasste AfA";
+        return "Auto";
       default:
         return null;
     }
   }
 
-  public static ArrayList<AfaMode> getArray()
+  public static ArrayList<StatusBuchungsart> getArray()
   {
-    ArrayList<AfaMode> ret = new ArrayList<>();
-    ret.add(new AfaMode(MANUELL));
-    ret.add(new AfaMode(AUTO));
-    ret.add(new AfaMode(ANGEPASST));
+    ArrayList<StatusBuchungsart> ret = new ArrayList<>();
+    ret.add(new StatusBuchungsart(ACTIVE));
+    ret.add(new StatusBuchungsart(INACTIVE));
+    ret.add(new StatusBuchungsart(AUTO));
     return ret;
   }
 
   @Override
   public boolean equals(Object obj)
   {
-    if (obj instanceof AfaMode)
+    if (obj instanceof StatusBuchungsart)
     {
-      AfaMode v = (AfaMode) obj;
+      StatusBuchungsart v = (StatusBuchungsart) obj;
       return (getKey() == v.getKey());
     }
     return false;
@@ -83,12 +84,12 @@ public class AfaMode
   @Override
   public int hashCode()
   {
-    return afamode;
+    return art;
   }
 
   @Override
   public String toString()
   {
-    return get(afamode);
+    return get(art);
   }
 }

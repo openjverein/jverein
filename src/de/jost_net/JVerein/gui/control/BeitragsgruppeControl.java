@@ -29,9 +29,11 @@ import org.eclipse.swt.widgets.TableItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BeitragsgruppeDetailAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.NotizFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.BeitragsgruppeMenu;
 import de.jost_net.JVerein.io.AltersgruppenParser;
@@ -39,6 +41,7 @@ import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.util.VonBis;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -82,6 +85,8 @@ public class BeitragsgruppeControl extends AbstractControl
   private DecimalInput betragjaehrlich;
 
   private SelectInput beitragsart;
+  
+  private SelectInput buchungsklasse;
 
   private Beitragsgruppe beitrag;
 
@@ -90,6 +95,8 @@ public class BeitragsgruppeControl extends AbstractControl
   private DecimalInput arbeitseinsatzbetrag;
 
   private AbstractInput buchungsart;
+  
+  
 
   private TextAreaInput notiz;
 
@@ -315,8 +322,58 @@ public class BeitragsgruppeControl extends AbstractControl
       return buchungsart;
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getBeitragsgruppe().getBuchungsart(), buchungsarttyp.BUCHUNGSART);
+        getBeitragsgruppe().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
+        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+    buchungsart.addListener(new Listener()
+    {
+      @Override
+      public void handleEvent(Event event)
+      {
+        try
+        {
+          Buchungsart bua = (Buchungsart) buchungsart.getValue();
+          if (buchungsklasse != null && buchungsklasse.getValue() == null &&
+              bua != null)
+            buchungsklasse.setValue(bua.getBuchungsklasse());
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+    });
     return buchungsart;
+  }
+  
+  public SelectInput getBuchungsklasse() throws RemoteException
+  {
+    if (buchungsklasse != null)
+    {
+      return buchungsklasse;
+    }
+    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklasse,
+        getBeitragsgruppe().getBuchungsklasse());
+    return buchungsklasse;
+  }
+  
+  private Long getSelectedBuchungsKlasseId() throws ApplicationException
+  {
+    try
+    {
+      if (null == buchungsklasse)
+        return null;
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
+      if (null == buchungsKlasse)
+        return null;
+      Long id = Long.valueOf(buchungsKlasse.getID());
+      return id;
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
   }
 
   public TextAreaInput getNotiz() throws RemoteException
@@ -348,11 +405,8 @@ public class BeitragsgruppeControl extends AbstractControl
       ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
 
       b.setBeitragsArt(ba.getKey());
-      Buchungsart bua = (Buchungsart) getBuchungsart().getValue();
-      if (bua != null)
-      {
-        b.setBuchungsart(bua);
-      }
+      b.setBuchungsart((Buchungsart) getBuchungsart().getValue());
+      b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
       Double d = (Double) getArbeitseinsatzStunden().getValue();
       b.setArbeitseinsatzStunden(d.doubleValue());
       d = (Double) getArbeitseinsatzBetrag().getValue();
@@ -460,6 +514,11 @@ public class BeitragsgruppeControl extends AbstractControl
       beitragsgruppeList.addColumn("Arbeitseinsatz-Stundensatz",
           "arbeitseinsatzbetrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    }
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      beitragsgruppeList.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
     }
     beitragsgruppeList.addColumn("Buchungsart", "buchungsart",
         new BuchungsartFormatter());
