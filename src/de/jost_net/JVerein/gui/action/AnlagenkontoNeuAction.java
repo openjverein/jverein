@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.dialogs.AnlagenkontoNeuDialog;
 import de.jost_net.JVerein.gui.view.KontoView;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
@@ -42,7 +43,7 @@ public class AnlagenkontoNeuAction implements Action
     Konto konto = null;
     try
     {
-
+      DBTransaction.starten();
       AnlagenkontoNeuDialog d = new AnlagenkontoNeuDialog(
           AnlagenkontoNeuDialog.POSITION_CENTER, buchung);
       konto = (Konto) d.open();
@@ -69,17 +70,20 @@ public class AnlagenkontoNeuAction implements Action
           bu.setProjektID(buchung.getProjektID());
         bu.setKommentar(buchung.getKommentar());
         bu.store();
-
+        DBTransaction.commit();
         GUI.startView(new KontoView(), konto);
       }
     }
     catch (OperationCanceledException oce)
     {
+      DBTransaction.rollback();
       throw oce;
     }
     catch (Exception e)
     {
-      GUI.getStatusBar().setErrorText("Fehler bei der Erstellung eines Anlagenkontos.");
+      DBTransaction.rollback();
+      GUI.getStatusBar().setErrorText(
+          "Fehler bei der Erstellung des Anlagenkontos: " + e.getMessage());
     }
   }
 }
