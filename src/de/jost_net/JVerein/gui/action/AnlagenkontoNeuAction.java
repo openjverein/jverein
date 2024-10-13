@@ -73,6 +73,7 @@ public class AnlagenkontoNeuAction implements Action
         DBTransaction.commit();
         GUI.startView(new KontoView(), konto);
       }
+      DBTransaction.rollback();
     }
     catch (OperationCanceledException oce)
     {
