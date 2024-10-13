@@ -38,7 +38,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
   public MitgliedSpaltenauswahl()
   {
     super("mitglied");
-    add("ID", "idint", false, true);
+    add("Mitgliedsnummer", "idint", false, true);
     try
     {
       if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())

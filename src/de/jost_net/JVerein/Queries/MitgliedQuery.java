@@ -405,6 +405,16 @@ public class MitgliedQuery
         // Workaround für einen Bug in IntegerInput
       }
     }
+    if (control.isSuchMitgliedsnummerActive())
+    {
+      Integer value = (Integer) control.getSuchMitgliedsnummer().getValue();
+      if (value != null)
+      {
+        addCondition("mitglied.id = ?");
+        bedingungen.add(value);
+      }
+    }
+    
     if (sort != null && !sort.isEmpty())
     {
       if (sort.equals("Name, Vorname"))
