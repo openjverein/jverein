@@ -27,6 +27,8 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.KontoControl;
+import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -163,6 +165,8 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       konto.setNutzungsdauer((Integer)getNutzungsdauer().getValue());
       konto.setKommentar(buchung.getKommentar());
       konto.store();
+      BuchungsControl bcontrol = new BuchungsControl(null, Kontenart.ANLAGEKONTO);
+      bcontrol.getSettings().setAttribute("anlagenkonto.kontoid", konto.getID());
     }
     catch (RemoteException e)
     {
@@ -201,7 +205,8 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       return anlagenart;
     }
     anlagenart = new BuchungsartInput().getBuchungsartInput( anlagenart,
-        buchung.getBuchungsart(), buchungsarttyp.ANLAGENART);
+        buchung.getBuchungsart(), buchungsarttyp.ANLAGENART,
+        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
     anlagenart.addListener(new AnlagenartListener());
     return anlagenart;
   }
@@ -233,7 +238,9 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     DBIterator<Buchungsklasse> list = Einstellungen.getDBService()
         .createList(Buchungsklasse.class);
     list.setOrder(control.getBuchungartSortOrder());
-    Buchungsklasse bk = buchung.getBuchungsart().getBuchungsklasse();
+    Buchungsklasse bk = buchung.getBuchungsklasse();
+    if (bk == null)
+        bk = buchung.getBuchungsart().getBuchungsklasse();
     if (bk != null)
     {
       anlagenklasse = new SelectInput(list != null ? 
@@ -274,7 +281,8 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       return afaart;
     }
     afaart = new BuchungsartInput().getBuchungsartInput( afaart,
-        null, buchungsarttyp.AFAART);
+        null, buchungsarttyp.AFAART,
+        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
     return afaart;
   }
   

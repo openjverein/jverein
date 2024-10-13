@@ -59,13 +59,16 @@ public class BuchungMenu extends ContextMenu
     {
       addItem(new SingleGegenBuchungItem("Gegenbuchung", new BuchungGegenbuchungAction(),
           "edit-copy.png"));
-      addItem(new SingleGegenBuchungItem("Neues Anlagenkonto", new AnlagenkontoNeuAction(),
-          "document-new.png"));
     }
     addItem(new SplitBuchungItem("Splitbuchung", new SplitBuchungAction(),
         "edit-copy.png"));
     addItem(new AufloesenItem("Auflösen", new SplitbuchungBulkAufloesenAction(),
         "unlocked.png"));
+    if (geldkonto)
+    {
+      addItem(new SingleGegenBuchungItem("Neues Anlagenkonto", new AnlagenkontoNeuAction(),
+          "document-new.png"));
+    }
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
     if (geldkonto)
