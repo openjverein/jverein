@@ -33,7 +33,7 @@ public class MailVorlagenUebersichtView extends AbstractView
 
     MailVorlageControl control = new MailVorlageControl(this);
 
-    control.getMailVorlageTable().paint(this.getParent());
+    control.getMailVorlageTable(new MailVorlageDetailAction()).paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

@@ -48,6 +48,47 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
 	private Date datumvon = null;
 
 	private Date datumbis = null;
+	
+  Double einnahmen;
+  Double ausgaben;
+  Double umbuchungen;
+  Double suBukEinnahmen = Double.valueOf(0);
+  Double suBukAusgaben = Double.valueOf(0);
+  Double suBukUmbuchungen = Double.valueOf(0);
+  Double suEinnahmen = Double.valueOf(0);
+  Double suAusgaben = Double.valueOf(0);
+  Double suUmbuchungen = Double.valueOf(0);
+  HashMap<Double, Double> suNetto = new HashMap<Double, Double>();
+  HashMap<Double, Double> suSteuer = new HashMap<Double, Double>();
+  HashMap<Double, Double> suBukNetto = new HashMap<Double, Double>();
+  HashMap<Double, Double> suBukSteuer = new HashMap<Double, Double>();
+  HashMap<String, Double> suBukSteuersatz = new HashMap<String, Double>();
+  DBService service;
+
+  ResultSetExtractor rsd = new ResultSetExtractor()
+  {
+    @Override
+    public Object extract(ResultSet rs) throws SQLException
+    {
+      if (!rs.next())
+      {
+        return Double.valueOf(0);
+      }
+      return Double.valueOf(rs.getDouble(1));
+    }
+  };
+  ResultSetExtractor rsi = new ResultSetExtractor()
+  {
+    @Override
+    public Object extract(ResultSet rs) throws SQLException
+    {
+      if (!rs.next())
+      {
+        return Integer.valueOf(0);
+      }
+      return Integer.valueOf(rs.getInt(1));
+    }
+  };
 
   public BuchungsklasseSaldoList(Action action, Date datumvon, Date datumbis)
   {
@@ -109,247 +150,38 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
   {
     ArrayList<BuchungsklasseSaldoZeile> zeile = new ArrayList<>();
     Buchungsklasse buchungsklasse = null;
-    Buchungsart buchungsart = null;
-    Double einnahmen;
-    Double ausgaben;
-    Double umbuchungen;
-    Double suBukEinnahmen = Double.valueOf(0);
-    Double suBukAusgaben = Double.valueOf(0);
-    Double suBukUmbuchungen = Double.valueOf(0);
-    Double suEinnahmen = Double.valueOf(0);
-    Double suAusgaben = Double.valueOf(0);
-    Double suUmbuchungen = Double.valueOf(0);
-    HashMap<Double, Double> suNetto = new HashMap<Double, Double>();
-    HashMap<Double, Double> suSteuer = new HashMap<Double, Double>();
-    HashMap<Double, Double> suBukNetto = new HashMap<Double, Double>();
-    HashMap<Double, Double> suBukSteuer = new HashMap<Double, Double>();
-    HashMap<String, Double> suBukSteuersatz = new HashMap<String, Double>();
+    suBukEinnahmen = Double.valueOf(0);
+    suBukAusgaben = Double.valueOf(0);
+    suBukUmbuchungen = Double.valueOf(0);
+    suEinnahmen = Double.valueOf(0);
+    suAusgaben = Double.valueOf(0);
+    suUmbuchungen = Double.valueOf(0);
+    suNetto = new HashMap<Double, Double>();
+    suSteuer = new HashMap<Double, Double>();
+    suBukNetto = new HashMap<Double, Double>();
+    suBukSteuer = new HashMap<Double, Double>();
+    suBukSteuersatz = new HashMap<String, Double>();
 
-    ResultSetExtractor rsd = new ResultSetExtractor()
-    {
-      @Override
-      public Object extract(ResultSet rs) throws SQLException
-      {
-        if (!rs.next())
-        {
-          return Double.valueOf(0);
-        }
-        return Double.valueOf(rs.getDouble(1));
-      }
-    };
-    ResultSetExtractor rsi = new ResultSetExtractor()
-    {
-      @Override
-      public Object extract(ResultSet rs) throws SQLException
-      {
-        if (!rs.next())
-        {
-          return Integer.valueOf(0);
-        }
-        return Integer.valueOf(rs.getInt(1));
-      }
-    };
-
-    DBService service = Einstellungen.getDBService();
+    service = Einstellungen.getDBService();
     DBIterator<Buchungsklasse> buchungsklassenIt = service
         .createList(Buchungsklasse.class);
     buchungsklassenIt.setOrder("ORDER BY nummer");
     while (buchungsklassenIt.hasNext())
     {
       buchungsklasse = (Buchungsklasse) buchungsklassenIt.next();
-      zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.HEADER,
-          buchungsklasse));
-      DBIterator<Buchungsart> buchungsartenIt = service
-          .createList(Buchungsart.class);
-      buchungsartenIt.addFilter("buchungsklasse = ?",
-          new Object[] { buchungsklasse.getID() });
-
-      suBukSteuersatz.clear();
-      DBIterator<Buchungsart> buchungsartenSteuerIt = service
-          .createList(Buchungsart.class);
-      buchungsartenSteuerIt.addFilter("buchungsklasse = ?",
-          new Object[] { buchungsklasse.getID() });
-      buchungsartenSteuerIt.addFilter("steuersatz <> 0");
-      while (buchungsartenSteuerIt.hasNext())
-      {
-        buchungsart = (Buchungsart) buchungsartenSteuerIt.next();
-        Buchungsart steuer_buchungsart = buchungsart.getSteuerBuchungsart();
-        if (steuer_buchungsart != null)
-        {
-          String steuer_buchungsart_id = steuer_buchungsart.getID();
-          if (buchungsart.getArt() == ArtBuchungsart.EINNAHME)
-          {
-            suBukSteuersatz.put(steuer_buchungsart_id,
-                buchungsart.getSteuersatz());
-          }
-          else if (buchungsart.getArt() == ArtBuchungsart.AUSGABE)
-          {
-            suBukSteuersatz.put(steuer_buchungsart_id,
-                -buchungsart.getSteuersatz());
-          }
-        }
-      }
-
-      buchungsartenIt.setOrder("order by nummer");
-      suBukEinnahmen = Double.valueOf(0);
-      suBukAusgaben = Double.valueOf(0);
-      suBukUmbuchungen = Double.valueOf(0);
-      suBukNetto.clear();
-      suBukSteuer.clear();
-      boolean ausgabe = false;
-
-      while (buchungsartenIt.hasNext())
-      {
-        buchungsart = (Buchungsart) buchungsartenIt.next();
-        String sqlc = "select count(*) from buchung, buchungsart "
-            + "where datum >= ? and datum <= ?  "
-            + "and buchung.buchungsart = buchungsart.id "
-            + "and buchungsart.id = ?";
-        int anz = (Integer) service.execute(sqlc,
-            new Object[] { datumvon, datumbis, buchungsart.getID() }, rsi);
-        if (anz == 0)
-        {
-          continue;
-        }
-        ausgabe = true;
-        String sql = "select sum(betrag) from buchung, buchungsart "
-            + "where datum >= ? and datum <= ?  "
-            + "and buchung.buchungsart = buchungsart.id "
-            + "and buchungsart.id = ? " + "and buchungsart.art = ?";
-        einnahmen = (Double) service.execute(sql,
-            new Object[] { datumvon, datumbis, buchungsart.getID(), 0 }, rsd);
-        suBukEinnahmen += einnahmen;
-        ausgaben = (Double) service.execute(sql,
-            new Object[] { datumvon, datumbis, buchungsart.getID(), 1 }, rsd);
-        suBukAusgaben += ausgaben;
-        umbuchungen = (Double) service.execute(sql,
-            new Object[] { datumvon, datumbis, buchungsart.getID(), 2 }, rsd);
-        suBukUmbuchungen += umbuchungen;
-
-        if (buchungsart.getSteuersatz() > 0.0)
-        {
-          Double steuersatz = buchungsart.getSteuersatz();
-          Double val = 0.0;
-          if (buchungsart.getArt() == ArtBuchungsart.EINNAHME)
-          {
-            val = einnahmen;
-          }
-          else if (buchungsart.getArt() == ArtBuchungsart.AUSGABE)
-          {
-            steuersatz = -steuersatz;
-            val = ausgaben;
-          }
-          if (!suBukNetto.containsKey(steuersatz))
-          {
-            suBukNetto.put(steuersatz, 0.0);
-          }
-          suBukNetto.put(steuersatz, suBukNetto.get(steuersatz) + val);
-        }
-        else if (suBukSteuersatz.containsKey(buchungsart.getID()))
-        {
-          Double steuersatz = suBukSteuersatz.get(buchungsart.getID());
-          if (!suBukSteuer.containsKey(steuersatz))
-          {
-            suBukSteuer.put(steuersatz, 0.0);
-          }
-          suBukSteuer.put(steuersatz,
-              suBukSteuer.get(steuersatz) + einnahmen + ausgaben + umbuchungen);
-        }
-
-        zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.DETAIL,
-            buchungsart, einnahmen, ausgaben, umbuchungen));
-      }
-      suEinnahmen += suBukEinnahmen;
-      suAusgaben += suBukAusgaben;
-      suUmbuchungen += suBukUmbuchungen;
-      if (!ausgabe
-          && Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
-      {
-        zeile.remove(zeile.size() - 1);
-        continue;
-      }
-
-      zeile.add(
-          new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.SALDOFOOTER,
-              "Saldo" + " " + buchungsklasse.getBezeichnung(), suBukEinnahmen,
-              suBukAusgaben, suBukUmbuchungen));
       zeile.add(new BuchungsklasseSaldoZeile(
-          BuchungsklasseSaldoZeile.SALDOGEWINNVERLUST,
-          "Gewinn/Verlust" + " " + buchungsklasse.getBezeichnung(),
-          suBukEinnahmen + suBukAusgaben + suBukUmbuchungen));
-
-      // Buchungsklasse Übersicht Steuern ausgeben
-      Boolean first_row = true;
-      for (Double steuersatz : suBukNetto.keySet())
-      {
-        String string_steuersatz = String.format("%.2f", Math.abs(steuersatz))
-            + "% ";
-        if (steuersatz > 0.0)
-        {
-          string_steuersatz += " MwSt.";
-        }
-        else
-        {
-          string_steuersatz += " VSt.";
-        }
-        if (!suBukSteuer.containsKey(steuersatz))
-        {
-          suBukSteuer.put(steuersatz, 0.0);
-        }
-        if (first_row)
-        {
-          zeile.add(new BuchungsklasseSaldoZeile(
-              BuchungsklasseSaldoZeile.STEUERHEADER,
-              "Steuern " + buchungsklasse.getBezeichnung(), string_steuersatz,
-              suBukNetto.get(steuersatz), suBukSteuer.get(steuersatz)));
-          first_row = false;
-        }
-        else
-        {
-          zeile.add(new BuchungsklasseSaldoZeile(
-              BuchungsklasseSaldoZeile.STEUER, "", string_steuersatz,
-              suBukNetto.get(steuersatz), suBukSteuer.get(steuersatz)));
-        }
-
-        // Werte für Gesamtübersicht addieren
-        if (!suNetto.containsKey(steuersatz))
-        {
-          suNetto.put(steuersatz, 0.0);
-          suSteuer.put(steuersatz, 0.0);
-        }
-        suNetto.put(steuersatz,
-            suNetto.get(steuersatz) + suBukNetto.get(steuersatz));
-        suSteuer.put(steuersatz,
-            suSteuer.get(steuersatz) + suBukSteuer.get(steuersatz));
-
-      }
+          BuchungsklasseSaldoZeile.HEADER, buchungsklasse));
+      createBuchungsklasse(buchungsklasse, zeile);
     }
-    String sql = "select sum(betrag) from buchung, buchungsart "
-        + "where datum >= ? and datum <= ?  "
-        + "and buchung.buchungsart = buchungsart.id "
-        + "and buchungsart.buchungsklasse is null and buchungsart.art = ?";
-    einnahmen = (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, 0 }, rsd);
-    suBukEinnahmen += einnahmen;
-    suEinnahmen += einnahmen;
-    ausgaben = (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, 1 }, rsd);
-    suBukAusgaben += ausgaben;
-    suAusgaben += ausgaben;
-    umbuchungen = (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, 2 }, rsd);
-    suBukUmbuchungen += umbuchungen;
-    suUmbuchungen += umbuchungen;
-    if (einnahmen != 0 || ausgaben != 0 || umbuchungen != 0)
-    {
-      Buchungsklasse b = (Buchungsklasse) service
-          .createObject(Buchungsklasse.class, null);
-      b.setBezeichnung("Nicht zugeordnet");
-      zeile.add(
-          new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.HEADER, b));
-      zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.DETAIL,
-          "Nicht zugeordnet", einnahmen, ausgaben, umbuchungen));
-    }
+    
+    // Buchungen ohne Buchungsklasse
+    Buchungsklasse b = (Buchungsklasse) service
+        .createObject(Buchungsklasse.class, null);
+    b.setBezeichnung("Nicht zugeordnet");
+    zeile.add(
+        new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.HEADER, b));
+    createBuchungsklasse(null, zeile);
+
     zeile.add(
         new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.GESAMTSALDOFOOTER,
             "Gesamtsaldo" + " ", suEinnahmen, suAusgaben, suUmbuchungen));
@@ -387,7 +219,8 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
       }
     }
 
-    sql = "select count(*) from buchung " + "where datum >= ? and datum <= ?  "
+    // Buchungen ohne Buchungsart
+    String sql = "select count(*) from buchung " + "where datum >= ? and datum <= ?  "
         + "and buchung.buchungsart is null";
 
     Integer anzahl = (Integer) service.execute(sql,
@@ -426,4 +259,274 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
     super.paint(parent);
   }
 
+  private void createBuchungsklasse(Buchungsklasse buchungsklasse, 
+      ArrayList<BuchungsklasseSaldoZeile> zeile) throws RemoteException 
+  {
+    Buchungsart buchungsart = null;
+    String buchungsklasseId = null;
+    String bezeichnung = "Nicht zugeordnet";
+    if (buchungsklasse != null)
+    {
+      buchungsklasseId = buchungsklasse.getID();
+      bezeichnung = buchungsklasse.getBezeichnung();
+    }
+
+    suBukSteuersatz.clear();
+    DBIterator<Buchungsart> buchungsartenSteuerIt = service
+        .createList(Buchungsart.class);
+    if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      if (buchungsklasseId != null)
+        buchungsartenSteuerIt.addFilter("buchungsklasse = ?", buchungsklasseId );
+      else
+        buchungsartenSteuerIt.addFilter("buchungsklasse is null");
+    }
+    buchungsartenSteuerIt.addFilter("steuersatz <> 0");
+    while (buchungsartenSteuerIt.hasNext())
+    {
+      buchungsart = (Buchungsart) buchungsartenSteuerIt.next();
+      Buchungsart steuer_buchungsart = buchungsart.getSteuerBuchungsart();
+      if (steuer_buchungsart != null)
+      {
+        String steuer_buchungsart_id = steuer_buchungsart.getID();
+        if (buchungsart.getArt() == ArtBuchungsart.EINNAHME)
+        {
+          suBukSteuersatz.put(steuer_buchungsart_id,
+              buchungsart.getSteuersatz());
+        }
+        else if (buchungsart.getArt() == ArtBuchungsart.AUSGABE)
+        {
+          suBukSteuersatz.put(steuer_buchungsart_id,
+              -buchungsart.getSteuersatz());
+        }
+      }
+    }
+    
+    DBIterator<Buchungsart> buchungsartenIt = service
+        .createList(Buchungsart.class);
+    if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      if (buchungsklasseId != null)
+        buchungsartenIt.addFilter("buchungsklasse = ?", buchungsklasseId );
+      else
+        buchungsartenIt.addFilter("buchungsklasse is null");
+    }
+    buchungsartenIt.setOrder("order by nummer");
+    suBukEinnahmen = Double.valueOf(0);
+    suBukAusgaben = Double.valueOf(0);
+    suBukUmbuchungen = Double.valueOf(0);
+    suBukNetto.clear();
+    suBukSteuer.clear();
+    boolean ausgabe = false;
+
+    while (buchungsartenIt.hasNext())
+    {
+      buchungsart = (Buchungsart) buchungsartenIt.next();
+      String sqlc = null;
+      int anz = 0;
+      if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      {
+        sqlc = "select count(*) from buchung, buchungsart "
+            + "where datum >= ? and datum <= ?  "
+            + "and buchung.buchungsart = buchungsart.id "
+            + "and buchungsart.id = ?";
+        anz = (Integer) service.execute(sqlc,
+            new Object[] { datumvon, datumbis, buchungsart.getID() }, rsi);
+      }
+      else
+      {
+        if (buchungsklasseId != null)
+        {
+          // Buchungen der Buchungsklasse
+          sqlc = "select count(*) from buchung, buchungsart "
+              + "where datum >= ? and datum <= ?  "
+              + "and buchung.buchungsart = buchungsart.id "
+              + "and buchungsart.id = ? "
+              + "and buchung.buchungsklasse = ? ";
+          anz = (Integer) service.execute(sqlc,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 
+                  buchungsklasseId }, rsi);
+        }
+        else
+        {
+          // Buchungen ohne Buchungsklasse
+          sqlc = "select count(*) from buchung, buchungsart "
+              + "where datum >= ? and datum <= ?  "
+              + "and buchung.buchungsart = buchungsart.id "
+              + "and buchungsart.id = ? "
+              + "and buchung.buchungsklasse is null ";
+          anz = (Integer) service.execute(sqlc,
+              new Object[] { datumvon, datumbis, buchungsart.getID() 
+          }, rsi);
+        }
+      }
+
+      if (anz == 0)
+      {
+        continue;
+      }
+      ausgabe = true;
+      String sql = null;
+      if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      {
+        // Buchungsklasse steht in Buchungsart
+        sql = "select sum(betrag) from buchung, buchungsart "
+            + "where datum >= ? and datum <= ?  "
+            + "and buchung.buchungsart = buchungsart.id "
+            + "and buchungsart.id = ? " + "and buchungsart.art = ?";
+        einnahmen = (Double) service.execute(sql,
+            new Object[] { datumvon, datumbis, buchungsart.getID(), 0 }, rsd);
+        suBukEinnahmen += einnahmen;
+        ausgaben = (Double) service.execute(sql,
+            new Object[] { datumvon, datumbis, buchungsart.getID(), 1 }, rsd);
+        suBukAusgaben += ausgaben;
+        umbuchungen = (Double) service.execute(sql,
+            new Object[] { datumvon, datumbis, buchungsart.getID(), 2 }, rsd);
+        suBukUmbuchungen += umbuchungen;
+      }
+      else
+      {
+        // Buchungsklasse steht in Buchung
+        if (buchungsklasseId != null)
+        {
+          // Buchungen der Buchungsklasse
+          sql = "select sum(betrag) from buchung, buchungsart "
+              + "where datum >= ? and datum <= ?  "
+              + "and buchung.buchungsart = buchungsart.id "
+              + "and buchungsart.id = ? " + "and buchungsart.art = ? "
+              + "and buchung.buchungsklasse = ? ";
+          einnahmen = (Double) service.execute(sql,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 0, 
+                  buchungsklasseId }, rsd);
+          suBukEinnahmen += einnahmen;
+          ausgaben = (Double) service.execute(sql,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 1, 
+                  buchungsklasseId }, rsd);
+          suBukAusgaben += ausgaben;
+          umbuchungen = (Double) service.execute(sql,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 2, 
+                  buchungsklasseId }, rsd);
+          suBukUmbuchungen += umbuchungen;
+        }
+        else
+        {
+          // Buchungen ohne Buchungsklasse
+          sql = "select sum(betrag) from buchung, buchungsart "
+              + "where datum >= ? and datum <= ?  "
+              + "and buchung.buchungsart = buchungsart.id "
+              + "and buchungsart.id = ? " + "and buchungsart.art = ? "
+              + "and buchung.buchungsklasse is null ";
+          einnahmen = (Double) service.execute(sql,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 0 
+          }, rsd);
+          suBukEinnahmen += einnahmen;
+          ausgaben = (Double) service.execute(sql,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 1 
+          }, rsd);
+          suBukAusgaben += ausgaben;
+          umbuchungen = (Double) service.execute(sql,
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 2 
+          }, rsd);
+          suBukUmbuchungen += umbuchungen;
+        }
+      }
+
+      if (buchungsart.getSteuersatz() > 0.0)
+      {
+        Double steuersatz = buchungsart.getSteuersatz();
+        Double val = 0.0;
+        if (buchungsart.getArt() == ArtBuchungsart.EINNAHME)
+        {
+          val = einnahmen;
+        }
+        else if (buchungsart.getArt() == ArtBuchungsart.AUSGABE)
+        {
+          steuersatz = -steuersatz;
+          val = ausgaben;
+        }
+        if (!suBukNetto.containsKey(steuersatz))
+        {
+          suBukNetto.put(steuersatz, 0.0);
+        }
+        suBukNetto.put(steuersatz, suBukNetto.get(steuersatz) + val);
+      }
+      else if (suBukSteuersatz.containsKey(buchungsart.getID()))
+      {
+        Double steuersatz = suBukSteuersatz.get(buchungsart.getID());
+        if (!suBukSteuer.containsKey(steuersatz))
+        {
+          suBukSteuer.put(steuersatz, 0.0);
+        }
+        suBukSteuer.put(steuersatz,
+            suBukSteuer.get(steuersatz) + einnahmen + ausgaben + umbuchungen);
+      }
+
+      zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.DETAIL,
+          buchungsart, einnahmen, ausgaben, umbuchungen));
+    }
+    suEinnahmen += suBukEinnahmen;
+    suAusgaben += suBukAusgaben;
+    suUmbuchungen += suBukUmbuchungen;
+    if (!ausgabe
+        && Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
+    {
+      zeile.remove(zeile.size() - 1);
+      return;
+    }
+
+    zeile.add(
+        new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.SALDOFOOTER,
+            "Saldo" + " " + bezeichnung, suBukEinnahmen,
+            suBukAusgaben, suBukUmbuchungen));
+    zeile.add(new BuchungsklasseSaldoZeile(
+        BuchungsklasseSaldoZeile.SALDOGEWINNVERLUST,
+        "Gewinn/Verlust" + " " + bezeichnung,
+        suBukEinnahmen + suBukAusgaben + suBukUmbuchungen));
+
+    // Buchungsklasse Übersicht Steuern ausgeben
+    Boolean first_row = true;
+    for (Double steuersatz : suBukNetto.keySet())
+    {
+      String string_steuersatz = String.format("%.2f", Math.abs(steuersatz))
+          + "% ";
+      if (steuersatz > 0.0)
+      {
+        string_steuersatz += " MwSt.";
+      }
+      else
+      {
+        string_steuersatz += " VSt.";
+      }
+      if (!suBukSteuer.containsKey(steuersatz))
+      {
+        suBukSteuer.put(steuersatz, 0.0);
+      }
+      if (first_row)
+      {
+        zeile.add(new BuchungsklasseSaldoZeile(
+            BuchungsklasseSaldoZeile.STEUERHEADER,
+            "Steuern " + bezeichnung, string_steuersatz,
+            suBukNetto.get(steuersatz), suBukSteuer.get(steuersatz)));
+        first_row = false;
+      }
+      else
+      {
+        zeile.add(new BuchungsklasseSaldoZeile(
+            BuchungsklasseSaldoZeile.STEUER, "", string_steuersatz,
+            suBukNetto.get(steuersatz), suBukSteuer.get(steuersatz)));
+      }
+
+      // Werte für Gesamtübersicht addieren
+      if (!suNetto.containsKey(steuersatz))
+      {
+        suNetto.put(steuersatz, 0.0);
+        suSteuer.put(steuersatz, 0.0);
+      }
+      suNetto.put(steuersatz,
+          suNetto.get(steuersatz) + suBukNetto.get(steuersatz));
+      suSteuer.put(steuersatz,
+          suSteuer.get(steuersatz) + suBukSteuer.get(steuersatz));
+
+    }
+  }
 }

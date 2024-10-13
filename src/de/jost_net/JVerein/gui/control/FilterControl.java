@@ -932,7 +932,10 @@ public class FilterControl extends AbstractControl
         count++;
       }
     }
-    abrechnungslaufausw = new SelectInput(liste, liste.get(0));
+    if (liste.size() > 0)
+      abrechnungslaufausw = new SelectInput(liste, liste.get(0));
+    else
+      abrechnungslaufausw = new SelectInput(liste, null);
     abrechnungslaufausw.setName("Abrechnungslauf");
     abrechnungslaufausw.setAttribute("idtext");
     return abrechnungslaufausw;

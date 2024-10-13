@@ -28,6 +28,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.gui.control.FormularPartControl;
 import de.jost_net.JVerein.gui.dialogs.ImportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.jameica.gui.Action;
@@ -50,7 +51,30 @@ public class FormularfelderImportAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-
+    if (context != null && (context instanceof Formular))
+    {
+      Formular f = (Formular) context;
+      try
+      {
+        if (f.isNewObject())
+        {
+          throw new ApplicationException(
+              "Vor dem Import der Formularfelder muss das Formular gespeichert werden!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+        throw new ApplicationException(
+            "Fehler beim Import der Formularfelder", e);
+      }
+    }
+    else
+    {
+      throw new ApplicationException(
+          "Es wurde kein Formular ausgewählt!");
+    }
+    
     // Nachfrage, da alle Daten gelöscht werden!
     YesNoDialog ynd = new YesNoDialog(AbstractDialog.POSITION_CENTER);
     ynd.setText("Achtung! Alle momentan vorhandenen Formularfelder für\n"

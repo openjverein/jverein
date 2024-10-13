@@ -94,6 +94,7 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
             zb.setMitglied(Integer.parseInt(mit.getID()));
             zb.setStartdatum((Date) part.getStartdatum(true).getValue());
             zb.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
+            zb.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
             zb.store();
             count++;
           }

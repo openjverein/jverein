@@ -200,7 +200,9 @@ public class ZusatzbetragVorlageControl extends AbstractControl
       return buchungsart;
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getZusatzbetragVorlage().getBuchungsart(), buchungsarttyp.BUCHUNGSART);
+      getZusatzbetragVorlage().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
+      Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+
     return buchungsart;
   }
 

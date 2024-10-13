@@ -24,6 +24,7 @@ import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.view.BuchungView;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
@@ -60,15 +61,23 @@ public class BuchungNeuAction implements Action
         String kontoid = control.getSettings().getString(control.getSettingsPrefix() + "kontoid", "");
         if (kontoid != null && !kontoid.isEmpty())
         {
-          Konto k = (Konto) Einstellungen.getDBService().createObject(Konto.class, kontoid);
-          if (null != k)
+          Konto k = null;
+          try
           {
-            if (k.getAnlagenkonto())
+            k = (Konto) Einstellungen.getDBService().createObject(Konto.class, kontoid);
+            if (null != k)
             {
-              buch.setBuchungsart(k.getAfaartId());
+              if (k.getAnlagenkonto())
+              {
+                buch.setBuchungsart(k.getAfaartId());
+              }
+              buch.setDatum(new Date());
+              buch.setKonto(k);
             }
-            buch.setDatum(new Date());
-            buch.setKonto(k);
+          }
+          catch (ObjectNotFoundException ex)
+          {
+            // Das Konto aus den Settings gibt es nicht!
           }
         }
       }

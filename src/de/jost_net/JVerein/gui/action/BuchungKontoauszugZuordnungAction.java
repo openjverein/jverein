@@ -18,7 +18,6 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.dialogs.BuchungsartZuordnungDialog;
 import de.jost_net.JVerein.gui.dialogs.KontoauszugZuordnungDialog;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
@@ -73,7 +72,7 @@ public class BuchungKontoauszugZuordnungAction implements Action
         return;
       }
       KontoauszugZuordnungDialog kaz = new KontoauszugZuordnungDialog(
-          BuchungsartZuordnungDialog.POSITION_MOUSE, b[0].getAuszugsnummer(),
+          KontoauszugZuordnungDialog.POSITION_MOUSE, b[0].getAuszugsnummer(),
           b[0].getBlattnummer());
       kaz.open();
       Integer auszugsnummer = kaz.getAuszugsnummerWert();

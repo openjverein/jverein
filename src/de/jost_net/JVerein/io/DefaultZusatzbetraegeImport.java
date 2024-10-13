@@ -33,6 +33,7 @@ import java.util.Properties;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -290,6 +291,25 @@ public class DefaultZusatzbetraegeImport implements Importer
               }
               Buchungsart bu = it.next();
               zus.setBuchungsart(bu);
+            }
+            catch (SQLException e)
+            {
+              //
+            }
+            try
+            {
+              String buchungsklasse = results.getString("Buchungsklasse");
+              DBIterator<Buchungsklasse> it = Einstellungen.getDBService()
+                  .createList(Buchungsklasse.class);
+              it.addFilter("nummer = ?", buchungsklasse);
+              if (it.size() == 0)
+              {
+                monitor.setStatusText(String.format(
+                    "Buchungsklasse mit der Nummer %s nicht gefunden",
+                    buchungsklasse));
+                fehlerInDaten = true;
+              }
+              zus.setBuchungsklasseId(Long.valueOf(buchungsklasse));
             }
             catch (SQLException e)
             {

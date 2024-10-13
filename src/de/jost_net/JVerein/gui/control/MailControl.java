@@ -139,6 +139,7 @@ public class MailControl extends FilterControl
     empfaenger.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatDATETIME()));
     empfaenger.setContextMenu(new MailAuswahlMenu(this));
+    empfaenger.setMulti(true);
     empfaenger.setRememberOrder(true);
     empfaenger.removeFeature(FeatureSummary.class);
     return empfaenger;
@@ -625,6 +626,7 @@ public class MailControl extends FilterControl
         new DateFormatter(new JVDateFormatDATETIME()));
     mailsList.setRememberColWidths(true);
     mailsList.setContextMenu(new MailMenu());
+    mailsList.setMulti(true);
     mailsList.setRememberOrder(true);
     return mailsList;
   }

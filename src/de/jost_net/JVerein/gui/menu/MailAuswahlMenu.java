@@ -26,6 +26,7 @@ import de.jost_net.JVerein.gui.dialogs.ShowVariablesDialog;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -39,7 +40,7 @@ public class MailAuswahlMenu extends ContextMenu
   public MailAuswahlMenu(MailControl control)
   {
     final MailControl contr = control;
-    addItem(new CheckedContextMenuItem("Variable", new Action()
+    addItem(new CheckedSingleContextMenuItem("Variable", new Action()
     {
 
       @Override
@@ -67,7 +68,7 @@ public class MailAuswahlMenu extends ContextMenu
       }
 
     }, "bookmark.png"));
-    addItem(new CheckedContextMenuItem("Vorschau", new Action()
+    addItem(new CheckedSingleContextMenuItem("Vorschau", new Action()
     {
 
       @Override

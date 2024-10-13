@@ -68,6 +68,8 @@ public class BuchungGegenbuchungAction implements Action
         bu.setDatum(b.getDatum());
         if (b.getBuchungsart() != null)
           bu.setBuchungsart(b.getBuchungsartId());
+        if (b.getBuchungsklasse() != null)
+          bu.setBuchungsklasseId(b.getBuchungsklasseId());
         if (b.getProjekt() != null)
           bu.setProjektID(b.getProjektID());
         

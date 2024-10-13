@@ -41,14 +41,29 @@ public class MailAuswahlDeleteAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof MailEmpfaenger))
+    MailEmpfaenger[] empfaenger = null;
+    if (context == null)
     {
       throw new ApplicationException("Keinen Empfänger ausgewählt");
     }
+    else if(context instanceof MailEmpfaenger)
+    {
+      empfaenger = new MailEmpfaenger[] {(MailEmpfaenger)context};
+    }
+    else if(context instanceof MailEmpfaenger[])
+    {
+      empfaenger = (MailEmpfaenger[])context;
+    }
+    else
+    {
+      return;
+    }
     try
     {
-      MailEmpfaenger me = (MailEmpfaenger) context;
-      control.removeEmpfaenger(me);
+      for(MailEmpfaenger me:empfaenger)
+      {
+        control.removeEmpfaenger(me);
+      }
     }
     catch (RemoteException e)
     {

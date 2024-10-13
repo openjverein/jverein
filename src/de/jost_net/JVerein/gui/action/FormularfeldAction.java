@@ -39,6 +39,20 @@ public class FormularfeldAction implements Action
     if (context != null && (context instanceof Formular))
     {
       f = (Formular) context;
+      try
+      {
+        if (f.isNewObject())
+        {
+          throw new ApplicationException(
+              "Vor dem Anlegen der Formularfelder muss das Formular gespeichert werden!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+        throw new ApplicationException(
+            "Fehler bei der Erzeugung eines neuen Formularfeldes", e);
+      }
     }
     if (context != null && (context instanceof Formularfeld))
     {

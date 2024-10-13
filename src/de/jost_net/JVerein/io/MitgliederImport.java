@@ -582,11 +582,11 @@ public class MitgliederImport implements Importer
             m.setGeschlecht(geschlecht.toLowerCase());
           }
           else
-            throw new ApplicationException("Geschlecht fehlt");
+            m.setGeschlecht("o");
         }
         catch (SQLException e)
         {
-          throw new ApplicationException("Geschlecht fehlt");
+          m.setGeschlecht("o");
         }
 
         try

@@ -134,6 +134,7 @@ public class SollbuchungAuswahlInput
             buchungen[0].setDatum(new Date());
             buchungen[0]
                 .setBuchungsart(Long.valueOf(konto.getBuchungsart().getID()));
+            buchungen[0].setBuchungsklasseId(konto.getBuchungsklasseId());
           }
         }
         else if (event.data instanceof Mitglied)

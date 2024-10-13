@@ -197,13 +197,15 @@ public class FormularfelderImportCSV implements Importer
           throw new ApplicationException(e.getMessage());
         }
       }
+      monitor.setStatus(ProgressMonitor.STATUS_DONE);
+      monitor.setStatusText("Formularfelder für Formular " + f.getBezeichnung() + " importiert");
       results.close();
       stmt.close();
       conn.close();
     }
     catch (Exception e)
     {
-      monitor.log(" nicht importiert: " + e.getMessage());
+      monitor.log(" Nicht importiert: " + e.getMessage());
       Logger.error("Fehler", e);
     }
     finally
