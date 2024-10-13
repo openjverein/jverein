@@ -50,11 +50,11 @@ public class AfaMode
     switch (key)
     {
       case MANUELL:
-        return "Manuelles AfA";
+        return "Manuelle AfA";
       case AUTO:
         return "Auto AfA";
       case ANGEPASST:
-        return "Angepasstes AfA";
+        return "Angepasste AfA";
       default:
         return null;
     }
