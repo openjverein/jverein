@@ -239,7 +239,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
         .createList(Buchungsklasse.class);
     list.setOrder(control.getBuchungartSortOrder());
     Buchungsklasse bk = buchung.getBuchungsklasse();
-    if (bk == null)
+    if (bk == null && buchung.getBuchungsart() != null)
         bk = buchung.getBuchungsart().getBuchungsklasse();
     if (bk != null)
     {
