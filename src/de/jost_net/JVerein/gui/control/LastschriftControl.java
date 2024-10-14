@@ -31,6 +31,7 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
+import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.logging.Logger;
 
 public class LastschriftControl extends FilterControl
@@ -63,7 +64,7 @@ public class LastschriftControl extends FilterControl
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     lastschriftList.addColumn("Fälligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    lastschriftList.addColumn("IBAN", "iban");
+    lastschriftList.addColumn("IBAN", "iban", new IbanFormatter());
     lastschriftList.addColumn("Mandat", "mandatid");
     lastschriftList.addColumn("Mandatdatum", "mandatdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

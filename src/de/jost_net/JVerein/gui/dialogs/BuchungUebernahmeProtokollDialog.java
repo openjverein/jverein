@@ -37,6 +37,7 @@ import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.logging.Logger;
 
 /**
@@ -92,7 +93,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
     bu.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     bu.addColumn("Name", "name");
-    bu.addColumn("IBAN oder Kontonummer", "iban");
+    bu.addColumn("IBAN oder Kontonummer", "iban", new IbanFormatter());
     bu.addColumn("Verwendungszweck", "zweck", new Formatter()
     {
 

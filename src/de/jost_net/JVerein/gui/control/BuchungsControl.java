@@ -108,6 +108,8 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
+import de.willuhn.jameica.hbci.HBCIProperties;
+import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisungBuchung;
 import de.willuhn.jameica.messaging.Message;
@@ -1263,7 +1265,7 @@ public class BuchungsControl extends AbstractControl
 
       buchungsList.addColumn("Name", "name");
       if (geldkonto)
-        buchungsList.addColumn("IBAN oder Kontonummer", "iban");
+        buchungsList.addColumn("IBAN oder Kontonummer", "iban", new IbanFormatter());
       buchungsList.addColumn("Verwendungszweck", "zweck", new Formatter()
       {
         @Override
@@ -2008,7 +2010,7 @@ public class BuchungsControl extends AbstractControl
     {
       return iban;
     }
-    iban = new TextInput(getBuchung().getIban(), 34);
+    iban = new TextInput(HBCIProperties.formatIban(getBuchung().getIban()), 34);
     return iban;
   }
 
