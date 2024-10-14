@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -53,14 +54,29 @@ public class BeitragsgruppeDeleteAction implements Action
       {
         return;
       }
-      DBIterator<Mitglied> mitgl = Einstellungen.getDBService()
-          .createList(Mitglied.class);
-      mitgl.addFilter("beitragsgruppe = ?", new Object[] { bg.getID() });
-      if (mitgl.size() > 0)
+      if(bg.getSekundaer())
       {
-        throw new ApplicationException(String.format(
-            "Beitragsgruppe '%s' kann nicht gelöscht werden. %d Mitglied(er) sind dieser Beitragsgruppe zugeordnet.",
-            bg.getBezeichnung(), mitgl.size()));
+        DBIterator<SekundaereBeitragsgruppe> sek = Einstellungen.getDBService()
+            .createList(SekundaereBeitragsgruppe.class);
+        sek.addFilter("beitragsgruppe = ?", new Object[] { bg.getID() });
+        if (sek.size() > 0)
+        {
+          throw new ApplicationException(String.format(
+              "Beitragsgruppe '%s' kann nicht gelöscht werden. %d Mitglied(er) sind dieser sekundären Beitragsgruppe zugeordnet.",
+              bg.getBezeichnung(), sek.size()));
+        }
+      }
+      else
+      {
+        DBIterator<Mitglied> mitgl = Einstellungen.getDBService()
+            .createList(Mitglied.class);
+        mitgl.addFilter("beitragsgruppe = ?", new Object[] { bg.getID() });
+        if (mitgl.size() > 0)
+        {
+          throw new ApplicationException(String.format(
+              "Beitragsgruppe '%s' kann nicht gelöscht werden. %d Mitglied(er) sind dieser Beitragsgruppe zugeordnet.",
+              bg.getBezeichnung(), mitgl.size()));
+        }
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Beitragsgruppe löschen");
