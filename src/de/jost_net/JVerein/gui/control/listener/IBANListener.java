@@ -29,6 +29,7 @@ import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
 
 /**
@@ -77,7 +78,7 @@ public class IBANListener implements Listener
         ib2 += t;
       }
     }
-    iban.setValue(ib2);
+    iban.setValue(HBCIProperties.formatIban(ib2));
     if (ib2.length() == 0)
     {
       iban.setComment("");
