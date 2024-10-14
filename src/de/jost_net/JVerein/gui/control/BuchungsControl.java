@@ -1222,15 +1222,14 @@ public class BuchungsControl extends AbstractControl
       buchungsList = new BuchungListTablePart(query.get(),
           new BuchungAction(false));
       buchungsList.addColumn("Nr", "id-int");
-      if (geldkonto)
-        buchungsList.addColumn("S", "splitid", new Formatter()
+      buchungsList.addColumn("S", "splitid", new Formatter()
+      {
+        @Override
+        public String format(Object o)
         {
-          @Override
-          public String format(Object o)
-          {
-            return (o != null ? "S" : " ");
-          }
-        });
+          return (o != null ? "S" : " ");
+        }
+      });
       buchungsList.addColumn("Konto", "konto", new Formatter()
       {
 
