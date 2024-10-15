@@ -2035,23 +2035,9 @@ public class EinstellungControl extends AbstractControl
       e.setBic((String) getBic().getValue());
       String ib = (String) getIban().getValue();
       if (ib == null)
-      {
         e.setIban(null);
-      }
       else
-      {
-        ib = ib.trim().toUpperCase();
-        String ib2 = "";
-        for (int i = 0; i < ib.length(); i++)
-        {
-          String t = ib.substring(i, i + 1);
-          if (!t.equals(" "))
-          {
-            ib2 += t;
-          }
-        }
-        e.setIban(ib2);
-      }
+        e.setIban(ib.toUpperCase().replace(" ",""));
       e.setGlaeubigerID((String) getGlaeubigerID().getValue());
       e.store();
       Einstellungen.setEinstellung(e);

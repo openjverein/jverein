@@ -2279,23 +2279,9 @@ public class MitgliedControl extends FilterControl
       m.setBic((String) getBic().getValue());
       String ib = (String) getIban().getValue();
       if (ib == null)
-      {
         m.setIban(null);
-      }
       else
-      {
-        ib = ib.trim().toUpperCase();
-        String ib2 = "";
-        for (int i = 0; i < ib.length(); i++)
-        {
-          String t = ib.substring(i, i + 1);
-          if (!t.equals(" "))
-          {
-            ib2 += t;
-          }
-        }
-        m.setIban(ib2);
-      }
+        m.setIban(ib.toUpperCase().replace(" ",""));
       m.setEintritt((Date) getEintritt().getValue());
       m.setEmail((String) getEmail().getValue());
       if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())

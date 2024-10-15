@@ -454,23 +454,9 @@ public class KursteilnehmerControl extends FilterControl
       k.setMandatDatum((Date) getMandatDatum().getValue());
       String ib = (String) getIBAN().getValue();
       if (ib == null)
-      {
         k.setIban(null);
-      }
       else
-      {
-        ib = ib.trim().toUpperCase();
-        String ib2 = "";
-        for (int i = 0; i < ib.length(); i++)
-        {
-          String t = ib.substring(i, i + 1);
-          if (!t.equals(" "))
-          {
-            ib2 += t;
-          }
-        }
-        k.setIban(ib2);
-      }
+        k.setIban(ib.toUpperCase().replace(" ",""));
       k.setBic((String) getBIC().getValue());
       k.setBetrag((Double) getBetrag().getValue());
       if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())

@@ -52,6 +52,7 @@ import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
+import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SollbuchungAuswahlInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -260,7 +261,11 @@ public class BuchungsControl extends AbstractControl
     b.setAuszugsnummer(getAuszugsnummerWert());
     b.setBlattnummer(getBlattnummerWert());
     b.setName((String) getName().getValue());
-    b.setIban((String) getIban().getValue());
+    String ib = (String) getIban().getValue();
+    if (ib == null)
+      b.setIban(null);
+    else
+      b.setIban(ib.toUpperCase().replace(" ",""));
     if (getBetrag().getValue() != null)
     {
       b.setBetrag((Double) getBetrag().getValue());
@@ -2004,13 +2009,14 @@ public class BuchungsControl extends AbstractControl
     return hasmitglied;
   }
 
-  public Input getIban() throws RemoteException
+  public TextInput getIban() throws RemoteException
   {
     if (iban != null)
     {
       return iban;
     }
-    iban = new TextInput(HBCIProperties.formatIban(getBuchung().getIban()), 34);
+    iban = new IBANInput(HBCIProperties.formatIban(getBuchung().getIban()), 
+        new TextInput(""));
     return iban;
   }
 
