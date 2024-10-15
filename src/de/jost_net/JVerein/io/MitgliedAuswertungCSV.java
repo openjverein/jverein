@@ -90,7 +90,7 @@ public class MitgliedAuswertungCSV implements IAuswertung
             CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
         headerUser = reader.read().toArray(new String[0]);
         headerKeys = reader.read().toArray(new String[0]);
-
+        reader.close();
       }
       catch (Exception e)
       {
@@ -102,16 +102,16 @@ public class MitgliedAuswertungCSV implements IAuswertung
       // check the file content
       if (headerUser.length == 0)
       {
-        Logger.error("no elements in first line: " + vorlagedateiname);
-        throw new RemoteException("keine Elemente in erster Zeile in Datei "
+        Logger.error("No elements in first line: " + vorlagedateiname);
+        throw new RemoteException("Keine Elemente in erster Zeile in Datei "
             + vorlagedateiname);
       }
       if (headerUser.length != headerKeys.length)
       {
-        Logger.error("different number of elements in 1st and 2nd line: "
+        Logger.error("Different number of elements in 1st and 2nd line: "
             + vorlagedateiname);
         throw new RemoteException(
-            "unterschiedliche Anzahl Elemente in 1. und 2. Zeile: "
+            "Unterschiedliche Anzahl Elemente in 1. und 2. Zeile: "
                 + vorlagedateiname);
       }
     }
@@ -159,7 +159,8 @@ public class MitgliedAuswertungCSV implements IAuswertung
       {
         if (!map.containsKey(key))
         {
-          throw new ApplicationException("invalid key: " + key);
+          writer.close();
+          throw new ApplicationException("Invalid key: " + key);
         }
       }
 
@@ -178,7 +179,7 @@ public class MitgliedAuswertungCSV implements IAuswertung
     }
     catch (Exception e)
     {
-      Logger.error("error while creating report", e);
+      Logger.error("Error while creating report", e);
       throw new ApplicationException("Fehler beim Erzeugen des Reports ("
           + e.getMessage() + ")", e);
     }
