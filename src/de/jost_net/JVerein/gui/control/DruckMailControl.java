@@ -87,10 +87,8 @@ public class DruckMailControl extends FilterControl
     {
       return ausgabeart;
     }
-    String art = settings.getString(settingsprefix + "ausgabeart", "DRUCK");
-    if (art.equals("EMAIL"))
-      art = "MAIL";
-    ausgabeart = new SelectInput(Ausgabeart.values(), Ausgabeart.valueOf(art));
+    ausgabeart = new SelectInput(Ausgabeart.values(),
+        Ausgabeart.getByKey(settings.getInt(settingsprefix + "ausgabeart.key", 1)));
     ausgabeart.setName("Ausgabe");
     return ausgabeart;
   }
@@ -191,7 +189,7 @@ public class DruckMailControl extends FilterControl
     if (ausgabeart != null )
     {
       Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
-      settings.setAttribute(settingsprefix + "ausgabeart", aa.toString());
+      settings.setAttribute(settingsprefix + "ausgabeart.key", aa.getKey());
     }
     if (art != null)
     {
@@ -216,7 +214,7 @@ public class DruckMailControl extends FilterControl
     }
     if (pdfModus != null)
     {
-      String pdfMode = (String) getPdfModus().getValue();;
+      String pdfMode = (String) getPdfModus().getValue();
       settings.setAttribute(settingsprefix + "pdfModus", pdfMode);
     }
     if (mailbetreff != null)
