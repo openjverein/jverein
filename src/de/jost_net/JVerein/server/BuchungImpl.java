@@ -700,8 +700,8 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
       DBIterator<BuchungDokument> list = Einstellungen.getDBService()
           .createList(BuchungDokument.class);
       list.addFilter("referenz = ?", Long.valueOf(getID()));
-      if (list.hasNext())
-        return "D";
+      if (list.size() > 0)
+        return list.size();
       else
         return "";
     }
