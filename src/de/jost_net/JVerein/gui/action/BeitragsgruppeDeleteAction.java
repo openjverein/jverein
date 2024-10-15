@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
@@ -77,6 +78,15 @@ public class BeitragsgruppeDeleteAction implements Action
               "Beitragsgruppe '%s' kann nicht gelöscht werden. %d Mitglied(er) sind dieser Beitragsgruppe zugeordnet.",
               bg.getBezeichnung(), mitgl.size()));
         }
+      }
+      DBIterator<MitgliedNextBGruppe> nextbg = Einstellungen.getDBService()
+          .createList(MitgliedNextBGruppe.class);
+      nextbg.addFilter("beitragsgruppe = ?", new Object[] { bg.getID() });
+      if (nextbg.size() > 0)
+      {
+        throw new ApplicationException(String.format(
+            "Beitragsgruppe '%s' kann nicht gelöscht werden. Bei %d Mitglied(er) ist diese Beitragsgruppe als zukünftige Beitragsgrupe hinterlegt.",
+            bg.getBezeichnung(), nextbg.size()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Beitragsgruppe löschen");
