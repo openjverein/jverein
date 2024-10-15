@@ -68,16 +68,7 @@ public class IBANListener implements Listener
     {
       return;
     }
-    ib = ib.trim().toUpperCase();
-    String ib2 = "";
-    for (int i = 0; i < ib.length(); i++)
-    {
-      String t = ib.substring(i, i + 1);
-      if (!t.equals(" "))
-      {
-        ib2 += t;
-      }
-    }
+    String ib2 = ib.trim().toUpperCase().replace(" ","");
     iban.setValue(HBCIProperties.formatIban(ib2));
     if (ib2.length() == 0)
     {
