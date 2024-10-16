@@ -40,10 +40,13 @@ import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
+import de.jost_net.JVerein.gui.view.BuchungView;
+import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.io.Kontoauszug;
 import de.jost_net.JVerein.io.Mahnungsausgabe;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -436,7 +439,40 @@ public class MitgliedskontoControl extends DruckMailControl
   public Part getMitgliedskontoTree(Mitglied mitglied) throws RemoteException
   {
     mitgliedskontoTree = new TreePart(new MitgliedskontoNode(mitglied),
-        (Action) null)
+        new Action()
+    {
+
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        if (context == null || !(context instanceof MitgliedskontoNode))
+        {
+          return;
+        }
+        try
+        {
+          MitgliedskontoNode mkn = (MitgliedskontoNode) context;
+          if (mkn.getType() == MitgliedskontoNode.IST)
+          {
+            Buchung bu = (Buchung) Einstellungen.getDBService().createObject(
+                Buchung.class, mkn.getID());
+            GUI.startView(BuchungView.class.getName(), bu);
+          }
+          if (mkn.getType() == MitgliedskontoNode.SOLL)
+          {
+            Mitgliedskonto mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
+                Mitgliedskonto.class, mkn.getID());
+            GUI.startView(new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
+          }
+        }
+        catch (RemoteException e)
+        {
+          Logger.error(e.getMessage());
+          throw new ApplicationException("Fehler beim Editieren der Buchung");
+        }
+      }
+    })
+
     {
 
       @SuppressWarnings("unchecked")

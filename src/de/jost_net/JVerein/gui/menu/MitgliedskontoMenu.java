@@ -22,6 +22,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungLoeschenAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungNeuAction;
+import de.jost_net.JVerein.gui.action.MitgliedskontoIstbuchungEditAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoIstbuchungLoesenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
@@ -46,12 +47,14 @@ public class MitgliedskontoMenu extends ContextMenu
   public MitgliedskontoMenu()
   {
     addItem(new MitgliedItem("Neue Sollbuchung",
-        new MitgliedskontoSollbuchungNeuAction(), "list-add.png"));
-    addItem(ContextMenuItem.SEPARATOR);
+        new MitgliedskontoSollbuchungNeuAction(), "document-new.png"));
     addItem(new SollItem("Sollbuchung bearbeiten",
         new MitgliedskontoSollbuchungEditAction(), "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
         new MitgliedskontoSollbuchungLoeschenAction(), "user-trash-full.png"));
+    addItem(ContextMenuItem.SEPARATOR);
+    addItem(new SollMitIstItem("Istbuchung bearbeiten",
+        new MitgliedskontoIstbuchungEditAction(), "text-x-generic.png"));
     addItem(new SollMitIstItem("Istbuchung von Sollbuchung lösen",
         new MitgliedskontoIstbuchungLoesenAction(), "unlocked.png"));
     addItem(ContextMenuItem.SEPARATOR);
