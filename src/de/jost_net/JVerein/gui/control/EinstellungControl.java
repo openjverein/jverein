@@ -62,6 +62,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.security.Wallet;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -518,7 +519,7 @@ public class EinstellungControl extends AbstractControl
     {
       return iban;
     }
-    iban = new IBANInput(Einstellungen.getEinstellung().getIban(), bic);
+    iban = new IBANInput(HBCIProperties.formatIban(Einstellungen.getEinstellung().getIban()), bic);
     return iban;
   }
 
@@ -2032,7 +2033,11 @@ public class EinstellungControl extends AbstractControl
       e.setPlz((String) getPlz().getValue());
       e.setOrt((String) getOrt().getValue());
       e.setBic((String) getBic().getValue());
-      e.setIban((String) getIban().getValue());
+      String ib = (String) getIban().getValue();
+      if (ib == null)
+        e.setIban(null);
+      else
+        e.setIban(ib.toUpperCase().replace(" ",""));
       e.setGlaeubigerID((String) getGlaeubigerID().getValue());
       e.store();
       Einstellungen.setEinstellung(e);

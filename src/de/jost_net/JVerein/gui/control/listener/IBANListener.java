@@ -29,6 +29,7 @@ import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
 
 /**
@@ -67,17 +68,8 @@ public class IBANListener implements Listener
     {
       return;
     }
-    ib = ib.trim().toUpperCase();
-    String ib2 = "";
-    for (int i = 0; i < ib.length(); i++)
-    {
-      String t = ib.substring(i, i + 1);
-      if (!t.equals(" "))
-      {
-        ib2 += t;
-      }
-    }
-    iban.setValue(ib2);
+    String ib2 = ib.trim().toUpperCase().replace(" ","");
+    iban.setValue(HBCIProperties.formatIban(ib2));
     if (ib2.length() == 0)
     {
       iban.setComment("");

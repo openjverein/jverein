@@ -18,5 +18,45 @@ package de.jost_net.JVerein.keys;
 
 public enum Ausgabeart
 {
-  DRUCK, MAIL;
+
+  DRUCK(1, "Druck"),
+  MAIL(2, "Mail");
+
+  private final String text;
+
+  private final int key;
+  
+  Ausgabeart(int key, String text)
+  {
+    this.key = key;
+    this.text = text;
+  }
+
+  public int getKey()
+  {
+    return key;
+  }
+
+  public String getText()
+  {
+    return text;
+  }
+
+  public static Ausgabeart getByKey(int key)
+  {
+    for (Ausgabeart art : Ausgabeart.values())
+    {
+      if (art.getKey() == key)
+      {
+        return art;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public String toString()
+  {
+    return getText();
+  }
 }

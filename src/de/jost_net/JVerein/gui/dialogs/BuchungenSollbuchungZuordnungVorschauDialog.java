@@ -35,6 +35,7 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
@@ -76,7 +77,7 @@ public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<
     bu.addColumn("Name", BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "mitglied.name");
     bu.addColumn("Abrechnungslaufnummer", BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "abrechnungslauf.id");
     bu.addColumn("Buchungsnummer", BookingMemberAccountEntry.PREFIX_BUCHUNG + "id");
-    bu.addColumn("IBAN oder Kontonummer", BookingMemberAccountEntry.PREFIX_BUCHUNG + "iban");
+    bu.addColumn("IBAN oder Kontonummer", BookingMemberAccountEntry.PREFIX_BUCHUNG + "iban", new IbanFormatter());
     bu.addColumn("Betrag", BookingMemberAccountEntry.PREFIX_BUCHUNG + "betrag", new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     bu.addColumn("Verwendungszweck", BookingMemberAccountEntry.PREFIX_BUCHUNG + "zweck", new Formatter()
     {

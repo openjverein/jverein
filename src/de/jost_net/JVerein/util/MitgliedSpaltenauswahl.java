@@ -30,6 +30,7 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.logging.Logger;
 
 public class MitgliedSpaltenauswahl extends Spaltenauswahl
@@ -38,7 +39,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
   public MitgliedSpaltenauswahl()
   {
     super("mitglied");
-    add("ID", "idint", false, true);
+    add("Mitgliedsnummer", "idint", false, true);
     try
     {
       if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
@@ -66,7 +67,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
         new ZahlungsterminFormatter(), Column.ALIGN_LEFT, true);
     add("Datum des Mandats", "mandatdatum", false, false);
     add("BIC", "bic", false, true);
-    add("IBAN", "iban", false, true);
+    add("IBAN", "iban", false, new IbanFormatter(), Column.ALIGN_LEFT, true);
     add("BLZ", "blz", false, true);
     add("Konto", "konto", false, true);
     add("Kontoinhaber Anrede", "ktoianrede", false, true);

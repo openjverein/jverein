@@ -89,6 +89,8 @@ public class FilterControl extends AbstractControl
 
   protected TextInput suchexternemitgliedsnummer = null;
 
+  protected IntegerNullInput suchmitgliedsnummer = null;
+  
   protected DialogInput eigenschaftenabfrage = null;
 
   protected SelectInput beitragsgruppeausw = null;
@@ -301,6 +303,30 @@ public class FilterControl extends AbstractControl
   public boolean isMitgliedArtAktiv()
   {
     return art != null;
+  }
+  
+  public IntegerNullInput getSuchMitgliedsnummer()
+  {
+    if (suchmitgliedsnummer != null)
+    {
+      return suchmitgliedsnummer;
+    }
+    String tmp = settings.getString(settingsprefix + "suchMitgliedsNummer", "");
+    if (tmp != null && !tmp.isEmpty())
+    {
+      suchmitgliedsnummer = new IntegerNullInput(Integer.parseInt(tmp));
+    }
+    else
+    {
+      suchmitgliedsnummer = new IntegerNullInput();
+    }
+    suchmitgliedsnummer.setName("Mitgliedsnummer");
+    return suchmitgliedsnummer;
+  }
+  
+  public boolean isSuchMitgliedsnummerActive()
+  {
+    return suchmitgliedsnummer != null;
   }
   
   public TextInput getSuchExterneMitgliedsnummer()
@@ -1025,6 +1051,8 @@ public class FilterControl extends AbstractControl
           art.setValue(null);
         if (suchexternemitgliedsnummer != null)
           suchexternemitgliedsnummer.setValue("");
+        if (suchmitgliedsnummer != null)
+          suchmitgliedsnummer.setValue(null);
         if (eigenschaftenabfrage != null)
         {
           settings.setAttribute(settingsprefix + "eigenschaften", "");
@@ -1288,6 +1316,19 @@ public class FilterControl extends AbstractControl
       else
       {
         settings.setAttribute(settingsprefix + "suchExterneMitgliedsNummer", "");
+      }
+    }
+    
+    if (suchmitgliedsnummer != null)
+    {
+      Integer tmp = (Integer) suchmitgliedsnummer.getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute(settingsprefix + "suchMitgliedsNummer", tmp);
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "suchMitgliedsNummer", "");
       }
     }
 

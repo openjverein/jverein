@@ -503,6 +503,7 @@ public class AuswertungVorlagenCsvView extends AbstractView
           CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
       String[] headerUser = reader.read().toArray(new String[0]);
       String[] headerKeys = reader.read().toArray(new String[0]);
+      reader.close();
 
       if (headerUser.length != headerKeys.length)
       {
@@ -520,7 +521,7 @@ public class AuswertungVorlagenCsvView extends AbstractView
     }
     catch (Exception e)
     {
-      Logger.error("unable to load file", e);
+      Logger.error("Unable to load file", e);
       Application.getMessagingFactory()
           .sendMessage(new StatusBarMessage(
               "Fehler beim Laden einer Vorlagendatei: " + e.getMessage(),
@@ -566,7 +567,7 @@ public class AuswertungVorlagenCsvView extends AbstractView
     }
     catch (Exception e)
     {
-      Logger.error("unable to write file", e);
+      Logger.error("Unable to write file", e);
       Application.getMessagingFactory()
           .sendMessage(new StatusBarMessage(
               "Fehler beim Speichern einer Vorlagendatei: " + e.getMessage(),

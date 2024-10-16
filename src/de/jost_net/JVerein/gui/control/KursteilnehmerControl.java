@@ -55,6 +55,8 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.hbci.HBCIProperties;
+import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -316,7 +318,7 @@ public class KursteilnehmerControl extends FilterControl
     {
       return iban;
     }
-    iban = new IBANInput(getKursteilnehmer().getIban(), getBIC());
+    iban = new IBANInput(HBCIProperties.formatIban(getKursteilnehmer().getIban()), getBIC());
     iban.setName("IBAN");
     iban.setMandatory(true);
     return iban;
@@ -378,7 +380,7 @@ public class KursteilnehmerControl extends FilterControl
     part.addColumn("Ort", "ort");
     part.addColumn("Verwendungszweck", "vzweck1");
     part.addColumn("BIC", "bic");
-    part.addColumn("IBAN", "iban");
+    part.addColumn("IBAN", "iban", new IbanFormatter());
     part.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     part.addColumn("Mandats-ID", "mandatid");
@@ -450,7 +452,11 @@ public class KursteilnehmerControl extends FilterControl
       k.setEmail((String) getEmail().getValue());
       k.setVZweck1((String) getVZweck1().getValue());
       k.setMandatDatum((Date) getMandatDatum().getValue());
-      k.setIban((String) getIBAN().getValue());
+      String ib = (String) getIBAN().getValue();
+      if (ib == null)
+        k.setIban(null);
+      else
+        k.setIban(ib.toUpperCase().replace(" ",""));
       k.setBic((String) getBIC().getValue());
       k.setBetrag((Double) getBetrag().getValue());
       if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())

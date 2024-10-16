@@ -694,6 +694,17 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     
     if ("mitgliedskonto".equals(fieldName))
         return getMitgliedskonto();
+    
+    if ("document".equals(fieldName))
+    {
+      DBIterator<BuchungDokument> list = Einstellungen.getDBService()
+          .createList(BuchungDokument.class);
+      list.addFilter("referenz = ?", Long.valueOf(getID()));
+      if (list.size() > 0)
+        return list.size();
+      else
+        return "";
+    }
 
     return super.getAttribute(fieldName);
   }

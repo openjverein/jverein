@@ -53,9 +53,9 @@ public class MitgliederSucheView extends AbstractMitgliedSucheView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getMitgliedStatus());
     if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
-    {
       left.addInput(control.getSuchExterneMitgliedsnummer());
-    }
+    else
+      left.addInput(control.getSuchMitgliedsnummer());
     left.addInput(control.getEigenschaftenAuswahl());
     left.addInput(control.getBeitragsgruppeAusw());
     if (Einstellungen.getEinstellung().hasZusatzfelder())

@@ -133,6 +133,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SWTUtil;
+import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
@@ -810,7 +811,7 @@ public class MitgliedControl extends FilterControl
     {
       return iban;
     }
-    iban = new IBANInput(getMitglied().getIban(), getBic());
+    iban = new IBANInput(HBCIProperties.formatIban(getMitglied().getIban()), getBic());
     iban.setMandatory(getMitglied().getZahlungsweg() == null || getMitglied()
         .getZahlungsweg().intValue() == Zahlungsweg.BASISLASTSCHRIFT);
     return iban;
@@ -2276,7 +2277,11 @@ public class MitgliedControl extends FilterControl
       m.setMandatDatum((Date) getMandatDatum().getValue());
       m.setMandatVersion((Integer) getMandatVersion().getValue());
       m.setBic((String) getBic().getValue());
-      m.setIban((String) getIban().getValue());
+      String ib = (String) getIban().getValue();
+      if (ib == null)
+        m.setIban(null);
+      else
+        m.setIban(ib.toUpperCase().replace(" ",""));
       m.setEintritt((Date) getEintritt().getValue());
       m.setEmail((String) getEmail().getValue());
       if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
