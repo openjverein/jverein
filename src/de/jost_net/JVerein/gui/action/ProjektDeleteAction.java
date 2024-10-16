@@ -55,7 +55,7 @@ public class ProjektDeleteAction implements Action
       if (it.hasNext())
       {
         throw new ApplicationException(String.format(
-            "Projekt '%s' kann nicht gelöscht werden. Es existiern Buchungen mit diesem Projekt.",
+            "Projekt '%s' kann nicht gelöscht werden. Es existieren Buchungen mit diesem Projekt.",
             p.getBezeichnung()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);

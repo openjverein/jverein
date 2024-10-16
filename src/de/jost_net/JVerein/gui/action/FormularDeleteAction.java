@@ -63,7 +63,7 @@ public class FormularDeleteAction implements Action
       if (spb.size() > 0)
       {
         throw new ApplicationException(String.format(
-            "Forular '%s' kann nicht gelöscht werden. Es ist bei %d Spendenbeschinugung(en) hinterlegt.",
+            "Forular '%s' kann nicht gelöscht werden. Es ist bei %d Spendenbescheinigung(en) hinterlegt.",
             f.getBezeichnung(), spb.size()));
       }
       

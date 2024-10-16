@@ -55,7 +55,7 @@ public class KontoDeleteAction implements Action
       if (it.hasNext())
       {
         throw new ApplicationException(String.format(
-            "Konto '%s' kann nicht gelöscht werden. Es existiern Buchungen auf diesem Konto.",
+            "Konto '%s' kann nicht gelöscht werden. Es existieren Buchungen auf diesem Konto.",
             k.getBezeichnung()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);

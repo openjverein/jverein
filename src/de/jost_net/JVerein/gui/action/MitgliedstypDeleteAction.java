@@ -59,7 +59,7 @@ public class MitgliedstypDeleteAction implements Action
       if (it.hasNext())
       {
         throw new ApplicationException(String.format(
-            "Mitgliedstyp '%s' kann nicht gelöscht werden. Es existiern Nicht-Mitglieder dieses Typs.",
+            "Mitgliedstyp '%s' kann nicht gelöscht werden. Es existieren Nicht-Mitglieder dieses Typs.",
             at.getBezeichnung()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);

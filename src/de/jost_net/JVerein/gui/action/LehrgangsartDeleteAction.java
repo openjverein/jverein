@@ -61,7 +61,7 @@ public class LehrgangsartDeleteAction implements Action
       if (it.hasNext())
       {
         throw new ApplicationException(String.format(
-            "Lehrgangsart '%s' kann nicht gelöscht werden. Es existiern Lehrgänge dieser Art.",
+            "Lehrgangsart '%s' kann nicht gelöscht werden. Es existieren Lehrgänge dieser Art.",
             l.getBezeichnung()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
