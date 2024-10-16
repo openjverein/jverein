@@ -36,23 +36,18 @@ public class MitgliedskontoIstbuchungEditAction implements Action
     {
       throw new ApplicationException("Keine Istbuchung ausgewählt");
     }
-  	
-    MitgliedskontoNode mkn = null;
-    Buchung bu = null;
 
-    if (context != null && (context instanceof MitgliedskontoNode))
+    try
     {
-      mkn = (MitgliedskontoNode) context;
-      try
-      {
-        bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
-            mkn.getID());
-        GUI.startView(BuchungView.class.getName(), bu);
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException("Fehler beim Editieren der Istbuchung");
-      }
+      MitgliedskontoNode mkn = (MitgliedskontoNode) context;
+      Buchung bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
+          mkn.getID());
+      GUI.startView(BuchungView.class.getName(), bu);
     }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim Editieren der Istbuchung");
+    }
+
   }
 }
