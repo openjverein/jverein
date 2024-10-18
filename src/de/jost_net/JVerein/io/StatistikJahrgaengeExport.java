@@ -112,7 +112,7 @@ public abstract class StatistikJahrgaengeExport implements Exporter
     MitgliedUtils.setMitgliedJuristischePerson(mitglj);
     while (mitglj.hasNext())
     {
-      String jg = "juristische Personen";
+      String jg = "Juristische Personen";
       StatistikJahrgang dsbj = statistik.get(jg);
       if (dsbj == null)
       {
@@ -122,6 +122,38 @@ public abstract class StatistikJahrgaengeExport implements Exporter
       dsbj.incrementGesamt();
       dsbj.incrementOhne();
       mitglj.next();
+    }
+    /*
+     * Teil 3: Ohne Geburtsdatum
+     */
+    DBIterator<Mitglied> mitglo = Einstellungen.getDBService()
+        .createList(Mitglied.class);
+    MitgliedUtils.setNurAktive(mitglo, stichtag);
+    MitgliedUtils.setMitglied(mitglo);
+    mitglo.addFilter("geburtsdatum is null");
+    while (mitglo.hasNext())
+    {
+      Mitglied m = (Mitglied) mitglo.next();
+      String jg = "Ohne Datum";
+      StatistikJahrgang dsbj = statistik.get(jg);
+      if (dsbj == null)
+      {
+        dsbj = new StatistikJahrgang();
+        statistik.put(jg, dsbj);
+      }
+      dsbj.incrementGesamt();
+      if (m.getGeschlecht().equals(GeschlechtInput.MAENNLICH))
+      {
+        dsbj.incrementMaennlich();
+      }
+      if (m.getGeschlecht().equals(GeschlechtInput.WEIBLICH))
+      {
+        dsbj.incrementWeiblich();
+      }
+      if (m.getGeschlecht().equals(GeschlechtInput.OHNEANGABE))
+      {
+        dsbj.incrementOhne();
+      }
     }
 
     open();

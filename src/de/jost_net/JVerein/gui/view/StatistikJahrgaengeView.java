@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.StatistikJahrgaengeExportAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
@@ -25,8 +24,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.jameica.messaging.StatusBarMessage;
-import de.willuhn.jameica.system.Application;
 
 public class StatistikJahrgaengeView extends AbstractView
 {
@@ -46,14 +43,7 @@ public class StatistikJahrgaengeView extends AbstractView
         DokumentationUtil.STATISTIKJAHRGAENGE, false, "question-circle.png");
     Button btnStart = new Button("Start", new StatistikJahrgaengeExportAction(),
         control.getJubeljahr(), true, "walking.png");
-    if (!Einstellungen.getEinstellung().getGeburtsdatumPflicht())
-    {
-      btnStart.setEnabled(false);
-      Application.getMessagingFactory().sendMessage(new StatusBarMessage(
-          "Einstellungen->Anzeige->Geburtsdatum: keine Pflicht. Die Statistik kann nicht erstellt werden.",
-          StatusBarMessage.TYPE_ERROR));
 
-    }
     buttons.addButton(btnStart);
 
     buttons.paint(getParent());
