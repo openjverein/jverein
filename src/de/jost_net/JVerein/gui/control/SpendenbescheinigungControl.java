@@ -318,6 +318,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       formular = new FormularInput(FormularArt.SPENDENBESCHEINIGUNG, def);
     }
+    formular.setPleaseChoose("Bitte auswählen");
     return formular;
   }
 
