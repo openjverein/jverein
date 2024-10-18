@@ -54,6 +54,7 @@ import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.FormularAufbereitung;
 import de.jost_net.JVerein.io.MailSender;
+import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.HerkunftSpende;
@@ -318,6 +319,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       formular = new FormularInput(FormularArt.SPENDENBESCHEINIGUNG, def);
     }
+    formular.setPleaseChoose("Bitte auswählen");
     return formular;
   }
 
@@ -510,13 +512,22 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
   }
 
-  public Button getPDFStandardButton(final boolean adressblatt)
+  public Button getPDFStandardButton(final Adressblatt adressblatt)
   {
-    String label = "PDF (Standard)";
-    if (adressblatt)
+    String label = "";
+    switch (adressblatt)
     {
-      label = "PDF (Standard, Mit Adressblatt)";
+      case OHNE_ADRESSBLATT:
+        label = "PDF (Standard)";
+        break;
+      case MIT_ADRESSE:
+        label = "PDF (Standard, Mit Adresse)";
+        break;
+      case MIT_ANSCHREIBEN:  // Hier nicht unterstützt
+      case MIT_ADRESSE_ANSCHREIBEN:
+        break;
     }
+    
     Button b = new Button(label, new Action()
     {
 
@@ -589,13 +600,22 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return b;
   }
 
-  public Button getPDFIndividuellButton(final boolean adressblatt)
+  public Button getPDFIndividuellButton(final Adressblatt adressblatt)
   {
-    String label = "PDF (Individuell)";
-    if (adressblatt)
+    String label = "";
+    switch (adressblatt)
     {
-      label = "PDF (Individuell, Mit Adressblatt)";
+      case OHNE_ADRESSBLATT:
+        label = "PDF (Individuell)";
+        break;
+      case MIT_ADRESSE:
+        label = "PDF (Individuell, Mit Adresse)";
+        break;
+      case MIT_ANSCHREIBEN:  // Hier nicht unterstützt
+      case MIT_ADRESSE_ANSCHREIBEN:
+        break;
     }
+
     Button b = new Button(label, new Action()
     {
 
@@ -623,7 +643,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return b;
   }
 
-  private void generiereSpendenbescheinigungIndividuell(boolean adressblatt) throws IOException
+  private void generiereSpendenbescheinigungIndividuell(Adressblatt adressblatt) throws IOException
   {
     Spendenbescheinigung spb = getSpendenbescheinigung();
     if (spb.isNewObject())
@@ -683,8 +703,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
     FormularAufbereitung fa = new FormularAufbereitung(file);
     fa.writeForm(fo, map);
     // Brieffenster drucken bei Spendenbescheinigung
-    if (adressblatt)
+    if (adressblatt == Adressblatt.MIT_ADRESSE)
     {
+      fa.printNeueSeite();
       fa.printAdressfenster(getAussteller(), 
           (String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()));
     }
@@ -909,10 +930,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
           {
             return;
           }
-          generatePdf((String) art.getValue(),
-              (String) adressblatt.getValue(), spbArray);
-          if (ausgabeart == null || 
-              (Ausgabeart) ausgabeart.getValue() == Ausgabeart.MAIL)
+          generatePdf((String) mailtext.getValue(), (String) art.getValue(),
+              (Adressblatt) adressblatt.getValue(), spbArray);
+          if ((Ausgabeart) ausgabeart.getValue() == Ausgabeart.MAIL)
           {
             sendeMail((String) mailbetreff.getValue(),
                 (String) mailtext.getValue(), spbArray);
@@ -928,17 +948,14 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return button;
   }
 
-  private void generatePdf(String ar, String ab, Spendenbescheinigung[] spba)
+  private void generatePdf(String text, String ar, Adressblatt adressblatt, Spendenbescheinigung[] spba)
       throws ApplicationException
   {
     boolean standard = true;
     if (ar.equalsIgnoreCase("Individuell"))
       standard = false;
-    boolean adressblatt = false;
-    if (ab.equalsIgnoreCase("Mit"))
-      adressblatt = true;
     SpendenbescheinigungPrintAction action = 
-        new SpendenbescheinigungPrintAction(standard, adressblatt);
+        new SpendenbescheinigungPrintAction(text, standard, adressblatt);
     action.handleAction(spba);
   }
   
