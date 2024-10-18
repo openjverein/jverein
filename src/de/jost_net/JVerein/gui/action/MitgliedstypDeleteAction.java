@@ -18,7 +18,10 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -48,6 +51,16 @@ public class MitgliedstypDeleteAction implements Action
       if (at.isNewObject())
       {
         return;
+      }
+      DBIterator<Mitglied> it = Einstellungen.getDBService()
+          .createList(Mitglied.class);
+      it.addFilter("adresstyp = ?", new Object[] { at.getID() });
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(String.format(
+            "Mitgliedstyp '%s' kann nicht gelöscht werden. Es existieren Nicht-Mitglieder dieses Typs.",
+            at.getBezeichnung()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Mitgliedstyp löschen");

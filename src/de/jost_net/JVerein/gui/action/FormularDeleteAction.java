@@ -20,6 +20,8 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -55,6 +57,16 @@ public class FormularDeleteAction implements Action
         return;
       }
 
+      DBIterator<Spendenbescheinigung> spb = Einstellungen.getDBService()
+          .createList(Spendenbescheinigung.class);
+      spb.addFilter("formular = ?", new Object[] { f.getID() });
+      if (spb.size() > 0)
+      {
+        throw new ApplicationException(String.format(
+            "Forular '%s' kann nicht gelöscht werden. Es ist bei %d Spendenbescheinigung(en) hinterlegt.",
+            f.getBezeichnung(), spb.size()));
+      }
+      
       // Do not delete a form if it is linked by other forms
       if (f.hasFormlinks())
       {

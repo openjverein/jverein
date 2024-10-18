@@ -18,7 +18,10 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -51,7 +54,16 @@ public class LehrgangsartDeleteAction implements Action
       {
         return;
       }
-
+      DBIterator<Lehrgang> it = Einstellungen.getDBService()
+          .createList(Lehrgang.class);
+      it.addFilter("lehrgangsart = ?", new Object[] { l.getID() });
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(String.format(
+            "Lehrgangsart '%s' kann nicht gelöscht werden. Es existieren Lehrgänge dieser Art.",
+            l.getBezeichnung()));
+      }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Lehrgangsart löschen");
       d.setText("Wollen Sie diese Lehrgangsart wirklich löschen?");

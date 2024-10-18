@@ -64,7 +64,7 @@ public class FormularDuplizierenAction implements Action
         ff2.setFormular(f2);
         ff2.store();
       }
-      control.refreshTable();
+      control.refreshFormularTable();
     }
     catch (Exception e)
     {

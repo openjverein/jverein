@@ -18,7 +18,10 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Projekt;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -44,6 +47,16 @@ public class ProjektDeleteAction implements Action
       if (p.isNewObject())
       {
         return;
+      }
+      DBIterator<Buchung> it = Einstellungen.getDBService()
+          .createList(Buchung.class);
+      it.addFilter("projekt = ?", new Object[] { p.getID() });
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(String.format(
+            "Projekt '%s' kann nicht gelöscht werden. Es existieren Buchungen mit diesem Projekt.",
+            p.getBezeichnung()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Projekt löschen");
