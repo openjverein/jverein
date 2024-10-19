@@ -99,6 +99,11 @@ public class Suchbetrag
       sustrat = Suchstrategie.GLEICH;
       liste.remove(0);
     }
+    else if (liste.get(0).equals("|"))
+    {
+      sustrat = Suchstrategie.BETRAG;
+      liste.remove(0);
+    }
     else if (liste.size() > 1 && liste.get(1).equals(".."))
     {
       sustrat = Suchstrategie.BEREICH;
