@@ -29,7 +29,7 @@ public class Suchbetrag
 
   public enum Suchstrategie
   {
-    KEINE, GLEICH, GRÖSSER, GRÖSSERGLEICH, KLEINER, KLEINERGLEICH, BEREICH, UNGÜLTIG
+    KEINE, GLEICH, GRÖSSER, GRÖSSERGLEICH, KLEINER, KLEINERGLEICH, BEREICH, UNGÜLTIG, BETRAG
   }
 
   private Suchstrategie sustrat = Suchstrategie.KEINE;
