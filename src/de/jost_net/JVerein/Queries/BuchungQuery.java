@@ -255,7 +255,7 @@ public class BuchungQuery
             it.addFilter("buchung.betrag <= ?", suchbetrag.getBetrag());
             break;
           case BETRAG:
-            it.addFilter("buchung.betrag = ? OR buchung.betrag = ?", suchbetrag.getBetrag(), suchbetrag.getBetrag().negate());
+            it.addFilter("(buchung.betrag = ? OR buchung.betrag = ?)", suchbetrag.getBetrag(), suchbetrag.getBetrag().negate());
             break;
           default:
             break;
