@@ -130,6 +130,7 @@ public abstract class StatistikJahrgaengeExport implements Exporter
         .createList(Mitglied.class);
     MitgliedUtils.setNurAktive(mitglo, stichtag);
     MitgliedUtils.setMitglied(mitglo);
+    MitgliedUtils.setMitgliedNatuerlichePerson(mitglo);
     mitglo.addFilter("geburtsdatum is null");
     while (mitglo.hasNext())
     {

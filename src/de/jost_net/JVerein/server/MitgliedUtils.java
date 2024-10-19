@@ -58,7 +58,7 @@ public class MitgliedUtils
   public static void setMitgliedJuristischePerson(DBIterator<Mitglied> it)
       throws RemoteException
   {
-    it.addFilter("personenart = 'j'");
+    it.addFilter("personenart = 'j' or personenart = 'J'");
   }
 
 }
