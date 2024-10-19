@@ -51,7 +51,7 @@ public class Suchbetrag
 
     // Suchstring in Einzelteile zerlegen
     ArrayList<String> liste = new ArrayList<>();
-    StringTokenizer tok = new StringTokenizer(suchbetrag, "<>=.", true);
+    StringTokenizer tok = new StringTokenizer(suchbetrag, "<>=.|", true);
     while (tok.hasMoreTokens())
     {
       liste.add(tok.nextToken().trim());
