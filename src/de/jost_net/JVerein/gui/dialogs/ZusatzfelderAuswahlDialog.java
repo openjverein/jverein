@@ -55,7 +55,7 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
 
   public ZusatzfelderAuswahlDialog(Settings settings, String zusatzfeld, String zusatzfelder)
   {
-    super(EigenschaftenAuswahlDialog.POSITION_CENTER);
+    super(ZusatzfelderAuswahlDialog.POSITION_CENTER);
     this.setSize(400, 700);
     setTitle("Zusatzfelder-Bedingungen ");
     this.settings = settings;
