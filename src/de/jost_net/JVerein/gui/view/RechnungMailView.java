@@ -20,8 +20,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -30,7 +29,7 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class MitgliedskontoRechnungView extends AbstractView
+public class RechnungMailView extends AbstractView
 {
 
   @Override
@@ -38,8 +37,8 @@ public class MitgliedskontoRechnungView extends AbstractView
   {
     GUI.getView().setTitle("Rechnung");
 
-    final MitgliedskontoControl control = new MitgliedskontoControl(this);
-    control.init(MitgliedskontoControl.TYP.RECHNUNG.name() + ".", null, null);
+    final RechnungControl control = new RechnungControl(this);
+    control.init(RechnungControl.TYP.RECHNUNG.name() + ".mail.", null, null);
 
     if (this.getCurrentObject() == null)
     {
@@ -71,9 +70,8 @@ public class MitgliedskontoRechnungView extends AbstractView
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Parameter");
     
-    cont.addLabelPair("Formular", control.getFormular(FormularArt.RECHNUNG));
     cont.addInput(control.getAusgabeart());
-    cont.addInput(control.getAusgabesortierung());
+    //cont.addInput(control.getAusgabesortierung());
 
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());
@@ -84,10 +82,10 @@ public class MitgliedskontoRechnungView extends AbstractView
         DokumentationUtil.RECHNUNG, false, "question-circle.png");
     buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
         control, false, "view-refresh.png"));
-    buttons.addButton(new Button("Export",
+    /*buttons.addButton(new Button("Export",
         new MitgliedskontoExportAction(EXPORT_TYP.RECHNUNGEN,
             getCurrentObject()),
-        control, false, "document-save.png"));
+        control, false, "document-save.png"));*/
     buttons.addButton(control.getStartRechnungButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }

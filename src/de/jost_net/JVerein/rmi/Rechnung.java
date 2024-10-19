@@ -14,31 +14,31 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.action;
+package de.jost_net.JVerein.rmi;
 
-import de.jost_net.JVerein.gui.view.MahnungMailView;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
 
-public class MitgliedskontoMahnungAction implements Action
+import de.willuhn.datasource.rmi.DBObject;
+
+public interface Rechnung extends DBObject
 {
-  @Override
-  public void handleAction(Object context)
-  {
-    if (context != null && context instanceof Mitgliedskonto)
-    {
-      Mitgliedskonto mk = (Mitgliedskonto) context;
-      GUI.startView(MahnungMailView.class.getName(), mk);
-    }
-    else if (context != null && context instanceof Mitgliedskonto[])
-    {
-      Mitgliedskonto[] mk = (Mitgliedskonto[]) context;
-      GUI.startView(MahnungMailView.class.getName(), mk);
-    }
-    else
-    {
-      GUI.startView(MahnungMailView.class, null);
-    }
-  }
+  public Mitglied getMitglied() throws RemoteException;
+
+  public void setMitglied(int mitglied) throws RemoteException;
+
+  public void setFormular(Formular formular) throws RemoteException;
+
+  double getBetrag() throws RemoteException;
+
+  void setBetrag(double betrag) throws RemoteException;
+
+  public void setDatum(Date date) throws RemoteException;
+  
+  public Date getDatum() throws RemoteException;
+
+  public ArrayList<Mitgliedskonto> getMitgliedskontoList() throws RemoteException;
+
+  public Formular getFormular() throws RemoteException;
 }

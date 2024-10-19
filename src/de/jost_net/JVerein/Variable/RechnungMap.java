@@ -26,17 +26,18 @@ import java.util.Map;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Rechnung;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 
-public class MitgliedskontoMap
+public class RechnungMap
 {
 
-  public MitgliedskontoMap()
+  public RechnungMap()
   {
     //
   }
 
-  public Map<String, Object> getMap(ArrayList<Mitgliedskonto> mk,
+  public Map<String, Object> getMap(Rechnung re,
       Map<String, Object> inma) throws RemoteException
   {
     Map<String, Object> map = null;
@@ -64,7 +65,7 @@ public class MitgliedskontoMap
     double summe = 0;
     double saldo = 0;
     double suist = 0;
-    for (Mitgliedskonto mkto : mk)
+    for (Mitgliedskonto mkto : re.getMitgliedskontoList())
     {
       buda.add(mkto.getDatum());
       zg.add(mkto.getZweck1());
@@ -112,6 +113,8 @@ public class MitgliedskontoMap
     map.put(MitgliedskontoVar.SUMME_OFFEN.getName(), Double.valueOf(saldo));
     map.put(MitgliedskontoVar.QRCODE_INTRO.getName(),
         Einstellungen.getEinstellung().getQRCodeIntro());
+    map.put(MitgliedskontoVar.RECHNUNG_DATUM.getName(),re.getDatum());
+    map.put(MitgliedskontoVar.RECHNUNG_NUMMER.getName(),re.getID());
     return map;
   }
 

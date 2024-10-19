@@ -31,7 +31,9 @@ public enum MitgliedskontoVar
   STAND("mitgliedskonto_stand"), //
   SUMME_OFFEN("mitgliedskonto_summe_offen"), //
   QRCODE_SUMME("qrcode_summe"), //
-  QRCODE_INTRO("qrcode_intro");
+  QRCODE_INTRO("qrcode_intro"),
+  RECHNUNG_DATUM("rechnung_datum"),
+  RECHNUNG_NUMMER("rechnung_nummer");
 
   private String name;
 

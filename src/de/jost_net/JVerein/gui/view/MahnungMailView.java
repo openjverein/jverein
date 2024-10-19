@@ -20,7 +20,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
+import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -30,7 +30,7 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class MitgliedskontoMahnungView extends AbstractView
+public class MahnungMailView extends AbstractView
 {
 
   @Override
@@ -38,8 +38,8 @@ public class MitgliedskontoMahnungView extends AbstractView
   {
     GUI.getView().setTitle("Mahnung");
 
-    final MitgliedskontoControl control = new MitgliedskontoControl(this);
-    control.init(MitgliedskontoControl.TYP.MAHNUNG.name() + ".", null, null);
+    final RechnungControl control = new RechnungControl(this);
+    control.init(RechnungControl.TYP.MAHNUNG.name() + ".", null, null);
     
     if (this.getCurrentObject() == null)
     {
@@ -73,7 +73,7 @@ public class MitgliedskontoMahnungView extends AbstractView
     
     cont.addLabelPair("Formular", control.getFormular(FormularArt.MAHNUNG));
     cont.addInput(control.getAusgabeart());
-    cont.addInput(control.getAusgabesortierung());
+    //cont.addInput(control.getAusgabesortierung());
     
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());
@@ -84,8 +84,8 @@ public class MitgliedskontoMahnungView extends AbstractView
         DokumentationUtil.MAHNUNG, false, "question-circle.png");
     buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
             control, false, "view-refresh.png"));
-    buttons.addButton(new Button("Export", new MitgliedskontoExportAction(
-        EXPORT_TYP.MAHNUNGEN, getCurrentObject()), control, false, "document-save.png"));
+    /*buttons.addButton(new Button("Export", new MitgliedskontoExportAction(
+        EXPORT_TYP.MAHNUNGEN, getCurrentObject()), control, false, "document-save.png"));*/
     buttons.addButton(control.getStartMahnungButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }

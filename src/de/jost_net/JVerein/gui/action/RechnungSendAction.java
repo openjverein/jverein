@@ -16,29 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.MahnungMailView;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.gui.view.RechnungMailView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 
-public class MitgliedskontoMahnungAction implements Action
+public class RechnungSendAction implements Action
 {
   @Override
   public void handleAction(Object context)
   {
-    if (context != null && context instanceof Mitgliedskonto)
-    {
-      Mitgliedskonto mk = (Mitgliedskonto) context;
-      GUI.startView(MahnungMailView.class.getName(), mk);
-    }
-    else if (context != null && context instanceof Mitgliedskonto[])
-    {
-      Mitgliedskonto[] mk = (Mitgliedskonto[]) context;
-      GUI.startView(MahnungMailView.class.getName(), mk);
-    }
-    else
-    {
-      GUI.startView(MahnungMailView.class, null);
-    }
+    GUI.startView(RechnungMailView.class.getName(), context);
   }
 }

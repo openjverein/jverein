@@ -27,6 +27,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Rechnung;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -129,7 +130,31 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   {
     setAttribute("abrechnungslauf", Integer.valueOf(abrechnungslauf.getID()));
   }
+  
+  @Override
+  public Rechnung getRechnung() throws RemoteException
+  {
+    Object o = (Object) super.getAttribute("rechnung");
+    if (o == null)
+      return null;
+    
+    if(o instanceof Rechnung)
+      return (Rechnung)o;
+   
+    Cache cache = Cache.get(Rechnung.class,true);
+    return (Rechnung) cache.get(o);
+  }
 
+  @Override
+  public void setRechnung(Rechnung rechnung)
+      throws RemoteException
+  {
+    if(rechnung != null)
+      setAttribute("rechnung", Long.valueOf(rechnung.getID()));
+    else
+      setAttribute("rechnung", null);
+  }
+  
   @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
@@ -182,6 +207,11 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
    
     Cache cache = Cache.get(Mitglied.class,true);
     return (Mitglied) cache.get(o);
+  }
+  
+  public String getMitgliedId() throws RemoteException
+  {
+    return String.valueOf(super.getAttribute("mitglied"));
   }
 
   @Override

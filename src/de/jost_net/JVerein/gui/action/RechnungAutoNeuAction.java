@@ -16,29 +16,18 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.MahnungMailView;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.gui.view.RechnungAutoNeuView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoMahnungAction implements Action
+public class RechnungAutoNeuAction implements Action
 {
+
   @Override
-  public void handleAction(Object context)
+  public void handleAction(Object context) throws ApplicationException
   {
-    if (context != null && context instanceof Mitgliedskonto)
-    {
-      Mitgliedskonto mk = (Mitgliedskonto) context;
-      GUI.startView(MahnungMailView.class.getName(), mk);
-    }
-    else if (context != null && context instanceof Mitgliedskonto[])
-    {
-      Mitgliedskonto[] mk = (Mitgliedskonto[]) context;
-      GUI.startView(MahnungMailView.class.getName(), mk);
-    }
-    else
-    {
-      GUI.startView(MahnungMailView.class, null);
-    }
+    GUI.startView(RechnungAutoNeuView.class.getName(), null);
   }
+
 }

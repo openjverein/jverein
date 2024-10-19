@@ -18,14 +18,14 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
+import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.Exporter;
 import de.jost_net.JVerein.io.IORegistry;
 import de.jost_net.JVerein.io.MitgliedskontoExport;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Rechnung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -49,10 +49,10 @@ public class MitgliedskontoExportAction implements Action
         {
           selectedMitglied = (Mitglied) currentObject;
         }
-        else if (currentObject instanceof Mitgliedskonto)
+        else if (currentObject instanceof Rechnung)
         {
-          Mitgliedskonto konto = (Mitgliedskonto) currentObject;
-          selectedMitglied = konto.getMitglied();
+          Rechnung rechnung = (Rechnung) currentObject;
+          selectedMitglied = rechnung.getMitglied();
         }
       }
     }
@@ -72,7 +72,7 @@ public class MitgliedskontoExportAction implements Action
     {
       initExporter();
       ExportDialog d = new ExportDialog(gibSuchGrenzen(context),
-          Mitgliedskonto.class, DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT);
+          Rechnung.class, DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT);
       d.open();
     }
     catch (OperationCanceledException oce)
@@ -89,7 +89,7 @@ public class MitgliedskontoExportAction implements Action
       Logger.error("Fehler", e);
       GUI.getStatusBar().setErrorText(
 
-      "Fehler beim exportieren der Mitgliedskonten");
+      "Fehler beim exportieren der Rechnungen");
     }
   }
 
@@ -112,9 +112,9 @@ public class MitgliedskontoExportAction implements Action
 
   private Object[] gibSuchGrenzen(Object context) throws ApplicationException
   {
-    if (context instanceof MitgliedskontoControl)
+    if (context instanceof Rechnung)
     {
-      MitgliedskontoControl control = (MitgliedskontoControl) context;
+      RechnungControl control = (RechnungControl) context;
       return control.getCVSExportGrenzen(selectedMitglied);
     }
     throw new ApplicationException(
