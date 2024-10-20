@@ -106,19 +106,6 @@ public class DruckMailControl extends FilterControl
     return ausgabesortierung;
   }
   
-  public SelectInput getArt()
-  {
-    if (art != null)
-    {
-      return art;
-    }
-    art = new SelectInput( 
-        new String[] { "Standard", "Individuell" },
-        settings.getString(settingsprefix + "art", "Standard"));
-    art.setName("Ausgabeart");
-    return art;
-  }
-  
   public SelectInput getAdressblatt()
   {
     if (adressblatt != null)
@@ -190,11 +177,6 @@ public class DruckMailControl extends FilterControl
     {
       Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
       settings.setAttribute(settingsprefix + "ausgabeart.key", aa.getKey());
-    }
-    if (art != null)
-    {
-      String ar = (String) getArt().getValue();
-      settings.setAttribute(settingsprefix + "art", ar);
     }
     if (adressblatt != null)
     {

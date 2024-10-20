@@ -18,7 +18,6 @@ package de.jost_net.JVerein.gui.control;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
@@ -32,15 +31,12 @@ import java.util.TreeSet;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
@@ -51,8 +47,7 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
-import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.io.FormularAufbereitung;
+import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
@@ -319,7 +314,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       formular = new FormularInput(FormularArt.SPENDENBESCHEINIGUNG, def);
     }
-    formular.setPleaseChoose("Bitte auswählen");
+    formular.setPleaseChoose("Standard");
     return formular;
   }
 
@@ -512,119 +507,24 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
   }
 
-  public Button getPDFStandardButton(final Adressblatt adressblatt)
+  public Button getDruckUndMailButton()
   {
-    String label = "";
-    switch (adressblatt)
-    {
-      case OHNE_ADRESSBLATT:
-        label = "PDF (Standard)";
-        break;
-      case MIT_ADRESSE:
-        label = "PDF (Standard, Mit Adresse)";
-        break;
-      case MIT_ANSCHREIBEN:  // Hier nicht unterstützt
-      case MIT_ADRESSE_ANSCHREIBEN:
-        break;
-    }
-    
-    Button b = new Button(label, new Action()
+  
+    Button b = new Button("Druck und Mail", new Action()
     {
 
-      /**
-       * Diese Action verwendet die "SpendenbescheinigungPrintAction" für die
-       * Aufbereitung des Dokumentes. Als Rahmen ist der Dialog zur Dateiauswahl
-       * und die Anzeige des Dokumentes um die Generierung gesetzt.
-       */
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
+        Spendenbescheinigung spb = getSpendenbescheinigung();
         try
         {
-          Spendenbescheinigung spb = getSpendenbescheinigung();
           if (spb.isNewObject())
           {
             GUI.getStatusBar()
-                .setErrorText("Spendenbescheinigung bitte erst speichern!");
+            .setErrorText("Spendenbescheinigung bitte erst speichern!");
             return;
           }
-          FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-          fd.setText("Ausgabedatei wählen.");
-          String path = Einstellungen.getEinstellung()
-              .getSpendenbescheinigungverzeichnis();
-          if (path != null && path.length() > 0)
-          {
-            fd.setFilterPath(path);
-          }
-          if (spb.getMitglied() != null)
-          {
-            fd.setFileName(new Dateiname(spb.getMitglied(),
-                spb.getBescheinigungsdatum(), "Spendenbescheinigung",
-                Einstellungen.getEinstellung().getDateinamenmusterSpende(),
-                "pdf").get());
-          }
-          else
-          {
-            fd.setFileName(new Dateiname(spb.getZeile1(), spb.getZeile2(),
-                spb.getBescheinigungsdatum(), "Spendenbescheinigung",
-                Einstellungen.getEinstellung().getDateinamenmusterSpende(),
-                "pdf").get());
-          }
-          fd.setFilterExtensions(new String[] { "*.pdf" });
-
-          String s = fd.open();
-          if (s == null || s.length() == 0)
-          {
-            return;
-          }
-          if (!s.toLowerCase().endsWith(".pdf"))
-          {
-            s = s + ".pdf";
-          }
-          final File file = new File(s);
-          //
-          SpendenbescheinigungPrintAction spa = new SpendenbescheinigungPrintAction(
-              true, adressblatt, s);
-          spa.handleAction(spb);
-          GUI.getStatusBar().setSuccessText("Spendenbescheinigung erstellt");
-          FileViewer.show(file);
-        }
-        catch (Exception e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler bei der Aufbereitung der Spendenbescheinigung");
-        }
-      }
-    }, getSpendenbescheinigung(), false, "file-pdf.png");
-    return b;
-  }
-
-  public Button getPDFIndividuellButton(final Adressblatt adressblatt)
-  {
-    String label = "";
-    switch (adressblatt)
-    {
-      case OHNE_ADRESSBLATT:
-        label = "PDF (Individuell)";
-        break;
-      case MIT_ADRESSE:
-        label = "PDF (Individuell, Mit Adresse)";
-        break;
-      case MIT_ANSCHREIBEN:  // Hier nicht unterstützt
-      case MIT_ADRESSE_ANSCHREIBEN:
-        break;
-    }
-
-    Button b = new Button(label, new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          generiereSpendenbescheinigungIndividuell(adressblatt);
         }
         catch (RemoteException e)
         {
@@ -632,93 +532,11 @@ public class SpendenbescheinigungControl extends DruckMailControl
           throw new ApplicationException(
               "Fehler bei der Aufbereitung der Spendenbescheinigung");
         }
-        catch (IOException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler bei der Aufbereitung der Spendenbescheinigung");
-        }
+        GUI.startView(SpendenbescheinigungMailView.class, 
+            new Spendenbescheinigung[] { (Spendenbescheinigung) spb });
       }
-    }, null, false, "file-pdf.png");
+    }, getSpendenbescheinigung(), false, "document-print.png");
     return b;
-  }
-
-  private void generiereSpendenbescheinigungIndividuell(Adressblatt adressblatt) throws IOException
-  {
-    Spendenbescheinigung spb = getSpendenbescheinigung();
-    if (spb.isNewObject())
-    {
-      GUI.getStatusBar()
-          .setErrorText("Spendenbescheinigung bitte erst speichern!");
-      return;
-    }
-    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
-    String path = Einstellungen.getEinstellung()
-        .getSpendenbescheinigungverzeichnis();
-    if (path != null && path.length() > 0)
-    {
-      fd.setFilterPath(path);
-    }
-    if (spb.getMitglied() != null)
-    {
-      fd.setFileName(new Dateiname(spb.getMitglied(),
-          spb.getBescheinigungsdatum(), "Spendenbescheinigung",
-          Einstellungen.getEinstellung().getDateinamenmusterSpende(), "pdf")
-              .get());
-    }
-    else
-    {
-      fd.setFileName(new Dateiname(spb.getZeile1(), spb.getZeile2(),
-          spb.getBescheinigungsdatum(), "Spendenbescheinigung",
-          Einstellungen.getEinstellung().getDateinamenmusterSpende(), "pdf")
-              .get());
-    }
-    fd.setFilterExtensions(new String[] { "*.pdf" });
-
-    String s = fd.open();
-    if (s == null || s.length() == 0)
-    {
-      return;
-    }
-    if (!s.toLowerCase().endsWith(".pdf"))
-    {
-      s = s + ".pdf";
-    }
-    final File file = new File(s);
-    settings.setAttribute("lastdir", file.getParent());
-
-    /* Check ob auch ein Formular ausgewaehlt ist */
-    Formular spendeformular = getSpendenbescheinigung().getFormular();
-    if (spendeformular == null)
-    {
-      GUI.getStatusBar().setErrorText("Bitte Formular auswaehlen");
-      return;
-    }
-
-    Formular fo = (Formular) Einstellungen.getDBService()
-        .createObject(Formular.class, spendeformular.getID());
-    Map<String, Object> map = getSpendenbescheinigung().getMap(null);
-    map = new AllgemeineMap().getMap(map);
-    FormularAufbereitung fa = new FormularAufbereitung(file);
-    fa.writeForm(fo, map);
-    // Brieffenster drucken bei Spendenbescheinigung
-    if (adressblatt == Adressblatt.MIT_ADRESSE)
-    {
-      fa.printNeueSeite();
-      fa.printAdressfenster(getAussteller(), 
-          (String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()));
-    }
-    fa.showFormular();
-
-  }
-  
-  private String getAussteller() throws RemoteException
-  {
-    return Einstellungen.getEinstellung().getName() + ", "
-        + Einstellungen.getEinstellung().getStrasse() + ", "
-        + Einstellungen.getEinstellung().getPlz() + " "
-        + Einstellungen.getEinstellung().getOrt();
   }
 
   public Part getSpendenbescheinigungList() throws RemoteException
@@ -930,8 +748,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
           {
             return;
           }
-          generatePdf((String) mailtext.getValue(), (String) art.getValue(),
-              (Adressblatt) adressblatt.getValue(), spbArray);
+          generatePdf((String) mailtext.getValue(), (Adressblatt) adressblatt.getValue(),
+               spbArray, (Ausgabeart) ausgabeart.getValue());
           if ((Ausgabeart) ausgabeart.getValue() == Ausgabeart.MAIL)
           {
             sendeMail((String) mailbetreff.getValue(),
@@ -948,14 +766,15 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return button;
   }
 
-  private void generatePdf(String text, String ar, Adressblatt adressblatt, Spendenbescheinigung[] spba)
+  private void generatePdf(String text, Adressblatt adressblatt, 
+      Spendenbescheinigung[] spba, Ausgabeart ausgabeart)
       throws ApplicationException
   {
-    boolean standard = true;
-    if (ar.equalsIgnoreCase("Individuell"))
-      standard = false;
+    boolean open = false;
+    if (ausgabeart ==  Ausgabeart.DRUCK)
+      open = true;
     SpendenbescheinigungPrintAction action = 
-        new SpendenbescheinigungPrintAction(text, standard, adressblatt);
+        new SpendenbescheinigungPrintAction(text, adressblatt, open);
     action.handleAction(spba);
   }
   
