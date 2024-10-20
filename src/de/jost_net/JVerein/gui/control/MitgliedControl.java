@@ -1080,7 +1080,6 @@ public class MitgliedControl extends FilterControl
           if (bg != null
               && bg.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
           {
-            getFamilienverband().setVisible(true);
             getZukuenftigeBeitraegeView().setVisible(false);
             if (zahler != null)
             {
@@ -1096,7 +1095,6 @@ public class MitgliedControl extends FilterControl
               && bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
           {
             boolean ist_neu = getMitglied().getID() == null;
-            getFamilienverband().setVisible(!ist_neu);
             // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
             if (!ist_neu)
             {
@@ -1118,7 +1116,6 @@ public class MitgliedControl extends FilterControl
               zahler.setPreselected(null);
               zahler.setEnabled(false);
             }
-            getFamilienverband().setVisible(false);
             // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
             if (getMitglied().getID() != null)
             {
@@ -1292,7 +1289,8 @@ public class MitgliedControl extends FilterControl
     DBIterator<Mitglied> zhl = Einstellungen.getDBService()
         .createList(Mitglied.class);
     zhl.addFilter("(" + cond.toString() + ")");
-    zhl.addFilter("id != ?",getMitglied().getID());
+    if(getMitglied().getID() != null)
+      zhl.addFilter("id != ?",getMitglied().getID());
     MitgliedUtils.setNurAktive(zhl);
     MitgliedUtils.setMitglied(zhl);
     zhl.setOrder("ORDER BY name, vorname");
