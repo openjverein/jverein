@@ -40,8 +40,6 @@ public class DruckMailControl extends FilterControl
   protected SelectInput ausgabeart = null;
   
   protected SelectInput ausgabesortierung = null;
-  
-  protected SelectInput art = null;
 
   protected SelectInput adressblatt = null;
   
