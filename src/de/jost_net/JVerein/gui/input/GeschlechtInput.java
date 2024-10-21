@@ -21,12 +21,11 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.willuhn.datasource.GenericObject;
-import de.willuhn.jameica.gui.input.SelectInput;
 
 /**
  * Combo-Box, fuer die Auswahl des Abbuchungsmodus.
  */
-public class GeschlechtInput extends SelectInput
+public class GeschlechtInput extends SelectNoScrollInput
 {
 
   public static final String MAENNLICH = "m";
