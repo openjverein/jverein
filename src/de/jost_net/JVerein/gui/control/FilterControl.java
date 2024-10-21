@@ -31,8 +31,8 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
-import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
-import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
+import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog2;
+import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter2;
 import de.jost_net.JVerein.gui.dialogs.ZusatzfelderAuswahlDialog;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
@@ -43,6 +43,7 @@ import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.server.EigenschaftenNode;
+import de.jost_net.JVerein.server.EigenschaftenNode2;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -60,6 +61,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TreePart;
+import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -349,9 +351,9 @@ public class FilterControl extends AbstractControl
   public DialogInput getEigenschaftenAuswahl() throws RemoteException
   {
     String  tmp = settings.getString(settingsprefix + "eigenschaften", "");
-    final EigenschaftenAuswahlDialog d = new EigenschaftenAuswahlDialog(tmp,
+    final EigenschaftenAuswahlDialog2 d = new EigenschaftenAuswahlDialog2(tmp,
         false, true, this);
-    d.addCloseListener(new EigenschaftenCloseListener());
+    d.addCloseListener(new EigenschaftenCloseListener2());
 
     StringTokenizer stt = new StringTokenizer(tmp, ",");
     StringBuilder text = new StringBuilder();
@@ -363,9 +365,13 @@ public class FilterControl extends AbstractControl
       }
       try
       {
+        String s = stt.nextToken();
+        String prefix = "+";
+        if (s.substring(s.length()-1).equals(EigenschaftenNode2.MINUS))
+          prefix = "-";
         Eigenschaft ei = (Eigenschaft) Einstellungen.getDBService()
-            .createObject(Eigenschaft.class, stt.nextToken());
-        text.append(ei.getBezeichnung());
+            .createObject(Eigenschaft.class, s.substring(0,s.length()-1));
+        text.append(prefix + ei.getBezeichnung());
       }
       catch (ObjectNotFoundException e)
       {
@@ -427,6 +433,49 @@ public class FilterControl extends AbstractControl
         else
         {
           item.setChecked(false);
+        }
+      }
+    }
+  }
+  
+  public TreePart getEigenschaftenAuswahlTree2(String vorbelegung,
+      boolean ohnePflicht) throws RemoteException
+  {
+    eigenschaftenAuswahlTree = new TreePart(
+        new EigenschaftenNode2(vorbelegung, ohnePflicht), null);
+    eigenschaftenAuswahlTree.addSelectionListener(
+        new EigenschaftListener2());
+    eigenschaftenAuswahlTree.setFormatter(new EigenschaftTreeFormatter2());
+    return eigenschaftenAuswahlTree;
+  }
+  
+  public static class EigenschaftTreeFormatter2 implements TreeFormatter
+  {
+
+    @Override
+    public void format(TreeItem item)
+    {
+      EigenschaftenNode2 eigenschaftitem = (EigenschaftenNode2) item.getData();
+      if (eigenschaftitem.getNodeType() == EigenschaftenNode2.ROOT
+          || eigenschaftitem
+              .getNodeType() == EigenschaftenNode2.EIGENSCHAFTGRUPPE)
+      {
+        //
+      }
+      else
+      {
+        if (eigenschaftitem.getEigenschaften() != null
+            || eigenschaftitem.getPreset().equals(EigenschaftenNode2.PLUS))
+        {
+          item.setImage(SWTUtil.getImage("list-add.png"));
+        }
+        else if (eigenschaftitem.getPreset().equals(EigenschaftenNode2.MINUS))
+        {
+          item.setImage(SWTUtil.getImage("list-remove.png"));
+        }
+        else
+        {
+          item.setImage(SWTUtil.getImage("tree-empty.png"));
         }
       }
     }
@@ -1218,10 +1267,32 @@ public class FilterControl extends AbstractControl
     }
   }
   
+  static class EigenschaftListener2 implements Listener
+  {
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      // "o" ist das Objekt, welches gerade markiert wurde
+      GenericObjectNode o = (GenericObjectNode) event.data;
+
+      if (o instanceof EigenschaftenNode2)
+      {
+        EigenschaftenNode2 node = (EigenschaftenNode2) o;
+        if ( node.getNodeType() == EigenschaftenNode2.EIGENSCHAFTEN)
+        {
+          node.incPreset();
+          TreeItem item = (TreeItem) event.item;
+          new EigenschaftTreeFormatter2().format(item);
+        }
+      }
+    }
+  }
+  
   /**
    * Listener, der die Auswahl der Eigenschaften ueberwacht.
    */
-  private class EigenschaftenCloseListener implements Listener
+  private class EigenschaftenCloseListener2 implements Listener
   {
 
     @Override
@@ -1231,7 +1302,7 @@ public class FilterControl extends AbstractControl
       {
         return;
       }
-      EigenschaftenAuswahlParameter param = (EigenschaftenAuswahlParameter) event.data;
+      EigenschaftenAuswahlParameter2 param = (EigenschaftenAuswahlParameter2) event.data;
       StringBuilder id = new StringBuilder();
       StringBuilder text = new StringBuilder();
       for (Object o : param.getEigenschaften())
@@ -1241,11 +1312,14 @@ public class FilterControl extends AbstractControl
           id.append(",");
           text.append(", ");
         }
-        EigenschaftenNode node = (EigenschaftenNode) o;
+        EigenschaftenNode2 node = (EigenschaftenNode2) o;
         try
         {
-          id.append(node.getEigenschaft().getID());
-          text.append(node.getEigenschaft().getBezeichnung());
+          id.append(node.getEigenschaft().getID() + node.getPreset());
+          String prefix = "+";
+          if (node.getPreset().equals(EigenschaftenNode2.MINUS))
+            prefix = "-";
+          text.append(prefix + node.getEigenschaft().getBezeichnung());
         }
         catch (RemoteException e)
         {

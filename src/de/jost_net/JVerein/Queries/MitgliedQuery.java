@@ -22,17 +22,22 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import org.apache.commons.lang.StringUtils;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
-import de.jost_net.JVerein.gui.util.EigenschaftenUtil;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
-import de.jost_net.JVerein.rmi.Eigenschaft;
-import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.server.EigenschaftenNode2;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
@@ -253,57 +258,7 @@ public class MitgliedQuery
         addCondition("(email is  not null and length(email) > 0)");
       }
     }
-    if (control.isEigenschaftenAuswahlAktiv())
-    {
-      String eigenschaften = "";
-      eigenschaften = control.getEigenschaftenString();
-      if (eigenschaften.length() > 0)
-      {
-        EigenschaftenUtil eiu = new EigenschaftenUtil(eigenschaften);
-        if (control.getEigenschaftenVerknuepfung().equals("und"))
-        {
-          for (EigenschaftGruppe eg : eiu.getGruppen())
-          {
-            StringBuilder condEigenschaft = new StringBuilder(
-                "(select count(*) from eigenschaften where ");
-            condEigenschaft.append("eigenschaften.mitglied = mitglied.id AND (");
-            int count = 0;
-            for (Eigenschaft ei : eiu.get(eg))
-            {
-              if (count != 0)
-              {
-                condEigenschaft.append("OR ");
-              }
-              count++;
-              condEigenschaft.append("eigenschaft = ? ");
-              bedingungen.add(ei.getID());
-            }
-            condEigenschaft.append(")) = ? ");
-            addCondition(condEigenschaft.toString());
-            bedingungen.add(Integer.toString(count));
-          }
-        }
-        else
-        {
-          StringBuilder condEigenschaft = new StringBuilder(
-              "(select count(*) from eigenschaften where ");
-          boolean first = true;
-          condEigenschaft.append("eigenschaften.mitglied = mitglied.id AND (");
-          for (Eigenschaft ei : eiu.getEigenschaften())
-          {
-            if (!first)
-            {
-              condEigenschaft.append("OR ");
-            }
-            first = false;
-            condEigenschaft.append("eigenschaft = ? ");
-            bedingungen.add(ei.getID());
-          }
-          condEigenschaft.append(")) > 0 ");
-          addCondition(condEigenschaft.toString());
-        }
-      }
-    }
+
     if (control.isSuchnameAktiv() && control.getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) control.getSuchname().getValue();
@@ -414,7 +369,7 @@ public class MitgliedQuery
         bedingungen.add(value);
       }
     }
-    
+
     if (sort != null && !sort.isEmpty())
     {
       if (sort.equals("Name, Vorname"))
@@ -438,7 +393,7 @@ public class MitgliedQuery
     {
       sql += " ORDER BY name, vorname";
     }
-    
+
     Logger.debug(sql);
 
     ResultSetExtractor rs = new ResultSetExtractor()
@@ -446,18 +401,125 @@ public class MitgliedQuery
       @Override
       public Object extract(ResultSet rs) throws RemoteException, SQLException
       {
-        ArrayList<Mitglied> list = new ArrayList<>();
+        ArrayList<Long> list = new ArrayList<>();
         while (rs.next())
         {
-          list.add(
-              (Mitglied) service.createObject(Mitglied.class, rs.getString(1)));
+          list.add(rs.getLong(1));
         }
         return list;
       }
     };
 
-    return (ArrayList<Mitglied>) service.execute(sql, bedingungen.toArray(),
-        rs);
+
+    ArrayList<Long> mitgliederIds = (ArrayList<Long>) 
+        service.execute(sql, bedingungen.toArray(), rs);
+
+    String eigenschaftenString = "";
+    eigenschaftenString = control.getEigenschaftenString();
+
+    if (control.isEigenschaftenAuswahlAktiv() && eigenschaftenString.length() > 0)
+    {
+      ArrayList<Long> suchIds = new ArrayList<>();
+      HashMap<Long, String> suchauswahl = new HashMap<>();
+      StringTokenizer stt = new StringTokenizer(eigenschaftenString, ",");
+      while (stt.hasMoreElements())
+      {
+        String s = stt.nextToken();
+        Long id = Long.valueOf(s.substring(0,s.length()-1));
+        suchIds.add(id);
+        suchauswahl.put(id, s.substring(s.length()-1));
+      }    
+      
+      // Eigenschaften lesen
+      String sql = "SELECT eigenschaften.* from eigenschaften ";
+      List<Long[]> mitgliedeigenschaften = (List<Long[]>) service.execute(sql,
+          new Object[] { }, new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs) throws RemoteException, SQLException
+        {
+          List<Long[]> list = new ArrayList<>();
+          while (rs.next())
+          {
+            list.add(new Long[] {rs.getLong(2), rs.getLong(3)}); // Mitglied.Id, Eigenschaft.Id
+          }
+          return list;
+        }
+      });
+      
+      ArrayList<Long> mitgliederIdsNeu = new ArrayList<>();
+      for (Long mitglied: mitgliederIds)
+      {
+        ArrayList<Long> mitgliedeigenschaftenIds = new ArrayList<>();
+        for (Long[] value: mitgliedeigenschaften)
+        {
+          if (value[0].equals(mitglied))
+            mitgliedeigenschaftenIds.add(value[1]);
+        }
+
+        boolean ok = false;
+        for (Long suchId : suchIds)
+        {
+          if (control.getEigenschaftenVerknuepfung().equals("und"))
+          {
+            ok = true;
+            if(suchauswahl.get(suchId).equals(EigenschaftenNode2.PLUS))
+            {
+              if (!mitgliedeigenschaftenIds.contains(suchId))
+              {
+                ok = false;
+                break;
+              }
+            }
+            else  // EigenschaftenNode2.MINUS
+            {
+              if (mitgliedeigenschaftenIds.contains(suchId))
+              {
+                ok = false;
+                break;
+              }
+            }
+          }
+          else    // Oder
+          {
+            if(suchauswahl.get(suchId).equals(EigenschaftenNode2.PLUS))
+            {
+              if (mitgliedeigenschaftenIds.contains(suchId))
+              {
+                ok = true;
+                break;
+              }
+            }
+            else  // EigenschaftenNode2.MINUS
+            {
+              if (!mitgliedeigenschaftenIds.contains(suchId))
+              {
+                ok = true;
+                break;
+              }
+            }
+          }
+        }
+        if (ok)
+          mitgliederIdsNeu.add(mitglied);
+      }
+      return getMitglieder(mitgliederIdsNeu);
+    }
+    else
+    {
+      return getMitglieder(mitgliederIds);
+    }
+  }
+  
+  private ArrayList<Mitglied> getMitglieder(ArrayList<Long> ids) 
+      throws RemoteException
+  {
+    
+    DBIterator<Mitglied> list = Einstellungen.getDBService().createList(Mitglied.class);
+    list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
+    @SuppressWarnings("unchecked")
+    ArrayList<Mitglied> mitglieder = list != null ? (ArrayList<Mitglied>) PseudoIterator.asList(list) : null;;
+    return mitglieder;
   }
 
   private void addCondition(String condition)

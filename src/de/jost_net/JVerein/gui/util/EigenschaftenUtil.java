@@ -32,11 +32,14 @@ public class EigenschaftenUtil
   private HashMap<String, EigenschaftGruppe> gruppen;
 
   private ArrayList<Eigenschaft> eigenschaftenList;
+  
+  private HashMap<String, String> auswahl;
 
   public EigenschaftenUtil(String eigenschaften) throws RemoteException
   {
     gruppen = new HashMap<>();
     eigenschaftenList = new ArrayList<>();
+    auswahl = new HashMap<>();
     if (eigenschaften == null || eigenschaften.length() == 0)
     {
       return;
@@ -47,11 +50,13 @@ public class EigenschaftenUtil
     {
       try
       {
+        String s = st.nextToken();
         Eigenschaft ei = (Eigenschaft) Einstellungen.getDBService()
-            .createObject(Eigenschaft.class, st.nextToken());
+            .createObject(Eigenschaft.class, s.substring(0,s.length()-1));
         EigenschaftGruppe eg = ei.getEigenschaftGruppe();
         gruppen.put(eg.getID(), eg);
         eigenschaftenList.add(ei);
+        auswahl.put(ei.getID(), s.substring(s.length()-1));
       }
       catch (ObjectNotFoundException e)
       {
@@ -88,5 +93,10 @@ public class EigenschaftenUtil
   public ArrayList<Eigenschaft> getEigenschaften()
   {
     return eigenschaftenList;
+  }
+  
+  public String getAuswahl(String eigenschaftId)
+  {
+    return auswahl.get(eigenschaftId);
   }
 }
