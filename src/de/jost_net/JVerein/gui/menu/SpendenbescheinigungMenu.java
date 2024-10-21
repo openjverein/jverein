@@ -40,14 +40,8 @@ public class SpendenbescheinigungMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new SpendenbescheinigungAction(0), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("PDF (Standard)",
-        new SpendenbescheinigungPrintAction(true, Adressblatt.OHNE_ADRESSBLATT), "file-pdf.png"));
-    addItem(new CheckedContextMenuItem("PDF (Standard, Mit Adresse)",
-        new SpendenbescheinigungPrintAction(true, Adressblatt.MIT_ADRESSE), "file-pdf.png"));
-    addItem(new CheckedContextMenuItem("PDF (Individuell)",
-        new SpendenbescheinigungPrintAction(false, Adressblatt.OHNE_ADRESSBLATT), "file-pdf.png"));
-    addItem(new CheckedContextMenuItem("PDF (Individuell, Mit Adresse)",
-        new SpendenbescheinigungPrintAction(false, Adressblatt.MIT_ADRESSE), "file-pdf.png"));
+    addItem(new CheckedContextMenuItem("PDF",
+        new SpendenbescheinigungPrintAction(Adressblatt.OHNE_ADRESSBLATT, true), "file-pdf.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Druck und Mail",
         new SpendenbescheinigungSendAction(), "document-print.png"));
