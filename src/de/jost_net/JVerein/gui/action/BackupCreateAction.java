@@ -26,19 +26,15 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.rmi.Beitragsgruppe;
-import de.jost_net.JVerein.rmi.Buchungsart;
-import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
-import de.jost_net.JVerein.rmi.Suchprofil;
-import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
-import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.server.AbrechnungslaufImpl;
 import de.jost_net.JVerein.server.AdresstypImpl;
 import de.jost_net.JVerein.server.AltersstaffelImpl;
 import de.jost_net.JVerein.server.AnfangsbestandImpl;
 import de.jost_net.JVerein.server.ArbeitseinsatzImpl;
+import de.jost_net.JVerein.server.BeitragsgruppeImpl;
 import de.jost_net.JVerein.server.BuchungDokumentImpl;
 import de.jost_net.JVerein.server.BuchungImpl;
+import de.jost_net.JVerein.server.BuchungsartImpl;
 import de.jost_net.JVerein.server.BuchungsklasseImpl;
 import de.jost_net.JVerein.server.EigenschaftGruppeImpl;
 import de.jost_net.JVerein.server.EigenschaftImpl;
@@ -66,10 +62,14 @@ import de.jost_net.JVerein.server.MitgliedskontoImpl;
 import de.jost_net.JVerein.server.ProjektImpl;
 import de.jost_net.JVerein.server.QIFImportHeadImpl;
 import de.jost_net.JVerein.server.QIFImportPosImpl;
+import de.jost_net.JVerein.server.SekundaereBeitragsgruppeImpl;
 import de.jost_net.JVerein.server.SpendenbescheinigungImpl;
+import de.jost_net.JVerein.server.SuchprofilImpl;
 import de.jost_net.JVerein.server.VersionImpl;
 import de.jost_net.JVerein.server.WiedervorlageImpl;
+import de.jost_net.JVerein.server.ZusatzbetragAbrechnungslaufImpl;
 import de.jost_net.JVerein.server.ZusatzbetragImpl;
+import de.jost_net.JVerein.server.ZusatzbetragVorlageImpl;
 import de.jost_net.JVerein.server.ZusatzfelderImpl;
 import de.jost_net.JVerein.util.JVDateFormatJJJJMMTT;
 import de.willuhn.datasource.BeanUtil;
@@ -171,7 +171,7 @@ public class BackupCreateAction implements Action
           monitor.addPercentComplete(1);
           
           monitor.setStatusText("Speichere Buchungsarten");
-          backup(Buchungsart.class, writer, monitor);
+          backup(BuchungsartImpl.class, writer, monitor, "steuer_buchungsart, id");
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Eigenschaftengruppen");
@@ -239,7 +239,7 @@ public class BackupCreateAction implements Action
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Beitragsgruppen");
-          backup(Beitragsgruppe.class, writer, monitor);
+          backup(BeitragsgruppeImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
           
           monitor.setStatusText("Speichere Altersstaffel");
@@ -281,7 +281,7 @@ public class BackupCreateAction implements Action
 
           monitor.setStatusText(
               "Speichere Informatioen über Abrechnungsläufe von Zusatzbeträgen");
-          backup(ZusatzbetragAbrechnungslauf.class, writer, monitor);
+          backup(ZusatzbetragAbrechnungslaufImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Zusatzfelder");
@@ -297,7 +297,7 @@ public class BackupCreateAction implements Action
           monitor.addPercentComplete(1);
           
           monitor.setStatusText("Speichere Buchungen");
-          backup(BuchungImpl.class, writer, monitor);
+          backup(BuchungImpl.class, writer, monitor, "splitid, id");
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Dokumente zu Buchungen");
@@ -321,15 +321,15 @@ public class BackupCreateAction implements Action
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Sekundäre Beitragsgruppen der Mitglieder");
-          backup(SekundaereBeitragsgruppe.class, writer, monitor);
+          backup(SekundaereBeitragsgruppeImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
           
           monitor.setStatusText("Speichere Suchprofile");
-          backup(Suchprofil.class, writer, monitor);
+          backup(SuchprofilImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
           
           monitor.setStatusText("Speichere Zusatzbetrag Vorlagen");
-          backup(ZusatzbetragVorlage.class, writer, monitor);
+          backup(ZusatzbetragVorlageImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
@@ -380,8 +380,14 @@ public class BackupCreateAction implements Action
   private static void backup(Class<? extends DBObject> type, Writer writer,
       ProgressMonitor monitor) throws Exception
   {
+    backup(type, writer, monitor, "id");
+  }
+  
+  private static void backup(Class<? extends DBObject> type, Writer writer,
+      ProgressMonitor monitor, String order) throws Exception
+  {
     DBIterator<?> list = Einstellungen.getDBService().createList(type);
-    list.setOrder("order by id");
+    list.setOrder("order by " + order);
     long count = 1;
     while (list.hasNext())
     {
