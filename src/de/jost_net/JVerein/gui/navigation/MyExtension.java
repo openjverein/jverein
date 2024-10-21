@@ -329,13 +329,7 @@ public class MyExtension implements Extension
         einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Lesefelder",
             new LesefelddefinitionenAction(null), "list.png"));
       }
-      // TODO deaktiviert für Versionsbau
-      // if (Einstellungen.getEinstellung().getInventar())
-      // {
-      // administration.addChild(new MyItem(administration,
-      // "Inventar-Lager", new InventarLagerortListeAction(),
-      // "category_obj.gif"));
-      // }
+
       einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Formulare",
           new FormularListeAction(), "columns.png"));
       if (Einstellungen.getEinstellung().getLehrgaenge())
