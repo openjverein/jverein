@@ -453,7 +453,7 @@ public class MitgliedQuery
         ArrayList<Long> mitgliedeigenschaftenIds = new ArrayList<>();
         for (Long[] value: mitgliedeigenschaften)
         {
-          if (value[0] == mitglied)
+          if (value[0].equals(mitglied))
             mitgliedeigenschaftenIds.add(value[1]);
         }
 
