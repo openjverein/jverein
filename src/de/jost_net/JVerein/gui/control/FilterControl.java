@@ -367,7 +367,7 @@ public class FilterControl extends AbstractControl
       {
         String s = stt.nextToken();
         String prefix = "+";
-        if (s.substring(s.length()-1).equalsIgnoreCase("2"))
+        if (s.substring(s.length()-1).equals(EigenschaftenNode2.MINUS))
           prefix = "-";
         Eigenschaft ei = (Eigenschaft) Einstellungen.getDBService()
             .createObject(Eigenschaft.class, s.substring(0,s.length()-1));
@@ -465,11 +465,11 @@ public class FilterControl extends AbstractControl
       else
       {
         if (eigenschaftitem.getEigenschaften() != null
-            || eigenschaftitem.getPreset() == EigenschaftenNode2.PLUS)
+            || eigenschaftitem.getPreset().equals(EigenschaftenNode2.PLUS))
         {
           item.setImage(SWTUtil.getImage("list-add.png"));
         }
-        else if (eigenschaftitem.getPreset() == EigenschaftenNode2.MINUS)
+        else if (eigenschaftitem.getPreset().equals(EigenschaftenNode2.MINUS))
         {
           item.setImage(SWTUtil.getImage("list-remove.png"));
         }
@@ -1317,7 +1317,7 @@ public class FilterControl extends AbstractControl
         {
           id.append(node.getEigenschaft().getID() + node.getPreset());
           String prefix = "+";
-          if (node.getPreset() == 2)
+          if (node.getPreset().equals(EigenschaftenNode2.MINUS))
             prefix = "-";
           text.append(prefix + node.getEigenschaft().getBezeichnung());
         }

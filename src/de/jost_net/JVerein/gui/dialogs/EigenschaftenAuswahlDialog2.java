@@ -112,7 +112,7 @@ public class EigenschaftenAuswahlDialog2
             {
               EigenschaftenNode2 eigenschaft = (EigenschaftenNode2) groupit.next();
               if (eigenschaft.getNodeType() == EigenschaftenNode2.EIGENSCHAFTEN &&
-                  eigenschaft.getPreset() > 0)
+                  !eigenschaft.getPreset().equals(EigenschaftenNode2.UNCHECKED))
               {
                 param.add(eigenschaft);
               }

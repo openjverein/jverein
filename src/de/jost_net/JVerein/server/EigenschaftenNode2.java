@@ -48,7 +48,7 @@ public class EigenschaftenNode2 implements GenericObjectNode
 
   private ArrayList<GenericObjectNode> childrens;
 
-  private int preset;
+  private String preset = UNCHECKED;
 
   public static final int NONE = 0;
 
@@ -62,11 +62,11 @@ public class EigenschaftenNode2 implements GenericObjectNode
 
   private Map<String, String> eigenschaftids = new HashMap<>();
   
-  public static final int EMPTY = 0;
+  public static final String UNCHECKED = "0";
 
-  public static final int PLUS = 1;
+  public static final String PLUS = "1";
 
-  public static final int MINUS = 2;
+  public static final String MINUS = "2";
 
   public EigenschaftenNode2(Mitglied mitglied) throws RemoteException
   {
@@ -152,7 +152,7 @@ public class EigenschaftenNode2 implements GenericObjectNode
     String eigenschaftenKey = this.eigenschaft.getID();
     if (eigenschaftids.containsKey(eigenschaftenKey))
     {
-      preset = Integer.valueOf(eigenschaftids.get(eigenschaftenKey));
+      preset = eigenschaftids.get(eigenschaftenKey);
     }
   }
 
@@ -284,15 +284,24 @@ public class EigenschaftenNode2 implements GenericObjectNode
     return this.eigenschaften;
   }
 
-  public int getPreset()
+  public String getPreset()
   {
     return preset;
   }
   
   public void incPreset()
   {
-    preset++;
-    if (preset > 2)
-      preset = 0;
+    switch (preset)
+    {
+      case EigenschaftenNode2.UNCHECKED:
+        preset = EigenschaftenNode2.PLUS;
+        break;
+      case EigenschaftenNode2.PLUS:
+        preset = EigenschaftenNode2.MINUS;
+        break;
+      case EigenschaftenNode2.MINUS:
+        preset = EigenschaftenNode2.UNCHECKED;
+        break;
+    }
   }
 }

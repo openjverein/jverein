@@ -23,7 +23,10 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringTokenizer;
+
+import org.apache.commons.lang.StringUtils;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FilterControl;
@@ -31,7 +34,10 @@ import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.server.EigenschaftenNode2;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
@@ -423,44 +429,51 @@ public class MitgliedQuery
         suchIds.add(id);
         suchauswahl.put(id, s.substring(s.length()-1));
       }    
-
+      
+      // Eigenschaften lesen
+      String sql = "SELECT eigenschaften.* from eigenschaften ";
+      List<Long[]> mitgliedeigenschaften = (List<Long[]>) service.execute(sql,
+          new Object[] { }, new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs) throws RemoteException, SQLException
+        {
+          List<Long[]> list = new ArrayList<>();
+          while (rs.next())
+          {
+            list.add(new Long[] {rs.getLong(2), rs.getLong(3)}); // Mitglied.Id, Eigenschaft.Id
+          }
+          return list;
+        }
+      });
+      
       ArrayList<Long> mitgliederIdsNeu = new ArrayList<>();
       for (Long mitglied: mitgliederIds)
       {
-        String sql = "SELECT eigenschaften.eigenschaft from eigenschaften "
-            + "WHERE (mitglied = ?) ";
-        ArrayList<Long> mitgliedeigenschaftenIds = (ArrayList<Long>) service.execute(sql,
-            new Object[] { mitglied }, new ResultSetExtractor()
+        ArrayList<Long> mitgliedeigenschaftenIds = new ArrayList<>();
+        for (Long[] value: mitgliedeigenschaften)
         {
-          @Override
-          public Object extract(ResultSet rs) throws RemoteException, SQLException
-          {
-            ArrayList<Long> list = new ArrayList<>();
-            while (rs.next())
-            {
-              list.add(rs.getLong(1));
-            }
-            return list;
-          }
-        });
+          if (value[0] == mitglied)
+            mitgliedeigenschaftenIds.add(value[1]);
+        }
 
         boolean ok = false;
-        for (Long ei : suchIds)
+        for (Long suchId : suchIds)
         {
           if (control.getEigenschaftenVerknuepfung().equals("und"))
           {
             ok = true;
-            if(suchauswahl.get(ei).equalsIgnoreCase("1"))  // +
+            if(suchauswahl.get(suchId).equals(EigenschaftenNode2.PLUS))
             {
-              if (!mitgliedeigenschaftenIds.contains(ei))
+              if (!mitgliedeigenschaftenIds.contains(suchId))
               {
                 ok = false;
                 break;
               }
             }
-            else  // -
+            else  // EigenschaftenNode2.MINUS
             {
-              if (mitgliedeigenschaftenIds.contains(ei))
+              if (mitgliedeigenschaftenIds.contains(suchId))
               {
                 ok = false;
                 break;
@@ -469,17 +482,17 @@ public class MitgliedQuery
           }
           else    // Oder
           {
-            if(suchauswahl.get(ei).equalsIgnoreCase("1"))  // +
+            if(suchauswahl.get(suchId).equals(EigenschaftenNode2.PLUS))
             {
-              if (mitgliedeigenschaftenIds.contains(ei))
+              if (mitgliedeigenschaftenIds.contains(suchId))
               {
                 ok = true;
                 break;
               }
             }
-            else  // -
+            else  // EigenschaftenNode2.MINUS
             {
-              if (!mitgliedeigenschaftenIds.contains(ei))
+              if (!mitgliedeigenschaftenIds.contains(suchId))
               {
                 ok = true;
                 break;
@@ -501,12 +514,11 @@ public class MitgliedQuery
   private ArrayList<Mitglied> getMitglieder(ArrayList<Long> ids) 
       throws RemoteException
   {
-    ArrayList<Mitglied> mitglieder = new ArrayList<>();
-    for (Long id : ids)
-    {
-      mitglieder.add((Mitglied) Einstellungen.getDBService()
-          .createObject(Mitglied.class, id.toString()));
-    }
+    
+    DBIterator<Mitglied> list = Einstellungen.getDBService().createList(Mitglied.class);
+    list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
+    @SuppressWarnings("unchecked")
+    ArrayList<Mitglied> mitglieder = list != null ? (ArrayList<Mitglied>) PseudoIterator.asList(list) : null;;
     return mitglieder;
   }
 
