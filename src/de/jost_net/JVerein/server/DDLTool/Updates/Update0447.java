@@ -15,6 +15,7 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
+import de.jost_net.JVerein.server.DDLTool.Index;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
@@ -46,15 +47,33 @@ public class Update0447 extends AbstractDDLUpdate
     execute(createForeignKey("fkLehrgang2", "lehrgang", "lehrgangsart",
         "lehrgangsart", "id", "RESTRICT", "RESTRICT"));
 
+    Index idx = new Index("ixBuchung9", false);
+    Column col = new Column("splitid", COLTYPE.BIGINT, 0, null, false,
+        false);
+    idx.add(col);
+    execute(idx.getCreateIndex("buchung"));
+    
     execute(createForeignKey("fkBuchung9", "buchung", "splitid", "buchung",
         "id", "RESTRICT", "RESTRICT"));
 
+    idx = new Index("ixMitgliednextbgruppe3", false);
+    col = new Column("mitglied", COLTYPE.BIGINT, 0, null, false,
+        false);
+    idx.add(col);
+    execute(idx.getCreateIndex("mitgliednextbgruppe"));
+    
     execute(createForeignKey("fkMitgliednextbgruppe2", "mitgliednextbgruppe",
         "mitglied", "mitglied", "id", "CASCADE", "RESTRICT"));
 
     execute(alterColumn("buchungsart", new Column(
         "steuer_buchungsart", COLTYPE.BIGINT, 10, "NULL", false, false)));
 
+    idx = new Index("ixBuchungsart3", false);
+    col = new Column("steuer_buchungsart", COLTYPE.BIGINT, 0, null, false,
+        false);
+    idx.add(col);
+    execute(idx.getCreateIndex("buchungsart"));
+    
     execute(createForeignKey("fkBuchungsart3", "buchungsart",
         "steuer_buchungsart", "buchungsart", "id", "RESTRICT", "RESTRICT"));
   }
