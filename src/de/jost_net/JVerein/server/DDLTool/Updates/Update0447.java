@@ -75,6 +75,6 @@ public class Update0447 extends AbstractDDLUpdate
     execute(idx.getCreateIndex("buchungsart"));
     
     execute(createForeignKey("fkBuchungsart3", "buchungsart",
-        "steuer_buchungsart", "buchungsart", "id", "RESTRICT", "RESTRICT"));
+        "steuer_buchungsart", "buchungsart", "id", "CASCADE", "RESTRICT"));
   }
 }
