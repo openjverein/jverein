@@ -514,6 +514,8 @@ public class MitgliedQuery
   private ArrayList<Mitglied> getMitglieder(ArrayList<Long> ids) 
       throws RemoteException
   {
+    if(ids.size() == 0)
+      return new ArrayList<Mitglied>();
     
     DBIterator<Mitglied> list = Einstellungen.getDBService().createList(Mitglied.class);
     list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
