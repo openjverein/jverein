@@ -54,7 +54,7 @@ public class Update0447 extends AbstractDDLUpdate
     execute(idx.getCreateIndex("buchung"));
     
     execute(createForeignKey("fkBuchung9", "buchung", "splitid", "buchung",
-        "id", "RESTRICT", "RESTRICT"));
+        "id", "CASCADE", "RESTRICT"));
 
     idx = new Index("ixMitgliednextbgruppe3", false);
     col = new Column("mitglied", COLTYPE.BIGINT, 0, null, false,
@@ -75,6 +75,6 @@ public class Update0447 extends AbstractDDLUpdate
     execute(idx.getCreateIndex("buchungsart"));
     
     execute(createForeignKey("fkBuchungsart3", "buchungsart",
-        "steuer_buchungsart", "buchungsart", "id", "CASCADE", "RESTRICT"));
+        "steuer_buchungsart", "buchungsart", "id", "RESTRICT", "RESTRICT"));
   }
 }
