@@ -29,10 +29,10 @@ public class Suchbetrag
 
   public enum Suchstrategie
   {
-    KEINE, GLEICH, GRÖSSER, GRÖSSERGLEICH, KLEINER, KLEINERGLEICH, BEREICH, UNGÜLTIG
+    KEINE, GLEICH, GRÖSSER, GRÖSSERGLEICH, KLEINER, KLEINERGLEICH, BEREICH, UNGÜLTIG, BETRAG
   }
 
-  private Suchstrategie sustrat = Suchstrategie.KEINE;
+  private Suchstrategie suchstrategie = Suchstrategie.KEINE;
 
   private BigDecimal betrag;
 
@@ -45,13 +45,13 @@ public class Suchbetrag
   {
     if (suchbetrag == null || suchbetrag.length() == 0)
     {
-      sustrat = Suchstrategie.KEINE;
+      suchstrategie = Suchstrategie.KEINE;
       return;
     }
 
     // Suchstring in Einzelteile zerlegen
     ArrayList<String> liste = new ArrayList<>();
-    StringTokenizer tok = new StringTokenizer(suchbetrag, "<>=.", true);
+    StringTokenizer tok = new StringTokenizer(suchbetrag, "<>=.|", true);
     while (tok.hasMoreTokens())
     {
       liste.add(tok.nextToken().trim());
@@ -76,32 +76,37 @@ public class Suchbetrag
     }
     if (liste.get(0).equals(">"))
     {
-      sustrat = Suchstrategie.GRÖSSER;
+      suchstrategie = Suchstrategie.GRÖSSER;
       liste.remove(0);
     }
     else if (liste.get(0).equals(">="))
     {
-      sustrat = Suchstrategie.GRÖSSERGLEICH;
+      suchstrategie = Suchstrategie.GRÖSSERGLEICH;
       liste.remove(0);
     }
     else if (liste.get(0).equals("<"))
     {
-      sustrat = Suchstrategie.KLEINER;
+      suchstrategie = Suchstrategie.KLEINER;
       liste.remove(0);
     }
     else if (liste.get(0).equals("<="))
     {
-      sustrat = Suchstrategie.KLEINERGLEICH;
+      suchstrategie = Suchstrategie.KLEINERGLEICH;
       liste.remove(0);
     }
     else if (liste.get(0).equals("="))
     {
-      sustrat = Suchstrategie.GLEICH;
+      suchstrategie = Suchstrategie.GLEICH;
+      liste.remove(0);
+    }
+    else if (liste.get(0).equals("|"))
+    {
+      suchstrategie = Suchstrategie.BETRAG;
       liste.remove(0);
     }
     else if (liste.size() > 1 && liste.get(1).equals(".."))
     {
-      sustrat = Suchstrategie.BEREICH;
+      suchstrategie = Suchstrategie.BEREICH;
       liste.remove(1);
     }
     else if (liste.size() > 1 && !liste.get(1).equals(".."))
@@ -110,7 +115,7 @@ public class Suchbetrag
     }
     else if (liste.size() == 1)
     {
-      sustrat = Suchstrategie.GLEICH; // Nur Betrag angegeben.
+      suchstrategie = Suchstrategie.GLEICH; // Nur Betrag angegeben.
     }
 
     // jetzt muss ein Decimalwert kommen
@@ -119,21 +124,21 @@ public class Suchbetrag
       NumberFormat nf = NumberFormat.getInstance(Locale.GERMAN);
       betrag = new BigDecimal(nf.parse(liste.get(0)).toString());
 
-      if (sustrat == Suchstrategie.BEREICH)
+      if (suchstrategie == Suchstrategie.BEREICH)
       {
         betrag2 = new BigDecimal(nf.parse(liste.get(1)).toString());
       }
     }
     catch (ParseException e)
     {
-      sustrat = Suchstrategie.UNGÜLTIG;
+      suchstrategie = Suchstrategie.UNGÜLTIG;
       throw new Exception("Wert ungültig");
     }
   }
 
   public Suchstrategie getSuchstrategie()
   {
-    return sustrat;
+    return suchstrategie;
   }
 
   public BigDecimal getBetrag()

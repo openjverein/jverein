@@ -14,33 +14,54 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.server.DDLTool.Updates.deaktiviert;
+package de.jost_net.JVerein.keys;
 
-import java.sql.Connection;
-
-import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
-import de.jost_net.JVerein.server.DDLTool.Column;
-import de.jost_net.JVerein.server.DDLTool.Table;
-import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
-
-public class Update0400 extends AbstractDDLUpdate
+/**
+ * Adressblatt
+ */
+public enum Adressblatt
 {
-  public Update0400(String driver, ProgressMonitor monitor, Connection conn)
+
+  OHNE_ADRESSBLATT(1, "Ohne Adressblatt"),
+  MIT_ADRESSE(2, "Mit Adresse"),
+  MIT_ANSCHREIBEN(3, "Mit Anschreiben"),
+  MIT_ADRESSE_ANSCHREIBEN(4, "Mit Adresse und Anschreiben");
+
+  private final String text;
+
+  private final int key;
+  
+  Adressblatt(int key, String text)
   {
-    super(driver, monitor, conn);
+    this.key = key;
+    this.text = text;
+  }
+
+  public int getKey()
+  {
+    return key;
+  }
+
+  public String getText()
+  {
+    return text;
+  }
+
+  public static Adressblatt getByKey(int key)
+  {
+    for (Adressblatt blatt : Adressblatt.values())
+    {
+      if (blatt.getKey() == key)
+      {
+        return blatt;
+      }
+    }
+    return null;
   }
 
   @Override
-  public void run() throws ApplicationException
+  public String toString()
   {
-    Table table = new Table("inventarlagerort");
-    Column primco = new Column("id", COLTYPE.BIGINT, 19, null, false, true);
-    table.add(primco);
-    table.add(
-        new Column("bezeichnung", COLTYPE.VARCHAR, 200, null, false, false));
-    table.setPrimaryKey(primco);
-
-    execute(createTable(table));
+    return getText();
   }
 }

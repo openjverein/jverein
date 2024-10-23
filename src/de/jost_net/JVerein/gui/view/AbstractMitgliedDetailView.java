@@ -581,10 +581,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
           ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
       if (it.hasNext())
       {
-        // Container lässt nur das Hinzufügen von Parts zu.
-        // Aus diesem Grund ist Part Familienverband dynamisch:
-        // Entweder wird der Familienverband angezeigt (setShow(true))
-        // oder ein leeres Composite (setShow(false))
         container.addPart(control.getFamilienverband());
       }
       container.addPart(control.getZukuenftigeBeitraegeView());

@@ -414,8 +414,7 @@ public class MitgliedQuery
     ArrayList<Long> mitgliederIds = (ArrayList<Long>) 
         service.execute(sql, bedingungen.toArray(), rs);
 
-    String eigenschaftenString = "";
-    eigenschaftenString = control.getEigenschaftenString();
+    String eigenschaftenString = control.getEigenschaftenString();
 
     if (control.isEigenschaftenAuswahlAktiv() && eigenschaftenString.length() > 0)
     {
@@ -432,7 +431,7 @@ public class MitgliedQuery
       
       // Eigenschaften lesen
       String sql = "SELECT eigenschaften.* from eigenschaften ";
-      List<Long[]> mitgliedeigenschaften = (List<Long[]>) service.execute(sql,
+      List<Long[]> mitgliedEigenschaften = (List<Long[]>) service.execute(sql,
           new Object[] { }, new ResultSetExtractor()
       {
         @Override
@@ -447,11 +446,11 @@ public class MitgliedQuery
         }
       });
       
-      ArrayList<Long> mitgliederIdsNeu = new ArrayList<>();
+      ArrayList<Long> mitgliederIdsFiltered = new ArrayList<>();
       for (Long mitglied: mitgliederIds)
       {
         ArrayList<Long> mitgliedeigenschaftenIds = new ArrayList<>();
-        for (Long[] value: mitgliedeigenschaften)
+        for (Long[] value: mitgliedEigenschaften)
         {
           if (value[0].equals(mitglied))
             mitgliedeigenschaftenIds.add(value[1]);
@@ -501,9 +500,9 @@ public class MitgliedQuery
           }
         }
         if (ok)
-          mitgliederIdsNeu.add(mitglied);
+          mitgliederIdsFiltered.add(mitglied);
       }
-      return getMitglieder(mitgliederIdsNeu);
+      return getMitglieder(mitgliederIdsFiltered);
     }
     else
     {
@@ -520,7 +519,8 @@ public class MitgliedQuery
     DBIterator<Mitglied> list = Einstellungen.getDBService().createList(Mitglied.class);
     list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
     @SuppressWarnings("unchecked")
-    ArrayList<Mitglied> mitglieder = list != null ? (ArrayList<Mitglied>) PseudoIterator.asList(list) : null;;
+    ArrayList<Mitglied> mitglieder = list != null ? 
+        (ArrayList<Mitglied>) PseudoIterator.asList(list) : null;
     return mitglieder;
   }
 

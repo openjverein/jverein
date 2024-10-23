@@ -19,10 +19,14 @@ package de.jost_net.JVerein.gui.action;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
@@ -34,13 +38,17 @@ import com.itextpdf.text.pdf.PdfPCell;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
+import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.io.FormularAufbereitung;
 import de.jost_net.JVerein.io.Reporter;
+import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatJJJJ;
@@ -61,9 +69,11 @@ public class SpendenbescheinigungPrintAction implements Action
 
   private boolean standardPdf = true;
   
-  private boolean adressblatt = false;
+  private Adressblatt adressblatt = Adressblatt.OHNE_ADRESSBLATT;
 
   private String fileName = null;
+  
+  private String text = null;
 
   private de.willuhn.jameica.system.Settings settings;
 
@@ -82,12 +92,33 @@ public class SpendenbescheinigungPrintAction implements Action
    * Konstruktor. Über den Parameter kann festgelegt werden, ob das Standard-
    * oder das individuelle Dokument aufbereitet werden soll.
    * 
+   * @param txt
+   *          Anschreiben auf PDF
    * @param standard
    *          true=Standard-Dokument, false=individuelles Dokument
    * @param adressblatt
-   *          true=für Adressblatt drucken, false=für kein Adressblatt drucken
+   *          enum Adressblatt
    */
-  public SpendenbescheinigungPrintAction(boolean standard, boolean adressblatt)
+  public SpendenbescheinigungPrintAction(String text, boolean standard, Adressblatt adressblatt)
+  {
+    super();
+    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings.setStoreWhenRead(true);
+    standardPdf = standard;
+    this.adressblatt = adressblatt;
+    this.text = text;
+  }
+  
+  /**
+   * Konstruktor. Über den Parameter kann festgelegt werden, ob das Standard-
+   * oder das individuelle Dokument aufbereitet werden soll.
+   * 
+   * @param standard
+   *          true=Standard-Dokument, false=individuelles Dokument
+   * @param adressblatt
+   *          enum Adressblatt
+   */
+  public SpendenbescheinigungPrintAction(boolean standard, Adressblatt adressblatt)
   {
     super();
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
@@ -103,11 +134,11 @@ public class SpendenbescheinigungPrintAction implements Action
    * @param standard
    *          true=Standard-Dokument, false=individuelles Dokument
    * @param adressblatt
-   *          true=Standard-Dokument, false=individuelles Dokument
+   *          enum Adressblatt
    * @param fileName
    *          Dateiname als Vorgabe inklusive Pfad
    */
-  public SpendenbescheinigungPrintAction(boolean standard, boolean adressblatt, String fileName)
+  public SpendenbescheinigungPrintAction(boolean standard, Adressblatt adressblatt, String fileName)
   {
     super();
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
@@ -235,11 +266,24 @@ public class SpendenbescheinigungPrintAction implements Action
           map = new AllgemeineMap().getMap(map);
           FormularAufbereitung fa = new FormularAufbereitung(file);
           fa.writeForm(fo, map);
+          if (adressblatt != Adressblatt.OHNE_ADRESSBLATT)
+          {
+            // Neue Seite für Anschrift in Fenster in querem Brief
+            // oder für Anschreiben
+            fa.printNeueSeite();
+          }
           // Brieffenster drucken bei Spendenbescheinigung
-          if (adressblatt)
+          if (adressblatt == Adressblatt.MIT_ADRESSE ||
+              adressblatt == Adressblatt.MIT_ADRESSE_ANSCHREIBEN)
           {
             fa.printAdressfenster(getAussteller(), 
                 (String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()));
+          }
+          // Anschreiben drucken
+          if (adressblatt == Adressblatt.MIT_ANSCHREIBEN ||
+              adressblatt == Adressblatt.MIT_ADRESSE_ANSCHREIBEN)
+          {
+            fa.printAnschreiben(spb, text);
           }
           fa.closeFormular();
         }
@@ -944,7 +988,7 @@ public class SpendenbescheinigungPrintAction implements Action
    * @throws DocumentException
    */
   private void generiereSpendenbescheinigungStandardAb2014(
-      Spendenbescheinigung spb, String fileName, boolean adressblatt)
+      Spendenbescheinigung spb, String fileName, Adressblatt adressblatt)
       throws IOException, DocumentException
   {
     final File file = new File(fileName);
@@ -1393,16 +1437,49 @@ public class SpendenbescheinigungPrintAction implements Action
       rpt.closeTable();      
     }
     
-    if (adressblatt)
+    if (adressblatt != Adressblatt.OHNE_ADRESSBLATT)
     {
-      // Neue Seite mit Anschrift für Fenster in querem Brief
+      // Neue Seite für Anschrift in Fenster in querem Brief
+      // oder für Anschreiben
       rpt.newPage();
+    }
+    
+    if (adressblatt == Adressblatt.MIT_ADRESSE ||
+        adressblatt == Adressblatt.MIT_ADRESSE_ANSCHREIBEN)
+    {
+      // Anschrift für Fenster in querem Brief
       rpt.add(new Paragraph(" ", Reporter.getFreeSans(12)));
       rpt.add("\n\n\n\n\n", 12);
       rpt.addUnderline(getAussteller(),8);
       rpt.addLight((String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()),9);
     }
-
+    
+    if (adressblatt == Adressblatt.MIT_ANSCHREIBEN ||
+        adressblatt == Adressblatt.MIT_ADRESSE_ANSCHREIBEN)
+    {
+      // Anschreiben
+      rpt.add("\n\n\n", 12);
+      Mitglied m = spb.getMitglied();
+      if (m != null)
+      {
+        VelocityContext context = new VelocityContext();
+        context.put("dateformat", new JVDateFormatTTMMJJJJ());
+        context.put("decimalformat", Einstellungen.DECIMALFORMAT);
+        if (m.getEmail() != null)
+          context.put("email", m.getEmail());
+        Map<String, Object> mmap = new MitgliedMap().getMap(m, null);
+        mmap = new AllgemeineMap().getMap(mmap);
+        VarTools.add(context, mmap);
+        StringWriter wtext = new StringWriter();
+        Velocity.evaluate(context, wtext, "LOG", text);
+        rpt.addLight(wtext.getBuffer().toString(), 10);
+      }
+      else
+      {
+        rpt.addLight(text, 10);
+      }
+    }
+    
     rpt.close();
     fos.close();
   }

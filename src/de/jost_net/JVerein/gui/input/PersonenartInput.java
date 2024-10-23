@@ -19,12 +19,10 @@ package de.jost_net.JVerein.gui.input;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.jameica.gui.input.SelectInput;
-
 /**
  * Combo-Box, fuer die Auswahl des Abbuchungsmodus.
  */
-public class PersonenartInput extends SelectInput
+public class PersonenartInput extends SelectNoScrollInput
 {
 
   public final static String NATUERLICHE_PERSON = "Natürliche Person";

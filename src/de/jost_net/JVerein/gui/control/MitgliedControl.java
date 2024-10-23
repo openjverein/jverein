@@ -55,6 +55,8 @@ import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
+import de.jost_net.JVerein.gui.input.SelectNoScrollInput;
+import de.jost_net.JVerein.gui.input.SpinnerNoScrollInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.menu.FamilienbeitragMenu;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
@@ -148,7 +150,7 @@ public class MitgliedControl extends FilterControl
 
   private TablePart part;
 
-  private SelectInput adresstyp;
+  private SelectNoScrollInput adresstyp;
 
   private TextInput externemitgliedsnummer;
 
@@ -176,19 +178,19 @@ public class MitgliedControl extends FilterControl
 
   private GeschlechtInput geschlecht;
 
-  private SelectInput zahlungsweg;
+  private SelectNoScrollInput zahlungsweg;
 
   private LabelGroup bankverbindungLabelGroup;
 
-  private SelectInput zahlungsrhytmus;
+  private SelectNoScrollInput zahlungsrhytmus;
 
-  private SelectInput zahlungstermin;
+  private SelectNoScrollInput zahlungstermin;
 
   private TextInput mandatid = null;
 
   private DateInput mandatdatum = null;
 
-  private SpinnerInput mandatversion = null;
+  private SpinnerNoScrollInput mandatversion = null;
 
   private DateInput letztelastschrift = null;
 
@@ -230,7 +232,7 @@ public class MitgliedControl extends FilterControl
 
   private DateInput eintritt = null;
 
-  private SelectInput beitragsgruppe;
+  private SelectNoScrollInput beitragsgruppe;
 
   private TreePart sekundaerebeitragsgruppe;
 
@@ -244,7 +246,7 @@ public class MitgliedControl extends FilterControl
 
   private TreePart familienbeitragtree;
 
-  private SelectInput zahler;
+  private SelectNoScrollInput zahler;
 
   private DateInput austritt = null;
 
@@ -330,7 +332,7 @@ public class MitgliedControl extends FilterControl
     this.mitglied = mitglied;
   }
 
-  public SelectInput getAdresstyp() throws RemoteException
+  public SelectNoScrollInput getAdresstyp() throws RemoteException
   {
     if (adresstyp != null)
     {
@@ -340,7 +342,7 @@ public class MitgliedControl extends FilterControl
         .createList(Adresstyp.class);
     at.addFilter("jvereinid != 1 or jvereinid is null");
     at.setOrder("order by bezeichnung");
-    adresstyp = new SelectInput(at != null ? PseudoIterator.asList(at) : null, getMitglied().getAdresstyp());
+    adresstyp = new SelectNoScrollInput(at != null ? PseudoIterator.asList(at) : null, getMitglied().getAdresstyp());
     adresstyp.setName("Mitgliedstyp");
     return adresstyp;
   }
@@ -565,7 +567,7 @@ public class MitgliedControl extends FilterControl
     return geschlecht;
   }
 
-  public SelectInput getZahlungsweg() throws RemoteException
+  public SelectNoScrollInput getZahlungsweg() throws RemoteException
   {
     if (zahlungsweg != null)
     {
@@ -580,14 +582,15 @@ public class MitgliedControl extends FilterControl
     }
     if (getMitglied().getZahlungsweg() != null)
     {
-      zahlungsweg = new SelectInput(weg,
+      zahlungsweg = new SelectNoScrollInput(weg,
           new Zahlungsweg(getMitglied().getZahlungsweg().intValue()));
     }
     else
     {
-      zahlungsweg = new SelectInput(weg,
+      zahlungsweg = new SelectNoScrollInput(weg,
           new Zahlungsweg(Einstellungen.getEinstellung().getZahlungsweg()));
     }
+    
     zahlungsweg.setName("Zahlungsweg");
     zahlungsweg.addListener(new Listener()
     {
@@ -696,12 +699,12 @@ public class MitgliedControl extends FilterControl
     }
     if (getMitglied().getZahlungsrhythmus() != null)
     {
-      zahlungsrhytmus = new SelectInput(Zahlungsrhythmus.getArray(),
+      zahlungsrhytmus = new SelectNoScrollInput(Zahlungsrhythmus.getArray(),
           new Zahlungsrhythmus(getMitglied().getZahlungsrhythmus().getKey()));
     }
     else
     {
-      zahlungsrhytmus = new SelectInput(Zahlungsrhythmus.getArray(),
+      zahlungsrhytmus = new SelectNoScrollInput(Zahlungsrhythmus.getArray(),
           new Zahlungsrhythmus(
               Einstellungen.getEinstellung().getZahlungsrhytmus()));
     }
@@ -715,7 +718,7 @@ public class MitgliedControl extends FilterControl
     {
       return zahlungstermin;
     }
-    zahlungstermin = new SelectInput(Zahlungstermin.values(),
+    zahlungstermin = new SelectNoScrollInput(Zahlungstermin.values(),
         getMitglied().getZahlungstermin());
     zahlungstermin.setName("Zahlungstermin");
     return zahlungstermin;
@@ -768,7 +771,7 @@ public class MitgliedControl extends FilterControl
     {
       return mandatversion;
     }
-    mandatversion = new SpinnerInput(0, 1000, getMitglied().getMandatVersion());
+    mandatversion = new SpinnerNoScrollInput(0, 1000, getMitglied().getMandatVersion());
     mandatversion.setName("Mandatsversion");
     mandatversion.addListener(new Listener()
     {
@@ -1056,7 +1059,7 @@ public class MitgliedControl extends FilterControl
       list.addFilter("beitragsart <> ? or beitragsart IS NULL",
           new Object[] { ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey() });
     }
-    beitragsgruppe = new SelectInput(list != null ? PseudoIterator.asList(list) : null, getMitglied().getBeitragsgruppe());
+    beitragsgruppe = new SelectNoScrollInput(list != null ? PseudoIterator.asList(list) : null, getMitglied().getBeitragsgruppe());
     beitragsgruppe.setName("Beitragsgruppe");
     beitragsgruppe.setValue(getMitglied().getBeitragsgruppe());
     beitragsgruppe.setMandatory(true);
@@ -1080,7 +1083,6 @@ public class MitgliedControl extends FilterControl
           if (bg != null
               && bg.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
           {
-            getFamilienverband().setVisible(true);
             getZukuenftigeBeitraegeView().setVisible(false);
             if (zahler != null)
             {
@@ -1096,7 +1098,6 @@ public class MitgliedControl extends FilterControl
               && bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
           {
             boolean ist_neu = getMitglied().getID() == null;
-            getFamilienverband().setVisible(!ist_neu);
             // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
             if (!ist_neu)
             {
@@ -1118,7 +1119,6 @@ public class MitgliedControl extends FilterControl
               zahler.setPreselected(null);
               zahler.setEnabled(false);
             }
-            getFamilienverband().setVisible(false);
             // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
             if (getMitglied().getID() != null)
             {
@@ -1292,7 +1292,8 @@ public class MitgliedControl extends FilterControl
     DBIterator<Mitglied> zhl = Einstellungen.getDBService()
         .createList(Mitglied.class);
     zhl.addFilter("(" + cond.toString() + ")");
-    zhl.addFilter("id != ?",getMitglied().getID());
+    if(getMitglied().getID() != null)
+      zhl.addFilter("id != ?",getMitglied().getID());
     MitgliedUtils.setNurAktive(zhl);
     MitgliedUtils.setMitglied(zhl);
     zhl.setOrder("ORDER BY name, vorname");
@@ -1305,7 +1306,7 @@ public class MitgliedControl extends FilterControl
     Mitglied zahlmitglied = (Mitglied) Einstellungen.getDBService()
         .createObject(Mitglied.class, suche);
 
-    zahler = new SelectInput(zhl != null ? PseudoIterator.asList(zhl) : null, zahlmitglied);
+    zahler = new SelectNoScrollInput(zhl != null ? PseudoIterator.asList(zhl) : null, zahlmitglied);
     zahler.setAttribute("namevorname");
     zahler.setPleaseChoose("Bitte auswählen");
     zahler.addListener(new Listener()

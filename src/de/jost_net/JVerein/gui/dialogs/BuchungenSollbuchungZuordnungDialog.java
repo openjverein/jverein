@@ -212,7 +212,6 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
           if(useIbanInput || useMemberNumberInput || useNameInput)
           {
             DBIterator<Mitglied> mitglieder = Einstellungen.getDBService().createList(Mitglied.class);
-            mitglieder.addFilter("zahlungsweg = ?", Zahlungsweg.ÜBERWEISUNG);
 
             while(mitglieder.hasNext())
             {

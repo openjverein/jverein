@@ -20,6 +20,7 @@ import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungDeleteAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungEmailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
+import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -40,18 +41,18 @@ public class SpendenbescheinigungMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new SpendenbescheinigungAction(0), "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("PDF (Standard)",
-        new SpendenbescheinigungPrintAction(true, false), "file-pdf.png"));
-    addItem(new CheckedContextMenuItem("PDF (Standard, Mit Adressblatt)",
-        new SpendenbescheinigungPrintAction(true, true), "file-pdf.png"));
+        new SpendenbescheinigungPrintAction(true, Adressblatt.OHNE_ADRESSBLATT), "file-pdf.png"));
+    addItem(new CheckedContextMenuItem("PDF (Standard, Mit Adresse)",
+        new SpendenbescheinigungPrintAction(true, Adressblatt.MIT_ADRESSE), "file-pdf.png"));
     addItem(new CheckedContextMenuItem("PDF (Individuell)",
-        new SpendenbescheinigungPrintAction(false, false), "file-pdf.png"));
-    addItem(new CheckedContextMenuItem("PDF (Individuell, Mit Adressblatt)",
-        new SpendenbescheinigungPrintAction(false, true), "file-pdf.png"));
+        new SpendenbescheinigungPrintAction(false, Adressblatt.OHNE_ADRESSBLATT), "file-pdf.png"));
+    addItem(new CheckedContextMenuItem("PDF (Individuell, Mit Adresse)",
+        new SpendenbescheinigungPrintAction(false, Adressblatt.MIT_ADRESSE), "file-pdf.png"));
     addItem(ContextMenuItem.SEPARATOR);
+    addItem(new CheckedContextMenuItem("Druck und Mail",
+        new SpendenbescheinigungSendAction(), "document-print.png"));
     addItem(new CheckedContextMenuItem("Mail an Spender",
         new SpendenbescheinigungEmailAction(), "envelope-open.png"));
-    addItem(new CheckedContextMenuItem("Spendenbescheinigungen versenden",
-        new SpendenbescheinigungSendAction(), "envelope-open.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Löschen",
         new SpendenbescheinigungDeleteAction(), "user-trash-full.png"));

@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.util.GuiRepainter;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.willuhn.jameica.gui.Part;
@@ -44,15 +43,12 @@ public class Familienverband implements Part
 
   private Container cont;
 
-  private boolean visible;
-
   private Composite parent;
 
   public Familienverband(MitgliedControl control, Beitragsgruppe gruppe)
   {
     this.control = control;
     this.gruppe = gruppe;
-    this.visible = true;
     this.parent = null;
     this.cont = null;
     this.tab = null;
@@ -68,12 +64,6 @@ public class Familienverband implements Part
     if (this.parent == null)
     {
       this.parent = parent;
-    }
-
-    // Familienverband soll nicht angezeigt werden...
-    if (!visible)
-    {
-      return;
     }
 
     // Familienverband soll angezeigt werden...
@@ -143,37 +133,5 @@ public class Familienverband implements Part
     }
     tab.redraw();
     tab.layout(true);
-  }
-
-  /**
-   * Zeige GUI-Komponente für Familienverband an oder blendet diese aus.
-   * 
-   * @param showFamilienverband
-   */
-  public void setVisible(boolean showFamilienverband)
-  {
-    if (this.visible == showFamilienverband)
-      return;
-    this.visible = showFamilienverband;
-
-    if (cont != null && !showFamilienverband)
-    {
-      cont.getComposite().dispose();
-      cont = null;
-    }
-
-    if (parent != null)
-    {
-      try
-      {
-        paint(parent);
-      }
-      catch (RemoteException e)
-      {
-        Logger.error("Fehler", e);
-      }
-      GuiRepainter.repaint(parent);
-      // updateGUI();
-    }
   }
 }

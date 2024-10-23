@@ -52,13 +52,13 @@ public class MitgliedUtils
   public static void setMitgliedNatuerlichePerson(DBIterator<Mitglied> it)
       throws RemoteException
   {
-    it.addFilter("personenart = 'n'");
+    it.addFilter("personenart = 'n' or personenart = 'N'");
   }
 
   public static void setMitgliedJuristischePerson(DBIterator<Mitglied> it)
       throws RemoteException
   {
-    it.addFilter("personenart = 'j'");
+    it.addFilter("personenart = 'j' or personenart = 'J'");
   }
 
 }
