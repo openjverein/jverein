@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.control.FilterControl;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.EigenschaftenNode2;
-import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -48,6 +48,10 @@ public class EigenschaftenAuswahlDialog2
   private boolean ohnePflicht;
 
   private boolean verknuepfung;
+  
+  private boolean onlyChecked;
+  
+  private Mitglied[] mitglieder;
 
   private EigenschaftenAuswahlParameter2 param;
 
@@ -58,7 +62,13 @@ public class EigenschaftenAuswahlDialog2
    *          Liste der Eigenschaften-IDs durch Komma separiert.
    */
   public EigenschaftenAuswahlDialog2(String defaults, boolean ohnePflicht,
-      boolean verknuepfung, FilterControl control)
+      boolean verknuepfung, FilterControl control, boolean onlyChecked)
+  {
+    this(defaults, ohnePflicht, verknuepfung, control, onlyChecked, null);
+  }
+  
+  public EigenschaftenAuswahlDialog2(String defaults, boolean ohnePflicht,
+      boolean verknuepfung, FilterControl control, boolean onlyChecked, Mitglied[] mitglieder)
   {
     super(EigenschaftenAuswahlDialog2.POSITION_CENTER);
     this.setSize(400, 400);
@@ -67,6 +77,8 @@ public class EigenschaftenAuswahlDialog2
     setTitle("Eigenschaften auswählen ");
     this.control = control;
     this.setDefaults(defaults);
+    this.onlyChecked = onlyChecked;
+    this.mitglieder = mitglieder;
   }
 
   /**
@@ -83,7 +95,7 @@ public class EigenschaftenAuswahlDialog2
   protected void paint(Composite parent) throws RemoteException
   {
     final TreePart tree = control.getEigenschaftenAuswahlTree2(this.defaults,
-        ohnePflicht);
+        ohnePflicht, onlyChecked, mitglieder);
 
     LabelGroup group = new LabelGroup(parent, "Eigenschaften", true);
     group.addPart(tree);
@@ -95,28 +107,16 @@ public class EigenschaftenAuswahlDialog2
     buttons.addButton("OK", new Action()
     {
       @Override
-      @SuppressWarnings("rawtypes")
       public void handleAction(Object context)
       {
         try
         {
           param = new EigenschaftenAuswahlParameter2();
-          ArrayList<?> checkednodes = (ArrayList<?>) tree.getItems();
-          EigenschaftenNode2 root = (EigenschaftenNode2) checkednodes.get(0);
-          GenericIterator rootit = root.getChildren();
-          while (rootit.hasNext())
+          ArrayList<?> rootnodes = (ArrayList<?>) tree.getItems();  // liefert nur den Root
+          EigenschaftenNode2 root = (EigenschaftenNode2) rootnodes.get(0);
+          for (EigenschaftenNode2 checkednode : root.getCheckedNodes())
           {
-            EigenschaftenNode2 gruppe = (EigenschaftenNode2) rootit.next();
-            GenericIterator groupit = gruppe.getChildren();
-            while (groupit.hasNext())
-            {
-              EigenschaftenNode2 eigenschaft = (EigenschaftenNode2) groupit.next();
-              if (eigenschaft.getNodeType() == EigenschaftenNode2.EIGENSCHAFTEN &&
-                  !eigenschaft.getPreset().equals(EigenschaftenNode2.UNCHECKED))
-              {
-                param.add(eigenschaft);
-              }
-            }
+            param.add(checkednode);
           }
           if (verknuepfung)
           {

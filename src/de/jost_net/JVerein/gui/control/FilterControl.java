@@ -42,6 +42,7 @@ import de.jost_net.JVerein.rmi.Adresstyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.jost_net.JVerein.server.EigenschaftenNode2;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -352,7 +353,7 @@ public class FilterControl extends AbstractControl
   {
     String  tmp = settings.getString(settingsprefix + "eigenschaften", "");
     final EigenschaftenAuswahlDialog2 d = new EigenschaftenAuswahlDialog2(tmp,
-        false, true, this);
+        false, true, this, false);
     d.addCloseListener(new EigenschaftenCloseListener2());
 
     StringTokenizer stt = new StringTokenizer(tmp, ",");
@@ -439,10 +440,11 @@ public class FilterControl extends AbstractControl
   }
   
   public TreePart getEigenschaftenAuswahlTree2(String vorbelegung,
-      boolean ohnePflicht) throws RemoteException
+      boolean ohnePflicht, boolean onlyChecked, 
+      Mitglied[] mitglieder) throws RemoteException
   {
     eigenschaftenAuswahlTree = new TreePart(
-        new EigenschaftenNode2(vorbelegung, ohnePflicht), null);
+        new EigenschaftenNode2(vorbelegung, ohnePflicht, onlyChecked, mitglieder), null);
     eigenschaftenAuswahlTree.addSelectionListener(
         new EigenschaftListener2());
     eigenschaftenAuswahlTree.setFormatter(new EigenschaftTreeFormatter2());
@@ -464,14 +466,21 @@ public class FilterControl extends AbstractControl
       }
       else
       {
-        if (eigenschaftitem.getEigenschaften() != null
-            || eigenschaftitem.getPreset().equals(EigenschaftenNode2.PLUS))
+        if (eigenschaftitem.getPreset().equals(EigenschaftenNode2.PLUS))
         {
           item.setImage(SWTUtil.getImage("list-add.png"));
         }
         else if (eigenschaftitem.getPreset().equals(EigenschaftenNode2.MINUS))
         {
           item.setImage(SWTUtil.getImage("list-remove.png"));
+        }
+        else if (eigenschaftitem.getPreset().equals(EigenschaftenNode2.CHECKED))
+        {
+          item.setImage(SWTUtil.getImage("tree-checked.png"));
+        }
+        else if (eigenschaftitem.getPreset().equals(EigenschaftenNode2.CHECKED_PARTLY))
+        {
+          item.setImage(SWTUtil.getImage("tree-checked-partly.png"));
         }
         else
         {
@@ -1305,7 +1314,7 @@ public class FilterControl extends AbstractControl
       EigenschaftenAuswahlParameter2 param = (EigenschaftenAuswahlParameter2) event.data;
       StringBuilder id = new StringBuilder();
       StringBuilder text = new StringBuilder();
-      for (Object o : param.getEigenschaften())
+      for (Object o : param.getEigenschaftenNodes())
       {
         if (text.length() > 0)
         {

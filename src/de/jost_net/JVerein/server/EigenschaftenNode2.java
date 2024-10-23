@@ -17,21 +17,25 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
-import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 
 public class EigenschaftenNode2 implements GenericObjectNode
 {
@@ -44,11 +48,11 @@ public class EigenschaftenNode2 implements GenericObjectNode
 
   private Eigenschaft eigenschaft = null;
 
-  private Eigenschaften eigenschaften = null;
-
   private ArrayList<GenericObjectNode> childrens;
 
   private String preset = UNCHECKED;
+  
+  private String base = UNCHECKED;
 
   public static final int NONE = 0;
 
@@ -60,34 +64,92 @@ public class EigenschaftenNode2 implements GenericObjectNode
 
   private int nodetype = NONE;
 
-  private Map<String, String> eigenschaftids = new HashMap<>();
+  private Map<String, Config> config = new HashMap<>();
+  
+  private boolean onlyChecked = false;
   
   public static final String UNCHECKED = "0";
 
   public static final String PLUS = "1";
 
   public static final String MINUS = "2";
+  
+  public static final String CHECKED = "3";
+  
+  public static final String CHECKED_PARTLY = "4";
 
   public EigenschaftenNode2(Mitglied mitglied) throws RemoteException
   {
-    this(mitglied, "", false);
+    this(mitglied, "", false, true, null);
   }
 
-  public EigenschaftenNode2(String vorbelegung, boolean ohnePflicht)
+  public EigenschaftenNode2(String vorbelegung, boolean ohnePflicht, 
+      boolean onlyChecked, Mitglied[] mitglieder)
       throws RemoteException
   {
-    this(null, vorbelegung, ohnePflicht);
+    this(null, vorbelegung, ohnePflicht, onlyChecked, mitglieder);
   }
 
   private EigenschaftenNode2(Mitglied mitglied, String vorbelegung,
-      boolean ohnePflicht) throws RemoteException
+      boolean ohnePflicht, boolean onlyChecked, Mitglied[] mitglieder) 
+          throws RemoteException
   {
-    this.mitglied = mitglied;
-    StringTokenizer stt = new StringTokenizer(vorbelegung, ",");
-    while (stt.hasMoreElements())
+    this.onlyChecked = onlyChecked;
+    if (!vorbelegung.isEmpty())
     {
-      String s = stt.nextToken();
-      eigenschaftids.put(s.substring(0,s.length()-1), s.substring(s.length()-1));
+      StringTokenizer stt = new StringTokenizer(vorbelegung, ",");
+      while (stt.hasMoreElements())
+      {
+        String s = stt.nextToken();
+        config.put(s.substring(0,s.length()-1), 
+            new Config(s.substring(s.length()-1), EigenschaftenNode2.UNCHECKED));
+      }
+    }
+    else if (mitglied != null)
+    {
+      this.mitglied = mitglied;
+      List<Long[]> eigenschaften = getEigenschaften();
+      for (Long[] value: eigenschaften)
+      {
+        if (value[0].toString().equals(mitglied.getID()))
+        {
+          config.put(value[1].toString(), 
+              new Config(EigenschaftenNode2.CHECKED, EigenschaftenNode2.UNCHECKED));
+        }
+      }
+    }
+    else if (mitglieder != null)
+    {
+      Map<Long, Long> counters = new HashMap<>();
+      Long counter = null;
+      List<Long[]> eigenschaften = getEigenschaften();
+      for (Long[] value: eigenschaften)
+      {
+        counter = counters.get(value[1]);
+        for (Mitglied m : mitglieder)
+        {
+          if (value[0].toString().equals(m.getID()))
+          {
+            if (counter == null)
+              counters.put(value[1], 1l);
+            else
+              counters.put(value[1], ++counter);
+          }
+        }
+      }
+      for (Long key : counters.keySet())
+      {
+        if (counters.get(key) == mitglieder.length)
+        {
+          config.put(key.toString(), 
+              new Config(EigenschaftenNode2.CHECKED, EigenschaftenNode2.CHECKED));
+        }
+        else if (counters.get(key) != 0)
+        {
+          config.put(key.toString(), 
+              new Config(EigenschaftenNode2.CHECKED_PARTLY, EigenschaftenNode2.CHECKED_PARTLY));
+        }
+      }
     }
     childrens = new ArrayList<>();
     nodetype = ROOT;
@@ -102,16 +164,16 @@ public class EigenschaftenNode2 implements GenericObjectNode
     while (it.hasNext())
     {
       EigenschaftGruppe eg = (EigenschaftGruppe) it.next();
-      childrens.add(new EigenschaftenNode2(this, mitglied, eg, eigenschaftids));
+      childrens.add(new EigenschaftenNode2(this, onlyChecked, eg, config));
     }
   }
 
-  private EigenschaftenNode2(EigenschaftenNode2 parent, Mitglied mitglied,
-      EigenschaftGruppe eg, Map<String, String> eigenschaftsids)
+  private EigenschaftenNode2(EigenschaftenNode2 parent, boolean onlyChecked,
+      EigenschaftGruppe eg, Map<String, Config> config)
       throws RemoteException
   {
     this.parent = parent;
-    this.mitglied = mitglied;
+    this.onlyChecked = onlyChecked;
     childrens = new ArrayList<>();
     this.eigenschaftgruppe = eg;
     nodetype = EIGENSCHAFTGRUPPE;
@@ -123,36 +185,24 @@ public class EigenschaftenNode2 implements GenericObjectNode
     while (it.hasNext())
     {
       Eigenschaft eigenschaft = (Eigenschaft) it.next();
-      Eigenschaften eigenschaften = null;
-      if (mitglied != null)
-      {
-        DBIterator<Eigenschaften> it2 = Einstellungen.getDBService()
-            .createList(Eigenschaften.class);
-        it2.addFilter("mitglied = ? AND eigenschaft = ?",
-            new Object[] { mitglied.getID(), eigenschaft.getID() });
-        if (it2.hasNext())
-        {
-          eigenschaften = (Eigenschaften) it2.next();
-        }
-      }
-      childrens.add(new EigenschaftenNode2(this, mitglied, eigenschaft,
-          eigenschaften, eigenschaftsids));
+      childrens.add(new EigenschaftenNode2(this, onlyChecked, eigenschaft, 
+          config));
     }
   }
 
-  private EigenschaftenNode2(EigenschaftenNode2 parent, Mitglied mitglied,
-      Eigenschaft eigenschaft, Eigenschaften eigenschaften,
-      Map<String, String> eigenschaftids) throws RemoteException
+  private EigenschaftenNode2(EigenschaftenNode2 parent, boolean onlyChecked,
+      Eigenschaft eigenschaft,
+      Map<String, Config> config) throws RemoteException
   {
     this.parent = parent;
     nodetype = EIGENSCHAFTEN;
-    this.mitglied = mitglied;
+    this.onlyChecked = onlyChecked;
     this.eigenschaft = eigenschaft;
-    this.eigenschaften = eigenschaften;
     String eigenschaftenKey = this.eigenschaft.getID();
-    if (eigenschaftids.containsKey(eigenschaftenKey))
+    if (config.containsKey(eigenschaftenKey))
     {
-      preset = eigenschaftids.get(eigenschaftenKey);
+      preset = config.get(eigenschaftenKey).preset;
+      base = config.get(eigenschaftenKey).base;
     }
   }
 
@@ -279,11 +329,6 @@ public class EigenschaftenNode2 implements GenericObjectNode
     return this.eigenschaft;
   }
 
-  public Eigenschaften getEigenschaften()
-  {
-    return this.eigenschaften;
-  }
-
   public String getPreset()
   {
     return preset;
@@ -291,17 +336,95 @@ public class EigenschaftenNode2 implements GenericObjectNode
   
   public void incPreset()
   {
-    switch (preset)
+    if (!onlyChecked)
     {
-      case EigenschaftenNode2.UNCHECKED:
-        preset = EigenschaftenNode2.PLUS;
-        break;
-      case EigenschaftenNode2.PLUS:
-        preset = EigenschaftenNode2.MINUS;
-        break;
-      case EigenschaftenNode2.MINUS:
-        preset = EigenschaftenNode2.UNCHECKED;
-        break;
+      switch (preset)
+      {
+        case EigenschaftenNode2.UNCHECKED:
+        case EigenschaftenNode2.CHECKED:
+        case EigenschaftenNode2.CHECKED_PARTLY:
+          preset = EigenschaftenNode2.PLUS;
+          break;
+        case EigenschaftenNode2.PLUS:
+          preset = EigenschaftenNode2.MINUS;
+          break;
+        case EigenschaftenNode2.MINUS:
+          preset = base;
+          break;
+      }
+    }
+    else
+    {
+      switch (preset)
+      {
+        case EigenschaftenNode2.UNCHECKED:
+          preset = EigenschaftenNode2.CHECKED;
+          break;
+        case EigenschaftenNode2.CHECKED:
+          preset = EigenschaftenNode2.UNCHECKED;
+          break;
+      }
+    }
+  }
+  
+  @SuppressWarnings("unchecked")
+  public List<Long[]> getEigenschaften() throws RemoteException
+  {
+    // Eigenschaften lesen
+    final DBService service = Einstellungen.getDBService();
+    String sql = "SELECT eigenschaften.* from eigenschaften ";
+    List<Long[]> mitgliedeigenschaften = (List<Long[]>) service.execute(sql,
+        new Object[] { }, new ResultSetExtractor()
+    {
+      @Override
+      public Object extract(ResultSet rs) throws RemoteException, SQLException
+      {
+        List<Long[]> list = new ArrayList<>();
+        while (rs.next())
+        {
+          list.add(new Long[] {rs.getLong(2), rs.getLong(3)}); // Mitglied.Id, Eigenschaft.Id
+        }
+        return list;
+      }
+    });
+    return mitgliedeigenschaften;
+  }
+
+  @SuppressWarnings("rawtypes")
+  public ArrayList<EigenschaftenNode2> getCheckedNodes() 
+      throws RemoteException
+  {
+    ArrayList<EigenschaftenNode2> checkednodes = new ArrayList<>();
+    if (this.nodetype == EigenschaftenNode2.ROOT)
+    {
+      GenericIterator rootit = this.getChildren();
+      while (rootit.hasNext())
+      {
+        GenericObjectNode gruppe = (GenericObjectNode) rootit.next();
+        GenericIterator groupit = gruppe.getChildren();
+        while (groupit.hasNext())
+        {
+          EigenschaftenNode2 eigenschaft = (EigenschaftenNode2) groupit.next();
+          if (eigenschaft.getNodeType() == EigenschaftenNode2.EIGENSCHAFTEN &&
+              !eigenschaft.getPreset().equals(EigenschaftenNode2.UNCHECKED))
+          {
+            checkednodes.add(eigenschaft);
+          }
+        }
+      }
+    }
+    return checkednodes;
+  }
+  
+  private class Config
+  {
+    public String preset;
+    public String base;
+    
+    public Config(String preset, String base)
+    {
+      this.preset = preset;
+      this.base = base;
     }
   }
 }
