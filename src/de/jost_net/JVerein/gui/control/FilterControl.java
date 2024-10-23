@@ -43,7 +43,6 @@ import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.jost_net.JVerein.server.EigenschaftenNode2;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObjectNode;
@@ -397,46 +396,6 @@ public class FilterControl extends AbstractControl
   public boolean isEigenschaftenAuswahlAktiv()
   {
     return eigenschaftenabfrage != null;
-  }
-  
-  public TreePart getEigenschaftenAuswahlTree(String vorbelegung,
-      boolean ohnePflicht) throws RemoteException
-  {
-    eigenschaftenAuswahlTree = new TreePart(
-        new EigenschaftenNode(vorbelegung, ohnePflicht), null);
-    eigenschaftenAuswahlTree.setCheckable(true);
-    eigenschaftenAuswahlTree.addSelectionListener(
-        new EigenschaftListener(eigenschaftenAuswahlTree));
-    eigenschaftenAuswahlTree.setFormatter(new EigenschaftTreeFormatter());
-    return eigenschaftenAuswahlTree;
-  }
-  
-  public static class EigenschaftTreeFormatter implements TreeFormatter
-  {
-
-    @Override
-    public void format(TreeItem item)
-    {
-      EigenschaftenNode eigenschaftitem = (EigenschaftenNode) item.getData();
-      if (eigenschaftitem.getNodeType() == EigenschaftenNode.ROOT
-          || eigenschaftitem
-              .getNodeType() == EigenschaftenNode.EIGENSCHAFTGRUPPE)
-      {
-        //
-      }
-      else
-      {
-        if (eigenschaftitem.getEigenschaften() != null
-            || eigenschaftitem.isPreset())
-        {
-          item.setChecked(true);
-        }
-        else
-        {
-          item.setChecked(false);
-        }
-      }
-    }
   }
   
   public TreePart getEigenschaftenAuswahlTree2(String vorbelegung,
