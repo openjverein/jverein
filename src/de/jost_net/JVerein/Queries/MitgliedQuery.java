@@ -446,7 +446,7 @@ public class MitgliedQuery
         }
       });
       
-      ArrayList<Long> mitgliederIdsNeu = new ArrayList<>();
+      ArrayList<Long> mitgliederIdsFiltered = new ArrayList<>();
       for (Long mitglied: mitgliederIds)
       {
         ArrayList<Long> mitgliedeigenschaftenIds = new ArrayList<>();
@@ -500,9 +500,9 @@ public class MitgliedQuery
           }
         }
         if (ok)
-          mitgliederIdsNeu.add(mitglied);
+          mitgliederIdsFiltered.add(mitglied);
       }
-      return getMitglieder(mitgliederIdsNeu);
+      return getMitglieder(mitgliederIdsFiltered);
     }
     else
     {
