@@ -458,11 +458,34 @@ public class FilterControl extends AbstractControl
     public void format(TreeItem item)
     {
       EigenschaftenNode2 eigenschaftitem = (EigenschaftenNode2) item.getData();
-      if (eigenschaftitem.getNodeType() == EigenschaftenNode2.ROOT
-          || eigenschaftitem
-              .getNodeType() == EigenschaftenNode2.EIGENSCHAFTGRUPPE)
+      if (eigenschaftitem.getNodeType() == EigenschaftenNode2.ROOT)
       {
-        //
+        item.setImage(SWTUtil.getImage("document-properties.png"));
+      }
+      else if (eigenschaftitem
+          .getNodeType() == EigenschaftenNode2.EIGENSCHAFTGRUPPE)
+      {
+        try
+        {
+          boolean pflicht = eigenschaftitem.getEigenschaftGruppe().getPflicht();
+          boolean maxeins = eigenschaftitem.getEigenschaftGruppe().getMax1();
+          if (pflicht && maxeins)
+          {
+            item.setImage(SWTUtil.getImage("pflicht-maxeins.png"));
+          }
+          if (pflicht && !maxeins)
+          {
+            item.setImage(SWTUtil.getImage("pflicht.png"));
+          }
+          if (!pflicht && maxeins)
+          {
+            item.setImage(SWTUtil.getImage("maxeins.png"));
+          }
+        }
+        catch (RemoteException e)
+        {
+          ;
+        }
       }
       else
       {

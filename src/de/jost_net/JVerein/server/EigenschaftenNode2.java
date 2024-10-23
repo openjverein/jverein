@@ -328,6 +328,11 @@ public class EigenschaftenNode2 implements GenericObjectNode
   {
     return this.eigenschaft;
   }
+  
+  public EigenschaftGruppe getEigenschaftGruppe()
+  {
+    return this.eigenschaftgruppe;
+  }
 
   public String getPreset()
   {
