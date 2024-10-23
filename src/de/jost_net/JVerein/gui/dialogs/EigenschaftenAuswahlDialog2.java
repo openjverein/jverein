@@ -60,6 +60,19 @@ public class EigenschaftenAuswahlDialog2
    * 
    * @param defaults
    *          Liste der Eigenschaften-IDs durch Komma separiert.
+   * @param ohnePflicht
+   *          Spezifiziert ob Eigenschaftengruppen mit Pflicht und Max1 
+   *           ignoriert werden.  true: ignorieren
+   * @param verknuepfung
+   *          Spezifiziert ob der Input Verknüpfung (UND,ODER) im Dialog
+   *          angezeigt werden soll.
+   * @param control
+   *          Control welches den EigenschaftenAuswahlTree liefert.
+   * @param onlyChecked
+   *          Gibt an ob nur die Checkbox Werte UNCHECKED und CHECKED 
+   *          angezeigt werden.
+   * @param mitglieder
+   *          Liste der Mitglieder welche selektiert wurden.
    */
   public EigenschaftenAuswahlDialog2(String defaults, boolean ohnePflicht,
       boolean verknuepfung, FilterControl control, boolean onlyChecked)
@@ -85,6 +98,7 @@ public class EigenschaftenAuswahlDialog2
    * Speichert die Default-Werte.
    * 
    * @param defaults
+   *          Liste der Eigenschaften-IDs durch Komma separiert.
    */
   public void setDefaults(String defaults)
   {

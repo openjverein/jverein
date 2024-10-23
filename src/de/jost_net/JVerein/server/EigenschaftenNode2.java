@@ -50,9 +50,9 @@ public class EigenschaftenNode2 implements GenericObjectNode
 
   private ArrayList<GenericObjectNode> childrens;
 
-  private String preset = UNCHECKED;
+  private String preset = UNCHECKED;  // Gesetzter Status/Icon
   
-  private String base = UNCHECKED;
+  private String base = UNCHECKED;  // Wert im Tree nach CHECKED bzw. MINUS
 
   public static final int NONE = 0;
 
@@ -66,7 +66,7 @@ public class EigenschaftenNode2 implements GenericObjectNode
 
   private Map<String, Config> config = new HashMap<>();
   
-  private boolean onlyChecked = false;
+  private boolean onlyChecked = false;  // Nur CHECKED, kein PLUS, MINUS etc.
   
   public static final String UNCHECKED = "0";
 
@@ -97,32 +97,39 @@ public class EigenschaftenNode2 implements GenericObjectNode
     this.onlyChecked = onlyChecked;
     if (!vorbelegung.isEmpty())
     {
+      // Aufruf aus (Nicht-)Mitglied Filter Dialog oder Auswertungen (Nicht-)Mitglied,
+      // Werte (PLUS oder MINUS) aus Settings lesen
       StringTokenizer stt = new StringTokenizer(vorbelegung, ",");
       while (stt.hasMoreElements())
       {
         String s = stt.nextToken();
-        config.put(s.substring(0,s.length()-1), 
+        config.put(s.substring(0,s.length()-1), // substring ist Eigenschaft.Id
+            // letztes Zeichen PLUS oder MINUS
             new Config(s.substring(s.length()-1), EigenschaftenNode2.UNCHECKED));
       }
     }
     else if (mitglied != null)
     {
+      // Aufruf aus (Nicht-)Mitglied Detail View Lasche Eigenschaften
+      // Gesetzte Eigenschaften (CHECKED) aus Datenbank lesen
       this.mitglied = mitglied;
-      List<Long[]> eigenschaften = getEigenschaften();
+      List<Long[]> eigenschaften = getEigenschaften(); // [Mitglied.Id, Eigenschaft.Id]
       for (Long[] value: eigenschaften)
       {
         if (value[0].toString().equals(mitglied.getID()))
         {
-          config.put(value[1].toString(), 
+          config.put(value[1].toString(),
               new Config(EigenschaftenNode2.CHECKED, EigenschaftenNode2.UNCHECKED));
         }
       }
     }
     else if (mitglieder != null)
     {
-      Map<Long, Long> counters = new HashMap<>();
+      // Aufruf aus Mitglied Kontext Menü -> Eigenschaften
+      // Gesetzte Eigenschaften (CHECKED) aus Datenbank lesen
+      Map<Long, Long> counters = new HashMap<>(); // <Eigenschaft.Id, Anzahl>
       Long counter = null;
-      List<Long[]> eigenschaften = getEigenschaften();
+      List<Long[]> eigenschaften = getEigenschaften(); // [Mitglied.Id, Eigenschaft.Id]
       for (Long[] value: eigenschaften)
       {
         counter = counters.get(value[1]);
@@ -131,8 +138,11 @@ public class EigenschaftenNode2 implements GenericObjectNode
           if (value[0].toString().equals(m.getID()))
           {
             if (counter == null)
+              // Erster Eintrag für Eigenschaft gefunden
               counters.put(value[1], 1l);
             else
+              // Weiterer Eintrag für Eigenschaft gefunden, Anzahl inkrementieren
+              // Neuer Eintrag überschreibt alten Eintrag
               counters.put(value[1], ++counter);
           }
         }
@@ -141,11 +151,13 @@ public class EigenschaftenNode2 implements GenericObjectNode
       {
         if (counters.get(key) == mitglieder.length)
         {
+          // Bei allen Mitgliedern ist die Eigenschaft gesetzt
           config.put(key.toString(), 
               new Config(EigenschaftenNode2.CHECKED, EigenschaftenNode2.CHECKED));
         }
         else if (counters.get(key) != 0)
         {
+          // Bei mindesten einem Mitglied ist die Eigenschaft gesetzt
           config.put(key.toString(), 
               new Config(EigenschaftenNode2.CHECKED_PARTLY, EigenschaftenNode2.CHECKED_PARTLY));
         }
@@ -157,6 +169,8 @@ public class EigenschaftenNode2 implements GenericObjectNode
         .createList(EigenschaftGruppe.class);
     if (ohnePflicht)
     {
+      // Pflicht und Maximal Eins wird im Mitglied Kontext Menü -> Eigenschaften
+      // zur Zeit noch nicht unterstützt
       it.addFilter(
           "(PFLICHT <> true OR PFLICHT IS NULL) AND (MAX1 <> true OR MAX1 IS NULL)");
     }
@@ -345,6 +359,9 @@ public class EigenschaftenNode2 implements GenericObjectNode
     {
       switch (preset)
       {
+        // In Mitglied Kontext Menü -> Eigenschaften und
+        // im Filter Dialog gibt es PLUS und MINUS etc.
+        // Die ersten drei Eigenschaften sind in "base" gespeichert
         case EigenschaftenNode2.UNCHECKED:
         case EigenschaftenNode2.CHECKED:
         case EigenschaftenNode2.CHECKED_PARTLY:
@@ -360,6 +377,9 @@ public class EigenschaftenNode2 implements GenericObjectNode
     }
     else
     {
+      // In (Nicht-)Mitglied Detail View Lasche Eigenschaften und
+      // Mail Empfänger Auswahl Dialog -> Eigenschaften
+      // gibt es nur UNCHECKED und CHECKED
       switch (preset)
       {
         case EigenschaftenNode2.UNCHECKED:
@@ -399,6 +419,8 @@ public class EigenschaftenNode2 implements GenericObjectNode
   public ArrayList<EigenschaftenNode2> getCheckedNodes() 
       throws RemoteException
   {
+    // Liefert alle EIGENSCHAFTEN Nodes die nicht UNCHECKED sind
+    // Momentan nur für ROOT gebraucht
     ArrayList<EigenschaftenNode2> checkednodes = new ArrayList<>();
     if (this.nodetype == EigenschaftenNode2.ROOT)
     {
@@ -410,8 +432,7 @@ public class EigenschaftenNode2 implements GenericObjectNode
         while (groupit.hasNext())
         {
           EigenschaftenNode2 eigenschaft = (EigenschaftenNode2) groupit.next();
-          if (eigenschaft.getNodeType() == EigenschaftenNode2.EIGENSCHAFTEN &&
-              !eigenschaft.getPreset().equals(EigenschaftenNode2.UNCHECKED))
+          if (!eigenschaft.getPreset().equals(EigenschaftenNode2.UNCHECKED))
           {
             checkednodes.add(eigenschaft);
           }
@@ -421,6 +442,7 @@ public class EigenschaftenNode2 implements GenericObjectNode
     return checkednodes;
   }
   
+  // Speichert den Startwert für eine Eigenschaft
   private class Config
   {
     public String preset;

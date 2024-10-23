@@ -51,14 +51,14 @@ public class MitgliedEigenschaftZuordnungAction implements Action
     {
       throw new ApplicationException("Kein Mitglied ausgewählt");
     }
-    Mitglied[] m = null;
+    Mitglied[] mitglieder = null;
     if (context instanceof Mitglied)
     {
-      m = new Mitglied[] { (Mitglied) context };
+      mitglieder = new Mitglied[] { (Mitglied) context };
     }
     else if (context instanceof Mitglied[])
     {
-      m = (Mitglied[]) context;
+      mitglieder = (Mitglied[]) context;
     }
     int anzErfolgreich = 0;
     int anzBereitsVorhanden = 0;
@@ -66,24 +66,24 @@ public class MitgliedEigenschaftZuordnungAction implements Action
     try
     {
       EigenschaftenAuswahlDialog2 ead = new EigenschaftenAuswahlDialog2("", true,
-          false, new MitgliedControl(null), false, m);
+          false, new MitgliedControl(null), false, mitglieder);
       EigenschaftenAuswahlParameter2 param = ead.open();
       if (param == null || param.getEigenschaftenNodes() == null)
       {
         return;
       }
-      Map<Long, Long[]> eigenschaften =  getEigenschaften();
-      ArrayList<EigenschaftenNode2> nodes = param.getEigenschaftenNodes();
-      for (EigenschaftenNode2 en : nodes)
+      Map<Long, Long[]> eigenschaftenMap =  getEigenschaften();
+      ArrayList<EigenschaftenNode2> eigenschaftenNodes = param.getEigenschaftenNodes();
+      for (EigenschaftenNode2 eigenschaftenNode : eigenschaftenNodes)
       {
-        if (en.getPreset().equals(EigenschaftenNode2.PLUS))
+        if (eigenschaftenNode.getPreset().equals(EigenschaftenNode2.PLUS))
         {
-          for (Mitglied mit : m)
+          for (Mitglied mitglied : mitglieder)
           {
             Eigenschaften eig = (Eigenschaften) Einstellungen.getDBService()
                 .createObject(Eigenschaften.class, null);
-            eig.setEigenschaft(en.getEigenschaft().getID());
-            eig.setMitglied(mit.getID());
+            eig.setEigenschaft(eigenschaftenNode.getEigenschaft().getID());
+            eig.setMitglied(mitglied.getID());
             try
             {
               eig.store();
@@ -102,15 +102,15 @@ public class MitgliedEigenschaftZuordnungAction implements Action
             }
           }
         }
-        else if (en.getPreset().equals(EigenschaftenNode2.MINUS))
+        else if (eigenschaftenNode.getPreset().equals(EigenschaftenNode2.MINUS))
         {
-          for (Mitglied mit : m)
+          for (Mitglied mitglied : mitglieder)
           {
-            for  (Long key : eigenschaften.keySet())
+            for  (Long key : eigenschaftenMap.keySet())
             {
-              Long[] entry = eigenschaften.get(key);
-              if (entry[0].equals(Long.valueOf(mit.getID())) &&
-                  entry[1].equals(Long.valueOf(en.getEigenschaft().getID())))
+              Long[] entry = eigenschaftenMap.get(key);
+              if (entry[0].equals(Long.valueOf(mitglied.getID())) &&
+                  entry[1].equals(Long.valueOf(eigenschaftenNode.getEigenschaft().getID())))
               {
                 Eigenschaften eig = (Eigenschaften) Einstellungen.getDBService()
                     .createObject(Eigenschaften.class, key.toString());
@@ -149,6 +149,7 @@ public class MitgliedEigenschaftZuordnungAction implements Action
         Map<Long, Long[]> list = new HashMap<>();
         while (rs.next())
         {
+          // (Eigenschaften.Id, [Mitglied.Id, Eigenschaft.Id])
           list.put(rs.getLong(1), new Long[] {rs.getLong(2), rs.getLong(3)});
         }
         return list;
