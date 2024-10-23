@@ -18,25 +18,25 @@ package de.jost_net.JVerein.gui.dialogs;
 
 import java.util.ArrayList;
 
-import de.jost_net.JVerein.server.EigenschaftenNode2;
+import de.jost_net.JVerein.server.EigenschaftenNode;
 
-public class EigenschaftenAuswahlParameter2
+public class EigenschaftenAuswahlParameter
 {
-  private ArrayList<EigenschaftenNode2> eigenschaftenNodes;
+  private ArrayList<EigenschaftenNode> eigenschaftenNodes;
 
   private String verknuepfung;
 
-  public EigenschaftenAuswahlParameter2()
+  public EigenschaftenAuswahlParameter()
   {
     eigenschaftenNodes = new ArrayList<>();
   }
 
-  public void add(EigenschaftenNode2 node)
+  public void add(EigenschaftenNode node)
   {
     eigenschaftenNodes.add(node);
   }
 
-  public ArrayList<EigenschaftenNode2> getEigenschaftenNodes()
+  public ArrayList<EigenschaftenNode> getEigenschaftenNodes()
   {
     return eigenschaftenNodes;
   }

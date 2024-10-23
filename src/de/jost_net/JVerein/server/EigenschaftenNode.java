@@ -37,10 +37,10 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 
-public class EigenschaftenNode2 implements GenericObjectNode
+public class EigenschaftenNode implements GenericObjectNode
 {
 
-  private EigenschaftenNode2 parent = null;
+  private EigenschaftenNode parent = null;
 
   private Mitglied mitglied = null;
 
@@ -78,19 +78,19 @@ public class EigenschaftenNode2 implements GenericObjectNode
   
   public static final String CHECKED_PARTLY = "4";
 
-  public EigenschaftenNode2(Mitglied mitglied) throws RemoteException
+  public EigenschaftenNode(Mitglied mitglied) throws RemoteException
   {
     this(mitglied, "", false, true, null);
   }
 
-  public EigenschaftenNode2(String vorbelegung, boolean ohnePflicht, 
+  public EigenschaftenNode(String vorbelegung, boolean ohnePflicht, 
       boolean onlyChecked, Mitglied[] mitglieder)
       throws RemoteException
   {
     this(null, vorbelegung, ohnePflicht, onlyChecked, mitglieder);
   }
 
-  private EigenschaftenNode2(Mitglied mitglied, String vorbelegung,
+  private EigenschaftenNode(Mitglied mitglied, String vorbelegung,
       boolean ohnePflicht, boolean onlyChecked, Mitglied[] mitglieder) 
           throws RemoteException
   {
@@ -105,7 +105,7 @@ public class EigenschaftenNode2 implements GenericObjectNode
         String s = stt.nextToken();
         config.put(s.substring(0,s.length()-1), // substring ist Eigenschaft.Id
             // letztes Zeichen PLUS oder MINUS
-            new Config(s.substring(s.length()-1), EigenschaftenNode2.UNCHECKED));
+            new Config(s.substring(s.length()-1), EigenschaftenNode.UNCHECKED));
       }
     }
     else if (mitglied != null)
@@ -119,7 +119,7 @@ public class EigenschaftenNode2 implements GenericObjectNode
         if (value[0].toString().equals(mitglied.getID()))
         {
           config.put(value[1].toString(),
-              new Config(EigenschaftenNode2.CHECKED, EigenschaftenNode2.UNCHECKED));
+              new Config(EigenschaftenNode.CHECKED, EigenschaftenNode.UNCHECKED));
         }
       }
     }
@@ -153,13 +153,13 @@ public class EigenschaftenNode2 implements GenericObjectNode
         {
           // Bei allen Mitgliedern ist die Eigenschaft gesetzt
           config.put(key.toString(), 
-              new Config(EigenschaftenNode2.CHECKED, EigenschaftenNode2.CHECKED));
+              new Config(EigenschaftenNode.CHECKED, EigenschaftenNode.CHECKED));
         }
         else if (counters.get(key) != 0)
         {
           // Bei mindesten einem Mitglied ist die Eigenschaft gesetzt
           config.put(key.toString(), 
-              new Config(EigenschaftenNode2.CHECKED_PARTLY, EigenschaftenNode2.CHECKED_PARTLY));
+              new Config(EigenschaftenNode.CHECKED_PARTLY, EigenschaftenNode.CHECKED_PARTLY));
         }
       }
     }
@@ -178,11 +178,11 @@ public class EigenschaftenNode2 implements GenericObjectNode
     while (it.hasNext())
     {
       EigenschaftGruppe eg = (EigenschaftGruppe) it.next();
-      childrens.add(new EigenschaftenNode2(this, onlyChecked, eg, config));
+      childrens.add(new EigenschaftenNode(this, onlyChecked, eg, config));
     }
   }
 
-  private EigenschaftenNode2(EigenschaftenNode2 parent, boolean onlyChecked,
+  private EigenschaftenNode(EigenschaftenNode parent, boolean onlyChecked,
       EigenschaftGruppe eg, Map<String, Config> config)
       throws RemoteException
   {
@@ -199,12 +199,12 @@ public class EigenschaftenNode2 implements GenericObjectNode
     while (it.hasNext())
     {
       Eigenschaft eigenschaft = (Eigenschaft) it.next();
-      childrens.add(new EigenschaftenNode2(this, onlyChecked, eigenschaft, 
+      childrens.add(new EigenschaftenNode(this, onlyChecked, eigenschaft, 
           config));
     }
   }
 
-  private EigenschaftenNode2(EigenschaftenNode2 parent, boolean onlyChecked,
+  private EigenschaftenNode(EigenschaftenNode parent, boolean onlyChecked,
       Eigenschaft eigenschaft,
       Map<String, Config> config) throws RemoteException
   {
@@ -238,7 +238,7 @@ public class EigenschaftenNode2 implements GenericObjectNode
   }
 
   @Override
-  public EigenschaftenNode2 getParent()
+  public EigenschaftenNode getParent()
   {
     return parent;
   }
@@ -362,15 +362,15 @@ public class EigenschaftenNode2 implements GenericObjectNode
         // In Mitglied Kontext Menü -> Eigenschaften und
         // im Filter Dialog gibt es PLUS und MINUS etc.
         // Die ersten drei Eigenschaften sind in "base" gespeichert
-        case EigenschaftenNode2.UNCHECKED:
-        case EigenschaftenNode2.CHECKED:
-        case EigenschaftenNode2.CHECKED_PARTLY:
-          preset = EigenschaftenNode2.PLUS;
+        case EigenschaftenNode.UNCHECKED:
+        case EigenschaftenNode.CHECKED:
+        case EigenschaftenNode.CHECKED_PARTLY:
+          preset = EigenschaftenNode.PLUS;
           break;
-        case EigenschaftenNode2.PLUS:
-          preset = EigenschaftenNode2.MINUS;
+        case EigenschaftenNode.PLUS:
+          preset = EigenschaftenNode.MINUS;
           break;
-        case EigenschaftenNode2.MINUS:
+        case EigenschaftenNode.MINUS:
           preset = base;
           break;
       }
@@ -382,11 +382,11 @@ public class EigenschaftenNode2 implements GenericObjectNode
       // gibt es nur UNCHECKED und CHECKED
       switch (preset)
       {
-        case EigenschaftenNode2.UNCHECKED:
-          preset = EigenschaftenNode2.CHECKED;
+        case EigenschaftenNode.UNCHECKED:
+          preset = EigenschaftenNode.CHECKED;
           break;
-        case EigenschaftenNode2.CHECKED:
-          preset = EigenschaftenNode2.UNCHECKED;
+        case EigenschaftenNode.CHECKED:
+          preset = EigenschaftenNode.UNCHECKED;
           break;
       }
     }
@@ -416,13 +416,13 @@ public class EigenschaftenNode2 implements GenericObjectNode
   }
 
   @SuppressWarnings("rawtypes")
-  public ArrayList<EigenschaftenNode2> getCheckedNodes() 
+  public ArrayList<EigenschaftenNode> getCheckedNodes() 
       throws RemoteException
   {
     // Liefert alle EIGENSCHAFTEN Nodes die nicht UNCHECKED sind
     // Momentan nur für ROOT gebraucht
-    ArrayList<EigenschaftenNode2> checkednodes = new ArrayList<>();
-    if (this.nodetype == EigenschaftenNode2.ROOT)
+    ArrayList<EigenschaftenNode> checkednodes = new ArrayList<>();
+    if (this.nodetype == EigenschaftenNode.ROOT)
     {
       GenericIterator rootit = this.getChildren();
       while (rootit.hasNext())
@@ -431,8 +431,8 @@ public class EigenschaftenNode2 implements GenericObjectNode
         GenericIterator groupit = gruppe.getChildren();
         while (groupit.hasNext())
         {
-          EigenschaftenNode2 eigenschaft = (EigenschaftenNode2) groupit.next();
-          if (!eigenschaft.getPreset().equals(EigenschaftenNode2.UNCHECKED))
+          EigenschaftenNode eigenschaft = (EigenschaftenNode) groupit.next();
+          if (!eigenschaft.getPreset().equals(EigenschaftenNode.UNCHECKED))
           {
             checkednodes.add(eigenschaft);
           }

@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.server.EigenschaftenNode2;
+import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -35,8 +35,8 @@ import de.willuhn.logging.Logger;
 /**
  * Dialog, zur Auswahl von Eigenschaften eines Mitglied.
  */
-public class EigenschaftenAuswahlDialog2
-    extends AbstractDialog<EigenschaftenAuswahlParameter2>
+public class EigenschaftenAuswahlDialog
+    extends AbstractDialog<EigenschaftenAuswahlParameter>
 {
 
   private FilterControl control;
@@ -53,7 +53,7 @@ public class EigenschaftenAuswahlDialog2
   
   private Mitglied[] mitglieder;
 
-  private EigenschaftenAuswahlParameter2 param;
+  private EigenschaftenAuswahlParameter param;
 
   /**
    * Eigenschaften oder Eigenschaftengruppen auswählen
@@ -74,16 +74,16 @@ public class EigenschaftenAuswahlDialog2
    * @param mitglieder
    *          Liste der Mitglieder welche selektiert wurden.
    */
-  public EigenschaftenAuswahlDialog2(String defaults, boolean ohnePflicht,
+  public EigenschaftenAuswahlDialog(String defaults, boolean ohnePflicht,
       boolean verknuepfung, FilterControl control, boolean onlyChecked)
   {
     this(defaults, ohnePflicht, verknuepfung, control, onlyChecked, null);
   }
   
-  public EigenschaftenAuswahlDialog2(String defaults, boolean ohnePflicht,
+  public EigenschaftenAuswahlDialog(String defaults, boolean ohnePflicht,
       boolean verknuepfung, FilterControl control, boolean onlyChecked, Mitglied[] mitglieder)
   {
-    super(EigenschaftenAuswahlDialog2.POSITION_CENTER);
+    super(EigenschaftenAuswahlDialog.POSITION_CENTER);
     this.setSize(400, 400);
     this.ohnePflicht = ohnePflicht;
     this.verknuepfung = verknuepfung;
@@ -108,7 +108,7 @@ public class EigenschaftenAuswahlDialog2
   @Override
   protected void paint(Composite parent) throws RemoteException
   {
-    final TreePart tree = control.getEigenschaftenAuswahlTree2(this.defaults,
+    final TreePart tree = control.getEigenschaftenAuswahlTree(this.defaults,
         ohnePflicht, onlyChecked, mitglieder);
 
     LabelGroup group = new LabelGroup(parent, "Eigenschaften", true);
@@ -125,12 +125,12 @@ public class EigenschaftenAuswahlDialog2
       {
         try
         {
-          param = new EigenschaftenAuswahlParameter2();
-          ArrayList<?> rootnodes = (ArrayList<?>) tree.getItems();  // liefert nur den Root
-          EigenschaftenNode2 root = (EigenschaftenNode2) rootnodes.get(0);
-          for (EigenschaftenNode2 checkednode : root.getCheckedNodes())
+          param = new EigenschaftenAuswahlParameter();
+          ArrayList<?> rootNodes = (ArrayList<?>) tree.getItems();  // liefert nur den Root
+          EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
+          for (EigenschaftenNode checkedNode : root.getCheckedNodes())
           {
-            param.add(checkednode);
+            param.add(checkedNode);
           }
           if (verknuepfung)
           {
@@ -149,7 +149,7 @@ public class EigenschaftenAuswahlDialog2
   }
 
   @Override
-  protected EigenschaftenAuswahlParameter2 getData()
+  protected EigenschaftenAuswahlParameter getData()
   {
     return param;
   }

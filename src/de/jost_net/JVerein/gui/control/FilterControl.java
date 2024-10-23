@@ -21,7 +21,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.swt.SWT;
@@ -31,8 +30,8 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
-import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog2;
-import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter2;
+import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
+import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
 import de.jost_net.JVerein.gui.dialogs.ZusatzfelderAuswahlDialog;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
@@ -43,7 +42,7 @@ import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.server.EigenschaftenNode2;
+import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -351,9 +350,9 @@ public class FilterControl extends AbstractControl
   public DialogInput getEigenschaftenAuswahl() throws RemoteException
   {
     String  tmp = settings.getString(settingsprefix + "eigenschaften", "");
-    final EigenschaftenAuswahlDialog2 d = new EigenschaftenAuswahlDialog2(tmp,
+    final EigenschaftenAuswahlDialog d = new EigenschaftenAuswahlDialog(tmp,
         false, true, this, false);
-    d.addCloseListener(new EigenschaftenCloseListener2());
+    d.addCloseListener(new EigenschaftenCloseListener());
 
     StringTokenizer stt = new StringTokenizer(tmp, ",");
     StringBuilder text = new StringBuilder();
@@ -367,7 +366,7 @@ public class FilterControl extends AbstractControl
       {
         String s = stt.nextToken();
         String prefix = "+";
-        if (s.substring(s.length()-1).equals(EigenschaftenNode2.MINUS))
+        if (s.substring(s.length()-1).equals(EigenschaftenNode.MINUS))
           prefix = "-";
         Eigenschaft ei = (Eigenschaft) Einstellungen.getDBService()
             .createObject(Eigenschaft.class, s.substring(0,s.length()-1));
@@ -398,31 +397,31 @@ public class FilterControl extends AbstractControl
     return eigenschaftenabfrage != null;
   }
   
-  public TreePart getEigenschaftenAuswahlTree2(String vorbelegung,
+  public TreePart getEigenschaftenAuswahlTree(String vorbelegung,
       boolean ohnePflicht, boolean onlyChecked, 
       Mitglied[] mitglieder) throws RemoteException
   {
     eigenschaftenAuswahlTree = new TreePart(
-        new EigenschaftenNode2(vorbelegung, ohnePflicht, onlyChecked, mitglieder), null);
+        new EigenschaftenNode(vorbelegung, ohnePflicht, onlyChecked, mitglieder), null);
     eigenschaftenAuswahlTree.addSelectionListener(
-        new EigenschaftListener2());
-    eigenschaftenAuswahlTree.setFormatter(new EigenschaftTreeFormatter2());
+        new EigenschaftListener());
+    eigenschaftenAuswahlTree.setFormatter(new EigenschaftTreeFormatter());
     return eigenschaftenAuswahlTree;
   }
   
-  public static class EigenschaftTreeFormatter2 implements TreeFormatter
+  public static class EigenschaftTreeFormatter implements TreeFormatter
   {
 
     @Override
     public void format(TreeItem item)
     {
-      EigenschaftenNode2 eigenschaftitem = (EigenschaftenNode2) item.getData();
-      if (eigenschaftitem.getNodeType() == EigenschaftenNode2.ROOT)
+      EigenschaftenNode eigenschaftitem = (EigenschaftenNode) item.getData();
+      if (eigenschaftitem.getNodeType() == EigenschaftenNode.ROOT)
       {
         item.setImage(SWTUtil.getImage("document-properties.png"));
       }
       else if (eigenschaftitem
-          .getNodeType() == EigenschaftenNode2.EIGENSCHAFTGRUPPE)
+          .getNodeType() == EigenschaftenNode.EIGENSCHAFTGRUPPE)
       {
         try
         {
@@ -448,19 +447,19 @@ public class FilterControl extends AbstractControl
       }
       else
       {
-        if (eigenschaftitem.getPreset().equals(EigenschaftenNode2.PLUS))
+        if (eigenschaftitem.getPreset().equals(EigenschaftenNode.PLUS))
         {
           item.setImage(SWTUtil.getImage("list-add.png"));
         }
-        else if (eigenschaftitem.getPreset().equals(EigenschaftenNode2.MINUS))
+        else if (eigenschaftitem.getPreset().equals(EigenschaftenNode.MINUS))
         {
           item.setImage(SWTUtil.getImage("list-remove.png"));
         }
-        else if (eigenschaftitem.getPreset().equals(EigenschaftenNode2.CHECKED))
+        else if (eigenschaftitem.getPreset().equals(EigenschaftenNode.CHECKED))
         {
           item.setImage(SWTUtil.getImage("tree-checked.png"));
         }
-        else if (eigenschaftitem.getPreset().equals(EigenschaftenNode2.CHECKED_PARTLY))
+        else if (eigenschaftitem.getPreset().equals(EigenschaftenNode.CHECKED_PARTLY))
         {
           item.setImage(SWTUtil.getImage("tree-checked-partly.png"));
         }
@@ -1211,70 +1210,20 @@ public class FilterControl extends AbstractControl
   static class EigenschaftListener implements Listener
   {
 
-    private TreePart tree;
-
-    public EigenschaftListener(TreePart tree)
-    {
-      this.tree = tree;
-    }
-
-    @Override
-    public void handleEvent(Event event)
-    {
-      // "o" ist das Objekt, welches gerade markiert
-      // wurde oder die Checkbox geaendert wurde.
-      GenericObjectNode o = (GenericObjectNode) event.data;
-
-      // Da der Listener sowohl dann aufgerufen wird,j
-      // nur nur eine Zeile selektiert wurde als auch,
-      // wenn die Checkbox geaendert wurde, musst du jetzt
-      // noch ersteres ausfiltern - die Checkboxen sollen
-      // ja nicht geaendert werden, wenn nur eine Zeile
-      // selektiert aber die Checkbox nicht geaendert wurde.
-      // Hierzu schreibe ich in event.detail einen Int-Wert.
-      // event.detail = -1 // Nur selektiert
-      // event.detail = 1 // Checkbox aktiviert
-      // event.detail = 0 // Checkbox deaktiviert
-
-      // Folgende Abfrage deaktiviert wegen Problemen mit Windows
-      // if (event.detail == -1)
-      // {
-      // return;
-      // }
-      try
-      {
-        if (o.getChildren() == null)
-        {
-          return;
-        }
-        List<?> children = PseudoIterator.asList(o.getChildren());
-        boolean b = event.detail > 0;
-        tree.setChecked(children.toArray(new Object[children.size()]), b);
-      }
-      catch (RemoteException e)
-      {
-        Logger.error("Fehler", e);
-      }
-    }
-  }
-  
-  static class EigenschaftListener2 implements Listener
-  {
-
     @Override
     public void handleEvent(Event event)
     {
       // "o" ist das Objekt, welches gerade markiert wurde
       GenericObjectNode o = (GenericObjectNode) event.data;
 
-      if (o instanceof EigenschaftenNode2)
+      if (o instanceof EigenschaftenNode)
       {
-        EigenschaftenNode2 node = (EigenschaftenNode2) o;
-        if ( node.getNodeType() == EigenschaftenNode2.EIGENSCHAFTEN)
+        EigenschaftenNode node = (EigenschaftenNode) o;
+        if ( node.getNodeType() == EigenschaftenNode.EIGENSCHAFTEN)
         {
           node.incPreset();
           TreeItem item = (TreeItem) event.item;
-          new EigenschaftTreeFormatter2().format(item);
+          new EigenschaftTreeFormatter().format(item);
         }
       }
     }
@@ -1283,7 +1232,7 @@ public class FilterControl extends AbstractControl
   /**
    * Listener, der die Auswahl der Eigenschaften ueberwacht.
    */
-  private class EigenschaftenCloseListener2 implements Listener
+  private class EigenschaftenCloseListener implements Listener
   {
 
     @Override
@@ -1293,7 +1242,7 @@ public class FilterControl extends AbstractControl
       {
         return;
       }
-      EigenschaftenAuswahlParameter2 param = (EigenschaftenAuswahlParameter2) event.data;
+      EigenschaftenAuswahlParameter param = (EigenschaftenAuswahlParameter) event.data;
       StringBuilder id = new StringBuilder();
       StringBuilder text = new StringBuilder();
       for (Object o : param.getEigenschaftenNodes())
@@ -1303,12 +1252,12 @@ public class FilterControl extends AbstractControl
           id.append(",");
           text.append(", ");
         }
-        EigenschaftenNode2 node = (EigenschaftenNode2) o;
+        EigenschaftenNode node = (EigenschaftenNode) o;
         try
         {
           id.append(node.getEigenschaft().getID() + node.getPreset());
           String prefix = "+";
-          if (node.getPreset().equals(EigenschaftenNode2.MINUS))
+          if (node.getPreset().equals(EigenschaftenNode.MINUS))
             prefix = "-";
           text.append(prefix + node.getEigenschaft().getBezeichnung());
         }

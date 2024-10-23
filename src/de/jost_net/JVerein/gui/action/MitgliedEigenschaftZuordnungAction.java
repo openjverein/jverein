@@ -25,11 +25,11 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog2;
-import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter2;
+import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
+import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.server.EigenschaftenNode2;
+import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
@@ -65,18 +65,18 @@ public class MitgliedEigenschaftZuordnungAction implements Action
     int anzGeloescht = 0;
     try
     {
-      EigenschaftenAuswahlDialog2 ead = new EigenschaftenAuswahlDialog2("", true,
+      EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog("", true,
           false, new MitgliedControl(null), false, mitglieder);
-      EigenschaftenAuswahlParameter2 param = ead.open();
+      EigenschaftenAuswahlParameter param = ead.open();
       if (param == null || param.getEigenschaftenNodes() == null)
       {
         return;
       }
       Map<Long, Long[]> eigenschaftenMap =  getEigenschaften();
-      ArrayList<EigenschaftenNode2> eigenschaftenNodes = param.getEigenschaftenNodes();
-      for (EigenschaftenNode2 eigenschaftenNode : eigenschaftenNodes)
+      ArrayList<EigenschaftenNode> eigenschaftenNodes = param.getEigenschaftenNodes();
+      for (EigenschaftenNode eigenschaftenNode : eigenschaftenNodes)
       {
-        if (eigenschaftenNode.getPreset().equals(EigenschaftenNode2.PLUS))
+        if (eigenschaftenNode.getPreset().equals(EigenschaftenNode.PLUS))
         {
           for (Mitglied mitglied : mitglieder)
           {
@@ -102,7 +102,7 @@ public class MitgliedEigenschaftZuordnungAction implements Action
             }
           }
         }
-        else if (eigenschaftenNode.getPreset().equals(EigenschaftenNode2.MINUS))
+        else if (eigenschaftenNode.getPreset().equals(EigenschaftenNode.MINUS))
         {
           for (Mitglied mitglied : mitglieder)
           {

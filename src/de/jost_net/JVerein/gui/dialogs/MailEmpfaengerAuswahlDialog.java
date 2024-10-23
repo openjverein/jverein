@@ -28,7 +28,7 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.server.EigenschaftenNode2;
+import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -71,12 +71,12 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
       {
         try
         {
-          EigenschaftenAuswahlDialog2 ead = new EigenschaftenAuswahlDialog2(null,
+          EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog(null,
               false, false, new MitgliedControl(null), true);
-          EigenschaftenAuswahlParameter2 param = ead.open();
+          EigenschaftenAuswahlParameter param = ead.open();
           if (param == null)
             return;
-          for (EigenschaftenNode2 node : param.getEigenschaftenNodes())
+          for (EigenschaftenNode node : param.getEigenschaftenNodes())
           {
             DBIterator<Eigenschaften> it = Einstellungen.getDBService()
                 .createList(Eigenschaften.class);
