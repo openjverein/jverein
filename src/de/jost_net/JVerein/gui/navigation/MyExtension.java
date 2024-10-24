@@ -319,10 +319,10 @@ public class MyExtension implements Extension
           new BeitragsgruppeSucheAction(), "clone.png"));
       einstellungenmitglieder
           .addChild(new MyItem(einstellungenmitglieder, "Eigenschaften-Gruppen",
-              new EigenschaftGruppeListeAction(), "ellipsis-v.png"));
+              new EigenschaftGruppeListeAction(), "document-properties.png"));
       einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Eigenschaften",
-          new EigenschaftListeAction(), "ellipsis-v.png"));
-      einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Felddefinitionen",
+          new EigenschaftListeAction(), "document-properties.png"));
+      einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Zusatzfelder",
           new FelddefinitionenAction(), "list.png"));
       if (Einstellungen.getEinstellung().getUseLesefelder())
       {
@@ -340,7 +340,7 @@ public class MyExtension implements Extension
       if (Einstellungen.getEinstellung().getZusatzadressen())
       {
         einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Mitgliedstypen",
-            new MitgliedstypListAction(), "columns.png"));
+            new MitgliedstypListAction(), "user-friends.png"));
       }
       administration.addChild(einstellungenmitglieder);
       
@@ -353,10 +353,10 @@ public class MyExtension implements Extension
           "Buchungsarten", new BuchungsartListAction(), "ellipsis-v.png"));
       einstellungenbuchfuehrung
           .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Export",
-              new KontenrahmenExportAction(), "ellipsis-v.png"));
+              new KontenrahmenExportAction(), "document-save.png"));
       einstellungenbuchfuehrung
           .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Import",
-              new KontenrahmenImportAction(), "ellipsis-v.png"));
+              new KontenrahmenImportAction(), "file-import.png"));
       einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
           "Projekte", new ProjektListAction(), "screwdriver.png"));
       administration.addChild(einstellungenbuchfuehrung);
