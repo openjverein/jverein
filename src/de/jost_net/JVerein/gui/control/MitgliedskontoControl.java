@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -127,6 +128,8 @@ public class MitgliedskontoControl extends DruckMailControl
   private AbstractInput buchungsart;
   
   private SelectInput buchungsklasse;
+  
+  private SelectInput mitglied;
 
   // MitgliedskontoMahnung/RechnungView
   public enum TYP
@@ -240,7 +243,7 @@ public class MitgliedskontoControl extends DruckMailControl
       z = getMitgliedskonto().getZahlungsweg();
     }
     ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
-    if(getMitgliedskonto().getMitglied().getZahlerID() == null)
+    if(((Mitglied) getMitglied().getValue()).getZahlerID() == null)
       weg.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
 
     zahlungsweg = new SelectInput(weg,
@@ -400,6 +403,10 @@ public class MitgliedskontoControl extends DruckMailControl
     try
     {
       Mitgliedskonto mkto = getMitgliedskonto();
+      if (mkto.isNewObject())
+      {
+        mkto.setMitglied((Mitglied) getMitglied().getValue());
+      }
       mkto.setBetrag((Double) getBetrag().getValue());
       mkto.setDatum((Date) getDatum().getValue());
       Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
@@ -1298,4 +1305,77 @@ public class MitgliedskontoControl extends DruckMailControl
     }
     return text;
   }
+
+  public SelectInput getMitglied() throws RemoteException
+  {
+    if (mitglied != null)
+    {
+      return mitglied;
+    }
+
+    if (!getMitgliedskonto().isNewObject())
+    {
+      Mitglied[] mitgliedArray = {getMitgliedskonto().getMitglied()};
+      mitglied = new SelectInput(mitgliedArray, getMitgliedskonto().getMitglied());
+      mitglied.setEnabled(false);
+    }
+    else
+    {
+      //Hole alle Mitglieder aus Datenbank um sie später anzuzeigen.
+      DBIterator<Mitglied> it = Einstellungen.getDBService()
+          .createList(Mitglied.class);
+      // TODO Wenn es "zu viele" Mitglieder gibt, ist ein SelectInput
+      // nicht geeignet. Es sollte eine andere Art der Auswahl eingebaut
+      // werden.
+      it.setOrder("order by name, vorname");
+      // optional könnten Filter eingebaut werden:
+      // it.addFilter("plz='" + (String) plz.getValue() + "'");
+      ArrayList<Mitglied> mitgliederList = new ArrayList<>();
+      while (it.hasNext())
+      {
+        mitgliederList.add(it.next());
+      }
+
+      // Das erste Mitglied wird ausgewählt
+      Mitglied selectedMitglied = null;
+      if (!mitgliederList.isEmpty())
+      {
+        selectedMitglied = mitgliederList.get(0);
+      }
+      mitglied = new SelectInput(mitgliederList.toArray(), selectedMitglied);
+      mitglied.addListener(new MitgliedListener());
+    }
+    return mitglied;
+  }
+  
+  public class MitgliedListener implements Listener
+  {
+
+    MitgliedListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      try
+      {
+        @SuppressWarnings("unchecked")
+        ArrayList<Zahlungsweg> list = (ArrayList<Zahlungsweg>) getZahlungsweg().getList();
+        list.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+        if(((Mitglied) getMitglied().getValue()).getZahlerID() != null)
+          list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+        getZahlungsweg().setList(list);
+      }
+      catch (RemoteException e)
+      {
+        e.printStackTrace();
+      }
+    }
+  }
+  
 }
