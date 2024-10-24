@@ -751,6 +751,7 @@ public class FilterControl extends AbstractControl
     zusatzfelderabfrage = new DialogInput("", zad);
     setZusatzfelderAuswahl();
     zusatzfelderabfrage.setName("Zusatzfelder");
+    zusatzfelderabfrage.disableClientControl();
     return zusatzfelderabfrage;
   }
   
