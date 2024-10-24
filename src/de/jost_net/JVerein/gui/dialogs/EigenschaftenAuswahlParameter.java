@@ -22,23 +22,23 @@ import de.jost_net.JVerein.server.EigenschaftenNode;
 
 public class EigenschaftenAuswahlParameter
 {
-  private ArrayList<EigenschaftenNode> eigenschaften;
+  private ArrayList<EigenschaftenNode> eigenschaftenNodes;
 
   private String verknuepfung;
 
   public EigenschaftenAuswahlParameter()
   {
-    eigenschaften = new ArrayList<>();
+    eigenschaftenNodes = new ArrayList<>();
   }
 
   public void add(EigenschaftenNode node)
   {
-    eigenschaften.add(node);
+    eigenschaftenNodes.add(node);
   }
 
-  public ArrayList<EigenschaftenNode> getEigenschaften()
+  public ArrayList<EigenschaftenNode> getEigenschaftenNodes()
   {
-    return eigenschaften;
+    return eigenschaftenNodes;
   }
 
   public void setVerknuepfung(String verknuepfung)

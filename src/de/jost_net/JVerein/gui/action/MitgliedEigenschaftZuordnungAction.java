@@ -17,7 +17,11 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
@@ -26,8 +30,11 @@ import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.EigenschaftenNode;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -45,59 +52,114 @@ public class MitgliedEigenschaftZuordnungAction implements Action
     {
       throw new ApplicationException("Kein Mitglied ausgewählt");
     }
-    Mitglied[] m = null;
+    Mitglied[] mitglieder = null;
     if (context instanceof Mitglied)
     {
-      m = new Mitglied[] { (Mitglied) context };
+      mitglieder = new Mitglied[] { (Mitglied) context };
     }
     else if (context instanceof Mitglied[])
     {
-      m = (Mitglied[]) context;
+      mitglieder = (Mitglied[]) context;
     }
     int anzErfolgreich = 0;
     int anzBereitsVorhanden = 0;
+    int anzGeloescht = 0;
     try
     {
       EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog("", true,
-          false, new MitgliedControl(null));
+          false, new MitgliedControl(null), false, mitglieder);
       EigenschaftenAuswahlParameter param = ead.open();
-      for (EigenschaftenNode en : param.getEigenschaften())
+      if (param == null || param.getEigenschaftenNodes() == null)
       {
-        for (Mitglied mit : m)
+        return;
+      }
+      Map<Long, Long[]> eigenschaftenMap =  getEigenschaften();
+      ArrayList<EigenschaftenNode> eigenschaftenNodes = param.getEigenschaftenNodes();
+      for (EigenschaftenNode eigenschaftenNode : eigenschaftenNodes)
+      {
+        if (eigenschaftenNode.getPreset().equals(EigenschaftenNode.PLUS))
         {
-          Eigenschaften eig = (Eigenschaften) Einstellungen.getDBService()
-              .createObject(Eigenschaften.class, null);
-          eig.setEigenschaft(en.getEigenschaft().getID());
-          eig.setMitglied(mit.getID());
-          try
+          for (Mitglied mitglied : mitglieder)
           {
-            eig.store();
-            anzErfolgreich++;
-          }
-          catch (RemoteException e)
-          {
-            if (e.getCause() instanceof SQLException)
+            Eigenschaften eig = (Eigenschaften) Einstellungen.getDBService()
+                .createObject(Eigenschaften.class, null);
+            eig.setEigenschaft(eigenschaftenNode.getEigenschaft().getID());
+            eig.setMitglied(mitglied.getID());
+            try
             {
-              anzBereitsVorhanden++;
+              eig.store();
+              anzErfolgreich++;
             }
-            else
+            catch (RemoteException e)
             {
-              throw new ApplicationException(e);
+              if (e.getCause() instanceof SQLException)
+              {
+                anzBereitsVorhanden++;
+              }
+              else
+              {
+                throw new ApplicationException(e);
+              }
+            }
+          }
+        }
+        else if (eigenschaftenNode.getPreset().equals(EigenschaftenNode.MINUS))
+        {
+          for (Mitglied mitglied : mitglieder)
+          {
+            for  (Long key : eigenschaftenMap.keySet())
+            {
+              Long[] entry = eigenschaftenMap.get(key);
+              if (entry[0].equals(Long.valueOf(mitglied.getID())) &&
+                  entry[1].equals(Long.valueOf(eigenschaftenNode.getEigenschaft().getID())))
+              {
+                Eigenschaften eig = (Eigenschaften) Einstellungen.getDBService()
+                    .createObject(Eigenschaften.class, key.toString());
+                eig.delete();
+                anzGeloescht++;
+              }
             }
           }
         }
       }
     }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
     catch (Exception e)
     {
       Logger.error(
-
-      "Fehler beim Anlegen neuer Eigenschaften", e);
+      "Fehler beim Bearbeiten von Eigenschaften", e);
       return;
     }
     GUI.getStatusBar().setSuccessText(
         String.format(
-            "%d Eigenschaft(en) angelegt. %d waren bereits vorhanden.",
-            anzErfolgreich, anzBereitsVorhanden));
+            "%d Eigenschaft(en) angelegt, %d waren bereits vorhanden, %d wurden gelöscht.",
+            anzErfolgreich, anzBereitsVorhanden, anzGeloescht));
+  }
+  
+  @SuppressWarnings("unchecked")
+  private Map<Long, Long[]> getEigenschaften() throws RemoteException
+  {
+    // Eigenschaften lesen
+    final DBService service = Einstellungen.getDBService();
+    String sql = "SELECT eigenschaften.* from eigenschaften ";
+    Map<Long, Long[]> mitgliedeigenschaften = (Map<Long, Long[]>) service.execute(sql,
+        new Object[] { }, new ResultSetExtractor()
+    {
+      @Override
+      public Object extract(ResultSet rs) throws RemoteException, SQLException
+      {
+        Map<Long, Long[]> list = new HashMap<>();
+        while (rs.next())
+        {
+          // (Eigenschaften.Id, [Mitglied.Id, Eigenschaft.Id])
+          list.put(rs.getLong(1), new Long[] {rs.getLong(2), rs.getLong(3)});
+        }
+        return list;
+      }
+    });
+    return mitgliedeigenschaften;
   }
 }
