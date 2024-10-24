@@ -79,7 +79,7 @@ public class PreNotificationView extends AbstractView
     buttons1.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
         control, false, "view-refresh.png"));
     buttons1.addButton(control.getStartButton(this.getCurrentObject()));
-    addButtonArea(buttons1, tabMailPDF.getComposite());
+    addButtonArea(buttons1, grtabMailPDF.getComposite());
 
     TabGroup tab2 = new TabGroup(folder, "1 ct-Überweisung");
     SimpleContainer grtab2 = new SimpleContainer(tab2.getComposite(), true);
@@ -92,7 +92,7 @@ public class PreNotificationView extends AbstractView
         DokumentationUtil.PRENOTIFICATION, false, "question-circle.png");
     buttons2.addButton(
         control.getStart1ctUeberweisungButton(this.getCurrentObject()));
-    addButtonArea(buttons2, tab2.getComposite());
+    addButtonArea(buttons2, grtab2.getComposite());
   }
   
   /**
