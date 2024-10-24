@@ -379,6 +379,7 @@ public class FilterControl extends AbstractControl
     }
     eigenschaftenabfrage = new DialogInput(text.toString(), d);
     eigenschaftenabfrage.setName("Eigenschaften");
+    eigenschaftenabfrage.disableClientControl();
     eigenschaftenabfrage.addListener(new Listener()
     {
 

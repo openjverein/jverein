@@ -34,6 +34,7 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -121,6 +122,10 @@ public class MitgliedEigenschaftZuordnungAction implements Action
           }
         }
       }
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
     }
     catch (Exception e)
     {

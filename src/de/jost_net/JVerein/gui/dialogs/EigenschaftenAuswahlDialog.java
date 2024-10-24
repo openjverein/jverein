@@ -30,6 +30,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 
 /**
@@ -145,6 +146,15 @@ public class EigenschaftenAuswahlDialog
         close();
       }
     }, null, true, "ok.png");
+    buttons.addButton("Abbrechen", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        throw new OperationCanceledException();
+      }
+    }, null, false, "process-stop.png");
     buttons.paint(parent);
   }
 
