@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -1340,10 +1339,6 @@ public class MitgliedskontoControl extends DruckMailControl
     @Override
     public void handleEvent(Event event)
     {
-      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
-      {
-        return;
-      }
       try
       {
         @SuppressWarnings("unchecked")
