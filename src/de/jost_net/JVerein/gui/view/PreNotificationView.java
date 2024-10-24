@@ -16,7 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.rmi.RemoteException;
+
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
@@ -28,6 +33,9 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.TabGroup;
+import de.willuhn.jameica.messaging.StatusBarMessage;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.logging.Logger;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
@@ -71,7 +79,7 @@ public class PreNotificationView extends AbstractView
     buttons1.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
         control, false, "view-refresh.png"));
     buttons1.addButton(control.getStartButton(this.getCurrentObject()));
-    grtabMailPDF.addButtonArea(buttons1);
+    addButtonArea(buttons1, grtabMailPDF.getComposite());
 
     TabGroup tab2 = new TabGroup(folder, "1 ct-Überweisung");
     SimpleContainer grtab2 = new SimpleContainer(tab2.getComposite(), true);
@@ -84,6 +92,34 @@ public class PreNotificationView extends AbstractView
         DokumentationUtil.PRENOTIFICATION, false, "question-circle.png");
     buttons2.addButton(
         control.getStart1ctUeberweisungButton(this.getCurrentObject()));
-    grtab2.addButtonArea(buttons2);
+    addButtonArea(buttons2, grtab2.getComposite());
+  }
+  
+  /**
+   * Fuegt eine neue ButtonArea ohne Seperator hinzu.
+   * @param buttonArea die hinzuzufuegende Button-Area.
+   * @param composite in den gezeichnet werden soll
+   * Code ist aus de.willuhn.jameica.gui.util.Container kopiert
+   */
+  public void addButtonArea(ButtonArea buttonArea, Composite composite)
+  {
+    try
+    {
+      final GridData g = new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END);
+      g.horizontalSpan = 2;
+      final Composite comp = new Composite(composite,SWT.NONE);
+      comp.setLayoutData(g);
+
+      final GridLayout gl = new GridLayout();
+      gl.marginHeight = 0;
+      gl.marginWidth = 0;
+      comp.setLayout(gl);
+      buttonArea.paint(comp);
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("error while adding button area",e);
+      Application.getMessagingFactory().sendMessage(new StatusBarMessage(Application.getI18n().tr("Fehler beim Anzeigen des Buttons."),StatusBarMessage.TYPE_ERROR));
+    }
   }
 }
