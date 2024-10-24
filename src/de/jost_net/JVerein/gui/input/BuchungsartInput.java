@@ -24,7 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.keys.BuchungBuchungsartAuswahl;
+import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -49,7 +49,7 @@ public class BuchungsartInput
   {
     switch (auswahl)
     {
-      case BuchungBuchungsartAuswahl.ComboBox:
+      case AbstractInputAuswahl.ComboBox:
         unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
         if (unterdrueckunglaenge > 0) 
         {
@@ -161,7 +161,7 @@ public class BuchungsartInput
         }
         ((SelectInput) buchungsart).setPleaseChoose("Bitte auswählen");
         break;
-      case BuchungBuchungsartAuswahl.SearchInput:
+      case AbstractInputAuswahl.SearchInput:
       default: // default soll SearchInput sein. Eigentlich sollten die
         // Settings immer gesetzt sein, aber man weiss ja nie.
         buchungsart = new BuchungsartSearchInput(art);

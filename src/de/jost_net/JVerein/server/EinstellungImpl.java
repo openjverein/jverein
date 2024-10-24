@@ -35,7 +35,7 @@ import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.io.JubilaeenParser;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.Beitragsmodel;
-import de.jost_net.JVerein.keys.BuchungBuchungsartAuswahl;
+import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.willuhn.datasource.db.AbstractDBObject;
@@ -1779,7 +1779,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     Integer wert = (Integer) getAttribute(COL_BUCHUNG_BUCHUNGSART_AUSWAHL);
     if (null == wert)
-      return BuchungBuchungsartAuswahl.SearchInput;
+      return AbstractInputAuswahl.SearchInput;
     return wert.intValue();
   }
 
@@ -1787,6 +1787,21 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   public void setBuchungBuchungsartAuswahl(int auswahl) throws RemoteException
   {
     setAttribute(COL_BUCHUNG_BUCHUNGSART_AUSWAHL, auswahl);
+  }
+  
+  @Override
+  public int getMitgliedAuswahl() throws RemoteException
+  {
+    Integer wert = (Integer) getAttribute("mitgliedauswahl");
+    if (null == wert)
+      return AbstractInputAuswahl.SearchInput;
+    return wert.intValue();
+  }
+
+  @Override
+  public void setMitgliedAuswahl(int mitgliedauswahl) throws RemoteException
+  {
+    setAttribute("mitgliedauswahl", mitgliedauswahl);
   }
 
   @Override

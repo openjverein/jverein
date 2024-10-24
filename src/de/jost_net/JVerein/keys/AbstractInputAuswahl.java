@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Auswahl der Buchungsart im Buchungsdialog
  */
-public class BuchungBuchungsartAuswahl
+public class AbstractInputAuswahl
 {
   public static final int SearchInput = 0;
 
@@ -29,7 +29,7 @@ public class BuchungBuchungsartAuswahl
 
   private int auswahl;
 
-  public BuchungBuchungsartAuswahl(int key)
+  public AbstractInputAuswahl(int key)
   {
     this.auswahl = key;
   }
@@ -57,20 +57,20 @@ public class BuchungBuchungsartAuswahl
     }
   }
 
-  public static ArrayList<BuchungBuchungsartAuswahl> getArray()
+  public static ArrayList<AbstractInputAuswahl> getArray()
   {
-    ArrayList<BuchungBuchungsartAuswahl> ret = new ArrayList<>();
-    ret.add(new BuchungBuchungsartAuswahl(SearchInput));
-    ret.add(new BuchungBuchungsartAuswahl(ComboBox));
+    ArrayList<AbstractInputAuswahl> ret = new ArrayList<>();
+    ret.add(new AbstractInputAuswahl(SearchInput));
+    ret.add(new AbstractInputAuswahl(ComboBox));
     return ret;
   }
 
   @Override
   public boolean equals(Object obj)
   {
-    if (obj instanceof BuchungBuchungsartAuswahl)
+    if (obj instanceof AbstractInputAuswahl)
     {
-      BuchungBuchungsartAuswahl v = (BuchungBuchungsartAuswahl) obj;
+      AbstractInputAuswahl v = (AbstractInputAuswahl) obj;
       return (getKey() == v.getKey());
     }
     return false;

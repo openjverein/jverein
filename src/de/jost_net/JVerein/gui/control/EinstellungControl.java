@@ -36,7 +36,7 @@ import de.jost_net.JVerein.keys.AfaOrt;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
 import de.jost_net.JVerein.keys.Beitragsmodel;
-import de.jost_net.JVerein.keys.BuchungBuchungsartAuswahl;
+import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
@@ -290,6 +290,8 @@ public class EinstellungControl extends AbstractControl
   private ScaleInput sepadatumoffset;
 
   private SelectInput buchungBuchungsartAuswahl;
+  
+  private SelectInput mitgliedAuswahl;
 
   private SelectInput buchungsartsort;
 
@@ -1641,10 +1643,24 @@ public class EinstellungControl extends AbstractControl
     }
 
     buchungBuchungsartAuswahl = new SelectInput(
-        BuchungBuchungsartAuswahl.getArray(), new BuchungBuchungsartAuswahl(
+        AbstractInputAuswahl.getArray(), new AbstractInputAuswahl(
             Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl()));
 
     return buchungBuchungsartAuswahl;
+  }
+  
+  public SelectInput getMitgliedAuswahl() throws RemoteException
+  {
+    if (null != mitgliedAuswahl)
+    {
+      return mitgliedAuswahl;
+    }
+
+    mitgliedAuswahl = new SelectInput(
+        AbstractInputAuswahl.getArray(), new AbstractInputAuswahl(
+            Einstellungen.getEinstellung().getMitgliedAuswahl()));
+
+    return mitgliedAuswahl;
   }
 
   public SelectInput getBuchungsartSort() throws RemoteException
@@ -2086,9 +2102,12 @@ public class EinstellungControl extends AbstractControl
       e.setSummenAnlagenkonto((Boolean) summenAnlagenkonto.getValue());
       Altermodel amValue = (Altermodel) altersmodel.getValue();
       e.setAltersModel(amValue.getKey());
-      BuchungBuchungsartAuswahl bbaAuswahl = (BuchungBuchungsartAuswahl) buchungBuchungsartAuswahl
+      AbstractInputAuswahl bbaAuswahl = (AbstractInputAuswahl) buchungBuchungsartAuswahl
           .getValue();
       e.setBuchungBuchungsartAuswahl(bbaAuswahl.getKey());
+      AbstractInputAuswahl mAuswahl = (AbstractInputAuswahl) mitgliedAuswahl
+          .getValue();
+      e.setMitgliedAuswahl(mAuswahl.getKey());
       e.setBuchungsartSort(((BuchungsartSort) buchungsartsort.getValue())
           .getKey());
       if (((AfaOrt) afaort.getValue()).getKey() == 0)

@@ -37,6 +37,7 @@ import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
+import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
@@ -127,6 +128,8 @@ public class MitgliedskontoControl extends DruckMailControl
   private AbstractInput buchungsart;
   
   private SelectInput buchungsklasse;
+  
+  private AbstractInput mitglied;
 
   // MitgliedskontoMahnung/RechnungView
   public enum TYP
@@ -240,7 +243,8 @@ public class MitgliedskontoControl extends DruckMailControl
       z = getMitgliedskonto().getZahlungsweg();
     }
     ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
-    if(getMitgliedskonto().getMitglied().getZahlerID() == null)
+    if(getMitglied().getValue() == null ||
+        ((Mitglied) getMitglied().getValue()).getZahlerID() == null)
       weg.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
 
     zahlungsweg = new SelectInput(weg,
@@ -400,6 +404,17 @@ public class MitgliedskontoControl extends DruckMailControl
     try
     {
       Mitgliedskonto mkto = getMitgliedskonto();
+      if (mkto.isNewObject())
+      {
+        if (getMitglied().getValue() != null)
+        {
+          mkto.setMitglied((Mitglied) getMitglied().getValue());
+        }
+        else
+        {
+          throw new ApplicationException("Bitte Mitglied eingeben");
+        }
+      }
       mkto.setBetrag((Double) getBetrag().getValue());
       mkto.setDatum((Date) getDatum().getValue());
       Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
@@ -1298,4 +1313,53 @@ public class MitgliedskontoControl extends DruckMailControl
     }
     return text;
   }
+
+  public Input getMitglied() throws RemoteException
+  {
+    if (mitglied != null)
+    {
+      return mitglied;
+    }
+
+    if (getMitgliedskonto().getMitglied() != null)
+    {
+      Mitglied[] mitgliedArray = {getMitgliedskonto().getMitglied()};
+      mitglied = new SelectInput(mitgliedArray, getMitgliedskonto().getMitglied());
+      mitglied.setEnabled(false);
+    }
+    else
+    {
+      mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
+          Einstellungen.getEinstellung().getMitgliedAuswahl());
+      mitglied.addListener(new MitgliedListener());
+    }
+    return mitglied;
+  }
+  
+  public class MitgliedListener implements Listener
+  {
+
+    MitgliedListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      try
+      {
+        @SuppressWarnings("unchecked")
+        ArrayList<Zahlungsweg> list = (ArrayList<Zahlungsweg>) getZahlungsweg().getList();
+        list.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+        if(((Mitglied) getMitglied().getValue()).getZahlerID() != null)
+          list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+        getZahlungsweg().setList(list);
+      }
+      catch (RemoteException e)
+      {
+        e.printStackTrace();
+      }
+    }
+  }
+  
 }

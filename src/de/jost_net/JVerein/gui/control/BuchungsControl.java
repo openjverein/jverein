@@ -67,7 +67,7 @@ import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
-import de.jost_net.JVerein.keys.BuchungBuchungsartAuswahl;
+import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -783,7 +783,7 @@ public class BuchungsControl extends AbstractControl
 
     suchbuchungsart = (SelectInput) new BuchungsartInput().
         getBuchungsartInput(suchbuchungsart, null,
-        buchungsarttyp.BUCHUNGSART, BuchungBuchungsartAuswahl.ComboBox);
+        buchungsarttyp.BUCHUNGSART, AbstractInputAuswahl.ComboBox);
     
     @SuppressWarnings("unchecked")
     List<Buchungsart> suchliste = (List<Buchungsart>) suchbuchungsart.getList();
