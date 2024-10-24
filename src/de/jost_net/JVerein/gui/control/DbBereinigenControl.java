@@ -474,7 +474,19 @@ public class DbBereinigenControl extends AbstractControl
             monitor.setStatusText(fehler);
             continue;
           }
-          b.delete();
+          try
+          {
+            b.delete();
+          }
+          catch (RemoteException e)
+          {
+            //Das kann passieren, wenn die Split Hauptbuchung gelöscht wurde
+            //und jetzt die Splitbuchung gelöscht werden soll, diese
+            //aber durch den Foreign Key bereits gelöscht ist
+            //wenn es aber keine Splitbuchung ist, werfen wir die Exeption
+            if(b.getSplitId() == null)
+              throw e;
+          }
           try
           {
             if (sollloeschen && (b.getMitgliedskonto() != null))

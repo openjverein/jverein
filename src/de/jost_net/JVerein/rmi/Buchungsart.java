@@ -50,7 +50,7 @@ public interface Buchungsart extends DBObject
 
   public Buchungsart getSteuerBuchungsart() throws RemoteException;
 
-  public void setSteuerBuchungsart(String steuer_buchungsart) throws RemoteException;
+  public void setSteuerBuchungsart(Integer steuer_buchungsart) throws RemoteException;
   
   public int getStatus() throws RemoteException;
 

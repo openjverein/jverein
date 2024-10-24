@@ -29,7 +29,7 @@ public class FelddefinitionenUebersichtView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Felddefinitionen");
+    GUI.getView().setTitle("Zusatzfelder");
 
     FelddefinitionControl control = new FelddefinitionControl(this);
 
