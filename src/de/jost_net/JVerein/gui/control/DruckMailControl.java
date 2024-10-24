@@ -40,8 +40,6 @@ public class DruckMailControl extends FilterControl
   protected SelectInput ausgabeart = null;
   
   protected SelectInput ausgabesortierung = null;
-  
-  protected SelectInput art = null;
 
   protected SelectInput adressblatt = null;
   
@@ -104,19 +102,6 @@ public class DruckMailControl extends FilterControl
         Ausgabesortierung.getByKey(settings.getInt(settingsprefix + "ausgabesortierung", 1)));
     ausgabesortierung.setName("Sortierung");
     return ausgabesortierung;
-  }
-  
-  public SelectInput getArt()
-  {
-    if (art != null)
-    {
-      return art;
-    }
-    art = new SelectInput( 
-        new String[] { "Standard", "Individuell" },
-        settings.getString(settingsprefix + "art", "Standard"));
-    art.setName("Ausgabeart");
-    return art;
   }
   
   public SelectInput getAdressblatt()
@@ -190,11 +175,6 @@ public class DruckMailControl extends FilterControl
     {
       Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
       settings.setAttribute(settingsprefix + "ausgabeart.key", aa.getKey());
-    }
-    if (art != null)
-    {
-      String ar = (String) getArt().getValue();
-      settings.setAttribute(settingsprefix + "art", ar);
     }
     if (adressblatt != null)
     {

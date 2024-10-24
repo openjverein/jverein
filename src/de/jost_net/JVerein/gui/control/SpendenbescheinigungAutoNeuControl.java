@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +47,6 @@ import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 
 public class SpendenbescheinigungAutoNeuControl extends AbstractControl
 {
@@ -110,11 +110,22 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
     {
       return formularEinzel;
     }
+    String tmp = settings.getString("formular.einzel", "");
     DBIterator<Formular> it = Einstellungen.getDBService()
         .createList(Formular.class);
     it.addFilter("art = ?",
         new Object[] { FormularArt.SPENDENBESCHEINIGUNG.getKey() });
-    formularEinzel = new SelectInput(it != null ? PseudoIterator.asList(it) : null, null);
+    ArrayList<Formular> list = new ArrayList<>();
+    Formular preset = null;
+    while (it.hasNext())
+    {
+      Formular f = (Formular) it.next();
+      list.add(f);
+      if (tmp != null && !tmp.isEmpty() && f.getID().equalsIgnoreCase(tmp) )
+        preset = f;
+    }
+    formularEinzel = new SelectInput(list, preset);
+    formularEinzel.setPleaseChoose("Standard");
     return formularEinzel;
   }
 
@@ -124,11 +135,22 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
     {
       return formularSammel;
     }
+    String tmp = settings.getString("formular.sammel", "");
     DBIterator<Formular> it = Einstellungen.getDBService()
         .createList(Formular.class);
     it.addFilter("art = ?",
         new Object[] { FormularArt.SAMMELSPENDENBESCHEINIGUNG.getKey() });
-    formularSammel = new SelectInput(it != null ? PseudoIterator.asList(it) : null, null);
+    ArrayList<Formular> list = new ArrayList<>();
+    Formular preset = null;
+    while (it.hasNext())
+    {
+      Formular f = (Formular) it.next();
+      list.add(f);
+      if (tmp != null && !tmp.isEmpty() && f.getID().equalsIgnoreCase(tmp) )
+        preset = f;
+    }
+    formularSammel = new SelectInput(list, preset);
+    formularSammel.setPleaseChoose("Standard");
     return formularSammel;
   }
 
@@ -150,6 +172,23 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
       {
         try
         {
+          if (formularEinzel != null )
+          {
+            Formular aa = (Formular) getFormular().getValue();
+            if (aa != null)
+              settings.setAttribute("formular.einzel", aa.getID());
+            else
+              settings.setAttribute("formular.einzel", "");
+          }
+          if (formularSammel != null )
+          {
+            Formular aa = (Formular) getFormularSammelbestaetigung().getValue();
+            if (aa != null)
+              settings.setAttribute("formular.sammel", aa.getID());
+            else
+              settings.setAttribute("formular.sammel", "");
+          }          
+          
           @SuppressWarnings("rawtypes")
           List items = spbTree.getItems();
           
