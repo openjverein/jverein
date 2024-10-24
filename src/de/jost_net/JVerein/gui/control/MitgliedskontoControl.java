@@ -38,6 +38,7 @@ import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
+import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
@@ -129,7 +130,7 @@ public class MitgliedskontoControl extends DruckMailControl
   
   private SelectInput buchungsklasse;
   
-  private SelectInput mitglied;
+  private AbstractInput mitglied;
 
   // MitgliedskontoMahnung/RechnungView
   public enum TYP
@@ -243,7 +244,8 @@ public class MitgliedskontoControl extends DruckMailControl
       z = getMitgliedskonto().getZahlungsweg();
     }
     ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
-    if(((Mitglied) getMitglied().getValue()).getZahlerID() == null)
+    if(getMitglied().getValue() == null ||
+        ((Mitglied) getMitglied().getValue()).getZahlerID() == null)
       weg.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
 
     zahlungsweg = new SelectInput(weg,
@@ -1306,7 +1308,7 @@ public class MitgliedskontoControl extends DruckMailControl
     return text;
   }
 
-  public SelectInput getMitglied() throws RemoteException
+  public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
     {
@@ -1321,28 +1323,8 @@ public class MitgliedskontoControl extends DruckMailControl
     }
     else
     {
-      //Hole alle Mitglieder aus Datenbank um sie später anzuzeigen.
-      DBIterator<Mitglied> it = Einstellungen.getDBService()
-          .createList(Mitglied.class);
-      // TODO Wenn es "zu viele" Mitglieder gibt, ist ein SelectInput
-      // nicht geeignet. Es sollte eine andere Art der Auswahl eingebaut
-      // werden.
-      it.setOrder("order by name, vorname");
-      // optional könnten Filter eingebaut werden:
-      // it.addFilter("plz='" + (String) plz.getValue() + "'");
-      ArrayList<Mitglied> mitgliederList = new ArrayList<>();
-      while (it.hasNext())
-      {
-        mitgliederList.add(it.next());
-      }
-
-      // Das erste Mitglied wird ausgewählt
-      Mitglied selectedMitglied = null;
-      if (!mitgliederList.isEmpty())
-      {
-        selectedMitglied = mitgliederList.get(0);
-      }
-      mitglied = new SelectInput(mitgliederList.toArray(), selectedMitglied);
+      mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
+          Einstellungen.getEinstellung().getMitgliedAuswahl());
       mitglied.addListener(new MitgliedListener());
     }
     return mitglied;
