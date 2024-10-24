@@ -1321,7 +1321,7 @@ public class MitgliedskontoControl extends DruckMailControl
       return mitglied;
     }
 
-    if (!getMitgliedskonto().isNewObject())
+    if (getMitgliedskonto().getMitglied() != null)
     {
       Mitglied[] mitgliedArray = {getMitgliedskonto().getMitglied()};
       mitglied = new SelectInput(mitgliedArray, getMitgliedskonto().getMitglied());
