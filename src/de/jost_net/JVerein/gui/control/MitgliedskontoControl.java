@@ -406,7 +406,14 @@ public class MitgliedskontoControl extends DruckMailControl
       Mitgliedskonto mkto = getMitgliedskonto();
       if (mkto.isNewObject())
       {
-        mkto.setMitglied((Mitglied) getMitglied().getValue());
+        if (getMitglied().getValue() != null)
+        {
+          mkto.setMitglied((Mitglied) getMitglied().getValue());
+        }
+        else
+        {
+          throw new ApplicationException("Bitte Mitglied eingeben");
+        }
       }
       mkto.setBetrag((Double) getBetrag().getValue());
       mkto.setDatum((Date) getDatum().getValue());
