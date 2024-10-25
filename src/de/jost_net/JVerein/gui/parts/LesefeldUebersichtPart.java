@@ -78,6 +78,10 @@ public class LesefeldUebersichtPart implements Part
     container.addHeadline("Lesefelder");
     container.addLabelPair("Mitglied", getMitglied());
 
+    if (selectedMitglied == null && getMitglied().getValue() != null)
+    {
+      selectedMitglied = (Mitglied) getMitglied().getValue();
+    }
     // LesefelderListeLayout
     // darf nur über die Funktionen
     // addLesefeldEinstellungRow(), updateLesefeldEinstellungRow()
