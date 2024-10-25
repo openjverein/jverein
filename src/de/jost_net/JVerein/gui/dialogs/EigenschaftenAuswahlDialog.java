@@ -190,102 +190,113 @@ public class EigenschaftenAuswahlDialog
   private boolean checkRestrictions(EigenschaftenNode root, Mitglied[] mitglieder) 
       throws RemoteException, ApplicationException
   {
-    HashMap<String, Boolean> pflichtgruppen = new HashMap<>();
-    HashMap<String, Boolean> max1gruppen = new HashMap<>();
-    for (Mitglied mitglied : mitglieder)
+    HashMap<String, Boolean> pflichtgruppenMap = new HashMap<>();
+    HashMap<String, Boolean> max1gruppenMap = new HashMap<>();
+    ArrayList<EigenschaftGruppe> pflichtgruppen = root.getPflichtGruppen();
+    ArrayList<EigenschaftGruppe> max1gruppen = root.getMax1Gruppen();
+    if (!pflichtgruppen.isEmpty())
     {
-      // 1. Prüfen auf Pflicht
-      // Erst alle Pflicht Gruppen auf false setzten
-      pflichtgruppen.clear();
-      for (EigenschaftGruppe eg : root.getPflichtGruppen())
+      for (Mitglied mitglied : mitglieder)
       {
-        pflichtgruppen.put(eg.getID(), Boolean.valueOf(false));
-      }
-      // Gesetzte Eigenschaften Gruppen bestimmen
-      // Es muss die Eigenschaft im Mitglied gesetzt sein
-      // und darf nicht im Dialog auf "-" stehen
-      for (Long[] eigenschaften : root.getEigenschaften())
-      {
-        EigenschaftenNode node = root.getEigenschaftenNode(eigenschaften[1].toString());
-        String gruppenId = node.getEigenschaftGruppe().getID();
-        if (eigenschaften[0].toString().equals(mitglied.getID()) &&
-            !node.getPreset().equals(EigenschaftenNode.MINUS))
+        // 1. Prüfen auf Pflicht
+        // Erst alle Pflicht Gruppen auf false setzten
+        pflichtgruppenMap.clear();
+        for (EigenschaftGruppe eg : pflichtgruppen)
         {
-          pflichtgruppen.put(gruppenId, Boolean.valueOf(true));
+          pflichtgruppenMap.put(eg.getID(), Boolean.valueOf(false));
         }
-      }
-      // Check ob ein Wert neu mit "+" gesetzt wird
-      for (EigenschaftenNode node : root.getCheckedNodes())
-      {
-        String gruppenId = node.getEigenschaftGruppe().getID().toString();
-        if (node.getPreset().equals(EigenschaftenNode.PLUS))
+        // Gesetzte Eigenschaften Gruppen bestimmen
+        // Es muss die Eigenschaft im Mitglied gesetzt sein
+        // und darf nicht im Dialog auf "-" stehen
+        for (Long[] eigenschaften : root.getEigenschaften())
         {
-          pflichtgruppen.put(gruppenId, Boolean.valueOf(true));
-        }
-      }
-      for (String key : pflichtgruppen.keySet())
-      {
-        if (!pflichtgruppen.get(key))
-        {
-          EigenschaftGruppe eg = root.getEigenschaftGruppe(key);
-          throw new ApplicationException(String.format(
-              "In der Eigenschaftengruppe \"%s\" fehlt ein Eintrag bei Mitglied %s!",
-              eg.getBezeichnung(), mitglied.getAttribute("namevorname")));
-        }
-      }
-      
-      // 2. Prüfen auf Max1
-      // Max eine Eigenschaft pro Gruppe
-      max1gruppen.clear();
-      for (EigenschaftGruppe eg : root.getMax1Gruppen())
-      {
-        max1gruppen.put(eg.getID(), Boolean.valueOf(false));
-      }
-      // Gesetzte Eigenschaften Gruppen bestimmen
-      // Es darf höchstens eine Eigenschaft im Mitglied gesetzt sein
-      // Hier nur gesetzte Werte ohne "+" und "-", "+" kommt nachher
-      for (Long[] eigenschaften : root.getEigenschaften())
-      {
-        EigenschaftenNode node = root.getEigenschaftenNode(eigenschaften[1].toString());
-        if (eigenschaften[0].toString().equals(mitglied.getID()) &&
-            !node.getPreset().equals(EigenschaftenNode.MINUS) && 
-            !node.getPreset().equals(EigenschaftenNode.PLUS))
-        {
-          EigenschaftGruppe gruppe = node.getEigenschaftGruppe();
-          Boolean m1 = max1gruppen.get(gruppe.getID());
-          if (m1 != null)
+          EigenschaftenNode node = root.getEigenschaftenNode(eigenschaften[1].toString());
+          String gruppenId = node.getEigenschaftGruppe().getID();
+          if (eigenschaften[0].toString().equals(mitglied.getID()) &&
+              !node.getPreset().equals(EigenschaftenNode.MINUS))
           {
-            if (m1)
-            {
-              throw new ApplicationException(String.format(
-                  "In der Eigenschaftengruppe \"%s\" ist bei Mitglied %s mehr als ein Eintrag markiert!",
-                  gruppe.getBezeichnung(), mitglied.getAttribute("namevorname")));
-            }
-            else
-            {
-              max1gruppen.put(gruppe.getID(), Boolean.valueOf(true));
-            }
+            pflichtgruppenMap.put(gruppenId, Boolean.valueOf(true));
+          }
+        }
+        // Check ob ein Wert neu mit "+" gesetzt wird
+        for (EigenschaftenNode node : root.getCheckedNodes())
+        {
+          String gruppenId = node.getEigenschaftGruppe().getID().toString();
+          if (node.getPreset().equals(EigenschaftenNode.PLUS))
+          {
+            pflichtgruppenMap.put(gruppenId, Boolean.valueOf(true));
+          }
+        }
+        for (String key : pflichtgruppenMap.keySet())
+        {
+          if (!pflichtgruppenMap.get(key))
+          {
+            EigenschaftGruppe eg = root.getEigenschaftGruppe(key);
+            throw new ApplicationException(String.format(
+                "In der Eigenschaftengruppe \"%s\" fehlt ein Eintrag bei Mitglied %s!",
+                eg.getBezeichnung(), mitglied.getAttribute("namevorname")));
           }
         }
       }
-      // Check ob ein Wert neu mit "+" gesetzt wird
-      for (EigenschaftenNode node : root.getCheckedNodes())
+    }
+
+    if (!max1gruppen.isEmpty())
+    {
+      for (Mitglied mitglied : mitglieder)
       {
-        if (node.getPreset().equals(EigenschaftenNode.PLUS))
+        // 2. Prüfen auf Max1
+        // Max eine Eigenschaft pro Gruppe
+        max1gruppenMap.clear();
+        for (EigenschaftGruppe eg : max1gruppen)
         {
-          EigenschaftGruppe gruppe = node.getEigenschaftGruppe();
-          Boolean m1 = max1gruppen.get(gruppe.getID());
-          if (m1 != null)
+          max1gruppenMap.put(eg.getID(), Boolean.valueOf(false));
+        }
+        // Gesetzte Eigenschaften Gruppen bestimmen
+        // Es darf höchstens eine Eigenschaft im Mitglied gesetzt sein
+        // Hier nur gesetzte Werte ohne "+" und "-", "+" kommt nachher
+        for (Long[] eigenschaften : root.getEigenschaften())
+        {
+          EigenschaftenNode node = root.getEigenschaftenNode(eigenschaften[1].toString());
+          if (eigenschaften[0].toString().equals(mitglied.getID()) &&
+              !node.getPreset().equals(EigenschaftenNode.MINUS) && 
+              !node.getPreset().equals(EigenschaftenNode.PLUS))
           {
-            if (m1)
+            EigenschaftGruppe gruppe = node.getEigenschaftGruppe();
+            Boolean m1 = max1gruppenMap.get(gruppe.getID());
+            if (m1 != null)
             {
-              throw new ApplicationException(String.format(
-                  "In der Eigenschaftengruppe '%s' ist bei Mitglied %s mehr als ein Eintrag markiert!",
-                  gruppe.getBezeichnung(), mitglied.getAttribute("namevorname")));
+              if (m1)
+              {
+                throw new ApplicationException(String.format(
+                    "In der Eigenschaftengruppe \"%s\" ist bei Mitglied %s mehr als ein Eintrag markiert!",
+                    gruppe.getBezeichnung(), mitglied.getAttribute("namevorname")));
+              }
+              else
+              {
+                max1gruppenMap.put(gruppe.getID(), Boolean.valueOf(true));
+              }
             }
-            else
+          }
+        }
+        // Check ob ein Wert neu mit "+" gesetzt wird
+        for (EigenschaftenNode node : root.getCheckedNodes())
+        {
+          if (node.getPreset().equals(EigenschaftenNode.PLUS))
+          {
+            EigenschaftGruppe gruppe = node.getEigenschaftGruppe();
+            Boolean m1 = max1gruppenMap.get(gruppe.getID());
+            if (m1 != null)
             {
-              max1gruppen.put(gruppe.getID(), Boolean.valueOf(true));
+              if (m1)
+              {
+                throw new ApplicationException(String.format(
+                    "In der Eigenschaftengruppe '%s' ist bei Mitglied %s mehr als ein Eintrag markiert!",
+                    gruppe.getBezeichnung(), mitglied.getAttribute("namevorname")));
+              }
+              else
+              {
+                max1gruppenMap.put(gruppe.getID(), Boolean.valueOf(true));
+              }
             }
           }
         }
