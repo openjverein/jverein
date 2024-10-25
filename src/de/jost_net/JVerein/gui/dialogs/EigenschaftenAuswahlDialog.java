@@ -18,10 +18,12 @@ package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.control.FilterControl;
+import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.willuhn.jameica.gui.Action;
@@ -32,6 +34,7 @@ import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Dialog, zur Auswahl von Eigenschaften eines Mitglied.
@@ -122,13 +125,17 @@ public class EigenschaftenAuswahlDialog
     buttons.addButton("OK", new Action()
     {
       @Override
-      public void handleAction(Object context)
+      public void handleAction(Object context) throws ApplicationException
       {
         try
         {
           param = new EigenschaftenAuswahlParameter();
           ArrayList<?> rootNodes = (ArrayList<?>) tree.getItems();  // liefert nur den Root
           EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
+          if (mitglieder != null)
+          {
+            checkRestrictions(root, mitglieder);
+          }
           for (EigenschaftenNode checkedNode : root.getCheckedNodes())
           {
             param.add(checkedNode);
@@ -178,6 +185,113 @@ public class EigenschaftenAuswahlDialog
         control.getEigenschaftenVerknuepfung());
     eigenschaftenverknuepfung.setName("Gruppen-Verknüpfung");
     return eigenschaftenverknuepfung;
+  }
+  
+  private boolean checkRestrictions(EigenschaftenNode root, Mitglied[] mitglieder) 
+      throws RemoteException, ApplicationException
+  {
+    HashMap<String, Boolean> pflichtgruppen = new HashMap<>();
+    HashMap<String, Boolean> max1gruppen = new HashMap<>();
+    for (Mitglied mitglied : mitglieder)
+    {
+      // 1. Prüfen auf Pflicht
+      // Erst alle Pflicht Gruppen auf false setzten
+      pflichtgruppen.clear();
+      for (EigenschaftGruppe eg : root.getPflichtGruppen())
+      {
+        pflichtgruppen.put(eg.getID(), Boolean.valueOf(false));
+      }
+      // Gesetzte Eigenschaften Gruppen bestimmen
+      // Es muss die Eigenschaft im Mitglied gesetzt sein
+      // und darf nicht im Dialog auf "-" stehen
+      for (Long[] eigenschaften : root.getEigenschaften())
+      {
+        EigenschaftenNode node = root.getEigenschaftenNode(eigenschaften[1].toString());
+        String gruppenId = node.getEigenschaftGruppe().getID();
+        if (eigenschaften[0].toString().equals(mitglied.getID()) &&
+            !node.getPreset().equals(EigenschaftenNode.MINUS))
+        {
+          pflichtgruppen.put(gruppenId, Boolean.valueOf(true));
+        }
+      }
+      // Check ob ein Wert neu mit "+" gesetzt wird
+      for (EigenschaftenNode node : root.getCheckedNodes())
+      {
+        String gruppenId = node.getEigenschaftGruppe().getID().toString();
+        if (node.getPreset().equals(EigenschaftenNode.PLUS))
+        {
+          pflichtgruppen.put(gruppenId, Boolean.valueOf(true));
+        }
+      }
+      for (String key : pflichtgruppen.keySet())
+      {
+        if (!pflichtgruppen.get(key))
+        {
+          EigenschaftGruppe eg = root.getEigenschaftGruppe(key);
+          throw new ApplicationException(String.format(
+              "In der Eigenschaftengruppe \"%s\" fehlt ein Eintrag bei Mitglied %s!",
+              eg.getBezeichnung(), mitglied.getAttribute("namevorname")));
+        }
+      }
+      
+      // 2. Prüfen auf Max1
+      // Max eine Eigenschaft pro Gruppe
+      max1gruppen.clear();
+      for (EigenschaftGruppe eg : root.getMax1Gruppen())
+      {
+        max1gruppen.put(eg.getID(), Boolean.valueOf(false));
+      }
+      // Gesetzte Eigenschaften Gruppen bestimmen
+      // Es darf höchstens eine Eigenschaft im Mitglied gesetzt sein
+      // Hier nur gesetzte Werte ohne "+" und "-", "+" kommt nachher
+      for (Long[] eigenschaften : root.getEigenschaften())
+      {
+        EigenschaftenNode node = root.getEigenschaftenNode(eigenschaften[1].toString());
+        if (eigenschaften[0].toString().equals(mitglied.getID()) &&
+            !node.getPreset().equals(EigenschaftenNode.MINUS) && 
+            !node.getPreset().equals(EigenschaftenNode.PLUS))
+        {
+          EigenschaftGruppe gruppe = node.getEigenschaftGruppe();
+          Boolean m1 = max1gruppen.get(gruppe.getID());
+          if (m1 != null)
+          {
+            if (m1)
+            {
+              throw new ApplicationException(String.format(
+                  "In der Eigenschaftengruppe \"%s\" ist bei Mitglied %s mehr als ein Eintrag markiert!",
+                  gruppe.getBezeichnung(), mitglied.getAttribute("namevorname")));
+            }
+            else
+            {
+              max1gruppen.put(gruppe.getID(), Boolean.valueOf(true));
+            }
+          }
+        }
+      }
+      // Check ob ein Wert neu mit "+" gesetzt wird
+      for (EigenschaftenNode node : root.getCheckedNodes())
+      {
+        if (node.getPreset().equals(EigenschaftenNode.PLUS))
+        {
+          EigenschaftGruppe gruppe = node.getEigenschaftGruppe();
+          Boolean m1 = max1gruppen.get(gruppe.getID());
+          if (m1 != null)
+          {
+            if (m1)
+            {
+              throw new ApplicationException(String.format(
+                  "In der Eigenschaftengruppe '%s' ist bei Mitglied %s mehr als ein Eintrag markiert!",
+                  gruppe.getBezeichnung(), mitglied.getAttribute("namevorname")));
+            }
+            else
+            {
+              max1gruppen.put(gruppe.getID(), Boolean.valueOf(true));
+            }
+          }
+        }
+      }
+    }
+    return true;
   }
 
 }
