@@ -350,6 +350,7 @@ public class LesefeldUebersichtPart implements Part
     mitglied = new MitgliedInput().getMitgliedInput(mitglied, selectedMitglied,
         Einstellungen.getEinstellung().getMitgliedAuswahl());
     mitglied.addListener(new MitgliedListener());
+    mitglied.setMandatory(true);
     return mitglied;
   }
   
