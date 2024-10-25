@@ -59,6 +59,7 @@ public class MitgliedInput
         mitgliedInput = new MitgliedSearchInput();
         ((MitgliedSearchInput) mitgliedInput)
             .setSearchString("Zum Suchen tippen");
+        mitgliedInput.setValue(mitglied);
     }
     return mitgliedInput;
   }
