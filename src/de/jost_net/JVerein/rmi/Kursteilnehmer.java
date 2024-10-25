@@ -59,9 +59,9 @@ public interface Kursteilnehmer extends DBObject, ILastschrift
 
   public void setMandatDatum(Date mandatdatum) throws RemoteException;
 
-  public double getBetrag() throws RemoteException;
+  public Double getBetrag() throws RemoteException;
 
-  public void setBetrag(double betrag) throws RemoteException;
+  public void setBetrag(Double betrag) throws RemoteException;
 
   public Date getGeburtsdatum() throws RemoteException;
 

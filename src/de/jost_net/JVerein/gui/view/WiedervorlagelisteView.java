@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.WiedervorlageAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageListeAction;
 import de.jost_net.JVerein.gui.parts.WiedervorlageList;
 import de.willuhn.jameica.gui.AbstractView;
@@ -35,6 +36,8 @@ public class WiedervorlagelisteView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.WIEDERVORLAGE, false, "question-circle.png");
+    buttons.addButton("Neu", new WiedervorlageAction(null), 
+        null, false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

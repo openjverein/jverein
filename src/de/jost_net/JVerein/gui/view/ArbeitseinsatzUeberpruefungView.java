@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import de.jost_net.JVerein.gui.action.ArbeitseinsatzAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
@@ -58,12 +59,14 @@ public class ArbeitseinsatzUeberpruefungView extends AbstractView
     group.addLabelPair("Auswertung", aui);
 
     control.getArbeitseinsatzUeberpruefungList().paint(getParent());
-    ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton("Hilfe", new DokumentationAction(),
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
-    buttons2.addButton(control.getPDFAusgabeButton());
-    buttons2.addButton(control.getCSVAusgabeButton());
-    buttons2.addButton(butArbeitseinsaetze);
-    buttons2.paint(this.getParent());
+    buttons.addButton(control.getPDFAusgabeButton());
+    buttons.addButton(control.getCSVAusgabeButton());
+    buttons.addButton(butArbeitseinsaetze);
+    buttons.addButton("Neu", new ArbeitseinsatzAction(null), 
+        control, false, "document-new.png");
+    buttons.paint(this.getParent());
   }
 }

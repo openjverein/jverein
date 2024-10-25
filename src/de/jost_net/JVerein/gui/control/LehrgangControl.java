@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.LehrgangAction;
+import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Lehrgang;
@@ -37,6 +38,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
+import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -63,6 +65,8 @@ public class LehrgangControl extends FilterControl
   private TextInput ergebnis = null;
 
   private Lehrgang lehrg = null;
+  
+  private AbstractInput mitglied;
 
 
   public LehrgangControl(AbstractView view)
@@ -115,6 +119,7 @@ public class LehrgangControl extends FilterControl
         }
       }
     });
+    lehrgangsart.setMandatory(true);
     return lehrgangsart;
   }
 
@@ -173,8 +178,27 @@ public class LehrgangControl extends FilterControl
     try
     {
       Lehrgang l = getLehrgang();
+      if (l.isNewObject())
+      {
+        if (getMitglied().getValue() != null)
+        {
+          l.setMitglied(Integer.valueOf(
+              ((Mitglied) getMitglied().getValue()).getID()));
+        }
+        else
+        {
+          throw new ApplicationException("Bitte Mitglied eingeben");
+        }
+      }
       Lehrgangsart la = (Lehrgangsart) getLehrgangsart().getValue();
-      l.setLehrgangsart(Integer.valueOf(la.getID()));
+      if (la != null)
+      {
+        l.setLehrgangsart(Integer.valueOf(la.getID()));
+      }
+      else
+      {
+        l.setLehrgangsart(null);
+      }
       l.setVon((Date) getVon().getValue());
       l.setBis((Date) getBis().getValue());
       l.setVeranstalter((String) getVeranstalter().getValue());
@@ -298,6 +322,28 @@ public class LehrgangControl extends FilterControl
       }
     }
     return lehrgaengeList;
+  }
+  
+  public Input getMitglied() throws RemoteException
+  {
+    if (mitglied != null)
+    {
+      return mitglied;
+    }
+
+    if (getLehrgang().getMitglied() != null)
+    {
+      Mitglied[] mitgliedArray = {getLehrgang().getMitglied()};
+      mitglied = new SelectInput(mitgliedArray, getLehrgang().getMitglied());
+      mitglied.setEnabled(false);
+    }
+    else
+    {
+      mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
+          Einstellungen.getEinstellung().getMitgliedAuswahl());
+    }
+    mitglied.setMandatory(true);
+    return mitglied;
   }
 
 }

@@ -63,7 +63,7 @@ public class WiedervorlageImpl extends AbstractDBObject implements
       {
         throw new ApplicationException("Bitte Datum eingeben");
       }
-      if (getVermerk() == null)
+      if (getVermerk() == null || getVermerk().isEmpty())
       {
         throw new ApplicationException("Bitte Vermerk eingeben");
       }

@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeImportAction;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -45,6 +46,8 @@ public class ZusatzbetraegelisteView extends AbstractView
     buttons.addButton("Importieren",
         new ZusatzbetraegeImportAction(),null,false, "file-import.png");
     buttons.addButton(control.getPDFAusgabeButton());
+    buttons.addButton("Neu", new ZusatzbetraegeAction(null), 
+        control, false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

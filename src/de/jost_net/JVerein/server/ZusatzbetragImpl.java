@@ -98,6 +98,10 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
         throw new ApplicationException(
             "Nächste Fälligkeit liegt nicht im Intervall");
       }
+      if (getBetrag() == null)
+      {
+        throw new ApplicationException("Bitte Betrag eingeben");
+      }
     }
     catch (RemoteException e)
     {
@@ -164,18 +168,15 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   }
 
   @Override
-  public double getBetrag() throws RemoteException
+  public Double getBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
-    if (d == null)
-      return 0;
-    return d.doubleValue();
+    return (Double) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(double d) throws RemoteException
+  public void setBetrag(Double d) throws RemoteException
   {
-    setAttribute("betrag", Double.valueOf(d));
+    setAttribute("betrag", d);
   }
 
   @Override
