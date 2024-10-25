@@ -116,7 +116,7 @@ public class ZusatzbetragControl extends AbstractControl
     {
       return part;
     }
-    part = new ZusatzbetragPart(getZusatzbetrag());
+    part = new ZusatzbetragPart(getZusatzbetrag(), true);
     return part;
   }
 

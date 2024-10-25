@@ -47,17 +47,23 @@ public class ArbeitseinsatzPart implements Part
   private TextInput bemerkung = null;
 
   private AbstractInput mitglied;
+  
+  private boolean mitMitglied;
 
-  public ArbeitseinsatzPart(Arbeitseinsatz arbeitseinsatz)
+  public ArbeitseinsatzPart(Arbeitseinsatz arbeitseinsatz, boolean mitMitglied)
   {
     this.arbeitseinsatz = arbeitseinsatz;
+    this.mitMitglied = mitMitglied;
   }
 
   @Override
   public void paint(Composite parent) throws RemoteException
   {
     LabelGroup group = new LabelGroup(parent, "Arbeitseinsatz");
-    group.addLabelPair("Mitglied", getMitglied());
+    if (mitMitglied)
+    {
+      group.addLabelPair("Mitglied", getMitglied());
+    }
     group.addLabelPair("Datum", getDatum());
     group.addLabelPair("Stunden", getStunden());
     group.addLabelPair("Bemerkung", getBemerkung());

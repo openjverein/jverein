@@ -103,7 +103,7 @@ public class ArbeitseinsatzControl extends AbstractControl
     {
       return part;
     }
-    part = new ArbeitseinsatzPart(getArbeitseinsatz());
+    part = new ArbeitseinsatzPart(getArbeitseinsatz(), true);
     return part;
   }
 

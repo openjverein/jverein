@@ -68,17 +68,23 @@ public class ZusatzbetragPart implements Part
   private SelectInput buchungsklasse;
   
   private AbstractInput mitglied;
+  
+  private boolean mitMitglied;
 
-  public ZusatzbetragPart(Zusatzbetrag zusatzbetrag)
+  public ZusatzbetragPart(Zusatzbetrag zusatzbetrag, boolean mitMitglied)
   {
     this.zusatzbetrag = zusatzbetrag;
+    this.mitMitglied = mitMitglied;
   }
 
   @Override
   public void paint(Composite parent) throws RemoteException
   {
     LabelGroup group = new LabelGroup(parent, "Zusatzbetrag");
-    group.addLabelPair("Mitglied", getMitglied());
+    if (mitMitglied)
+    {
+      group.addLabelPair("Mitglied", getMitglied());
+    }
     group.addLabelPair("Startdatum", getStartdatum(true));
     group.addLabelPair("Nächste Fälligkeit", getFaelligkeit());
     group.addLabelPair("Intervall", getIntervall());
