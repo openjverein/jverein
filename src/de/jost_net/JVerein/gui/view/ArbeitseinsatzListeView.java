@@ -16,54 +16,51 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-
+import de.jost_net.JVerein.gui.action.ArbeitseinsatzAction;
+import de.jost_net.JVerein.gui.action.ArbeitseinsatzUeberpruefungAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
-import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class ArbeitseinsatzUeberpruefungView extends AbstractView
+public class ArbeitseinsatzListeView extends AbstractView
 {
-  Button butArbeitseinsaetze = null;
-
-  ArbeitseinsatzUeberpruefungInput aui = null;
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Arbeitseinsätze auswerten");
+    GUI.getView().setTitle("Arbeitseinsätze");
 
     final ArbeitseinsatzControl control = new ArbeitseinsatzControl(this);
-    butArbeitseinsaetze = control.getArbeitseinsatzAusgabeButton();
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addLabelPair("Jahr", control.getSuchJahr());
-    aui = control.getAuswertungSchluessel();
-    aui.addListener(new Listener()
-    {
-      @Override
-      public void handleEvent(Event event)
-      {
-        int i = (Integer) aui.getValue();
-        butArbeitseinsaetze
-            .setEnabled(i == ArbeitseinsatzUeberpruefungInput.MINDERLEISTUNG);
-      }
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
-    });
-    group.addLabelPair("Auswertung", aui);
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getSuchname());
+    
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getDatumvon());
+    right.addInput(control.getDatumbis());
+    
+    ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSuchenButton());
+    group.addButtonArea(fbuttons);
 
-    control.getArbeitseinsatzUeberpruefungList().paint(getParent());
-    ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ARBEITSEINSATZPRUEFEN, false, "question-circle.png");
-    buttons2.addButton(control.getPDFAusgabeButton());
-    buttons2.addButton(control.getCSVAusgabeButton());
-    buttons2.addButton(butArbeitseinsaetze);
-    buttons2.paint(this.getParent());
+    control.getArbeitseinsatzTable().paint(this.getParent());
+
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton("Hilfe", new DokumentationAction(),
+        DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
+    buttons.addButton("Auswertung", new ArbeitseinsatzUeberpruefungAction(), 
+        control, false, "screwdriver.png");
+    buttons.addButton("Neu", new ArbeitseinsatzAction(null), 
+        control, false, "document-new.png");
+    buttons.paint(this.getParent());
   }
 }

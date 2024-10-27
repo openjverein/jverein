@@ -37,28 +37,36 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.ArbeitseinsatzAction;
 import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
+import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzPart;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzUeberpruefungList;
 import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
+import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.Dateiname;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.AbstractControl;
+import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
+import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -66,11 +74,9 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class ArbeitseinsatzControl extends AbstractControl
+public class ArbeitseinsatzControl extends FilterControl
 {
   private ArbeitseinsatzPart part = null;
-
-  private Settings settings = null;
 
   private Arbeitseinsatz aeins = null;
 
@@ -79,6 +85,8 @@ public class ArbeitseinsatzControl extends AbstractControl
   private SelectInput suchjahr = null;
 
   private ArbeitseinsatzUeberpruefungInput auswertungschluessel = null;
+  
+  private TablePart arbeitseinsatzList;
 
   public ArbeitseinsatzControl(AbstractView view)
   {
@@ -103,7 +111,7 @@ public class ArbeitseinsatzControl extends AbstractControl
     {
       return part;
     }
-    part = new ArbeitseinsatzPart(getArbeitseinsatz());
+    part = new ArbeitseinsatzPart(getArbeitseinsatz(), true);
     return part;
   }
 
@@ -124,6 +132,18 @@ public class ArbeitseinsatzControl extends AbstractControl
     try
     {
       Arbeitseinsatz ae = getArbeitseinsatz();
+      if (ae.isNewObject())
+      {
+        if (getPart().getMitglied().getValue() != null)
+        {
+          Mitglied m = (Mitglied) getPart().getMitglied().getValue();
+          ae.setMitglied(Integer.parseInt(m.getID()));
+        }
+        else
+        {
+          throw new ApplicationException("Bitte Mitglied eingeben");
+        }
+      }
       ae.setDatum((Date) part.getDatum().getValue());
       ae.setStunden((Double) part.getStunden().getValue());
       ae.setBemerkung((String) part.getBemerkung().getValue());
@@ -175,7 +195,7 @@ public class ArbeitseinsatzControl extends AbstractControl
 
   public Button getPDFAusgabeButton()
   {
-    Button b = new Button("PDF-Ausgabe", new Action()
+    Button b = new Button("PDF", new Action()
     {
 
       @Override
@@ -198,7 +218,7 @@ public class ArbeitseinsatzControl extends AbstractControl
 
   public Button getCSVAusgabeButton()
   {
-    Button b = new Button("CSV-Ausgabe", new Action()
+    Button b = new Button("CSV", new Action()
     {
 
       @Override
@@ -534,7 +554,7 @@ public class ArbeitseinsatzControl extends AbstractControl
     return arbeitseinsatzueberpruefungList.getArbeitseinsatzUeberpruefungList();
   }
   
-  private void refresh()
+  private void refreshList()
   {
     try
     {
@@ -556,8 +576,106 @@ public class ArbeitseinsatzControl extends AbstractControl
       {
         return;
       }
-      refresh();
+      refreshList();
     }
+  }
+  
+  public Part getArbeitseinsatzTable() throws RemoteException
+  {
+    if (arbeitseinsatzList != null)
+    {
+      return arbeitseinsatzList;
+    }
+    
+    DBIterator<Arbeitseinsatz> arbeitseinsaetze = getArbeitseinsaetzeIt();
+    arbeitseinsatzList = new TablePart(arbeitseinsaetze,
+        new ArbeitseinsatzAction(null));
+    arbeitseinsatzList.setRememberColWidths(true);
+    arbeitseinsatzList.setRememberOrder(true);
+    arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu());
+
+    arbeitseinsatzList.addColumn("Name", "mitglied", new Formatter()
+    {
+
+      @Override
+      public String format(Object o)
+      {
+        Mitglied m = (Mitglied) o;
+        if (m == null)
+          return null;
+        String name = null;
+        try
+        {
+          name = Adressaufbereitung.getNameVorname(m);
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return name;
+      }
+    });
+    arbeitseinsatzList.addColumn("Datum", "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    arbeitseinsatzList.addColumn("Stunden", "stunden",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    arbeitseinsatzList.addColumn("Bemerkung", "bemerkung");
+    return arbeitseinsatzList;
+  }
+  
+  
+  public void TabRefresh()
+  {
+    try
+    {
+      if (arbeitseinsatzList == null)
+      {
+        return;
+      }
+      arbeitseinsatzList.removeAll();
+      DBIterator<Arbeitseinsatz> arbeitseinsaetze = getArbeitseinsaetzeIt();
+      while (arbeitseinsaetze.hasNext())
+      {
+        arbeitseinsatzList.addItem(arbeitseinsaetze.next());
+      }
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
+  }
+  
+  private DBIterator<Arbeitseinsatz> getArbeitseinsaetzeIt() throws RemoteException
+  {
+    DBService service = Einstellungen.getDBService();
+    DBIterator<Arbeitseinsatz> arbeitseinsaetze = service
+        .createList(Arbeitseinsatz.class);
+    arbeitseinsaetze.join("mitglied");
+    arbeitseinsaetze.addFilter("mitglied.id = arbeitseinsatz.mitglied");
+    
+    if (isSuchnameAktiv() && getSuchname().getValue() != null)
+    {
+      String tmpSuchname = (String) getSuchname().getValue();
+      if (tmpSuchname.length() > 0)
+      {
+        String suchName = "%" + tmpSuchname.toLowerCase() + "%";
+        arbeitseinsaetze.addFilter("(lower(name) like ? "
+            + "or lower(vorname) like ?)" , 
+            new Object[] { suchName, suchName });
+      }
+    }
+    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
+    {
+      arbeitseinsaetze.addFilter("datum >= ?",
+          new Object[] { (Date) getDatumvon().getValue() });
+    }
+    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
+    {
+      arbeitseinsaetze.addFilter("datum <= ?",
+          new Object[] { (Date) getDatumbis().getValue() });
+    }
+    arbeitseinsaetze.setOrder("ORDER by datum desc");
+    return arbeitseinsaetze;
   }
   
 }
