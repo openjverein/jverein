@@ -83,9 +83,9 @@ public class EinstellungenAnzeigeView extends AbstractView
     right.addLabelPair("Basis für Berechnung des Alters",
         control.getAltersModel());
     // Einstellung zum Buchungsdialog
-    right.addLabelPair("Buchungsart Auswahl",
-        control.getBuchungBuchungsartAuswahl());
+    right.addLabelPair("Buchungsart Auswahl", control.getBuchungBuchungsartAuswahl());
     right.addLabelPair("Buchungsart Sortierung", control.getBuchungsartSort());
+    right.addLabelPair("Mitglied Auswahl", control.getMitgliedAuswahl());
     right.addLabelPair("Ort der Abschreibung", control.getAfaOrt());
 
     right.addHeadline("* " + "Änderung erfordert Neustart");
