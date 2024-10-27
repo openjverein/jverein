@@ -55,7 +55,7 @@ public class MitgliedArbeitseinsatzZuordnungDialog extends
   {
     Arbeitseinsatz aeins = (Arbeitseinsatz) Einstellungen.getDBService()
         .createObject(Arbeitseinsatz.class, null);
-    part = new ArbeitseinsatzPart(aeins, false);
+    part = new ArbeitseinsatzPart(aeins);
     part.paint(parent);
 
     ButtonArea buttons = new ButtonArea();

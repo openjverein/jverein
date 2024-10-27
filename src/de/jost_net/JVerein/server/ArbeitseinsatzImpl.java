@@ -68,7 +68,7 @@ public class ArbeitseinsatzImpl extends AbstractDBObject implements
     {
       if (getStunden() == null)
       {
-        throw new ApplicationException("Keine Stunden angegeben");
+        throw new ApplicationException("Bitte Stunden eingeben");
       }
       if (getStunden() <= 0d)
       {
@@ -79,7 +79,7 @@ public class ArbeitseinsatzImpl extends AbstractDBObject implements
       }
       if (getDatum() == null)
       {
-        throw new ApplicationException("Bitte Datum erfassen");
+        throw new ApplicationException("Bitte Datum eingeben");
       }
     }
     catch (RemoteException e)
@@ -131,12 +131,7 @@ public class ArbeitseinsatzImpl extends AbstractDBObject implements
   @Override
   public Double getStunden() throws RemoteException
   {
-    Double d = (Double) getAttribute("stunden");
-    if (d == null)
-    {
-      return 0d;
-    }
-    return d.doubleValue();
+    return (Double) getAttribute("stunden");
   }
 
   @Override

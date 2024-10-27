@@ -103,7 +103,7 @@ public class ArbeitseinsatzControl extends AbstractControl
     {
       return part;
     }
-    part = new ArbeitseinsatzPart(getArbeitseinsatz(), true);
+    part = new ArbeitseinsatzPart(getArbeitseinsatz());
     return part;
   }
 
@@ -124,18 +124,6 @@ public class ArbeitseinsatzControl extends AbstractControl
     try
     {
       Arbeitseinsatz ae = getArbeitseinsatz();
-      if (ae.isNewObject())
-      {
-        if (getPart().getMitglied().getValue() != null)
-        {
-          Mitglied m = (Mitglied) getPart().getMitglied().getValue();
-          ae.setMitglied(Integer.parseInt(m.getID()));
-        }
-        else
-        {
-          throw new ApplicationException("Bitte Mitglied eingeben");
-        }
-      }
       ae.setDatum((Date) part.getDatum().getValue());
       ae.setStunden((Double) part.getStunden().getValue());
       ae.setBemerkung((String) part.getBemerkung().getValue());
