@@ -252,8 +252,10 @@ public class LehrgangControl extends FilterControl
       String tmpSuchname = (String) getSuchname().getValue();
       if (tmpSuchname.length() > 0)
       {
-        lehrgaenge.addFilter("(lower(name) like ?)", 
-            new Object[] { "%" + tmpSuchname.toLowerCase() + "%"});
+        String suchName = "%" + tmpSuchname.toLowerCase() + "%";
+        lehrgaenge.addFilter("(lower(name) like ? "
+            + "or lower(vorname) like ?)" , 
+            new Object[] { suchName, suchName });
       }
     }
     if (isSuchLehrgangsartAktiv() && getSuchLehrgangsart().getValue() != null)

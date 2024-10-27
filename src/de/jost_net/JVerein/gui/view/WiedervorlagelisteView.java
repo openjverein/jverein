@@ -18,11 +18,13 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageAction;
-import de.jost_net.JVerein.gui.action.WiedervorlageListeAction;
-import de.jost_net.JVerein.gui.parts.WiedervorlageList;
+import de.jost_net.JVerein.gui.control.WiedervorlageControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
+import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class WiedervorlagelisteView extends AbstractView
 {
@@ -31,8 +33,26 @@ public class WiedervorlagelisteView extends AbstractView
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Wiedervorlagen");
-    new WiedervorlageList(new WiedervorlageListeAction()).getWiedervorlageList()
-        .paint(this.getParent());
+    
+    final WiedervorlageControl control = new WiedervorlageControl(this);
+    
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getSuchname());
+    left.addLabelPair("Vermerk", control.getSuchtext());
+    
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getDatumvon());
+    right.addInput(control.getDatumbis());
+    
+    ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSuchenButton());
+    group.addButtonArea(fbuttons);
+    
+    control.getWiedervorlageList().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.WIEDERVORLAGE, false, "question-circle.png");

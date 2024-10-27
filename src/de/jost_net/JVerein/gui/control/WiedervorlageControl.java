@@ -23,22 +23,25 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.WiedervorlageListeAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
+import de.jost_net.JVerein.gui.parts.WiedervorlageList;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class WiedervorlageControl extends AbstractControl
+public class WiedervorlageControl extends FilterControl
 {
 
   private DateInput datum = null;
@@ -50,10 +53,14 @@ public class WiedervorlageControl extends AbstractControl
   private AbstractInput mitglied;
 
   private Wiedervorlage wvl = null;
+  
+  private WiedervorlageList wiedervorlageList = null;
 
   public WiedervorlageControl(AbstractView view)
   {
     super(view);
+    settings = new Settings(this.getClass());
+    settings.setStoreWhenRead(true);
   }
 
   public Wiedervorlage getWiedervorlage()
@@ -194,4 +201,21 @@ public class WiedervorlageControl extends AbstractControl
       GUI.getStatusBar().setErrorText(fehler);
     }
   }
+  
+  public Part getWiedervorlageList() throws RemoteException
+  {
+    wiedervorlageList = new WiedervorlageList(
+        new WiedervorlageListeAction(), this);
+    return wiedervorlageList.getWiedervorlageList();
+  }
+  
+  public void TabRefresh()
+  {
+    if (wiedervorlageList == null)
+    {
+      return;
+    }
+    wiedervorlageList.refresh();
+  }
+  
 }

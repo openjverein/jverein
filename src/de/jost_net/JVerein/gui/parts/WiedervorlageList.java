@@ -17,11 +17,13 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
+import java.util.Date;
 
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.WiedervorlageAction;
+import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -41,19 +43,19 @@ public class WiedervorlageList extends TablePart implements Part
 {
 
   private TablePart wiedervorlageList;
+  
+  private FilterControl control;
 
-  public WiedervorlageList(Action action)
+  public WiedervorlageList(Action action, FilterControl control)
   {
     super(action);
+    this.control = control;
   }
 
   public Part getWiedervorlageList() throws RemoteException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Wiedervorlage> wiedervorlagen = service
-        .createList(Wiedervorlage.class);
-    wiedervorlagen.setOrder("ORDER BY datum DESC");
-
+    
+    DBIterator<Wiedervorlage> wiedervorlagen = getIterator();
     if (wiedervorlageList == null)
     {
       wiedervorlageList = new TablePart(wiedervorlagen,
@@ -100,6 +102,50 @@ public class WiedervorlageList extends TablePart implements Part
     }
     return wiedervorlageList;
   }
+  
+  private DBIterator<Wiedervorlage> getIterator() throws RemoteException
+  {
+    DBService service = Einstellungen.getDBService();
+    DBIterator<Wiedervorlage> wiedervorlagen = service
+        .createList(Wiedervorlage.class);
+    
+    wiedervorlagen.join("mitglied");
+    wiedervorlagen.addFilter("mitglied.id = wiedervorlage.mitglied");
+    
+    if (control.isSuchnameAktiv() && control.getSuchname().getValue() != null)
+    {
+      String tmpSuchname = (String) control.getSuchname().getValue();
+      if (tmpSuchname.length() > 0)
+      {
+        String suchName = "%" + tmpSuchname.toLowerCase() + "%";
+        wiedervorlagen.addFilter("(lower(name) like ? "
+            + "or lower(vorname) like ?)" , 
+            new Object[] { suchName, suchName });
+      }
+    }
+    if (control.isDatumvonAktiv() && control.getDatumvon().getValue() != null)
+    {
+      wiedervorlagen.addFilter("datum >= ?",
+          new Object[] { (Date) control.getDatumvon().getValue() });
+    }
+    if (control.isDatumbisAktiv() && control.getDatumbis().getValue() != null)
+    {
+      wiedervorlagen.addFilter("datum <= ?",
+          new Object[] { (Date) control.getDatumbis().getValue() });
+    }
+    if (control.isSuchtextAktiv() && control.getSuchtext().getValue() != null)
+    {
+      String tmpSuchtext = (String) control.getSuchtext().getValue();
+      if (tmpSuchtext.length() > 0)
+      {
+        wiedervorlagen.addFilter("(lower(vermerk) like ?)",
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+      }
+    }
+    wiedervorlagen.setOrder("ORDER BY datum DESC");
+    
+    return wiedervorlagen;
+  }
 
   @Override
   public synchronized void paint(Composite parent) throws RemoteException
@@ -107,4 +153,16 @@ public class WiedervorlageList extends TablePart implements Part
     super.paint(parent);
   }
 
+  public void refresh()
+  {
+    try
+    {
+      getWiedervorlageList();
+    }
+    catch (RemoteException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
 }
