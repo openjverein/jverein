@@ -135,6 +135,7 @@ public class LehrgangControl extends FilterControl
     this.von = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.von.setTitle("Datum");
     this.von.setText("Bitte (Beginn-)Datum wählen");
+    von.setMandatory(true);
     return von;
   }
 

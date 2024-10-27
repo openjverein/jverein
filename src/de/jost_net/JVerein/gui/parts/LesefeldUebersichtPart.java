@@ -293,7 +293,8 @@ public class LesefeldUebersichtPart implements Part
   private void openEditLesefeldDialog(Lesefeld lesefeld)
   {
 
-    GUI.startView(new LesefeldDetailView(lesefeldAuswerter, lesefeld), null);
+    GUI.startView(new LesefeldDetailView(lesefeldAuswerter, 
+        lesefeld, selectedMitglied), null);
   }
 
   class DeleteLesefeldAction implements Action

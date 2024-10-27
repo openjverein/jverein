@@ -90,6 +90,10 @@ public class LehrgangImpl extends AbstractDBObject implements Lehrgang
     {
       throw new ApplicationException("Bitte Lehrgangsart auswählen");
     }
+    if (getVon() == null)
+    {
+      throw new ApplicationException("Bitte Datum eingeben");
+    }
   }
 
   @Override
