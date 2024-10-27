@@ -40,16 +40,15 @@ public class SpendenbescheinigungMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new SpendenbescheinigungAction(0), "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("Löschen",
+        new SpendenbescheinigungDeleteAction(), "user-trash-full.png"));
+    addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("PDF",
         new SpendenbescheinigungPrintAction(Adressblatt.OHNE_ADRESSBLATT, true), "file-pdf.png"));
-    addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Druck und Mail",
         new SpendenbescheinigungSendAction(), "document-print.png"));
     addItem(new CheckedContextMenuItem("Mail an Spender",
         new SpendenbescheinigungEmailAction(), "envelope-open.png"));
-    addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedContextMenuItem("Löschen",
-        new SpendenbescheinigungDeleteAction(), "user-trash-full.png"));
   }
 
 }
