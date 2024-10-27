@@ -674,6 +674,15 @@ public class ArbeitseinsatzControl extends FilterControl
       arbeitseinsaetze.addFilter("datum <= ?",
           new Object[] { (Date) getDatumbis().getValue() });
     }
+    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
+    {
+      String tmpSuchtext = (String) getSuchtext().getValue();
+      if (tmpSuchtext.length() > 0)
+      {
+        arbeitseinsaetze.addFilter("(lower(bemerkung) like ?)",
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+      }
+    }
     arbeitseinsaetze.setOrder("ORDER by datum desc");
     return arbeitseinsaetze;
   }

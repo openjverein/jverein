@@ -42,6 +42,7 @@ public class ArbeitseinsatzListeView extends AbstractView
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
+    left.addLabelPair("Bemerkung", control.getSuchtext());
     
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
