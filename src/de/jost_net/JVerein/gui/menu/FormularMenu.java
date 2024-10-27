@@ -24,7 +24,6 @@ import de.jost_net.JVerein.gui.control.FormularControl;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 /**
  * Kontext-Menu zu den Formularen.
@@ -43,7 +42,6 @@ public class FormularMenu extends ContextMenu
         "edit-copy.png"));
     addItem(new CheckedSingleContextMenuItem("Duplizieren",
         new FormularDuplizierenAction(control), "edit-copy.png"));
-    addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Löschen", new FormularDeleteAction(),
         "user-trash-full.png"));
   }
