@@ -8,6 +8,7 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -41,10 +42,16 @@ public class FreieFormulareView extends AbstractView
     mid.addInput(control.getSuchGeschlecht());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getEigenschaftenAuswahl());
+    DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
+    right.addInput(eigenschaftenInput);
+    control.updateEigenschaftenAuswahlTooltip();
     right.addInput(control.getStichtag());
     if (Einstellungen.getEinstellung().hasZusatzfelder())
-      right.addInput(control.getZusatzfelderAuswahl());
+    {
+      DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
+      right.addInput(zusatzfelderInput);
+      control.updateZusatzfelderAuswahlTooltip();
+    }
 
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Parameter");

@@ -398,6 +398,12 @@ public class FilterControl extends AbstractControl
     return eigenschaftenabfrage != null;
   }
   
+  public void updateEigenschaftenAuswahlTooltip()
+  {
+    eigenschaftenabfrage.getControl().setToolTipText(
+        eigenschaftenabfrage.getText());
+  }
+  
   public TreePart getEigenschaftenAuswahlTree(String vorbelegung,
       boolean ohnePflicht, boolean onlyChecked, 
       Mitglied[] mitglieder) throws RemoteException
@@ -760,22 +766,28 @@ public class FilterControl extends AbstractControl
     return zusatzfelderabfrage != null;
   }
   
+  public void updateZusatzfelderAuswahlTooltip()
+  {
+    zusatzfelderabfrage.getControl().setToolTipText(zusatzfelderabfrage.getText());
+  }
+  
   public void setZusatzfelderAuswahl()
   {
     int selected = settings.getInt(additionalparamprefix2 + "selected", 0);
+    String string = "";
     if (selected == 0)
     {
-      zusatzfelderabfrage.setText("kein Feld ausgewählt");
+      string = "kein Feld ausgewählt";
     }
     else if (selected == 1)
     {
-      zusatzfelderabfrage.setText("1 Feld ausgewählt");
+      string = "1 Feld ausgewählt";
     }
     else
     {
-      zusatzfelderabfrage
-          .setText(String.format("%d Felder ausgewählt", selected));
+      string = String.format("%d Felder ausgewählt", selected);
     }
+    zusatzfelderabfrage.setText(string);
   }
   
   public SelectInput getMailauswahl() throws RemoteException
@@ -1187,6 +1199,7 @@ public class FilterControl extends AbstractControl
     public void handleEvent(Event event)
     {
       setZusatzfelderAuswahl();
+      zusatzfelderabfrage.getControl().setToolTipText(zusatzfelderabfrage.getText());
       refresh();
     }
   }
@@ -1268,7 +1281,9 @@ public class FilterControl extends AbstractControl
           Logger.error("Fehler", e);
         }
       }
-      eigenschaftenabfrage.setText(text.toString());
+      String string = text.toString();
+      eigenschaftenabfrage.setText(string);
+      eigenschaftenabfrage.getControl().setToolTipText(string);
       settings.setAttribute(settingsprefix + "eigenschaften", id.toString());
       settings.setAttribute(settingsprefix + "eigenschaften.verknuepfung",
           param.getVerknuepfung());
