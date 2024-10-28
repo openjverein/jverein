@@ -39,10 +39,9 @@ public class LesefelddefinitionenAction implements Action
   {
     if (selectedMitglied == null )
     {
-      DBIterator<Mitglied> it;
       try
       {
-        it = Einstellungen.getDBService().createList(Mitglied.class);
+        DBIterator<Mitglied> it = Einstellungen.getDBService().createList(Mitglied.class);
         it.setOrder("order by name, vorname");
         if (it.hasNext())
         {
