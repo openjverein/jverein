@@ -777,7 +777,7 @@ public class FilterControl extends AbstractControl
     String string = "";
     if (selected == 0)
     {
-      string = "kein Feld ausgewählt";
+      string = "Kein Feld ausgewählt";
     }
     else if (selected == 1)
     {
