@@ -337,7 +337,7 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
     {
       return false;
     }
-    if (getFaelligkeit().getTime() > datum.getTime())
+    if (getFaelligkeit().getTime() < datum.getTime())
     {
       return false;
     }
