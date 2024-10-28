@@ -32,25 +32,24 @@ public class MitgliedInput
   public AbstractInput getMitgliedInput(AbstractInput mitgliedInput,
       Mitglied mitglied, int auswahl) throws RemoteException
   {
-    //Hole alle Mitglieder aus Datenbank um sie später anzuzeigen.
-    DBIterator<Mitglied> it = Einstellungen.getDBService()
-        .createList(Mitglied.class);
-    it.setOrder("order by name, vorname");
-    ArrayList<Mitglied> mitgliederList = new ArrayList<>();
-    while (it.hasNext())
-    {
-      mitgliederList.add(it.next());
-    }
-    // Das erste Mitglied wird ausgewählt wenn nichts übergeben
-    Mitglied selectedMitglied = mitglied;
-    if (selectedMitglied == null && !mitgliederList.isEmpty())
-    {
-      selectedMitglied = mitgliederList.get(0);
-    }
     switch (auswahl)
     {
       case AbstractInputAuswahl.ComboBox:
-
+        //Hole alle Mitglieder aus Datenbank um sie später anzuzeigen.
+        DBIterator<Mitglied> it = Einstellungen.getDBService()
+            .createList(Mitglied.class);
+        it.setOrder("order by name, vorname");
+        ArrayList<Mitglied> mitgliederList = new ArrayList<>();
+        while (it.hasNext())
+        {
+          mitgliederList.add(it.next());
+        }
+        // Das erste Mitglied wird ausgewählt wenn nichts übergeben
+        Mitglied selectedMitglied = mitglied;
+        if (selectedMitglied == null && !mitgliederList.isEmpty())
+        {
+          selectedMitglied = mitgliederList.get(0);
+        }
         mitgliedInput = new SelectInput(mitgliederList.toArray(), selectedMitglied);
         break;
       case AbstractInputAuswahl.SearchInput:
@@ -58,8 +57,8 @@ public class MitgliedInput
         mitgliedInput = new MitgliedSearchInput();
         ((MitgliedSearchInput) mitgliedInput)
             .setSearchString("Zum Suchen tippen");
+        mitgliedInput.setValue(mitglied);
     }
-    mitgliedInput.setValue(selectedMitglied);
     return mitgliedInput;
   }
 
