@@ -57,6 +57,8 @@ import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.input.SelectNoScrollInput;
 import de.jost_net.JVerein.gui.input.SpinnerNoScrollInput;
+import de.jost_net.JVerein.gui.input.VollzahlerInput;
+import de.jost_net.JVerein.gui.input.VollzahlerSearchInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.menu.FamilienbeitragMenu;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
@@ -100,7 +102,6 @@ import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.server.EigenschaftenNode;
-import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTIMESTAMP;
@@ -120,6 +121,7 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.formatter.TreeFormatter;
+import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -246,7 +248,7 @@ public class MitgliedControl extends FilterControl
 
   private TreePart familienbeitragtree;
 
-  private SelectNoScrollInput zahler;
+  private AbstractInput zahler;
 
   private DateInput austritt = null;
 
@@ -1106,8 +1108,14 @@ public class MitgliedControl extends FilterControl
             getMitglied().setZahlerID(null);
             if (zahler != null)
             {
-              zahler.setValue(Einstellungen.getDBService()
-                  .createObject(Mitglied.class, ""));
+              if (zahler instanceof SelectNoScrollInput)
+              {
+                ((SelectNoScrollInput) zahler).setPreselected(null);
+              }
+              else if (zahler instanceof VollzahlerSearchInput)
+              {
+                ((VollzahlerSearchInput) zahler).setValue("Zum Suchen tippen");
+              }
               zahler.setEnabled(false);
             }
           }
@@ -1116,7 +1124,14 @@ public class MitgliedControl extends FilterControl
             getMitglied().setZahlerID(null);
             if (zahler != null)
             {
-              zahler.setPreselected(null);
+              if (zahler instanceof SelectNoScrollInput)
+              {
+                ((SelectNoScrollInput) zahler).setPreselected(null);
+              }
+              else if (zahler instanceof VollzahlerSearchInput)
+              {
+                ((VollzahlerSearchInput) zahler).setValue("Zum Suchen tippen");
+              }
               zahler.setEnabled(false);
             }
             // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
@@ -1272,53 +1287,15 @@ public class MitgliedControl extends FilterControl
       // Dies ist nötig, wenn Zahler ausgeblendet wurde und daher der
       // Parent vom GC disposed wurde.
     }
+    zahler = new VollzahlerInput().getMitgliedInput(zahler, getMitglied(),
+        Einstellungen.getEinstellung().getMitgliedAuswahl());
 
-    StringBuffer cond = new StringBuffer();
-
-    // Beitragsgruppen ermitteln, die Zahler für andere Mitglieder sind
-    DBIterator<Beitragsgruppe> bg = Einstellungen.getDBService()
-        .createList(Beitragsgruppe.class);
-    bg.addFilter("beitragsart != ?", ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
-    while (bg.hasNext())
-    {
-      if (cond.length() > 0)
-      {
-        cond.append(" OR ");
-      }
-      Beitragsgruppe beitragsgruppe = bg.next();
-      cond.append("beitragsgruppe = ");
-      cond.append(beitragsgruppe.getID());
-    }
-    DBIterator<Mitglied> zhl = Einstellungen.getDBService()
-        .createList(Mitglied.class);
-    zhl.addFilter("(" + cond.toString() + ")");
-    if(getMitglied().getID() != null)
-      zhl.addFilter("id != ?",getMitglied().getID());
-    MitgliedUtils.setNurAktive(zhl);
-    MitgliedUtils.setMitglied(zhl);
-    zhl.setOrder("ORDER BY name, vorname");
-
-    String suche = "";
-    if (getMitglied().getZahlerID() != null)
-    {
-      suche = getMitglied().getZahlerID().toString();
-    }
-    Mitglied zahlmitglied = (Mitglied) Einstellungen.getDBService()
-        .createObject(Mitglied.class, suche);
-
-    zahler = new SelectNoScrollInput(zhl != null ? PseudoIterator.asList(zhl) : null, zahlmitglied);
-    zahler.setAttribute("namevorname");
-    zahler.setPleaseChoose("Bitte auswählen");
     zahler.addListener(new Listener()
     {
 
       @Override
       public void handleEvent(Event event)
       {
-        if (event.type != SWT.Selection)
-        {
-          return;
-        }
         try
         {
           Mitglied m = (Mitglied) zahler.getValue();
@@ -1349,7 +1326,14 @@ public class MitgliedControl extends FilterControl
       }
       else
       {
-        zahler.setPreselected(getMitglied());
+        if (zahler instanceof SelectNoScrollInput)
+        {
+          ((SelectNoScrollInput) zahler).setPreselected(getMitglied());
+        }
+        else if (zahler instanceof VollzahlerSearchInput)
+        {
+          ((VollzahlerSearchInput) zahler).setValue("Zum Suchen tippen");
+        }
         zahler.setEnabled(false);
       }
     }
