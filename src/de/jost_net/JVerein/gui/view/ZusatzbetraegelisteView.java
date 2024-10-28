@@ -30,7 +30,7 @@ public class ZusatzbetraegelisteView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Liste der Zusatzbeträge");
+    GUI.getView().setTitle("Zusatzbeträge");
 
     final ZusatzbetragControl control = new ZusatzbetragControl(this);
 
