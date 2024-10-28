@@ -37,19 +37,22 @@ public class LesefelddefinitionenAction implements Action
   @Override
   public void handleAction(Object context)
   {
-    DBIterator<Mitglied> it;
-    try
+    if (selectedMitglied == null )
     {
-      it = Einstellungen.getDBService().createList(Mitglied.class);
-      it.setOrder("order by name, vorname");
-      if (selectedMitglied == null && it.hasNext())
+      DBIterator<Mitglied> it;
+      try
       {
-        selectedMitglied = it.next();
+        it = Einstellungen.getDBService().createList(Mitglied.class);
+        it.setOrder("order by name, vorname");
+        if (it.hasNext())
+        {
+          selectedMitglied = it.next();
+        }
       }
-    }
-    catch (RemoteException e)
-    {
-      //;
+      catch (RemoteException e)
+      {
+        // Dann lassen wir die null
+      }
     }
 
     GUI.startView(LesefeldUebersichtView.class.getName(), selectedMitglied);
