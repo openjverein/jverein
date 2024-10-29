@@ -484,6 +484,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
     cols.addSeparator();
     cols.addText("Abweichender Kontoinhaber", false);
     ButtonArea buttons2 = new ButtonArea();
+    buttons2.addButton(control.getKontoDatenLoeaschenButton());
     buttons2.addButton(control.getMitglied2KontoinhaberEintragenButton());
     cols.addButtonArea(buttons2);
     cols.addInput(control.getKtoiPersonenart());

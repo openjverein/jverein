@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.io.BeitragsUtil;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
@@ -46,7 +45,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
-import de.jost_net.OBanToo.SEPA.SEPAException.Fehler;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -183,17 +181,15 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       throw new ApplicationException("Bitte Eintrittsdatum eingeben");
     }
-    if (getAdresstyp().getJVereinid() == 1
-        && getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-        && BeitragsUtil.getBeitrag(
-            Einstellungen.getEinstellung().getBeitragsmodel(),
-            this.getZahlungstermin(), this.getZahlungsrhythmus().getKey(),
-            this.getBeitragsgruppe(), new Date(), this ) > 0)
+    if (getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
     {
-      if (getIban() == null
-          || getIban().length() == 0)
+      if (getIban() == null || getIban().length() == 0)
       {
         throw new ApplicationException("Bitte IBAN eingeben");
+      }
+      if (getMandatDatum() == Einstellungen.NODATE)
+      {
+        throw new ApplicationException("Bitte Datum des Mandat eingeben");
       }
     }
     if (getIban() != null && getIban().length() != 0)
@@ -204,10 +200,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       }
       catch (SEPAException e)
       {
-        if (e.getFehler() != Fehler.UNGUELTIGES_LAND)
-        {
-          throw new ApplicationException(e.getMessage());
-        }
+        throw new ApplicationException("Ungültige IBAN");
       }
     }
     if (getBic() != null && getBic().length() != 0)
@@ -218,10 +211,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       }
       catch (SEPAException e)
       {
-        if (!e.getMessage().startsWith("Ungültiges Land"))
-        {
-          throw new ApplicationException(e.getMessage());
-        }
+        throw new ApplicationException("Ungültige BIC");
       }
     }
     if (getZahlungsrhythmus() == null)

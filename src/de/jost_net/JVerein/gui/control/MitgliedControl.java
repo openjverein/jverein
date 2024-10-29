@@ -603,40 +603,31 @@ public class MitgliedControl extends FilterControl
       {
         if (event != null && event.type == SWT.Selection)
         {
-          Zahlungsweg zahlungswegValue = (Zahlungsweg) zahlungsweg.getValue();
-          boolean isLastschrift = zahlungswegValue
-              .getKey() == Zahlungsweg.BASISLASTSCHRIFT;
-
-          // Optimalerweise mit Prüfung auf zahlungsweg.hasChanged() und
-          // zahlungsweg.getOldValue == BASISLASTSCHRIFT
-          // Allerdings funktioniert hasChanged erst beim zweiten Aufruf, und
-          // getOldValue gibt es in Jameica nicht.
-          if (!isLastschrift)
+          try
           {
-            YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-            dialog.setTitle("Bankverbindungsdaten");
-            dialog.setText(
-                "Die Bankverbindung wird beim gewählten Zahlungsweg nicht benötigt.\n"
-                    + "Sollen eventuell vorhandene Werte gelöscht werden?");
-            boolean delete = false;
-            try
+            if (!(((Zahlungsweg) getZahlungsweg().getValue()).getKey() == Zahlungsweg.BASISLASTSCHRIFT))
             {
-              delete = ((Boolean) dialog.open()).booleanValue();
+              mandatdatum.setMandatory(false);
+              mandatdatum.setValue(null);
+              mandatdatum.disable();
+              mandatversion.setMandatory(false);
+              mandatversion.setValue(null);
+              mandatversion.disable();
+              iban.setMandatory(false);
             }
-            catch (Exception e)
+            else
             {
-              Logger.error("Fehler beim Bankverbindung-Löschen-Dialog.", e);
-            }
-            if (delete)
-            {
-              deleteBankverbindung();
+              mandatdatum.enable();
+              mandatdatum.setMandatory(true);
+              mandatversion.enable();
+              mandatversion.setMandatory(true);
+              iban.setMandatory(true);
             }
           }
-
-          // if (bankverbindungLabelGroup != null)
-          // {
-          // bankverbindungLabelGroup.getComposite().setVisible(isLastschrift);
-          // }
+          catch (RemoteException e)
+          {
+            Logger.error("Fehler beim Zahlungsweg setzen.", e);
+          }        
         }
       }
     });
@@ -766,6 +757,17 @@ public class MitgliedControl extends FilterControl
     this.mandatdatum.setTitle("Datum des Mandats");
     this.mandatdatum.setName("Datum des Mandats");
     this.mandatdatum.setText("Bitte Datum des Mandats wählen");
+    if (!(((Zahlungsweg) getZahlungsweg().getValue()).getKey() == Zahlungsweg.BASISLASTSCHRIFT))
+    {
+      mandatdatum.setMandatory(false);
+      mandatdatum.setValue(null);
+      mandatdatum.disable();
+    }
+    else
+    {
+      mandatdatum.enable();
+      mandatdatum.setMandatory(true);
+    }
     return mandatdatum;
   }
 
@@ -795,6 +797,17 @@ public class MitgliedControl extends FilterControl
 
       }
     });
+    if (!(((Zahlungsweg) getZahlungsweg().getValue()).getKey() == Zahlungsweg.BASISLASTSCHRIFT))
+    {
+      mandatversion.setMandatory(false);
+      mandatversion.setValue(null);
+      mandatversion.disable();
+    }
+    else
+    {
+      mandatversion.enable();
+      mandatversion.setMandatory(true);
+    }
     return mandatversion;
   }
 
@@ -819,8 +832,14 @@ public class MitgliedControl extends FilterControl
       return iban;
     }
     iban = new IBANInput(HBCIProperties.formatIban(getMitglied().getIban()), getBic());
-    iban.setMandatory(getMitglied().getZahlungsweg() == null || getMitglied()
-        .getZahlungsweg().intValue() == Zahlungsweg.BASISLASTSCHRIFT);
+    if (!(((Zahlungsweg) getZahlungsweg().getValue()).getKey() == Zahlungsweg.BASISLASTSCHRIFT))
+    {
+      iban.setMandatory(false);
+    }
+    else
+    {
+      iban.setMandatory(true);
+    }
     return iban;
   }
 
@@ -1987,6 +2006,35 @@ public class MitgliedControl extends FilterControl
         }
       }
     }, null, true, "walking.png"); // "true" defines this button as the default
+    // button
+    return b;
+  }
+  
+  public Button getKontoDatenLoeaschenButton()
+  {
+    Button b = new Button("Bankverbindung-Daten löschen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+          YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+          dialog.setTitle("Bankverbindung-Daten löschen");
+          dialog.setText("Bankverbindung-Daten löschen?");
+          boolean delete = false;
+          try
+          {
+            delete = ((Boolean) dialog.open()).booleanValue();
+          }
+          catch (Exception e)
+          {
+            Logger.error("Fehler beim Bankverbindung-Löschen-Dialog.", e);
+          }
+          if (delete)
+          {
+            deleteBankverbindung();
+          }
+      }
+    }, null, false, "user-trash-full.png");
     // button
     return b;
   }
