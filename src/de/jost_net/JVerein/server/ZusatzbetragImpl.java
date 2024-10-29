@@ -331,13 +331,9 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
       }
     }
 
-    // Wenn das Endedatum gesetzt ist und das Ausführungsdatum liegt hinter
+    // Wenn das Endedatum gesetzt ist und das Fälligkeitsdatum liegt hinter
     // dem Endedatum: nicht mehr ausführen
-    if (getEndedatum() != null && datum.getTime() >= getEndedatum().getTime())
-    {
-      return false;
-    }
-    if (getFaelligkeit().getTime() < datum.getTime())
+    if (getEndedatum() != null && getFaelligkeit().getTime() >= getEndedatum().getTime())
     {
       return false;
     }
