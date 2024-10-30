@@ -181,6 +181,8 @@ public class MitgliedControl extends FilterControl
   private SelectNoScrollInput zahlungsweg;
 
   private LabelGroup bankverbindungLabelGroup;
+  
+  private LabelGroup abweichenderKontoinhaberLabelGroup;
 
   private SelectNoScrollInput zahlungsrhytmus;
 
@@ -679,6 +681,15 @@ public class MitgliedControl extends FilterControl
     }
     return bankverbindungLabelGroup;
   }
+  
+  public LabelGroup getAbweichenderKontoinhaberLabelGroup(Composite parent)
+  {
+    if (abweichenderKontoinhaberLabelGroup == null)
+    {
+      abweichenderKontoinhaberLabelGroup = new LabelGroup(parent, "Abweichender Kontoinhaber");
+    }
+    return abweichenderKontoinhaberLabelGroup;
+  }
 
   public SelectInput getZahlungsrhythmus() throws RemoteException
   {
@@ -809,7 +820,7 @@ public class MitgliedControl extends FilterControl
     Date d = getMitglied().getLetzteLastschrift();
     this.letztelastschrift = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.letztelastschrift.setEnabled(false);
-    this.letztelastschrift.setName("letzte Lastschrift");
+    this.letztelastschrift.setName("Letzte Lastschrift");
     return letztelastschrift;
   }
 
