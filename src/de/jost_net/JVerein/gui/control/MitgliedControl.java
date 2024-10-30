@@ -2009,7 +2009,7 @@ public class MitgliedControl extends FilterControl
     return b;
   }
   
-  public Button getKontoDatenLoeaschenButton()
+  public Button getKontoDatenLoeschenButton()
   {
     Button b = new Button("Bankverbindung-Daten löschen", new Action()
     {

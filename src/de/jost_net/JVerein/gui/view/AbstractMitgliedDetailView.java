@@ -447,6 +447,10 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
     GridLayout layout = new GridLayout(1, false);
     container.getComposite().setLayout(layout);
 
+    ButtonArea buttons1 = new ButtonArea();
+    buttons1.addButton(control.getKontoDatenLoeschenButton());
+    buttons1.paint(container.getComposite());
+    
     LabelGroup zahlungsweg = new LabelGroup(container.getComposite(),
         "Zahlungsweg");
 
@@ -468,11 +472,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
 
     LabelGroup bankverbindung = control
         .getBankverbindungLabelGroup(container.getComposite());
-    // bankverbindung
-    // .getComposite()
-    // .setVisible(
-    // ((Zahlungsweg) control.getZahlungsweg().getValue()).getKey() ==
-    // Zahlungsweg.BASISLASTSCHRIFT);
 
     SimpleVerticalContainer cols = new SimpleVerticalContainer(
         bankverbindung.getComposite(), false, spaltenanzahl);
@@ -491,7 +490,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
         abweichenderKontoInhaber.getComposite(), false, spaltenanzahl);
     
     ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton(control.getKontoDatenLoeaschenButton());
     buttons2.addButton(control.getMitglied2KontoinhaberEintragenButton());
     addButtonArea(buttons2, cols2.getComposite());
     cols2.addInput(control.getKtoiPersonenart());
