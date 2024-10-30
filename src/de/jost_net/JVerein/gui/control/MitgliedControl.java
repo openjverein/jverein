@@ -1344,18 +1344,16 @@ public class MitgliedControl extends FilterControl
     });
 
     if (getBeitragsgruppe(true) != null
-        && getBeitragsgruppe(true).getValue() != null)
+        && getBeitragsgruppe(true).getValue() != null
+        && ((Beitragsgruppe) getBeitragsgruppe(true).getValue()).getBeitragsArt() 
+             == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
     {
-      Beitragsgruppe bg2 = (Beitragsgruppe) getBeitragsgruppe(true).getValue();
-      if (bg2.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-      {
-        zahler.setEnabled(true);
-      }
-      else
-      {
-        zahler.setPreselected(getMitglied());
-        zahler.setEnabled(false);
-      }
+      zahler.setEnabled(true);
+    }
+    else
+    {
+      zahler.setPreselected(getMitglied());
+      zahler.setEnabled(false);
     }
     return zahler;
   }
