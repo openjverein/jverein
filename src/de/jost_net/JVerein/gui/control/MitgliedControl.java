@@ -751,7 +751,7 @@ public class MitgliedControl extends FilterControl
     this.mandatdatum.setTitle("Datum des Mandats");
     this.mandatdatum.setName("Datum des Mandats");
     this.mandatdatum.setText("Bitte Datum des Mandats wählen");
-    if (!(((Zahlungsweg) getZahlungsweg().getValue()).getKey() == Zahlungsweg.BASISLASTSCHRIFT))
+    if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
     {
       mandatdatum.setMandatory(false);
     }
@@ -788,7 +788,7 @@ public class MitgliedControl extends FilterControl
 
       }
     });
-    if (!(((Zahlungsweg) getZahlungsweg().getValue()).getKey() == Zahlungsweg.BASISLASTSCHRIFT))
+    if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
     {
       mandatversion.setMandatory(false);
     }
@@ -820,7 +820,7 @@ public class MitgliedControl extends FilterControl
       return iban;
     }
     iban = new IBANInput(HBCIProperties.formatIban(getMitglied().getIban()), getBic());
-    if (!(((Zahlungsweg) getZahlungsweg().getValue()).getKey() == Zahlungsweg.BASISLASTSCHRIFT))
+    if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
     {
       iban.setMandatory(false);
     }
