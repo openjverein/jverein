@@ -45,7 +45,6 @@ import de.jost_net.JVerein.gui.parts.ArbeitseinsatzUeberpruefungList;
 import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -63,7 +62,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -593,28 +591,7 @@ public class ArbeitseinsatzControl extends FilterControl
     arbeitseinsatzList.setRememberColWidths(true);
     arbeitseinsatzList.setRememberOrder(true);
     arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu());
-
-    arbeitseinsatzList.addColumn("Name", "mitglied", new Formatter()
-    {
-
-      @Override
-      public String format(Object o)
-      {
-        Mitglied m = (Mitglied) o;
-        if (m == null)
-          return null;
-        String name = null;
-        try
-        {
-          name = Adressaufbereitung.getNameVorname(m);
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-        return name;
-      }
-    });
+    arbeitseinsatzList.addColumn("Name", "mitglied");
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     arbeitseinsatzList.addColumn("Stunden", "stunden",

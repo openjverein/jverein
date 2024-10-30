@@ -25,10 +25,8 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.LehrgangAction;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
-import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -36,7 +34,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -256,27 +253,7 @@ public class LehrgangControl extends FilterControl
     if (lehrgaengeList == null)
     {
       lehrgaengeList = new TablePart(lehrgaenge, new LehrgangAction(null));
-      lehrgaengeList.addColumn("Name", "mitglied", new Formatter()
-      {
-
-        @Override
-        public String format(Object o)
-        {
-          Mitglied m = (Mitglied) o;
-          if (m == null)
-            return null;
-          String name = null;
-          try
-          {
-            name = Adressaufbereitung.getNameVorname(m);
-          }
-          catch (RemoteException e)
-          {
-            Logger.error("Fehler", e);
-          }
-          return name;
-        }
-      });
+      lehrgaengeList.addColumn("Name", "mitglied");
       lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
       lehrgaengeList.addColumn("Von/am", "von",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
