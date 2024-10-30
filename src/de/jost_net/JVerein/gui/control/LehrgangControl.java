@@ -27,6 +27,7 @@ import de.jost_net.JVerein.gui.action.LehrgangAction;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
