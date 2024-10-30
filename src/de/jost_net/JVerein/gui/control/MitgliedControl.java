@@ -605,21 +605,15 @@ public class MitgliedControl extends FilterControl
         {
           try
           {
-            if (!(((Zahlungsweg) getZahlungsweg().getValue()).getKey() == Zahlungsweg.BASISLASTSCHRIFT))
+            if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
             {
               mandatdatum.setMandatory(false);
-              mandatdatum.setValue(null);
-              mandatdatum.disable();
               mandatversion.setMandatory(false);
-              mandatversion.setValue(null);
-              mandatversion.disable();
               iban.setMandatory(false);
             }
             else
             {
-              mandatdatum.enable();
               mandatdatum.setMandatory(true);
-              mandatversion.enable();
               mandatversion.setMandatory(true);
               iban.setMandatory(true);
             }
@@ -760,12 +754,9 @@ public class MitgliedControl extends FilterControl
     if (!(((Zahlungsweg) getZahlungsweg().getValue()).getKey() == Zahlungsweg.BASISLASTSCHRIFT))
     {
       mandatdatum.setMandatory(false);
-      mandatdatum.setValue(null);
-      mandatdatum.disable();
     }
     else
     {
-      mandatdatum.enable();
       mandatdatum.setMandatory(true);
     }
     return mandatdatum;
@@ -800,12 +791,9 @@ public class MitgliedControl extends FilterControl
     if (!(((Zahlungsweg) getZahlungsweg().getValue()).getKey() == Zahlungsweg.BASISLASTSCHRIFT))
     {
       mandatversion.setMandatory(false);
-      mandatversion.setValue(null);
-      mandatversion.disable();
     }
     else
     {
-      mandatversion.enable();
       mandatversion.setMandatory(true);
     }
     return mandatversion;
