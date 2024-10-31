@@ -1233,12 +1233,13 @@ public class BuchungsControl extends AbstractControl
       {
         buchungsList.addColumn("D", "document");
       }
-      buchungsList.addColumn("S", "splitid", new Formatter()
+      buchungsList.addColumn("S", "splittyp", new Formatter()
       {
         @Override
         public String format(Object o)
         {
-          return (o != null ? "S" : " ");
+          Integer typ = (Integer) o;
+          return SplitbuchungTyp.get(typ).substring(0, 1);
         }
       });
       buchungsList.addColumn("Konto", "konto", new Formatter()
