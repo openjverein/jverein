@@ -43,7 +43,7 @@ public class RechnungListeView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addInput(control.getDifferenz());
-    left.addLabelPair("ohne Abbucher",control.getOhneAbbucher());
+    left.addLabelPair("Ohne Abbucher",control.getOhneAbbucher());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());

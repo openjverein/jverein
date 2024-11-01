@@ -79,7 +79,7 @@ public class RechnungMailView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.RECHNUNG, false, "question-circle.png");
+        DokumentationUtil.RECHNUNG_MAIL, false, "question-circle.png");
     buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
         control, false, "view-refresh.png"));
     /*buttons.addButton(new Button("Export",

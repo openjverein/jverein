@@ -72,6 +72,8 @@ public class DokumentationUtil
   public static final String SPENDENBESCHEINIGUNG = PRE + FUNKTIONEN + MITGLIEDER 
       + "spendenbescheinigung";
   
+  public static final String RECHNUNG = PRE + FUNKTIONEN + MITGLIEDER + "rechnung";
+  
   public static final String SUCHPROFIL = PRE + FUNKTIONEN + MITGLIEDER + "content/suchprofil";
 
   public static final String WIEDERVORLAGE = PRE + FUNKTIONEN + MITGLIEDER  + "wiedervorlage";
@@ -137,7 +139,7 @@ public class DokumentationUtil
   
 
   // Druck und Mail
-  public static final String RECHNUNG = PRE + FUNKTIONEN + DRUCKMAIL + "rechnungen";
+  public static final String RECHNUNG_MAIL = PRE + FUNKTIONEN + DRUCKMAIL + "rechnungen";
 
   public static final String MAHNUNG = PRE + FUNKTIONEN + DRUCKMAIL+ "mahnungen";
 

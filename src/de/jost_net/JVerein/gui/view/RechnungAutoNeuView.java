@@ -43,13 +43,14 @@ public class RechnungAutoNeuView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addInput(control.getDifferenz());
-    left.addLabelPair("ohne Abbucher", control.getOhneAbbucher());
+    left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
     
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
     
-    right.addLabelPair("Formular", control.getFormular(FormularArt.RECHNUNG));
+    LabelGroup formularGroup = new LabelGroup(getParent(), "Formular");
+    formularGroup.addLabelPair("Formular", control.getFormular(FormularArt.RECHNUNG));
     
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());

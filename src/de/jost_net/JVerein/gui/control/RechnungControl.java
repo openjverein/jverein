@@ -199,7 +199,7 @@ public class RechnungControl extends DruckMailControl
       if (rechnungList != null)
       {
         rechnungList.removeAll();
-        GenericIterator<Lehrgang> rechnungen = getRechnungIterator();
+        GenericIterator<Rechnung> rechnungen = getRechnungIterator();
         while (rechnungen.hasNext())
         {
           rechnungList.addItem(rechnungen.next());
@@ -331,14 +331,20 @@ public class RechnungControl extends DruckMailControl
           RechnungNode ren = (RechnungNode) items.get(0);
           // Loop über die Mitglieder
           GenericIterator it1 = ren.getChildren();
+
+          Formular form = (Formular) getFormular(FormularArt.RECHNUNG).getValue();
+          if(form == null)
+          {
+            throw new ApplicationException(
+                "Kein Formular ausgewählt");
+          }
           while (it1.hasNext())
           {
             RechnungNode sp1 = (RechnungNode) it1.next();
             Rechnung rechnung = (Rechnung) Einstellungen.getDBService()
                 .createObject(Rechnung.class, null);
             rechnung.setMitglied(Integer.parseInt(sp1.getMitglied().getID()));
-            rechnung.setFormular(
-                (Formular) getFormular(FormularArt.RECHNUNG).getValue());
+            rechnung.setFormular(form);
             rechnung.setDatum(new Date());
 
             double betrag = 0;
