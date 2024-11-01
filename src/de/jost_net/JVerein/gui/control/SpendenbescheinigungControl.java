@@ -966,6 +966,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
     BackgroundTask t = new BackgroundTask()
     {
 
+      private boolean cancel = false;
+
       @Override
       public void run(ProgressMonitor monitor)
       {
@@ -994,6 +996,14 @@ public class SpendenbescheinigungControl extends DruckMailControl
           int size = spba.length;
           for (int i=0; i < size; i++)
           {
+            if(isInterrupted())
+            {
+              monitor.setStatus(ProgressMonitor.STATUS_ERROR);
+              monitor.setStatusText("Mailversand abgebrochen");
+              monitor.setPercentComplete(100);
+              return;
+            }
+            
             double proz = (double) i / (double) size * 100d;
             monitor.setPercentComplete((int) proz);
             Mitglied m = spba[i].getMitglied();
@@ -1094,13 +1104,13 @@ public class SpendenbescheinigungControl extends DruckMailControl
       @Override
       public void interrupt()
       {
-        //
+        this.cancel = true;
       }
 
       @Override
       public boolean isInterrupted()
       {
-        return false;
+        return this.cancel;
       }
     };
     Application.getController().start(t);

@@ -61,6 +61,8 @@ public class ZipMailer
   {
     BackgroundTask t = new BackgroundTask()
     {
+      private boolean cancel = false;
+
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
@@ -92,6 +94,13 @@ public class ZipMailer
           for (@SuppressWarnings("rawtypes")
           Enumeration e = zip.entries(); e.hasMoreElements();)
           {
+            if(isInterrupted())
+            {
+              monitor.setStatus(ProgressMonitor.STATUS_ERROR);
+              monitor.setStatusText("Mailversand abgebrochen");
+              monitor.setPercentComplete(100);
+              return;
+            }
             ZipEntry entry = (ZipEntry) e.nextElement();
             String currentEntry = entry.getName();
             if (currentEntry.indexOf("@") > 0)
@@ -201,13 +210,13 @@ public class ZipMailer
       @Override
       public void interrupt()
       {
-        //
+        this.cancel = true;
       }
 
       @Override
       public boolean isInterrupted()
       {
-        return false;
+        return this.cancel;
       }
 
     };
