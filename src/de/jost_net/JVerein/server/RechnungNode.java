@@ -143,7 +143,7 @@ public class RechnungNode implements GenericObjectNode
         && !((String) control.getSuchname().getValue()).isEmpty())
     {
       mitgliedterator.addFilter(
-          "  AND (upper(name) like upper(?%) or upper(vorname) like upper(?%))",
+          " (upper(name) like upper(?) or upper(vorname) like upper(?)) ",
           new Object[] { control.getSuchname().getValue(),
               control.getSuchname().getValue() });
     }
