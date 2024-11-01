@@ -48,15 +48,11 @@ public class ZusatzbetraegeAction implements Action
     }
     else
     {
-      if (m == null)
-      {
-        return;
-      }
       try
       {
         z = (Zusatzbetrag) Einstellungen.getDBService().createObject(
             Zusatzbetrag.class, null);
-        if (m.getID() == null)
+        if (m != null  && m.getID() == null)
         {
           throw new ApplicationException(
               "Neues Mitglied bitte erst speichern. Dann können Zusatzbeträge aufgenommen werden.");

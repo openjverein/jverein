@@ -25,13 +25,18 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.dialogs.ShowVariablesDialog;
+import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.ShowVariablesMenu;
 import de.jost_net.JVerein.rmi.Lesefeld;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.AbstractInput;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -56,13 +61,30 @@ public class LesefeldDetailView extends AbstractView implements Listener
   private TextAreaInput textAreaInputScriptResult;
 
   private TextInput textInputScriptName;
+  
+  private AbstractInput mitglied;
+  
+  private Mitglied selectedMitglied;
 
+  
+  public LesefeldDetailView(LesefeldAuswerter lesefeldAuswerter,
+      Lesefeld lesefeld, Mitglied mitglied)
+  {
+    this.lesefeldAuswerter = lesefeldAuswerter;
+    this.lesefeld = lesefeld;
+    this.selectedMitglied = mitglied;
+    // KeyListener für HotKeys.
+    GUI.getDisplay().addFilter(SWT.KeyDown, this);
+  }
+  
   @Override
   public void bind() throws Exception
   {
     Composite parent = getParent();
     SimpleContainer container = new SimpleContainer(parent, true);
 
+    container.addLabelPair("Mitglied", getMitglied());
+    
     // Auf diese Input-Felder sollte nur über die Funktionen
     // updateLesefeldFromGUI() und updateScriptResult() zugegriffen werden.
     textInputScriptName = new TextInput(
@@ -154,16 +176,6 @@ public class LesefeldDetailView extends AbstractView implements Listener
   public void unbind()
   {
     GUI.getDisplay().removeFilter(SWT.KeyDown, this);
-  }
-
-  public LesefeldDetailView(LesefeldAuswerter lesefeldAuswerter,
-      Lesefeld lesefeld)
-  {
-    this.lesefeldAuswerter = lesefeldAuswerter;
-    this.lesefeld = lesefeld;
-
-    // KeyListener für HotKeys.
-    GUI.getDisplay().addFilter(SWT.KeyDown, this);
   }
 
   /**
@@ -275,6 +287,49 @@ public class LesefeldDetailView extends AbstractView implements Listener
 
     }
 
+  }
+  
+  public Input getMitglied() throws RemoteException
+  {
+    if (mitglied != null)
+    {
+      return mitglied;
+    }
+
+    mitglied = new MitgliedInput().getMitgliedInput(mitglied, selectedMitglied,
+        Einstellungen.getEinstellung().getMitgliedAuswahl());
+    mitglied.addListener(new MitgliedListener());
+    mitglied.setMandatory(true);
+    return mitglied;
+  }
+  
+  public class MitgliedListener implements Listener
+  {
+
+    MitgliedListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      try
+      {
+        Mitglied selected = (Mitglied) getMitglied().getValue();
+        if (selected == null || selected == selectedMitglied)
+          return;
+        selectedMitglied = selected;
+        lesefeldAuswerter
+            .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
+        updateScriptResult();
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Fehler beim Auswählen des Mitgliedes";
+        Logger.error(fehler, e);
+        GUI.getStatusBar().setErrorText(fehler);
+      }
+    }
   }
 
 }

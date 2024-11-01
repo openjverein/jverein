@@ -44,21 +44,20 @@ public class MitgliedInput
         {
           mitgliederList.add(it.next());
         }
-
         // Das erste Mitglied wird ausgewählt wenn nichts übergeben
         Mitglied selectedMitglied = mitglied;
-        if (!mitgliederList.isEmpty() && selectedMitglied == null)
+        if (selectedMitglied == null && !mitgliederList.isEmpty())
         {
           selectedMitglied = mitgliederList.get(0);
         }
         mitgliedInput = new SelectInput(mitgliederList.toArray(), selectedMitglied);
         break;
       case AbstractInputAuswahl.SearchInput:
-      default: // default soll SearchInput sein. Eigentlich sollten die
-        // Settings immer gesetzt sein, aber man weiss ja nie.
+      default:
         mitgliedInput = new MitgliedSearchInput();
         ((MitgliedSearchInput) mitgliedInput)
             .setSearchString("Zum Suchen tippen");
+        mitgliedInput.setValue(mitglied);
     }
     return mitgliedInput;
   }

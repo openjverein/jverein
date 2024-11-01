@@ -876,7 +876,7 @@ public class BuchungsControl extends AbstractControl
 
   public Button getStartCSVAuswertungButton()
   {
-    Button b = new Button("CSV-Export", new Action()
+    Button b = new Button("CSV", new Action()
     {
 
       @Override

@@ -1,7 +1,6 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -15,18 +14,19 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.gui.view.LesefeldDetailView;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.input.AbstractInput;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -52,6 +52,8 @@ public class LesefeldUebersichtPart implements Part
   private Mitglied selectedMitglied;
 
   private LesefeldAuswerter lesefeldAuswerter;
+  
+  private AbstractInput mitglied;
 
   /**
    * Mit selectedMitglied kann ein beliebiges Mitglied in der GUI ausgwählt
@@ -74,83 +76,21 @@ public class LesefeldUebersichtPart implements Part
     SimpleContainer container = new SimpleContainer(scrolled.getComposite());
 
     container.addHeadline("Lesefelder");
+    container.addLabelPair("Mitglied", getMitglied());
 
-    // Hole alle Mitglieder aus Datenbank um sie später anzuzeigen.
-    DBIterator<Mitglied> it = Einstellungen.getDBService()
-        .createList(Mitglied.class);
-    // TODO Wenn es "zu viele" Mitglieder gibt, ist ein SelectInput
-    // nicht geeignet. Es sollte eine andere Art der Auswahl eingebaut
-    // werden.
-    it.setOrder("order by name, vorname");
-    // optional könnten Filter eingebaut werden:
-    // it.addFilter("plz='" + (String) plz.getValue() + "'");
-    ArrayList<Mitglied> mitgliederList = new ArrayList<>();
-    while (it.hasNext())
+    if (selectedMitglied == null && getMitglied().getValue() != null)
     {
-      mitgliederList.add(it.next());
+      selectedMitglied = (Mitglied) getMitglied().getValue();
     }
-
-    // Das erste Mitglied wird ausgewählt, wenn im Contructor keins gewählt
-    // wurde.
-    if (selectedMitglied == null && !mitgliederList.isEmpty())
-    {
-      selectedMitglied = mitgliederList.get(0);
-    }
-    if (selectedMitglied == null)
-    {
-      Label textLabel = new Label(container.getComposite(), SWT.NONE);
-      textLabel.setText("Bitte erst ein Mitglied anlegen.");
-      return;
-    }
-
-    // MITGLIEDER AUSWAHL-FELD
-    final SelectInput mitgliederSelectInput = new SelectInput(
-        mitgliederList.toArray(), selectedMitglied);
-
-    mitgliederSelectInput.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Mitglied selected = (Mitglied) mitgliederSelectInput.getValue();
-        if (selected == null || selected == selectedMitglied)
-          return;
-
-        selectedMitglied = selected;
-        try
-        {
-          lesefeldAuswerter
-              .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
-          lesefeldAuswerter.evalAlleLesefelder();
-          List<Lesefeld> lesefelder = lesefeldAuswerter.getLesefelder();
-          for (Lesefeld lesefeld : lesefelder)
-          {
-            updateLesefeldEinstellungRow(lesefeld);
-          }
-        }
-        catch (RemoteException e)
-        {
-          String fehler = "Fehler beim Auswählen des Mitgliedes";
-          Logger.error(fehler, e);
-          GUI.getStatusBar().setErrorText(fehler);
-        }
-
-      }
-    });
-    mitgliederSelectInput.setName("Mitgliedschaft");
-    container.addLabelPair("Mitglied", mitgliederSelectInput);
-    // ENDE MITGLIEDER AUSWAHL-FELD
-
     // LesefelderListeLayout
     // darf nur über die Funktionen
     // addLesefeldEinstellungRow(), updateLesefeldEinstellungRow()
     // und deleteLesefeldEinstellungRow()
     // manipuliert werden.
     lesefelderListeLayout = new ColumnLayout(container.getComposite(), 4);
-
     lesefeldAuswerter = new LesefeldAuswerter();
     lesefeldAuswerter.setLesefelderDefinitionsFromDatabase();
+    if (selectedMitglied != null)
     lesefeldAuswerter
         .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
     lesefeldAuswerter.evalAlleLesefelder();
@@ -333,9 +273,12 @@ public class LesefeldUebersichtPart implements Part
     }
 
     @Override
-    public void handleAction(Object context)
+    public void handleAction(Object context) throws ApplicationException
     {
-      openEditLesefeldDialog(lesefeld);
+      if (selectedMitglied != null)
+        openEditLesefeldDialog(lesefeld);
+      else
+        throw new ApplicationException("Bitte Mitglied auswählen");
     }
   }
 
@@ -350,7 +293,8 @@ public class LesefeldUebersichtPart implements Part
   private void openEditLesefeldDialog(Lesefeld lesefeld)
   {
 
-    GUI.startView(new LesefeldDetailView(lesefeldAuswerter, lesefeld), null);
+    GUI.startView(new LesefeldDetailView(lesefeldAuswerter, 
+        lesefeld, selectedMitglied), null);
   }
 
   class DeleteLesefeldAction implements Action
@@ -395,7 +339,54 @@ public class LesefeldUebersichtPart implements Part
         GUI.getStatusBar().setErrorText(fehler);
       }
     }
+  }
+  
+  public Input getMitglied() throws RemoteException
+  {
+    if (mitglied != null)
+    {
+      return mitglied;
+    }
 
+    mitglied = new MitgliedInput().getMitgliedInput(mitglied, selectedMitglied,
+        Einstellungen.getEinstellung().getMitgliedAuswahl());
+    mitglied.addListener(new MitgliedListener());
+    mitglied.setMandatory(true);
+    return mitglied;
+  }
+  
+  public class MitgliedListener implements Listener
+  {
+
+    MitgliedListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      try
+      {
+        Mitglied selected = (Mitglied) getMitglied().getValue();
+        if (selected == null || selected == selectedMitglied)
+          return;
+        selectedMitglied = selected;
+        lesefeldAuswerter
+            .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
+        lesefeldAuswerter.evalAlleLesefelder();
+        List<Lesefeld> lesefelder = lesefeldAuswerter.getLesefelder();
+        for (Lesefeld lesefeld : lesefelder)
+        {
+          updateLesefeldEinstellungRow(lesefeld);
+        }
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Fehler beim Auswählen des Mitgliedes";
+        Logger.error(fehler, e);
+        GUI.getStatusBar().setErrorText(fehler);
+      }
+    }
   }
 
 }

@@ -29,7 +29,7 @@ public interface Lehrgang extends DBObject
 
   public Lehrgangsart getLehrgangsart() throws RemoteException;
 
-  public void setLehrgangsart(int lehrgangsart) throws RemoteException;
+  public void setLehrgangsart(Integer lehrgangsart) throws RemoteException;
 
   public Date getVon() throws RemoteException;
 

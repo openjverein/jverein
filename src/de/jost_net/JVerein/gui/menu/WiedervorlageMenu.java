@@ -28,6 +28,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 
@@ -44,14 +45,15 @@ public class WiedervorlageMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten", new WiedervorlageAction(null),
         "text-x-generic.png"));
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-        new MitgliedDetailAction(), "user-friends.png"));
     addItem(new WiedervorlageNichtErledigtItem("Erledigung setzen",
         new WiedervorlageErledigungAction(table), "check.png"));
     addItem(new WiedervorlageErledigtItem("Erledigung löschen",
         new WiedervorlageErledigungDeleteAction(table), "user-trash-full.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new WiedervorlageDeleteAction(), "user-trash-full.png"));
+    addItem(ContextMenuItem.SEPARATOR);
+    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+        new MitgliedDetailAction(), "user-friends.png"));
   }
   
   private static class WiedervorlageErledigtItem extends CheckedSingleContextMenuItem

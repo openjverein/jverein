@@ -110,6 +110,10 @@ public class KursteilnehmerImpl extends AbstractDBObject implements
     {
       throw new ApplicationException("Bitte BIC eingeben");
     }
+    if (getBetrag() == null)
+    {
+      throw new ApplicationException("Bitte Betrag eingeben");
+    }
 
     try
     {
@@ -443,18 +447,15 @@ public class KursteilnehmerImpl extends AbstractDBObject implements
   }
 
   @Override
-  public double getBetrag() throws RemoteException
+  public Double getBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
-    if (d == null)
-      return 0;
-    return d.doubleValue();
+    return (Double) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(double d) throws RemoteException
+  public void setBetrag(Double d) throws RemoteException
   {
-    setAttribute("betrag", Double.valueOf(d));
+    setAttribute("betrag", d);
   }
 
   @Override

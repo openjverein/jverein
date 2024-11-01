@@ -115,7 +115,7 @@ public class ZusatzbetragControl extends AbstractControl
     {
       return part;
     }
-    part = new ZusatzbetragPart(getZusatzbetrag());
+    part = new ZusatzbetragPart(getZusatzbetrag(), true);
     return part;
   }
 
@@ -186,6 +186,18 @@ public class ZusatzbetragControl extends AbstractControl
     try
     {
       Zusatzbetrag z = getZusatzbetrag();
+      if (z.isNewObject())
+      {
+        if (getZusatzbetragPart().getMitglied().getValue() != null)
+        {
+          Mitglied m = (Mitglied) getZusatzbetragPart().getMitglied().getValue();
+          z.setMitglied(Integer.parseInt(m.getID()));
+        }
+        else
+        {
+          throw new ApplicationException("Bitte Mitglied eingeben");
+        }
+      }
       z.setFaelligkeit(
           (Date) getZusatzbetragPart().getFaelligkeit().getValue());
       z.setStartdatum(
@@ -196,11 +208,10 @@ public class ZusatzbetragControl extends AbstractControl
       z.setEndedatum((Date) getZusatzbetragPart().getEndedatum().getValue());
       z.setBuchungstext(
           (String) getZusatzbetragPart().getBuchungstext().getValue());
-      Double d = (Double) getZusatzbetragPart().getBetrag().getValue();
       z.setBuchungsart(
           (Buchungsart) getZusatzbetragPart().getBuchungsart().getValue());
       z.setBuchungsklasseId(getZusatzbetragPart().getSelectedBuchungsKlasseId());
-      z.setBetrag(d.doubleValue());
+      z.setBetrag((Double) getZusatzbetragPart().getBetrag().getValue());
       z.store();
       if (getVorlage().getValue().equals(MITDATUM)
           || getVorlage().getValue().equals(OHNEDATUM))
@@ -337,7 +348,7 @@ public class ZusatzbetragControl extends AbstractControl
 
   public Button getPDFAusgabeButton()
   {
-    Button b = new Button("PDF-Ausgabe", new Action()
+    Button b = new Button("PDF", new Action()
     {
 
       @Override

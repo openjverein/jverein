@@ -67,6 +67,10 @@ public class LehrgangsartImpl extends AbstractDBObject implements Lehrgangsart
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben");
       }
+      if (getVon() == null)
+      {
+        throw new ApplicationException("Bitte Datum eingeben");
+      }
     }
     catch (RemoteException e)
     {

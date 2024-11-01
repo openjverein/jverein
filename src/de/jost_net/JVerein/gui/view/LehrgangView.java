@@ -34,6 +34,7 @@ public class LehrgangView extends AbstractView
     final LehrgangControl control = new LehrgangControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Lehrgang");
+    group.addLabelPair("Mitglied", control.getMitglied());
     group.addLabelPair("Lehrgangsart", control.getLehrgangsart());
     group.addLabelPair("Am/von", control.getVon());
     group.addLabelPair("Bis", control.getBis());

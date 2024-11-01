@@ -98,6 +98,10 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
         throw new ApplicationException(
             "Nächste Fälligkeit liegt nicht im Intervall");
       }
+      if (getBetrag() == null)
+      {
+        throw new ApplicationException("Bitte Betrag eingeben");
+      }
     }
     catch (RemoteException e)
     {
@@ -164,18 +168,15 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   }
 
   @Override
-  public double getBetrag() throws RemoteException
+  public Double getBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
-    if (d == null)
-      return 0;
-    return d.doubleValue();
+    return (Double) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(double d) throws RemoteException
+  public void setBetrag(Double d) throws RemoteException
   {
-    setAttribute("betrag", Double.valueOf(d));
+    setAttribute("betrag", d);
   }
 
   @Override
@@ -315,14 +316,7 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
       // Ist das Ausführungsdatum gesetzt?
       if (getAusfuehrung() == null)
       {
-        if (getFaelligkeit().getTime() <= datum.getTime())
-        {
-          return true;
-        }
-        else
-        {
-          return false;
-        }
+        return true;
       }
       else
       {
@@ -331,13 +325,9 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
       }
     }
 
-    // Wenn das Endedatum gesetzt ist und das Ausführungsdatum liegt hinter
+    // Wenn das Endedatum gesetzt ist und das Fälligkeitsdatum liegt zum oder hinter
     // dem Endedatum: nicht mehr ausführen
-    if (getEndedatum() != null && datum.getTime() >= getEndedatum().getTime())
-    {
-      return false;
-    }
-    if (getFaelligkeit().getTime() > datum.getTime())
+    if (getEndedatum() != null && getFaelligkeit().getTime() >= getEndedatum().getTime())
     {
       return false;
     }

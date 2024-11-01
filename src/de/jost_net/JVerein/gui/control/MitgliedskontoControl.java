@@ -242,10 +242,11 @@ public class MitgliedskontoControl extends DruckMailControl
     {
       z = getMitgliedskonto().getZahlungsweg();
     }
-    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
-    if(getMitglied().getValue() == null ||
-        ((Mitglied) getMitglied().getValue()).getZahlerID() == null)
-      weg.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+    boolean mitVollzahler = false;
+    if(getMitglied().getValue() != null &&
+        ((Mitglied) getMitglied().getValue()).getZahlerID() != null)
+      mitVollzahler = true;
+    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray(mitVollzahler);
 
     zahlungsweg = new SelectInput(weg,
         z == null
@@ -432,9 +433,12 @@ public class MitgliedskontoControl extends DruckMailControl
 
       // Update taxes and netto amount
       mkto.setSteuersatz(steuersatz);
-      double netto = ((Double) getBetrag().getValue() / (1d + (steuersatz / 100d)));
-      mkto.setNettobetrag(netto);
-      mkto.setSteuerbetrag((Double) getBetrag().getValue() - netto);
+      if (getBetrag().getValue() != null)
+      {
+        Double netto = ((Double) getBetrag().getValue() / (1d + (steuersatz / 100d)));
+        mkto.setNettobetrag(netto);
+        mkto.setSteuerbetrag((Double) getBetrag().getValue() - netto);
+      }
       
       mkto.store();
       GUI.getStatusBar().setSuccessText("Sollbuchung gespeichert");
@@ -1333,6 +1337,7 @@ public class MitgliedskontoControl extends DruckMailControl
           Einstellungen.getEinstellung().getMitgliedAuswahl());
       mitglied.addListener(new MitgliedListener());
     }
+    mitglied.setMandatory(true);
     return mitglied;
   }
   
