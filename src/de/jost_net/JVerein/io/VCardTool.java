@@ -56,25 +56,28 @@ public class VCardTool
         vcard.setBirthday(bd);
       }
 
-      if (m.getGeschlecht().equalsIgnoreCase("m"))
+      if(m.getGeschlecht() != null)
       {
-        vcard.setGender(Gender.male());
-      }
-      if (m.getGeschlecht().equalsIgnoreCase("w"))
-      {
-        vcard.setGender(Gender.female());
-      }
-      if (m.getGeschlecht().equalsIgnoreCase("o"))
-      {
-        vcard.setGender(Gender.other());
-      }
-      if (m.getPersonenart().equalsIgnoreCase("n"))
-      {
-        StructuredName n = new StructuredName();
-        n.setFamily(m.getName());
-        n.setGiven(m.getVorname());
-        // n.addPrefix("Mr");
-        vcard.setStructuredName(n);
+        if (m.getGeschlecht().equalsIgnoreCase("m"))
+        {
+          vcard.setGender(Gender.male());
+        }
+        if (m.getGeschlecht().equalsIgnoreCase("w"))
+        {
+          vcard.setGender(Gender.female());
+        }
+        if (m.getGeschlecht().equalsIgnoreCase("o"))
+        {
+          vcard.setGender(Gender.other());
+        }
+        if (m.getPersonenart().equalsIgnoreCase("n"))
+        {
+          StructuredName n = new StructuredName();
+          n.setFamily(m.getName());
+          n.setGiven(m.getVorname());
+          // n.addPrefix("Mr");
+          vcard.setStructuredName(n);
+        }
       }
 
       vcard.setFormattedName(Adressaufbereitung.getVornameName(m));
