@@ -16,10 +16,19 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.action.LastschriftDeleteAction;
+import de.jost_net.JVerein.gui.action.LastschriftDetailAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.PreNotificationAction;
+import de.jost_net.JVerein.rmi.Lastschrift;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.parts.ContextMenuItem;
+import de.willuhn.logging.Logger;
 
 /**
  * Kontext-Menu zu den Lastschriften
@@ -32,9 +41,40 @@ public class LastschriftMenu extends ContextMenu
    */
   public LastschriftMenu()
   {
+    addItem(new CheckedSingleContextMenuItem("Anzeigen", new LastschriftDetailAction(),
+        "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));
     addItem(new CheckedContextMenuItem("Löschen", new LastschriftDeleteAction(),
         "user-trash-full.png"));
+    addItem(ContextMenuItem.SEPARATOR);
+    addItem(new MitgliedAnzeigenMenuItem("Mitglied anzeigen",
+        new MitgliedDetailAction(), "user-friends.png"));
+  }
+  
+  private static class MitgliedAnzeigenMenuItem extends CheckedSingleContextMenuItem
+  {
+    private MitgliedAnzeigenMenuItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof Lastschrift)
+      {
+        Lastschrift la = (Lastschrift) o;
+        try
+        {
+          return la.getMitglied() != null;
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+      return false;
+    }
   }
 }
