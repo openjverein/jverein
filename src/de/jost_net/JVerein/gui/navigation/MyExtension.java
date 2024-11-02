@@ -43,6 +43,7 @@ import de.jost_net.JVerein.gui.action.PreNotificationAction;
 import de.jost_net.JVerein.gui.action.MitgliedstypListAction;
 import de.jost_net.JVerein.gui.action.AnfangsbestandListAction;
 import de.jost_net.JVerein.gui.action.AnlagenlisteAction;
+import de.jost_net.JVerein.gui.action.ArbeitseinsaetzeListeAction;
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzUeberpruefungAction;
 import de.jost_net.JVerein.gui.action.AuswertungAdressenAction;
 import de.jost_net.JVerein.gui.action.AuswertungKursteilnehmerAction;
@@ -186,8 +187,8 @@ public class MyExtension implements Extension
       }
       if (Einstellungen.getEinstellung().getArbeitseinsatz())
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Arbeitseinsätze prüfen",
-            new ArbeitseinsatzUeberpruefungAction(), "screwdriver.png"));
+        mitglieder.addChild(new MyItem(mitglieder, "Arbeitseinsätze",
+            new ArbeitseinsaetzeListeAction(), "screwdriver.png"));
       }
       jverein.addChild(mitglieder);
 
@@ -246,6 +247,11 @@ public class MyExtension implements Extension
           new StatistikMitgliedAction(), "chart-line.png"));
       auswertung.addChild(new MyItem(auswertung, "Statistik Jahrgänge",
           new StatistikJahrgaengeAction(), "chart-line.png"));
+      if (Einstellungen.getEinstellung().getArbeitseinsatz())
+      {
+        auswertung.addChild(new MyItem(mitglieder, "Arbeitseinsätze",
+            new ArbeitseinsatzUeberpruefungAction(), "screwdriver.png"));
+      }
       jverein.addChild(auswertung);
 
       NavigationItem mail = null;

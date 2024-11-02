@@ -23,6 +23,8 @@ import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class LehrgangImpl extends AbstractDBObject implements Lehrgang
 {
@@ -53,15 +55,45 @@ public class LehrgangImpl extends AbstractDBObject implements Lehrgang
   }
 
   @Override
-  protected void insertCheck()
+  protected void insertCheck() throws ApplicationException
   {
-    updateCheck();
+    try
+    {
+      plausi();
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Lehrgang kann nicht gespeichert werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
+  }
+  
+  @Override
+  protected void updateCheck() throws ApplicationException
+  {
+    try
+    {
+      plausi();
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Lehrgang kann nicht gespeichert werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
-  @Override
-  protected void updateCheck()
+  private void plausi() throws RemoteException, ApplicationException
   {
-    //
+    if (getLehrgangsart() == null)
+    {
+      throw new ApplicationException("Bitte Lehrgangsart auswählen");
+    }
+    if (getVon() == null)
+    {
+      throw new ApplicationException("Bitte Datum eingeben");
+    }
   }
 
   @Override
@@ -98,9 +130,9 @@ public class LehrgangImpl extends AbstractDBObject implements Lehrgang
   }
 
   @Override
-  public void setLehrgangsart(int lehrgangsart) throws RemoteException
+  public void setLehrgangsart(Integer lehrgangsart) throws RemoteException
   {
-    setAttribute("lehrgangsart", Integer.valueOf(lehrgangsart));
+    setAttribute("lehrgangsart", lehrgangsart);
   }
 
   @Override

@@ -14,40 +14,17 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.dialogs;
+package de.jost_net.JVerein.gui.action;
 
-import java.util.ArrayList;
+import de.jost_net.JVerein.gui.view.ArbeitseinsatzListeView;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 
-import de.jost_net.JVerein.server.EigenschaftenNode2;
-
-public class EigenschaftenAuswahlParameter2
+public class ArbeitseinsaetzeListeAction implements Action
 {
-  private ArrayList<EigenschaftenNode2> eigenschaften;
-
-  private String verknuepfung;
-
-  public EigenschaftenAuswahlParameter2()
+  @Override
+  public void handleAction(Object context)
   {
-    eigenschaften = new ArrayList<>();
-  }
-
-  public void add(EigenschaftenNode2 node)
-  {
-    eigenschaften.add(node);
-  }
-
-  public ArrayList<EigenschaftenNode2> getEigenschaften()
-  {
-    return eigenschaften;
-  }
-
-  public void setVerknuepfung(String verknuepfung)
-  {
-    this.verknuepfung = verknuepfung;
-  }
-
-  public String getVerknuepfung()
-  {
-    return verknuepfung;
+    GUI.startView(ArbeitseinsatzListeView.class.getName(), null);
   }
 }

@@ -23,6 +23,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -53,12 +54,16 @@ public class AuswertungMitgliedView extends AbstractView
     {
       left.addInput(control.getSuchExterneMitgliedsnummer());
     }
-    left.addInput(control.getEigenschaftenAuswahl());
+    DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
+    left.addInput(eigenschaftenInput);
+    control.updateEigenschaftenAuswahlTooltip();
     left.addInput(control.getBeitragsgruppeAusw());
 
     if (Einstellungen.getEinstellung().hasZusatzfelder())
     {
-      left.addInput(control.getZusatzfelderAuswahl());
+      DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
+      left.addInput(zusatzfelderInput);
+      control.updateZusatzfelderAuswahlTooltip();
     }
 
     // middle

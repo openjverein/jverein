@@ -66,13 +66,14 @@ public class Zahlungsweg
     }
   }
 
-  public static ArrayList<Zahlungsweg> getArray()
+  public static ArrayList<Zahlungsweg> getArray(boolean mitVollzahler)
   {
     ArrayList<Zahlungsweg> ret = new ArrayList<>();
     ret.add(new Zahlungsweg(BASISLASTSCHRIFT));
     ret.add(new Zahlungsweg(ÜBERWEISUNG));
     ret.add(new Zahlungsweg(BARZAHLUNG));
-    ret.add(new Zahlungsweg(VOLLZAHLER));
+    if(mitVollzahler)
+      ret.add(new Zahlungsweg(VOLLZAHLER));
     return ret;
   }
 

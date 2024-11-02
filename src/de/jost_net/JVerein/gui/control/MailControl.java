@@ -436,6 +436,8 @@ public class MailControl extends FilterControl
     BackgroundTask t = new BackgroundTask()
     {
 
+      private boolean cancel= false;
+
       @Override
       public void run(ProgressMonitor monitor)
       {
@@ -463,6 +465,13 @@ public class MailControl extends FilterControl
           int sentCount = 0;
           for (final MailEmpfaenger empf : getMail().getEmpfaenger())
           {
+            if(isInterrupted())
+            {
+              monitor.setStatus(ProgressMonitor.STATUS_ERROR);
+              monitor.setStatusText("Mailversand abgebrochen");
+              monitor.setPercentComplete(100);
+              return;
+            }
             try
             {
               EvalMail em = new EvalMail(empf);
@@ -522,13 +531,13 @@ public class MailControl extends FilterControl
       @Override
       public void interrupt()
       {
-        //
+        this.cancel = true;
       }
 
       @Override
       public boolean isInterrupted()
       {
-        return false;
+        return this.cancel;
       }
     };
     Application.getController().start(t);

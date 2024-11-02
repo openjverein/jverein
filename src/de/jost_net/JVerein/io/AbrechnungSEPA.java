@@ -190,6 +190,8 @@ public class AbrechnungSEPA
           ls.setOrt(k.getOrt());
           ls.setStaat(k.getStaat());
           ls.setEmail(k.getEmail());
+          if (k.getGeschlecht() != null)
+            ls.setGeschlecht(k.getGeschlecht());
           break;
         case MITGLIED:
           ls.setMitglied(Integer.parseInt(vza.getPersonId()));

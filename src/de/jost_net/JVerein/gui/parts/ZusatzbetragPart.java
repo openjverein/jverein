@@ -26,16 +26,19 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
+import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -63,16 +66,25 @@ public class ZusatzbetragPart implements Part
   private AbstractInput buchungsart;
   
   private SelectInput buchungsklasse;
+  
+  private AbstractInput mitglied;
+  
+  private boolean mitMitglied;
 
-  public ZusatzbetragPart(Zusatzbetrag zusatzbetrag)
+  public ZusatzbetragPart(Zusatzbetrag zusatzbetrag, boolean mitMitglied)
   {
     this.zusatzbetrag = zusatzbetrag;
+    this.mitMitglied = mitMitglied;
   }
 
   @Override
   public void paint(Composite parent) throws RemoteException
   {
     LabelGroup group = new LabelGroup(parent, "Zusatzbetrag");
+    if (mitMitglied)
+    {
+      group.addLabelPair("Mitglied", getMitglied());
+    }
     group.addLabelPair("Startdatum", getStartdatum(true));
     group.addLabelPair("Nächste Fälligkeit", getFaelligkeit());
     group.addLabelPair("Intervall", getIntervall());
@@ -106,9 +118,10 @@ public class ZusatzbetragPart implements Part
         if (date == null)
         {
           return;
-        }
+        }       
       }
     });
+    faelligkeit.setMandatory(true);
     return faelligkeit;
   }
 
@@ -168,6 +181,7 @@ public class ZusatzbetragPart implements Part
     {
       startdatum.focus();
     }
+    startdatum.setMandatory(true);
     return startdatum;
   }
 
@@ -307,6 +321,28 @@ public class ZusatzbetragPart implements Part
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
+  }
+  
+  public Input getMitglied() throws RemoteException
+  {
+    if (mitglied != null)
+    {
+      return mitglied;
+    }
+
+    if (zusatzbetrag.getMitglied() != null)
+    {
+      Mitglied[] mitgliedArray = {zusatzbetrag.getMitglied()};
+      mitglied = new SelectInput(mitgliedArray, zusatzbetrag.getMitglied());
+      mitglied.setEnabled(false);
+    }
+    else
+    {
+      mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
+          Einstellungen.getEinstellung().getMitgliedAuswahl());
+    }
+    mitglied.setMandatory(true);
+    return mitglied;
   }
   
 }

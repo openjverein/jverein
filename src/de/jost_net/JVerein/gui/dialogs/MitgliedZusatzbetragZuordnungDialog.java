@@ -63,7 +63,7 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
   {
     Zusatzbetrag zb = (Zusatzbetrag) Einstellungen.getDBService()
         .createObject(Zusatzbetrag.class, null);
-    part = new ZusatzbetragPart(zb);
+    part = new ZusatzbetragPart(zb, false);
     part.paint(parent);
 
     ButtonArea buttons = new ButtonArea();

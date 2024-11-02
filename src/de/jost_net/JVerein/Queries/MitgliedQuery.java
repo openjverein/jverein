@@ -34,7 +34,7 @@ import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.server.EigenschaftenNode2;
+import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -462,7 +462,7 @@ public class MitgliedQuery
           if (control.getEigenschaftenVerknuepfung().equals("und"))
           {
             ok = true;
-            if(suchauswahl.get(suchId).equals(EigenschaftenNode2.PLUS))
+            if(suchauswahl.get(suchId).equals(EigenschaftenNode.PLUS))
             {
               if (!mitgliedeigenschaftenIds.contains(suchId))
               {
@@ -481,7 +481,7 @@ public class MitgliedQuery
           }
           else    // Oder
           {
-            if(suchauswahl.get(suchId).equals(EigenschaftenNode2.PLUS))
+            if(suchauswahl.get(suchId).equals(EigenschaftenNode.PLUS))
             {
               if (mitgliedeigenschaftenIds.contains(suchId))
               {

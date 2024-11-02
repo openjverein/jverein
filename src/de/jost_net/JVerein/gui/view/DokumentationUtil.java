@@ -135,6 +135,8 @@ public class DokumentationUtil
   public static final String STATISTIKJAHRGAENGE = PRE + FUNKTIONEN + AUSWERTUNGEN
       + "statistik-jahrgange";
   
+  public static final String ARBEITSEINSATZPRUEFEN = PRE + FUNKTIONEN + AUSWERTUNGEN + "arbeitseinsatz";
+  
 
   // Druck und Mail
   public static final String RECHNUNG = PRE + FUNKTIONEN + DRUCKMAIL + "rechnungen";

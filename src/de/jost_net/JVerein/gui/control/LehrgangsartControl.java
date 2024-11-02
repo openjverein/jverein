@@ -83,6 +83,7 @@ public class LehrgangsartControl extends AbstractControl
     {
       bezeichnung.focus();
     }
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -100,6 +101,7 @@ public class LehrgangsartControl extends AbstractControl
     this.von = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.von.setTitle("Von/am");
     this.von.setText("Bitte Beginn oder Tag der Veranstaltung wählen");
+    von.setMandatory(true);
     return von;
   }
 
