@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import ezvcard.VCard;
@@ -58,15 +59,15 @@ public class VCardTool
 
       if(m.getGeschlecht() != null)
       {
-        if (m.getGeschlecht().equalsIgnoreCase("m"))
+        if (m.getGeschlecht().equalsIgnoreCase(GeschlechtInput.MAENNLICH))
         {
           vcard.setGender(Gender.male());
         }
-        if (m.getGeschlecht().equalsIgnoreCase("w"))
+        if (m.getGeschlecht().equalsIgnoreCase(GeschlechtInput.WEIBLICH))
         {
           vcard.setGender(Gender.female());
         }
-        if (m.getGeschlecht().equalsIgnoreCase("o"))
+        if (m.getGeschlecht().equalsIgnoreCase(GeschlechtInput.OHNEANGABE))
         {
           vcard.setGender(Gender.other());
         }
