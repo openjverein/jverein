@@ -18,7 +18,6 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
-import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -101,10 +100,7 @@ public class SpendenbescheinigungView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
-    buttons.addButton(control.getPDFStandardButton(Adressblatt.OHNE_ADRESSBLATT));
-    buttons.addButton(control.getPDFStandardButton(Adressblatt.MIT_ADRESSE));
-    buttons.addButton(control.getPDFIndividuellButton(Adressblatt.OHNE_ADRESSBLATT));
-    buttons.addButton(control.getPDFIndividuellButton(Adressblatt.MIT_ADRESSE));
+    buttons.addButton(control.getDruckUndMailButton());
     buttons.addButton("Speichern", new Action()
     {
 

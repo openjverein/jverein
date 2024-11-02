@@ -69,6 +69,8 @@ public class SollbuchungListeView extends AbstractView
     buttons.addButton(new Button("Export",
         new MitgliedskontoExportAction(EXPORT_TYP.MITGLIEDSKONTO, null),
         control, false, "document-save.png"));
+    buttons.addButton("Neu", new MitgliedskontoSollbuchungEditAction(), 
+        control, false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

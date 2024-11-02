@@ -468,7 +468,7 @@ public class BuchungsartControl extends AbstractControl
       b.setSteuersatz(steuersatzValue);
       if (steuer_buchungsart.getValue() instanceof Buchungsart) 
       {
-        b.setSteuerBuchungsart((String) ((Buchungsart) steuer_buchungsart.getValue()).getID());
+        b.setSteuerBuchungsart(Integer.parseInt(((Buchungsart) steuer_buchungsart.getValue()).getID()));
       }
       else
       {

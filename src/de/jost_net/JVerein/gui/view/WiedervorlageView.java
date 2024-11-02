@@ -34,6 +34,7 @@ public class WiedervorlageView extends AbstractView
     final WiedervorlageControl control = new WiedervorlageControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Wiedervorlage");
+    group.addLabelPair("Mitglied", control.getMitglied());
     group.addLabelPair("Datum", control.getDatum(true));
     group.addLabelPair("Vermerk", control.getVermerk());
     group.addLabelPair("Erledigung", control.getErledigung());

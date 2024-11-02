@@ -24,6 +24,7 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -50,10 +51,14 @@ public class AuswertungNichtMitgliedView extends AbstractView
 
     left.addInput(control.getMailauswahl());
     left.addInput(control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED));
-    left.addInput(control.getEigenschaftenAuswahl());
+    DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
+    left.addInput(eigenschaftenInput);
+    control.updateEigenschaftenAuswahlTooltip();
     if (Einstellungen.getEinstellung().hasZusatzfelder())
     {
-      left.addInput(control.getZusatzfelderAuswahl());
+      DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
+      left.addInput(zusatzfelderInput);
+      control.updateZusatzfelderAuswahlTooltip();
     }
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());

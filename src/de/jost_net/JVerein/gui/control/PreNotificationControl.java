@@ -613,6 +613,8 @@ public class PreNotificationControl extends DruckMailControl
     BackgroundTask t = new BackgroundTask()
     {
 
+      private boolean cancel = false;
+
       @Override
       public void run(ProgressMonitor monitor)
       {
@@ -641,6 +643,14 @@ public class PreNotificationControl extends DruckMailControl
           int size = lastschriften.size();
           for (Lastschrift ls : lastschriften)
           {
+            if(isInterrupted())
+            {
+              monitor.setStatus(ProgressMonitor.STATUS_ERROR);
+              monitor.setStatusText("Mailversand abgebrochen");
+              monitor.setPercentComplete(100);
+              return;
+            }
+            
             VelocityContext context = new VelocityContext();
             context.put("dateformat", new JVDateFormatTTMMJJJJ());
             context.put("decimalformat", Einstellungen.DECIMALFORMAT);
@@ -709,13 +719,13 @@ public class PreNotificationControl extends DruckMailControl
       @Override
       public void interrupt()
       {
-        //
+        this.cancel = true;
       }
 
       @Override
       public boolean isInterrupted()
       {
-        return false;
+        return this.cancel;
       }
     };
     Application.getController().start(t);

@@ -280,12 +280,7 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   @Override
   public Double getBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
-    if (d == null)
-    {
-      return 0.0d;
-    }
-    return d;
+    return (Double) getAttribute("betrag");
   }
 
   @Override

@@ -16,9 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.gui.action.ArbeitseinsatzAction;
+import de.jost_net.JVerein.gui.action.ArbeitseinsatzUeberpruefungAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.LehrgangAction;
-import de.jost_net.JVerein.gui.control.LehrgangControl;
+import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -26,22 +27,22 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class LehrgaengeListeView extends AbstractView
+public class ArbeitseinsatzListeView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Lehrgänge");
+    GUI.getView().setTitle("Arbeitseinsätze");
 
-    final LehrgangControl control = new LehrgangControl(this);
+    final ArbeitseinsatzControl control = new ArbeitseinsatzControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
-    left.addInput(control.getSuchLehrgangsart());
+    left.addLabelPair("Bemerkung", control.getSuchtext());
     
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
@@ -52,11 +53,14 @@ public class LehrgaengeListeView extends AbstractView
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
 
-    control.getLehrgaengeList().paint(this.getParent());
+    control.getArbeitseinsatzTable().paint(this.getParent());
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.LEHRGANG, false, "question-circle.png");
-    buttons.addButton("Neu", new LehrgangAction(null), 
+        DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
+    buttons.addButton("Auswertung", new ArbeitseinsatzUeberpruefungAction(), 
+        control, false, "screwdriver.png");
+    buttons.addButton("Neu", new ArbeitseinsatzAction(null), 
         control, false, "document-new.png");
     buttons.paint(this.getParent());
   }

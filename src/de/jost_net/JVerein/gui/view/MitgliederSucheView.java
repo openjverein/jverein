@@ -22,6 +22,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -56,11 +57,15 @@ public class MitgliederSucheView extends AbstractMitgliedSucheView
       left.addInput(control.getSuchExterneMitgliedsnummer());
     else
       left.addInput(control.getSuchMitgliedsnummer());
-    left.addInput(control.getEigenschaftenAuswahl());
+    DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
+    left.addInput(eigenschaftenInput);
+    control.updateEigenschaftenAuswahlTooltip();
     left.addInput(control.getBeitragsgruppeAusw());
     if (Einstellungen.getEinstellung().hasZusatzfelder())
     {
-      left.addInput(control.getZusatzfelderAuswahl());
+      DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
+      left.addInput(zusatzfelderInput);
+      control.updateZusatzfelderAuswahlTooltip();
     }
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());

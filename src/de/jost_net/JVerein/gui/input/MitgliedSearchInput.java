@@ -14,46 +14,49 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.action;
+package de.jost_net.JVerein.gui.input;
 
-import java.rmi.RemoteException;
+import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.LesefeldUebersichtView;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.SearchInput;
+import de.willuhn.logging.Logger;
 
-public class LesefelddefinitionenAction implements Action
+public class MitgliedSearchInput extends SearchInput
 {
-  private Mitglied selectedMitglied;
-
-  public LesefelddefinitionenAction(Mitglied mitglied)
+  public MitgliedSearchInput()
   {
-    selectedMitglied = mitglied;
+    super();
   }
-
+  
   @Override
-  public void handleAction(Object context)
+  @SuppressWarnings("rawtypes")
+  public List startSearch(String text)
   {
-    if (selectedMitglied == null )
+    try
     {
-      try
-      {
-        DBIterator<Mitglied> it = Einstellungen.getDBService().createList(Mitglied.class);
-        it.setOrder("order by name, vorname");
-        if (it.hasNext())
-        {
-          selectedMitglied = it.next();
-        }
-      }
-      catch (RemoteException e)
-      {
-        // Dann lassen wir die null
-      }
-    }
+      DBIterator result = Einstellungen.getDBService()
+          .createList(Mitglied.class);
 
-    GUI.startView(LesefeldUebersichtView.class.getName(), selectedMitglied);
+      if (text != null)
+      {
+        text = "%" + text.toUpperCase() + "%";
+        result.addFilter("(UPPER(name) like ? or UPPER(vorname) like ?)",
+            new Object[] { text, text });
+      }
+      result.setOrder("order by name, vorname");
+
+      return result != null ? PseudoIterator.asList(result) : null;
+
+    }
+    catch (Exception e)
+    {
+      Logger.error("Unable to load mitglied list", e);
+      return null;
+    }
   }
+
 }

@@ -56,6 +56,8 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
+import de.willuhn.jameica.messaging.StatusBarMessage;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 
 public abstract class AbstractMitgliedDetailView extends AbstractView
@@ -445,6 +447,10 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
     GridLayout layout = new GridLayout(1, false);
     container.getComposite().setLayout(layout);
 
+    ButtonArea buttons1 = new ButtonArea();
+    buttons1.addButton(control.getKontoDatenLoeschenButton());
+    buttons1.paint(container.getComposite());
+    
     LabelGroup zahlungsweg = new LabelGroup(container.getComposite(),
         "Zahlungsweg");
 
@@ -466,14 +472,9 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
 
     LabelGroup bankverbindung = control
         .getBankverbindungLabelGroup(container.getComposite());
-    // bankverbindung
-    // .getComposite()
-    // .setVisible(
-    // ((Zahlungsweg) control.getZahlungsweg().getValue()).getKey() ==
-    // Zahlungsweg.BASISLASTSCHRIFT);
 
     SimpleVerticalContainer cols = new SimpleVerticalContainer(
-        bankverbindung.getComposite(), true, spaltenanzahl);
+        bankverbindung.getComposite(), false, spaltenanzahl);
 
     cols.addInput(control.getMandatID());
     cols.addInput(control.getMandatDatum());
@@ -481,29 +482,34 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
     cols.addInput(control.getLetzteLastschrift());
     cols.addInput(control.getIban());
     cols.addInput(control.getBic());
-    cols.addSeparator();
-    cols.addText("Abweichender Kontoinhaber", false);
+    cols.arrangeVertically();
+
+    LabelGroup abweichenderKontoInhaber = control
+        .getAbweichenderKontoinhaberLabelGroup(container.getComposite());
+    SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
+        abweichenderKontoInhaber.getComposite(), false, spaltenanzahl);
+    
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton(control.getMitglied2KontoinhaberEintragenButton());
-    cols.addButtonArea(buttons2);
-    cols.addInput(control.getKtoiPersonenart());
-    cols.addInput(control.getKtoiAnrede());
-    cols.addInput(control.getKtoiTitel());
-    cols.addInput(control.getKtoiName());
-    cols.addInput(control.getKtoiVorname());
-    cols.addInput(control.getKtoiStrasse());
-    cols.addInput(control.getKtoiAdressierungszusatz());
-    cols.addInput(control.getKtoiPlz());
-    cols.addInput(control.getKtoiOrt());
+    addButtonArea(buttons2, cols2.getComposite());
+    cols2.addInput(control.getKtoiPersonenart());
+    cols2.addInput(control.getKtoiAnrede());
+    cols2.addInput(control.getKtoiTitel());
+    cols2.addInput(control.getKtoiName());
+    cols2.addInput(control.getKtoiVorname());
+    cols2.addInput(control.getKtoiStrasse());
+    cols2.addInput(control.getKtoiAdressierungszusatz());
+    cols2.addInput(control.getKtoiPlz());
+    cols2.addInput(control.getKtoiOrt());
     if (Einstellungen.getEinstellung().getAuslandsadressen())
     {
-      cols.addInput(control.getKtoiStaat());
+      cols2.addInput(control.getKtoiStaat());
     }
-    cols.addInput(control.getKtoiEmail());
-    cols.addInput(control.getKtoiGeschlecht());
+    cols2.addInput(control.getKtoiEmail());
+    cols2.addInput(control.getKtoiGeschlecht());
     // cols.addInput(control.getBlz());
     // cols.addInput(control.getKonto());
-    cols.arrangeVertically();
+    cols2.arrangeVertically();
   }
 
   /**
@@ -685,4 +691,31 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
 
   public abstract boolean isMitgliedDetail();
 
+  /**
+   * Fuegt eine neue ButtonArea ohne Seperator hinzu.
+   * @param buttonArea die hinzuzufuegende Button-Area.
+   * @param composite in den gezeichnet werden soll
+   * Code ist aus de.willuhn.jameica.gui.util.Container kopiert
+   */
+  public void addButtonArea(ButtonArea buttonArea, Composite composite)
+  {
+    try
+    {
+      final GridData g = new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END);
+      g.horizontalSpan = 2;
+      final Composite comp = new Composite(composite,SWT.NONE);
+      comp.setLayoutData(g);
+
+      final GridLayout gl = new GridLayout();
+      gl.marginHeight = 0;
+      gl.marginWidth = 0;
+      comp.setLayout(gl);
+      buttonArea.paint(comp);
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("error while adding button area",e);
+      Application.getMessagingFactory().sendMessage(new StatusBarMessage(Application.getI18n().tr("Fehler beim Anzeigen des Buttons."),StatusBarMessage.TYPE_ERROR));
+    }
+  }
 }

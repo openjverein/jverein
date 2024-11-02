@@ -280,6 +280,10 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     {
       ret += "NOT NULL ";
     }
+    else if(drv == DRIVER.MYSQL && !col.isAutoincrement())
+    {
+      ret += "NULL ";
+    }
     if (col.getDefaultvalue() != null)
     {
       ret += "DEFAULT " + col.getDefaultvalue();

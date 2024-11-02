@@ -37,7 +37,7 @@ public class ArbeitseinsatzUeberpruefungView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Arbeitseinsätze prüfen");
+    GUI.getView().setTitle("Arbeitseinsätze auswerten");
 
     final ArbeitseinsatzControl control = new ArbeitseinsatzControl(this);
     butArbeitseinsaetze = control.getArbeitseinsatzAusgabeButton();
@@ -60,7 +60,7 @@ public class ArbeitseinsatzUeberpruefungView extends AbstractView
     control.getArbeitseinsatzUeberpruefungList().paint(getParent());
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
+        DokumentationUtil.ARBEITSEINSATZPRUEFEN, false, "question-circle.png");
     buttons2.addButton(control.getPDFAusgabeButton());
     buttons2.addButton(control.getCSVAusgabeButton());
     buttons2.addButton(butArbeitseinsaetze);

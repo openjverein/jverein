@@ -16,44 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.LesefeldUebersichtView;
-import de.jost_net.JVerein.rmi.Mitglied;
-import de.willuhn.datasource.rmi.DBIterator;
+import de.jost_net.JVerein.gui.view.ArbeitseinsatzListeView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 
-public class LesefelddefinitionenAction implements Action
+public class ArbeitseinsaetzeListeAction implements Action
 {
-  private Mitglied selectedMitglied;
-
-  public LesefelddefinitionenAction(Mitglied mitglied)
-  {
-    selectedMitglied = mitglied;
-  }
-
   @Override
   public void handleAction(Object context)
   {
-    if (selectedMitglied == null )
-    {
-      try
-      {
-        DBIterator<Mitglied> it = Einstellungen.getDBService().createList(Mitglied.class);
-        it.setOrder("order by name, vorname");
-        if (it.hasNext())
-        {
-          selectedMitglied = it.next();
-        }
-      }
-      catch (RemoteException e)
-      {
-        // Dann lassen wir die null
-      }
-    }
-
-    GUI.startView(LesefeldUebersichtView.class.getName(), selectedMitglied);
+    GUI.startView(ArbeitseinsatzListeView.class.getName(), null);
   }
 }

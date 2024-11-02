@@ -67,7 +67,7 @@ import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
-import de.jost_net.JVerein.keys.BuchungBuchungsartAuswahl;
+import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -783,7 +783,7 @@ public class BuchungsControl extends AbstractControl
 
     suchbuchungsart = (SelectInput) new BuchungsartInput().
         getBuchungsartInput(suchbuchungsart, null,
-        buchungsarttyp.BUCHUNGSART, BuchungBuchungsartAuswahl.ComboBox);
+        buchungsarttyp.BUCHUNGSART, AbstractInputAuswahl.ComboBox);
     
     @SuppressWarnings("unchecked")
     List<Buchungsart> suchliste = (List<Buchungsart>) suchbuchungsart.getList();
@@ -876,7 +876,7 @@ public class BuchungsControl extends AbstractControl
 
   public Button getStartCSVAuswertungButton()
   {
-    Button b = new Button("CSV-Export", new Action()
+    Button b = new Button("CSV", new Action()
     {
 
       @Override
@@ -1233,12 +1233,13 @@ public class BuchungsControl extends AbstractControl
       {
         buchungsList.addColumn("D", "document");
       }
-      buchungsList.addColumn("S", "splitid", new Formatter()
+      buchungsList.addColumn("S", "splittyp", new Formatter()
       {
         @Override
         public String format(Object o)
         {
-          return (o != null ? "S" : " ");
+          Integer typ = (Integer) o;
+          return SplitbuchungTyp.get(typ).substring(0, 1);
         }
       });
       buchungsList.addColumn("Konto", "konto", new Formatter()

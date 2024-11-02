@@ -16,44 +16,29 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.LesefeldUebersichtView;
-import de.jost_net.JVerein.rmi.Mitglied;
-import de.willuhn.datasource.rmi.DBIterator;
+import de.jost_net.JVerein.gui.view.LastschriftDetailView;
+import de.jost_net.JVerein.rmi.Lastschrift;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.util.ApplicationException;
 
-public class LesefelddefinitionenAction implements Action
+public class LastschriftDetailAction implements Action
 {
-  private Mitglied selectedMitglied;
-
-  public LesefelddefinitionenAction(Mitglied mitglied)
-  {
-    selectedMitglied = mitglied;
-  }
 
   @Override
-  public void handleAction(Object context)
+  public void handleAction(Object context) throws ApplicationException
   {
-    if (selectedMitglied == null )
+    Lastschrift la = null;
+
+    if (context != null && (context instanceof Lastschrift))
     {
-      try
-      {
-        DBIterator<Mitglied> it = Einstellungen.getDBService().createList(Mitglied.class);
-        it.setOrder("order by name, vorname");
-        if (it.hasNext())
-        {
-          selectedMitglied = it.next();
-        }
-      }
-      catch (RemoteException e)
-      {
-        // Dann lassen wir die null
-      }
+      la = (Lastschrift) context;
+    }
+    else
+    {
+      throw new ApplicationException("Keine Lastschrift ausgewählt");
     }
 
-    GUI.startView(LesefeldUebersichtView.class.getName(), selectedMitglied);
+    GUI.startView(LastschriftDetailView.class.getName(), la);
   }
 }

@@ -17,47 +17,56 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.LehrgangAction;
-import de.jost_net.JVerein.gui.control.LehrgangControl;
+import de.jost_net.JVerein.gui.control.LastschriftControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class LehrgaengeListeView extends AbstractView
+public class LastschriftDetailView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Lehrgänge");
+    GUI.getView().setTitle("Lastschrift");
 
-    final LehrgangControl control = new LehrgangControl(this);
+    final LastschriftControl control = new LastschriftControl(this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
+
+    LabelGroup group = new LabelGroup(scrolled.getComposite(),
+        "Daten der Lastschrift");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getSuchname());
-    left.addInput(control.getSuchLehrgangsart());
+    left.addInput(control.getPersonenart());
+    left.addInput(control.getMitgliedstyp());
+    left.addInput(control.getGeschlecht());
+    left.addInput(control.getAnrede());
+    left.addInput(control.getTitel());
+    left.addInput(control.getName());
+    left.addInput(control.getVorname());
+    left.addInput(control.getStrasse());
+    left.addInput(control.getAdressierungszusatz());
     
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getDatumvon());
-    right.addInput(control.getDatumbis());
-    
-    ButtonArea fbuttons = new ButtonArea();
-    fbuttons.addButton(control.getResetButton());
-    fbuttons.addButton(control.getSuchenButton());
-    group.addButtonArea(fbuttons);
+    right.addInput(control.getPLZ());
+    right.addInput(control.getOrt());
+    right.addInput(control.getStaat());
+    right.addInput(control.getEmail());
+    right.addInput(control.getVZweck());
+    right.addInput(control.getMandatDatum());
+    right.addInput(control.getIBAN());
+    right.addInput(control.getBIC());
+    right.addInput(control.getBetrag());
 
-    control.getLehrgaengeList().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.LEHRGANG, false, "question-circle.png");
-    buttons.addButton("Neu", new LehrgangAction(null), 
-        control, false, "document-new.png");
+        DokumentationUtil.LASTSCHRIFT, false, "question-circle.png");
     buttons.paint(this.getParent());
   }
 }
