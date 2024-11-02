@@ -385,7 +385,7 @@ public class FilterControl extends AbstractControl
       }
     }
     final EigenschaftenAuswahlDialog d = new EigenschaftenAuswahlDialog(tmp,
-        false, true, this, false);
+         true, this, false);
     d.addCloseListener(new EigenschaftenCloseListener());
     eigenschaftenabfrage = new DialogInput(text.toString(), d);
     eigenschaftenabfrage.setName("Eigenschaften");
@@ -415,11 +415,11 @@ public class FilterControl extends AbstractControl
   }
   
   public TreePart getEigenschaftenAuswahlTree(String vorbelegung,
-      boolean ohnePflicht, boolean onlyChecked, 
+       boolean onlyChecked, 
       Mitglied[] mitglieder) throws RemoteException
   {
     eigenschaftenAuswahlTree = new TreePart(
-        new EigenschaftenNode(vorbelegung, ohnePflicht, onlyChecked, mitglieder), null);
+        new EigenschaftenNode(vorbelegung, onlyChecked, mitglieder), null);
     eigenschaftenAuswahlTree.addSelectionListener(
         new EigenschaftListener());
     eigenschaftenAuswahlTree.setFormatter(new EigenschaftTreeFormatter());

@@ -85,18 +85,18 @@ public class EigenschaftenNode implements GenericObjectNode
 
   public EigenschaftenNode(Mitglied mitglied) throws RemoteException
   {
-    this(mitglied, "", false, true, null);
+    this(mitglied, "",  true, null);
   }
 
-  public EigenschaftenNode(String vorbelegung, boolean ohnePflicht, 
+  public EigenschaftenNode(String vorbelegung, 
       boolean onlyChecked, Mitglied[] mitglieder)
       throws RemoteException
   {
-    this(null, vorbelegung, ohnePflicht, onlyChecked, mitglieder);
+    this(null, vorbelegung, onlyChecked, mitglieder);
   }
 
   private EigenschaftenNode(Mitglied mitglied, String vorbelegung,
-      boolean ohnePflicht, boolean onlyChecked, Mitglied[] mitglieder) 
+       boolean onlyChecked, Mitglied[] mitglieder) 
           throws RemoteException
   {
     this.onlyChecked = onlyChecked;

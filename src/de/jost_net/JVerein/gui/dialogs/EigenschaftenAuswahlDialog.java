@@ -49,8 +49,6 @@ public class EigenschaftenAuswahlDialog
 
   private String defaults = null;
 
-  private boolean ohnePflicht;
-
   private boolean verknuepfung;
   
   private boolean onlyChecked;
@@ -78,18 +76,17 @@ public class EigenschaftenAuswahlDialog
    * @param mitglieder
    *          Liste der Mitglieder welche selektiert wurden.
    */
-  public EigenschaftenAuswahlDialog(String defaults, boolean ohnePflicht,
+  public EigenschaftenAuswahlDialog(String defaults,
       boolean verknuepfung, FilterControl control, boolean onlyChecked)
   {
-    this(defaults, ohnePflicht, verknuepfung, control, onlyChecked, null);
+    this(defaults, verknuepfung, control, onlyChecked, null);
   }
   
-  public EigenschaftenAuswahlDialog(String defaults, boolean ohnePflicht,
-      boolean verknuepfung, FilterControl control, boolean onlyChecked, Mitglied[] mitglieder)
+  public EigenschaftenAuswahlDialog(String defaults, boolean verknuepfung,
+       FilterControl control, boolean onlyChecked, Mitglied[] mitglieder)
   {
     super(EigenschaftenAuswahlDialog.POSITION_CENTER);
     this.setSize(400, 400);
-    this.ohnePflicht = ohnePflicht;
     this.verknuepfung = verknuepfung;
     setTitle("Eigenschaften auswählen ");
     this.control = control;
@@ -113,7 +110,7 @@ public class EigenschaftenAuswahlDialog
   protected void paint(Composite parent) throws RemoteException
   {
     final TreePart tree = control.getEigenschaftenAuswahlTree(this.defaults,
-        ohnePflicht, onlyChecked, mitglieder);
+        onlyChecked, mitglieder);
 
     LabelGroup group = new LabelGroup(parent, "Eigenschaften", true);
     group.addPart(tree);
