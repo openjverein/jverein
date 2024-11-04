@@ -66,7 +66,7 @@ public class BuchungMenu extends ContextMenu
       addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
               new BuchungSollbuchungZuordnungAction(control), "view-refresh.png"));
       addItem(new SollbuchungOeffnenItem("Zugeordnetes Mitglied öffnen",
-              new SollbuchungOeffnenAction(), "view-refresh.png"));
+              new SollbuchungOeffnenAction(), "go-to.png"));
     }
     addItem(new CheckedContextMenuItem("Projekt zuordnen",
         new BuchungProjektZuordnungAction(control), "view-refresh.png"));
