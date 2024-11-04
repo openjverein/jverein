@@ -29,13 +29,17 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.RechnungAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.input.BICInput;
+import de.jost_net.JVerein.gui.input.FormularInput;
+import de.jost_net.JVerein.gui.input.GeschlechtInput;
+import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
+import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
-import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -54,12 +58,14 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.TreeFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.gui.util.SWTUtil;
+import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -76,9 +82,43 @@ public class RechnungControl extends DruckMailControl
 
   private TextInput mitglied;
 
-  private TextInput betrag;
+  private DecimalInput betrag;
 
   private TablePart buchungList;
+
+  private TextInput anrede;
+
+  private TextInput titel;
+
+  private TextInput name;
+
+  private TextInput vorname;
+
+  private TextInput strasse;
+
+  private TextInput adressierungszusatz;
+
+  private TextInput ort;
+
+  private TextInput plz;
+
+  private TextInput staat;
+
+  private GeschlechtInput geschlecht;
+
+  private FormularInput rechnungFormular;
+
+  private TextInput nummer;
+
+  private IBANInput iban;
+
+  private BICInput bic;
+
+  private TextInput mandatid;
+
+  private DateInput mandatdatum;
+
+  private TextInput personenart;
 
   public enum TYP
   {
@@ -341,11 +381,28 @@ public class RechnungControl extends DruckMailControl
           while (it1.hasNext())
           {
             RechnungNode sp1 = (RechnungNode) it1.next();
+            Mitglied mitglied = sp1.getMitglied();
             Rechnung rechnung = (Rechnung) Einstellungen.getDBService()
                 .createObject(Rechnung.class, null);
-            rechnung.setMitglied(Integer.parseInt(sp1.getMitglied().getID()));
+            rechnung.setMitglied(Integer.parseInt(mitglied.getID()));
             rechnung.setFormular(form);
             rechnung.setDatum(new Date());
+            rechnung.setGeschlecht(mitglied.getGeschlecht());
+            rechnung.setAnrede(mitglied.getAnrede());
+            rechnung.setTitel(mitglied.getTitel());
+            rechnung.setName(mitglied.getName());
+            rechnung.setVorname(mitglied.getVorname());
+            rechnung.setStrasse(mitglied.getStrasse());
+            rechnung.setAdressierungszusatz(mitglied.getAdressierungszusatz());
+            rechnung.setPlz(mitglied.getPlz());
+            rechnung.setOrt(mitglied.getOrt());
+            rechnung.setStaat(mitglied.getStaat());
+            rechnung.setPersonenart(mitglied.getPersonenart());
+            if(!mitglied.getMandatDatum().equals(Einstellungen.NODATE))
+              rechnung.setMandatDatum(mitglied.getMandatDatum());
+            rechnung.setMandatID(mitglied.getMandatID());
+            rechnung.setBIC(mitglied.getBic());
+            rechnung.setIBAN(mitglied.getIban());
 
             double betrag = 0;
             GenericIterator it2 = sp1.getChildren();
@@ -374,7 +431,7 @@ public class RechnungControl extends DruckMailControl
         {
           Logger.error(e.getMessage());
           throw new ApplicationException(
-              "Fehler bei der Aufbereitung der Rechnung");
+              "Fehler bei der erstellen der Rechnungen");
         }
       }
     }, null, false, "document-save.png");
@@ -484,20 +541,243 @@ public class RechnungControl extends DruckMailControl
     mitglied.disable();
     return mitglied;
   }
+  
+  public FormularInput getRechnungFormular() throws RemoteException
+  {
+    if (rechnungFormular != null)
+    {
+      return rechnungFormular;
+    }
 
-  public TextInput getBetrag() throws RemoteException
+    rechnungFormular = new FormularInput(FormularArt.RECHNUNG, getRechnung().getFormular().getID());
+    rechnungFormular.setName("Formular");
+    rechnungFormular.disable();
+    return rechnungFormular;
+  }
+
+  public TextInput getNummer() throws RemoteException
+  {
+    if (nummer != null)
+    {
+      return nummer;
+    }
+
+    nummer = new TextInput(getRechnung().getID());
+    nummer.setName("Rechnungsnummer");
+    nummer.disable();;
+    return nummer;
+  }
+  
+  public DecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
     {
       return betrag;
     }
 
-    betrag = new TextInput(Double.toString(getRechnung().getBetrag()));
-    betrag.setName("Rechnungsdatum");
+    betrag = new DecimalInput(getRechnung().getBetrag(),Einstellungen.DECIMALFORMAT);
+    betrag.setName("Betrag");
     betrag.disable();;
     return betrag;
   }
 
+  public TextInput getAnrede() throws RemoteException
+  {
+    if (anrede != null)
+    {
+      return anrede;
+    }
+
+    anrede = new TextInput(getRechnung().getAnrede());
+    anrede.setName("Anrede");
+    anrede.disable();
+    return anrede;
+  }
+
+  public TextInput getTitel() throws RemoteException
+  {
+    if (titel != null)
+    {
+      return titel;
+    }
+
+    titel = new TextInput(getRechnung().getTitel());
+    titel.setName("Titel");
+    titel.disable();
+    return titel;
+  }
+
+  public TextInput getName() throws RemoteException
+  {
+    if (name != null)
+    {
+      return name;
+    }
+
+    name = new TextInput(getRechnung().getName());
+    name.setName("Name");
+    name.disable();
+    return name;
+  }
+
+  public TextInput getVorname() throws RemoteException
+  {
+    if (vorname != null)
+    {
+      return vorname;
+    }
+
+    vorname = new TextInput(getRechnung().getVorname());
+    vorname.setName("Vorname");
+    vorname.disable();
+    return vorname;
+  }
+
+  public TextInput getStrasse() throws RemoteException
+  {
+    if (strasse != null)
+    {
+      return strasse;
+    }
+
+    strasse = new TextInput(getRechnung().getStrasse());
+    strasse.setName("Strasse");
+    strasse.disable();
+    return strasse;
+  }
+
+  public TextInput getAdressierungszusatz() throws RemoteException
+  {
+    if (adressierungszusatz != null)
+    {
+      return adressierungszusatz;
+    }
+
+    adressierungszusatz = new TextInput(getRechnung().getAdressierungszusatz());
+    adressierungszusatz.setName("Adressierungszusatz");
+    adressierungszusatz.disable();
+    return adressierungszusatz;
+  }
+
+  public TextInput getOrt() throws RemoteException
+  {
+    if (ort != null)
+    {
+      return ort;
+    }
+
+    ort = new TextInput(getRechnung().getOrt());
+    ort.setName("Ort");
+    ort.disable();
+    return ort;
+  }
+
+  public TextInput getPlz() throws RemoteException
+  {
+    if (plz != null)
+    {
+      return plz;
+    }
+
+    plz = new TextInput(getRechnung().getPlz());
+    plz.setName("Plz");
+    plz.disable();
+    return plz;
+  }
+
+  public TextInput getStaat() throws RemoteException
+  {
+    if (staat != null)
+    {
+      return staat;
+    }
+
+    staat = new TextInput(getRechnung().getStaat());
+    staat.setName("Staat");
+    staat.disable();
+    return staat;
+  }
+
+  public GeschlechtInput getGeschlecht() throws RemoteException
+  {
+    if (geschlecht != null)
+    {
+      return geschlecht;
+    }
+
+    geschlecht = new GeschlechtInput(getRechnung().getGeschlecht());
+    geschlecht.setName("Geschlecht");
+    geschlecht.disable();
+    return geschlecht;
+  }
+  
+  public TextInput getPersonenart() throws RemoteException
+  {
+    if (personenart != null)
+    {
+      return personenart;
+    }
+
+    personenart = new TextInput(getRechnung().getPersonenart().equalsIgnoreCase("n")?PersonenartInput.NATUERLICHE_PERSON:PersonenartInput.JURISTISCHE_PERSON);
+    personenart.setName("Personenart");
+    personenart.disable();
+    return personenart;
+  }
+  
+  public DateInput getMandatdatum() throws RemoteException
+  {
+    if (mandatdatum != null)
+    {
+      return mandatdatum;
+    }
+    
+    Date d = getRechnung().getMandatDatum();
+    
+    mandatdatum = new DateInput(d,new JVDateFormatTTMMJJJJ());
+    mandatdatum.setName("Mandatdatum");
+    mandatdatum.disable();
+    return mandatdatum;
+  }
+  
+  public TextInput getMandatid() throws RemoteException
+  {
+    if (mandatid != null)
+    {
+      return mandatid;
+    }
+
+    mandatid = new TextInput(getRechnung().getMandatID());
+    mandatid.setName("Mandatid");
+    mandatid.disable();
+    return mandatid;
+  }
+  
+  public BICInput getBic() throws RemoteException
+  {
+    if (bic != null)
+    {
+      return bic;
+    }
+
+    bic = new BICInput(getRechnung().getBIC());
+    bic.setName("BIC");
+    bic.disable();
+    return bic;
+  }
+  
+  public IBANInput getIban() throws RemoteException
+  {
+    if (iban != null)
+    {
+      return iban;
+    }
+
+    iban = new IBANInput(HBCIProperties.formatIban(getRechnung().getIBAN()), getBic());
+    iban.setName("IBAN");
+    iban.disable();
+    return iban;
+  }
+  
   public Part getBuchungenList() throws RemoteException
   {
     if (buchungList != null)

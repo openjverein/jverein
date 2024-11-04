@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
-public enum MitgliedskontoVar
+public enum RechnungVar
 {
   ZAHLUNGSGRUND("mitgliedskonto_zahlungsgrund"), //
   ZAHLUNGSGRUND1("mitgliedskonto_zahlungsgrund1"), //
@@ -32,12 +32,31 @@ public enum MitgliedskontoVar
   SUMME_OFFEN("mitgliedskonto_summe_offen"), //
   QRCODE_SUMME("qrcode_summe"), //
   QRCODE_INTRO("qrcode_intro"),
-  RECHNUNG_DATUM("rechnung_datum"),
-  RECHNUNG_NUMMER("rechnung_nummer");
+  DATUM("rechnung_datum"),
+  NUMMER("rechnung_nummer"),
+  ANREDE("rechnung_anrede"),
+  TITEL("rechnung_titel"),
+  NAME("rechnung_name"),
+  VORNAME("rechnung_vorname"),
+  STRASSE("rechnung_strasse"),
+  ADRESSIERUNGSZUSATZ("rechnung_adressierungszusatz"),
+  PLZ("rechnung_plz"),
+  ORT("rechnung_ort"),
+  STAAT("rechnung_staat"),
+  GESCHLECHT("rechnung_geschlecht"),
+  ANREDE_DU("rechnung_anrede_du"), //
+  ANREDE_FOERMLICH("rechnung_anrede_foermlich"), //
+  PERSONENART("rechnung_personenart"), //
+  MANDATID("rechnung_mandatid"), //
+  MANDATDATUM("rechnung_mandatdatum"), //
+  BIC("rechnung_bic"), //
+  IBAN("rechnung_iban"), //
+  IBANMASKIERT("rechnung_ibanmaskiert"), //
+  EMPFAENGER("rechnung_empfaenger");
 
   private String name;
 
-  MitgliedskontoVar(String name)
+  RechnungVar(String name)
   {
     this.name = name;
   }

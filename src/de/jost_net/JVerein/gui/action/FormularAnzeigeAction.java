@@ -29,7 +29,7 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.Variable.MitgliedskontoVar;
+import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
@@ -323,17 +323,17 @@ public class FormularAnzeigeAction implements Action
       map.put(FormularfeldControl.ZAHLUNGSGRUND, zg.toArray());
       map.put(FormularfeldControl.ZAHLUNGSGRUND1, zg1.toArray());
       map.put(FormularfeldControl.BETRAG, betrag.toArray());
-      map.put(MitgliedskontoVar.BUCHUNGSDATUM.getName(), buda.toArray());
-      map.put(MitgliedskontoVar.ZAHLUNGSGRUND.getName(), zg.toArray());
-      map.put(MitgliedskontoVar.ZAHLUNGSGRUND1.getName(), zg1.toArray());
-      map.put(MitgliedskontoVar.NETTOBETRAG.getName(), nettobetrag.toArray());
-      map.put(MitgliedskontoVar.STEUERSATZ.getName(), steuersatz.toArray());
-      map.put(MitgliedskontoVar.STEUERBETRAG.getName(), steuerbetrag.toArray());
-      map.put(MitgliedskontoVar.BETRAG.getName(), betrag.toArray());
-      map.put(MitgliedskontoVar.IST.getName(), ist.toArray());
-      map.put(MitgliedskontoVar.DIFFERENZ.getName(), differenz.toArray());
-      map.put(MitgliedskontoVar.SUMME_OFFEN.getName(), 700);
-      map.put(MitgliedskontoVar.QRCODE_INTRO.getName(),
+      map.put(RechnungVar.BUCHUNGSDATUM.getName(), buda.toArray());
+      map.put(RechnungVar.ZAHLUNGSGRUND.getName(), zg.toArray());
+      map.put(RechnungVar.ZAHLUNGSGRUND1.getName(), zg1.toArray());
+      map.put(RechnungVar.NETTOBETRAG.getName(), nettobetrag.toArray());
+      map.put(RechnungVar.STEUERSATZ.getName(), steuersatz.toArray());
+      map.put(RechnungVar.STEUERBETRAG.getName(), steuerbetrag.toArray());
+      map.put(RechnungVar.BETRAG.getName(), betrag.toArray());
+      map.put(RechnungVar.IST.getName(), ist.toArray());
+      map.put(RechnungVar.DIFFERENZ.getName(), differenz.toArray());
+      map.put(RechnungVar.SUMME_OFFEN.getName(), 700);
+      map.put(RechnungVar.QRCODE_INTRO.getName(),
           Einstellungen.getEinstellung().getQRCodeIntro());
       FormularAufbereitung fab = new FormularAufbereitung(file);
       fab.writeForm(formular, map);

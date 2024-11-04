@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
@@ -29,7 +30,7 @@ import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 
-public class RechnungImpl extends AbstractDBObject implements Rechnung
+public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
 {
 
   /**
@@ -101,6 +102,126 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung
   {
     return (Date) getAttribute("datum");
   }
+  
+  @Override
+  public void setAnrede(String anrede) throws RemoteException
+  {
+    setAttribute("anrede", anrede);
+  }
+  
+  @Override
+  public String getAnrede() throws RemoteException
+  {
+    return (String) getAttribute("anrede");
+  }
+
+  @Override
+  public String getTitel() throws RemoteException
+  {
+    return (String) getAttribute("titel");
+  }
+  
+  @Override
+  public void setTitel(String titel) throws RemoteException
+  {
+    setAttribute("titel", titel);
+  }
+
+  @Override
+  public String getName() throws RemoteException
+  {
+    return (String) getAttribute("name");
+  }
+  
+  @Override
+  public void setName(String name) throws RemoteException
+  {
+    setAttribute("name", name);
+  }
+
+  @Override
+  public String getVorname() throws RemoteException
+  {
+    return (String) getAttribute("vorname");
+  }
+  
+  @Override
+  public void setVorname(String vorname) throws RemoteException
+  {
+    setAttribute("vorname", vorname);
+  }
+
+  @Override
+  public String getStrasse() throws RemoteException
+  {
+    return (String) getAttribute("strasse");
+  }
+  
+  @Override
+  public void setStrasse(String strasse) throws RemoteException
+  {
+    setAttribute("strasse", strasse);
+  }
+
+  @Override
+  public String getAdressierungszusatz() throws RemoteException
+  {
+    return (String) getAttribute("adressierungszusatz");
+  }
+  
+  @Override
+  public void setAdressierungszusatz(String adressierungszusatz) throws RemoteException
+  {
+    setAttribute("adressierungszusatz", adressierungszusatz);
+  }
+
+  @Override
+  public String getPlz() throws RemoteException
+  {
+    return (String) getAttribute("plz");
+  }
+  
+  @Override
+  public void setPlz(String plz) throws RemoteException
+  {
+    setAttribute("plz", plz);
+  }
+
+  @Override
+  public String getOrt() throws RemoteException
+  {
+    return (String) getAttribute("ort");
+  }
+  
+  @Override
+  public void setOrt(String ort) throws RemoteException
+  {
+    setAttribute("ort", ort);
+  }
+
+  @Override
+  public String getStaat() throws RemoteException
+  {
+    return (String) getAttribute("staat");
+  }
+  
+  @Override
+  public void setStaat(String staat) throws RemoteException
+  {
+    setAttribute("staat", staat);
+  }
+
+  @Override
+  public String getGeschlecht() throws RemoteException
+  {
+    return (String) getAttribute("geschlecht");
+  }
+  
+  @Override
+  public void setGeschlecht(String geschlecht) throws RemoteException
+  {
+    setAttribute("geschlecht", geschlecht);
+  }
 
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
@@ -118,6 +239,20 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung
       }
     }
     return super.getAttribute(fieldName);
+  }
+  
+
+  @Override
+  public String getPersonenart() throws RemoteException
+  {
+    return (String) getAttribute("personenart");
+  }
+  
+
+  @Override
+  public void setPersonenart(String personenart) throws RemoteException
+  {
+    setAttribute("personenart", personenart);
   }
 
   @Override
@@ -148,6 +283,54 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung
       mks.add((Mitgliedskonto) it.next());
     }
     return mks;
+  }
+
+  @Override
+  public String getMandatID() throws RemoteException
+  {
+    return (String) getAttribute("mandatid");
+  }
+
+  @Override
+  public void setMandatID(String id) throws RemoteException
+  {
+    setAttribute("mandatid", id); 
+  }
+
+  @Override
+  public Date getMandatDatum() throws RemoteException
+  {
+    return (Date) getAttribute("mandatdatum");
+  }
+
+  @Override
+  public void setMandatDatum(Date datum) throws RemoteException
+  {
+    setAttribute("mandatdatum", datum);
+  }
+
+  @Override
+  public String getBIC() throws RemoteException
+  {
+    return (String) getAttribute("bic");
+  }
+
+  @Override
+  public void setBIC(String bic) throws RemoteException
+  {
+    setAttribute("bic", bic); 
+  }
+
+  @Override
+  public String getIBAN() throws RemoteException
+  {
+    return (String) getAttribute("iban");
+  }
+
+  @Override
+  public void setIBAN(String iban) throws RemoteException
+  {
+    setAttribute("iban", iban);
   }
 
 }

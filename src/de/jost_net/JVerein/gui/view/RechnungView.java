@@ -21,7 +21,9 @@ import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class RechnungView extends AbstractView
 {
@@ -34,9 +36,34 @@ public class RechnungView extends AbstractView
     final RechnungControl control = new RechnungControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Rechnung");
-    group.addLabelPair("Rechnungsdatum", control.getRechnungsdatum());
-    group.addLabelPair("Mitglied", control.getMitglied());
-    group.addLabelPair("Betrag", control.getBetrag());
+    
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    
+    left.addInput(control.getNummer());
+    left.addInput(control.getRechnungsdatum());
+    left.addInput(control.getMitglied());
+    left.addInput(control.getBetrag());
+    left.addInput(control.getRechnungFormular());
+    left.addInput(control.getPersonenart());
+    
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getGeschlecht());
+    middle.addInput(control.getAnrede());
+    middle.addInput(control.getTitel());
+    middle.addInput(control.getName());
+    middle.addInput(control.getVorname());
+    middle.addInput(control.getStrasse());
+    middle.addInput(control.getAdressierungszusatz());
+    
+    SimpleContainer rigth = new SimpleContainer(cl.getComposite());
+    rigth.addInput(control.getPlz());
+    rigth.addInput(control.getOrt());
+    rigth.addInput(control.getStaat());
+    rigth.addInput(control.getIban());
+    rigth.addInput(control.getBic());
+    rigth.addInput(control.getMandatdatum());
+    rigth.addInput(control.getMandatid());
     
     LabelGroup cont = new LabelGroup(getParent(), "Sollbuchungen", true);
     cont.addPart(control.getBuchungenList());

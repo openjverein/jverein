@@ -25,6 +25,7 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
+import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -100,21 +101,46 @@ public class RechnungMap
     map.put(FormularfeldControl.ZAHLUNGSGRUND, zg.toArray());
     map.put(FormularfeldControl.ZAHLUNGSGRUND1, zg1.toArray());
     map.put(FormularfeldControl.BETRAG, betrag.toArray());
-    map.put(MitgliedskontoVar.BUCHUNGSDATUM.getName(), buda.toArray());
-    map.put(MitgliedskontoVar.ZAHLUNGSGRUND.getName(), zg.toArray());
-    map.put(MitgliedskontoVar.ZAHLUNGSGRUND1.getName(), zg1.toArray());
-    map.put(MitgliedskontoVar.NETTOBETRAG.getName(), nettobetrag.toArray());
-    map.put(MitgliedskontoVar.STEUERSATZ.getName(), steuersatz.toArray());
-    map.put(MitgliedskontoVar.STEUERBETRAG.getName(), steuerbetrag.toArray());
-    map.put(MitgliedskontoVar.BETRAG.getName(), betrag.toArray());
-    map.put(MitgliedskontoVar.IST.getName(), ist.toArray());
-    map.put(MitgliedskontoVar.DIFFERENZ.getName(), differenz.toArray());
-    map.put(MitgliedskontoVar.STAND.getName(), Double.valueOf(-1 * saldo));
-    map.put(MitgliedskontoVar.SUMME_OFFEN.getName(), Double.valueOf(saldo));
-    map.put(MitgliedskontoVar.QRCODE_INTRO.getName(),
+    map.put(RechnungVar.BUCHUNGSDATUM.getName(), buda.toArray());
+    map.put(RechnungVar.ZAHLUNGSGRUND.getName(), zg.toArray());
+    map.put(RechnungVar.ZAHLUNGSGRUND1.getName(), zg1.toArray());
+    map.put(RechnungVar.NETTOBETRAG.getName(), nettobetrag.toArray());
+    map.put(RechnungVar.STEUERSATZ.getName(), steuersatz.toArray());
+    map.put(RechnungVar.STEUERBETRAG.getName(), steuerbetrag.toArray());
+    map.put(RechnungVar.BETRAG.getName(), betrag.toArray());
+    map.put(RechnungVar.IST.getName(), ist.toArray());
+    map.put(RechnungVar.DIFFERENZ.getName(), differenz.toArray());
+    map.put(RechnungVar.STAND.getName(), Double.valueOf(-1 * saldo));
+    map.put(RechnungVar.SUMME_OFFEN.getName(), Double.valueOf(saldo));
+    map.put(RechnungVar.QRCODE_INTRO.getName(),
         Einstellungen.getEinstellung().getQRCodeIntro());
-    map.put(MitgliedskontoVar.RECHNUNG_DATUM.getName(),re.getDatum());
-    map.put(MitgliedskontoVar.RECHNUNG_NUMMER.getName(),re.getID());
+    
+    map.put(RechnungVar.DATUM.getName(),re.getDatum());
+    map.put(RechnungVar.NUMMER.getName(),re.getID());
+    map.put(RechnungVar.PERSONENART.getName(), re.getPersonenart());
+    map.put(RechnungVar.GESCHLECHT.getName(),re.getGeschlecht());
+    map.put(RechnungVar.ANREDE.getName(),re.getAnrede());
+    map.put(RechnungVar.ANREDE_DU.getName(),
+        Adressaufbereitung.getAnredeDu(re));
+    map.put(RechnungVar.ANREDE_DU.getName(),
+        Adressaufbereitung.getAnredeFoermlich(re));
+    map.put(RechnungVar.TITEL.getName(),re.getTitel());
+    map.put(RechnungVar.NAME.getName(),re.getName());
+    map.put(RechnungVar.VORNAME.getName(),re.getVorname());
+    map.put(RechnungVar.STRASSE.getName(),re.getStrasse());
+    map.put(RechnungVar.ADRESSIERUNGSZUSATZ.getName(),re.getAdressierungszusatz());
+    map.put(RechnungVar.PLZ.getName(),re.getPlz());
+    map.put(RechnungVar.ORT.getName(),re.getOrt());
+    map.put(RechnungVar.STAAT.getName(),re.getStaat());
+    map.put(RechnungVar.MANDATID.getName(), re.getMandatID());
+    map.put(RechnungVar.MANDATDATUM.getName(), re.getMandatDatum());
+    map.put(RechnungVar.BIC.getName(), re.getBIC());
+    map.put(RechnungVar.IBAN.getName(), re.getIBAN());
+    map.put(RechnungVar.IBANMASKIERT.getName(),
+        VarTools.maskieren(re.getIBAN()));
+    map.put(RechnungVar.EMPFAENGER.getName(),
+        Adressaufbereitung.getAdressfeld(re));
+
     return map;
   }
 
@@ -131,15 +157,15 @@ public class RechnungMap
       map = inma;
     }
 
-    map.put(MitgliedskontoVar.BUCHUNGSDATUM.getName(), mk.getDatum());
-    map.put(MitgliedskontoVar.ZAHLUNGSGRUND.getName(), mk.getZweck1());
-    map.put(MitgliedskontoVar.ZAHLUNGSGRUND1.getName(), mk.getZweck1());
-    map.put(MitgliedskontoVar.NETTOBETRAG.getName(), mk.getNettobetrag());
-    map.put(MitgliedskontoVar.STEUERSATZ.getName(), mk.getSteuersatz());
-    map.put(MitgliedskontoVar.STEUERBETRAG.getName(), mk.getSteuerbetrag());
-    map.put(MitgliedskontoVar.BETRAG.getName(), mk.getBetrag());
-    map.put(MitgliedskontoVar.IST.getName(), mk.getIstSumme());
-    map.put(MitgliedskontoVar.DIFFERENZ.getName(),
+    map.put(RechnungVar.BUCHUNGSDATUM.getName(), mk.getDatum());
+    map.put(RechnungVar.ZAHLUNGSGRUND.getName(), mk.getZweck1());
+    map.put(RechnungVar.ZAHLUNGSGRUND1.getName(), mk.getZweck1());
+    map.put(RechnungVar.NETTOBETRAG.getName(), mk.getNettobetrag());
+    map.put(RechnungVar.STEUERSATZ.getName(), mk.getSteuersatz());
+    map.put(RechnungVar.STEUERBETRAG.getName(), mk.getSteuerbetrag());
+    map.put(RechnungVar.BETRAG.getName(), mk.getBetrag());
+    map.put(RechnungVar.IST.getName(), mk.getIstSumme());
+    map.put(RechnungVar.DIFFERENZ.getName(),
         mk.getBetrag() - mk.getIstSumme());
     return map;
   }

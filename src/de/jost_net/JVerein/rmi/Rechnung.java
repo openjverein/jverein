@@ -20,9 +20,10 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import de.jost_net.JVerein.io.IAdresse;
 import de.willuhn.datasource.rmi.DBObject;
 
-public interface Rechnung extends DBObject
+public interface Rechnung extends DBObject, IAdresse
 {
   public Mitglied getMitglied() throws RemoteException;
 
@@ -41,4 +42,73 @@ public interface Rechnung extends DBObject
   public ArrayList<Mitgliedskonto> getMitgliedskontoList() throws RemoteException;
 
   public Formular getFormular() throws RemoteException;
+
+  public void setAnrede(String anrede) throws RemoteException;
+
+  @Override
+  public String getTitel() throws RemoteException;
+
+  public void setTitel(String titel) throws RemoteException;
+
+  @Override
+  public String getName() throws RemoteException;
+
+  public void setName(String name) throws RemoteException;
+
+  @Override
+  public String getVorname() throws RemoteException;
+
+  public void setVorname(String vorname) throws RemoteException;
+
+  @Override
+  public String getStrasse() throws RemoteException;
+
+  public void setStrasse(String strasse) throws RemoteException;
+
+  @Override
+  public String getAdressierungszusatz() throws RemoteException;
+
+  public void setAdressierungszusatz(String adressierungszusatz)
+      throws RemoteException;
+
+  @Override
+  public String getPlz() throws RemoteException;
+
+  public void setPlz(String plz) throws RemoteException;
+
+  @Override
+  public String getOrt() throws RemoteException;
+
+  @Override
+  public String getStaat() throws RemoteException;
+
+  public void setOrt(String ort) throws RemoteException;
+
+  public void setStaat(String staat) throws RemoteException;
+
+  @Override
+  public String getGeschlecht() throws RemoteException;
+
+  public void setGeschlecht(String geschlecht) throws RemoteException;
+
+  @Override
+  public String getAnrede() throws RemoteException;
+
+  void setPersonenart(String personenart) throws RemoteException;
+
+  public String getMandatID() throws RemoteException;
+  
+  public void setMandatID(String id) throws RemoteException;
+
+  public Date getMandatDatum() throws RemoteException;
+  
+  public void setMandatDatum(Date datum) throws RemoteException;
+
+  public String getBIC() throws RemoteException;
+  
+  public void setBIC(String bic) throws RemoteException;
+
+  public String getIBAN() throws RemoteException;
+  
+  public void setIBAN(String iban) throws RemoteException;
 }
