@@ -17,14 +17,23 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.view.RechnungView;
+import de.jost_net.JVerein.rmi.Rechnung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.util.ApplicationException;
 
 public class RechnungAction implements Action
 {
   @Override
-  public void handleAction(Object context)
+  public void handleAction(Object context) throws ApplicationException
   {
-    GUI.startView(RechnungView.class.getName(), context);
+    if (context != null && (context instanceof Rechnung))
+    {
+      GUI.startView(RechnungView.class.getName(), context);
+    }
+    else
+    {
+      throw new ApplicationException("Keine Rechnung ausgewählt");
+    }
   }
 }
