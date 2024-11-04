@@ -45,6 +45,7 @@ import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.server.RechnungNode;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -562,7 +563,8 @@ public class RechnungControl extends DruckMailControl
       return nummer;
     }
 
-    nummer = new TextInput(getRechnung().getID());
+    nummer = new TextInput(StringTool.lpad(getRechnung().getID(),
+        Einstellungen.getEinstellung().getZaehlerLaenge(), "0"));
     nummer.setName("Rechnungsnummer");
     nummer.disable();;
     return nummer;

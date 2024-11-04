@@ -26,8 +26,10 @@ import java.util.Map;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 
 public class RechnungMap
@@ -38,8 +40,8 @@ public class RechnungMap
     //
   }
 
-  public Map<String, Object> getMap(Rechnung re,
-      Map<String, Object> inma) throws RemoteException
+  public Map<String, Object> getMap(Rechnung re, Map<String, Object> inma)
+      throws RemoteException
   {
     Map<String, Object> map = null;
     if (inma == null)
@@ -60,9 +62,9 @@ public class RechnungMap
     ArrayList<Double> betrag = new ArrayList<>();
     ArrayList<Double> ist = new ArrayList<>();
     ArrayList<Double> differenz = new ArrayList<>();
-    
+
     DecimalFormat format = new DecimalFormat("0");
-    CurrencyFormatter formatter = new CurrencyFormatter("%",format);
+    CurrencyFormatter formatter = new CurrencyFormatter("%", format);
     double summe = 0;
     double saldo = 0;
     double suist = 0;
@@ -72,7 +74,8 @@ public class RechnungMap
       zg.add(mkto.getZweck1());
       zg1.add(mkto.getZweck1());
       nettobetrag.add(Double.valueOf(mkto.getNettobetrag()));
-      steuersatz.add("("+formatter.format(Double.valueOf(mkto.getSteuersatz()))+")");
+      steuersatz.add(
+          "(" + formatter.format(Double.valueOf(mkto.getSteuersatz())) + ")");
       steuerbetrag.add(Double.valueOf(mkto.getSteuerbetrag()));
       betrag.add(Double.valueOf(mkto.getBetrag()));
       ist.add(mkto.getIstSumme());
@@ -114,24 +117,27 @@ public class RechnungMap
     map.put(RechnungVar.SUMME_OFFEN.getName(), Double.valueOf(saldo));
     map.put(RechnungVar.QRCODE_INTRO.getName(),
         Einstellungen.getEinstellung().getQRCodeIntro());
-    
-    map.put(RechnungVar.DATUM.getName(),re.getDatum());
-    map.put(RechnungVar.NUMMER.getName(),re.getID());
+
+    map.put(RechnungVar.DATUM.getName(), re.getDatum());
+    map.put(RechnungVar.NUMMER.getName(), StringTool.lpad(re.getID(),
+        Einstellungen.getEinstellung().getZaehlerLaenge(), "0"));
+
     map.put(RechnungVar.PERSONENART.getName(), re.getPersonenart());
-    map.put(RechnungVar.GESCHLECHT.getName(),re.getGeschlecht());
-    map.put(RechnungVar.ANREDE.getName(),re.getAnrede());
+    map.put(RechnungVar.GESCHLECHT.getName(), re.getGeschlecht());
+    map.put(RechnungVar.ANREDE.getName(), re.getAnrede());
     map.put(RechnungVar.ANREDE_DU.getName(),
         Adressaufbereitung.getAnredeDu(re));
     map.put(RechnungVar.ANREDE_DU.getName(),
         Adressaufbereitung.getAnredeFoermlich(re));
-    map.put(RechnungVar.TITEL.getName(),re.getTitel());
-    map.put(RechnungVar.NAME.getName(),re.getName());
-    map.put(RechnungVar.VORNAME.getName(),re.getVorname());
-    map.put(RechnungVar.STRASSE.getName(),re.getStrasse());
-    map.put(RechnungVar.ADRESSIERUNGSZUSATZ.getName(),re.getAdressierungszusatz());
-    map.put(RechnungVar.PLZ.getName(),re.getPlz());
-    map.put(RechnungVar.ORT.getName(),re.getOrt());
-    map.put(RechnungVar.STAAT.getName(),re.getStaat());
+    map.put(RechnungVar.TITEL.getName(), re.getTitel());
+    map.put(RechnungVar.NAME.getName(), re.getName());
+    map.put(RechnungVar.VORNAME.getName(), re.getVorname());
+    map.put(RechnungVar.STRASSE.getName(), re.getStrasse());
+    map.put(RechnungVar.ADRESSIERUNGSZUSATZ.getName(),
+        re.getAdressierungszusatz());
+    map.put(RechnungVar.PLZ.getName(), re.getPlz());
+    map.put(RechnungVar.ORT.getName(), re.getOrt());
+    map.put(RechnungVar.STAAT.getName(), re.getStaat());
     map.put(RechnungVar.MANDATID.getName(), re.getMandatID());
     map.put(RechnungVar.MANDATDATUM.getName(), re.getMandatDatum());
     map.put(RechnungVar.BIC.getName(), re.getBIC());
@@ -165,8 +171,7 @@ public class RechnungMap
     map.put(RechnungVar.STEUERBETRAG.getName(), mk.getSteuerbetrag());
     map.put(RechnungVar.BETRAG.getName(), mk.getBetrag());
     map.put(RechnungVar.IST.getName(), mk.getIstSumme());
-    map.put(RechnungVar.DIFFERENZ.getName(),
-        mk.getBetrag() - mk.getIstSumme());
+    map.put(RechnungVar.DIFFERENZ.getName(), mk.getBetrag() - mk.getIstSumme());
     return map;
   }
 }
