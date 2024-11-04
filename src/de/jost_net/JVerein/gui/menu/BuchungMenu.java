@@ -18,17 +18,7 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
-import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
-import de.jost_net.JVerein.gui.action.BuchungDuplizierenAction;
-import de.jost_net.JVerein.gui.action.BuchungGegenbuchungAction;
-import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
-import de.jost_net.JVerein.gui.action.SplitBuchungAction;
-import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
+import de.jost_net.JVerein.gui.action.*;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -38,6 +28,7 @@ import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Kontext-Menu zu den Buchungen.
@@ -71,9 +62,12 @@ public class BuchungMenu extends ContextMenu
     }
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
-    if (geldkonto)
+    if (geldkonto) {
       addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
-        new BuchungSollbuchungZuordnungAction(control), "view-refresh.png"));
+              new BuchungSollbuchungZuordnungAction(control), "view-refresh.png"));
+      addItem(new SollbuchungOeffnenItem("Zugeordnetes Mitglied öffnen",
+              new SollbuchungOeffnenAction(), "view-refresh.png"));
+    }
     addItem(new CheckedContextMenuItem("Projekt zuordnen",
         new BuchungProjektZuordnungAction(control), "view-refresh.png"));
     if (geldkonto)
@@ -249,5 +243,10 @@ public class BuchungMenu extends ContextMenu
       }
       return false;
     }
+  }
+
+  private static class SollbuchungOeffnenItem extends CheckedContextMenuItem
+  {
+    private SollbuchungOeffnenItem(String text, Action action, String icon) { super(text, action, icon); }
   }
 }
