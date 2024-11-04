@@ -52,7 +52,8 @@ public enum RechnungVar
   BIC("rechnung_bic"), //
   IBAN("rechnung_iban"), //
   IBANMASKIERT("rechnung_ibanmaskiert"), //
-  EMPFAENGER("rechnung_empfaenger");
+  EMPFAENGER("rechnung_empfaenger"), 
+  ZAHLUNGSWEGTEXT("rechnung_zahlungsweg_text");
 
   private String name;
 

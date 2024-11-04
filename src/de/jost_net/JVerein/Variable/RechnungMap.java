@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -25,8 +26,9 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
+import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.rmi.Einstellung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.util.StringTool;
@@ -146,6 +148,40 @@ public class RechnungMap
         VarTools.maskieren(re.getIBAN()));
     map.put(RechnungVar.EMPFAENGER.getName(),
         Adressaufbereitung.getAdressfeld(re));
+    
+    String zahlungsweg = "";
+    switch (re.getMitglied().getZahlungsweg())
+    {
+      case Zahlungsweg.BASISLASTSCHRIFT:
+      {
+        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextAbbuchung();
+        zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}", re.getBIC());
+        zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}", re.getIBAN());
+        zahlungsweg = zahlungsweg.replaceAll("\\$\\{MANDATID\\}",
+            re.getMandatID());
+        break;
+      }
+      case Zahlungsweg.BARZAHLUNG:
+      {
+        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextBar();
+        break;
+      }
+      case Zahlungsweg.ÜBERWEISUNG:
+      {
+        zahlungsweg = Einstellungen.getEinstellung()
+            .getRechnungTextUeberweisung();
+        break;
+      }
+    }
+    try
+    {
+      zahlungsweg = VelocityTool.eval(map, zahlungsweg);
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+    map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(), zahlungsweg);
 
     return map;
   }
