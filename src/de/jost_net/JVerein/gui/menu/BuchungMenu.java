@@ -23,6 +23,8 @@ import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -248,5 +250,31 @@ public class BuchungMenu extends ContextMenu
   private static class SollbuchungOeffnenItem extends CheckedContextMenuItem
   {
     private SollbuchungOeffnenItem(String text, Action action, String icon) { super(text, action, icon); }
+
+    @Override
+    public boolean isEnabledFor(Object o) {
+      try
+      {
+        if (o instanceof Buchung)
+        {
+          return ((Buchung) o).getMitgliedskonto() != null;
+        }
+        if (o instanceof Buchung[] buchungen)
+        {
+          Mitglied mitglied = buchungen[0].getMitgliedskonto().getMitglied();
+
+          if (mitglied == null) { return false; }
+
+          for (Buchung buchung : buchungen) {
+            if (!buchung.getMitgliedskonto().getMitglied().equals(mitglied)) { return false; }
+          }
+          return true;
+        }
+      }
+      catch (RemoteException e) {
+        Logger.error("Fehler", e);
+      }
+      return false;
+    }
   }
 }
