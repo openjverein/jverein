@@ -24,13 +24,11 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 
 /**
  * Kontext-Menu zu den Buchungen.
