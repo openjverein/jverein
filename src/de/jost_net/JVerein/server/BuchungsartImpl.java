@@ -207,7 +207,7 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   @Override
   public Buchungsart getSteuerBuchungsart() throws RemoteException
   {
-    Long id = (Long) getAttribute("steuer_buchungsart");
+    Integer id = (Integer) getAttribute("steuer_buchungsart");
     if (id == null) {
       return null;
     }
