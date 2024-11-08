@@ -65,6 +65,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.formatter.TreeFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -551,6 +552,15 @@ public class MitgliedskontoControl extends DruckMailControl
       mitgliedskontoList.addColumn("Zweck", "zweck1");
       mitgliedskontoList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      mitgliedskontoList.addColumn("Zahlungsweg","zahlungsweg", new Formatter() {
+        @Override
+        public String format(Object o)
+        {
+          if(o == null)
+            return "";
+          return new Zahlungsweg((Integer)o).getText();
+        }
+      });
       mitgliedskontoList.addColumn("Zahlungseingang", "istsumme",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       mitgliedskontoList.setContextMenu(menu);
