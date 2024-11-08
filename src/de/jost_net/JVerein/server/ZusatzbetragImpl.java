@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -362,5 +363,23 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
     {
       setFaelligkeit(vorh);
     }
+  }
+
+  @Override
+  public Zahlungsweg getZahlungsweg() throws RemoteException
+  {
+    Object o = getAttribute("zahlungsweg");
+    if(o == null)
+        return null;
+    return new Zahlungsweg((Integer)o); 
+  }
+  
+  @Override
+  public void setZahlungsweg(Zahlungsweg zahlungsweg) throws RemoteException
+  {
+    if(zahlungsweg == null)
+      setAttribute("zahlungsweg", null);
+    else
+      setAttribute("zahlungsweg", zahlungsweg.getKey());
   }
 }
