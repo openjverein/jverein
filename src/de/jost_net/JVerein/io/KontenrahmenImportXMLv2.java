@@ -143,7 +143,7 @@ public class KontenrahmenImportXMLv2 implements Importer
           .createList(Buchungsart.class);
       stbuait.addFilter("nummer = ?", mapst.get(id));
       Buchungsart stbua = stbuait.next();
-      bua.setSteuerBuchungsart(Integer.parseInt(stbua.getID()));
+      bua.setSteuerBuchungsart(Long.parseLong(stbua.getID()));
       bua.store();
     }
   }
