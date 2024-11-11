@@ -29,7 +29,7 @@ public class EinstellungenMitgliederSpaltenView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen Trefferliste Mitglieder");
+    GUI.getView().setTitle("Einstellungen Mitglieder Spalten");
 
     final EinstellungControl control = new EinstellungControl(this);
 

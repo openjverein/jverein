@@ -33,7 +33,7 @@ public class EinstellungenMitgliedAnsichtView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen Mitglied Ansicht");
+    GUI.getView().setTitle("Einstellungen Mitglieder Ansicht");
 
     final EinstellungControl control = new EinstellungControl(this);
 

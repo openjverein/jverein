@@ -30,7 +30,7 @@ public class BuchungsuebernahmeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Hibiscus-Buchungen übernehmen");
+    GUI.getView().setTitle("Hibiscus-Buchungen");
 
     final BuchungsuebernahmeControl control = new BuchungsuebernahmeControl(
         this);

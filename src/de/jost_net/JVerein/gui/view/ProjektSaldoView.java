@@ -31,7 +31,7 @@ public class ProjektSaldoView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Projekt-Saldo");
+    GUI.getView().setTitle("Projektsaldo");
 
     final ProjektSaldoControl control = new ProjektSaldoControl(this);
     

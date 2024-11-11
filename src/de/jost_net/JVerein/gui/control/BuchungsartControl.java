@@ -635,7 +635,7 @@ public class BuchungsartControl extends AbstractControl
 
   public Button getPDFAusgabeButton()
   {
-    Button b = new Button("PDF-Ausgabe", new Action()
+    Button b = new Button("PDF", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException

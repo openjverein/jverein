@@ -27,7 +27,7 @@ public class LesefeldUebersichtView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Lesefeld-Definitionen");
+    GUI.getView().setTitle("Lesefelder");
 
     LesefeldUebersichtPart lesefeldEinstellungPart = new LesefeldUebersichtPart(
         (Mitglied) getCurrentObject());
