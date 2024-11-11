@@ -1720,6 +1720,15 @@ public class MitgliedControl extends FilterControl
     zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
     zusatzbetraegeList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter() {
+      @Override
+      public String format(Object o)
+      {
+        if(o == null)
+          return "";
+        return new Zahlungsweg((Integer)o).getText();
+      }
+    });
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
       zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
