@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -37,6 +38,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -72,6 +74,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
   private TablePart zusatzbetraegeList;
 
   public ZusatzbetragVorlage auswahl;
+
+  private SelectInput zahlungsweg;
 
   public ZusatzbetragVorlageControl(AbstractView view)
   {
@@ -206,6 +210,17 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     return buchungsart;
   }
 
+  public SelectInput getZahlungsweg() throws RemoteException
+  {
+    if (zahlungsweg != null)
+    {
+      return zahlungsweg;
+    }
+    zahlungsweg = new SelectInput(Zahlungsweg.getArray(false),getZusatzbetragVorlage().getZahlungsweg());
+    zahlungsweg.setPleaseChoose("Standard");
+    return zahlungsweg;
+  }
+  
   public DateInput getEndedatum() throws RemoteException
   {
     if (endedatum != null)
@@ -250,6 +265,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
       {
         z.setBuchungsart((Buchungsart) getBuchungsart().getValue());
       }
+      z.setZahlungsweg((Zahlungsweg) getZahlungsweg().getValue());
 
       z.store();
       GUI.getStatusBar().setSuccessText("Zusatzbetrag-Vorlage gespeichert");
@@ -292,6 +308,15 @@ public class ZusatzbetragVorlageControl extends AbstractControl
       zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
       zusatzbetraegeList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter() {
+        @Override
+        public String format(Object o)
+        {
+          if(o == null)
+            return "";
+          return new Zahlungsweg((Integer)o).getText();
+        }
+      });
       // zusatzbetraegeList.setContextMenu(new ZusatzbetraegeMenu(
       // zusatzbetraegeList));
       zusatzbetraegeList.setRememberColWidths(true);

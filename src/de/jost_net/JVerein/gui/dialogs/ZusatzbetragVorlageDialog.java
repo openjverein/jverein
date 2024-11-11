@@ -25,6 +25,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.menu.ZusatzbetragVorlageMenu;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -32,6 +33,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
@@ -121,6 +123,15 @@ public class ZusatzbetragVorlageDialog
           new BuchungsklasseFormatter());
     tab.addColumn("Buchungsart", "buchungsart",
         new BuchungsartFormatter());
+    tab.addColumn("Zahlungsweg", "zahlungsweg", new Formatter() {
+      @Override
+      public String format(Object o)
+      {
+        if(o == null)
+          return "";
+        return new Zahlungsweg((Integer)o).getText();
+      }
+    });
     tab.setContextMenu(new ZusatzbetragVorlageMenu());
     tab.setRememberColWidths(true);
     tab.setRememberOrder(true);

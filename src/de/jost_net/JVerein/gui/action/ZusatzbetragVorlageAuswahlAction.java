@@ -62,6 +62,7 @@ public class ZusatzbetragVorlageAuswahlAction implements Action
             break;
           }
         }
+        part.getZahlungsweg().setValue(zbv.getZahlungsweg());
         part.getStartdatum(false).setValue(zbv.getStartdatum());
       }
     }

@@ -232,6 +232,7 @@ public class ZusatzbetragControl extends AbstractControl
         }
         zv.setBuchungsart(z.getBuchungsart());
         zv.setBuchungsklasseId(z.getBuchungsklasseId());
+        zv.setZahlungsweg(z.getZahlungsweg());
         zv.store();
       }
       GUI.getStatusBar().setSuccessText("Zusatzbetrag gespeichert");
