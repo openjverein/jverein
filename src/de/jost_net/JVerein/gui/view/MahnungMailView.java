@@ -17,8 +17,6 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -36,7 +34,7 @@ public class MahnungMailView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Mahnung");
+    GUI.getView().setTitle("Mahnungen");
 
     final RechnungControl control = new RechnungControl(this);
     control.init(RechnungControl.TYP.MAHNUNG.name() + ".", null, null);

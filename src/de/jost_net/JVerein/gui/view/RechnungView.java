@@ -31,7 +31,7 @@ public class RechnungView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Rechnung");
+    GUI.getView().setTitle("Rechnungen");
 
     final RechnungControl control = new RechnungControl(this);
 
