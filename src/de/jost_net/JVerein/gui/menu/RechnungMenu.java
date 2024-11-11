@@ -38,13 +38,13 @@ public class RechnungMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
         new RechnungAction(), "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("Löschen",
+        new RechnungDeleteAction(), "user-trash-full.png"));
+    addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Druck und Mail",
         new RechnungSendAction(), "document-print.png"));
     addItem(new CheckedContextMenuItem("Mahnung Druck und Mail",
         new MahnungSendAction(), "document-print.png"));
-    addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedContextMenuItem("Löschen",
-        new RechnungDeleteAction(), "user-trash-full.png"));
   }
 
 }

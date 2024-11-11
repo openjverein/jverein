@@ -18,14 +18,14 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.control.RechnungControl;
+import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.Exporter;
 import de.jost_net.JVerein.io.IORegistry;
 import de.jost_net.JVerein.io.MitgliedskontoExport;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -49,10 +49,10 @@ public class MitgliedskontoExportAction implements Action
         {
           selectedMitglied = (Mitglied) currentObject;
         }
-        else if (currentObject instanceof Rechnung)
+        else if (currentObject instanceof Mitgliedskonto)
         {
-          Rechnung rechnung = (Rechnung) currentObject;
-          selectedMitglied = rechnung.getMitglied();
+          Mitgliedskonto konto = (Mitgliedskonto) currentObject;
+          selectedMitglied = konto.getMitglied();
         }
       }
     }
@@ -72,7 +72,7 @@ public class MitgliedskontoExportAction implements Action
     {
       initExporter();
       ExportDialog d = new ExportDialog(gibSuchGrenzen(context),
-          Rechnung.class, DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT);
+          Mitgliedskonto.class, DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT);
       d.open();
     }
     catch (OperationCanceledException oce)
@@ -112,9 +112,9 @@ public class MitgliedskontoExportAction implements Action
 
   private Object[] gibSuchGrenzen(Object context) throws ApplicationException
   {
-    if (context instanceof Rechnung)
+    if (context instanceof MitgliedskontoControl)
     {
-      RechnungControl control = (RechnungControl) context;
+      MitgliedskontoControl control = (MitgliedskontoControl) context;
       return control.getCVSExportGrenzen(selectedMitglied);
     }
     throw new ApplicationException(

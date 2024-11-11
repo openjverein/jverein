@@ -1266,4 +1266,23 @@ public class MitgliedskontoControl extends DruckMailControl
     }
     return false;
   }
+  
+
+  public Object[] getCVSExportGrenzen(Mitglied selectedMitglied)
+  {
+    return new Object[] {
+        getDatumvon().getValue(),
+        getDatumbis().getValue(),
+        getDifferenz().getValue(), getCVSExportGrenzeOhneAbbucher(),
+        selectedMitglied };
+  }
+
+
+  private Boolean getCVSExportGrenzeOhneAbbucher()
+  {
+    if (null == ohneabbucher)
+      return Boolean.FALSE;
+    return (Boolean) ohneabbucher.getValue();
+  }
+
 }

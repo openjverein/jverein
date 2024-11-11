@@ -347,7 +347,7 @@ public class RechnungControl extends DruckMailControl
           });
       if(diffIds.size() == 0)
         return PseudoIterator.fromArray(new GenericObject[] {});
-      rechnungenIt.addFilter("id in (" + String.join(",", diffIds) + ")");
+      rechnungenIt.addFilter("rechnung.id in (" + String.join(",", diffIds) + ")");
     }
     
     return rechnungenIt;
@@ -483,24 +483,6 @@ public class RechnungControl extends DruckMailControl
     return text;
   }
   
-
-  public Object[] getCVSExportGrenzen(Mitglied selectedMitglied)
-  {
-    return new Object[] {
-        getDatumvon().getValue(),
-        getDatumbis().getValue(),
-        getDifferenz().getValue(), getCVSExportGrenzeOhneAbbucher(),
-        selectedMitglied };
-  }
-
-
-  private Boolean getCVSExportGrenzeOhneAbbucher()
-  {
-    if (null == ohneabbucher)
-      return Boolean.FALSE;
-    return (Boolean) ohneabbucher.getValue();
-  }
-
   private Rechnung getRechnung()
   {
     if (rechnung != null)
