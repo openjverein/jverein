@@ -217,15 +217,6 @@ public class LesefeldDetailView extends AbstractView implements Listener
   @Override
   public void handleEvent(Event event)
   {
-    // aktualisiere Script-Ausgabe, wenn F5 gedrückt wird.
-    /*if (event.keyCode == org.eclipse.swt.SWT.F5)
-    {
-      updateScriptResult();
-    }
-    else if (event.keyCode == org.eclipse.swt.SWT.F6)
-    {
-      new OpenInsertVariableDialogAction().handleAction(null);
-    }*/
   }
 
   private final class SaveLesefeldAction implements Action
