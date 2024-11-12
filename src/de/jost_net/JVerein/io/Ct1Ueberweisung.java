@@ -46,6 +46,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.VarTools;
+import de.jost_net.JVerein.gui.dialogs.PainVersionDialog;
 import de.jost_net.JVerein.keys.Ct1Ausgabe;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -56,7 +57,6 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.HBCI;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.hbci.gui.action.SepaUeberweisungMerge;
-import de.willuhn.jameica.hbci.gui.dialogs.PainVersionDialog;
 import de.willuhn.jameica.hbci.rmi.AuslandsUeberweisung;
 import de.willuhn.jameica.hbci.rmi.HibiscusAddress;
 import de.willuhn.jameica.system.Application;
@@ -100,6 +100,10 @@ public class Ct1Ueberweisung
       if (sepaVersion == null)
       {
         throw new OperationCanceledException();
+      }
+      if (d.isChecked())
+      {
+        Einstellungen.getEinstellung().setCt1SepaVersion(sepaVersion);
       }
     }
     Properties ls_properties = new Properties();

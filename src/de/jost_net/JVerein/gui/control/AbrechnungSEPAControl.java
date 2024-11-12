@@ -29,6 +29,7 @@ import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.gui.dialogs.PainVersionDialog;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
 import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
@@ -47,7 +48,6 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.hbci.gui.dialogs.PainVersionDialog;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -361,7 +361,7 @@ public class AbrechnungSEPAControl extends AbstractControl
       String file = fd.open();
       if (file == null || file.length() == 0)
       {
-        throw new ApplicationException("keine Datei ausgewählt!");
+        throw new ApplicationException("Keine Datei ausgewählt!");
       }
       sepafilercur = new File(file);
       // Wir merken uns noch das Verzeichnis fürs nächste mal
@@ -379,6 +379,10 @@ public class AbrechnungSEPAControl extends AbstractControl
           if (sepaVersion == null)
           {
             return;
+          }
+          if (d.isChecked())
+          {
+            Einstellungen.getEinstellung().setSepaVersion(sepaVersion);
           }
         }
       }
