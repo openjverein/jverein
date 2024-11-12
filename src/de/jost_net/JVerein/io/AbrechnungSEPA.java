@@ -245,7 +245,7 @@ public class AbrechnungSEPA
     // Gegenbuchung für das Mitgliedskonto schreiben
     if (!summemitgliedskonto.equals(BigDecimal.valueOf(0)))
     {
-      writeMitgliedskonto(null, new Date(), "Gegenbuchung",
+      writeMitgliedskonto(null, param.faelligkeit, "Gegenbuchung",
           summemitgliedskonto.doubleValue() * -1, abrl, true, getKonto(), null, null);
     }
     if (param.abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
