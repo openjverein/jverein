@@ -29,11 +29,8 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.Container;
 import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.willuhn.jameica.hbci.HBCI;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.I18N;
 
 /**
  * Dialog zum Auswaehlen einer SEPA PAIN-Version.
@@ -41,8 +38,6 @@ import de.willuhn.util.I18N;
 public class PainVersionDialog extends AbstractDialog<SepaVersion>
 {
   private final static int WINDOW_WIDTH = 400;
-
-  private final static I18N i18n = Application.getPluginLoader().getPlugin(HBCI.class).getResources().getI18N();
   
   private Type type               = null;
   private SepaVersion painVersion = null;
@@ -57,7 +52,7 @@ public class PainVersionDialog extends AbstractDialog<SepaVersion>
   public PainVersionDialog(Type type)
   {
     super(PainVersionDialog.POSITION_CENTER);
-    this.setTitle(i18n.tr("SEPA XML-Version"));
+    this.setTitle("SEPA XML-Version");
     this.type = type;
     this.setSize(WINDOW_WIDTH,SWT.DEFAULT);
   }
@@ -68,7 +63,7 @@ public class PainVersionDialog extends AbstractDialog<SepaVersion>
   protected void paint(Composite parent) throws Exception
   {
     Container c = new SimpleContainer(parent);
-    c.addText(i18n.tr("Bitte wählen Sie die zu verwendende SEPA XML-Version."),true);
+    c.addText("Bitte wählen Sie die zu verwendende SEPA XML-Version.",true);
     
     final SelectInput version = this.getPainVersionInput();
     final LabelInput msg      = this.getMessage();
@@ -78,14 +73,14 @@ public class PainVersionDialog extends AbstractDialog<SepaVersion>
     c.addInput(check);
     
     ButtonArea buttons = new ButtonArea();
-    this.ok = new Button(i18n.tr("Übernehmen"),new Action()
+    this.ok = new Button("Übernehmen",new Action()
     {
       public void handleAction(Object context) throws ApplicationException
       {
         painVersion = (SepaVersion) version.getValue();
         if (painVersion == null)
         {
-          msg.setValue(i18n.tr("Bitte wählen Sie eine SEPA XML-Version aus."));
+          msg.setValue("Bitte wählen Sie eine SEPA XML-Version aus.");
           return;
         }
         close();
@@ -93,7 +88,7 @@ public class PainVersionDialog extends AbstractDialog<SepaVersion>
     },null,true,"ok.png");
     buttons.addButton(ok);
     
-    buttons.addButton(i18n.tr("Abbrechen"), new Action()
+    buttons.addButton("Abbrechen", new Action()
     {
       public void handleAction(Object context) throws ApplicationException
       {
@@ -114,7 +109,7 @@ public class PainVersionDialog extends AbstractDialog<SepaVersion>
     List<SepaVersion> list = SepaVersion.getKnownVersions(type);
     final SelectInput select = new SelectInput(list,SepaVersion.findGreatest(list));
     select.setAttribute("file");
-    select.setName(i18n.tr("Schema-Version der SEPA XML-Datei"));
+    select.setName("Schema-Version der SEPA XML-Datei");
     select.addListener(new Listener() {
       public void handleEvent(Event event)
       {
