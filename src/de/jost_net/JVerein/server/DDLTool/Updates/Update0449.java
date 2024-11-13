@@ -31,9 +31,9 @@ public class Update0449 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute(addColumn("zusatzabbuchung", new Column("zahlungsweg",
-        COLTYPE.INTEGER, 1, "null", false, false)));
+        COLTYPE.INTEGER, 1, "0", true, false)));
 
     execute(addColumn("zusatzbetragvorlage", new Column("zahlungsweg",
-        COLTYPE.INTEGER, 1, "null", false, false)));
+        COLTYPE.INTEGER, 1, "0", true, false)));
   }
 }

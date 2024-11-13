@@ -556,8 +556,6 @@ public class MitgliedskontoControl extends DruckMailControl
         @Override
         public String format(Object o)
         {
-          if(o == null)
-            return "";
           return new Zahlungsweg((Integer)o).getText();
         }
       });

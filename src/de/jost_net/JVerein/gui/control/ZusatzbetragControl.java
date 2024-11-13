@@ -274,8 +274,6 @@ public class ZusatzbetragControl extends AbstractControl
         @Override
         public String format(Object o)
         {
-          if(o == null)
-            return "";
           return new Zahlungsweg((Integer)o).getText();
         }
       });

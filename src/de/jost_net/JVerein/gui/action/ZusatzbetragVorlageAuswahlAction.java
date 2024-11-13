@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import de.jost_net.JVerein.gui.dialogs.ZusatzbetragVorlageDialog;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -62,7 +63,10 @@ public class ZusatzbetragVorlageAuswahlAction implements Action
             break;
           }
         }
-        part.getZahlungsweg().setValue(zbv.getZahlungsweg());
+        if(zbv.getZahlungsweg().getKey() == Zahlungsweg.STANDARD)
+          part.getZahlungsweg().setValue(null);
+        else
+          part.getZahlungsweg().setValue(zbv.getZahlungsweg());
         part.getStartdatum(false).setValue(zbv.getStartdatum());
       }
     }

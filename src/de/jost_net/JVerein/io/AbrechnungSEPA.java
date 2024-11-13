@@ -525,10 +525,10 @@ public class AbrechnungSEPA
           mZahler = Einstellungen.getDBService().createObject(Mitglied.class, m.getZahlerID().toString());
         }
         Integer zahlungsweg;
-        if(z.getZahlungsweg() == null)
-          zahlungsweg = mZahler.getZahlungsweg();
-        else
+        if(z.getZahlungsweg() != null && z.getZahlungsweg().getKey() != Zahlungsweg.STANDARD)
           zahlungsweg = z.getZahlungsweg().getKey();
+        else
+          zahlungsweg = mZahler.getZahlungsweg();
         
         if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT && !checkSEPA(mZahler, monitor))
         {

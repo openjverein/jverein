@@ -370,7 +370,7 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   {
     Object o = getAttribute("zahlungsweg");
     if(o == null)
-        return null;
+        return new Zahlungsweg(0);
     return new Zahlungsweg((Integer)o); 
   }
   
@@ -378,7 +378,7 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   public void setZahlungsweg(Zahlungsweg zahlungsweg) throws RemoteException
   {
     if(zahlungsweg == null)
-      setAttribute("zahlungsweg", null);
+      setAttribute("zahlungsweg", 0);
     else
       setAttribute("zahlungsweg", zahlungsweg.getKey());
   }
