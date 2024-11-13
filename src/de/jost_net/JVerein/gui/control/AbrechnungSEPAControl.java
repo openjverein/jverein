@@ -206,7 +206,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     String zgrund = settings.getString("zahlungsgrund", "bitte eingeben");
 
-    zahlungsgrund = new TextInput(zgrund, 50);
+    zahlungsgrund = new TextInput(zgrund, 140);
     return zahlungsgrund;
   }
 

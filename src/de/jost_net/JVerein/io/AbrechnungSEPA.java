@@ -475,7 +475,12 @@ public class AbrechnungSEPA
         zahler.setFaelligkeit(param.faelligkeit);
         if (primaer && m.getZahlungsweg() != Zahlungsweg.VOLLZAHLER)
         {
-          zahler.setVerwendungszweck(getVerwendungszweck2(mZahler) + " " + vzweck);
+          String verwendungszweck = getVerwendungszweck2(mZahler) + " " + vzweck;
+          if (verwendungszweck.length() >= 140)
+          {
+            verwendungszweck = verwendungszweck.substring(0, 136) + "...";
+          }
+          zahler.setVerwendungszweck(verwendungszweck);
         }
         else
         {
