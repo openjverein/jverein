@@ -42,22 +42,22 @@ public class RechnungMap
     //
   }
 
-  public Map<String, Object> getMap(Rechnung re, Map<String, Object> inma)
+  public Map<String, Object> getMap(Rechnung re, Map<String, Object> inMap)
       throws RemoteException
   {
     Map<String, Object> map = null;
-    if (inma == null)
+    if (inMap == null)
     {
       map = new HashMap<>();
     }
     else
     {
-      map = inma;
+      map = inMap;
     }
 
-    ArrayList<Date> buda = new ArrayList<>();
-    ArrayList<String> zg = new ArrayList<>();
-    ArrayList<String> zg1 = new ArrayList<>();
+    ArrayList<Date> buchungDatum = new ArrayList<>();
+    ArrayList<String> zweck = new ArrayList<>();
+    ArrayList<String> zweck1 = new ArrayList<>();
     ArrayList<Double> nettobetrag = new ArrayList<>();
     ArrayList<String> steuersatz = new ArrayList<>();
     ArrayList<Double> steuerbetrag = new ArrayList<>();
@@ -72,9 +72,9 @@ public class RechnungMap
     double suist = 0;
     for (Mitgliedskonto mkto : re.getMitgliedskontoList())
     {
-      buda.add(mkto.getDatum());
-      zg.add(mkto.getZweck1());
-      zg1.add(mkto.getZweck1());
+      buchungDatum.add(mkto.getDatum());
+      zweck.add(mkto.getZweck1());
+      zweck1.add(mkto.getZweck1());
       nettobetrag.add(Double.valueOf(mkto.getNettobetrag()));
       steuersatz.add(
           "(" + formatter.format(Double.valueOf(mkto.getSteuersatz())) + ")");
@@ -86,29 +86,29 @@ public class RechnungMap
       summe += mkto.getBetrag();
       saldo += mkto.getBetrag() - mkto.getIstSumme();
     }
-    if (buda.size() > 1)
+    if (buchungDatum.size() > 1)
     {
       if (Einstellungen.getEinstellung().getOptiert())
       {
-        zg1.add("Rechnungsbetrag inkl. USt.");
-        zg.add("Rechnungsbetrag inkl. USt.");
+        zweck1.add("Rechnungsbetrag inkl. USt.");
+        zweck.add("Rechnungsbetrag inkl. USt.");
       }
       else
       {
-        zg1.add("Summe");
-        zg.add("Summe");
+        zweck1.add("Summe");
+        zweck.add("Summe");
       }
       betrag.add(summe);
       differenz.add(saldo);
       ist.add(suist);
     }
-    map.put(FormularfeldControl.BUCHUNGSDATUM, buda.toArray());
-    map.put(FormularfeldControl.ZAHLUNGSGRUND, zg.toArray());
-    map.put(FormularfeldControl.ZAHLUNGSGRUND1, zg1.toArray());
+    map.put(FormularfeldControl.BUCHUNGSDATUM, buchungDatum.toArray());
+    map.put(FormularfeldControl.ZAHLUNGSGRUND, zweck.toArray());
+    map.put(FormularfeldControl.ZAHLUNGSGRUND1, zweck1.toArray());
     map.put(FormularfeldControl.BETRAG, betrag.toArray());
-    map.put(RechnungVar.BUCHUNGSDATUM.getName(), buda.toArray());
-    map.put(RechnungVar.ZAHLUNGSGRUND.getName(), zg.toArray());
-    map.put(RechnungVar.ZAHLUNGSGRUND1.getName(), zg1.toArray());
+    map.put(RechnungVar.BUCHUNGSDATUM.getName(), buchungDatum.toArray());
+    map.put(RechnungVar.ZAHLUNGSGRUND.getName(), zweck.toArray());
+    map.put(RechnungVar.ZAHLUNGSGRUND1.getName(), zweck1.toArray());
     map.put(RechnungVar.NETTOBETRAG.getName(), nettobetrag.toArray());
     map.put(RechnungVar.STEUERSATZ.getName(), steuersatz.toArray());
     map.put(RechnungVar.STEUERBETRAG.getName(), steuerbetrag.toArray());
