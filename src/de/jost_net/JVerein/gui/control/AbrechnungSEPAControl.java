@@ -29,7 +29,6 @@ import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.gui.dialogs.PainVersionDialog;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
 import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
@@ -368,27 +367,7 @@ public class AbrechnungSEPAControl extends AbstractControl
       settings.setAttribute("lastdir.sepa", sepafilercur.getParent());
       try
       {
-        if (Einstellungen.getEinstellung().getSepaVersion() != null)
-        {
-          sepaVersion = Einstellungen.getEinstellung().getSepaVersion();
-        }
-        else
-        {
-          PainVersionDialog d = new PainVersionDialog(org.kapott.hbci.sepa.SepaVersion.Type.PAIN_008);
-          sepaVersion = (SepaVersion) d.open();
-          if (sepaVersion == null)
-          {
-            return;
-          }
-          if (d.isChecked())
-          {
-            Einstellungen.getEinstellung().setSepaVersion(sepaVersion);
-          }
-        }
-      }
-      catch (OperationCanceledException oce)
-      {
-        throw oce;
+        sepaVersion = Einstellungen.getEinstellung().getSepaVersion();
       }
       catch (Exception e)
       {

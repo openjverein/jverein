@@ -46,7 +46,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.VarTools;
-import de.jost_net.JVerein.gui.dialogs.PainVersionDialog;
 import de.jost_net.JVerein.keys.Ct1Ausgabe;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -60,7 +59,6 @@ import de.willuhn.jameica.hbci.gui.action.SepaUeberweisungMerge;
 import de.willuhn.jameica.hbci.rmi.AuslandsUeberweisung;
 import de.willuhn.jameica.hbci.rmi.HibiscusAddress;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
 public class Ct1Ueberweisung
@@ -88,24 +86,7 @@ public class Ct1Ueberweisung
   private int dateiausgabe(ArrayList<Lastschrift> lastschriften, File file, Date faell,
       Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
   {
-    SepaVersion sepaVersion;  
-    if (Einstellungen.getEinstellung().getCt1SepaVersion() != null)
-    {
-      sepaVersion = Einstellungen.getEinstellung().getCt1SepaVersion();
-    }
-    else
-    {
-      PainVersionDialog d = new PainVersionDialog(org.kapott.hbci.sepa.SepaVersion.Type.PAIN_001);
-      sepaVersion = (SepaVersion) d.open();
-      if (sepaVersion == null)
-      {
-        throw new OperationCanceledException();
-      }
-      if (d.isChecked())
-      {
-        Einstellungen.getEinstellung().setCt1SepaVersion(sepaVersion);
-      }
-    }
+    SepaVersion  sepaVersion = Einstellungen.getEinstellung().getCt1SepaVersion();
     Properties ls_properties = new Properties();
     ls_properties.setProperty("src.bic", Einstellungen.getEinstellung().getBic());
     ls_properties.setProperty("src.iban", Einstellungen.getEinstellung().getIban());
