@@ -18,7 +18,18 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.action.*;
+import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.action.BuchungDuplizierenAction;
+import de.jost_net.JVerein.gui.action.BuchungGegenbuchungAction;
+import de.jost_net.JVerein.gui.action.SplitBuchungAction;
+import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
+import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
+import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungMitgliedOeffnenAction;
+import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -66,7 +77,7 @@ public class BuchungMenu extends ContextMenu
       addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
               new BuchungSollbuchungZuordnungAction(control), "view-refresh.png"));
       addItem(new SollbuchungOeffnenItem("Zugeordnetes Mitglied öffnen",
-              new SollbuchungOeffnenAction(), "go-to.png"));
+              new BuchungMitgliedOeffnenAction(), "go-to.png"));
     }
     addItem(new CheckedContextMenuItem("Projekt zuordnen",
         new BuchungProjektZuordnungAction(control), "view-refresh.png"));
@@ -256,17 +267,6 @@ public class BuchungMenu extends ContextMenu
         if (o instanceof Buchung)
         {
           return ((Buchung) o).getMitgliedskonto() != null;
-        }
-        if (o instanceof Buchung[] buchungen)
-        {
-          Mitglied mitglied = buchungen[0].getMitgliedskonto().getMitglied();
-
-          if (mitglied == null) { return false; }
-
-          for (Buchung buchung : buchungen) {
-            if (!buchung.getMitgliedskonto().getMitglied().equals(mitglied)) { return false; }
-          }
-          return true;
         }
       }
       catch (RemoteException e) {

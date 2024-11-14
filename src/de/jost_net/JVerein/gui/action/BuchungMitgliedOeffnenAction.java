@@ -27,20 +27,16 @@ import de.willuhn.jameica.gui.GUI;
 
 import java.rmi.RemoteException;
 
-public class SollbuchungOeffnenAction implements Action {
+public class BuchungMitgliedOeffnenAction implements Action {
     @Override
     public void handleAction(Object context) throws ApplicationException {
-        if (!(context instanceof Buchung) && !(context instanceof Buchung[]))
+        if (!(context instanceof Buchung))
         {
             throw new ApplicationException("Keine Buchung(en) ausgewählt");
         }
         Mitglied mitglied;
         try {
-            if (context instanceof Buchung) {
-                mitglied = ((Buchung) context).getMitgliedskonto().getMitglied();
-            } else {
-                mitglied = ((Buchung[]) context)[0].getMitgliedskonto().getMitglied();
-            }
+            mitglied = ((Buchung) context).getMitgliedskonto().getMitglied();
         }
         catch (RemoteException e) {
             Logger.error("Fehler", e);
