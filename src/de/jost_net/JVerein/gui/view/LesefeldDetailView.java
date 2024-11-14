@@ -250,37 +250,6 @@ public class LesefeldDetailView extends AbstractView implements Listener
     }
   }
 
-  private final class OpenInsertVariableDialogAction implements Action
-  {
-
-    @Override
-    public void handleAction(Object context)
-    {
-      try
-      {
-        ShowVariablesDialog d = new ShowVariablesDialog(
-            lesefeldAuswerter.getMap(), false);
-        ShowVariablesMenu menu = new ShowVariablesMenu();
-        menu.setPrependCopyText("");
-        menu.setAppendCopyText("");
-        d.setContextMenu(menu);
-        d.setDoubleClickAction(menu.getCopyToClipboardAction());
-        d.open();
-      }
-      catch (OperationCanceledException e)
-      {
-        
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Anzeigen der Variablen.", e);
-        GUI.getStatusBar().setErrorText("Fehler beim Anzeigen der Variablen.");
-      }
-
-    }
-
-  }
-  
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
