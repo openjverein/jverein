@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.gui.action.BuchungImportAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
+import de.jost_net.JVerein.gui.action.BuchungsuebernahmeAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
@@ -126,6 +127,8 @@ public class BuchungslisteView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
+    buttons.addButton("Hibiscus-Import", new BuchungsuebernahmeAction(), null, false,
+        "file-import.png");
     buttons.addButton("Import", new BuchungImportAction(), null, false,
         "file-import.png");
     buttons.addButton(control.getStartCSVAuswertungButton());
