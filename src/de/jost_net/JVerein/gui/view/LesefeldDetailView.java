@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.gui.action.OpenInsertVariableDialgoAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -112,8 +113,8 @@ public class LesefeldDetailView extends AbstractView implements Listener
       }
     }, null, false, "view-refresh.png");
     buttonArea.addButton(button);
-    button = new Button("Variablen anzeigen (F6)",
-        new OpenInsertVariableDialogAction(), null, false, "bookmark.png");
+    button = new Button("Variablen anzeigen",
+        new OpenInsertVariableDialgoAction(), lesefeldAuswerter, false, "bookmark.png");
     buttonArea.addButton(button);
     button = new Button("Speichern", new SaveLesefeldAction(), null,
         false, "document-save.png");
@@ -217,15 +218,6 @@ public class LesefeldDetailView extends AbstractView implements Listener
   @Override
   public void handleEvent(Event event)
   {
-    // aktualisiere Script-Ausgabe, wenn F5 gedrückt wird.
-    if (event.keyCode == org.eclipse.swt.SWT.F5)
-    {
-      updateScriptResult();
-    }
-    else if (event.keyCode == org.eclipse.swt.SWT.F6)
-    {
-      new OpenInsertVariableDialogAction().handleAction(null);
-    }
   }
 
   private final class SaveLesefeldAction implements Action
