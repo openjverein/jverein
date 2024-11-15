@@ -103,11 +103,23 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
       {
         throw new ApplicationException("Bitte Betrag eingeben");
       }
-      if(getZahlungsweg().getKey() == Zahlungsweg.BASISLASTSCHRIFT
-          && (getMitglied().getIban().length() == 0 
-            || getMitglied().getMandatDatum().equals(Einstellungen.NODATE)))
+      if(getZahlungsweg().getKey() == Zahlungsweg.BASISLASTSCHRIFT)
       {
-        throw new ApplicationException("Beim Mitglied ist keine IBAN oder Mandatdatum hinterlegt.");
+        if(getMitglied().getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        {
+          Mitglied m = Einstellungen.getDBService().createObject(MitgliedImpl.class,
+              getMitglied().getZahlerID().toString());
+          if(m.getIban().length() == 0 
+              || m.getMandatDatum().equals(Einstellungen.NODATE))
+          {
+            throw new ApplicationException("Beim Vollzahler ist keine IBAN oder Mandatdatum hinterlegt.");
+          }
+        }
+        else if(getMitglied().getIban().length() == 0 
+            || getMitglied().getMandatDatum().equals(Einstellungen.NODATE))
+        {
+          throw new ApplicationException("Beim Mitglied ist keine IBAN oder Mandatdatum hinterlegt.");
+        }
       }
     }
     catch (RemoteException e)
