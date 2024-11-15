@@ -84,7 +84,7 @@ public class RechnungDeleteAction implements Action
         re.delete();
       }
       GUI.getStatusBar().setSuccessText(
-          "Rechung" + mehrzahl + "  gelöscht.");
+          "Rechnung" + mehrzahl + "  gelöscht.");
     }
     catch (RemoteException e)
     {

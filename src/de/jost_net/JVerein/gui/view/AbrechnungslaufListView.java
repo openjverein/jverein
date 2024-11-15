@@ -49,7 +49,7 @@ public class AbrechnungslaufListView extends AbstractView
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
 
-    control.getAbrechungslaeufeList().paint(this.getParent());
+    control.getAbrechnungslaeufeList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
