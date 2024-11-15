@@ -196,6 +196,10 @@ public class FormularfeldControl extends FormularPartControl
       {
         namen.add(spv.getName());
       }
+      for (MitgliedVar mv : MitgliedVar.values())
+      {
+        namen.add(mv.getName());
+      }
     }
     if (formular.getArt() == FormularArt.SAMMELSPENDENBESCHEINIGUNG)
     {
@@ -206,6 +210,10 @@ public class FormularfeldControl extends FormularPartControl
       for (SpendenbescheinigungVar spv : SpendenbescheinigungVar.values())
       {
         namen.add(spv.getName());
+      }
+      for (MitgliedVar mv : MitgliedVar.values())
+      {
+        namen.add(mv.getName());
       }
     }
     if (formular.getArt() == FormularArt.FREIESFORMULAR)
@@ -249,7 +257,9 @@ public class FormularfeldControl extends FormularPartControl
     }
     if (formular.getArt() == FormularArt.FREIESFORMULAR
         || formular.getArt() == FormularArt.RECHNUNG
-        || formular.getArt() == FormularArt.MAHNUNG)
+        || formular.getArt() == FormularArt.MAHNUNG
+        || formular.getArt() == FormularArt.SPENDENBESCHEINIGUNG
+        || formular.getArt() == FormularArt.SAMMELSPENDENBESCHEINIGUNG)
     {
       DBIterator<Lesefeld> itlesefelder = Einstellungen.getDBService()
           .createList(Lesefeld.class);

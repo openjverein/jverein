@@ -28,7 +28,7 @@ public class BuchungsTexteKorrigierenView extends AbstractView {
 
 	@Override
 	public void bind() throws Exception {
-	    GUI.getView().setTitle("Buchungstexte korrigieren");
+	    GUI.getView().setTitle("Buchungskorrektur");
 
 		final BuchungsTextKorrekturControl control = new BuchungsTextKorrekturControl(this);
 

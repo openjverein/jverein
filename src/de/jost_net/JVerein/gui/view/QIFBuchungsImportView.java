@@ -44,7 +44,7 @@ public class QIFBuchungsImportView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Importiere QIF Buchungen");
+    GUI.getView().setTitle("QIF-Datei-Import");
 
     QIFBuchungsImportControl control = new QIFBuchungsImportControl(this);
     LabelGroup group = new LabelGroup(getParent(), "Konto Kopfdaten");
@@ -77,7 +77,7 @@ public class QIFBuchungsImportView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.QIFIMPORT, false, "question-circle.png");
-    buttons.addButton("Datei einlesen", new QIFDateiEinlesenAction(), null,
+    buttons.addButton("Import", new QIFDateiEinlesenAction(), null,
         false, "file-import.png");
     buttons.addButton("Import löschen",
         control.getAktuellenImportLoeschenAction(), null, false,

@@ -40,7 +40,7 @@ public class JubilaeenView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.JUBILAEEN, false, "question-circle.png");
-    buttons.addButton("Start", new JubilaeumsExportAction(), control, true,
+    buttons.addButton("Starten", new JubilaeumsExportAction(), control, true,
         "walking.png");
     buttons.paint(getParent());
   }

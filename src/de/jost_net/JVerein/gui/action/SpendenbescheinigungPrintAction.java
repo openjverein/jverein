@@ -248,6 +248,8 @@ public class SpendenbescheinigungPrintAction implements Action
               .createObject(Formular.class, spb.getFormular().getID());
           Map<String, Object> map = spb.getMap(null);
           map = new AllgemeineMap().getMap(map);
+          if(spb.getMitglied() != null)
+            map = new MitgliedMap().getMap(spb.getMitglied(), map);
           FormularAufbereitung fa = new FormularAufbereitung(file);
           fa.writeForm(fo, map);
           if (adressblatt != Adressblatt.OHNE_ADRESSBLATT)

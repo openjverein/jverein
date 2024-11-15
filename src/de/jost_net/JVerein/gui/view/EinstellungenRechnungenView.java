@@ -30,7 +30,7 @@ public class EinstellungenRechnungenView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen");
+    GUI.getView().setTitle("Einstellungen Rechnungen");
 
     final EinstellungControl control = new EinstellungControl(this);
 

@@ -245,7 +245,7 @@ public class AbrechnungSEPA
     // Gegenbuchung für das Mitgliedskonto schreiben
     if (!summemitgliedskonto.equals(BigDecimal.valueOf(0)))
     {
-      writeMitgliedskonto(null, new Date(), "Gegenbuchung",
+      writeMitgliedskonto(null, param.faelligkeit, "Gegenbuchung",
           summemitgliedskonto.doubleValue() * -1, abrl, true, getKonto(), null, null, null);
     }
     if (param.abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
@@ -475,7 +475,12 @@ public class AbrechnungSEPA
         zahler.setFaelligkeit(param.faelligkeit);
         if (primaer && m.getZahlungsweg() != Zahlungsweg.VOLLZAHLER)
         {
-          zahler.setVerwendungszweck(getVerwendungszweck2(mZahler) + " " + vzweck);
+          String verwendungszweck = getVerwendungszweck2(mZahler) + " " + vzweck;
+          if (verwendungszweck.length() >= 140)
+          {
+            verwendungszweck = verwendungszweck.substring(0, 136) + "...";
+          }
+          zahler.setVerwendungszweck(verwendungszweck);
         }
         else
         {

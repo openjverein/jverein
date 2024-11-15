@@ -33,7 +33,7 @@ public class SpendenbescheinigungMailView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Spendenbescheinigung");
+    GUI.getView().setTitle("Spendenbescheinigungen");
 
     final SpendenbescheinigungControl control = new SpendenbescheinigungControl(this);
     control.init("spenden." , null, null);

@@ -1332,7 +1332,6 @@ public class EinstellungControl extends AbstractControl
     sepaversion = new SelectInput(list, 
         Einstellungen.getEinstellung().getSepaVersion());
     sepaversion.setAttribute("file");
-    sepaversion.setPleaseChoose("Bitte auswählen");
     return sepaversion;
   }
   
@@ -1347,7 +1346,6 @@ public class EinstellungControl extends AbstractControl
     ct1sepaversion = new SelectInput(list, 
         Einstellungen.getEinstellung().getCt1SepaVersion());
     ct1sepaversion.setAttribute("file");
-    ct1sepaversion.setPleaseChoose("Bitte auswählen");
     return ct1sepaversion;
   }
 

@@ -31,7 +31,7 @@ public class StatistikJahrgaengeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Statistik Jahrgänge");
+    GUI.getView().setTitle("Jahrgangsstatistik");
 
     final MitgliedControl control = new MitgliedControl(this);
 
@@ -41,7 +41,7 @@ public class StatistikJahrgaengeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.STATISTIKJAHRGAENGE, false, "question-circle.png");
-    Button btnStart = new Button("Start", new StatistikJahrgaengeExportAction(),
+    Button btnStart = new Button("Starten", new StatistikJahrgaengeExportAction(),
         control.getJubeljahr(), true, "walking.png");
 
     buttons.addButton(btnStart);
