@@ -131,13 +131,12 @@ public class Rechnungsausgabe
           aufbereitenFormular(re, formularaufbereitung, formular);
           break;
         case MAIL:
-          File f = File.createTempFile(getDateiname(re),
-              ".pdf");
+          File f = File.createTempFile(getDateiname(re), ".pdf");
           formularaufbereitung = new FormularAufbereitung(f);
           aufbereitenFormular(re, formularaufbereitung, formular);
           formularaufbereitung.closeFormular();
-          zos.putNextEntry(
-              new ZipEntry(getDateiname(re) + ".pdf"));
+          formularaufbereitung.addZUGFeRD(re);
+          zos.putNextEntry(new ZipEntry(getDateiname(re) + ".pdf"));
           FileInputStream in = new FileInputStream(f);
           // buffer size
           byte[] b = new byte[1024];
@@ -154,6 +153,11 @@ public class Rechnungsausgabe
     {
       case DRUCK:
         formularaufbereitung.showFormular();
+        if (rechnungen.size() == 1)
+        {
+          rechnungen.begin();
+          formularaufbereitung.addZUGFeRD(rechnungen.next());
+        }
         break;
       case MAIL:
         zos.close();
@@ -196,17 +200,17 @@ public class Rechnungsausgabe
   {
     if (formular == null)
       formular = re.getFormular();
-    
+
     if (re.getMitgliedskontoList().size() == 0)
       return;
-    
+
     Map<String, Object> map = new RechnungMap().getMap(re, null);
     map = new MitgliedMap().getMap(re.getMitglied(), map);
     map = new AllgemeineMap().getMap(map);
     fa.writeForm(formular, map);
 
     formular.store();
-    
+
     formular.setZaehlerToFormlink(formular.getZaehler());
   }
 

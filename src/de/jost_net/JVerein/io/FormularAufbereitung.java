@@ -23,6 +23,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,7 +32,15 @@ import java.util.Map;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
-
+import org.mustangproject.BankDetails;
+import org.mustangproject.Contact;
+import org.mustangproject.DirectDebit;
+import org.mustangproject.Invoice;
+import org.mustangproject.Item;
+import org.mustangproject.Product;
+import org.mustangproject.TradeParty;
+import org.mustangproject.ZUGFeRD.IZUGFeRDExporter;
+import org.mustangproject.ZUGFeRD.ZUGFeRDExporterFromPDFA;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -42,11 +52,13 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ICC_Profile;
+import com.itextpdf.text.pdf.PdfAConformanceException;
+import com.itextpdf.text.pdf.PdfAConformanceLevel;
+import com.itextpdf.text.pdf.PdfAWriter;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfWriter;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
@@ -58,6 +70,8 @@ import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
@@ -75,7 +89,7 @@ public class FormularAufbereitung
 
   private FileOutputStream fos;
 
-  private PdfWriter writer;
+  private PdfAWriter writer;
 
   private File f;
 
@@ -112,15 +126,28 @@ public class FormularAufbereitung
       doc = new Document();
       fos = new FileOutputStream(f);
 
-      writer = PdfWriter.getInstance(doc, fos);
+      writer = PdfAWriter.getInstance(doc, fos, PdfAConformanceLevel.PDF_A_3B);
+
+      writer.createXmpMetadata();
       doc.open();
 
+      ICC_Profile icc = ICC_Profile
+          .getInstance(Class.forName("org.mustangproject.Invoice")
+              .getClassLoader().getResourceAsStream("sRGB.icc"));
+      writer.setOutputIntents("Custom", "", "http://www.color.org",
+          "sRGB IEC61966-2.1", icc);
+
+      writer.setCompressionLevel(9);
     }
     catch (IOException e)
     {
       throw new RemoteException("Fehler", e);
     }
     catch (DocumentException e)
+    {
+      throw new RemoteException("Fehler", e);
+    }
+    catch (ClassNotFoundException e)
     {
       throw new RemoteException("Fehler", e);
     }
@@ -132,8 +159,9 @@ public class FormularAufbereitung
     try
     {
       PdfReader reader = new PdfReader(formular.getInhalt());
+
       int numOfPages = reader.getNumberOfPages();
-      
+
       // Get current counter
       Integer zaehler = formular.getZaehler();
       // Get settings and length of counter
@@ -152,13 +180,13 @@ public class FormularAufbereitung
             .createList(Formularfeld.class);
         it.addFilter("formular = ? and seite = ?",
             new Object[] { formular.getID(), i });
-        
+
         Boolean increased = false;
-        
+
         while (it.hasNext())
         {
           Formularfeld f = (Formularfeld) it.next();
-          
+
           // Increase counter if form field is zaehler or qrcode (counter is
           // needed in QR code, so it needs to be incremented)
           if ((f.getName().equals(AllgemeineVar.ZAEHLER.getName())
@@ -168,11 +196,12 @@ public class FormularAufbereitung
             zaehler++;
             // Prevent multiple increases by next page
             increased = true;
-            // Set new value to field with leading zero to get the defined length
-            map.put(AllgemeineVar.ZAEHLER.getName(), StringTool.lpad(
-                zaehler.toString(), zaehlerLaenge, "0"));
+            // Set new value to field with leading zero to get the defined
+            // length
+            map.put(AllgemeineVar.ZAEHLER.getName(),
+                StringTool.lpad(zaehler.toString(), zaehlerLaenge, "0"));
           }
-          
+
           // create QR code for invoice sum if form field is QRCODE_SUM
           if (f.getName().equals(RechnungVar.QRCODE_SUMME.getName()))
           {
@@ -183,7 +212,7 @@ public class FormularAufbereitung
           goFormularfeld(contentByte, f, map.get(f.getName()));
         }
       }
-         
+
       // Set counter to form (not yet saved to the DB)
       formular.setZaehler(zaehler);
     }
@@ -308,10 +337,10 @@ public class FormularAufbereitung
     sbEpc.append(e.getName()).append("\n");
     sbEpc.append(e.getIban()).append("\n");
     sbEpc.append(EPC_EUR);
-    Object[] oPosten = (Object[]) fieldsMap
-        .get(RechnungVar.BETRAG.getName());
+    Object[] oPosten = (Object[]) fieldsMap.get(RechnungVar.BETRAG.getName());
     // Der letzte Eintrag in dem Array ist die Rechnungssumme
-    // Ersetze das Dezimalkomma durch einen Punkt, um der Spezifikation zu entsprechen
+    // Ersetze das Dezimalkomma durch einen Punkt, um der Spezifikation zu
+    // entsprechen
     String betrag = getString(oPosten[oPosten.length - 1]).replace(',', '.');
     sbEpc.append(betrag);
     sbEpc.append("\n");
@@ -351,7 +380,7 @@ public class FormularAufbereitung
    * 
    * @throws IOException
    */
-  public void closeFormular() throws IOException
+  public void closeFormular() throws IOException, PdfAConformanceException
   {
     doc.close();
     writer.close();
@@ -397,8 +426,10 @@ public class FormularAufbereitung
       {
         filename += feld.getFont().substring(9);
       }
-      bf = BaseFont.createFont(filename+".ttf", BaseFont.IDENTITY_H, true);
-    } else if (feld.getFont().startsWith("PTSans")) {
+      bf = BaseFont.createFont(filename + ".ttf", BaseFont.IDENTITY_H, true);
+    }
+    else if (feld.getFont().startsWith("PTSans"))
+    {
       String filename = String.format("/fonts/%s.ttf", feld.getFont());
       bf = BaseFont.createFont(filename, BaseFont.IDENTITY_H, true);
     }
@@ -466,9 +497,10 @@ public class FormularAufbereitung
           stringVal.append((String) ostr);
           stringVal.append("\n");
         }
-        
+
         // Format Strings with percent numbers and closing bracket e.g. taxes
-        if (((String) o[0]).contains("%)")) {
+        if (((String) o[0]).contains("%)"))
+        {
           buendig = rechts;
         }
       }
@@ -496,7 +528,8 @@ public class FormularAufbereitung
       stringVal = new StringBuilder((String) val);
 
       // Format Strings with percent numbers and closing bracket e.g. taxes
-      if (((String) val).contains("%)")) {
+      if (((String) val).contains("%)"))
+      {
         buendig = rechts;
       }
     }
@@ -517,13 +550,13 @@ public class FormularAufbereitung
     }
     return stringVal.toString();
   }
-  
+
   public void printNeueSeite()
   {
     // Neue Seite mit Anschrift für Fenster in querem Brief
-      doc.newPage();
+    doc.newPage();
   }
-  
+
   public void printAdressfenster(String aussteller, String empfaenger)
       throws RemoteException
   {
@@ -532,7 +565,8 @@ public class FormularAufbereitung
     {
       doc.add(new Paragraph(" ", Reporter.getFreeSans(12)));
       doc.add(new Paragraph("\n\n\n\n\n\n", Reporter.getFreeSans(12)));
-      Paragraph paragraph = new Paragraph(aussteller, Reporter.getFreeSansUnderline(8));
+      Paragraph paragraph = new Paragraph(aussteller,
+          Reporter.getFreeSansUnderline(8));
       paragraph.setIndentationLeft(40);
       doc.add(paragraph);
       paragraph = new Paragraph(empfaenger, Reporter.getFreeSans(9));
@@ -544,14 +578,14 @@ public class FormularAufbereitung
       throw new RemoteException("Fehler", e);
     }
   }
-  
+
   public void printAnschreiben(Spendenbescheinigung spb, String text)
       throws RemoteException
   {
     // Anschreiben drucken
     try
     {
-      doc.add(new Paragraph("\n\n\n",  Reporter.getFreeSans(12)));
+      doc.add(new Paragraph("\n\n\n", Reporter.getFreeSans(12)));
       Mitglied m = spb.getMitglied();
       Paragraph p = null;
       if (m != null)
@@ -566,7 +600,8 @@ public class FormularAufbereitung
         VarTools.add(context, mmap);
         StringWriter wtext = new StringWriter();
         Velocity.evaluate(context, wtext, "LOG", text);
-        p = new Paragraph(wtext.getBuffer().toString(), Reporter.getFreeSans(10));
+        p = new Paragraph(wtext.getBuffer().toString(),
+            Reporter.getFreeSans(10));
       }
       else
       {
@@ -580,5 +615,109 @@ public class FormularAufbereitung
       throw new RemoteException("Fehler", e);
     }
   }
-  
+
+  @SuppressWarnings("resource")
+  public void addZUGFeRD(Rechnung re) throws IOException
+  {
+    if (re.getMitgliedskontoList().size() == 0)
+      return;
+
+    String sourcePDF = f.getAbsolutePath();
+    Einstellung e = Einstellungen.getEinstellung();
+    IZUGFeRDExporter ze = new ZUGFeRDExporterFromPDFA().ignorePDFAErrors()
+        .load(sourcePDF).setProducer("JVerein")
+        .setCreator(System.getProperty("user.name"));
+
+    Invoice invoice = new Invoice()
+        // Fälligkeitsdatum
+        .setDueDate(re.getMitgliedskontoList().getLast().getDatum())
+        // Lieferdatum
+        .setDeliveryDate(re.getMitgliedskontoList().getLast().getDatum())
+        // Rechnungsdatum
+        .setIssueDate(re.getDatum())
+        // Rechnungsnummer
+        .setNumber(re.getID());
+
+    // Rechnungssteller
+    TradeParty sender = new TradeParty(e.getName(),
+        StringTool.toNotNullString(e.getStrasse()),
+        StringTool.toNotNullString(e.getPlz()),
+        StringTool.toNotNullString(e.getOrt()), "DE")
+            .addTaxID(e.getSteuernummer());
+    // UStID
+    // .addVATID(id)
+    
+    //TODO Zahlungsweg aus Rechnung lesen sobald implementiert
+    if (re.getMandatDatum() != null && !re.getMandatDatum().equals(Einstellungen.NODATE))
+    {
+      // Mandat
+      sender.addDebitDetails(new DirectDebit(re.getIBAN(), re.getMandatID()));
+      // Gläubiger identifikationsnummer
+      invoice.setCreditorReferenceID(e.getGlaeubigerID());
+    }
+    else
+    {
+      sender.addBankDetails(
+          new BankDetails(StringTool.toNotNullString(e.getIban()),
+              StringTool.toNotNullString(e.getBic())));
+    }
+    invoice.setSender(sender);
+
+    //TODO bei Mahnung und Zahlungsweg Überweisung eingegangene Buchungen abziehen
+    //Bereits gezahlt
+    // invoice.setTotalPrepaidAmount(null);
+
+    // TODO Ländercode bestimmen
+    String staat = StringTool.toNotNullString(re.getStaat());
+    if (staat.length() == 0)
+      staat = "DE";
+
+    String id = re.getMitglied().getID();
+    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+      id = re.getMitglied().getExterneMitgliedsnummer();
+
+    // Rechnungsempfänger
+    invoice.setRecipient(new TradeParty(
+        StringTool.toNotNullString(re.getVorname()) + " "
+            + StringTool.toNotNullString(re.getName()),
+        StringTool.toNotNullString(re.getStrasse()),
+        StringTool.toNotNullString(re.getPlz()),
+        StringTool.toNotNullString(re.getOrt()), staat)
+            .setID(id)
+            .setContact(new Contact(
+                StringTool.toNotNullString(re.getVorname()) + " "
+                    + StringTool.toNotNullString(re.getName()),
+                re.getMitglied().getTelefonprivat(),
+                re.getMitglied().getEmail()))
+            .setAdditionalAddress(
+                StringTool.toNotNullString(re.getAdressierungszusatz())));
+
+    // Sollbuchungen
+    for (Mitgliedskonto mk : re.getMitgliedskontoList())
+    {
+      if (mk.getBetrag() < 0)
+      {
+        invoice.addItem(new Item(
+            new Product(mk.getZweck1(), "", "LS",
+                new BigDecimal(mk.getSteuersatz()).setScale(2,
+                    RoundingMode.HALF_DOWN)),
+            new BigDecimal(mk.getBetrag() * -1).setScale(2,
+                RoundingMode.HALF_DOWN),
+            new BigDecimal(-1.0)));
+      }
+      else
+      {
+        invoice.addItem(new Item(
+            new Product(mk.getZweck1(), "", "LS", //LS = pauschal
+                new BigDecimal(mk.getSteuersatz()).setScale(2,
+                    RoundingMode.HALF_DOWN)),
+            new BigDecimal(mk.getBetrag()).setScale(2, RoundingMode.HALF_DOWN),
+            new BigDecimal(1.0)));
+      }
+    }
+    ze.setTransaction(invoice);
+    ze.export(f.getAbsolutePath());
+    ze.close();
+  }
+
 }
