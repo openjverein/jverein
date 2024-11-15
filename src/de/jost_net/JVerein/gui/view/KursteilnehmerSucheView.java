@@ -38,7 +38,7 @@ public class KursteilnehmerSucheView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Suche Kursteilnehmer");
+    GUI.getView().setTitle("Kursteilnehmer");
 
     final KursteilnehmerControl control = new KursteilnehmerControl(this);
 

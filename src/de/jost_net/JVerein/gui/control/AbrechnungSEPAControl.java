@@ -47,7 +47,6 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.hbci.gui.dialogs.PainVersionDialog;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -206,7 +205,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     String zgrund = settings.getString("zahlungsgrund", "bitte eingeben");
 
-    zahlungsgrund = new TextInput(zgrund, 50);
+    zahlungsgrund = new TextInput(zgrund, 140);
     return zahlungsgrund;
   }
 
@@ -361,30 +360,14 @@ public class AbrechnungSEPAControl extends AbstractControl
       String file = fd.open();
       if (file == null || file.length() == 0)
       {
-        throw new ApplicationException("keine Datei ausgewählt!");
+        throw new ApplicationException("Keine Datei ausgewählt!");
       }
       sepafilercur = new File(file);
       // Wir merken uns noch das Verzeichnis fürs nächste mal
       settings.setAttribute("lastdir.sepa", sepafilercur.getParent());
       try
       {
-        if (Einstellungen.getEinstellung().getSepaVersion() != null)
-        {
-          sepaVersion = Einstellungen.getEinstellung().getSepaVersion();
-        }
-        else
-        {
-          PainVersionDialog d = new PainVersionDialog(org.kapott.hbci.sepa.SepaVersion.Type.PAIN_008);
-          sepaVersion = (SepaVersion) d.open();
-          if (sepaVersion == null)
-          {
-            return;
-          }
-        }
-      }
-      catch (OperationCanceledException oce)
-      {
-        throw oce;
+        sepaVersion = Einstellungen.getEinstellung().getSepaVersion();
       }
       catch (Exception e)
       {

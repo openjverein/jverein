@@ -347,7 +347,10 @@ public class KursteilnehmerControl extends FilterControl
     this.geburtsdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.geburtsdatum.setTitle("Geburtsdatum");
     this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
-    this.geburtsdatum.setMandatory(true);
+    if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
+    {
+      this.geburtsdatum.setMandatory(true);
+    }
     return geburtsdatum;
   }
 
@@ -360,7 +363,10 @@ public class KursteilnehmerControl extends FilterControl
     geschlecht = new GeschlechtInput(getKursteilnehmer().getGeschlecht());
     geschlecht.setName("Geschlecht");
     geschlecht.setPleaseChoose("Bitte auswählen");
-    geschlecht.setMandatory(true);
+    if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
+    {
+      geschlecht.setMandatory(true);
+    }
     return geschlecht;
   }
 

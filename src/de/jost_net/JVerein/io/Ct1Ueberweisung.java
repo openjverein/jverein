@@ -56,11 +56,9 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.HBCI;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.hbci.gui.action.SepaUeberweisungMerge;
-import de.willuhn.jameica.hbci.gui.dialogs.PainVersionDialog;
 import de.willuhn.jameica.hbci.rmi.AuslandsUeberweisung;
 import de.willuhn.jameica.hbci.rmi.HibiscusAddress;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
 public class Ct1Ueberweisung
@@ -88,20 +86,7 @@ public class Ct1Ueberweisung
   private int dateiausgabe(ArrayList<Lastschrift> lastschriften, File file, Date faell,
       Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
   {
-    SepaVersion sepaVersion;  
-    if (Einstellungen.getEinstellung().getCt1SepaVersion() != null)
-    {
-      sepaVersion = Einstellungen.getEinstellung().getCt1SepaVersion();
-    }
-    else
-    {
-      PainVersionDialog d = new PainVersionDialog(org.kapott.hbci.sepa.SepaVersion.Type.PAIN_001);
-      sepaVersion = (SepaVersion) d.open();
-      if (sepaVersion == null)
-      {
-        throw new OperationCanceledException();
-      }
-    }
+    SepaVersion  sepaVersion = Einstellungen.getEinstellung().getCt1SepaVersion();
     Properties ls_properties = new Properties();
     ls_properties.setProperty("src.bic", Einstellungen.getEinstellung().getBic());
     ls_properties.setProperty("src.iban", Einstellungen.getEinstellung().getIban());

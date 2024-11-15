@@ -22,11 +22,17 @@ import java.util.Date;
 
 import org.eclipse.swt.widgets.Composite;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
@@ -39,16 +45,26 @@ public class ArbeitseinsatzPart implements Part
   private DecimalInput stunden = null;
 
   private TextInput bemerkung = null;
+  
+  private AbstractInput mitglied;
+  
+  private boolean mitMitglied;
+  
 
-  public ArbeitseinsatzPart(Arbeitseinsatz arbeitseinsatz)
+  public ArbeitseinsatzPart(Arbeitseinsatz arbeitseinsatz, boolean mitMitglied)
   {
     this.arbeitseinsatz = arbeitseinsatz;
+    this.mitMitglied = mitMitglied;
   }
 
   @Override
   public void paint(Composite parent) throws RemoteException
   {
     LabelGroup group = new LabelGroup(parent, "Arbeitseinsatz");
+    if (mitMitglied)
+    {
+      group.addLabelPair("Mitglied", getMitglied());
+    }
     group.addLabelPair("Datum", getDatum());
     group.addLabelPair("Stunden", getStunden());
     group.addLabelPair("Bemerkung", getBemerkung());
@@ -96,6 +112,28 @@ public class ArbeitseinsatzPart implements Part
     bemerkung = new TextInput(arbeitseinsatz.getBemerkung(), 50);
     bemerkung.setName("Bemerkung");
     return bemerkung;
+  }
+  
+  public Input getMitglied() throws RemoteException
+  {
+    if (mitglied != null)
+    {
+      return mitglied;
+    }
+
+    if (arbeitseinsatz.getMitglied() != null)
+    {
+      Mitglied[] mitgliedArray = {arbeitseinsatz.getMitglied()};
+      mitglied = new SelectInput(mitgliedArray, arbeitseinsatz.getMitglied());
+      mitglied.setEnabled(false);
+    }
+    else
+    {
+      mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
+          Einstellungen.getEinstellung().getMitgliedAuswahl());
+    }
+    mitglied.setMandatory(true);
+    return mitglied;
   }
 
 }

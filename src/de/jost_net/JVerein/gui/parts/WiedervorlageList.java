@@ -25,8 +25,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.WiedervorlageAction;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -34,10 +32,8 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
-import de.willuhn.logging.Logger;
 
 public class WiedervorlageList extends TablePart implements Part
 {
@@ -60,27 +56,7 @@ public class WiedervorlageList extends TablePart implements Part
     {
       wiedervorlageList = new TablePart(wiedervorlagen,
           new WiedervorlageAction(null));
-      wiedervorlageList.addColumn("Name", "mitglied", new Formatter()
-      {
-
-        @Override
-        public String format(Object o)
-        {
-          Mitglied m = (Mitglied) o;
-          if (m == null)
-            return null;
-          String name = null;
-          try
-          {
-            name = Adressaufbereitung.getNameVorname(m);
-          }
-          catch (RemoteException e)
-          {
-            Logger.error("Fehler", e);
-          }
-          return name;
-        }
-      });
+      wiedervorlageList.addColumn("Name", "mitglied");
       wiedervorlageList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       wiedervorlageList.addColumn("Vermerk", "vermerk");

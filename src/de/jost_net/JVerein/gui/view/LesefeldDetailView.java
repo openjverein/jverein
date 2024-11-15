@@ -102,7 +102,7 @@ public class LesefeldDetailView extends AbstractView implements Listener
       updateScriptResult();
 
     ButtonArea buttonArea = new ButtonArea();
-    Button button = new Button("Aktualisieren (F5)", new Action()
+    Button button = new Button("Aktualisieren", new Action()
     {
 
       @Override
@@ -112,7 +112,7 @@ public class LesefeldDetailView extends AbstractView implements Listener
       }
     }, null, false, "view-refresh.png");
     buttonArea.addButton(button);
-    button = new Button("Variablen anzeigen (F6)",
+    button = new Button("Variablen anzeigen",
         new OpenInsertVariableDialogAction(), null, false, "bookmark.png");
     buttonArea.addButton(button);
     button = new Button("Speichern", new SaveLesefeldAction(), null,
@@ -217,15 +217,6 @@ public class LesefeldDetailView extends AbstractView implements Listener
   @Override
   public void handleEvent(Event event)
   {
-    // aktualisiere Script-Ausgabe, wenn F5 gedrückt wird.
-    if (event.keyCode == org.eclipse.swt.SWT.F5)
-    {
-      updateScriptResult();
-    }
-    else if (event.keyCode == org.eclipse.swt.SWT.F6)
-    {
-      new OpenInsertVariableDialogAction().handleAction(null);
-    }
   }
 
   private final class SaveLesefeldAction implements Action

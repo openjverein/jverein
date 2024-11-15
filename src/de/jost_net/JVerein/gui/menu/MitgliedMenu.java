@@ -76,6 +76,15 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedDuplizierenAction(), "edit-copy.png"));
     addItem(new CheckedContextMenuItem("In Zwischenablage kopieren",
         new MitgliedInZwischenablageKopierenAction(), "edit-copy.png"));
+    addItem(new CheckedContextMenuItem("Eigenschaften",
+        new MitgliedEigenschaftZuordnungAction(), "document-properties.png"));
+    addItem(new CheckedContextMenuItem("Zusatzbeträge zuweisen",
+        new MitgliedZusatzbetraegeZuordnungAction(), "coins.png"));
+    if (Einstellungen.getEinstellung().getArbeitseinsatz() && !(detailaction instanceof NichtMitgliedDetailAction))
+    {
+      addItem(new CheckedContextMenuItem("Arbeitseinsätze zuweisen",
+          new MitgliedArbeitseinsatzZuordnungAction(), "screwdriver.png"));
+    }
     if (detailaction instanceof NichtMitgliedDetailAction)
     {
       addItem(new CheckedSingleContextMenuItem("Zu Mitglied umwandeln", new Action()
@@ -188,15 +197,6 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedVCardDateiAction(), "address-card.png"));
     addItem(new CheckedSingleContextMenuItem("vCard QR-Code",
         new MitgliedVCardQRCodeAction(), "qr-code.png"));
-    addItem(new CheckedContextMenuItem("Eigenschaften",
-        new MitgliedEigenschaftZuordnungAction(), "document-properties.png"));
-    if (Einstellungen.getEinstellung().getArbeitseinsatz() && !(detailaction instanceof NichtMitgliedDetailAction))
-    {
-      addItem(new CheckedContextMenuItem("Arbeitseinsätze zuweisen",
-          new MitgliedArbeitseinsatzZuordnungAction(), "screwdriver.png"));
-    }
-    addItem(new CheckedContextMenuItem("Zusatzbeträge zuweisen",
-        new MitgliedZusatzbetraegeZuordnungAction(), "coins.png"));
     addItem(new CheckedContextMenuItem("Kontoauszug", new KontoauszugAction(),
         "file-invoice.png"));
     addItem(new CheckedSingleContextMenuItem("Geldspendenbescheinigung",

@@ -43,6 +43,7 @@ import de.jost_net.JVerein.gui.action.PreNotificationAction;
 import de.jost_net.JVerein.gui.action.MitgliedstypListAction;
 import de.jost_net.JVerein.gui.action.AnfangsbestandListAction;
 import de.jost_net.JVerein.gui.action.AnlagenlisteAction;
+import de.jost_net.JVerein.gui.action.ArbeitseinsaetzeListeAction;
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzUeberpruefungAction;
 import de.jost_net.JVerein.gui.action.AuswertungAdressenAction;
 import de.jost_net.JVerein.gui.action.AuswertungKursteilnehmerAction;
@@ -179,7 +180,7 @@ public class MyExtension implements Extension
       }
       if (Einstellungen.getEinstellung().getWiedervorlage())
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Wiedervorlage",
+        mitglieder.addChild(new MyItem(mitglieder, "Wiedervorlagen",
             new WiedervorlageListeAction(), "office-calendar.png"));
       }
       if (Einstellungen.getEinstellung().getLehrgaenge())
@@ -189,8 +190,8 @@ public class MyExtension implements Extension
       }
       if (Einstellungen.getEinstellung().getArbeitseinsatz())
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Arbeitseinsätze prüfen",
-            new ArbeitseinsatzUeberpruefungAction(), "screwdriver.png"));
+        mitglieder.addChild(new MyItem(mitglieder, "Arbeitseinsätze",
+            new ArbeitseinsaetzeListeAction(), "screwdriver.png"));
       }
       jverein.addChild(mitglieder);
 
@@ -200,7 +201,7 @@ public class MyExtension implements Extension
           new KontoListAction(), "list.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbestände",
           new AnfangsbestandListAction(), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Hibiscus-Buchungen",
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Hibiscus-Buchungen-Import",
           new BuchungsuebernahmeAction(), "hibiscus-icon-64x64.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
           new BuchungsListeAction(), "euro-sign.png"));
@@ -226,7 +227,7 @@ public class MyExtension implements Extension
       abrechnung = new MyItem(abrechnung, "Abrechnung", null);
       abrechnung.addChild(new MyItem(abrechnung, "Abrechnung",
           new AbrechnungSEPAAction(), "calculator.png"));
-      abrechnung.addChild(new MyItem(abrechnung, "Abrechnungslauf",
+      abrechnung.addChild(new MyItem(abrechnung, "Abrechnungsläufe",
           new AbrechnunslaufListAction(), "calculator.png"));
       abrechnung.addChild(new MyItem(abrechnung, "Lastschriften",
           new LastschriftListAction(), "file-invoice.png"));
@@ -245,10 +246,15 @@ public class MyExtension implements Extension
         auswertung.addChild(new MyItem(auswertung, "Kursteilnehmer",
             new AuswertungKursteilnehmerAction(), "receipt.png"));
       }
-      auswertung.addChild(new MyItem(auswertung, "Statistik",
+      auswertung.addChild(new MyItem(auswertung, "Mitgliederstatistik",
           new StatistikMitgliedAction(), "chart-line.png"));
-      auswertung.addChild(new MyItem(auswertung, "Statistik Jahrgänge",
+      auswertung.addChild(new MyItem(auswertung, "Jahrgangsstatistik",
           new StatistikJahrgaengeAction(), "chart-line.png"));
+      if (Einstellungen.getEinstellung().getArbeitseinsatz())
+      {
+        auswertung.addChild(new MyItem(mitglieder, "Arbeitseinsätze",
+            new ArbeitseinsatzUeberpruefungAction(), "screwdriver.png"));
+      }
       jverein.addChild(auswertung);
 
       NavigationItem mail = null;
@@ -321,7 +327,7 @@ public class MyExtension implements Extension
       einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Beitragsgruppen",
           new BeitragsgruppeSucheAction(), "clone.png"));
       einstellungenmitglieder
-          .addChild(new MyItem(einstellungenmitglieder, "Eigenschaften-Gruppen",
+          .addChild(new MyItem(einstellungenmitglieder, "Eigenschaftengruppen",
               new EigenschaftGruppeListeAction(), "document-properties.png"));
       einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Eigenschaften",
           new EigenschaftListeAction(), "document-properties.png"));
@@ -370,14 +376,14 @@ public class MyExtension implements Extension
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert, "Migration",
           new MitgliedMigrationAction(), "file-import.png"));
       einstellungenerweitert
-      .addChild(new MyItem(einstellungenerweitert, "QIF Datei-Import",
+      .addChild(new MyItem(einstellungenerweitert, "QIF-Datei-Import",
           new QIFBuchungsImportViewAction(), "file-import.png"));
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,
-          "Datenbank bereinigen", new DbBereinigenAction(), "placeholder-loading.png"));
+          "Datenbank-Bereinigung", new DbBereinigenAction(), "placeholder-loading.png"));
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,
-          "Diagnose-Backup erstellen", new BackupCreateAction(), "document-save.png"));
+          "Diagnose-Backup-Export", new BackupCreateAction(), "document-save.png"));
       einstellungenerweitert.addChild(
-          new MyItem(einstellungenerweitert, "Diagnose-Backup importieren",
+          new MyItem(einstellungenerweitert, "Diagnose-Backup-Import",
               new BackupRestoreAction(), "file-import.png"));
       administration.addChild(einstellungenerweitert);
       jverein.addChild(administration);

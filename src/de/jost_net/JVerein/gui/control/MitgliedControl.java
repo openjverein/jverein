@@ -181,6 +181,8 @@ public class MitgliedControl extends FilterControl
   private SelectNoScrollInput zahlungsweg;
 
   private LabelGroup bankverbindungLabelGroup;
+  
+  private LabelGroup abweichenderKontoinhaberLabelGroup;
 
   private SelectNoScrollInput zahlungsrhytmus;
 
@@ -603,40 +605,25 @@ public class MitgliedControl extends FilterControl
       {
         if (event != null && event.type == SWT.Selection)
         {
-          Zahlungsweg zahlungswegValue = (Zahlungsweg) zahlungsweg.getValue();
-          boolean isLastschrift = zahlungswegValue
-              .getKey() == Zahlungsweg.BASISLASTSCHRIFT;
-
-          // Optimalerweise mit Prüfung auf zahlungsweg.hasChanged() und
-          // zahlungsweg.getOldValue == BASISLASTSCHRIFT
-          // Allerdings funktioniert hasChanged erst beim zweiten Aufruf, und
-          // getOldValue gibt es in Jameica nicht.
-          if (!isLastschrift)
+          try
           {
-            YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-            dialog.setTitle("Bankverbindungsdaten");
-            dialog.setText(
-                "Die Bankverbindung wird beim gewählten Zahlungsweg nicht benötigt.\n"
-                    + "Sollen eventuell vorhandene Werte gelöscht werden?");
-            boolean delete = false;
-            try
+            if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
             {
-              delete = ((Boolean) dialog.open()).booleanValue();
+              mandatdatum.setMandatory(false);
+              mandatversion.setMandatory(false);
+              iban.setMandatory(false);
             }
-            catch (Exception e)
+            else
             {
-              Logger.error("Fehler beim Bankverbindung-Löschen-Dialog.", e);
-            }
-            if (delete)
-            {
-              deleteBankverbindung();
+              mandatdatum.setMandatory(true);
+              mandatversion.setMandatory(true);
+              iban.setMandatory(true);
             }
           }
-
-          // if (bankverbindungLabelGroup != null)
-          // {
-          // bankverbindungLabelGroup.getComposite().setVisible(isLastschrift);
-          // }
+          catch (RemoteException e)
+          {
+            Logger.error("Fehler beim Zahlungsweg setzen.", e);
+          }        
         }
       }
     });
@@ -693,6 +680,15 @@ public class MitgliedControl extends FilterControl
       bankverbindungLabelGroup = new LabelGroup(parent, "Bankverbindung");
     }
     return bankverbindungLabelGroup;
+  }
+  
+  public LabelGroup getAbweichenderKontoinhaberLabelGroup(Composite parent)
+  {
+    if (abweichenderKontoinhaberLabelGroup == null)
+    {
+      abweichenderKontoinhaberLabelGroup = new LabelGroup(parent, "Abweichender Kontoinhaber");
+    }
+    return abweichenderKontoinhaberLabelGroup;
   }
 
   public SelectInput getZahlungsrhythmus() throws RemoteException
@@ -766,6 +762,14 @@ public class MitgliedControl extends FilterControl
     this.mandatdatum.setTitle("Datum des Mandats");
     this.mandatdatum.setName("Datum des Mandats");
     this.mandatdatum.setText("Bitte Datum des Mandats wählen");
+    if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
+    {
+      mandatdatum.setMandatory(false);
+    }
+    else
+    {
+      mandatdatum.setMandatory(true);
+    }
     return mandatdatum;
   }
 
@@ -795,6 +799,14 @@ public class MitgliedControl extends FilterControl
 
       }
     });
+    if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
+    {
+      mandatversion.setMandatory(false);
+    }
+    else
+    {
+      mandatversion.setMandatory(true);
+    }
     return mandatversion;
   }
 
@@ -808,7 +820,7 @@ public class MitgliedControl extends FilterControl
     Date d = getMitglied().getLetzteLastschrift();
     this.letztelastschrift = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.letztelastschrift.setEnabled(false);
-    this.letztelastschrift.setName("letzte Lastschrift");
+    this.letztelastschrift.setName("Letzte Lastschrift");
     return letztelastschrift;
   }
 
@@ -819,8 +831,14 @@ public class MitgliedControl extends FilterControl
       return iban;
     }
     iban = new IBANInput(HBCIProperties.formatIban(getMitglied().getIban()), getBic());
-    iban.setMandatory(getMitglied().getZahlungsweg() == null || getMitglied()
-        .getZahlungsweg().intValue() == Zahlungsweg.BASISLASTSCHRIFT);
+    if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
+    {
+      iban.setMandatory(false);
+    }
+    else
+    {
+      iban.setMandatory(true);
+    }
     return iban;
   }
 
@@ -1988,6 +2006,35 @@ public class MitgliedControl extends FilterControl
     // button
     return b;
   }
+  
+  public Button getKontoDatenLoeschenButton()
+  {
+    Button b = new Button("Bankverbindung-Daten löschen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+          YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+          dialog.setTitle("Bankverbindung-Daten löschen");
+          dialog.setText("Bankverbindung-Daten löschen?");
+          boolean delete = false;
+          try
+          {
+            delete = ((Boolean) dialog.open()).booleanValue();
+          }
+          catch (Exception e)
+          {
+            Logger.error("Fehler beim Bankverbindung-Löschen-Dialog.", e);
+          }
+          if (delete)
+          {
+            deleteBankverbindung();
+          }
+      }
+    }, null, false, "user-trash-full.png");
+    // button
+    return b;
+  }
 
   public Button getProfileButton()
   {
@@ -2141,9 +2188,8 @@ public class MitgliedControl extends FilterControl
       return eigenschaftenTree;
     }
     eigenschaftenTree = new TreePart(new EigenschaftenNode(mitglied), null);
-    eigenschaftenTree.setCheckable(true);
     eigenschaftenTree
-        .addSelectionListener(new EigenschaftListener(eigenschaftenTree));
+        .addSelectionListener(new EigenschaftListener());
     eigenschaftenTree.setFormatter(new EigenschaftTreeFormatter());
     return eigenschaftenTree;
   }
@@ -2156,6 +2202,9 @@ public class MitgliedControl extends FilterControl
 
       if (eigenschaftenTree != null)
       {
+        ArrayList<?> rootNodes = (ArrayList<?>) eigenschaftenTree.getItems();  // liefert nur den Root
+        EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
+        
         HashMap<String, Boolean> pflichtgruppen = new HashMap<>();
         DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
             .createList(EigenschaftGruppe.class);
@@ -2165,18 +2214,12 @@ public class MitgliedControl extends FilterControl
           EigenschaftGruppe eg = it.next();
           pflichtgruppen.put(eg.getID(), Boolean.valueOf(false));
         }
-        for (Object o1 : eigenschaftenTree.getItems())
+        
+        for (EigenschaftenNode checkedNode : root.getCheckedNodes())
         {
-          if (o1 instanceof EigenschaftenNode)
-          {
-            EigenschaftenNode node = (EigenschaftenNode) o1;
-            if (node.getNodeType() == EigenschaftenNode.EIGENSCHAFTEN)
-            {
-              Eigenschaft ei = (Eigenschaft) node.getObject();
-              pflichtgruppen.put(ei.getEigenschaftGruppeId() + "",
-                  Boolean.valueOf(true));
-            }
-          }
+          Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
+          pflichtgruppen.put(ei.getEigenschaftGruppeId() + "",
+              Boolean.valueOf(true));
         }
         for (String key : pflichtgruppen.keySet())
         {
@@ -2198,29 +2241,22 @@ public class MitgliedControl extends FilterControl
           EigenschaftGruppe eg = it.next();
           max1gruppen.put(eg.getID(), Boolean.valueOf(false));
         }
-        for (Object o1 : eigenschaftenTree.getItems())
+        for (EigenschaftenNode checkedNode : root.getCheckedNodes())
         {
-          if (o1 instanceof EigenschaftenNode)
+          Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
+          Boolean m1 = max1gruppen.get(ei.getEigenschaftGruppe().getID());
+          if (m1 != null)
           {
-            EigenschaftenNode node = (EigenschaftenNode) o1;
-            if (node.getNodeType() == EigenschaftenNode.EIGENSCHAFTEN)
+            if (m1)
             {
-              Eigenschaft ei = (Eigenschaft) node.getObject();
-              Boolean m1 = max1gruppen.get(ei.getEigenschaftGruppe().getID());
-              if (m1 != null)
-              {
-                if (m1)
-                {
-                  throw new ApplicationException(String.format(
-                      "In der Eigenschaftengruppe '%s' mehr als ein Eintrag markiert!",
-                      ei.getEigenschaftGruppe().getBezeichnung()));
-                }
-                else
-                {
-                  max1gruppen.put(ei.getEigenschaftGruppe().getID(),
-                      Boolean.valueOf(true));
-                }
-              }
+              throw new ApplicationException(String.format(
+                  "In der Eigenschaftengruppe '%s' mehr als ein Eintrag markiert!",
+                  ei.getEigenschaftGruppe().getBezeichnung()));
+            }
+            else
+            {
+              max1gruppen.put(ei.getEigenschaftGruppe().getID(),
+                  Boolean.valueOf(true));
             }
           }
         }
@@ -2383,6 +2419,8 @@ public class MitgliedControl extends FilterControl
       }
       if (eigenschaftenTree != null)
       {
+        ArrayList<?> rootNodes = (ArrayList<?>) eigenschaftenTree.getItems();  // liefert nur den Root
+        EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
         if (!getMitglied().isNewObject())
         {
           DBIterator<Eigenschaften> it = Einstellungen.getDBService()
@@ -2394,20 +2432,13 @@ public class MitgliedControl extends FilterControl
             ei.delete();
           }
         }
-        for (Object o1 : eigenschaftenTree.getItems())
+        for (EigenschaftenNode checkedNode : root.getCheckedNodes())
         {
-          if (o1 instanceof EigenschaftenNode)
-          {
-            EigenschaftenNode node = (EigenschaftenNode) o1;
-            if (node.getNodeType() == EigenschaftenNode.EIGENSCHAFTEN)
-            {
-              Eigenschaften eig = (Eigenschaften) Einstellungen.getDBService()
-                  .createObject(Eigenschaften.class, null);
-              eig.setEigenschaft(node.getEigenschaft().getID());
-              eig.setMitglied(getMitglied().getID());
-              eig.store();
-            }
-          }
+          Eigenschaften eig = (Eigenschaften) Einstellungen.getDBService()
+              .createObject(Eigenschaften.class, null);
+          eig.setEigenschaft(checkedNode.getEigenschaft().getID());
+          eig.setMitglied(getMitglied().getID());
+          eig.store();
         }
       }
 

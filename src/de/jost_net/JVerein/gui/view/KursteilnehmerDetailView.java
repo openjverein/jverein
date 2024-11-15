@@ -16,15 +16,16 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class KursteilnehmerDetailView extends AbstractView
 {
@@ -38,34 +39,34 @@ public class KursteilnehmerDetailView extends AbstractView
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 
-    LabelGroup grGrund = new LabelGroup(scrolled.getComposite(),
+    LabelGroup group = new LabelGroup(scrolled.getComposite(),
         "Daten für die Lastschrift");
-    grGrund.getComposite().setSize(290, 190);
-    grGrund.addInput(control.getPersonenart());
-    grGrund.addInput(control.getAnrede());
-    grGrund.addInput(control.getTitel());
-    grGrund.addInput(control.getName());
-    grGrund.addInput(control.getVorname());
-    grGrund.addInput(control.getStrasse());
-    grGrund.addInput(control.getAdressierungszusatz());
-    grGrund.addInput(control.getPLZ());
-    grGrund.addInput(control.getOrt());
-    grGrund.addInput(control.getStaat());
-    grGrund.addInput(control.getEmail());
-    grGrund.addInput(control.getVZweck1());
-    grGrund.addInput(control.getMandatDatum());
-    grGrund.addInput(control.getIBAN());
-    grGrund.addInput(control.getBIC());
-    grGrund.addLabelPair("Betrag", control.getBetrag());
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
-    if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
-    {
-      LabelGroup grStatistik = new LabelGroup(scrolled.getComposite(),
-          "Statistik");
-      grStatistik.getComposite().setSize(290, 190);
-      grStatistik.addLabelPair("Geburtsdatum", control.getGeburtsdatum());
-      grStatistik.addLabelPair("Geschlecht", control.getGeschlecht());
-    }
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getPersonenart());
+    left.addInput(control.getAnrede());
+    left.addInput(control.getTitel());
+    left.addInput(control.getName());
+    left.addInput(control.getVorname());
+    left.addInput(control.getStrasse());
+    left.addInput(control.getAdressierungszusatz());
+    left.addInput(control.getPLZ());
+    
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getOrt());
+    right.addInput(control.getStaat());
+    right.addInput(control.getEmail());
+    right.addInput(control.getVZweck1());
+    right.addInput(control.getMandatDatum());
+    right.addInput(control.getIBAN());
+    right.addInput(control.getBIC());
+    right.addInput(control.getBetrag());
+
+    LabelGroup grStatistik = new LabelGroup(scrolled.getComposite(),
+        "Statistik");
+    grStatistik.addLabelPair("Geburtsdatum", control.getGeburtsdatum());
+    grStatistik.addLabelPair("Geschlecht", control.getGeschlecht());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

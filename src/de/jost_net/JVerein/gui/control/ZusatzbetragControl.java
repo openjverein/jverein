@@ -61,7 +61,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -254,29 +253,7 @@ public class ZusatzbetragControl extends AbstractControl
     {
       zusatzbetraegeList = new TablePart(zusatzbetraege,
           new ZusatzbetraegeAction(null));
-      zusatzbetraegeList.addColumn("Name", "mitglied", new Formatter()
-      {
-
-        @Override
-        public String format(Object o)
-        {
-          Mitglied m = (Mitglied) o;
-          if (m == null)
-          {
-            return null;
-          }
-          String name = null;
-          try
-          {
-            name = Adressaufbereitung.getNameVorname(m);
-          }
-          catch (RemoteException e)
-          {
-            Logger.error("Fehler", e);
-          }
-          return name;
-        }
-      });
+      zusatzbetraegeList.addColumn("Name", "mitglied");
       zusatzbetraegeList.addColumn("Startdatum", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
