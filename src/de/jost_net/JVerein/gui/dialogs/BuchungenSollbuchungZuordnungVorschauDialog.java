@@ -26,6 +26,8 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BuchungsListeAction;
 import de.jost_net.JVerein.gui.dialogs.BuchungenSollbuchungZuordnungDialog.BookingMemberAccountEntry;
+import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -136,8 +138,17 @@ public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<
         {
           for(BookingMemberAccountEntry dao : assignedBooking)
           {
-            dao.getBuchung().setMitgliedskonto(dao.getMitgliedskonto());
-            dao.getBuchung().store();
+            Mitgliedskonto mk = dao.getMitgliedskonto();
+            Buchung buchung = dao.getBuchung();
+            buchung.setMitgliedskonto(dao.getMitgliedskonto());
+            if (mk != null)
+            {
+              if (buchung.getBuchungsart() == null)
+                buchung.setBuchungsart(Long.valueOf(mk.getBuchungsart().getID()));
+              if (buchung.getBuchungsklasseId() == null)
+                buchung.setBuchungsklasseId(mk.getBuchungsklasseId());
+            }
+            buchung.store();
           }
 
           //Darstellung aktualisieren
