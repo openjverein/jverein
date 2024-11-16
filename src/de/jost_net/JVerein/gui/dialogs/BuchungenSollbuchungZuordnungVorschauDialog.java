@@ -132,8 +132,8 @@ public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<
         buchung.setMitgliedskonto(dao.getMitgliedskonto());
         if (mk != null)
         {
-          if (buchung.getBuchungsart() == null && mk.getBuchungsart() != null)
-            buchung.setBuchungsart(Long.valueOf(mk.getBuchungsart().getID()));
+          if (buchung.getBuchungsartId() == null)
+            buchung.setBuchungsartId(mk.getBuchungsartId());
           if (buchung.getBuchungsklasseId() == null)
             buchung.setBuchungsklasseId(mk.getBuchungsklasseId());
         }

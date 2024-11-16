@@ -48,7 +48,7 @@ public class SplitbuchungNeuAction implements Action
       buch.setSplitId(Long.valueOf(master.getID()));
       buch.setUmsatzid(master.getUmsatzid());
       buch.setZweck(master.getZweck());
-      buch.setBuchungsart(Long.parseLong(master.getBuchungsart().getID()));
+      buch.setBuchungsartId(master.getBuchungsartId());
       buch.setSpeicherung(false);
       buch.setSplitTyp(SplitbuchungTyp.SPLIT);
       buch.setBetrag(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT).doubleValue() - SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT).doubleValue());

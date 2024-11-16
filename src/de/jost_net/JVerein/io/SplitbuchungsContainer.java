@@ -289,7 +289,7 @@ public class SplitbuchungsContainer
     buch.setAuszugsnummer(b.getAuszugsnummer());
     buch.setBetrag(b.getBetrag() * -1);
     buch.setBlattnummer(b.getBlattnummer());
-    buch.setBuchungsart(b.getBuchungsartId());
+    buch.setBuchungsartId(b.getBuchungsartId());
     buch.setBuchungsklasseId(b.getBuchungsklasseId());
     buch.setDatum(b.getDatum());
     buch.setKommentar(b.getKommentar());
@@ -311,7 +311,7 @@ public class SplitbuchungsContainer
     buch.setAuszugsnummer(master.getAuszugsnummer());
     buch.setBetrag(origin.getBetrag());
     buch.setBlattnummer(master.getBlattnummer());
-    buch.setBuchungsart(origin.getBuchungsartId());
+    buch.setBuchungsartId(origin.getBuchungsartId());
     buch.setBuchungsklasseId(origin.getBuchungsklasseId());
     buch.setDatum(master.getDatum());
     buch.setKommentar(origin.getKommentar());

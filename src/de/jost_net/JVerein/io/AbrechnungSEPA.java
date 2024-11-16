@@ -865,7 +865,7 @@ public class AbrechnungSEPA
       }
       if (buchungsart != null)
       {
-        buchung.setBuchungsart(Long.valueOf(buchungsart.getID()));
+        buchung.setBuchungsartId(Long.valueOf(buchungsart.getID()));
       }
       buchung.setBuchungsklasseId(buchungsklasseId);
       buchung.store();

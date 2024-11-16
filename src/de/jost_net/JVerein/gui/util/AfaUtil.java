@@ -205,7 +205,7 @@ public class AfaUtil
     buchung.setName(Einstellungen.getEinstellung().getName());
     buchung.setDatum(afaBuchungDatum);
     buchung.setBetrag(-betrag);
-    buchung.setBuchungsart(konto.getAfaartId());
+    buchung.setBuchungsartId(konto.getAfaartId());
     buchung.setAbschluss(abschluss);
     if (abschluss == null)
       buchung.store(true);
@@ -308,7 +308,7 @@ public class AfaUtil
     buchung.setName(Einstellungen.getEinstellung().getName());
     buchung.setZweck(zweck);
     buchung.setDatum(afaBuchungDatum);
-    buchung.setBuchungsart(konto.getAfaartId());
+    buchung.setBuchungsartId(konto.getAfaartId());
     buchung.setBetrag(-betrag);
     buchung.setAbschluss(abschluss);
     if (abschluss == null)

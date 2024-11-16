@@ -103,10 +103,6 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   @Override
   protected Class<?> getForeignObject(String arg0)
   {
-    if ("buchungsart".equals(arg0))
-    {
-      return Buchungsart.class;
-    }
     return null;
   }
 
@@ -158,7 +154,14 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
-    return (Buchungsart) getAttribute("buchungsart");
+    Long l = (Long) super.getAttribute("buchungsart");
+    if (l == null)
+    {
+      return null; // Keine Buchungsart zugeordnet
+    }
+
+    Cache cache = Cache.get(Buchungsart.class, true);
+    return (Buchungsart) cache.get(l);
   }
 
   @Override
@@ -168,6 +171,18 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
       setAttribute("buchungsart", Long.valueOf(buchungsart.getID()));
     else
       setAttribute("buchungsart", null);
+  }
+  
+  @Override
+  public Long getBuchungsartId() throws RemoteException
+  {
+    return (Long) super.getAttribute("buchungsart");
+  }
+  
+  @Override
+  public void setBuchungsartId(Long buchungsartId) throws RemoteException
+  {
+    setAttribute("buchungsart", buchungsartId);
   }
   
   @Override
