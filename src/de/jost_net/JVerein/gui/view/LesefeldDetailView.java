@@ -74,8 +74,6 @@ public class LesefeldDetailView extends AbstractView implements Listener
     this.lesefeldAuswerter = lesefeldAuswerter;
     this.lesefeld = lesefeld;
     this.selectedMitglied = mitglied;
-    // KeyListener für HotKeys.
-    GUI.getDisplay().addFilter(SWT.KeyDown, this);
   }
   
   @Override
