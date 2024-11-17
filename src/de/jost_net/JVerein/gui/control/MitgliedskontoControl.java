@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
@@ -46,8 +45,6 @@ import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.gui.view.BuchungView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.io.Kontoauszug;
-import de.jost_net.JVerein.io.Mahnungsausgabe;
-import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -91,7 +88,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class MitgliedskontoControl extends DruckMailControl
-{
+{ 
   public enum DIFFERENZ
   {
     EGAL("Egal"), FEHLBETRAG("Fehlbetrag"), UEBERZAHLUNG("Überzahlung");
@@ -134,12 +131,6 @@ public class MitgliedskontoControl extends DruckMailControl
   
   private AbstractInput mitglied;
 
-  // MitgliedskontoMahnung/RechnungView
-  public enum TYP
-  {
-    RECHNUNG, MAHNUNG
-  }
-  
   private Mitgliedskonto mkto;
 
   private TreePart mitgliedskontoTree;
@@ -334,22 +325,6 @@ public class MitgliedskontoControl extends DruckMailControl
       throw new ApplicationException(meldung, ex);
     }
   }
-
-  public Object[] getCVSExportGrenzen(Mitglied selectedMitglied)
-  {
-    return new Object[] {
-        getDatumvon().getValue(),
-        getDatumbis().getValue(),
-        getDifferenz().getValue(), getCVSExportGrenzeOhneAbbucher(),
-        selectedMitglied };
-  }
-
-  private Boolean getCVSExportGrenzeOhneAbbucher()
-  {
-    if (null == ohneabbucher)
-      return Boolean.FALSE;
-    return (Boolean) ohneabbucher.getValue();
-  }
   
   public CheckboxInput getSpezialSuche2()
   {
@@ -419,6 +394,9 @@ public class MitgliedskontoControl extends DruckMailControl
           throw new ApplicationException("Bitte Mitglied eingeben");
         }
       }
+      
+      if(mkto.getRechnung() != null)
+        throw new ApplicationException("Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
       mkto.setBetrag((Double) getBetrag().getValue());
       mkto.setDatum((Date) getDatum().getValue());
       Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
@@ -563,6 +541,7 @@ public class MitgliedskontoControl extends DruckMailControl
       });
       mitgliedskontoList.addColumn("Zahlungseingang", "istsumme",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      mitgliedskontoList.addColumn("Rechnung", "rechnung");
       mitgliedskontoList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
       if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
@@ -1049,33 +1028,6 @@ public class MitgliedskontoControl extends DruckMailControl
         .replaceAll("ue", "u").replaceAll("ß", "s").replaceAll("ss", "s");
   }
 
-  public Button getStartRechnungButton(final Object currentObject)
-  {
-    Button button = new Button("Starten", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        try
-        {
-          generiereRechnung(currentObject);
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("", e);
-          GUI.getStatusBar().setErrorText(e.getMessage());
-        }
-        catch (IOException e)
-        {
-          Logger.error("", e);
-          GUI.getStatusBar().setErrorText(e.getMessage());
-        }
-      }
-    }, null, true, "walking.png");
-    return button;
-  }
-
   public Button getStartKontoauszugButton(final Object currentObject,
       final MitgliedskontoControl control)
   {
@@ -1098,45 +1050,6 @@ public class MitgliedskontoControl extends DruckMailControl
       }
     }, null, true, "walking.png");
     return button;
-  }
-
-  private void generiereRechnung(Object currentObject) throws IOException
-  {
-    saveDruckMailSettings();
-    new Rechnungsausgabe(this);
-  }
-
-  public Button getStartMahnungButton(final Object currentObject)
-  {
-    Button button = new Button("Starten", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        try
-        {
-          generiereMahnung(currentObject);
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("", e);
-          GUI.getStatusBar().setErrorText(e.getMessage());
-        }
-        catch (IOException e)
-        {
-          Logger.error("", e);
-          GUI.getStatusBar().setErrorText(e.getMessage());
-        }
-      }
-    }, null, true, "walking.png");
-    return button;
-  }
-
-  private void generiereMahnung(Object currentObject) throws IOException
-  {
-    saveDruckMailSettings();
-    new Mahnungsausgabe(this);
   }
   
   // Für Sollbuchungen View
@@ -1271,7 +1184,6 @@ public class MitgliedskontoControl extends DruckMailControl
   public String getInfoText(Object selection)
   {
     Mitglied[] mitglieder = null;
-    Mitgliedskonto[] sollbuchungen = null;
     String text = "";
     
     if (selection instanceof Mitglied)
@@ -1281,14 +1193,6 @@ public class MitgliedskontoControl extends DruckMailControl
     else if (selection instanceof Mitglied[])
     {
       mitglieder = (Mitglied[]) selection;
-    }
-    else if (selection instanceof Mitgliedskonto)
-    {
-      sollbuchungen = new Mitgliedskonto[] { (Mitgliedskonto) selection };
-    }
-    else if (selection instanceof Mitgliedskonto[])
-    {
-      sollbuchungen = (Mitgliedskonto[]) selection;
     }
     else
     {
@@ -1306,21 +1210,6 @@ public class MitgliedskontoControl extends DruckMailControl
         for (Mitglied m: mitglieder)
         {
           if ( m.getEmail() == null || m.getEmail().isEmpty())
-          {
-            text = text + "\n - " + m.getName()
-            + ", " + m.getVorname();
-          }
-        }
-      }
-      else if (sollbuchungen != null)
-      {
-        text = "Es wurden " + sollbuchungen.length + 
-            " Sollbuchungen ausgewählt"
-            + "\nFolgende Mitglieder haben keine Mailadresse:";
-        for (Mitgliedskonto s: sollbuchungen)
-        {
-          Mitglied m = s.getMitglied();
-          if (m != null && ( m.getEmail() == null || m.getEmail().isEmpty()))
           {
             text = text + "\n - " + m.getName()
             + ", " + m.getVorname();
@@ -1384,4 +1273,33 @@ public class MitgliedskontoControl extends DruckMailControl
     }
   }
   
+  public boolean hasRechnung() throws RemoteException
+  {
+    if(getMitgliedskonto().getRechnung() != null)
+    {
+      GUI.getStatusBar().setErrorText(
+          "Solbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
+      return true;
+    }
+    return false;
+  }
+  
+
+  public Object[] getCVSExportGrenzen(Mitglied selectedMitglied)
+  {
+    return new Object[] {
+        getDatumvon().getValue(),
+        getDatumbis().getValue(),
+        getDifferenz().getValue(), getCVSExportGrenzeOhneAbbucher(),
+        selectedMitglied };
+  }
+
+
+  private Boolean getCVSExportGrenzeOhneAbbucher()
+  {
+    if (null == ohneabbucher)
+      return Boolean.FALSE;
+    return (Boolean) ohneabbucher.getValue();
+  }
+
 }

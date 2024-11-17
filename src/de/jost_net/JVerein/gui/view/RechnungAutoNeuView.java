@@ -17,7 +17,8 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
+import de.jost_net.JVerein.gui.control.RechnungControl;
+import de.jost_net.JVerein.keys.FormularArt;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -25,35 +26,44 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class AbrechnungslaufListView extends AbstractView
+public class RechnungAutoNeuView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Abrechnungsläufe");
+    GUI.getView().setTitle("Rechnungen automatisch erzeugen");
 
-    AbrechnungslaufControl control = new AbrechnungslaufControl(this);
-    
+    RechnungControl control = new RechnungControl(
+        this);
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getDatumvon());
-
+    left.addInput(control.getSuchname());
+    left.addInput(control.getDifferenz());
+    left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
+    
     SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
+    
+    LabelGroup formularGroup = new LabelGroup(getParent(), "Formular");
+    formularGroup.addLabelPair("Formular", control.getFormular(FormularArt.RECHNUNG));
     
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
 
-    control.getAbrechnungslaeufeList().paint(this.getParent());
+    control.getRechnungTree().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ABRECHNUNGSLAUF, false, "question-circle.png");
-    buttons.paint(this.getParent());
+            DokumentationUtil.RECHNUNG, false, "question-circle.png");
+    buttons.addButton(control.getRechnungErstellenButton());
+    buttons.paint(getParent());
   }
+
 }

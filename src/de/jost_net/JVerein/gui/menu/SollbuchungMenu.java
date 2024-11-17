@@ -53,10 +53,11 @@ public class SollbuchungMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
-    addItem(new CheckedContextMenuItem("Rechnung erstellen",
+    /*addItem(new CheckedContextMenuItem("Rechnung erstellen",
         new MitgliedskontoRechnungAction(), "file-invoice.png"));
     addItem(new CheckedContextMenuItem("Mahnung erstellen",
         new MitgliedskontoMahnungAction(), "file-invoice.png"));
+        */
   }
 
   private static class SollOhneIstItem extends CheckedContextMenuItem

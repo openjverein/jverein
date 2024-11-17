@@ -16,74 +16,215 @@
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.gui.control.RechnungControl;
+import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
+import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.util.Dateiname;
+import de.jost_net.JVerein.util.JVDateFormatJJJJMMTT;
+import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
-public class Rechnungsausgabe extends AbstractMitgliedskontoDokument
+public class Rechnungsausgabe
 {
 
-  public Rechnungsausgabe(MitgliedskontoControl control) throws IOException
-  {
-    super(control, MitgliedskontoControl.TYP.RECHNUNG);
-    Formular form = (Formular) control.getFormular(FormularArt.RECHNUNG)
-        .getValue();
-    if (form == null)
-    {
-      throw new IOException("Kein Rechnungsformular ausgewählt");
-    }
-    Formular formular = (Formular) Einstellungen.getDBService()
-        .createObject(Formular.class, form.getID());
+  RechnungControl control;
 
-    // Wurde ein Object übergeben?
-    if (control.getCurrentObject() != null)
+  GenericIterator<Rechnung> rechnungen = null;
+
+  File file = null;
+
+  FormularAufbereitung formularaufbereitung = null;
+
+  ZipOutputStream zos = null;
+
+  RechnungControl.TYP typ;
+
+  @SuppressWarnings("unchecked")
+  public Rechnungsausgabe(RechnungControl control, RechnungControl.TYP typ)
+      throws IOException, ApplicationException
+  {
+    this.control = control;
+    this.typ = typ;
+    switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
-      // Ja: Einzeldruck aus dem Kontextmenu
-      mks = getRechnungsempfaenger(control.getCurrentObject());
+      case DRUCK:
+        file = getDateiAuswahl("pdf");
+        formularaufbereitung = new FormularAufbereitung(file);
+        break;
+      case MAIL:
+        file = getDateiAuswahl("zip");
+        zos = new ZipOutputStream(new FileOutputStream(file));
+        break;
+    }
+
+    Formular formular = null;
+    // Bei Mahnung ist Formular nötig, bei Rechnung ist es individuell in der
+    // Rechnung angegeben
+    if (typ == TYP.MAHNUNG)
+    {
+      Formular form = (Formular) control.getFormular(FormularArt.MAHNUNG)
+          .getValue();
+      if (form == null)
+      {
+        throw new IOException("Kein Mahnungsformular ausgewählt");
+      }
+      formular = (Formular) Einstellungen.getDBService()
+          .createObject(Formular.class, form.getID());
+    }
+
+    Object context = control.getCurrentObject();
+    if (context != null && context instanceof Rechnung[])
+    {
+      rechnungen = PseudoIterator.fromArray((Rechnung[]) context);
+    }
+    else if (context != null && context instanceof Rechnung)
+    {
+      rechnungen = PseudoIterator
+          .fromArray(new Rechnung[] { (Rechnung) context });
     }
     else
     {
-      // Nein: Sammeldruck aus der MitgliedskontoRechnungView
-      @SuppressWarnings("rawtypes")
-      GenericIterator it = control.getMitgliedskontoIterator(false);
-      Mitgliedskonto[] mk = new Mitgliedskonto[it.size()];
-      int i = 0;
-      while (it.hasNext())
-      {
-        mk[i] = (Mitgliedskonto) it.next();
-        i++;
-      }
-      mks = getRechnungsempfaenger(mk);
+      rechnungen = control.getRechnungIterator();
     }
-    if (mks.size() == 0)
+
+    if (rechnungen.size() == 0)
     {
-      GUI.getStatusBar().setErrorText(
-          "Keine passenden Sollbuchungen gefunden.");
+      GUI.getStatusBar().setErrorText("Keine passende Rechnung gefunden.");
       file.delete();
       return;
     }
     aufbereitung(formular);
-    try
+  }
+
+  public void aufbereitung(Formular formular)
+      throws IOException, ApplicationException
+  {
+    while (rechnungen.hasNext())
     {
-      // Write updated form to DB
-      formular.store();
-      // Update all linked forms
-      formular.setZaehlerToFormlink(formular.getZaehler());
+      Rechnung re = rechnungen.next();
+      switch ((Ausgabeart) control.getAusgabeart().getValue())
+      {
+        case DRUCK:
+          aufbereitenFormular(re, formularaufbereitung, formular);
+          break;
+        case MAIL:
+          File f = File.createTempFile(getDateiname(re),
+              ".pdf");
+          formularaufbereitung = new FormularAufbereitung(f);
+          aufbereitenFormular(re, formularaufbereitung, formular);
+          formularaufbereitung.closeFormular();
+          zos.putNextEntry(
+              new ZipEntry(getDateiname(re) + ".pdf"));
+          FileInputStream in = new FileInputStream(f);
+          // buffer size
+          byte[] b = new byte[1024];
+          int count;
+          while ((count = in.read(b)) > 0)
+          {
+            zos.write(b, 0, count);
+          }
+          in.close();
+          break;
+      }
     }
-    catch (Exception e)
+    switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
-      String fehler = "Formularfeld kann nicht gespeichert werden. Siehe system log";
-      Logger.error(fehler, e);
-      throw new RemoteException(fehler);
+      case DRUCK:
+        formularaufbereitung.showFormular();
+        break;
+      case MAIL:
+        zos.close();
+        new ZipMailer(file, (String) control.getBetreff().getValue(),
+            (String) control.getTxt().getValue(), typ.name() + ".pdf");
+        break;
     }
+  }
+
+  private File getDateiAuswahl(String extension) throws RemoteException
+  {
+    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+    fd.setText("Ausgabedatei wählen.");
+    String path = control.getSettings().getString("lastdir",
+        System.getProperty("user.home"));
+    if (path != null && path.length() > 0)
+    {
+      fd.setFilterPath(path);
+    }
+    fd.setFileName(new Dateiname(typ.name(), "",
+        Einstellungen.getEinstellung().getDateinamenmuster(), extension).get());
+    fd.setFilterExtensions(new String[] { "*." + extension });
+
+    String s = fd.open();
+    if (s == null || s.length() == 0)
+    {
+      return null;
+    }
+    if (!s.toLowerCase().endsWith("." + extension))
+    {
+      s = s + "." + extension;
+    }
+    final File file = new File(s);
+    control.getSettings().setAttribute("lastdir", file.getParent());
+    return file;
+  }
+
+  void aufbereitenFormular(Rechnung re, FormularAufbereitung fa,
+      Formular formular) throws RemoteException, ApplicationException
+  {
+    if (formular == null)
+      formular = re.getFormular();
+    
+    if (re.getMitgliedskontoList().size() == 0)
+      return;
+    
+    Map<String, Object> map = new RechnungMap().getMap(re, null);
+    map = new MitgliedMap().getMap(re.getMitglied(), map);
+    map = new AllgemeineMap().getMap(map);
+    fa.writeForm(formular, map);
+
+    formular.store();
+    
+    formular.setZaehlerToFormlink(formular.getZaehler());
+  }
+
+  String getDateiname(Rechnung re) throws RemoteException
+  {
+    Mitglied m = re.getMitglied();
+    String filename = m.getID() + "#"
+        + new JVDateFormatJJJJMMTT().format(re.getDatum()) + "#";
+    String email = StringTool.toNotNullString(m.getEmail());
+    if (email.length() > 0)
+    {
+      filename += email;
+    }
+    else
+    {
+      filename += m.getName() + m.getVorname();
+    }
+    return filename;
   }
 
 }

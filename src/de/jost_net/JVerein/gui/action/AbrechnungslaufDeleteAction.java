@@ -26,6 +26,7 @@ import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -66,10 +67,10 @@ public class AbrechnungslaufDeleteAction implements Action
       }
 
       // Prüfe, ob einer der erzeugten Buchungen bereits abgeschlossen ist
-      final DBService service1 = Einstellungen.getDBService();
+      final DBService service = Einstellungen.getDBService();
       String sql1 = "SELECT jahresabschluss.bis from jahresabschluss "
           + "order by jahresabschluss.bis desc";      
-      Date bis = (Date) service1.execute(sql1,
+      Date bis = (Date) service.execute(sql1,
           new Object[] { }, new ResultSetExtractor()
       {
         @Override
@@ -87,10 +88,9 @@ public class AbrechnungslaufDeleteAction implements Action
         // Es gibt Jahresabschlüsse und bis ist das letzte Datum
       {
         // Check ob eine Buchung des Abrechnungslaufen vor dem bis Datum liegt
-        DBService service2 = Einstellungen.getDBService();
         String sql2 = "SELECT DISTINCT buchung.id from buchung "
             + "WHERE (abrechnungslauf = ? and datum <= ?) ";
-        boolean abgeschlossen = (boolean) service2.execute(sql2,
+        boolean abgeschlossen = (boolean) service.execute(sql2,
             new Object[] { abrl.getID(), bis }, new ResultSetExtractor()
         {
           @Override
@@ -113,10 +113,9 @@ public class AbrechnungslaufDeleteAction implements Action
       
       // Check ob einer der Buchungen des Abrechnungslaufs
       // eine Spendenbescheinigung zugeordnet ist
-      DBService service3 = Einstellungen.getDBService();
       String sql3 = "SELECT DISTINCT buchung.id from buchung "
           + "WHERE (abrechnungslauf = ? and spendenbescheinigung IS NOT NULL) ";
-      boolean spendenbescheinigung = (boolean) service3.execute(sql3,
+      boolean spendenbescheinigung = (boolean) service.execute(sql3,
           new Object[] { abrl.getID() }, new ResultSetExtractor()
       {
         @Override
@@ -131,17 +130,51 @@ public class AbrechnungslaufDeleteAction implements Action
         }
       });
 
+      // Check ob einer der Buchungen des Abrechnungslaufs
+      // einer Rechnung zugeordnet ist
+      String sql4 = "SELECT DISTINCT mitgliedskonto.id from mitgliedskonto "
+          + "WHERE (abrechnungslauf = ? and rechnung IS NOT NULL) ";
+      boolean rechnung = (boolean) service.execute(sql4,
+          new Object[] { abrl.getID() }, new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs)
+            throws RemoteException, SQLException
+        {
+          if (rs.next())
+          {
+            return true;
+          }
+          return false;
+        }
+      });
+      
       String text = "";
-      if (!spendenbescheinigung)
+      if (!spendenbescheinigung && !rechnung)
       {
         text = "Wollen Sie diesen Abrechnungslauf wirklich löschen?";
       }
-      else
+      else if(!spendenbescheinigung && rechnung)
+      {
+        text = "Der Abrechnungslauf enthält Sollbuchungen denen eine "
+            + "Rechnung zugeordnet ist.\n"
+            + "Sie können nur zusammen gelöscht werden.\n"
+            + "Abrechnungslauf und Rechnungen löschen?";
+      }
+      else if(spendenbescheinigung && !rechnung)
       {
         text = "Der Abrechnungslauf enthält Buchungen denen eine "
             + "Spendenbescheinigung zugeordnet ist.\n"
             + "Sie können nur zusammen gelöscht werden.\n"
             + "Abrechnungslauf und Spendenbescheinigungen löschen?";
+      }
+      else if(spendenbescheinigung && rechnung)
+      {
+        text = "Der Abrechnungslauf enthält Buchungen denen eine "
+            + "Spendenbescheinigung zugeordnet ist\n"
+            + "und Sollbuchungen denen eine Rechnung zugeordnet ist.\n"
+            + "Sie können nur zusammen gelöscht werden.\n"
+            + "Abrechnungslauf, Spendenbescheinigungen und Rechnungen löschen?";
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
@@ -172,6 +205,16 @@ public class AbrechnungslaufDeleteAction implements Action
           bu.getSpendenbescheinigung().delete();
         bu.delete();
       }
+      DBIterator<Mitgliedskonto> mitgliedskontoIt = Einstellungen.getDBService()
+          .createList(Mitgliedskonto.class);
+      mitgliedskontoIt.addFilter("abrechnungslauf = ?", new Object[] { abrl.getID() });
+      while (mitgliedskontoIt.hasNext())
+      {
+        Mitgliedskonto mk = mitgliedskontoIt.next();
+        if (mk.getRechnung() != null)
+          mk.getRechnung().delete();
+        mk.delete();
+      }
       it = Einstellungen.getDBService()
           .createList(ZusatzbetragAbrechnungslauf.class);
       it.addFilter("abrechnungslauf = ?", abrl.getID());
@@ -181,7 +224,15 @@ public class AbrechnungslaufDeleteAction implements Action
             .next();
         Zusatzbetrag z = (Zusatzbetrag) Einstellungen.getDBService()
             .createObject(Zusatzbetrag.class, za.getZusatzbetrag().getID());
-        z.vorherigeFaelligkeit();
+        try
+        {
+          z.vorherigeFaelligkeit();
+        }
+        catch (RemoteException e)
+        {
+          //Ignorieren, da die Exeption auftritt wenn das Fälligkeitsdatum
+          //nicht weiter zurückgesetzt werden kann
+        }
         z.setAusfuehrung(za.getLetzteAusfuehrung());
         z.store();
       }

@@ -92,7 +92,7 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont.addSeparator();
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_ANZEIGE, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

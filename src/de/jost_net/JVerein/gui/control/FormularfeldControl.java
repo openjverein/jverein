@@ -25,7 +25,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.LastschriftVar;
 import de.jost_net.JVerein.Variable.MitgliedVar;
-import de.jost_net.JVerein.Variable.MitgliedskontoVar;
+import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Felddefinition;
@@ -249,7 +249,7 @@ public class FormularfeldControl extends FormularPartControl
       {
         namen.add(mv.getName());
       }
-      for (MitgliedskontoVar mkv : MitgliedskontoVar.values())
+      for (RechnungVar mkv : RechnungVar.values())
       {
         namen.add(mkv.getName());
       }
