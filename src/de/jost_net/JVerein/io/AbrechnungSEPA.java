@@ -452,7 +452,7 @@ public class AbrechnungSEPA
         param.faelligkeit,
         primaer ? vzweck : bg.getBezeichnung(), betr, abrl,
         mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT, konto,
-        bg.getBuchungsart(), bg.getBuchungsklasseId(), null);
+        bg.getBuchungsart(), bg.getBuchungsklasseId(), mZahler.getZahlungsweg());
     if (mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
     {
       try
