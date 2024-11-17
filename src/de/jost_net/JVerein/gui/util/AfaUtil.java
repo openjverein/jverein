@@ -347,6 +347,19 @@ public class AfaUtil
         buchwert = ((Anfangsbestand) anfangsbestand.next()).getBetrag();
       }
     }
+    
+    // Jetzt noch AfA Buchungen des aktuellen GJ addieren
+    DBIterator<Buchung> buchungsIt = Einstellungen.getDBService().createList(Buchung.class);
+    buchungsIt.addFilter("konto = ?", konto.getID());
+    buchungsIt.join("buchungsart");
+    buchungsIt.addFilter("buchungsart.id = buchung.buchungsart");
+    buchungsIt.addFilter("buchungsart.abschreibung = ?", true);
+    buchungsIt.addFilter("datum >= ?", aktuellesGJ.getBeginnGeschaeftsjahr());
+    while (buchungsIt.hasNext())
+    {
+      Buchung afa = (Buchung) buchungsIt.next();
+      buchwert += afa.getBetrag();
+    }
 
     return buchwert;
   }
