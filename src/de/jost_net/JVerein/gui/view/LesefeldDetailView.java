@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.action.OpenInsertVariableDialgoAction;
+import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -27,9 +27,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.dialogs.ShowVariablesDialog;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
-import de.jost_net.JVerein.gui.menu.ShowVariablesMenu;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
@@ -43,7 +41,6 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -112,7 +109,7 @@ public class LesefeldDetailView extends AbstractView implements Listener
     }, null, false, "view-refresh.png");
     buttonArea.addButton(button);
     button = new Button("Variablen anzeigen",
-        new OpenInsertVariableDialgoAction(), lesefeldAuswerter, false, "bookmark.png");
+        new OpenInsertVariableDialogAction(), lesefeldAuswerter, false, "bookmark.png");
     buttonArea.addButton(button);
     button = new Button("Speichern", new SaveLesefeldAction(), null,
         false, "document-save.png");

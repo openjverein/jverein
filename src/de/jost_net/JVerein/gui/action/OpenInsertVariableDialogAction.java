@@ -24,16 +24,30 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
-public class OpenInsertVariableDialgoAction implements Action {
+import java.util.Map;
+
+public class OpenInsertVariableDialogAction implements Action {
     @Override
     public void handleAction(Object context) {
         try
         {
-            ShowVariablesDialog d = new ShowVariablesDialog(
-                    ((LesefeldAuswerter) context).getMap(), false);
             ShowVariablesMenu menu = new ShowVariablesMenu();
-            menu.setPrependCopyText("");
+            Map<String, Object> map;
+            if (context instanceof LesefeldAuswerter) {
+                map = ((LesefeldAuswerter) context).getMap();
+                menu.setPrependCopyText("");
+            }
+            else if (context instanceof Map) {
+                map = (Map<String, Object>) context;
+                menu.setPrependCopyText("$");
+            }
+            else {
+                throw new ApplicationException("Falscher Kontext");
+            }
+            ShowVariablesDialog d = new ShowVariablesDialog(
+                    map, false);
             menu.setAppendCopyText("");
             d.setContextMenu(menu);
             d.setDoubleClickAction(menu.getCopyToClipboardAction());
