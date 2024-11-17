@@ -18,23 +18,11 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.action.BuchungDuplizierenAction;
-import de.jost_net.JVerein.gui.action.BuchungGegenbuchungAction;
-import de.jost_net.JVerein.gui.action.SplitBuchungAction;
-import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
-import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
-import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungMitgliedOeffnenAction;
-import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
+import de.jost_net.JVerein.gui.action.*;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
-import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -76,8 +64,8 @@ public class BuchungMenu extends ContextMenu
     if (geldkonto) {
       addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
               new BuchungSollbuchungZuordnungAction(control), "view-refresh.png"));
-      addItem(new SollbuchungOeffnenItem("Zugeordnetes Mitglied öffnen",
-              new BuchungMitgliedOeffnenAction(), "go-to.png"));
+      addItem(new MitgliedOeffnenItem("Zugeordnetes Mitglied öffnen",
+              new MitgliedDetailAction(), "user-friends.png"));
     }
     addItem(new CheckedContextMenuItem("Projekt zuordnen",
         new BuchungProjektZuordnungAction(control), "view-refresh.png"));
@@ -256,9 +244,9 @@ public class BuchungMenu extends ContextMenu
     }
   }
 
-  private static class SollbuchungOeffnenItem extends CheckedContextMenuItem
+  private static class MitgliedOeffnenItem extends CheckedContextMenuItem
   {
-    private SollbuchungOeffnenItem(String text, Action action, String icon) { super(text, action, icon); }
+    private MitgliedOeffnenItem(String text, Action action, String icon) { super(text, action, icon); }
 
     @Override
     public boolean isEnabledFor(Object o) {
