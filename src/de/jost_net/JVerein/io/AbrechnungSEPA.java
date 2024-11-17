@@ -525,7 +525,7 @@ public class AbrechnungSEPA
           continue;
         }
         Mitglied mZahler = m;
-        if(z.getZahlungsweg() == null && m.getZahlungsweg() != null && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        if(m.getZahlungsweg() != null && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
         {
           mZahler = Einstellungen.getDBService().createObject(Mitglied.class, m.getZahlerID().toString());
         }
