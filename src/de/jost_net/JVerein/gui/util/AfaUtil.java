@@ -341,6 +341,7 @@ public class AfaUtil
       {
         monitor.setStatusText("Konto " + konto.getNummer() + ": "
             + "Für das Konto existiert kein Anfangsbestand für das Geschäftsjahr");
+        return 0d;
       }
       else
       {
