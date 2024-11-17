@@ -33,6 +33,8 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
@@ -561,6 +563,13 @@ public class MitgliedskontoControl extends DruckMailControl
       });
       mitgliedskontoList.addColumn("Zahlungseingang", "istsumme",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      mitgliedskontoList.addColumn("Buchungsart", "buchungsart",
+          new BuchungsartFormatter());
+      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      {
+        mitgliedskontoList.addColumn("Buchungsklasse", "buchungsklasse",
+            new BuchungsklasseFormatter());
+      }
       mitgliedskontoList.setContextMenu(menu);
       mitgliedskontoList.setRememberColWidths(true);
       mitgliedskontoList.setRememberOrder(true);
