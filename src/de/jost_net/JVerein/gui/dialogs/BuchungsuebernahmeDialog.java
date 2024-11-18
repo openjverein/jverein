@@ -23,10 +23,8 @@ import de.jost_net.JVerein.gui.control.BuchungsuebernahmeControl;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.Buchungsuebernahme;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.system.OperationCanceledException;
 
 public class BuchungsuebernahmeDialog extends AbstractDialog<String>
 {
