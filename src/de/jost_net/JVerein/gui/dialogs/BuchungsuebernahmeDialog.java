@@ -23,6 +23,7 @@ import de.jost_net.JVerein.gui.control.BuchungsuebernahmeControl;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.Buchungsuebernahme;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -53,6 +54,7 @@ public class BuchungsuebernahmeDialog extends AbstractDialog<String>
       public void handleAction(Object context)
       {
         new Buchungsuebernahme();
+        close();
       }
     }, null, true, "file-import.png");
     buttons.addButton("Abbrechen", new Action()
@@ -60,7 +62,7 @@ public class BuchungsuebernahmeDialog extends AbstractDialog<String>
       @Override
       public void handleAction(Object context)
       {
-        throw new OperationCanceledException();
+       close();
       }
     }, null, false, "process-stop.png");
     buttons.paint(parent);
