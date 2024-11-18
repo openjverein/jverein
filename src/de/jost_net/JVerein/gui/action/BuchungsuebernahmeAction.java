@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.dialogs.BuchungsuebernahmeDialog;
-
+import de.jost_net.JVerein.io.Buchungsuebernahme;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -33,7 +33,10 @@ public class BuchungsuebernahmeAction implements Action
     try
     {
       BuchungsuebernahmeDialog d = new BuchungsuebernahmeDialog(BuchungsuebernahmeDialog.POSITION_CENTER);
-      d.open();
+      if (d.open())
+      {
+        new Buchungsuebernahme();
+      }
     }
     catch (OperationCanceledException oce)
     {

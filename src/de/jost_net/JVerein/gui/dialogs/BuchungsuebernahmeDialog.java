@@ -21,14 +21,15 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsuebernahmeControl;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
-import de.jost_net.JVerein.io.Buchungsuebernahme;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class BuchungsuebernahmeDialog extends AbstractDialog<String>
+public class BuchungsuebernahmeDialog extends AbstractDialog<Boolean>
 {
 
+  Boolean start = false;
+  
   public BuchungsuebernahmeDialog(int position)
   {
     super(position);
@@ -51,7 +52,7 @@ public class BuchungsuebernahmeDialog extends AbstractDialog<String>
       @Override
       public void handleAction(Object context)
       {
-        new Buchungsuebernahme();
+        start = true;
         close();
       }
     }, null, true, "file-import.png");
@@ -67,8 +68,8 @@ public class BuchungsuebernahmeDialog extends AbstractDialog<String>
   }
 
   @Override
-  protected String getData() throws Exception
+  protected Boolean getData() throws Exception
   {
-    return null;
+    return start;
   }
 }
