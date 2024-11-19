@@ -1261,7 +1261,7 @@ public class MitgliedskontoControl extends DruckMailControl
     if(getMitgliedskonto().getRechnung() != null)
     {
       GUI.getStatusBar().setErrorText(
-          "Solbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
+          "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
       return true;
     }
     return false;
