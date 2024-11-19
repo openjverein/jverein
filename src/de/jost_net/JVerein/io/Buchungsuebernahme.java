@@ -80,7 +80,7 @@ public class Buchungsuebernahme
     }
     catch (OperationCanceledException oce)
     {
-      ;
+      // Keine Ausgabe einer Fehlermeldung
     }
     catch (Exception e)
     {
