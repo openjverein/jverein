@@ -88,7 +88,7 @@ public class MitgliedDetailAction implements Action
         Lastschrift l = (Lastschrift) context;
         mitglied = l.getMitglied();
       }
-      else if (context instanceof Buchung) {
+      else if ((context instanceof Buchung ) && ((Buchung) context).getMitgliedskonto() != null ) {
         mitglied = ((Buchung) context).getMitgliedskonto().getMitglied();
       }
       else
