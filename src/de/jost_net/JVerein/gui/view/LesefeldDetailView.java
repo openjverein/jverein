@@ -47,7 +47,7 @@ import de.willuhn.util.ApplicationException;
 /**
  * Ein View zum Bearbeiten von Skripten für ein Lesefeld.
  */
-public class LesefeldDetailView extends AbstractView implements Listener
+public class LesefeldDetailView extends AbstractView
 {
 
   private LesefeldAuswerter lesefeldAuswerter;
@@ -171,7 +171,6 @@ public class LesefeldDetailView extends AbstractView implements Listener
   @Override
   public void unbind()
   {
-    GUI.getDisplay().removeFilter(SWT.KeyDown, this);
   }
 
   /**
@@ -208,11 +207,6 @@ public class LesefeldDetailView extends AbstractView implements Listener
     }
 
     return success;
-  }
-
-  @Override
-  public void handleEvent(Event event)
-  {
   }
 
   private final class SaveLesefeldAction implements Action
