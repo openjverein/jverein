@@ -1790,7 +1790,7 @@ public class BuchungsControl extends AbstractControl
         if(spb != null)
         {
           GUI.getStatusBar().setErrorText(
-              "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordenet.");
+              "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
           return true;
         }
       }
@@ -1827,7 +1827,7 @@ public class BuchungsControl extends AbstractControl
           if(spb != null)
           {
             GUI.getStatusBar().setErrorText(
-                "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordenet.");
+                "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
             return true;
           }
         }

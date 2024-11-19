@@ -162,7 +162,7 @@ public class SplitbuchungBulkAufloesenAction implements Action
         if(spb != null)
         {
           throw new ApplicationException(
-              "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordenet.");
+              "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
         }
         splitid = bu.getSplitId();
         if (!geloescht.contains(splitid))

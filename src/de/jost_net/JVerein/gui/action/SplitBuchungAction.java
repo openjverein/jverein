@@ -78,7 +78,7 @@ public class SplitBuchungAction implements Action
         if(spb != null)
         {
           throw new ApplicationException(
-              "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordenet.");
+              "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
         }
         if (bu.getBuchungsart() == null)
         {
