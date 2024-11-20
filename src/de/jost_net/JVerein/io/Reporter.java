@@ -115,7 +115,7 @@ public class Reporter
     rpt.setMargins(linkerRand, rechterRand, obererRand, untererRand);
     hyph = new HyphenationAuto("de", "DE", 2, 2);
     PdfWriter.getInstance(rpt, out).setEncryption(null, null, 
-        PdfWriter.ALLOW_PRINTING, PdfWriter.ENCRYPTION_AES_256);
+        PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS, PdfWriter.ENCRYPTION_AES_256);
     AbstractPlugin plugin = Application.getPluginLoader()
         .getPlugin(JVereinPlugin.class);
     rpt.addAuthor(plugin.getManifest().getName() + " - Version "
@@ -134,7 +134,7 @@ public class Reporter
     hyph = new HyphenationAuto("de", "DE", 2, 2);
     PdfWriter writer = PdfWriter.getInstance(rpt, out);
     writer.setEncryption(null, null, 
-        PdfWriter.ALLOW_PRINTING, PdfWriter.ENCRYPTION_AES_256);
+        PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS, PdfWriter.ENCRYPTION_AES_256);
     rpt.setMargins(linkerRand, rechterRand, obererRand, untererRand);
     AbstractPlugin plugin = Application.getPluginLoader()
         .getPlugin(JVereinPlugin.class);
