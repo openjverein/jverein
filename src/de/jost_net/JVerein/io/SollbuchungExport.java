@@ -26,7 +26,7 @@ import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
-import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
+import de.jost_net.JVerein.gui.action.SollbuchungExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput.MailAuswertungObject;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -36,7 +36,7 @@ import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.util.ProgressMonitor;
 
-public abstract class MitgliedskontoExport implements Exporter
+public abstract class SollbuchungExport implements Exporter
 {
 
   @Override

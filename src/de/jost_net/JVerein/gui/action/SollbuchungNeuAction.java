@@ -20,34 +20,42 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.BuchungView;
-import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoIstbuchungEditAction implements Action
+public class SollbuchungNeuAction implements Action
 {
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
+    MitgliedskontoNode mkn = null;
+    Mitgliedskonto mk = null;
+
     if (context == null || !(context instanceof MitgliedskontoNode))
     {
-      throw new ApplicationException("Keine Istbuchung ausgewählt");
+      throw new ApplicationException("Keine Sollbuchung ausgewählt");
     }
 
+    mkn = (MitgliedskontoNode) context;
     try
     {
-      MitgliedskontoNode mkn = (MitgliedskontoNode) context;
-      Buchung bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
-          mkn.getID());
-      GUI.startView(BuchungView.class.getName(), bu);
+      Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
+          Mitglied.class, mkn.getID());
+      mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
+          Mitgliedskonto.class, null);
+      mk.setZahlungsweg(m.getZahlungsweg());
+      mk.setMitglied(m);
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException("Fehler beim Editieren der Istbuchung");
+      throw new ApplicationException(
+          "Fehler bei der Erzeugung einer Sollbuchung");
     }
-
+    GUI.startView(new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
   }
 }

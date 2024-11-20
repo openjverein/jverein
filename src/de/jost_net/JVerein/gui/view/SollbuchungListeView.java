@@ -17,9 +17,9 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungEditAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
+import de.jost_net.JVerein.gui.action.SollbuchungExportAction;
+import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
+import de.jost_net.JVerein.gui.action.SollbuchungExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.willuhn.jameica.gui.AbstractView;
@@ -59,7 +59,7 @@ public class SollbuchungListeView extends AbstractView
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
 
-    control.getMitgliedskontoList(new MitgliedskontoSollbuchungEditAction(),
+    control.getMitgliedskontoList(new SollbuchungEditAction(),
         new SollbuchungMenu(), false).paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
@@ -67,9 +67,9 @@ public class SollbuchungListeView extends AbstractView
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
     buttons.addButton(new Button("Export",
-        new MitgliedskontoExportAction(EXPORT_TYP.MITGLIEDSKONTO, null),
+        new SollbuchungExportAction(EXPORT_TYP.MITGLIEDSKONTO, null),
         control, false, "document-save.png"));
-    buttons.addButton("Neu", new MitgliedskontoSollbuchungEditAction(), 
+    buttons.addButton("Neu", new SollbuchungEditAction(), 
         control, false, "document-new.png");
     buttons.paint(this.getParent());
   }

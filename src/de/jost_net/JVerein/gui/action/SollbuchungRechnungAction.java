@@ -21,7 +21,7 @@ import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 
-public class MitgliedskontoRechnungAction implements Action
+public class SollbuchungRechnungAction implements Action
 {
   @Override
   public void handleAction(Object context)

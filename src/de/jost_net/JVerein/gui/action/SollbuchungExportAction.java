@@ -23,7 +23,7 @@ import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.Exporter;
 import de.jost_net.JVerein.io.IORegistry;
-import de.jost_net.JVerein.io.MitgliedskontoExport;
+import de.jost_net.JVerein.io.SollbuchungExport;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -31,12 +31,12 @@ import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoExportAction implements Action
+public class SollbuchungExportAction implements Action
 {
   private EXPORT_TYP exportTyp;
 
 
-  public MitgliedskontoExportAction(EXPORT_TYP exportTyp, Object currentObject)
+  public SollbuchungExportAction(EXPORT_TYP exportTyp, Object currentObject)
   {
     this.exportTyp = exportTyp;
   }
@@ -80,9 +80,9 @@ public class MitgliedskontoExportAction implements Action
     Exporter[] exporters = IORegistry.getExporters();
     for (Exporter export : exporters)
     {
-      if (export instanceof MitgliedskontoExport)
+      if (export instanceof SollbuchungExport)
       {
-        MitgliedskontoExport mkexport = (MitgliedskontoExport) export;
+        SollbuchungExport mkexport = (SollbuchungExport) export;
         mkexport.setExportTyp(exportTyp);
       }
     }

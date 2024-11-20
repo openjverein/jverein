@@ -16,29 +16,38 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.MahnungMailView;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
+import de.jost_net.JVerein.gui.view.BuchungView;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoMahnungAction implements Action
+public class IstbuchungEditAction implements Action
 {
+
   @Override
-  public void handleAction(Object context)
+  public void handleAction(Object context) throws ApplicationException
   {
-    if (context != null && context instanceof Mitgliedskonto)
+    if (context == null || !(context instanceof MitgliedskontoNode))
     {
-      Mitgliedskonto mk = (Mitgliedskonto) context;
-      GUI.startView(MahnungMailView.class.getName(), mk);
+      throw new ApplicationException("Keine Istbuchung ausgewählt");
     }
-    else if (context != null && context instanceof Mitgliedskonto[])
+
+    try
     {
-      Mitgliedskonto[] mk = (Mitgliedskonto[]) context;
-      GUI.startView(MahnungMailView.class.getName(), mk);
+      MitgliedskontoNode mkn = (MitgliedskontoNode) context;
+      Buchung bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
+          mkn.getID());
+      GUI.startView(BuchungView.class.getName(), bu);
     }
-    else
+    catch (RemoteException e)
     {
-      GUI.startView(MahnungMailView.class, null);
+      throw new ApplicationException("Fehler beim Editieren der Istbuchung");
     }
+
   }
 }

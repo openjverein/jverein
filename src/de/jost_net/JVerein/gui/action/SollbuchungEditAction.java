@@ -26,7 +26,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoSollbuchungEditAction implements Action
+public class SollbuchungEditAction implements Action
 {
 
   @Override
