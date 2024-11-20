@@ -82,8 +82,8 @@ public class SollbuchungExportAction implements Action
     {
       if (export instanceof SollbuchungExport)
       {
-        SollbuchungExport mkexport = (SollbuchungExport) export;
-        mkexport.setExportTyp(exportTyp);
+        SollbuchungExport sollbexport = (SollbuchungExport) export;
+        sollbexport.setExportTyp(exportTyp);
       }
     }
   }
