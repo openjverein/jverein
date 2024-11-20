@@ -72,7 +72,7 @@ public class BuchungBuchungsartZuordnungAction implements Action
       {
         return;
       }
-      
+
       BuchungsartZuordnungDialog baz = new BuchungsartZuordnungDialog(
           BuchungsartZuordnungDialog.POSITION_MOUSE);
       baz.open();
@@ -104,7 +104,7 @@ public class BuchungBuchungsartZuordnungAction implements Action
             {
               buchung.setBuchungsartId(Long.valueOf(ba.getID()));
               if (bk != null)
-               buchung.setBuchungsklasseId(Long.valueOf(bk.getID()));
+                buchung.setBuchungsklasseId(Long.valueOf(bk.getID()));
               else
                 buchung.setBuchungsklasseId(null);
               buchung.store();
@@ -136,7 +136,8 @@ public class BuchungBuchungsartZuordnungAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText("Fehler bei der Zuordnung der Buchungsart");
+      GUI.getStatusBar().setErrorText("Fehler bei der Zuordnung der Buchungsart: " 
+          + e.getLocalizedMessage());
     }
   }
 }

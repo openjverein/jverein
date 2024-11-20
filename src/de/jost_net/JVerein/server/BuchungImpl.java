@@ -97,7 +97,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
           "Buchung kann nicht gelöscht werden. Siehe system log");
     }
   }
-  
+
   @Override
   protected void insertCheck() throws ApplicationException
   {
@@ -134,7 +134,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     cal2.add(Calendar.YEAR, 10);
     if (cal1.after(cal2))
     {
-     throw new ApplicationException("Buchungsdatum liegt mehr als 10 Jahre in der Zukunft");
+      throw new ApplicationException("Buchungsdatum liegt mehr als 10 Jahre in der Zukunft");
     }
     cal2.add(Calendar.YEAR, -20);
     if (cal1.before(cal2))
@@ -167,6 +167,22 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     if (!getSpeicherung() && getBuchungsart() == null)
     {
       throw new ApplicationException("Buchungsart fehlt bei Splitbuchung!");
+    }
+
+    if (getSpendenbescheinigung() != null)
+    {
+      if (getBuchungsart() == null)
+      {
+        throw new ApplicationException(
+            "Buchungsart kann nicht gelöscht werden da "
+            + "eine Spendenbescheinigung zugeordnet ist!");
+      }
+      if (getBuchungsart() != null && !getBuchungsart().getSpende())
+      {
+        throw new ApplicationException(
+            "Buchungsart kann nicht in eine Buchungsart ohne der Eigenschaft Spende "
+            + "geändert werden da eine Spendenbescheinigung zugeordnet ist!");
+      }
     }
   }
 
@@ -313,7 +329,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   {
     setAttribute("betrag", null);
   }
-  
+
   @Override
   public String getZweck() throws RemoteException
   {
@@ -391,7 +407,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   {
     setAttribute("buchungsart", buchungsartId);
   }
-  
+
   @Override
   public Buchungsklasse getBuchungsklasse() throws RemoteException
   {
@@ -410,7 +426,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   {
     return (Long) super.getAttribute("buchungsklasse");
   }
-  
+
   @Override
   public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException
   {
@@ -441,7 +457,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   {
     setAttribute("abrechnungslauf", Long.valueOf(abrechnungslauf.getID()));
   }
-  
+
   @Override
   public Jahresabschluss getAbschluss() throws RemoteException
   { 
@@ -563,7 +579,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   {
     setAttribute("spendenbescheinigung", spendenbescheinigung);
   }
-  
+
   @Override
   public int getDependencyId() throws RemoteException
   {
@@ -601,7 +617,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     }
     map.put(BuchungVar.ABRECHNUNGSLAUF.getName(),
         (this.getAbrechnungslauf() != null
-            ? this.getAbrechnungslauf().getDatum()
+        ? this.getAbrechnungslauf().getDatum()
             : ""));
     map.put(BuchungVar.ART.getName(),
         StringTool.toNotNullString(this.getArt()));
@@ -658,8 +674,8 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
         this.getKonto() != null ? this.getKonto().getNummer() : "");
     map.put(BuchungVar.MITGLIEDSKONTO.getName(),
         this.getMitgliedskonto() != null
-            ? Adressaufbereitung
-                .getNameVorname(this.getMitgliedskonto().getMitglied())
+        ? Adressaufbereitung
+            .getNameVorname(this.getMitgliedskonto().getMitglied())
             : "");
     map.put(BuchungVar.NAME.getName(), this.getName());
     map.put(BuchungVar.ZWECK1.getName(),
@@ -685,16 +701,16 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
 
     if ("buchungsart".equals(fieldName))
       return getBuchungsart();
-    
+
     if ("buchungsklasse".equals(fieldName))
       return getBuchungsklasse();
 
     if ("konto".equals(fieldName))
       return getKonto();
-    
+
     if ("mitgliedskonto".equals(fieldName))
-        return getMitgliedskonto();
-    
+      return getMitgliedskonto();
+
     if ("document".equals(fieldName))
     {
       DBIterator<BuchungDokument> list = Einstellungen.getDBService()
@@ -798,7 +814,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   {
     return delete;
   }
-  
+
   @Override
   public void delete() throws RemoteException, ApplicationException
   {
@@ -814,13 +830,13 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     }
     super.delete();
   }
-  
+
   @Override
   public void store() throws RemoteException, ApplicationException
   {
     store(true);
   }
-  
+
   @Override
   public void store(boolean check) throws RemoteException, ApplicationException
   {
@@ -839,5 +855,5 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     // können. In diesem Fall wird mit check false gespeichert.
     super.store();
   }
-  
+
 }
