@@ -54,9 +54,9 @@ public class SollbuchungMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
     /*addItem(new CheckedContextMenuItem("Rechnung erstellen",
-        new MitgliedskontoRechnungAction(), "file-invoice.png"));
+        new SollbuchungRechnungAction(), "file-invoice.png"));
     addItem(new CheckedContextMenuItem("Mahnung erstellen",
-        new MitgliedskontoMahnungAction(), "file-invoice.png"));
+        new SollbuchungMahnungAction(), "file-invoice.png"));
         */
   }
 
