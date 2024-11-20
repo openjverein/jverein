@@ -28,36 +28,42 @@ import de.willuhn.util.ApplicationException;
 
 import java.util.Map;
 
-public class OpenInsertVariableDialogAction implements Action {
-    @Override
-    public void handleAction(Object context) {
-        try
-        {
-            ShowVariablesMenu menu = new ShowVariablesMenu();
-            Map<String, Object> map;
-            if (context instanceof LesefeldAuswerter) {
-                map = ((LesefeldAuswerter) context).getMap();
-                menu.setPrependCopyText("");
-            }
-            else if (context instanceof Map) {
-                map = (Map<String, Object>) context;
-                menu.setPrependCopyText("$");
-            }
-            else {
-                throw new ApplicationException("Falscher Kontext");
-            }
-            ShowVariablesDialog d = new ShowVariablesDialog(
-                    map, false);
-            menu.setAppendCopyText("");
-            d.setContextMenu(menu);
-            d.setDoubleClickAction(menu.getCopyToClipboardAction());
-            d.open();
-        }
-        catch (OperationCanceledException ignored) {}
-        catch (Exception e)
-        {
-            Logger.error("Fehler beim Anzeigen der Variablen.", e);
-            GUI.getStatusBar().setErrorText("Fehler beim Anzeigen der Variablen.");
-        }
+public class OpenInsertVariableDialogAction implements Action
+{
+  @Override
+  public void handleAction(Object context)
+  {
+    try
+    {
+      ShowVariablesMenu menu = new ShowVariablesMenu();
+      Map<String, Object> map;
+      if (context instanceof LesefeldAuswerter)
+      {
+        map = ((LesefeldAuswerter) context).getMap();
+        menu.setPrependCopyText("");
+      }
+      else if (context instanceof Map)
+      {
+        map = (Map<String, Object>) context;
+        menu.setPrependCopyText("$");
+      }
+      else
+      {
+        throw new ApplicationException("Falscher Kontext");
+      }
+      ShowVariablesDialog d = new ShowVariablesDialog(map, false);
+      menu.setAppendCopyText("");
+      d.setContextMenu(menu);
+      d.setDoubleClickAction(menu.getCopyToClipboardAction());
+      d.open();
     }
+    catch (OperationCanceledException ignored)
+    {
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler beim Anzeigen der Variablen.", e);
+      GUI.getStatusBar().setErrorText("Fehler beim Anzeigen der Variablen.");
+    }
+  }
 }

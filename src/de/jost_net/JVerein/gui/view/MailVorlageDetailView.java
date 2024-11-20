@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -18,9 +18,8 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.MailVorlageControl;
 import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
-import de.jost_net.JVerein.util.LesefeldAuswerter;
+import de.jost_net.JVerein.gui.control.MailVorlageControl;
 import de.jost_net.JVerein.util.MitgliedDummy;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -30,7 +29,6 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 import java.util.Map;
-
 
 public class MailVorlageDetailView extends AbstractView
 {
@@ -53,7 +51,7 @@ public class MailVorlageDetailView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAILVORLAGE, false, "question-circle.png");
     buttons.addButton("Variablen anzeigen",
-            new OpenInsertVariableDialogAction(), map, false, "bookmark.png");
+        new OpenInsertVariableDialogAction(), map, false, "bookmark.png");
     buttons.addButton("Speichern", new Action()
     {
 

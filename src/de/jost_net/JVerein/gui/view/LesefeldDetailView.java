@@ -10,23 +10,16 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
 
 package de.jost_net.JVerein.gui.view;
 
-import java.rmi.RemoteException;
-
-import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -43,6 +36,11 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+
+import java.rmi.RemoteException;
 
 /**
  * Ein View zum Bearbeiten von Skripten für ein Lesefeld.
@@ -50,7 +48,7 @@ import de.willuhn.util.ApplicationException;
 public class LesefeldDetailView extends AbstractView
 {
 
-  private LesefeldAuswerter lesefeldAuswerter;
+  private final LesefeldAuswerter lesefeldAuswerter;
 
   private Lesefeld lesefeld;
 
@@ -59,12 +57,11 @@ public class LesefeldDetailView extends AbstractView
   private TextAreaInput textAreaInputScriptResult;
 
   private TextInput textInputScriptName;
-  
+
   private AbstractInput mitglied;
-  
+
   private Mitglied selectedMitglied;
 
-  
   public LesefeldDetailView(LesefeldAuswerter lesefeldAuswerter,
       Lesefeld lesefeld, Mitglied mitglied)
   {
@@ -72,7 +69,7 @@ public class LesefeldDetailView extends AbstractView
     this.lesefeld = lesefeld;
     this.selectedMitglied = mitglied;
   }
-  
+
   @Override
   public void bind() throws Exception
   {
@@ -80,7 +77,7 @@ public class LesefeldDetailView extends AbstractView
     SimpleContainer container = new SimpleContainer(parent, true);
 
     container.addLabelPair("Mitglied", getMitglied());
-    
+
     // Auf diese Input-Felder sollte nur über die Funktionen
     // updateLesefeldFromGUI() und updateScriptResult() zugegriffen werden.
     textInputScriptName = new TextInput(
@@ -109,10 +106,11 @@ public class LesefeldDetailView extends AbstractView
     }, null, false, "view-refresh.png");
     buttonArea.addButton(button);
     button = new Button("Variablen anzeigen",
-        new OpenInsertVariableDialogAction(), lesefeldAuswerter, false, "bookmark.png");
+        new OpenInsertVariableDialogAction(), lesefeldAuswerter, false,
+        "bookmark.png");
     buttonArea.addButton(button);
-    button = new Button("Speichern", new SaveLesefeldAction(), null,
-        false, "document-save.png");
+    button = new Button("Speichern", new SaveLesefeldAction(), null, false,
+        "document-save.png");
     buttonArea.addButton(button);
     buttonArea.paint(this.getParent());
   }
@@ -121,7 +119,6 @@ public class LesefeldDetailView extends AbstractView
    * Aktualisiert lokales Feld lesefeld mit den vom Nutzer eingegebenen Daten
    * aus der GUI. Dabei wird ggf. lesefeld initialisiert und die Eindeutigkeit
    * des Namens des Skriptes sichergestellt.
-   * 
    */
   private boolean updateLesefeldFromGUI()
   {
@@ -138,8 +135,8 @@ public class LesefeldDetailView extends AbstractView
         if (lesefeld.getBezeichnung().equals(textInputScriptName.getValue()))
         {
           String currentid = lesefeld.getID();
-          if (this.lesefeld == null || (this.lesefeld != null
-              && !this.lesefeld.getID().equalsIgnoreCase((currentid))))
+          if (this.lesefeld == null || (this.lesefeld != null && !this.lesefeld.getID()
+              .equalsIgnoreCase((currentid))))
           {
             GUI.getStatusBar()
                 .setErrorText("Bitte eindeutigen Skript-Namen eingeben!");
@@ -150,13 +147,13 @@ public class LesefeldDetailView extends AbstractView
 
       // erstelle neues lesefeld, wenn nötig.
       if (lesefeld == null)
-        lesefeld = (Lesefeld) Einstellungen.getDBService()
+        lesefeld = Einstellungen.getDBService()
             .createObject(Lesefeld.class, null);
 
       lesefeld.setBezeichnung((String) textInputScriptName.getValue());
       lesefeld.setScript((String) textAreaInputScriptCode.getValue());
-      lesefeld
-          .setEvaluatedContent((String) textAreaInputScriptResult.getValue());
+      lesefeld.setEvaluatedContent(
+          (String) textAreaInputScriptResult.getValue());
     }
     catch (RemoteException e)
     {
@@ -176,9 +173,9 @@ public class LesefeldDetailView extends AbstractView
   /**
    * Holt akutelles Skript von GUI, evaluiert dieses und schreibt Ergebnis
    * zurück in die GUI.
-   * 
+   *
    * @return true bei Erfolg, sonst false (Fehlermeldung wird in
-   *         Skript-Ausgabe-Feld geschrieben).
+   *     Skript-Ausgabe-Feld geschrieben).
    */
   private boolean updateScriptResult()
   {
@@ -252,7 +249,7 @@ public class LesefeldDetailView extends AbstractView
     mitglied.setMandatory(true);
     return mitglied;
   }
-  
+
   public class MitgliedListener implements Listener
   {
 
@@ -269,8 +266,8 @@ public class LesefeldDetailView extends AbstractView
         if (selected == null || selected == selectedMitglied)
           return;
         selectedMitglied = selected;
-        lesefeldAuswerter
-            .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
+        lesefeldAuswerter.setMap(
+            new MitgliedMap().getMap(selectedMitglied, null, true));
         updateScriptResult();
       }
       catch (RemoteException e)

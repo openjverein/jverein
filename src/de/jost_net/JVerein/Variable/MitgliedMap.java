@@ -10,32 +10,19 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.input.GeschlechtInput;
+import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.io.BeitragsUtil;
 import de.jost_net.JVerein.io.VelocityTool;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Datentyp;
-import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Beitragsgruppe;
-import de.jost_net.JVerein.rmi.Eigenschaft;
-import de.jost_net.JVerein.rmi.Eigenschaften;
-import de.jost_net.JVerein.rmi.Felddefinition;
-import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Zusatzfelder;
+import de.jost_net.JVerein.rmi.*;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.jost_net.JVerein.util.MitgliedDummy;
@@ -45,6 +32,12 @@ import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MitgliedMap
 {
@@ -60,8 +53,9 @@ public class MitgliedMap
     return getMap(m, inma, false);
   }
 
-  public Map<String, Object> getMap(Mitglied mitglied, Map<String, Object> initMap,
-      boolean ohneLesefelder) throws RemoteException
+  public Map<String, Object> getMap(Mitglied mitglied,
+      Map<String, Object> initMap, boolean ohneLesefelder)
+      throws RemoteException
   {
     Map<String, Object> map = null;
 
@@ -85,27 +79,30 @@ public class MitgliedMap
         StringTool.toNotNullString(mitglied.getAnrede()));
     map.put(MitgliedVar.ANREDE_FOERMLICH.getName(),
         Adressaufbereitung.getAnredeFoermlich(mitglied));
-    map.put(MitgliedVar.ANREDE_DU.getName(), Adressaufbereitung.getAnredeDu(mitglied));
-    map.put(MitgliedVar.AUSTRITT.getName(), Datum.formatDate(mitglied.getAustritt()));
+    map.put(MitgliedVar.ANREDE_DU.getName(),
+        Adressaufbereitung.getAnredeDu(mitglied));
+    map.put(MitgliedVar.AUSTRITT.getName(),
+        Datum.formatDate(mitglied.getAustritt()));
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG.getName(),
-        mitglied.getBeitragsgruppe() != null
-            ? Einstellungen.DECIMALFORMAT
-                .format(mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag())
-            : "");
+        mitglied.getBeitragsgruppe() != null ?
+            Einstellungen.DECIMALFORMAT.format(
+                mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag()) :
+            "");
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN.getName(),
-        mitglied.getBeitragsgruppe() != null
-            ? Einstellungen.DECIMALFORMAT
-                .format(mitglied.getBeitragsgruppe().getArbeitseinsatzStunden())
-            : "");
+        mitglied.getBeitragsgruppe() != null ?
+            Einstellungen.DECIMALFORMAT.format(
+                mitglied.getBeitragsgruppe().getArbeitseinsatzStunden()) :
+            "");
     try
     {
       map.put(MitgliedVar.BEITRAGSGRUPPE_BETRAG.getName(),
-          mitglied.getBeitragsgruppe() != null
-              ? Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
+          mitglied.getBeitragsgruppe() != null ?
+              Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
                   Einstellungen.getEinstellung().getBeitragsmodel(),
-                  mitglied.getZahlungstermin(), mitglied.getZahlungsrhythmus().getKey(),
-                  mitglied.getBeitragsgruppe(), new Date(), mitglied))
-              : "");
+                  mitglied.getZahlungstermin(),
+                  mitglied.getZahlungsrhythmus().getKey(),
+                  mitglied.getBeitragsgruppe(), new Date(), mitglied)) :
+              "");
     }
     catch (ApplicationException e)
     {
@@ -116,16 +113,20 @@ public class MitgliedMap
       Logger.error("NullPointerException:" + mitglied.getName());
     }
     map.put(MitgliedVar.BEITRAGSGRUPPE_BEZEICHNUNG.getName(),
-        mitglied.getBeitragsgruppe() != null ? mitglied.getBeitragsgruppe().getBezeichnung()
-            : "");
+        mitglied.getBeitragsgruppe() != null ?
+            mitglied.getBeitragsgruppe().getBezeichnung() :
+            "");
     map.put(MitgliedVar.BEITRAGSGRUPPE_ID.getName(),
-        mitglied.getBeitragsgruppe() != null ? mitglied.getBeitragsgruppe().getID() : "");
+        mitglied.getBeitragsgruppe() != null ?
+            mitglied.getBeitragsgruppe().getID() :
+            "");
     map.put(MitgliedVar.MANDATDATUM.getName(), mitglied.getMandatDatum());
     map.put(MitgliedVar.MANDATID.getName(), mitglied.getMandatID());
     map.put(MitgliedVar.BIC.getName(), mitglied.getBic());
     map.put(MitgliedVar.EINGABEDATUM.getName(),
         Datum.formatDate(mitglied.getEingabedatum()));
-    map.put(MitgliedVar.EINTRITT.getName(), Datum.formatDate(mitglied.getEintritt()));
+    map.put(MitgliedVar.EINTRITT.getName(),
+        Datum.formatDate(mitglied.getEintritt()));
     map.put(MitgliedVar.EMAIL.getName(), mitglied.getEmail());
     map.put(MitgliedVar.EMPFAENGER.getName(),
         Adressaufbereitung.getAdressfeld(mitglied));
@@ -141,8 +142,9 @@ public class MitgliedMap
     map.put(MitgliedVar.ID.getName(), mitglied.getID());
     if (mitglied.getIndividuellerBeitrag() != null)
     {
-    map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(),
-        Einstellungen.DECIMALFORMAT.format(mitglied.getIndividuellerBeitrag()));
+      map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(),
+          Einstellungen.DECIMALFORMAT.format(
+              mitglied.getIndividuellerBeitrag()));
     }
     else
     {
@@ -151,7 +153,8 @@ public class MitgliedMap
     map.put(MitgliedVar.BANKNAME.getName(), getBankname(mitglied));
     map.put(MitgliedVar.KONTOINHABER_ADRESSIERUNGSZUSATZ.getName(),
         mitglied.getKtoiAdressierungszusatz());
-    map.put(MitgliedVar.KONTOINHABER_ANREDE.getName(), mitglied.getKtoiAnrede());
+    map.put(MitgliedVar.KONTOINHABER_ANREDE.getName(),
+        mitglied.getKtoiAnrede());
     map.put(MitgliedVar.KONTOINHABER_EMAIL.getName(), mitglied.getKtoiEmail());
     map.put(MitgliedVar.KONTOINHABER_NAME.getName(), mitglied.getKtoiName());
     map.put(MitgliedVar.KONTOINHABER_ORT.getName(), mitglied.getKtoiOrt());
@@ -159,9 +162,11 @@ public class MitgliedMap
         mitglied.getKtoiPersonenart());
     map.put(MitgliedVar.KONTOINHABER_PLZ.getName(), mitglied.getKtoiPlz());
     map.put(MitgliedVar.KONTOINHABER_STAAT.getName(), mitglied.getKtoiStaat());
-    map.put(MitgliedVar.KONTOINHABER_STRASSE.getName(), mitglied.getKtoiStrasse());
+    map.put(MitgliedVar.KONTOINHABER_STRASSE.getName(),
+        mitglied.getKtoiStrasse());
     map.put(MitgliedVar.KONTOINHABER_TITEL.getName(), mitglied.getKtoiTitel());
-    map.put(MitgliedVar.KONTOINHABER_VORNAME.getName(), mitglied.getKtoiVorname());
+    map.put(MitgliedVar.KONTOINHABER_VORNAME.getName(),
+        mitglied.getKtoiVorname());
     map.put(MitgliedVar.KUENDIGUNG.getName(),
         Datum.formatDate(mitglied.getKuendigung()));
     map.put(MitgliedVar.LETZTEAENDERUNG.getName(),
@@ -176,7 +181,8 @@ public class MitgliedMap
     map.put(MitgliedVar.STERBETAG.getName(),
         Datum.formatDate(mitglied.getSterbetag()));
     map.put(MitgliedVar.STRASSE.getName(), mitglied.getStrasse());
-    map.put(MitgliedVar.TELEFONDIENSTLICH.getName(), mitglied.getTelefondienstlich());
+    map.put(MitgliedVar.TELEFONDIENSTLICH.getName(),
+        mitglied.getTelefondienstlich());
     map.put(MitgliedVar.TELEFONPRIVAT.getName(), mitglied.getTelefonprivat());
     map.put(MitgliedVar.TITEL.getName(), mitglied.getTitel());
     map.put(MitgliedVar.VERMERK1.getName(), mitglied.getVermerk1());
@@ -190,7 +196,9 @@ public class MitgliedMap
     map.put(MitgliedVar.ZAHLUNGSRHYTHMUS.getName(),
         mitglied.getZahlungsrhythmus() + "");
     map.put(MitgliedVar.ZAHLUNGSTERMIN.getName(),
-        mitglied.getZahlungstermin() != null ? mitglied.getZahlungstermin().getText() : "");
+        mitglied.getZahlungstermin() != null ?
+            mitglied.getZahlungstermin().getText() :
+            "");
     map.put(MitgliedVar.ZAHLUNGSWEG.getName(), mitglied.getZahlungsweg() + "");
 
     String zahlungsweg = "";
@@ -200,7 +208,8 @@ public class MitgliedMap
       {
         zahlungsweg = Einstellungen.getEinstellung().getRechnungTextAbbuchung();
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}", mitglied.getBic());
-        zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}", mitglied.getIban());
+        zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}",
+            mitglied.getIban());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{MANDATID\\}",
             mitglied.getMandatID());
         break;
@@ -232,20 +241,19 @@ public class MitgliedMap
         .createList(Felddefinition.class);
     while (itfd.hasNext())
     {
-      Felddefinition fd = (Felddefinition) itfd.next();
+      Felddefinition fd = itfd.next();
       DBIterator<Zusatzfelder> itzus = Einstellungen.getDBService()
           .createList(Zusatzfelder.class);
-      itzus.addFilter("mitglied = ? and felddefinition = ? ",
-          new Object[] { mitglied.getID(), fd.getID() });
+      itzus.addFilter("mitglied = ? and felddefinition = ? ", mitglied.getID(),
+          fd.getID());
       Zusatzfelder z = null;
       if (itzus.hasNext())
       {
-        z = (Zusatzfelder) itzus.next();
+        z = itzus.next();
       }
       else
       {
-        z = (Zusatzfelder) Einstellungen.getDBService()
-            .createObject(Zusatzfelder.class, null);
+        z = Einstellungen.getDBService().createObject(Zusatzfelder.class, null);
       }
 
       switch (fd.getDatentyp())
@@ -286,11 +294,11 @@ public class MitgliedMap
         .createList(Eigenschaft.class);
     while (iteig.hasNext())
     {
-      Eigenschaft eig = (Eigenschaft) iteig.next();
+      Eigenschaft eig = iteig.next();
       DBIterator<Eigenschaften> iteigm = Einstellungen.getDBService()
           .createList(Eigenschaften.class);
-      iteigm.addFilter("mitglied = ? and eigenschaft = ?",
-          new Object[] { mitglied.getID(), eig.getID() });
+      iteigm.addFilter("mitglied = ? and eigenschaft = ?", mitglied.getID(),
+          eig.getID());
       String val = "";
       if (iteigm.size() > 0)
       {
