@@ -38,6 +38,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.logging.Logger;
 
 /**
@@ -65,8 +66,13 @@ public class BuchungMenu extends ContextMenu
         "edit-copy.png"));
     addItem(new AufloesenItem("Auflösen", new SplitbuchungBulkAufloesenAction(),
         "unlocked.png"));
+    addItem(new BuchungItem("Löschen", new BuchungDeleteAction(false),
+            "user-trash-full.png"));
+    addItem(ContextMenuItem.SEPARATOR);
     if (geldkonto)
     {
+      addItem(new MitgliedOeffnenItem("Mitglied anzeigen",
+              new MitgliedDetailAction(), "user-friends.png"));
       addItem(new SingleGegenBuchungItem("Neues Anlagenkonto", new AnlagenkontoNeuAction(),
           "document-new.png"));
     }
@@ -75,16 +81,12 @@ public class BuchungMenu extends ContextMenu
     if (geldkonto) {
       addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
               new BuchungSollbuchungZuordnungAction(control), "view-refresh.png"));
-      addItem(new MitgliedOeffnenItem("Mitglied anzeigen",
-              new MitgliedDetailAction(), "user-friends.png"));
     }
     addItem(new CheckedContextMenuItem("Projekt zuordnen",
         new BuchungProjektZuordnungAction(control), "view-refresh.png"));
     if (geldkonto)
       addItem(new CheckedContextMenuItem("Kontoauszug zuordnen",
         new BuchungKontoauszugZuordnungAction(control), "view-refresh.png"));
-    addItem(new BuchungItem("Löschen", new BuchungDeleteAction(false),
-        "user-trash-full.png"));
   }
 
   private static class SingleBuchungItem extends CheckedSingleContextMenuItem
