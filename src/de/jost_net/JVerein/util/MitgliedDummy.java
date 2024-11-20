@@ -166,6 +166,7 @@ public final class MitgliedDummy implements Mitglied
       return null;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public DBIterator getList() throws RemoteException
     {
@@ -215,13 +216,13 @@ public final class MitgliedDummy implements Mitglied
     }
 
     @Override
-    public void store() throws RemoteException, ApplicationException
+    public void store() throws RemoteException
     {
 
     }
 
     @Override
-    public void delete() throws RemoteException, ApplicationException
+    public void delete() throws RemoteException
     {
 
     }
@@ -982,6 +983,7 @@ public final class MitgliedDummy implements Mitglied
     return null;
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public DBIterator getList() throws RemoteException
   {

@@ -38,6 +38,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MitgliedMap
 {
@@ -57,16 +58,9 @@ public class MitgliedMap
       Map<String, Object> initMap, boolean ohneLesefelder)
       throws RemoteException
   {
-    Map<String, Object> map = null;
+    Map<String, Object> map;
 
-    if (initMap == null)
-    {
-      map = new HashMap<>();
-    }
-    else
-    {
-      map = initMap;
-    }
+    map = Objects.requireNonNullElseGet(initMap, HashMap::new);
     if (mitglied == null || mitglied.getID() == null)
     {
       mitglied = new MitgliedDummy();
@@ -204,7 +198,7 @@ public class MitgliedMap
     String zahlungsweg = "";
     switch (mitglied.getZahlungsweg())
     {
-      case Zahlungsweg.BASISLASTSCHRIFT:
+      case Zahlungsweg.BASISLASTSCHRIFT ->
       {
         zahlungsweg = Einstellungen.getEinstellung().getRechnungTextAbbuchung();
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}", mitglied.getBic());
@@ -212,19 +206,12 @@ public class MitgliedMap
             mitglied.getIban());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{MANDATID\\}",
             mitglied.getMandatID());
-        break;
       }
-      case Zahlungsweg.BARZAHLUNG:
-      {
-        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextBar();
-        break;
-      }
-      case Zahlungsweg.ÜBERWEISUNG:
-      {
-        zahlungsweg = Einstellungen.getEinstellung()
-            .getRechnungTextUeberweisung();
-        break;
-      }
+      case Zahlungsweg.BARZAHLUNG ->
+          zahlungsweg = Einstellungen.getEinstellung().getRechnungTextBar();
+      case Zahlungsweg.ÜBERWEISUNG ->
+          zahlungsweg = Einstellungen.getEinstellung()
+              .getRechnungTextUeberweisung();
     }
     try
     {
@@ -246,7 +233,7 @@ public class MitgliedMap
           .createList(Zusatzfelder.class);
       itzus.addFilter("mitglied = ? and felddefinition = ? ", mitglied.getID(),
           fd.getID());
-      Zusatzfelder z = null;
+      Zusatzfelder z;
       if (itzus.hasNext())
       {
         z = itzus.next();
@@ -258,21 +245,23 @@ public class MitgliedMap
 
       switch (fd.getDatentyp())
       {
-        case Datentyp.DATUM:
+        case Datentyp.DATUM ->
+        {
           map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
               Datum.formatDate(z.getFeldDatum()));
           format.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "DATE");
-          break;
-        case Datentyp.JANEIN:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
-              z.getFeldJaNein() ? "X" : " ");
-          break;
-        case Datentyp.GANZZAHL:
+        }
+        case Datentyp.JANEIN ->
+            map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
+                z.getFeldJaNein() ? "X" : " ");
+        case Datentyp.GANZZAHL ->
+        {
           map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
               z.getFeldGanzzahl() + "");
           format.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "INTEGER");
-          break;
-        case Datentyp.WAEHRUNG:
+        }
+        case Datentyp.WAEHRUNG ->
+        {
           if (z.getFeldWaehrung() != null)
           {
             map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
@@ -283,10 +272,9 @@ public class MitgliedMap
           {
             map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "");
           }
-          break;
-        case Datentyp.ZEICHENFOLGE:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), z.getFeld());
-          break;
+        }
+        case Datentyp.ZEICHENFOLGE ->
+            map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), z.getFeld());
       }
     }
 

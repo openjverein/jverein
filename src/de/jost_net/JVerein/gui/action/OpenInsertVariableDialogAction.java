@@ -44,6 +44,7 @@ public class OpenInsertVariableDialogAction implements Action
       }
       else if (context instanceof Map)
       {
+        //noinspection unchecked
         map = (Map<String, Object>) context;
         menu.setPrependCopyText("$");
       }

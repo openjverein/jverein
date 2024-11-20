@@ -95,15 +95,8 @@ public class LesefeldDetailView extends AbstractView
       updateScriptResult();
 
     ButtonArea buttonArea = new ButtonArea();
-    Button button = new Button("Aktualisieren (F5)", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        updateScriptResult();
-      }
-    }, null, false, "view-refresh.png");
+    Button button = new Button("Aktualisieren", context -> updateScriptResult(),
+        null, false, "view-refresh.png");
     buttonArea.addButton(button);
     button = new Button("Variablen anzeigen",
         new OpenInsertVariableDialogAction(), lesefeldAuswerter, false,
@@ -135,8 +128,8 @@ public class LesefeldDetailView extends AbstractView
         if (lesefeld.getBezeichnung().equals(textInputScriptName.getValue()))
         {
           String currentid = lesefeld.getID();
-          if (this.lesefeld == null || (this.lesefeld != null && !this.lesefeld.getID()
-              .equalsIgnoreCase((currentid))))
+          if (this.lesefeld == null || !this.lesefeld.getID()
+              .equalsIgnoreCase(currentid))
           {
             GUI.getStatusBar()
                 .setErrorText("Bitte eindeutigen Skript-Namen eingeben!");

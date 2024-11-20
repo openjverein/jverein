@@ -22,7 +22,6 @@ import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
 import de.jost_net.JVerein.util.MitgliedDummy;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -45,22 +44,16 @@ public class MailVorlageDetailView extends AbstractView
     SimpleContainer t = new SimpleContainer(getParent(), true);
     t.addPart(control.getTxt());
 
-    Map map = new MitgliedMap().getMap(new MitgliedDummy(), null);
+    Map<String, Object> map = new MitgliedMap().getMap(new MitgliedDummy(),
+        null);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAILVORLAGE, false, "question-circle.png");
     buttons.addButton("Variablen anzeigen",
         new OpenInsertVariableDialogAction(), map, false, "bookmark.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton("Speichern", context -> control.handleStore(), null, true,
+        "document-save.png");
     buttons.paint(this.getParent());
   }
 }
