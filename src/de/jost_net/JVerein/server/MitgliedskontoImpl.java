@@ -30,6 +30,7 @@ import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -60,9 +61,29 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      if (this.getRechnung() != null)
+      {
+        throw new ApplicationException(
+            "Sollbuchung kann nicht gelöscht werden weil sie zu einer "
+                + "Rechnung gehört");
+      }
+    }
+    catch (ObjectNotFoundException e)
+    {
+      // Alles ok, es gibt keine Rechnung
+      // Das passiert wenn sie kurz vorher gelöscht wurde aber 
+      // die ID noch im Cache gespeichert ist
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+      throw new ApplicationException(
+          "Sollbuchung kann nicht gelöscht werden. Siehe system log");
+    }
   }
 
   @Override
@@ -365,6 +386,18 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
+    if ("id-int".equals(fieldName))
+    {
+      try
+      {
+        return Integer.valueOf(getID());
+      }
+      catch (Exception e)
+      {
+        Logger.error("unable to parse id: " + getID());
+        return getID();
+      }
+    }
     if (fieldName.equals("istsumme"))
     {
       return getIstSumme();

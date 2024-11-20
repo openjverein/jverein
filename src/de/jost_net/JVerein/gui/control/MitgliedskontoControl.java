@@ -522,6 +522,7 @@ public class MitgliedskontoControl extends DruckMailControl
     if (mitgliedskontoList == null)
     {
       mitgliedskontoList = new SollbuchungListTablePart(mitgliedskonten, action);
+      mitgliedskontoList.addColumn("Nr", "id-int");
       mitgliedskontoList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       mitgliedskontoList.addColumn("Abrechnungslauf", "abrechnungslauf");
