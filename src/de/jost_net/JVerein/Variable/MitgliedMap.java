@@ -23,9 +23,9 @@ import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.*;
+import de.jost_net.JVerein.server.MitgliedImpl;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
-import de.jost_net.JVerein.util.MitgliedDummy;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
@@ -63,7 +63,7 @@ public class MitgliedMap
     map = Objects.requireNonNullElseGet(initMap, HashMap::new);
     if (mitglied == null || mitglied.getID() == null)
     {
-      mitglied = new MitgliedDummy();
+      mitglied = MitgliedImpl.getDummy();
     }
     map.put(MitgliedVar.ADRESSIERUNGSZUSATZ.getName(),
         StringTool.toNotNullString(mitglied.getAdressierungszusatz()));
@@ -198,20 +198,21 @@ public class MitgliedMap
     String zahlungsweg = "";
     switch (mitglied.getZahlungsweg())
     {
-      case Zahlungsweg.BASISLASTSCHRIFT ->
-      {
+      case Zahlungsweg.BASISLASTSCHRIFT:
         zahlungsweg = Einstellungen.getEinstellung().getRechnungTextAbbuchung();
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}", mitglied.getBic());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}",
             mitglied.getIban());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{MANDATID\\}",
             mitglied.getMandatID());
-      }
-      case Zahlungsweg.BARZAHLUNG ->
-          zahlungsweg = Einstellungen.getEinstellung().getRechnungTextBar();
-      case Zahlungsweg.ÜBERWEISUNG ->
-          zahlungsweg = Einstellungen.getEinstellung()
-              .getRechnungTextUeberweisung();
+        break;
+      case Zahlungsweg.BARZAHLUNG:
+        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextBar();
+        break;
+      case Zahlungsweg.ÜBERWEISUNG:
+        zahlungsweg = Einstellungen.getEinstellung()
+            .getRechnungTextUeberweisung();
+        break;
     }
     try
     {
@@ -245,23 +246,21 @@ public class MitgliedMap
 
       switch (fd.getDatentyp())
       {
-        case Datentyp.DATUM ->
-        {
+        case Datentyp.DATUM:
           map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
               Datum.formatDate(z.getFeldDatum()));
           format.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "DATE");
-        }
-        case Datentyp.JANEIN ->
-            map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
-                z.getFeldJaNein() ? "X" : " ");
-        case Datentyp.GANZZAHL ->
-        {
+          break;
+        case Datentyp.JANEIN:
+          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
+              z.getFeldJaNein() ? "X" : " ");
+          break;
+        case Datentyp.GANZZAHL:
           map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
               z.getFeldGanzzahl() + "");
           format.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "INTEGER");
-        }
-        case Datentyp.WAEHRUNG ->
-        {
+          break;
+        case Datentyp.WAEHRUNG:
           if (z.getFeldWaehrung() != null)
           {
             map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
@@ -272,9 +271,10 @@ public class MitgliedMap
           {
             map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "");
           }
-        }
-        case Datentyp.ZEICHENFOLGE ->
-            map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), z.getFeld());
+          break;
+        case Datentyp.ZEICHENFOLGE:
+          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), z.getFeld());
+          break;
       }
     }
 

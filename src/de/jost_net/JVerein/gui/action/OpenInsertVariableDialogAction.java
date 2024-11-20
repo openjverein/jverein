@@ -30,6 +30,7 @@ import java.util.Map;
 
 public class OpenInsertVariableDialogAction implements Action
 {
+  @SuppressWarnings("unchecked")
   @Override
   public void handleAction(Object context)
   {
@@ -44,7 +45,6 @@ public class OpenInsertVariableDialogAction implements Action
       }
       else if (context instanceof Map)
       {
-        //noinspection unchecked
         map = (Map<String, Object>) context;
         menu.setPrependCopyText("$");
       }
