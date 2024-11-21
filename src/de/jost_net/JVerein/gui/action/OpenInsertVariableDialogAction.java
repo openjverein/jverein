@@ -17,8 +17,10 @@
 
 package de.jost_net.JVerein.gui.action;
 
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.dialogs.ShowVariablesDialog;
 import de.jost_net.JVerein.gui.menu.ShowVariablesMenu;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -46,6 +48,12 @@ public class OpenInsertVariableDialogAction implements Action
       else if (context instanceof Map)
       {
         map = (Map<String, Object>) context;
+        prependCopyText = "$";
+      }
+      else if (context instanceof MailEmpfaenger)
+      {
+        map = new MitgliedMap().getMap(((MailEmpfaenger) context).getMitglied(),
+            null);
         prependCopyText = "$";
       }
       else

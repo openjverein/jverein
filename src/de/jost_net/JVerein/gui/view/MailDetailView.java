@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -19,6 +19,11 @@ package de.jost_net.JVerein.gui.view;
 import java.io.File;
 import java.io.FileInputStream;
 
+import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.server.MitgliedImpl;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -48,7 +53,7 @@ public class MailDetailView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("JVerein-Mail");
+    GUI.getView().setTitle("Mail");
 
     final MailControl control = new MailControl(this);
 
@@ -164,8 +169,22 @@ public class MailDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAIL, false, "question-circle.png");
-    buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
-        control, false, "view-refresh.png"));
+    buttons.addButton(
+        new Button("Mail-Vorlage", new MailVorlageZuweisenAction(), control,
+            false, "view-refresh.png"));
+    Mitglied m;
+    if (control.getEmpfaenger().getItems().isEmpty())
+    {
+      m = MitgliedImpl.getDummy();
+    }
+    else
+    {
+      m = ((MailEmpfaenger) control.getEmpfaenger().getItems()
+          .get(0)).getMitglied();
+    }
+    buttons.addButton(
+        new Button("Variablen anzeigen", new OpenInsertVariableDialogAction(),
+            new MitgliedMap().getMap(m, null), false, "bookmark.png"));
     buttons.addButton(control.getMailSpeichernButton());
     buttons.addButton(control.getMailReSendButton());
     buttons.addButton(control.getMailSendButton());
