@@ -23,7 +23,9 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.InfoPanel;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class SpendenbescheinigungAutoNeuView extends AbstractView
 {
@@ -57,12 +59,23 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
     info.setComment("Siehe Administration->Einstellungen->Spendenbescheinigungen->Mindestbetrag");
     }
     info.paint(getParent());
-    LabelGroup group = new LabelGroup(getParent(), "Jahr");
-    group.addLabelPair("Jahr", control.getJahr());
-    // TODO Unterscheidung Einzel/Sammel-Bestätigung: zwei Felder
-    group.addLabelPair("Formular-Einzelbest.", control.getFormular());
-    group.addLabelPair("Formular-Sammelbest.",
-        control.getFormularSammelbestaetigung());
+    LabelGroup group1 = new LabelGroup(getParent(), "Filter");
+    group1.addLabelPair("Jahr", control.getJahr());
+
+    LabelGroup group2 = new LabelGroup(getParent(), "Formulare");
+    ColumnLayout cl = new ColumnLayout(group2.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addLabelPair("Einzelbestätigung für Geldsspende",
+        control.getFormularGeld());
+    left.addLabelPair("Einzelbestätigung für Erstattungsverzicht",
+        control.getFormularSonstig());
+
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addLabelPair("Sammelbestätigung für Geldsspende",
+        control.getFormularSammelbestaetigungGeld());
+    right.addLabelPair("Sammelbestätigung für Erstattungsverzicht",
+        control.getFormularSammelbestaetigungSonstig());
 
     control.getSpendenbescheinigungTree().paint(this.getParent());
 

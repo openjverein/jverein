@@ -1219,6 +1219,7 @@ public class BuchungsControl extends AbstractControl
     }
     settings.setAttribute(settingsprefix + "suchtext", (String) getSuchtext().getValue());
     settings.setAttribute(settingsprefix + "suchbetrag", (String) getSuchBetrag().getValue());
+    settings.setAttribute(settingsprefix + "mitglied", (String) getMitglied().getValue());
 
     query = new BuchungQuery(dv, db, k, b, p, (String) getSuchtext().getValue(),
         (String) getSuchBetrag().getValue(), m.getValue(),
