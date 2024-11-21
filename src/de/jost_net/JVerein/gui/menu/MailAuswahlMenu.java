@@ -17,16 +17,12 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.MailAuswahlDeleteAction;
+import de.jost_net.JVerein.gui.action.MailVorschauAction;
 import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.MailControl;
-import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
-import de.jost_net.JVerein.gui.dialogs.MailVorschauDialog;
-import de.jost_net.JVerein.rmi.MailEmpfaenger;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.logging.Logger;
 
 /**
  * Kontext-Menu zur MailEmpfänger-Auswahl.
@@ -36,34 +32,11 @@ public class MailAuswahlMenu extends ContextMenu
 
   public MailAuswahlMenu(MailControl control)
   {
-    final MailControl contr = control;
     addItem(new CheckedSingleContextMenuItem("Variable",
         new OpenInsertVariableDialogAction(), "bookmark.png"));
-    addItem(new CheckedSingleContextMenuItem("Vorschau", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        if (context != null && context instanceof MailEmpfaenger)
-        {
-          MailEmpfaenger m = (MailEmpfaenger) context;
-          new MailVorschauDialog(contr, m,
-              MailEmpfaengerAuswahlDialog.POSITION_CENTER);
-        }
-        else
-        {
-          String name = "";
-          if (context != null && context.getClass() != null)
-          {
-            name = context.getClass().getCanonicalName();
-          }
-          Logger.error("ShowVariablesDiaglog: Ungültige Klasse: " + name);
-        }
-
-      }
-
-    }, "edit-copy.png" /* "mail-message-new.png" */));
+    addItem(new CheckedSingleContextMenuItem("Vorschau",
+        new MailVorschauAction(control),
+        "edit-copy.png" /* "mail-message-new.png" */));
     addItem(new CheckedContextMenuItem("Entfernen",
         new MailAuswahlDeleteAction(control), "user-trash-full.png"));
   }

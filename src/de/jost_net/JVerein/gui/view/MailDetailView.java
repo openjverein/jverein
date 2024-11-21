@@ -16,27 +16,19 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.io.File;
-import java.io.FileInputStream;
-
-import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
-import de.jost_net.JVerein.rmi.MailEmpfaenger;
-import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.server.MitgliedImpl;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
-
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
+import de.jost_net.JVerein.gui.action.MailVorschauAction;
+import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
 import de.jost_net.JVerein.gui.util.JameicaUtil;
 import de.jost_net.JVerein.rmi.MailAnhang;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.server.MitgliedImpl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -46,6 +38,14 @@ import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
+
+import java.io.File;
+import java.io.FileInputStream;
 
 public class MailDetailView extends AbstractView
 {
@@ -179,12 +179,16 @@ public class MailDetailView extends AbstractView
     }
     else
     {
-      m = ((MailEmpfaenger) control.getEmpfaenger().getItems()
-          .get(0)).getMitglied();
+      MailEmpfaenger empfaenger = (MailEmpfaenger) control.getEmpfaenger()
+          .getItems().get(0);
+      m = empfaenger.getMitglied();
     }
     buttons.addButton(
         new Button("Variablen anzeigen", new OpenInsertVariableDialogAction(),
             new MitgliedMap().getMap(m, null), false, "bookmark.png"));
+    buttons.addButton(
+        new Button("Vorschau", new MailVorschauAction(control), m, false,
+            "edit-copy.png"));
     buttons.addButton(control.getMailSpeichernButton());
     buttons.addButton(control.getMailReSendButton());
     buttons.addButton(control.getMailSendButton());
