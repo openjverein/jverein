@@ -65,7 +65,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
 
   private static final long serialVersionUID = 1L;
 
-  private static MitgliedDummy INSTANCE;
+  private static MitgliedDummy DUMMY_INSTANCE;
 
   public MitgliedImpl() throws RemoteException
   {
@@ -1316,11 +1316,11 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
 
   public static MitgliedDummy getDummy()
   {
-    if (INSTANCE == null)
+    if (DUMMY_INSTANCE == null)
     {
       try
       {
-        INSTANCE = new MitgliedDummy();
+        DUMMY_INSTANCE = new MitgliedDummy();
       }
       catch (RemoteException e)
       {
@@ -1328,11 +1328,12 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       }
     }
 
-    return INSTANCE;
+    return DUMMY_INSTANCE;
   }
 
   private static final class MitgliedDummy extends MitgliedImpl
   {
+    private static final long serialVersionUID = 1L;
 
     private final static String PERSONENART = "n";
 
@@ -1438,7 +1439,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       @Override
       public String getBezeichnung() throws RemoteException
       {
-        return "Adresstyp";
+        return "Mitglied";
       }
 
       @Override
@@ -1450,7 +1451,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       @Override
       public String getBezeichnungPlural() throws RemoteException
       {
-        return "Adresstypen";
+        return "Mitglieder";
       }
 
       @Override

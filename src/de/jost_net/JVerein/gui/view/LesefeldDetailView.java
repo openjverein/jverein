@@ -158,11 +158,6 @@ public class LesefeldDetailView extends AbstractView
     return true;
   }
 
-  @Override
-  public void unbind()
-  {
-  }
-
   /**
    * Holt akutelles Skript von GUI, evaluiert dieses und schreibt Ergebnis
    * zurück in die GUI.
