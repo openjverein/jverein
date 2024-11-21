@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.jost_net.JVerein.Variable.MitgliedVar;
-import de.jost_net.JVerein.Variable.MitgliedskontoVar;
+import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.JVereinDBService;
@@ -4360,16 +4360,16 @@ public class JVereinUpdateProvider
         + sql1 + MitgliedVar.KUENDIGUNG.getName() + sql2 + KUENDIGUNG + sql3 //
         + sql1 + MitgliedVar.BEITRAGSGRUPPE_BEZEICHNUNG.getName() + sql2
         + BEITRAGSGRUPPE + sql3 //
-        + sql1 + MitgliedskontoVar.ZAHLUNGSGRUND.getName() + sql2
+        + sql1 + RechnungVar.ZAHLUNGSGRUND.getName() + sql2
         + ZAHLUNGSGRUND + sql3//
-        + sql1 + MitgliedskontoVar.ZAHLUNGSGRUND1.getName() + sql2
+        + sql1 + RechnungVar.ZAHLUNGSGRUND1.getName() + sql2
         + ZAHLUNGSGRUND1 + sql3//
-        + sql1 + MitgliedskontoVar.ZAHLUNGSGRUND2.getName() + sql2
+        + sql1 + RechnungVar.ZAHLUNGSGRUND2.getName() + sql2
         + ZAHLUNGSGRUND2 + sql3//
-        + sql1 + MitgliedskontoVar.BUCHUNGSDATUM.getName() + sql2
+        + sql1 + RechnungVar.BUCHUNGSDATUM.getName() + sql2
         + BUCHUNGSDATUM + sql3//
         + sql1 + "tagesdatum" + sql2 + "Tagesdatum" + sql3//
-        + sql1 + MitgliedskontoVar.BETRAG.getName() + sql2 + BETRAG + sql3//
+        + sql1 + RechnungVar.BETRAG.getName() + sql2 + BETRAG + sql3//
     ;
     Map<String, String> statements = new HashMap<String, String>();
     // Update fuer H2

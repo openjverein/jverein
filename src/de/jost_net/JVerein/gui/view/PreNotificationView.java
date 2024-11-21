@@ -45,7 +45,7 @@ public class PreNotificationView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("SEPA Pre-Notification");
+    GUI.getView().setTitle("Pre-Notification");
 
     final PreNotificationControl control = new PreNotificationControl(this);
     control.init("prenotification." , null, null);

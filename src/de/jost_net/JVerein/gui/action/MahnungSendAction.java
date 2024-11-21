@@ -14,34 +14,17 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.Variable;
+package de.jost_net.JVerein.gui.action;
 
-public enum MitgliedskontoVar
+import de.jost_net.JVerein.gui.view.MahnungMailView;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
+
+public class MahnungSendAction implements Action
 {
-  ZAHLUNGSGRUND("mitgliedskonto_zahlungsgrund"), //
-  ZAHLUNGSGRUND1("mitgliedskonto_zahlungsgrund1"), //
-  ZAHLUNGSGRUND2("mitgliedskonto_zahlungsgrund2"), //
-  BUCHUNGSDATUM("mitgliedskonto_buchungsdatum"), //
-  NETTOBETRAG("mitgliedskonto_nettobetrag"), //
-  STEUERSATZ("mitgliedskonto_steuersatz"), //
-  STEUERBETRAG("mitgliedskonto_steuerbetrag"), //
-  BETRAG("mitgliedskonto_betrag"), //
-  IST("mitgliedskonto_ist"), //
-  DIFFERENZ("mitgliedskonto_differenz"), //
-  STAND("mitgliedskonto_stand"), //
-  SUMME_OFFEN("mitgliedskonto_summe_offen"), //
-  QRCODE_SUMME("qrcode_summe"), //
-  QRCODE_INTRO("qrcode_intro");
-
-  private String name;
-
-  MitgliedskontoVar(String name)
+  @Override
+  public void handleAction(Object context)
   {
-    this.name = name;
-  }
-
-  public String getName()
-  {
-    return name;
+    GUI.startView(MahnungMailView.class.getName(), context);
   }
 }

@@ -30,7 +30,7 @@ public class EinstellungenRechnungenView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen");
+    GUI.getView().setTitle("Einstellungen Rechnungen");
 
     final EinstellungControl control = new EinstellungControl(this);
 
@@ -59,7 +59,7 @@ public class EinstellungenRechnungenView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_RECHNUNGEN, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

@@ -46,6 +46,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.VarTools;
+import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Ct1Ausgabe;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -56,11 +57,9 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.HBCI;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.hbci.gui.action.SepaUeberweisungMerge;
-import de.willuhn.jameica.hbci.gui.dialogs.PainVersionDialog;
 import de.willuhn.jameica.hbci.rmi.AuslandsUeberweisung;
 import de.willuhn.jameica.hbci.rmi.HibiscusAddress;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
 public class Ct1Ueberweisung
@@ -88,20 +87,7 @@ public class Ct1Ueberweisung
   private int dateiausgabe(ArrayList<Lastschrift> lastschriften, File file, Date faell,
       Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
   {
-    SepaVersion sepaVersion;  
-    if (Einstellungen.getEinstellung().getCt1SepaVersion() != null)
-    {
-      sepaVersion = Einstellungen.getEinstellung().getCt1SepaVersion();
-    }
-    else
-    {
-      PainVersionDialog d = new PainVersionDialog(org.kapott.hbci.sepa.SepaVersion.Type.PAIN_001);
-      sepaVersion = (SepaVersion) d.open();
-      if (sepaVersion == null)
-      {
-        throw new OperationCanceledException();
-      }
-    }
+    SepaVersion  sepaVersion = Einstellungen.getEinstellung().getCt1SepaVersion();
     Properties ls_properties = new Properties();
     ls_properties.setProperty("src.bic", Einstellungen.getEinstellung().getBic());
     ls_properties.setProperty("src.iban", Einstellungen.getEinstellung().getIban());
@@ -118,8 +104,16 @@ public class Ct1Ueberweisung
     {
       ls_properties.setProperty(SepaUtil.insertIndex("dst.bic", counter),       StringUtils.trimToEmpty(ls.getBIC()));
       ls_properties.setProperty(SepaUtil.insertIndex("dst.iban", counter),      StringUtils.trimToEmpty(ls.getIBAN()));
-      ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),      StringUtils.trimToEmpty(ls.getMitglied()
-          .getKontoinhaber(1).toUpperCase()));
+      if (ls.getMitglied() != null)
+      {
+        ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),      StringUtils.trimToEmpty(ls.getMitglied()
+            .getKontoinhaber(1).toUpperCase()));
+      }
+      else if (ls.getKursteilnehmer() != null)
+      {
+        ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),      StringUtils.trimToEmpty(
+            Adressaufbereitung.getNameVorname(ls.getKursteilnehmer()).toUpperCase()));
+      }
       ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),     (BigDecimal.valueOf(0.01)).toString());
       ls_properties.setProperty(SepaUtil.insertIndex("btg.curr", counter),      HBCIProperties.CURRENCY_DEFAULT_DE);
       ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),         StringUtils.trimToEmpty(eval(ls, verwendungszweck)));

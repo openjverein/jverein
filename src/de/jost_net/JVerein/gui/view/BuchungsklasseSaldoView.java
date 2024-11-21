@@ -30,7 +30,7 @@ public class BuchungsklasseSaldoView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Buchungsklassen-Saldo");
+    GUI.getView().setTitle("Buchungsklassensaldo");
 
     final BuchungsklasseSaldoControl control = new BuchungsklasseSaldoControl(
         this);

@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.MitgliedskontoRechnungView;
+import de.jost_net.JVerein.gui.view.RechnungMailView;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -29,16 +29,16 @@ public class MitgliedskontoRechnungAction implements Action
     if (context != null && context instanceof Mitgliedskonto)
     {
       Mitgliedskonto mk = (Mitgliedskonto) context;
-      GUI.startView(MitgliedskontoRechnungView.class.getName(), mk);
+      GUI.startView(RechnungMailView.class.getName(), mk);
     }
     else if (context != null && context instanceof Mitgliedskonto[])
     {
       Mitgliedskonto[] mk = (Mitgliedskonto[]) context;
-      GUI.startView(MitgliedskontoRechnungView.class.getName(), mk);
+      GUI.startView(RechnungMailView.class.getName(), mk);
     }
     else
     {
-      GUI.startView(MitgliedskontoRechnungView.class, null);
+      GUI.startView(RechnungMailView.class, null);
     }
   }
 }

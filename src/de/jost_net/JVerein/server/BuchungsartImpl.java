@@ -220,7 +220,7 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   }
 
   @Override
-  public void setSteuerBuchungsart(Integer steuer_buchungsart) throws RemoteException
+  public void setSteuerBuchungsart(Long steuer_buchungsart) throws RemoteException
   {
     setAttribute("steuer_buchungsart", steuer_buchungsart);
   }

@@ -52,7 +52,7 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.MitgliedVar;
-import de.jost_net.JVerein.Variable.MitgliedskontoVar;
+import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Formular;
@@ -162,7 +162,7 @@ public class FormularAufbereitung
           // Increase counter if form field is zaehler or qrcode (counter is
           // needed in QR code, so it needs to be incremented)
           if ((f.getName().equals(AllgemeineVar.ZAEHLER.getName())
-              || f.getName().equals(MitgliedskontoVar.QRCODE_SUMME.getName()))
+              || f.getName().equals(RechnungVar.QRCODE_SUMME.getName()))
               && !increased)
           {
             zaehler++;
@@ -174,9 +174,9 @@ public class FormularAufbereitung
           }
           
           // create QR code for invoice sum if form field is QRCODE_SUM
-          if (f.getName().equals(MitgliedskontoVar.QRCODE_SUMME.getName()))
+          if (f.getName().equals(RechnungVar.QRCODE_SUMME.getName()))
           {
-            map.put(MitgliedskontoVar.QRCODE_SUMME.getName(), getPaymentQRCode(map));
+            map.put(RechnungVar.QRCODE_SUMME.getName(), getPaymentQRCode(map));
             // Update QR code
           }
 
@@ -217,7 +217,7 @@ public class FormularAufbereitung
     if (true == festerText)
     {
       String zahlungsgruende_raw = getString(
-          fieldsMap.get(MitgliedskontoVar.ZAHLUNGSGRUND.getName()));
+          fieldsMap.get(RechnungVar.ZAHLUNGSGRUND.getName()));
       String[] zahlungsgruende = zahlungsgruende_raw.split("\n");
       if (zahlungsgruende.length == 1 && e.getQRCodeSnglLine())
       {
@@ -309,7 +309,7 @@ public class FormularAufbereitung
     sbEpc.append(e.getIban()).append("\n");
     sbEpc.append(EPC_EUR);
     Object[] oPosten = (Object[]) fieldsMap
-        .get(MitgliedskontoVar.BETRAG.getName());
+        .get(RechnungVar.BETRAG.getName());
     // Der letzte Eintrag in dem Array ist die Rechnungssumme
     // Ersetze das Dezimalkomma durch einen Punkt, um der Spezifikation zu entsprechen
     String betrag = getString(oPosten[oPosten.length - 1]).replace(',', '.');

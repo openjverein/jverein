@@ -65,7 +65,7 @@ public class AnlagenkontoNeuAction implements Action
         bu.setZweck(buchung.getZweck());
         bu.setDatum(buchung.getDatum());
         if (buchung.getBuchungsart() != null)
-          bu.setBuchungsart(buchung.getBuchungsartId());
+          bu.setBuchungsartId(buchung.getBuchungsartId());
         if (buchung.getProjekt() != null)
           bu.setProjektID(buchung.getProjektID());
         bu.setKommentar(buchung.getKommentar());

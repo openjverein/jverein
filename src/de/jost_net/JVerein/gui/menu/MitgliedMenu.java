@@ -150,10 +150,11 @@ public class MitgliedMenu extends ContextMenu
             m.setEingabedatum();
             m.setBeitragsgruppe(null);
             m.setExterneMitgliedsnummer(null);
-            m.setIndividuellerBeitrag(0.0d);
+            m.setIndividuellerBeitrag(null);
             m.setEintritt("");
             m.setAustritt("");
             m.setKuendigung("");
+            m.setZahlerID(null);
             DBService service = Einstellungen.getDBService();
             // Sekundäre Beitragsgruppen löschen
             DBIterator<SekundaereBeitragsgruppe> sit = service

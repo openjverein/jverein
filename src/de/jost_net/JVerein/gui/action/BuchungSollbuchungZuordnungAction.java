@@ -107,6 +107,13 @@ public class BuchungSollbuchungZuordnungAction implements Action
         for (Buchung buchung : b)
         {
           buchung.setMitgliedskonto(mk);
+          if (mk != null)
+          {
+            if (buchung.getBuchungsartId() == null)
+              buchung.setBuchungsartId(mk.getBuchungsartId());
+            if (buchung.getBuchungsklasseId() == null)
+              buchung.setBuchungsklasseId(mk.getBuchungsklasseId());
+          }
           buchung.store();
         }
         control.getBuchungsList();

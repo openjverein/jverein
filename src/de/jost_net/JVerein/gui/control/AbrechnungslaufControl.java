@@ -346,7 +346,7 @@ public class AbrechnungslaufControl extends FilterControl
     }
   }
 
-  public Part getAbrechungslaeufeList() throws RemoteException
+  public Part getAbrechnungslaeufeList() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Abrechnungslauf> abrechnungslaeufe = service
@@ -409,7 +409,7 @@ public class AbrechnungslaufControl extends FilterControl
     }
     try
     {
-      getAbrechungslaeufeList();
+      getAbrechnungslaeufeList();
     }
     catch (RemoteException e1)
     {

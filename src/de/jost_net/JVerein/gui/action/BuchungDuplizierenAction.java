@@ -47,7 +47,7 @@ public class BuchungDuplizierenAction implements Action
       bu.setArt(b.getArt());
       bu.setKommentar(b.getKommentar());
       if (b.getBuchungsart() != null)
-        bu.setBuchungsart(b.getBuchungsartId());
+        bu.setBuchungsartId(b.getBuchungsartId());
       if (b.getBuchungsklasse() != null)
         bu.setBuchungsklasseId(b.getBuchungsklasseId());
       if (b.getProjekt() != null)

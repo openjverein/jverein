@@ -468,7 +468,7 @@ public class BuchungsartControl extends AbstractControl
       b.setSteuersatz(steuersatzValue);
       if (steuer_buchungsart.getValue() instanceof Buchungsart) 
       {
-        b.setSteuerBuchungsart(Integer.parseInt(((Buchungsart) steuer_buchungsart.getValue()).getID()));
+        b.setSteuerBuchungsart(Long.parseLong(((Buchungsart) steuer_buchungsart.getValue()).getID()));
       }
       else
       {
@@ -635,7 +635,7 @@ public class BuchungsartControl extends AbstractControl
 
   public Button getPDFAusgabeButton()
   {
-    Button b = new Button("PDF-Ausgabe", new Action()
+    Button b = new Button("PDF", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException

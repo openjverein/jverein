@@ -30,7 +30,7 @@ public class BuchungsuebernahmeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Hibiscus-Buchungen übernehmen");
+    GUI.getView().setTitle("Hibiscus-Buchungen-Import");
 
     final BuchungsuebernahmeControl control = new BuchungsuebernahmeControl(
         this);
@@ -40,14 +40,14 @@ public class BuchungsuebernahmeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGSUEBERNAHME, false, "question-circle.png");
-    buttons.addButton("Übernahme", new Action()
+    buttons.addButton("Import", new Action()
     {
       @Override
       public void handleAction(Object context)
       {
         new Buchungsuebernahme();
       }
-    }, null, true, "document-save.png");
+    }, null, true, "file-import.png");
     buttons.paint(this.getParent());
   }
 }

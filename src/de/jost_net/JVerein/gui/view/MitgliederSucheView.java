@@ -42,7 +42,7 @@ public class MitgliederSucheView extends AbstractMitgliedSucheView
   @Override
   public String getTitle()
   {
-    return "Mitglieder suchen";
+    return "Mitglieder";
   }
 
   @Override

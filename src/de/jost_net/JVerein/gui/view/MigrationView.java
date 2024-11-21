@@ -187,7 +187,7 @@ public class MigrationView extends AbstractView
   public void bind() throws Exception
   {
 
-    GUI.getView().setTitle("Daten-Import");
+    GUI.getView().setTitle("Migration");
 
     final Composite parent = this.getParent();
     parent.setLayout(new GridLayout(2, false));

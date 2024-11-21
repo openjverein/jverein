@@ -23,6 +23,7 @@ import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
@@ -60,7 +61,9 @@ public class SollbuchungDetailView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
-    buttons.addButton("Speichern", new Action()
+    
+    boolean hasRechnung = control.hasRechnung();
+    Button save = new Button("Speichern", new Action()
     {
 
       @Override
@@ -69,6 +72,10 @@ public class SollbuchungDetailView extends AbstractView
         control.handleStore();
       }
     }, null, true, "document-save.png");
+    save.setEnabled(!hasRechnung);
+    buttons.addButton(save);
+    
+    
     buttons.paint(this.getParent());
   }
 }

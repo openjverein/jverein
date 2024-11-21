@@ -31,7 +31,7 @@ public class DbBereinigenView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Datenbank bereinigen");
+    GUI.getView().setTitle("Datenbank-Bereinigung");
 
     final DbBereinigenControl control = new DbBereinigenControl(this);
 

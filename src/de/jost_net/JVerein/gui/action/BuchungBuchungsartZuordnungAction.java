@@ -85,7 +85,7 @@ public class BuchungBuchungsartZuordnungAction implements Action
         {
           for (Buchung buchung : b)
           {
-            buchung.setBuchungsart(null);
+            buchung.setBuchungsartId(null);
             buchung.setBuchungsklasseId(null);
             buchung.store();
           }
@@ -102,7 +102,7 @@ public class BuchungBuchungsartZuordnungAction implements Action
             }
             else
             {
-              buchung.setBuchungsart(Long.valueOf(ba.getID()));
+              buchung.setBuchungsartId(Long.valueOf(ba.getID()));
               if (bk != null)
                buchung.setBuchungsklasseId(Long.valueOf(bk.getID()));
               else

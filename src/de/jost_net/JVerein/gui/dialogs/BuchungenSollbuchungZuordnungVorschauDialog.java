@@ -26,6 +26,8 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BuchungsListeAction;
 import de.jost_net.JVerein.gui.dialogs.BuchungenSollbuchungZuordnungDialog.BookingMemberAccountEntry;
+import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -36,11 +38,8 @@ import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
 /**
  * Ein Dialog, der die automatisch ermittelten Zuordnungen zwischen Buchung
@@ -105,7 +104,7 @@ public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<
     b.addButton("Zuordnen", new Action()
     {
       @Override
-      public void handleAction(Object context)
+      public void handleAction(Object context) throws ApplicationException
       {
         persistAssignment();
       }
@@ -122,49 +121,34 @@ public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<
     b.paint(parent);
   }
 
-  protected void persistAssignment()
+  protected void persistAssignment() throws ApplicationException
   {
-
-    BackgroundTask t = new BackgroundTask()
+    try
     {
-
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
+      for(BookingMemberAccountEntry dao : assignedBooking)
       {
-
-        try
+        Mitgliedskonto mk = dao.getMitgliedskonto();
+        Buchung buchung = dao.getBuchung();
+        buchung.setMitgliedskonto(dao.getMitgliedskonto());
+        if (mk != null)
         {
-          for(BookingMemberAccountEntry dao : assignedBooking)
-          {
-            dao.getBuchung().setMitgliedskonto(dao.getMitgliedskonto());
-            dao.getBuchung().store();
-          }
-
-          //Darstellung aktualisieren
-          new BuchungsListeAction().handleAction(this);
-
-          GUI.getStatusBar().setSuccessText("Die Zuordnung wurde erfolgreich durchgeführt");
+          if (buchung.getBuchungsartId() == null)
+            buchung.setBuchungsartId(mk.getBuchungsartId());
+          if (buchung.getBuchungsklasseId() == null)
+            buchung.setBuchungsklasseId(mk.getBuchungsklasseId());
         }
-        catch (RemoteException e) {
-          Logger.error("error while assignment", e);
-          throw new ApplicationException("Fehler bei der Durchführung der Zuordnung", e);
-        }
-      }
-      
-      @Override
-      public void interrupt()
-      {
-        //
+        buchung.store();
       }
 
-      @Override
-      public boolean isInterrupted()
-      {
-        return false;
-      }
-    };
+      //Darstellung aktualisieren
+      new BuchungsListeAction().handleAction(this);
 
-    Application.getController().start(t);
+      GUI.getStatusBar().setSuccessText("Die Zuordnung wurde erfolgreich durchgeführt");
+    }
+    catch (RemoteException e) {
+      Logger.error("error while assignment", e);
+      throw new ApplicationException("Fehler bei der Durchführung der Zuordnung", e);
+    }
 
     close();
   }

@@ -375,7 +375,7 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
       for (Buchung b : buchungen)
       {
         b.setSpendenbescheinigungId(id);
-        b.store();
+        b.store(false);
       }
     }
   }

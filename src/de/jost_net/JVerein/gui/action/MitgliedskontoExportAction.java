@@ -89,7 +89,7 @@ public class MitgliedskontoExportAction implements Action
       Logger.error("Fehler", e);
       GUI.getStatusBar().setErrorText(
 
-      "Fehler beim exportieren der Mitgliedskonten");
+      "Fehler beim exportieren der Sollbuchungen");
     }
   }
 
@@ -123,7 +123,7 @@ public class MitgliedskontoExportAction implements Action
 
   public enum EXPORT_TYP
   {
-    MITGLIEDSKONTO("Mitgliedskonten"), MAHNUNGEN("Mahnungen"), RECHNUNGEN(
+    MITGLIEDSKONTO("Sollbuchungen"), MAHNUNGEN("Mahnungen"), RECHNUNGEN(
         "Rechnungen");
 
     private final String titel;
