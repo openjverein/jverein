@@ -34,6 +34,7 @@ public class OpenInsertVariableDialogAction implements Action
   @Override
   public void handleAction(Object context)
   {
+    String prependCopyText = "";
     try
     {
       ShowVariablesMenu menu = new ShowVariablesMenu();
@@ -41,19 +42,20 @@ public class OpenInsertVariableDialogAction implements Action
       if (context instanceof LesefeldAuswerter)
       {
         map = ((LesefeldAuswerter) context).getMap();
-        menu.setPrependCopyText("");
       }
       else if (context instanceof Map)
       {
         map = (Map<String, Object>) context;
-        menu.setPrependCopyText("$");
+        prependCopyText = "$";
       }
       else
       {
         throw new ApplicationException("Falscher Kontext");
       }
-      ShowVariablesDialog d = new ShowVariablesDialog(map, false);
+      ShowVariablesDialog d = new ShowVariablesDialog(map, false,
+          prependCopyText, "");
       menu.setAppendCopyText("");
+      menu.setPrependCopyText(prependCopyText);
       d.setContextMenu(menu);
       d.setDoubleClickAction(menu.getCopyToClipboardAction());
       d.open();
