@@ -70,6 +70,10 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   {
     try
     {
+      if (getZahler() == null)
+      {
+        throw new ApplicationException("Zahler fehlt");
+      }
       if (getDatum() == null)
       {
         throw new ApplicationException("Datum fehlt");
@@ -234,6 +238,31 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   {
     setAttribute("mitglied", Integer.valueOf(mitglied.getID()));
   }
+  
+  @Override
+  public Mitglied getZahler() throws RemoteException
+  {
+  Object o = (Object) super.getAttribute("zahler");
+    if (o == null)
+      return null;
+
+    if(o instanceof Mitglied)
+      return (Mitglied)o;
+   
+    Cache cache = Cache.get(Mitglied.class,true);
+    return (Mitglied) cache.get(o);
+  }
+  
+  public Long getZahlerId() throws RemoteException
+  {
+    return (Long) super.getAttribute("zahler");
+  }
+
+  @Override
+  public void setZahlerId(Long zahlerId) throws RemoteException
+  {
+    setAttribute("zahler", zahlerId);
+  }
 
   @Override
   public Date getDatum() throws RemoteException
@@ -372,6 +401,10 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
     if (fieldName.equals("mitglied"))
     {
       return getMitglied();
+    }
+    if (fieldName.equals("zahler"))
+    {
+      return getZahler();
     }
     if (fieldName.equals("abrechnungslauf"))
     {

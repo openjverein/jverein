@@ -49,6 +49,7 @@ import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.io.MailSender;
+import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -95,6 +96,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   private SelectInput spendenart;
 
+  private TextInput mitglied;
+  
   private TextInput zeile1;
 
   private TextInput zeile2;
@@ -186,6 +189,21 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       Logger.error("Fehler", e);
     }
+  }
+  
+  public TextInput getMitglied() throws RemoteException
+  {
+    if (mitglied != null)
+    {
+      return mitglied;
+    }
+    String text = "";
+    Mitglied m = getSpendenbescheinigung().getMitglied();
+    if (m != null)
+      text = Adressaufbereitung.getVornameName(m);
+    mitglied = new TextInput(text);
+    mitglied.disable();
+    return mitglied;
   }
 
   public TextInput getZeile1(boolean withFocus) throws RemoteException
@@ -548,6 +566,15 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spbList = new TablePart(getSpendenbescheinigungen(),
         new SpendenbescheinigungAction(Spendenart.SACHSPENDE));
     spbList.addColumn("Nr", "id-int");
+    spbList.addColumn("Mitglied", "mitglied");
+    spbList.addColumn("Spendenart", "spendenart", new Formatter()
+    {
+      @Override
+      public String format(Object o)
+      {
+        return new Spendenart((Integer) o).getText();
+      }
+    });
     spbList.addColumn("Bescheinigungsdatum", "bescheinigungsdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     spbList.addColumn("Spendedatum", "spendedatum",

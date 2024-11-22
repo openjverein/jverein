@@ -127,6 +127,8 @@ public class MitgliedskontoControl extends DruckMailControl
   private SelectInput buchungsklasse;
   
   private AbstractInput mitglied;
+  
+  private AbstractInput zahler;
 
   private Mitgliedskonto mkto;
 
@@ -394,6 +396,7 @@ public class MitgliedskontoControl extends DruckMailControl
       
       if(mkto.getRechnung() != null)
         throw new ApplicationException("Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
+      mkto.setZahlerId(getSelectedZahlerId());
       mkto.setBetrag((Double) getBetrag().getValue());
       mkto.setDatum((Date) getDatum().getValue());
       Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
@@ -525,7 +528,8 @@ public class MitgliedskontoControl extends DruckMailControl
       mitgliedskontoList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       mitgliedskontoList.addColumn("Abrechnungslauf", "abrechnungslauf");
-      mitgliedskontoList.addColumn("Name", "mitglied");
+      mitgliedskontoList.addColumn("Mitglied", "mitglied");
+      mitgliedskontoList.addColumn("Zahler", "zahler");
       mitgliedskontoList.addColumn("Zweck", "zweck1");
       mitgliedskontoList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
@@ -1230,6 +1234,38 @@ public class MitgliedskontoControl extends DruckMailControl
     return mitglied;
   }
   
+  public Input getZahler() throws RemoteException
+  {
+    if (zahler != null)
+    {
+      return zahler;
+    }
+    zahler = new MitgliedInput().getMitgliedInput(zahler,
+        getMitgliedskonto().getZahler(),
+        Einstellungen.getEinstellung().getMitgliedAuswahl());
+    zahler.setMandatory(true);
+    return zahler;
+  }
+
+  private Long getSelectedZahlerId() throws ApplicationException
+  {
+    try
+    {
+      if (zahler == null)
+        return null;
+      Mitglied derZahler = (Mitglied) getZahler().getValue();
+      if (null == derZahler)
+        return null;
+      return Long.valueOf(derZahler.getID());
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählter Zahler kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
+
   public class MitgliedListener implements Listener
   {
 

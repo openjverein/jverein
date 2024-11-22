@@ -46,6 +46,7 @@ public class SollbuchungDetailView extends AbstractView
     LabelGroup grBuchung = new LabelGroup(getParent(),
         (typ == MitgliedskontoNode.SOLL ? "Soll" : "Ist") + "buchung");
     grBuchung.addLabelPair("Mitglied", control.getMitglied());
+    grBuchung.addLabelPair("Zahler", control.getZahler());
     grBuchung.addLabelPair("Datum", control.getDatum());
     grBuchung.addLabelPair("Verwendungszweck 1", control.getZweck1());
     grBuchung.addLabelPair("Zahlungsweg", control.getZahlungsweg());

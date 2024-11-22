@@ -132,9 +132,11 @@ public class SollbuchungAuswahlInput
             buchungen[0].setZweck(konto.getZweck1());
             buchungen[0].setBetrag(konto.getBetrag());
             buchungen[0].setDatum(new Date());
-            buchungen[0].setBuchungsartId(konto.getBuchungsartId());
-            buchungen[0].setBuchungsklasseId(konto.getBuchungsklasseId());
           }
+          if (buchungen[0].getBuchungsartId() == null)
+            buchungen[0].setBuchungsartId(konto.getBuchungsartId());
+          if (buchungen[0].getBuchungsklasseId() == null)
+            buchungen[0].setBuchungsklasseId(konto.getBuchungsklasseId());
         }
         else if (event.data instanceof Mitglied)
         {
