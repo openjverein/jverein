@@ -1284,6 +1284,9 @@ public class MitgliedskontoControl extends DruckMailControl
         if(((Mitglied) getMitglied().getValue()).getZahlerID() != null)
           list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
         getZahlungsweg().setList(list);
+        
+        if (getZahler().getValue() == null)
+          getZahler().setValue(getMitglied().getValue());
       }
       catch (RemoteException e)
       {

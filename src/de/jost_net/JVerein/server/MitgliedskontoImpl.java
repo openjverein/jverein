@@ -253,6 +253,15 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
     return (Mitglied) cache.get(o);
   }
   
+  @Override
+  public void setZahler(Mitglied zahler) throws RemoteException
+  {
+    if (zahler != null)
+      setAttribute("zahler", Long.valueOf(zahler.getID()));
+    else
+      setAttribute("zahler", null);
+  }
+  
   public Long getZahlerId() throws RemoteException
   {
     return (Long) super.getAttribute("zahler");

@@ -830,7 +830,7 @@ public class AbrechnungSEPA
       mk.setBetrag(betrag);
       mk.setDatum(datum);
       mk.setMitglied(mg);
-      mk.setZahlerId(Long.valueOf(zahler.getID()));
+      mk.setZahler(zahler);
       mk.setZweck1(zweck1);
       double steuersatz = 0d;
       if (buchungsart != null)

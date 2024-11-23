@@ -1056,7 +1056,7 @@ public class BuchungsControl extends AbstractControl
         if (zahlerId != null)
           mk.setZahlerId(zahlerId);
         else
-          mk.setZahlerId(Long.valueOf(mitglied.getID()));
+          mk.setZahler(mitglied);
         mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
         mk.setZweck1(b.getZweck());
         mk.store();

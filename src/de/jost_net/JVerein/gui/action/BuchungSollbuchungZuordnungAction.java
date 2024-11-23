@@ -103,7 +103,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
           if (zahlerId != null)
             mk.setZahlerId(zahlerId);
           else
-            mk.setZahlerId(Long.valueOf(m.getID()));
+            mk.setZahler(m);
           mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
           mk.setZweck1(b[0].getZweck());
           mk.store();

@@ -79,12 +79,8 @@ public class SpendenbescheinigungAction implements Action
         else if (context != null && (context instanceof MitgliedskontoNode))
         {
           MitgliedskontoNode mkn = (MitgliedskontoNode) context;
-          if (mkn.getMitglied() != null)
-          {
-            // Mitglied aus Mitgliedskonto lesen
-            Mitglied m = mkn.getMitglied();
-            SpbAdressaufbereitung.adressaufbereitung(m, spb);
-          }
+
+          // Istbuchung in Mitgliedskonto ausgewählt
           if (mkn.getType() == MitgliedskontoNode.IST)
           {
             // Buchung eintragen
@@ -98,13 +94,27 @@ public class SpendenbescheinigungAction implements Action
                 throw new ApplicationException(
                     "Die Buchung ist bereits auf einer Spendenbescheinigung eingetragen!");
               }
+              if (b.getMitgliedskonto() != null)
+              {
+                // Zahler aus Sollbuchung lesen
+                Mitglied zahler = b.getMitgliedskonto().getZahler();
+                if (zahler != null)
+                  SpbAdressaufbereitung.adressaufbereitung(zahler, spb);
+              }
               spb.setBuchung(b);
               spb.setSpendedatum(b.getDatum());
               spb.setAutocreate(Boolean.TRUE);
             }
           }
+          // Mitglied in Mitgliedskonto ausgewählt
           else if (mkn.getType() == MitgliedskontoNode.MITGLIED)
           {
+            if (mkn.getMitglied() != null)
+            {
+              // Mitglied aus Mitgliedskonto lesen
+              Mitglied m = mkn.getMitglied();
+              SpbAdressaufbereitung.adressaufbereitung(m, spb);
+            }
             if (spendenart == Spendenart.GELDSPENDE)
             {
               handleMitglied(spb.getMitglied());

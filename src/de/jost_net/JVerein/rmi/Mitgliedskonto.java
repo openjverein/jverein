@@ -29,13 +29,15 @@ public interface Mitgliedskonto extends DBObject
       throws RemoteException;
 
   public Mitglied getMitglied() throws RemoteException;
-  
+
   public String getMitgliedId() throws RemoteException;
 
   public void setMitglied(Mitglied mitglied) throws RemoteException;
-  
+
   public Mitglied getZahler() throws RemoteException;
-  
+
+  public void setZahler(Mitglied zahler) throws RemoteException;
+
   public Long getZahlerId() throws RemoteException;
 
   public void setZahlerId(Long zahlerId) throws RemoteException;
@@ -73,13 +75,13 @@ public interface Mitgliedskonto extends DBObject
   public Buchungsart getBuchungsart() throws RemoteException;
 
   public void setBuchungsart(Buchungsart buchungsart) throws RemoteException;
-  
+
   public Long getBuchungsartId() throws RemoteException;
 
   public void setBuchungsartId(Long buchungsartId) throws RemoteException;
 
   public Buchungsklasse getBuchungsklasse() throws RemoteException;
-  
+
   public Long getBuchungsklasseId() throws RemoteException;
 
   public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
