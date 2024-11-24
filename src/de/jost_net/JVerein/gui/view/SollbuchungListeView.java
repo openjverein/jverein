@@ -40,7 +40,7 @@ public class SollbuchungListeView extends AbstractView
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
     control.init("sollbuchung.", null, null);
-    
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
@@ -48,12 +48,12 @@ public class SollbuchungListeView extends AbstractView
     left.addInput(control.getSuchname());
     left.addInput(control.getDifferenz());
     left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
     right.addInput(control.getMailauswahl());
-    
+
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
@@ -67,10 +67,10 @@ public class SollbuchungListeView extends AbstractView
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
     buttons.addButton(new Button("Export",
-        new SollbuchungExportAction(EXPORT_TYP.MITGLIEDSKONTO, null),
-        control, false, "document-save.png"));
-    buttons.addButton("Neu", new SollbuchungEditAction(), 
-        control, false, "document-new.png");
+        new SollbuchungExportAction(EXPORT_TYP.MITGLIEDSKONTO), control, false,
+        "document-save.png"));
+    buttons.addButton("Neu", new SollbuchungEditAction(), control, false,
+        "document-new.png");
     buttons.paint(this.getParent());
   }
 }

@@ -61,8 +61,9 @@ public abstract class SollbuchungExport implements Exporter
     this.control.getOhneAbbucher().setValue(objects[2]);
     this.control.getDatumvon().setValue(objects[3]);
     this.control.getDatumbis().setValue(objects[4]);
-    this.control.getMailauswahl().setValue(new MailAuswertungObject((int) objects[5]));
-    
+    this.control.getMailauswahl()
+        .setValue(new MailAuswertungObject((int) objects[5]));
+
     open();
 
     DBIterator<Mitglied> mitgl = Einstellungen.getDBService()
@@ -73,7 +74,8 @@ public abstract class SollbuchungExport implements Exporter
     {
       Mitglied m = (Mitglied) mitgl.next();
       startMitglied(m);
-      GenericIterator<Mitgliedskonto> sollbuchnungen = new SollbuchungQuery(control, false, m).get();
+      GenericIterator<Mitgliedskonto> sollbuchnungen = new SollbuchungQuery(
+          control, false, m).get();
       while (sollbuchnungen.hasNext())
       {
         add(sollbuchnungen.next());

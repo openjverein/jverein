@@ -43,12 +43,13 @@ public class SollbuchungQuery
 {
 
   protected boolean umwandeln = false;
-  
+
   protected Mitglied mitglied = null;
-  
+
   protected FilterControl control = null;
 
-  public SollbuchungQuery(FilterControl control, boolean umwandeln, Mitglied mitglied)
+  public SollbuchungQuery(FilterControl control, boolean umwandeln,
+      Mitglied mitglied)
   {
     this.umwandeln = umwandeln;
     this.control = control;
@@ -77,30 +78,32 @@ public class SollbuchungQuery
         bd = new java.sql.Date(d1.getTime());
       }
     }
-    
+
     DIFFERENZ diff = DIFFERENZ.EGAL;
     if (control.isDifferenzAktiv() && control.getDifferenz() != null)
     {
       diff = (DIFFERENZ) control.getDifferenz().getValue();
     }
-    
-    boolean kein_name = !control.isSuchnameAktiv() || control.getSuchname().getValue() == null || 
-        ((String) control.getSuchname().getValue()).isEmpty();
-    boolean ein_name = control.isSuchnameAktiv() && control.getSuchname().getValue() != null && 
-        !((String) control.getSuchname().getValue()).isEmpty();
-    boolean keine_email = !control.isMailauswahlAktiv() || (Integer) control.getMailauswahl().getValue() == 
-        MailAuswertungInput.ALLE;
-    boolean filter_email = control.isMailauswahlAktiv() && !((Integer) control.getMailauswahl().getValue() == 
-        MailAuswertungInput.ALLE);
-    
+
+    boolean kein_name = !control.isSuchnameAktiv()
+        || control.getSuchname().getValue() == null
+        || ((String) control.getSuchname().getValue()).isEmpty();
+    boolean ein_name = control.isSuchnameAktiv()
+        && control.getSuchname().getValue() != null
+        && !((String) control.getSuchname().getValue()).isEmpty();
+    boolean keine_email = !control.isMailauswahlAktiv() || (Integer) control
+        .getMailauswahl().getValue() == MailAuswertungInput.ALLE;
+    boolean filter_email = control.isMailauswahlAktiv() && !((Integer) control
+        .getMailauswahl().getValue() == MailAuswertungInput.ALLE);
+
     // Falls kein Name, kein Mailfilter und keine Differenz dann alles lesen
-    if (kein_name && keine_email &&  diff == DIFFERENZ.EGAL)
+    if (kein_name && keine_email && diff == DIFFERENZ.EGAL)
     {
       DBIterator<Mitgliedskonto> sollbuchungen = Einstellungen.getDBService()
           .createList(Mitgliedskonto.class);
       if (mitglied != null)
       {
-        sollbuchungen.addFilter("mitgliedskonto.mitglied = ?", 
+        sollbuchungen.addFilter("mitgliedskonto.mitglied = ?",
             new Object[] { Long.valueOf(mitglied.getID()) });
       }
       if (vd != null)
@@ -113,23 +116,25 @@ public class SollbuchungQuery
         sollbuchungen.addFilter("mitgliedskonto.datum <= ? ",
             new Object[] { bd });
       }
-      if (control.isOhneAbbucherAktiv() && (Boolean) control.getOhneAbbucher().getValue())
+      if (control.isOhneAbbucherAktiv()
+          && (Boolean) control.getOhneAbbucher().getValue())
       {
-        sollbuchungen.addFilter("mitgliedskonto.zahlungsweg <> ?", 
+        sollbuchungen.addFilter("mitgliedskonto.zahlungsweg <> ?",
             Zahlungsweg.BASISLASTSCHRIFT);
       }
       sollbuchungen.setOrder("ORDER BY mitgliedskonto.datum desc");
       return sollbuchungen;
     }
-    
-    // Falls ein Name oder Mailfilter aber keine Differenz dann alles des Mitglieds lesen
-    if ((ein_name || filter_email)  && diff == DIFFERENZ.EGAL)
+
+    // Falls ein Name oder Mailfilter aber keine Differenz dann alles des
+    // Mitglieds lesen
+    if ((ein_name || filter_email) && diff == DIFFERENZ.EGAL)
     {
       DBIterator<Mitgliedskonto> sollbuchungen = Einstellungen.getDBService()
           .createList(Mitgliedskonto.class);
       if (mitglied != null)
       {
-        sollbuchungen.addFilter("mitgliedskonto.mitglied = ?", 
+        sollbuchungen.addFilter("mitgliedskonto.mitglied = ?",
             new Object[] { Long.valueOf(mitglied.getID()) });
       }
       if ((!umwandeln && ein_name) || filter_email)
@@ -137,24 +142,27 @@ public class SollbuchungQuery
         sollbuchungen.join("mitglied");
         sollbuchungen.addFilter("mitglied.id = mitgliedskonto.mitglied");
       }
-      
+
       if (!umwandeln && ein_name)
       {
         // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
         String name = (String) control.getSuchname().getValue();
-        sollbuchungen.addFilter("((lower(mitglied.name) like ?)"
-            + " OR (lower(mitglied.vorname) like ?))",
-            new Object[] {name.toLowerCase() + "%", name.toLowerCase() + "%"});
+        sollbuchungen.addFilter(
+            "((lower(mitglied.name) like ?)"
+                + " OR (lower(mitglied.vorname) like ?))",
+            new Object[] { name.toLowerCase() + "%",
+                name.toLowerCase() + "%" });
       }
       else if (umwandeln && ein_name)
       {
         // Der Name muss umgewandelt werden, es kann mehrere Matches geben
-        ArrayList<BigDecimal> namenids = getNamenIds((String) control.getSuchname().getValue());
+        ArrayList<BigDecimal> namenids = getNamenIds(
+            (String) control.getSuchname().getValue());
         if (namenids != null)
         {
           int anzahl = namenids.size();
           String querystring = null;
-          
+
           for (int i = 1; i <= anzahl; i++)
           {
             if (anzahl == 1)
@@ -163,18 +171,18 @@ public class SollbuchungQuery
             }
             else if (i == 1)
             {
-              querystring =  "((mitgliedskonto.mitglied = ?) OR ";
+              querystring = "((mitgliedskonto.mitglied = ?) OR ";
             }
             else if (i < anzahl)
             {
-              querystring =  querystring + "(mitgliedskonto.mitglied = ?) OR ";
+              querystring = querystring + "(mitgliedskonto.mitglied = ?) OR ";
             }
             else if (i == anzahl)
             {
-              querystring =  querystring + "(mitgliedskonto.mitglied = ?)) ";
+              querystring = querystring + "(mitgliedskonto.mitglied = ?)) ";
             }
           }
-          sollbuchungen.addFilter(querystring, namenids.toArray() );
+          sollbuchungen.addFilter(querystring, namenids.toArray());
         }
       }
 
@@ -188,9 +196,10 @@ public class SollbuchungQuery
         sollbuchungen.addFilter("(mitgliedskonto.datum <= ?) ",
             new Object[] { bd });
       }
-      if (control.isOhneAbbucherAktiv() && (Boolean) control.getOhneAbbucher().getValue())
+      if (control.isOhneAbbucherAktiv()
+          && (Boolean) control.getOhneAbbucher().getValue())
       {
-        sollbuchungen.addFilter("mitgliedskonto.zahlungsweg <> ?", 
+        sollbuchungen.addFilter("mitgliedskonto.zahlungsweg <> ?",
             Zahlungsweg.BASISLASTSCHRIFT);
       }
       if (filter_email)
@@ -208,7 +217,7 @@ public class SollbuchungQuery
       sollbuchungen.setOrder("ORDER BY mitgliedskonto.datum desc");
       return sollbuchungen;
     }
-    
+
     // Eine Differenz ist ausgewählt
     final DBService service = Einstellungen.getDBService();
     String sql = "SELECT  mitgliedskonto.id, mitglied.name, mitglied.vorname, "
@@ -223,8 +232,9 @@ public class SollbuchungQuery
           + "mitgliedskonto.mitglied = ? ";
       param.add(Long.valueOf(mitglied.getID()));
     }
-    if (control.isSuchnameAktiv() && control.getSuchname().getValue() != null && 
-        !((String) control.getSuchname().getValue()).isEmpty() && umwandeln == false)
+    if (control.isSuchnameAktiv() && control.getSuchname().getValue() != null
+        && !((String) control.getSuchname().getValue()).isEmpty()
+        && umwandeln == false)
     {
       // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
       String tmpSuchname = (String) control.getSuchname().getValue();
@@ -233,22 +243,25 @@ public class SollbuchungQuery
       param.add(tmpSuchname.toLowerCase() + "%");
       param.add(tmpSuchname.toLowerCase() + "%");
     }
-    else if (control.isSuchnameAktiv() && control.getSuchname().getValue() != null && 
-        !((String) control.getSuchname().getValue()).isEmpty() && umwandeln == true)
+    else if (control.isSuchnameAktiv()
+        && control.getSuchname().getValue() != null
+        && !((String) control.getSuchname().getValue()).isEmpty()
+        && umwandeln == true)
     {
       // Der Name muss umgewandelt werden, es kann mehrere Matches geben
-      ArrayList<BigDecimal> namenids = getNamenIds((String) control.getSuchname().getValue());
+      ArrayList<BigDecimal> namenids = getNamenIds(
+          (String) control.getSuchname().getValue());
       if (namenids != null)
       {
         int count = 0;
         int anzahl = namenids.size();
-        for (BigDecimal id: namenids)
+        for (BigDecimal id : namenids)
         {
           count++;
           if (anzahl == 1)
           {
-          where += (where.length() > 0 ? "and " : "")
-              + "mitgliedskonto.mitglied = ? ";
+            where += (where.length() > 0 ? "and " : "")
+                + "mitgliedskonto.mitglied = ? ";
           }
           else if (count == 1)
           {
@@ -279,10 +292,11 @@ public class SollbuchungQuery
           + "mitgliedskonto.datum <= ? ";
       param.add(bd);
     }
-    if (control.isOhneAbbucherAktiv() && (Boolean) control.getOhneAbbucher().getValue())
+    if (control.isOhneAbbucherAktiv()
+        && (Boolean) control.getOhneAbbucher().getValue())
     {
       where += (where.length() > 0 ? "and " : "")
-          +"mitgliedskonto.zahlungsweg <> ?"; 
+          + "mitgliedskonto.zahlungsweg <> ?";
       param.add(Zahlungsweg.BASISLASTSCHRIFT);
     }
     if (filter_email)
@@ -299,7 +313,7 @@ public class SollbuchungQuery
             + "(email is not null and length(email) > 0)";
       }
     }
-    
+
     if (where.length() > 0)
     {
       sql += "WHERE " + where;
@@ -315,38 +329,39 @@ public class SollbuchungQuery
     {
       sql += "having sum(buchung.betrag) > mitgliedskonto.betrag ";
     }
-    
-    List<Long> ids = (List<Long>) service.execute(sql,
-        param.toArray(), new ResultSetExtractor()
-    {
-      @Override
-      public Object extract(ResultSet rs)
-          throws RemoteException, SQLException
-      {
-        List<Long> list = new ArrayList<>();
-        while (rs.next())
+
+    List<Long> ids = (List<Long>) service.execute(sql, param.toArray(),
+        new ResultSetExtractor()
         {
-          list.add(rs.getLong(1));
-        }
-        return list;
-      }
-    });
-    
-    DBIterator<Mitgliedskonto> list = 
-        Einstellungen.getDBService().createList(Mitgliedskonto.class);
+          @Override
+          public Object extract(ResultSet rs)
+              throws RemoteException, SQLException
+          {
+            List<Long> list = new ArrayList<>();
+            while (rs.next())
+            {
+              list.add(rs.getLong(1));
+            }
+            return list;
+          }
+        });
+
+    DBIterator<Mitgliedskonto> list = Einstellungen.getDBService()
+        .createList(Mitgliedskonto.class);
     list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
     list.setOrder("ORDER BY mitgliedskonto.datum desc");
     return list;
   }
-  
-  private ArrayList<BigDecimal> getNamenIds(final String suchname) throws RemoteException
+
+  private ArrayList<BigDecimal> getNamenIds(final String suchname)
+      throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     String sql = "SELECT  mitglied.id, mitglied.name, mitglied.vorname from mitglied";
-    
+
     @SuppressWarnings("unchecked")
-    ArrayList<BigDecimal> mitgliedids = (ArrayList<BigDecimal>) service.execute(sql,
-        new Object[] { }, new ResultSetExtractor()
+    ArrayList<BigDecimal> mitgliedids = (ArrayList<BigDecimal>) service
+        .execute(sql, new Object[] {}, new ResultSetExtractor()
         {
           @Override
           public Object extract(ResultSet rs)
@@ -355,7 +370,7 @@ public class SollbuchungQuery
             ArrayList<BigDecimal> ergebnis = new ArrayList<>();
 
             // In case the text search input is used, we calculate
-            // an "equality" score for each Mitglied entry. 
+            // an "equality" score for each Mitglied entry.
             // Only the entries with
             // score == maxScore will be shown.
             Integer maxScore = 0;
@@ -373,7 +388,7 @@ public class SollbuchungQuery
               StringTokenizer tok = new StringTokenizer(name, " ,-");
               Integer score = 0;
               nachname = reduceWord(rs.getString(2));
-              vorname = reduceWord(rs.getString(3));                
+              vorname = reduceWord(rs.getString(3));
               while (tok.hasMoreElements())
               {
                 String nextToken = tok.nextToken();
@@ -412,7 +427,7 @@ public class SollbuchungQuery
         });
     return mitgliedids;
   }
-  
+
   public Integer scoreWord(String word, String in)
   {
     Integer wordScore = 0;

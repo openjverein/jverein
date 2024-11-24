@@ -78,10 +78,11 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class MitgliedskontoControl extends DruckMailControl
-{ 
+{
   public enum DIFFERENZ
   {
     EGAL("Egal"), FEHLBETRAG("Fehlbetrag"), UEBERZAHLUNG("Überzahlung");
+
     private final String titel;
 
     private DIFFERENZ(String titel)
@@ -116,22 +117,22 @@ public class MitgliedskontoControl extends DruckMailControl
   private DecimalInput betrag;
 
   private AbstractInput buchungsart;
-  
+
   private SelectInput buchungsklasse;
-  
+
   private AbstractInput mitglied;
 
   private Mitgliedskonto mkto;
 
   private TreePart mitgliedskontoTree;
-  
+
   // SollbuchungListeView, SollbuchungAuswahldialog
   private TablePart mitgliedskontoList;
 
   private TablePart mitgliedskontoList2;
 
   private TextInput suchname2 = null;
-  
+
   private CheckboxInput spezialsuche2 = null;
 
   // private CheckboxInput offenePosten = null;
@@ -139,9 +140,8 @@ public class MitgliedskontoControl extends DruckMailControl
   private MitgliedskontoMessageConsumer mc = null;
 
   private Action action;
-  
-  private boolean umwandeln;
 
+  private boolean umwandeln;
 
   public MitgliedskontoControl(AbstractView view)
   {
@@ -227,8 +227,8 @@ public class MitgliedskontoControl extends DruckMailControl
       z = getMitgliedskonto().getZahlungsweg();
     }
     boolean mitVollzahler = false;
-    if(getMitglied().getValue() != null &&
-        ((Mitglied) getMitglied().getValue()).getZahlerID() != null)
+    if (getMitglied().getValue() != null
+        && ((Mitglied) getMitglied().getValue()).getZahlerID() != null)
       mitVollzahler = true;
     ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray(mitVollzahler);
 
@@ -272,8 +272,8 @@ public class MitgliedskontoControl extends DruckMailControl
         try
         {
           Buchungsart bua = (Buchungsart) buchungsart.getValue();
-          if (buchungsklasse != null && buchungsklasse.getValue() == null &&
-              bua != null)
+          if (buchungsklasse != null && buchungsklasse.getValue() == null
+              && bua != null)
             buchungsklasse.setValue(bua.getBuchungsklasse());
         }
         catch (RemoteException e)
@@ -284,25 +284,26 @@ public class MitgliedskontoControl extends DruckMailControl
     });
     return buchungsart;
   }
-  
+
   public SelectInput getBuchungsklasse() throws RemoteException
   {
     if (buchungsklasse != null)
     {
       return buchungsklasse;
     }
-    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklasse,
-        getMitgliedskonto().getBuchungsklasse());
+    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(
+        buchungsklasse, getMitgliedskonto().getBuchungsklasse());
     return buchungsklasse;
   }
-  
+
   private Long getSelectedBuchungsKlasseId() throws ApplicationException
   {
     try
     {
       if (buchungsklasse == null)
         return null;
-      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse()
+          .getValue();
       if (null == buchungsKlasse)
         return null;
       Long id = Long.valueOf(buchungsKlasse.getID());
@@ -315,7 +316,7 @@ public class MitgliedskontoControl extends DruckMailControl
       throw new ApplicationException(meldung, ex);
     }
   }
-  
+
   public CheckboxInput getSpezialSuche2()
   {
     if (spezialsuche2 != null && !spezialsuche2.getControl().isDisposed())
@@ -355,8 +356,8 @@ public class MitgliedskontoControl extends DruckMailControl
     suchname.setName("Name");
     return suchname;
   }
-  
-  //Für SollbuchungAuswahlDialog
+
+  // Für SollbuchungAuswahlDialog
   public TextInput getSuchName2(boolean newcontrol)
   {
     if (!newcontrol && suchname2 != null)
@@ -367,7 +368,7 @@ public class MitgliedskontoControl extends DruckMailControl
     suchname2.setName("Name");
     return suchname2;
   }
-  
+
   public void handleStore()
   {
     try
@@ -384,9 +385,10 @@ public class MitgliedskontoControl extends DruckMailControl
           throw new ApplicationException("Bitte Mitglied eingeben");
         }
       }
-      
-      if(mkto.getRechnung() != null)
-        throw new ApplicationException("Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
+
+      if (mkto.getRechnung() != null)
+        throw new ApplicationException(
+            "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
       mkto.setBetrag((Double) getBetrag().getValue());
       mkto.setDatum((Date) getDatum().getValue());
       Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
@@ -406,11 +408,12 @@ public class MitgliedskontoControl extends DruckMailControl
       mkto.setSteuersatz(steuersatz);
       if (getBetrag().getValue() != null)
       {
-        Double netto = ((Double) getBetrag().getValue() / (1d + (steuersatz / 100d)));
+        Double netto = ((Double) getBetrag().getValue()
+            / (1d + (steuersatz / 100d)));
         mkto.setNettobetrag(netto);
         mkto.setSteuerbetrag((Double) getBetrag().getValue() - netto);
       }
-      
+
       mkto.store();
       GUI.getStatusBar().setSuccessText("Sollbuchung gespeichert");
     }
@@ -430,38 +433,41 @@ public class MitgliedskontoControl extends DruckMailControl
   {
     mitgliedskontoTree = new TreePart(new MitgliedskontoNode(mitglied),
         new Action()
-    {
+        {
 
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        if (context == null || !(context instanceof MitgliedskontoNode))
-        {
-          return;
-        }
-        try
-        {
-          MitgliedskontoNode mkn = (MitgliedskontoNode) context;
-          if (mkn.getType() == MitgliedskontoNode.IST)
+          @Override
+          public void handleAction(Object context) throws ApplicationException
           {
-            Buchung bu = (Buchung) Einstellungen.getDBService().createObject(
-                Buchung.class, mkn.getID());
-            GUI.startView(BuchungView.class.getName(), bu);
+            if (context == null || !(context instanceof MitgliedskontoNode))
+            {
+              return;
+            }
+            try
+            {
+              MitgliedskontoNode mkn = (MitgliedskontoNode) context;
+              if (mkn.getType() == MitgliedskontoNode.IST)
+              {
+                Buchung bu = (Buchung) Einstellungen.getDBService()
+                    .createObject(Buchung.class, mkn.getID());
+                GUI.startView(BuchungView.class.getName(), bu);
+              }
+              if (mkn.getType() == MitgliedskontoNode.SOLL)
+              {
+                Mitgliedskonto mk = (Mitgliedskonto) Einstellungen
+                    .getDBService()
+                    .createObject(Mitgliedskonto.class, mkn.getID());
+                GUI.startView(
+                    new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
+              }
+            }
+            catch (RemoteException e)
+            {
+              Logger.error(e.getMessage());
+              throw new ApplicationException(
+                  "Fehler beim Editieren der Buchung");
+            }
           }
-          if (mkn.getType() == MitgliedskontoNode.SOLL)
-          {
-            Mitgliedskonto mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-                Mitgliedskonto.class, mkn.getID());
-            GUI.startView(new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException("Fehler beim Editieren der Buchung");
-        }
-      }
-    })
+        })
 
     {
 
@@ -505,16 +511,18 @@ public class MitgliedskontoControl extends DruckMailControl
     return mitgliedskontoTree;
   }
 
-  public TablePart getMitgliedskontoList(Action action, ContextMenu menu, boolean umwandeln)
-      throws RemoteException
+  public TablePart getMitgliedskontoList(Action action, ContextMenu menu,
+      boolean umwandeln) throws RemoteException
   {
     this.action = action;
     this.umwandeln = umwandeln;
     @SuppressWarnings("rawtypes")
-    GenericIterator mitgliedskonten = new SollbuchungQuery(this, umwandeln, null).get();
+    GenericIterator mitgliedskonten = new SollbuchungQuery(this, umwandeln,
+        null).get();
     if (mitgliedskontoList == null)
     {
-      mitgliedskontoList = new SollbuchungListTablePart(mitgliedskonten, action);
+      mitgliedskontoList = new SollbuchungListTablePart(mitgliedskonten,
+          action);
       mitgliedskontoList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       mitgliedskontoList.addColumn("Abrechnungslauf", "abrechnungslauf");
@@ -622,14 +630,15 @@ public class MitgliedskontoControl extends DruckMailControl
   public void refreshMitgliedkonto1() throws RemoteException
   {
     @SuppressWarnings("rawtypes")
-    GenericIterator mitgliedskonten = new SollbuchungQuery(this, umwandeln, null).get();
+    GenericIterator mitgliedskonten = new SollbuchungQuery(this, umwandeln,
+        null).get();
     mitgliedskontoList.removeAll();
     while (mitgliedskonten.hasNext())
     {
       mitgliedskontoList.addItem(mitgliedskonten.next());
     }
   }
-  
+
   public Button getStartKontoauszugButton(final Object currentObject,
       final MitgliedskontoControl control)
   {
@@ -653,7 +662,7 @@ public class MitgliedskontoControl extends DruckMailControl
     }, null, true, "walking.png");
     return button;
   }
-  
+
   // Für Sollbuchungen View
   public void TabRefresh()
   {
@@ -669,7 +678,7 @@ public class MitgliedskontoControl extends DruckMailControl
       }
     }
   }
-  
+
   // Für SollbuchungAuswahlDialog
   public void refreshMitgliedskontoList1()
   {
@@ -682,7 +691,7 @@ public class MitgliedskontoControl extends DruckMailControl
       Logger.error("Fehler", e);
     }
   }
-  
+
   // Für SollbuchungAuswahlDialog
   public void refreshMitgliedskontoList2()
   {
@@ -787,7 +796,7 @@ public class MitgliedskontoControl extends DruckMailControl
   {
     Mitglied[] mitglieder = null;
     String text = "";
-    
+
     if (selection instanceof Mitglied)
     {
       mitglieder = new Mitglied[] { (Mitglied) selection };
@@ -800,21 +809,19 @@ public class MitgliedskontoControl extends DruckMailControl
     {
       return "";
     }
-    
+
     try
     {
       // Aufruf aus Mitglieder View
       if (mitglieder != null)
       {
-        text = "Es wurden " + mitglieder.length + 
-            " Mitglieder ausgewählt"
+        text = "Es wurden " + mitglieder.length + " Mitglieder ausgewählt"
             + "\nFolgende Mitglieder haben keine Mailadresse:";
-        for (Mitglied m: mitglieder)
+        for (Mitglied m : mitglieder)
         {
-          if ( m.getEmail() == null || m.getEmail().isEmpty())
+          if (m.getEmail() == null || m.getEmail().isEmpty())
           {
-            text = text + "\n - " + m.getName()
-            + ", " + m.getVorname();
+            text = text + "\n - " + m.getName() + ", " + m.getVorname();
           }
         }
       }
@@ -835,8 +842,9 @@ public class MitgliedskontoControl extends DruckMailControl
 
     if (getMitgliedskonto().getMitglied() != null)
     {
-      Mitglied[] mitgliedArray = {getMitgliedskonto().getMitglied()};
-      mitglied = new SelectInput(mitgliedArray, getMitgliedskonto().getMitglied());
+      Mitglied[] mitgliedArray = { getMitgliedskonto().getMitglied() };
+      mitglied = new SelectInput(mitgliedArray,
+          getMitgliedskonto().getMitglied());
       mitglied.setEnabled(false);
     }
     else
@@ -848,7 +856,7 @@ public class MitgliedskontoControl extends DruckMailControl
     mitglied.setMandatory(true);
     return mitglied;
   }
-  
+
   public class MitgliedListener implements Listener
   {
 
@@ -862,9 +870,10 @@ public class MitgliedskontoControl extends DruckMailControl
       try
       {
         @SuppressWarnings("unchecked")
-        ArrayList<Zahlungsweg> list = (ArrayList<Zahlungsweg>) getZahlungsweg().getList();
+        ArrayList<Zahlungsweg> list = (ArrayList<Zahlungsweg>) getZahlungsweg()
+            .getList();
         list.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
-        if(((Mitglied) getMitglied().getValue()).getZahlerID() != null)
+        if (((Mitglied) getMitglied().getValue()).getZahlerID() != null)
           list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
         getZahlungsweg().setList(list);
       }
@@ -874,10 +883,10 @@ public class MitgliedskontoControl extends DruckMailControl
       }
     }
   }
-  
+
   public boolean hasRechnung() throws RemoteException
   {
-    if(getMitgliedskonto().getRechnung() != null)
+    if (getMitgliedskonto().getRechnung() != null)
     {
       GUI.getStatusBar().setErrorText(
           "Solbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
@@ -885,18 +894,12 @@ public class MitgliedskontoControl extends DruckMailControl
     }
     return false;
   }
-  
+
   public Object[] getCVSExportGrenzen() throws RemoteException
   {
-    return new Object[] 
-      {
-        getSuchname().getValue(),
-        getDifferenz().getValue(),
-        getOhneAbbucher().getValue(),
-        getDatumvon().getValue(),
-        getDatumbis().getValue(),
-        getMailauswahl().getValue()
-      };
+    return new Object[] { getSuchname().getValue(), getDifferenz().getValue(),
+        getOhneAbbucher().getValue(), getDatumvon().getValue(),
+        getDatumbis().getValue(), getMailauswahl().getValue() };
   }
 
 }

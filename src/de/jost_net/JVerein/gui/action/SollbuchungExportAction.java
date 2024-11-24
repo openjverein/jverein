@@ -35,8 +35,7 @@ public class SollbuchungExportAction implements Action
 {
   private EXPORT_TYP exportTyp;
 
-
-  public SollbuchungExportAction(EXPORT_TYP exportTyp, Object currentObject)
+  public SollbuchungExportAction(EXPORT_TYP exportTyp)
   {
     this.exportTyp = exportTyp;
   }
@@ -66,8 +65,8 @@ public class SollbuchungExportAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(
-      "Fehler beim exportieren der Sollbuchungen");
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim exportieren der Sollbuchungen");
     }
   }
 
@@ -88,7 +87,8 @@ public class SollbuchungExportAction implements Action
     }
   }
 
-  private Object[] gibSuchGrenzen(Object context) throws ApplicationException, RemoteException
+  private Object[] gibSuchGrenzen(Object context)
+      throws ApplicationException, RemoteException
   {
     if (context instanceof MitgliedskontoControl)
     {
