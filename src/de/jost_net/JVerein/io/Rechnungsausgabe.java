@@ -72,7 +72,7 @@ public class Rechnungsausgabe
     {
       case DRUCK:
         file = getDateiAuswahl("pdf");
-        formularaufbereitung = new FormularAufbereitung(file);
+        formularaufbereitung = new FormularAufbereitung(file, true);
         break;
       case MAIL:
         file = getDateiAuswahl("zip");
@@ -132,7 +132,7 @@ public class Rechnungsausgabe
           break;
         case MAIL:
           File f = File.createTempFile(getDateiname(re), ".pdf");
-          formularaufbereitung = new FormularAufbereitung(f);
+          formularaufbereitung = new FormularAufbereitung(f, true);
           aufbereitenFormular(re, formularaufbereitung, formular);
           formularaufbereitung.closeFormular();
           formularaufbereitung.addZUGFeRD(re, typ == TYP.MAHNUNG);

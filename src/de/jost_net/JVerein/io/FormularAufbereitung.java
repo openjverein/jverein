@@ -59,6 +59,8 @@ import com.itextpdf.text.pdf.PdfAWriter;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfWriter;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
@@ -89,7 +91,7 @@ public class FormularAufbereitung
 
   private FileOutputStream fos;
 
-  private PdfAWriter writer;
+  private PdfWriter writer;
 
   private File f;
 
@@ -118,7 +120,7 @@ public class FormularAufbereitung
    *          Die Datei, in die geschrieben werden soll
    * @throws RemoteException
    */
-  public FormularAufbereitung(final File f) throws RemoteException
+  public FormularAufbereitung(final File f, boolean pdfa) throws RemoteException
   {
     this.f = f;
     try
@@ -126,22 +128,32 @@ public class FormularAufbereitung
       doc = new Document();
       fos = new FileOutputStream(f);
 
-      writer = PdfAWriter.getInstance(doc, fos, PdfAConformanceLevel.PDF_A_3B);
+      if (pdfa)
+      {
+        writer = PdfAWriter.getInstance(doc, fos,
+            PdfAConformanceLevel.PDF_A_3B);
 
-      writer.createXmpMetadata();
+        writer.createXmpMetadata();
+        doc.open();
 
-      writer.setEncryption(null, null,
-          PdfAWriter.ALLOW_PRINTING | PdfAWriter.ALLOW_SCREENREADERS,
-          PdfAWriter.ENCRYPTION_AES_256);
-      doc.open();
+        ICC_Profile icc = ICC_Profile
+            .getInstance(Class.forName("org.mustangproject.Invoice")
+                .getClassLoader().getResourceAsStream("sRGB.icc"));
+        writer.setOutputIntents("Custom", "", "http://www.color.org",
+            "sRGB IEC61966-2.1", icc);
 
-      ICC_Profile icc = ICC_Profile
-          .getInstance(Class.forName("org.mustangproject.Invoice")
-              .getClassLoader().getResourceAsStream("sRGB.icc"));
-      writer.setOutputIntents("Custom", "", "http://www.color.org",
-          "sRGB IEC61966-2.1", icc);
+        writer.setCompressionLevel(9);
+      }
+      else
+      {
+        writer = PdfWriter.getInstance(doc, fos);
+        writer.setEncryption(null, null,
+            PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS,
+            PdfWriter.ENCRYPTION_AES_256);
+        doc.open();
+      }
 
-      writer.setCompressionLevel(9);
+      ;
     }
     catch (IOException e)
     {
