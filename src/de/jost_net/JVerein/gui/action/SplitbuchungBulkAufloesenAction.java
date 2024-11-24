@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -156,6 +157,12 @@ public class SplitbuchungBulkAufloesenAction implements Action
           throw new ApplicationException(String.format(
               "Buchung wurde bereits am %s von %s abgeschlossen.",
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
+        }
+        Spendenbescheinigung spb = bu.getSpendenbescheinigung();
+        if(spb != null)
+        {
+          throw new ApplicationException(
+              "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
         }
         splitid = bu.getSplitId();
         if (!geloescht.contains(splitid))

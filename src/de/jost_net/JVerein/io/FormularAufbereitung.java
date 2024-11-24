@@ -129,6 +129,9 @@ public class FormularAufbereitung
       writer = PdfAWriter.getInstance(doc, fos, PdfAConformanceLevel.PDF_A_3B);
 
       writer.createXmpMetadata();
+
+      writer.setEncryption(null, null, 
+          PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS, PdfWriter.ENCRYPTION_AES_256);
       doc.open();
 
       ICC_Profile icc = ICC_Profile

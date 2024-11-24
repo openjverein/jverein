@@ -79,6 +79,7 @@ import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Projekt;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
@@ -1219,6 +1220,7 @@ public class BuchungsControl extends AbstractControl
     }
     settings.setAttribute(settingsprefix + "suchtext", (String) getSuchtext().getValue());
     settings.setAttribute(settingsprefix + "suchbetrag", (String) getSuchBetrag().getValue());
+    settings.setAttribute(settingsprefix + "mitglied", (String) getMitglied().getValue());
 
     query = new BuchungQuery(dv, db, k, b, p, (String) getSuchtext().getValue(),
         (String) getSuchBetrag().getValue(), m.getValue(),
@@ -1785,6 +1787,13 @@ public class BuchungsControl extends AbstractControl
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
           return true;
         }
+        Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
+        if(spb != null)
+        {
+          GUI.getStatusBar().setErrorText(
+              "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
+          return true;
+        }
       }
     }
     catch (RemoteException e)
@@ -1813,6 +1822,13 @@ public class BuchungsControl extends AbstractControl
             GUI.getStatusBar().setErrorText(String.format(
                 "Buchung wurde bereits am %s von %s abgeschlossen.",
                 new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
+            return true;
+          }
+          Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
+          if(spb != null)
+          {
+            GUI.getStatusBar().setErrorText(
+                "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
             return true;
           }
         }
