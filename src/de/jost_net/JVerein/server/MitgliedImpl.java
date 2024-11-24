@@ -532,23 +532,20 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public String getStaat() throws RemoteException
   {
-    if (getAttribute("staat") != null)
+    String staat = (String) getAttribute("staat");
+    if (staat != null && staat.length() > 0)
     {
-      return (String) getAttribute("staat");
+      return staat;
     }
     else
     {
-      return "";
+      return "DE";
     }
   }
 
   @Override
   public void setStaat(String staat) throws RemoteException
   {
-    if (staat != null)
-    {
-      staat = staat.toUpperCase();
-    }
     setAttribute("staat", staat);
   }
 
@@ -827,7 +824,15 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public String getKtoiStaat() throws RemoteException
   {
-    return (String) getAttribute("ktoistaat");
+    String staat = (String) getAttribute("ktoistaat");
+    if (staat != null && staat.length() > 0)
+    {
+      return staat;
+    }
+    else
+    {
+      return "DE";
+    }
   }
 
   @Override

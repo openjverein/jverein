@@ -621,7 +621,7 @@ public class FormularAufbereitung
   }
 
   @SuppressWarnings("resource")
-  public void addZUGFeRD(Rechnung re) throws IOException
+  public void addZUGFeRD(Rechnung re, boolean mahnung) throws IOException
   {
     if (re.getMitgliedskontoList().size() == 0)
       return;
@@ -646,10 +646,10 @@ public class FormularAufbereitung
     TradeParty sender = new TradeParty(e.getName(),
         StringTool.toNotNullString(e.getStrasse()),
         StringTool.toNotNullString(e.getPlz()),
-        StringTool.toNotNullString(e.getOrt()), "DE")
+        StringTool.toNotNullString(e.getOrt()), e.getStaat())
             .addTaxID(e.getSteuernummer());
-    // UStID
-    // .addVATID(id)
+    if (e.getUStId().length() > 0)
+      sender.addVATID(e.getUStId());
 
     // TODO Zahlungsweg aus Rechnung lesen sobald implementiert
     if (re.getMandatDatum() != null
@@ -668,15 +668,16 @@ public class FormularAufbereitung
     }
     invoice.setSender(sender);
 
-    // TODO bei Mahnung und Zahlungsweg Überweisung eingegangene Buchungen
-    // abziehen
-    // Bereits gezahlt
-    // invoice.setTotalPrepaidAmount(null);
-
-    // TODO Ländercode bestimmen
-    String staat = StringTool.toNotNullString(re.getStaat());
-    if (staat.length() == 0)
-      staat = "DE";
+    if (mahnung)
+    {
+      double bezahlt = 0;
+      for (Mitgliedskonto mk : re.getMitgliedskontoList())
+      {
+        bezahlt += mk.getIstSumme();
+      }
+      // Bereits gezahlt
+      invoice.setTotalPrepaidAmount(new BigDecimal(bezahlt));
+    }
 
     String id = re.getMitglied().getID();
     if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
@@ -688,7 +689,7 @@ public class FormularAufbereitung
             + StringTool.toNotNullString(re.getName()),
         StringTool.toNotNullString(re.getStrasse()),
         StringTool.toNotNullString(re.getPlz()),
-        StringTool.toNotNullString(re.getOrt()), staat)
+        StringTool.toNotNullString(re.getOrt()), re.getStaat())
             .setID(id)
             .setContact(new Contact(
                 StringTool.toNotNullString(re.getVorname()) + " "

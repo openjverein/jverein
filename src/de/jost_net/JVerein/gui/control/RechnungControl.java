@@ -38,6 +38,7 @@ import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -60,6 +61,7 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.TreeFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -103,7 +105,7 @@ public class RechnungControl extends DruckMailControl
 
   private TextInput plz;
 
-  private TextInput staat;
+  private SelectInput staat;
 
   private GeschlechtInput geschlecht;
 
@@ -669,14 +671,14 @@ public class RechnungControl extends DruckMailControl
     return plz;
   }
 
-  public TextInput getStaat() throws RemoteException
+  public SelectInput getStaat() throws RemoteException
   {
     if (staat != null)
     {
       return staat;
     }
 
-    staat = new TextInput(getRechnung().getStaat());
+    staat = new SelectInput(Staat.values(), Staat.getByKey(getRechnung().getStaat()));
     staat.setName("Staat");
     staat.disable();
     return staat;

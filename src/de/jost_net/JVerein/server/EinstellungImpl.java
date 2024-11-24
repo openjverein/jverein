@@ -2151,4 +2151,38 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("beitragaltersstufen", altersstufen);
   }
+  
+  @Override
+  public String getStaat() throws RemoteException
+  {
+    String staat = (String) getAttribute("staat");
+    if (staat == null || staat.length() == 0)
+    {
+      return "DE";
+    }
+    return staat;
+  }
+
+  @Override
+  public void setStaat(String staat) throws RemoteException
+  {
+    setAttribute("staat", staat);
+  }
+  
+  @Override
+  public String getUStId() throws RemoteException
+  {
+    String ustid = (String) getAttribute("ustid");
+    if (ustid == null)
+    {
+      return "";
+    }
+    return ustid;
+  }
+
+  @Override
+  public void setUStId(String ustid) throws RemoteException
+  {
+    setAttribute("ustid", ustid);
+  }
 }

@@ -135,7 +135,7 @@ public class Rechnungsausgabe
           formularaufbereitung = new FormularAufbereitung(f);
           aufbereitenFormular(re, formularaufbereitung, formular);
           formularaufbereitung.closeFormular();
-          formularaufbereitung.addZUGFeRD(re);
+          formularaufbereitung.addZUGFeRD(re, typ == TYP.MAHNUNG);
           zos.putNextEntry(new ZipEntry(getDateiname(re) + ".pdf"));
           FileInputStream in = new FileInputStream(f);
           // buffer size
@@ -156,7 +156,8 @@ public class Rechnungsausgabe
         if (rechnungen.size() == 1)
         {
           rechnungen.begin();
-          formularaufbereitung.addZUGFeRD(rechnungen.next());
+          formularaufbereitung.addZUGFeRD(rechnungen.next(),
+              typ == TYP.MAHNUNG);
         }
         break;
       case MAIL:
