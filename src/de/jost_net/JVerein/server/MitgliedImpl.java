@@ -191,6 +191,10 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       {
         throw new ApplicationException("Bitte Datum des Mandat eingeben");
       }
+      else if (getMandatDatum().after(new Date()))
+      {
+        throw new ApplicationException("Datum des Mandat liegt in der Zukunft!");
+      }
     }
     if (getIban() != null && getIban().length() != 0)
     {
