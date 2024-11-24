@@ -632,6 +632,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     DBIterator<Spendenbescheinigung> list = Einstellungen.getDBService()
         .createList(Spendenbescheinigung.class);
     list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
+    list.setOrder(" ORDER BY bescheinigungsdatum desc ");
     ArrayList<Spendenbescheinigung> spendenbescheinigungen = list != null
         ? (ArrayList<Spendenbescheinigung>) PseudoIterator.asList(list)
         : null;
@@ -739,7 +740,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
       Date d = (Date) getEingabedatumbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    sql += " ORDER BY bescheinigungsdatum desc ";
 
     ResultSetExtractor rs = new ResultSetExtractor()
     {
