@@ -22,13 +22,14 @@ import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
-import de.jost_net.JVerein.rmi.Arbeitseinsatz;
-import de.jost_net.JVerein.rmi.Lastschrift;
-import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
+import de.jost_net.JVerein.rmi.Lehrgang;
+import de.jost_net.JVerein.rmi.Lastschrift;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -40,56 +41,59 @@ public class MitgliedDetailAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Mitglied m = null;
+    Mitglied mitglied;
     try
     {
       if (context != null && context instanceof FamilienbeitragNode)
       {
         FamilienbeitragNode fbn = (FamilienbeitragNode) context;
-        m = fbn.getMitglied();
+        mitglied = fbn.getMitglied();
       }
       else if (context != null && (context instanceof Arbeitseinsatz))
       {
         Arbeitseinsatz aeins = (Arbeitseinsatz) context;
-        m = aeins.getMitglied();
+        mitglied = aeins.getMitglied();
       }
       else if (context != null && context instanceof ArbeitseinsatzZeile)
       {
         ArbeitseinsatzZeile aez = (ArbeitseinsatzZeile) context;
-        m = (Mitglied) aez.getAttribute("mitglied");
+        mitglied = (Mitglied) aez.getAttribute("mitglied");
       }
       else if (context != null && (context instanceof Mitglied))
       {
-        m = (Mitglied) context;
+        mitglied = (Mitglied) context;
       }
       else if (context != null && (context instanceof Mitgliedskonto))
       {
         Mitgliedskonto mk = (Mitgliedskonto) context;
-        m = mk.getMitglied();
+        mitglied = mk.getMitglied();
       }
       else if (context != null && (context instanceof Wiedervorlage))
       {
         Wiedervorlage w = (Wiedervorlage) context;
-        m = w.getMitglied();
+        mitglied = w.getMitglied();
       }
       else if (context != null && (context instanceof Zusatzbetrag))
       {
         Zusatzbetrag z = (Zusatzbetrag) context;
-        m = z.getMitglied();
+        mitglied = z.getMitglied();
       }
       else if (context != null && (context instanceof Lehrgang))
       {
         Lehrgang l = (Lehrgang) context;
-        m = l.getMitglied();
+        mitglied = l.getMitglied();
       }
       else if (context != null && (context instanceof Lastschrift))
       {
         Lastschrift l = (Lastschrift) context;
-        m = l.getMitglied();
+        mitglied = l.getMitglied();
+      }
+      else if ((context instanceof Buchung ) && ((Buchung) context).getMitgliedskonto() != null ) {
+        mitglied = ((Buchung) context).getMitgliedskonto().getMitglied();
       }
       else
       {
-        m = (Mitglied) Einstellungen.getDBService().createObject(
+        mitglied = (Mitglied) Einstellungen.getDBService().createObject(
             Mitglied.class, null);
         if (Einstellungen.getEinstellung().getJuristischePersonen())
         {
@@ -100,20 +104,20 @@ public class MitgliedDetailAction implements Action
           {
             return;
           }
-          m.setPersonenart(pa);
+          mitglied.setPersonenart(pa);
         }
         else
         {
-          m.setPersonenart("n");
+          mitglied.setPersonenart("n");
         }
       }
-      if (m.getAdresstyp() == null || m.getAdresstyp().getID().equals("1"))
+      if (mitglied.getAdresstyp() == null || mitglied.getAdresstyp().getID().equals("1"))
       {
-        GUI.startView(new MitgliedDetailView(), m);
+        GUI.startView(new MitgliedDetailView(), mitglied);
       }
       else
       {
-        GUI.startView(new NichtMitgliedDetailView(), m);
+        GUI.startView(new NichtMitgliedDetailView(), mitglied);
       }
     }
     catch (OperationCanceledException oce)

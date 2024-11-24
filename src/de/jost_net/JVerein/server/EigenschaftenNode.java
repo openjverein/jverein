@@ -50,10 +50,7 @@ public class EigenschaftenNode implements GenericObjectNode
 
   private ArrayList<GenericObjectNode> childrens;
 
-  private String preset = UNCHECKED;  // Gesetzter Status/Icon
-  
-  private String base = UNCHECKED;  // Wert im Tree nach CHECKED bzw. MINUS
-
+  // Node Typen
   public static final int NONE = 0;
 
   public static final int ROOT = 1;
@@ -63,11 +60,8 @@ public class EigenschaftenNode implements GenericObjectNode
   public static final int EIGENSCHAFTEN = 3;
 
   private int nodetype = NONE;
-
-  private Map<String, Config> config = new HashMap<>();
   
-  private boolean onlyChecked = false;  // Nur CHECKED, kein PLUS, MINUS etc.
-  
+  // Preset und Icon Definition
   public static final String UNCHECKED = "0";
 
   public static final String PLUS = "1";
@@ -78,23 +72,35 @@ public class EigenschaftenNode implements GenericObjectNode
   
   public static final String CHECKED_PARTLY = "4";
 
+  private String preset = UNCHECKED;  // Gesetzter Status/Icon
+  
+  private String base = UNCHECKED;  // Wert im Tree nach CHECKED bzw. MINUS
+
+  private boolean onlyChecked = false;  // Nur CHECKED, kein PLUS, MINUS etc.
+
+  private Map<String, Config> config = new HashMap<>();
+  
+  private List<Long[]> eigenschaften = null;
+
+
   public EigenschaftenNode(Mitglied mitglied) throws RemoteException
   {
-    this(mitglied, "", false, true, null);
+    this(mitglied, "",  true, null);
   }
 
-  public EigenschaftenNode(String vorbelegung, boolean ohnePflicht, 
+  public EigenschaftenNode(String vorbelegung, 
       boolean onlyChecked, Mitglied[] mitglieder)
       throws RemoteException
   {
-    this(null, vorbelegung, ohnePflicht, onlyChecked, mitglieder);
+    this(null, vorbelegung, onlyChecked, mitglieder);
   }
 
   private EigenschaftenNode(Mitglied mitglied, String vorbelegung,
-      boolean ohnePflicht, boolean onlyChecked, Mitglied[] mitglieder) 
+       boolean onlyChecked, Mitglied[] mitglieder) 
           throws RemoteException
   {
     this.onlyChecked = onlyChecked;
+    nodetype = ROOT;
     if (!vorbelegung.isEmpty())
     {
       // Aufruf aus (Nicht-)Mitglied Filter Dialog oder Auswertungen (Nicht-)Mitglied,
@@ -164,16 +170,8 @@ public class EigenschaftenNode implements GenericObjectNode
       }
     }
     childrens = new ArrayList<>();
-    nodetype = ROOT;
     DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
         .createList(EigenschaftGruppe.class);
-    if (ohnePflicht)
-    {
-      // Pflicht und Maximal Eins wird im Mitglied Kontext Menü -> Eigenschaften
-      // zur Zeit noch nicht unterstützt
-      it.addFilter(
-          "(PFLICHT <> true OR PFLICHT IS NULL) AND (MAX1 <> true OR MAX1 IS NULL)");
-    }
     it.setOrder("order by bezeichnung");
     while (it.hasNext())
     {
@@ -188,9 +186,9 @@ public class EigenschaftenNode implements GenericObjectNode
   {
     this.parent = parent;
     this.onlyChecked = onlyChecked;
-    childrens = new ArrayList<>();
     this.eigenschaftgruppe = eg;
     nodetype = EIGENSCHAFTGRUPPE;
+    childrens = new ArrayList<>();
     DBIterator<Eigenschaft> it = Einstellungen.getDBService()
         .createList(Eigenschaft.class);
     it.addFilter("eigenschaftgruppe = ?",
@@ -200,18 +198,19 @@ public class EigenschaftenNode implements GenericObjectNode
     {
       Eigenschaft eigenschaft = (Eigenschaft) it.next();
       childrens.add(new EigenschaftenNode(this, onlyChecked, eigenschaft, 
-          config));
+          eigenschaftgruppe, config));
     }
   }
 
   private EigenschaftenNode(EigenschaftenNode parent, boolean onlyChecked,
-      Eigenschaft eigenschaft,
+      Eigenschaft eigenschaft, EigenschaftGruppe eg,
       Map<String, Config> config) throws RemoteException
   {
     this.parent = parent;
     nodetype = EIGENSCHAFTEN;
     this.onlyChecked = onlyChecked;
     this.eigenschaft = eigenschaft;
+    this.eigenschaftgruppe = eg;
     String eigenschaftenKey = this.eigenschaft.getID();
     if (config.containsKey(eigenschaftenKey))
     {
@@ -395,10 +394,14 @@ public class EigenschaftenNode implements GenericObjectNode
   @SuppressWarnings("unchecked")
   public List<Long[]> getEigenschaften() throws RemoteException
   {
+    if (eigenschaften != null)
+    {
+      return eigenschaften;
+    }
     // Eigenschaften lesen
     final DBService service = Einstellungen.getDBService();
     String sql = "SELECT eigenschaften.* from eigenschaften ";
-    List<Long[]> mitgliedeigenschaften = (List<Long[]>) service.execute(sql,
+    eigenschaften = (List<Long[]>) service.execute(sql,
         new Object[] { }, new ResultSetExtractor()
     {
       @Override
@@ -412,7 +415,7 @@ public class EigenschaftenNode implements GenericObjectNode
         return list;
       }
     });
-    return mitgliedeigenschaften;
+    return eigenschaften;
   }
 
   @SuppressWarnings("rawtypes")
@@ -440,6 +443,93 @@ public class EigenschaftenNode implements GenericObjectNode
       }
     }
     return checkednodes;
+  }
+  
+  @SuppressWarnings("rawtypes")
+  public ArrayList<EigenschaftGruppe> getPflichtGruppen() 
+      throws RemoteException
+  {
+    // Liefert alle EIGENSCHAFTGRUPPEn bei den Pflicht gesetzt ist
+    ArrayList<EigenschaftGruppe> plichtGruppen = new ArrayList<>();
+    if (this.nodetype == EigenschaftenNode.ROOT)
+    {
+      GenericIterator rootit = this.getChildren();
+      while (rootit.hasNext())
+      {
+        EigenschaftenNode gruppenNode = (EigenschaftenNode) rootit.next();
+        EigenschaftGruppe gruppe = gruppenNode.getEigenschaftGruppe();
+        if (gruppe.getPflicht())
+          plichtGruppen.add(gruppe);
+      }
+    }
+    return plichtGruppen;
+  }
+  
+  @SuppressWarnings("rawtypes")
+  public ArrayList<EigenschaftGruppe> getMax1Gruppen() 
+      throws RemoteException
+  {
+    // Liefert alle EIGENSCHAFTGRUPPEn bei den Pflicht gesetzt ist
+    ArrayList<EigenschaftGruppe> max1Gruppen = new ArrayList<>();
+    if (this.nodetype == EigenschaftenNode.ROOT)
+    {
+      GenericIterator rootit = this.getChildren();
+      while (rootit.hasNext())
+      {
+        EigenschaftenNode gruppenNode = (EigenschaftenNode) rootit.next();
+        EigenschaftGruppe gruppe = gruppenNode.getEigenschaftGruppe();
+        if (gruppe.getMax1())
+          max1Gruppen.add(gruppe);
+      }
+    }
+    return max1Gruppen;
+  }
+  
+  @SuppressWarnings("rawtypes")
+  public EigenschaftenNode getEigenschaftenNode(String eigenschaftId) 
+      throws RemoteException
+  {
+    // Liefert den EigenschaftenNode einer Eigenschaft
+    // Momentan nur für ROOT gebraucht
+    EigenschaftenNode eigenschaftenNode = null;
+    if (this.nodetype == EigenschaftenNode.ROOT)
+    {
+      GenericIterator rootit = this.getChildren();
+      while (rootit.hasNext())
+      {
+        GenericObjectNode gruppe = (GenericObjectNode) rootit.next();
+        GenericIterator groupit = gruppe.getChildren();
+        while (groupit.hasNext())
+        {
+          eigenschaftenNode = (EigenschaftenNode) groupit.next();
+          Eigenschaft eigenschaft = eigenschaftenNode.getEigenschaft();
+          if (eigenschaft.getID().equals(eigenschaftId))
+           return eigenschaftenNode;
+        }
+      }
+    }
+    return eigenschaftenNode;
+  }
+  
+  @SuppressWarnings("rawtypes")
+  public EigenschaftGruppe getEigenschaftGruppe(String gruppeId) 
+      throws RemoteException
+  {
+    // Liefert die EigenschaftGruppe zur Id
+    // Momentan nur für ROOT gebraucht
+    EigenschaftGruppe eigenschaftGruppe = null;
+    if (this.nodetype == EigenschaftenNode.ROOT)
+    {
+      GenericIterator rootit = this.getChildren();
+      while (rootit.hasNext())
+      {
+        EigenschaftenNode gruppeNode = (EigenschaftenNode) rootit.next();
+        eigenschaftGruppe = gruppeNode.getEigenschaftGruppe();
+          if (eigenschaftGruppe.getID().equals(gruppeId))
+           return eigenschaftGruppe;
+      }
+    }
+    return eigenschaftGruppe;
   }
   
   // Speichert den Startwert für eine Eigenschaft

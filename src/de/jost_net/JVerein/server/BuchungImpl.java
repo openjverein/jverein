@@ -80,7 +80,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
       if (this.getSpendenbescheinigung() != null)
       {
         throw new ApplicationException(
-            "Buchung kann nicht gelöscht werden weil sie zu eine "
+            "Buchung kann nicht gelöscht werden weil sie zu einer "
                 + "Spendenbescheinigung gehört");
       }
     }

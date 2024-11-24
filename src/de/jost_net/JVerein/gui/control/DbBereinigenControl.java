@@ -30,10 +30,12 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
+import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Datum;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -52,15 +54,19 @@ public class DbBereinigenControl extends AbstractControl
 {
 
   private Settings settings = null;
-  
+
   Date defaultDate = null;
-  
-  private double anzahl = 6.0d;
-  
+
+  private double anzahl = 7.0d;
+
+  // Rechnungen loeschen
+  private CheckboxInput rLoeschenInput = null;
+  private DateInput rDateInput = null;
+
   // Spendenbescheinigungen loeschen
   private CheckboxInput sLoeschenInput = null;
   private DateInput sDateInput = null;
-  
+
   // Buchungen loeschen
   private CheckboxInput bLoeschenInput = null;
   private DateInput bDateInput = null;
@@ -69,15 +75,15 @@ public class DbBereinigenControl extends AbstractControl
   // Lastschriften loeschen
   private CheckboxInput lLoeschenInput = null;
   private DateInput lDateInput = null;
-  
+
   // Abrechnungslauf loeschen
   private CheckboxInput aLoeschenInput = null;
   private DateInput aDateInput = null;
-  
+
   // Jahresabschluss loeschen
   private CheckboxInput jLoeschenInput = null;
   private DateInput jDateInput = null;
-  
+
   // Mails loeschen
   private CheckboxInput mLoeschenInput = null;
   private DateInput mDateInput = null;
@@ -107,6 +113,7 @@ public class DbBereinigenControl extends AbstractControl
         try
         {
           runDelete(
+              (boolean) rLoeschenInput.getValue(), (Date) rDateInput.getValue(),
               (boolean) sLoeschenInput.getValue(), (Date) sDateInput.getValue(),
               (boolean) bLoeschenInput.getValue(), (Date) bDateInput.getValue(),
               (boolean) sollLoeschenInput.getValue(),
@@ -125,8 +132,10 @@ public class DbBereinigenControl extends AbstractControl
     return b;
   }
 
-  
-  private void runDelete(final boolean sloeschen, final Date sdate,
+
+  private void runDelete(
+      final boolean rloeschen, final Date rdate,
+      final boolean sloeschen, final Date sdate,
       final boolean bloeschen, final Date bdate, final boolean sollloeschen,
       final boolean lloeschen, final Date ldate,
       final boolean aloeschen, final Date adate,
@@ -143,7 +152,19 @@ public class DbBereinigenControl extends AbstractControl
           monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
           monitor.setPercentComplete(0);
           double progress = 1.0d;
-          
+
+          // Rechnungen löschen
+          if ( rloeschen && rdate == null)
+          {
+            monitor.log("Rechnungen löschen: Kein gültiges Datum eingegeben");
+          }
+          else if ( rloeschen && rdate != null)
+          {
+            rechnungenLoeschen(monitor, rdate);
+          }
+          monitor.setPercentComplete((int) (progress / anzahl * 100d));
+          progress++;
+
           // Spendenbescheinigungen löschen
           if ( sloeschen && sdate == null)
           {
@@ -155,7 +176,7 @@ public class DbBereinigenControl extends AbstractControl
           }
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
-          
+
           // Buchungen löschen
           if ( bloeschen && bdate == null)
           {
@@ -167,7 +188,7 @@ public class DbBereinigenControl extends AbstractControl
           }
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
-          
+
           // Lastschriften löschen
           if ( lloeschen && ldate == null)
           {
@@ -179,7 +200,7 @@ public class DbBereinigenControl extends AbstractControl
           }
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
-          
+
           // Abrechnungslauf löschen
           if ( aloeschen && adate == null)
           {
@@ -191,7 +212,7 @@ public class DbBereinigenControl extends AbstractControl
           }
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
-          
+
           // Jahresabschluss löschen
           if ( jloeschen && jdate == null)
           {
@@ -203,7 +224,7 @@ public class DbBereinigenControl extends AbstractControl
           }
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
-          
+
           // Mails löschen
           if ( mloeschen && mdate == null)
           {
@@ -213,7 +234,7 @@ public class DbBereinigenControl extends AbstractControl
           {
             mailsLoeschen(monitor, mdate);
           }
-          
+
           monitor.setPercentComplete(100);
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
           monitor.setStatusText("Bereinigung beendet");
@@ -224,7 +245,7 @@ public class DbBereinigenControl extends AbstractControl
           monitor.log(re.getMessage());
         }
       }
-      
+
       @Override
       public void interrupt()
       {
@@ -239,7 +260,28 @@ public class DbBereinigenControl extends AbstractControl
     };
     Application.getController().start(t);
   }
-  
+
+  // Rechnungen loeschen
+  public CheckboxInput getRechnungenLoeschen()
+  {
+    if (rLoeschenInput != null)
+    {
+      return rLoeschenInput;
+    }
+    rLoeschenInput = new CheckboxInput(false);
+    return rLoeschenInput;
+  }
+
+  public DateInput getDatumAuswahlRechnungen()
+  {
+    if (rDateInput != null)
+    {
+      return rDateInput;
+    }
+    rDateInput = new DateInput(defaultDate);
+    return rDateInput;
+  }
+
   // Spendenbescheinigungen loeschen
   public CheckboxInput getSpendenbescheinigungenLoeschen()
   {
@@ -250,7 +292,7 @@ public class DbBereinigenControl extends AbstractControl
     sLoeschenInput = new CheckboxInput(false);
     return sLoeschenInput;
   }
-  
+
   public DateInput getDatumAuswahlSpendenbescheinigungen()
   {
     if (sDateInput != null)
@@ -271,7 +313,7 @@ public class DbBereinigenControl extends AbstractControl
     bLoeschenInput = new CheckboxInput(false);
     return bLoeschenInput;
   }
-  
+
   public DateInput getDatumAuswahlBuchungen()
   {
     if (bDateInput != null)
@@ -291,7 +333,7 @@ public class DbBereinigenControl extends AbstractControl
     sollLoeschenInput = new CheckboxInput(true);
     return sollLoeschenInput;
   }
-  
+
   // Lastschriften loeschen
   public CheckboxInput getLastschriftenLoeschen()
   {
@@ -302,7 +344,7 @@ public class DbBereinigenControl extends AbstractControl
     lLoeschenInput = new CheckboxInput(false);
     return lLoeschenInput;
   }
-  
+
   public DateInput getDatumAuswahlLastschriften()
   {
     if (lDateInput != null)
@@ -312,7 +354,7 @@ public class DbBereinigenControl extends AbstractControl
     lDateInput = new DateInput(defaultDate);
     return lDateInput;
   }
-  
+
   // Abrechnungslauf loeschen
   public CheckboxInput getAbrechnungslaufLoeschen()
   {
@@ -323,7 +365,7 @@ public class DbBereinigenControl extends AbstractControl
     aLoeschenInput = new CheckboxInput(false);
     return aLoeschenInput;
   }
-  
+
   public DateInput getDatumAuswahlAbrechnungslauf()
   {
     if (aDateInput != null)
@@ -344,7 +386,7 @@ public class DbBereinigenControl extends AbstractControl
     jLoeschenInput = new CheckboxInput(false);
     return jLoeschenInput;
   }
-  
+
   public DateInput getDatumAuswahlJahresabschluss()
   {
     if (jDateInput != null)
@@ -354,7 +396,7 @@ public class DbBereinigenControl extends AbstractControl
     jDateInput = new DateInput(defaultDate);
     return jDateInput;
   }
-  
+
   // Mails loeschen
   public CheckboxInput getMailsLoeschen()
   {
@@ -365,7 +407,7 @@ public class DbBereinigenControl extends AbstractControl
     mLoeschenInput = new CheckboxInput(false);
     return mLoeschenInput;
   }
-  
+
   public DateInput getDatumAuswahlMails()
   {
     if (mDateInput != null)
@@ -375,8 +417,58 @@ public class DbBereinigenControl extends AbstractControl
     mDateInput = new DateInput(defaultDate);
     return mDateInput;
   }
-  
+
   // Lösch Aktionen
+  private void rechnungenLoeschen(ProgressMonitor monitor, final Date date)
+  {
+    try
+    {
+      DBIterator<Rechnung> it = Einstellungen.getDBService()
+          .createList(Rechnung.class);
+      it.addFilter("datum < ?", date);
+      it.setOrder("order by datum"); 
+      int count = 0;
+      Rechnung rechnung = null;
+      while (it.hasNext())
+      {
+        try
+        {
+          rechnung = it.next();
+          rechnung.delete();
+          count++;
+        }
+        catch (OperationCanceledException oce)
+        {
+          throw oce;
+        }
+        catch (Exception e)
+        {
+          String fehler = "Fehler beim Löschen der Rechnungung mit Nr " + 
+              rechnung.getID() + ", " + e.getMessage();
+          monitor.setStatusText(fehler);
+        }
+      }
+      if (count > 0)
+      {
+        monitor.setStatusText(String.format(
+            "%d Rechnung" + (count != 1 ? "en" : "") + " gelöscht.", count));
+      }
+      else
+      {
+        monitor.log("Keine Rechnung im vorgegebenen Zeitraum vorhanden!");
+      }
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      String fehler = "Fehler beim Löschen von Rechnungen.";
+      monitor.setStatusText(fehler);
+    }
+  }
+
   private void spendenbescheinigungenLoeschen(ProgressMonitor monitor, final Date date)
   {
     try
@@ -422,11 +514,11 @@ public class DbBereinigenControl extends AbstractControl
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Löschen von Lastschriften.";
+      String fehler = "Fehler beim Löschen von Spendenbescheinigungen.";
       monitor.setStatusText(fehler);
     }
   }
-  
+
   private void buchungenLoeschen(ProgressMonitor monitor, final Date date, 
       final boolean sollloeschen)
   {
@@ -453,7 +545,7 @@ public class DbBereinigenControl extends AbstractControl
           return list;
         }
       });
-      
+
       DBIterator<Buchung> it = Einstellungen.getDBService()
           .createList(Buchung.class);
       it.addFilter("datum < ?", date);
@@ -487,6 +579,12 @@ public class DbBereinigenControl extends AbstractControl
             if(b.getSplitId() == null)
               throw e;
           }
+          catch (Exception e)
+          {
+            String fehler = "Fehler beim Löschen der Buchung mit Nr " + 
+                b.getID() + ", " + e.getMessage();
+            monitor.setStatusText(fehler);
+          }
           try
           {
             if (sollloeschen && (b.getMitgliedskonto() != null))
@@ -499,11 +597,17 @@ public class DbBereinigenControl extends AbstractControl
           {
             throw oce;
           }
-          catch (Exception e)
+          catch (ObjectNotFoundException e)
           {
             // Das kann passieren wenn der Sollbuchung mehrere Buchungen 
             // zugeordnet waren. Dann existiert die Sollbuchung nicht mehr  
             // bei den weiteren Buchungen da das Query vorher erfolgt ist
+          }
+          catch (Exception e)
+          {
+            String fehler = "Fehler beim Löschen der Sollbuchung mit Nr " + 
+                b.getMitgliedskonto().getID() + ", " + e.getMessage();
+            monitor.setStatusText(fehler);
           }
           countb++;
         }
@@ -513,8 +617,8 @@ public class DbBereinigenControl extends AbstractControl
         }
         catch (Exception e)
         {
-          String fehler = "Fehler beim Löschen der Buchungen mit Nr " + 
-                           b.getID() + ", " + e.getMessage();
+          String fehler = "Fehler beim Löschen der Buchung mit Nr " + 
+              b.getID() + ", " + e.getMessage();
           monitor.setStatusText(fehler);
         }
       }
@@ -543,7 +647,7 @@ public class DbBereinigenControl extends AbstractControl
       monitor.setStatusText(fehler);
     }
   }
-  
+
   private void lastschriftenLoeschen(ProgressMonitor monitor, final Date date)
   {
     try
@@ -726,7 +830,7 @@ public class DbBereinigenControl extends AbstractControl
       monitor.setStatusText(fehler);
     }
   }
-  
+
   private void jahresabschlussLoeschen(ProgressMonitor monitor, final Date date)
   {
     try
@@ -750,7 +854,7 @@ public class DbBereinigenControl extends AbstractControl
           return null;
         }
       });
-      
+
       DBIterator<Jahresabschluss> it = Einstellungen.getDBService()
           .createList(Jahresabschluss.class);
       it.addFilter("bis < ?", date);
@@ -815,7 +919,7 @@ public class DbBereinigenControl extends AbstractControl
       monitor.setStatusText(fehler);
     }
   }
-  
+
   private void mailsLoeschen(ProgressMonitor monitor, final Date date)
   {
     try

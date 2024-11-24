@@ -66,7 +66,7 @@ public class MitgliedEigenschaftZuordnungAction implements Action
     int anzGeloescht = 0;
     try
     {
-      EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog("", true,
+      EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog("", 
           false, new MitgliedControl(null), false, mitglieder);
       EigenschaftenAuswahlParameter param = ead.open();
       if (param == null || param.getEigenschaftenNodes() == null)

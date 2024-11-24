@@ -72,7 +72,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
         try
         {
           EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog(null,
-              false, false, new MitgliedControl(null), true);
+              false, new MitgliedControl(null), true);
           EigenschaftenAuswahlParameter param = ead.open();
           if (param == null)
             return;
