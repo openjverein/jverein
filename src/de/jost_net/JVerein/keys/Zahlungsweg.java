@@ -24,6 +24,8 @@ import java.util.ArrayList;
 public class Zahlungsweg
 {
 
+  public static final int STANDARD = 0;
+  
   public static final int BASISLASTSCHRIFT = 1;
 
   public static final int ÜBERWEISUNG = 2;
@@ -53,6 +55,8 @@ public class Zahlungsweg
   {
     switch (key)
     {
+      case STANDARD:
+        return "Standard";
       case BASISLASTSCHRIFT:
         return "Basislastschrift";
       case ÜBERWEISUNG:
