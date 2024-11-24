@@ -672,8 +672,7 @@ public class SpendenbescheinigungPrintAction implements Action
             + "(Ort, Datum und Unterschrift des Zuwendungsempfängers)",
             8);
 
-    if (Einstellungen.getEinstellung().getUnterschriftdrucken() &&
-        Einstellungen.getEinstellung().getUnterschrift() != null)
+    if (unterschriftDrucken)
     {
       rpt.addLight("\nDie maschinelle Erstellung der Zuwendungsbestätigung wurde dem "
           + "zuständigen Finanzamt " + Einstellungen.getEinstellung().getFinanzamt()

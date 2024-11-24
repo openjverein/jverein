@@ -98,10 +98,9 @@ public interface Spendenbescheinigung extends DBObject
   public boolean isSammelbestaetigung() throws RemoteException;
 
   /**
-   * Liefert als Kennzeichen zurück, ob die Spendenbescheinigung eine
-   * echte Geldspende ist. Dies ist der Fall, wenn es sich um eine 
-   * Gelspende handelt bei der bei keiner Buchung das Flag 
-   * Erstattungsverzicht gesetzt ist.
+   * Liefert als Kennzeichen zurück, ob die Spendenbescheinigung eine echte
+   * Geldspende ist. Dies ist der Fall, wenn es sich um eine Gelspende handelt
+   * bei der bei keiner Buchung das Flag Erstattungsverzicht gesetzt ist.
    * 
    * @return Flag, ob echte Geldspende
    * @throws RemoteException

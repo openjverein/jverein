@@ -594,7 +594,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
   }
 
   @SuppressWarnings("unchecked")
-  private ArrayList<Spendenbescheinigung> getSpendenbescheinigungen() throws RemoteException
+  private ArrayList<Spendenbescheinigung> getSpendenbescheinigungen()
+      throws RemoteException
   {
     SuchSpendenart suchSpendenart = SuchSpendenart.ALLE;
     if (isSuchSpendenartAktiv())
@@ -610,8 +611,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
     // auch dabei ist dürfen wir die Splittbuchung nicht nehmen
     if (suchSpendenart == SuchSpendenart.GELDSPENDE_ECHT)
     {
-      ArrayList<Long> erstattungsIds = 
-          querySpendenbescheinigungen(SuchSpendenart.ERSTATTUNGSVERZICHT);
+      ArrayList<Long> erstattungsIds = querySpendenbescheinigungen(
+          SuchSpendenart.ERSTATTUNGSVERZICHT);
       for (Long id : queryIds)
       {
         if (!erstattungsIds.contains(id))
@@ -622,22 +623,24 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     else
     {
-      ids= queryIds;
+      ids = queryIds;
     }
 
-    if(ids.size() == 0)
+    if (ids.size() == 0)
       return new ArrayList<Spendenbescheinigung>();
 
-    DBIterator<Spendenbescheinigung> list = Einstellungen.getDBService().
-        createList(Spendenbescheinigung.class);
+    DBIterator<Spendenbescheinigung> list = Einstellungen.getDBService()
+        .createList(Spendenbescheinigung.class);
     list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
-    ArrayList<Spendenbescheinigung> spendenbescheinigungen = list != null ? 
-        (ArrayList<Spendenbescheinigung>) PseudoIterator.asList(list) : null;
+    ArrayList<Spendenbescheinigung> spendenbescheinigungen = list != null
+        ? (ArrayList<Spendenbescheinigung>) PseudoIterator.asList(list)
+        : null;
     return spendenbescheinigungen;
   }
-  
+
   @SuppressWarnings("unchecked")
-  private ArrayList<Long> querySpendenbescheinigungen(SuchSpendenart suchSpendenart) throws RemoteException
+  private ArrayList<Long> querySpendenbescheinigungen(
+      SuchSpendenart suchSpendenart) throws RemoteException
   {
     final DBService service = Einstellungen.getDBService();
     ArrayList<Object> bedingungen = new ArrayList<>();
@@ -737,7 +740,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
     sql += " ORDER BY bescheinigungsdatum desc ";
-    
+
     ResultSetExtractor rs = new ResultSetExtractor()
     {
       @Override
@@ -752,10 +755,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
       }
     };
 
-    return (ArrayList<Long>) service.execute(sql, bedingungen.toArray(),
-        rs);
+    return (ArrayList<Long>) service.execute(sql, bedingungen.toArray(), rs);
   }
-  
+
   private void addCondition(String condition)
   {
     if (and)
@@ -769,7 +771,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     and = true;
     sql += condition;
   }
-  
+
   // Mail/Drucken View
   @Override
   public String getInfoText(Object spbArray)

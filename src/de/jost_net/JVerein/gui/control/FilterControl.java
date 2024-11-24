@@ -1075,7 +1075,7 @@ public class FilterControl extends AbstractControl
     suchspendenart.addListener(new FilterListener());
     return suchspendenart;
   }
-  
+
   public boolean isSuchSpendenartAktiv()
   {
     return suchspendenart != null;

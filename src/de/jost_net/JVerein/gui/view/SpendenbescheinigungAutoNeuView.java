@@ -81,7 +81,7 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-            DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
+        DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
     buttons.addButton(control.getSpendenbescheinigungErstellenButton());
     buttons.paint(getParent());
   }
