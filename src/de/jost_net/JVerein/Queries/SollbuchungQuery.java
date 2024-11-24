@@ -118,6 +118,7 @@ public class SollbuchungQuery
         sollbuchungen.addFilter("mitgliedskonto.zahlungsweg <> ?", 
             Zahlungsweg.BASISLASTSCHRIFT);
       }
+      sollbuchungen.setOrder("ORDER BY mitgliedskonto.datum desc");
       return sollbuchungen;
     }
     
@@ -204,6 +205,7 @@ public class SollbuchungQuery
           sollbuchungen.addFilter("(email is  not null and length(email) > 0)");
         }
       }
+      sollbuchungen.setOrder("ORDER BY mitgliedskonto.datum desc");
       return sollbuchungen;
     }
     
@@ -313,7 +315,6 @@ public class SollbuchungQuery
     {
       sql += "having sum(buchung.betrag) > mitgliedskonto.betrag ";
     }
-    sql += "order by mitglied.name, mitglied.vorname, mitgliedskonto.datum desc";
     
     List<Long> ids = (List<Long>) service.execute(sql,
         param.toArray(), new ResultSetExtractor()
@@ -334,6 +335,7 @@ public class SollbuchungQuery
     DBIterator<Mitgliedskonto> list = 
         Einstellungen.getDBService().createList(Mitgliedskonto.class);
     list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
+    list.setOrder("ORDER BY mitgliedskonto.datum desc");
     return list;
   }
   
