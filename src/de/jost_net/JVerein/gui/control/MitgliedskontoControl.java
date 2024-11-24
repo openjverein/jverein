@@ -522,6 +522,7 @@ public class MitgliedskontoControl extends DruckMailControl
     if (mitgliedskontoList == null)
     {
       mitgliedskontoList = new SollbuchungListTablePart(mitgliedskonten, action);
+      mitgliedskontoList.addColumn("Nr", "id-int");
       mitgliedskontoList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       mitgliedskontoList.addColumn("Abrechnungslauf", "abrechnungslauf");
@@ -1261,7 +1262,7 @@ public class MitgliedskontoControl extends DruckMailControl
     if(getMitgliedskonto().getRechnung() != null)
     {
       GUI.getStatusBar().setErrorText(
-          "Solbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
+          "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
       return true;
     }
     return false;

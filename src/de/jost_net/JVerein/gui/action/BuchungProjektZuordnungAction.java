@@ -119,6 +119,10 @@ public class BuchungProjektZuordnungAction implements Action
     {
       throw oce;
     }
+    catch (ApplicationException e)
+    {
+      GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
+    }
     catch (Exception e)
     {
       Logger.error("Fehler", e);

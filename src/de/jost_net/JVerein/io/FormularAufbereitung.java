@@ -113,6 +113,8 @@ public class FormularAufbereitung
       fos = new FileOutputStream(f);
 
       writer = PdfWriter.getInstance(doc, fos);
+      writer.setEncryption(null, null, 
+          PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS, PdfWriter.ENCRYPTION_AES_256);
       doc.open();
 
     }

@@ -1967,6 +1967,8 @@ public class EinstellungControl extends AbstractControl
       return unterschriftdrucken;
     }
     unterschriftdrucken = new CheckboxInput(Einstellungen.getEinstellung().getUnterschriftdrucken());
+    unterschriftdrucken.setName(" *Die maschinelle Erstellung von Zuwendungsbestätigungen muss "
+        + "vorab dem zuständigen Finanzamt angezeigt worden sein.");
     return unterschriftdrucken;
   }
 
