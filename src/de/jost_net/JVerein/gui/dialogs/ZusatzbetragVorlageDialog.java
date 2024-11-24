@@ -1,16 +1,16 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
  *  the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -119,17 +119,21 @@ public class ZusatzbetragVorlageDialog
     tab.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-      tab.addColumn("Buchungsklasse", "buchungsklasse", 
+    {
+      tab.addColumn("Buchungsklasse", "buchungsklasse",
           new BuchungsklasseFormatter());
-    tab.addColumn("Buchungsart", "buchungsart",
-        new BuchungsartFormatter());
-    tab.addColumn("Zahlungsweg", "zahlungsweg", new Formatter() {
+    }
+    tab.addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
+    tab.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
+    {
       @Override
       public String format(Object o)
       {
-        if(o == null)
+        if (o == null)
+        {
           return "";
-        return new Zahlungsweg((Integer)o).getText();
+        }
+        return new Zahlungsweg((Integer) o).getText();
       }
     });
     tab.setContextMenu(new ZusatzbetragVorlageMenu());
