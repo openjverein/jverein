@@ -79,8 +79,8 @@ import de.jost_net.JVerein.gui.action.MailVorlagenAction;
 import de.jost_net.JVerein.gui.action.MitgliedMigrationAction;
 import de.jost_net.JVerein.gui.action.MitgliedSucheAction;
 import de.jost_net.JVerein.gui.action.SollbuchungListeAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoMahnungAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoRechnungAction;
+import de.jost_net.JVerein.gui.action.SollbuchungMahnungAction;
+import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
 import de.jost_net.JVerein.gui.action.ProjektListAction;
 import de.jost_net.JVerein.gui.action.ProjektSaldoAction;
 import de.jost_net.JVerein.gui.action.QIFBuchungsImportViewAction;
@@ -254,9 +254,9 @@ public class MyExtension implements Extension
       NavigationItem mail = null;
       mail = new MyItem(mail, "Druck & Mail", null);
       mail.addChild(new MyItem(mail, "Rechnungen",
-          new MitgliedskontoRechnungAction(), "document-print.png"));
+          new SollbuchungRechnungAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Mahnungen",
-          new MitgliedskontoMahnungAction(), "document-print.png"));
+          new SollbuchungMahnungAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Kontoauszüge",
           new KontoauszugAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Freie Formulare",

@@ -21,7 +21,8 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -29,20 +30,21 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoIstbuchungLoesenAction implements Action
+public class SollbuchungLoeschenAction implements Action
 {
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof MitgliedskontoNode))
+    if (context == null || !((context instanceof MitgliedskontoNode)
+        || context instanceof Mitgliedskonto))
     {
-      throw new ApplicationException("Keine Istbuchung ausgewählt");
+      throw new ApplicationException("Keine Sollbuchung ausgewählt");
     }
   	
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle("Istbuchung von Sollbuchung lösen");
-    d.setText("Wollen Sie die Istbuchung wirklich von der Sollbuchung lösen?");
+    d.setTitle("Sollbuchung löschen");
+    d.setText("Wollen Sie die Sollbuchung wirklich löschen?");
 
     try
     {
@@ -58,28 +60,29 @@ public class MitgliedskontoIstbuchungLoesenAction implements Action
       return;
     }
     MitgliedskontoNode mkn = null;
-    Buchung bu = null;
-
-    if (context != null && (context instanceof MitgliedskontoNode))
+    Mitgliedskonto mk = null;
+    try
     {
-      mkn = (MitgliedskontoNode) context;
-      try
+      if (context instanceof MitgliedskontoNode)
       {
-        bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
-            mkn.getID());
-        bu.setMitgliedskonto(null);
-        bu.store();
-        GUI.getStatusBar().setSuccessText(
-
-        "Istbuchung von Sollbuchung gelöst.");
-        Application.getMessagingFactory().sendMessage(
-            new MitgliedskontoMessage(mkn.getMitglied()));
+        mkn = (MitgliedskontoNode) context;
+        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
+            Mitgliedskonto.class, mkn.getID());
       }
-      catch (RemoteException e)
+      else
       {
-        throw new ApplicationException(
-            "Fehler beim lösen der Istbuchung von der Sollbuchung");
+        mk = (Mitgliedskonto) context;
       }
+      Mitglied mitglied = mk.getMitglied();
+      mk.delete();
+      GUI.getStatusBar().setSuccessText("Sollbuchung gelöscht.");
+      Application.getMessagingFactory().sendMessage(
+          new MitgliedskontoMessage(mitglied));
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(
+          "Fehler beim Löschen einer Sollbuchung");
     }
   }
 }

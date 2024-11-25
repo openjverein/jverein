@@ -17,9 +17,9 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungEditAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
+import de.jost_net.JVerein.gui.action.SollbuchungExportAction;
+import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
+import de.jost_net.JVerein.gui.action.SollbuchungExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.willuhn.jameica.gui.AbstractView;
@@ -40,7 +40,7 @@ public class SollbuchungListeView extends AbstractView
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
     control.init("sollbuchung.", null, null);
-    
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
@@ -49,18 +49,18 @@ public class SollbuchungListeView extends AbstractView
     left.addLabelPair("Zahler", control.getSuchtext());
     left.addInput(control.getDifferenz());
     left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
     right.addInput(control.getMailauswahl());
-    
+
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
 
-    control.getMitgliedskontoList(new MitgliedskontoSollbuchungEditAction(),
+    control.getMitgliedskontoList(new SollbuchungEditAction(),
         new SollbuchungMenu(), false).paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
@@ -68,10 +68,10 @@ public class SollbuchungListeView extends AbstractView
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
     buttons.addButton(new Button("Export",
-        new MitgliedskontoExportAction(EXPORT_TYP.MITGLIEDSKONTO, null),
-        control, false, "document-save.png"));
-    buttons.addButton("Neu", new MitgliedskontoSollbuchungEditAction(), 
-        control, false, "document-new.png");
+        new SollbuchungExportAction(EXPORT_TYP.MITGLIEDSKONTO), control, false,
+        "document-save.png"));
+    buttons.addButton("Neu", new SollbuchungEditAction(), control, false,
+        "document-new.png");
     buttons.paint(this.getParent());
   }
 }

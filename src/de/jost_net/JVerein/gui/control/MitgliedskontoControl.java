@@ -16,10 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.math.BigDecimal;
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,12 +29,12 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
+import de.jost_net.JVerein.Queries.SollbuchungQuery;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
-import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
@@ -53,11 +50,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -88,10 +81,11 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class MitgliedskontoControl extends DruckMailControl
-{ 
+{
   public enum DIFFERENZ
   {
     EGAL("Egal"), FEHLBETRAG("Fehlbetrag"), UEBERZAHLUNG("Überzahlung");
+
     private final String titel;
 
     private DIFFERENZ(String titel)
@@ -126,9 +120,9 @@ public class MitgliedskontoControl extends DruckMailControl
   private DecimalInput betrag;
 
   private AbstractInput buchungsart;
-  
+
   private SelectInput buchungsklasse;
-  
+
   private AbstractInput mitglied;
   
   private AbstractInput zahler;
@@ -136,14 +130,14 @@ public class MitgliedskontoControl extends DruckMailControl
   private Mitgliedskonto mkto;
 
   private TreePart mitgliedskontoTree;
-  
+
   // SollbuchungListeView, SollbuchungAuswahldialog
   private TablePart mitgliedskontoList;
 
   private TablePart mitgliedskontoList2;
 
   private TextInput suchname2 = null;
-  
+
   private CheckboxInput spezialsuche2 = null;
 
   // private CheckboxInput offenePosten = null;
@@ -151,9 +145,8 @@ public class MitgliedskontoControl extends DruckMailControl
   private MitgliedskontoMessageConsumer mc = null;
 
   private Action action;
-  
-  private boolean umwandeln;
 
+  private boolean umwandeln;
 
   public MitgliedskontoControl(AbstractView view)
   {
@@ -239,8 +232,8 @@ public class MitgliedskontoControl extends DruckMailControl
       z = getMitgliedskonto().getZahlungsweg();
     }
     boolean mitVollzahler = false;
-    if(getMitglied().getValue() != null &&
-        ((Mitglied) getMitglied().getValue()).getZahlerID() != null)
+    if (getMitglied().getValue() != null
+        && ((Mitglied) getMitglied().getValue()).getZahlerID() != null)
       mitVollzahler = true;
     ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray(mitVollzahler);
 
@@ -284,8 +277,8 @@ public class MitgliedskontoControl extends DruckMailControl
         try
         {
           Buchungsart bua = (Buchungsart) buchungsart.getValue();
-          if (buchungsklasse != null && buchungsklasse.getValue() == null &&
-              bua != null)
+          if (buchungsklasse != null && buchungsklasse.getValue() == null
+              && bua != null)
             buchungsklasse.setValue(bua.getBuchungsklasse());
         }
         catch (RemoteException e)
@@ -296,25 +289,26 @@ public class MitgliedskontoControl extends DruckMailControl
     });
     return buchungsart;
   }
-  
+
   public SelectInput getBuchungsklasse() throws RemoteException
   {
     if (buchungsklasse != null)
     {
       return buchungsklasse;
     }
-    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklasse,
-        getMitgliedskonto().getBuchungsklasse());
+    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(
+        buchungsklasse, getMitgliedskonto().getBuchungsklasse());
     return buchungsklasse;
   }
-  
+
   private Long getSelectedBuchungsKlasseId() throws ApplicationException
   {
     try
     {
       if (buchungsklasse == null)
         return null;
-      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse()
+          .getValue();
       if (null == buchungsKlasse)
         return null;
       Long id = Long.valueOf(buchungsKlasse.getID());
@@ -327,7 +321,7 @@ public class MitgliedskontoControl extends DruckMailControl
       throw new ApplicationException(meldung, ex);
     }
   }
-  
+
   public CheckboxInput getSpezialSuche2()
   {
     if (spezialsuche2 != null && !spezialsuche2.getControl().isDisposed())
@@ -367,8 +361,8 @@ public class MitgliedskontoControl extends DruckMailControl
     suchname.setName("Name");
     return suchname;
   }
-  
-  //Für SollbuchungAuswahlDialog
+
+  // Für SollbuchungAuswahlDialog
   public TextInput getSuchName2(boolean newcontrol)
   {
     if (!newcontrol && suchname2 != null)
@@ -379,7 +373,7 @@ public class MitgliedskontoControl extends DruckMailControl
     suchname2.setName("Name");
     return suchname2;
   }
-  
+
   public void handleStore()
   {
     try
@@ -419,11 +413,12 @@ public class MitgliedskontoControl extends DruckMailControl
       mkto.setSteuersatz(steuersatz);
       if (getBetrag().getValue() != null)
       {
-        Double netto = ((Double) getBetrag().getValue() / (1d + (steuersatz / 100d)));
+        Double netto = ((Double) getBetrag().getValue()
+            / (1d + (steuersatz / 100d)));
         mkto.setNettobetrag(netto);
         mkto.setSteuerbetrag((Double) getBetrag().getValue() - netto);
       }
-      
+
       mkto.store();
       GUI.getStatusBar().setSuccessText("Sollbuchung gespeichert");
     }
@@ -443,38 +438,41 @@ public class MitgliedskontoControl extends DruckMailControl
   {
     mitgliedskontoTree = new TreePart(new MitgliedskontoNode(mitglied),
         new Action()
-    {
+        {
 
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        if (context == null || !(context instanceof MitgliedskontoNode))
-        {
-          return;
-        }
-        try
-        {
-          MitgliedskontoNode mkn = (MitgliedskontoNode) context;
-          if (mkn.getType() == MitgliedskontoNode.IST)
+          @Override
+          public void handleAction(Object context) throws ApplicationException
           {
-            Buchung bu = (Buchung) Einstellungen.getDBService().createObject(
-                Buchung.class, mkn.getID());
-            GUI.startView(BuchungView.class.getName(), bu);
+            if (context == null || !(context instanceof MitgliedskontoNode))
+            {
+              return;
+            }
+            try
+            {
+              MitgliedskontoNode mkn = (MitgliedskontoNode) context;
+              if (mkn.getType() == MitgliedskontoNode.IST)
+              {
+                Buchung bu = (Buchung) Einstellungen.getDBService()
+                    .createObject(Buchung.class, mkn.getID());
+                GUI.startView(BuchungView.class.getName(), bu);
+              }
+              if (mkn.getType() == MitgliedskontoNode.SOLL)
+              {
+                Mitgliedskonto mk = (Mitgliedskonto) Einstellungen
+                    .getDBService()
+                    .createObject(Mitgliedskonto.class, mkn.getID());
+                GUI.startView(
+                    new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
+              }
+            }
+            catch (RemoteException e)
+            {
+              Logger.error(e.getMessage());
+              throw new ApplicationException(
+                  "Fehler beim Editieren der Buchung");
+            }
           }
-          if (mkn.getType() == MitgliedskontoNode.SOLL)
-          {
-            Mitgliedskonto mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-                Mitgliedskonto.class, mkn.getID());
-            GUI.startView(new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException("Fehler beim Editieren der Buchung");
-        }
-      }
-    })
+        })
 
     {
 
@@ -518,16 +516,18 @@ public class MitgliedskontoControl extends DruckMailControl
     return mitgliedskontoTree;
   }
 
-  public TablePart getMitgliedskontoList(Action action, ContextMenu menu, boolean umwandeln)
-      throws RemoteException
+  public TablePart getMitgliedskontoList(Action action, ContextMenu menu,
+      boolean umwandeln) throws RemoteException
   {
     this.action = action;
     this.umwandeln = umwandeln;
     @SuppressWarnings("rawtypes")
-    GenericIterator mitgliedskonten = getMitgliedskontoIterator(umwandeln);
+    GenericIterator mitgliedskonten = new SollbuchungQuery(this, umwandeln,
+        null).get();
     if (mitgliedskontoList == null)
     {
-      mitgliedskontoList = new SollbuchungListTablePart(mitgliedskonten, action);
+      mitgliedskontoList = new SollbuchungListTablePart(mitgliedskonten,
+          action);
       mitgliedskontoList.addColumn("Nr", "id-int");
       mitgliedskontoList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -648,389 +648,16 @@ public class MitgliedskontoControl extends DruckMailControl
     return mitglieder;
   }
 
-  
   public void refreshMitgliedkonto1() throws RemoteException
   {
     @SuppressWarnings("rawtypes")
-    GenericIterator mitgliedskonten = getMitgliedskontoIterator(umwandeln);
+    GenericIterator mitgliedskonten = new SollbuchungQuery(this, umwandeln,
+        null).get();
     mitgliedskontoList.removeAll();
     while (mitgliedskonten.hasNext())
     {
       mitgliedskontoList.addItem(mitgliedskonten.next());
     }
-  }
-  
-  @SuppressWarnings("rawtypes")
-  public GenericIterator getMitgliedskontoIterator(boolean umwandeln) throws RemoteException
-  {
-    this.umwandeln = umwandeln;
-    Date d1 = null;
-    java.sql.Date vd = null;
-    java.sql.Date bd = null;
-    if (datumvon != null)
-    {
-      d1 = (Date) datumvon.getValue();
-      if (d1 != null)
-      {
-        vd = new java.sql.Date(d1.getTime());
-      }
-    }
-    if (datumbis != null)
-    {
-      d1 = (Date) datumbis.getValue();
-      if (d1 != null)
-      {
-        bd = new java.sql.Date(d1.getTime());
-      }
-    }
-    
-    DIFFERENZ diff = DIFFERENZ.EGAL;
-    if (differenz != null)
-    {
-      diff = (DIFFERENZ) differenz.getValue();
-    }
-    
-    boolean kein_name = suchname == null || suchname.getValue() == null || 
-        ((String) suchname.getValue()).isEmpty();
-    boolean ein_name = suchname != null && suchname.getValue() != null && 
-        !((String) suchname.getValue()).isEmpty();
-    boolean keine_email = mailAuswahl == null || (Integer) mailAuswahl.getValue() == 
-        MailAuswertungInput.ALLE;
-    boolean filter_email = mailAuswahl != null && !((Integer) mailAuswahl.getValue() == 
-        MailAuswertungInput.ALLE);
-    
-    // Falls kein Name, kein Mailfilter und keine Differenz dann alles lesen
-    if (kein_name && keine_email &&  diff == DIFFERENZ.EGAL)
-    {
-      DBIterator<Mitgliedskonto> sollbuchungen = Einstellungen.getDBService()
-          .createList(Mitgliedskonto.class);
-      if (vd != null)
-      {
-      sollbuchungen.addFilter("mitgliedskonto.datum >= ? ",
-          new Object[] { vd });
-      }
-      if (bd != null)
-      {
-      sollbuchungen.addFilter("mitgliedskonto.datum <= ? ",
-          new Object[] { bd });
-      }
-      if (ohneabbucher != null && (Boolean) ohneabbucher.getValue())
-      {
-        sollbuchungen.addFilter("mitgliedskonto.zahlungsweg <> ?", 
-            Zahlungsweg.BASISLASTSCHRIFT);
-      }
-      return sollbuchungen;
-    }
-    
-    // Falls ein Name oder Mailfilter aber keine Differenz dann alles des Mitglieds lesen
-    if ((ein_name || filter_email)  && diff == DIFFERENZ.EGAL)
-    {
-      DBIterator<Mitgliedskonto> sollbuchungen = Einstellungen.getDBService()
-          .createList(Mitgliedskonto.class);
-      
-      if ((!umwandeln && ein_name) || filter_email)
-      {
-        sollbuchungen.join("mitglied");
-        sollbuchungen.addFilter("mitglied.id = mitgliedskonto.mitglied");
-      }
-      
-      if (!umwandeln && ein_name)
-      {
-        // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
-        String name = (String) suchname.getValue();
-        sollbuchungen.addFilter("((lower(mitglied.name) like ?)"
-            + " OR (lower(mitglied.vorname) like ?))",
-            new Object[] {name.toLowerCase() + "%", name.toLowerCase() + "%"});
-      }
-      else if (umwandeln && ein_name)
-      {
-        // Der Name muss umgewandelt werden, es kann mehrere Matches geben
-        ArrayList<BigDecimal> namenids = getNamenIds();
-        if (namenids != null)
-        {
-          int anzahl = namenids.size();
-          String querystring = null;
-          
-          for (int i = 1; i <= anzahl; i++)
-          {
-            if (anzahl == 1)
-            {
-              querystring = "(mitgliedskonto.mitglied = ?) ";
-            }
-            else if (i == 1)
-            {
-              querystring =  "((mitgliedskonto.mitglied = ?) OR ";
-            }
-            else if (i < anzahl)
-            {
-              querystring =  querystring + "(mitgliedskonto.mitglied = ?) OR ";
-            }
-            else if (i == anzahl)
-            {
-              querystring =  querystring + "(mitgliedskonto.mitglied = ?)) ";
-            }
-          }
-          sollbuchungen.addFilter(querystring, namenids.toArray() );
-        }
-      }
-
-      if (vd != null)
-      {
-        sollbuchungen.addFilter("(mitgliedskonto.datum >= ?) ",
-            new Object[] { vd });
-      }
-      if (bd != null)
-      {
-        sollbuchungen.addFilter("(mitgliedskonto.datum <= ?) ",
-            new Object[] { bd });
-      }
-      if (ohneabbucher != null && (Boolean) ohneabbucher.getValue())
-      {
-        sollbuchungen.addFilter("mitgliedskonto.zahlungsweg <> ?", 
-            Zahlungsweg.BASISLASTSCHRIFT);
-      }
-      if (filter_email)
-      {
-        int mailauswahl = (Integer) mailAuswahl.getValue();
-        if (mailauswahl == MailAuswertungInput.OHNE)
-        {
-          sollbuchungen.addFilter("(email is null or length(email) = 0)");
-        }
-        if (mailauswahl == MailAuswertungInput.MIT)
-        {
-          sollbuchungen.addFilter("(email is  not null and length(email) > 0)");
-        }
-      }
-      return sollbuchungen;
-    }
-    
-    // Eine Differenz ist ausgewählt
-    final DBService service = Einstellungen.getDBService();
-    String sql = "SELECT  mitgliedskonto.id, mitglied.name, mitglied.vorname, "
-        + " mitgliedskonto.betrag, sum(buchung.betrag) FROM mitgliedskonto "
-        + "JOIN mitglied on (mitgliedskonto.mitglied = mitglied.id) "
-        + "LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto ";
-    String where = "";
-    ArrayList<Object> param = new ArrayList<>();
-    if (suchname != null && suchname.getValue() != null && 
-        !((String) suchname.getValue()).isEmpty() && umwandeln == false)
-    {
-      // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
-      String tmpSuchname = (String) suchname.getValue();
-      where += (where.length() > 0 ? "and " : "")
-          + "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?)) ";
-      param.add(tmpSuchname.toLowerCase() + "%");
-      param.add(tmpSuchname.toLowerCase() + "%");
-    }
-    else if (suchname != null && suchname.getValue() != null && 
-        !((String) suchname.getValue()).isEmpty() && umwandeln == true)
-    {
-      // Der Name muss umgewandelt werden, es kann mehrere Matches geben
-      ArrayList<BigDecimal> namenids = getNamenIds();
-      if (namenids != null)
-      {
-        int count = 0;
-        int anzahl = namenids.size();
-        for (BigDecimal id: namenids)
-        {
-          count++;
-          if (anzahl == 1)
-          {
-          where += (where.length() > 0 ? "and " : "")
-              + "mitgliedskonto.mitglied = ? ";
-          }
-          else if (count == 1)
-          {
-            where += (where.length() > 0 ? "and " : "")
-                + "(mitgliedskonto.mitglied = ? ";
-          }
-          else if (count < anzahl)
-          {
-            where += " OR mitgliedskonto.mitglied = ? ";
-          }
-          else if (count == anzahl)
-          {
-            where += " OR mitgliedskonto.mitglied = ?) ";
-          }
-          param.add(id);
-        }
-      }
-    }
-    if (vd != null)
-    {
-      where += (where.length() > 0 ? "and " : "")
-          + "mitgliedskonto.datum >= ? ";
-      param.add(vd);
-    }
-    if (bd != null)
-    {
-      where += (where.length() > 0 ? "and " : "")
-          + "mitgliedskonto.datum <= ? ";
-      param.add(bd);
-    }
-    if (ohneabbucher != null && (Boolean) ohneabbucher.getValue())
-    {
-      where += (where.length() > 0 ? "and " : "")
-          +"mitgliedskonto.zahlungsweg <> ?"; 
-      param.add(Zahlungsweg.BASISLASTSCHRIFT);
-    }
-    if (filter_email)
-    {
-      int mailauswahl = (Integer) mailAuswahl.getValue();
-      if (mailauswahl == MailAuswertungInput.OHNE)
-      {
-        where += (where.length() > 0 ? "and " : "")
-            + "(email is null or length(email) = 0)";
-      }
-      if (mailauswahl == MailAuswertungInput.MIT)
-      {
-        where += (where.length() > 0 ? "and " : "")
-            + "(email is not null and length(email) > 0)";
-      }
-    }
-    
-    if (where.length() > 0)
-    {
-      sql += "WHERE " + where;
-    }
-    sql += "group by mitgliedskonto.id ";
-
-    if (DIFFERENZ.FEHLBETRAG == diff)
-    {
-      sql += "having sum(buchung.betrag) < mitgliedskonto.betrag or "
-          + "(sum(buchung.betrag) is null and mitgliedskonto.betrag > 0) ";
-    }
-    if (DIFFERENZ.UEBERZAHLUNG == diff)
-    {
-      sql += "having sum(buchung.betrag) > mitgliedskonto.betrag ";
-    }
-    sql += "order by mitglied.name, mitglied.vorname, mitgliedskonto.datum desc";
-    @SuppressWarnings("unchecked")
-    ArrayList<Mitgliedskonto> mitgliedskonten = (ArrayList<Mitgliedskonto>) service.execute(sql,
-        param.toArray(), new ResultSetExtractor()
-    {
-      @Override
-      public Object extract(ResultSet rs)
-          throws RemoteException, SQLException
-      {
-        ArrayList<Mitgliedskonto> list = new ArrayList<>();
-        while (rs.next())
-        {
-          list.add(
-            (Mitgliedskonto) service.createObject(Mitgliedskonto.class, rs.getString(1)));
-        }
-        return list;
-      }
-    });
-    
-    return PseudoIterator.fromArray(
-        mitgliedskonten.toArray(new GenericObject[mitgliedskonten.size()]));
-  }
-  
-  private ArrayList<BigDecimal> getNamenIds() throws RemoteException
-  {
-    DBService service = Einstellungen.getDBService();
-    String sql = "SELECT  mitglied.id, mitglied.name, mitglied.vorname from mitglied";
-    
-    @SuppressWarnings("unchecked")
-    ArrayList<BigDecimal> mitgliedids = (ArrayList<BigDecimal>) service.execute(sql,
-        new Object[] { }, new ResultSetExtractor()
-        {
-          @Override
-          public Object extract(ResultSet rs)
-              throws RemoteException, SQLException
-          {
-            ArrayList<BigDecimal> ergebnis = new ArrayList<>();
-
-            // In case the text search input is used, we calculate
-            // an "equality" score for each Mitglied entry. 
-            // Only the entries with
-            // score == maxScore will be shown.
-            Integer maxScore = 0;
-            int count = 0;
-            String name = reduceWord((String) suchname.getValue());
-            BigDecimal mgid = null;
-            String nachname = null;
-            String vorname = null;
-            while (rs.next())
-            {
-              count++;
-              // Nur die ids der Mitglieder speichern
-              mgid = rs.getBigDecimal(1);
-
-              StringTokenizer tok = new StringTokenizer(name, " ,-");
-              Integer score = 0;
-              nachname = reduceWord(rs.getString(2));
-              vorname = reduceWord(rs.getString(3));                
-              while (tok.hasMoreElements())
-              {
-                String nextToken = tok.nextToken();
-                if (nextToken.length() > 2)
-                {
-                  score += scoreWord(nextToken, nachname);
-                  score += scoreWord(nextToken, vorname);
-                }
-              }
-
-              if (maxScore < score)
-              {
-                maxScore = score;
-                // We found a Mitgliedskonto matching with a higher equality
-                // score, so we drop all previous matches, because they were
-                // less equal.
-                ergebnis.clear();
-              }
-              else if (maxScore > score)
-              {
-                // This match is worse, so skip it.
-                continue;
-              }
-              ergebnis.add(mgid);
-            }
-            if (ergebnis.size() != count)
-            {
-              return ergebnis;
-            }
-            else
-            {
-              // Kein Match
-              return null;
-            }
-          }
-        });
-    return mitgliedids;
-  }
-
-  public Integer scoreWord(String word, String in)
-  {
-    Integer wordScore = 0;
-    StringTokenizer tok = new StringTokenizer(in, " ,-");
-
-    while (tok.hasMoreElements())
-    {
-      String nextToken = tok.nextToken();
-
-      // Full match is twice worth
-      if (nextToken.equals(word))
-      {
-        wordScore += 2;
-      }
-      else if (nextToken.contains(word))
-      {
-        wordScore += 1;
-      }
-    }
-
-    return wordScore;
-  }
-
-  public String reduceWord(String word)
-  {
-    // We replace "ue" -> "u" and "ü" -> "u", because some bank institutions
-    // remove the dots "ü" -> "u". So we get "u" == "ü" == "ue".
-    return word.toLowerCase().replaceAll("ä", "a").replaceAll("ae", "a")
-        .replaceAll("ö", "o").replaceAll("oe", "o").replaceAll("ü", "u")
-        .replaceAll("ue", "u").replaceAll("ß", "s").replaceAll("ss", "s");
   }
 
   public Button getStartKontoauszugButton(final Object currentObject,
@@ -1056,7 +683,7 @@ public class MitgliedskontoControl extends DruckMailControl
     }, null, true, "walking.png");
     return button;
   }
-  
+
   // Für Sollbuchungen View
   public void TabRefresh()
   {
@@ -1072,7 +699,7 @@ public class MitgliedskontoControl extends DruckMailControl
       }
     }
   }
-  
+
   // Für SollbuchungAuswahlDialog
   public void refreshMitgliedskontoList1()
   {
@@ -1085,7 +712,7 @@ public class MitgliedskontoControl extends DruckMailControl
       Logger.error("Fehler", e);
     }
   }
-  
+
   // Für SollbuchungAuswahlDialog
   public void refreshMitgliedskontoList2()
   {
@@ -1190,7 +817,7 @@ public class MitgliedskontoControl extends DruckMailControl
   {
     Mitglied[] mitglieder = null;
     String text = "";
-    
+
     if (selection instanceof Mitglied)
     {
       mitglieder = new Mitglied[] { (Mitglied) selection };
@@ -1203,21 +830,19 @@ public class MitgliedskontoControl extends DruckMailControl
     {
       return "";
     }
-    
+
     try
     {
       // Aufruf aus Mitglieder View
       if (mitglieder != null)
       {
-        text = "Es wurden " + mitglieder.length + 
-            " Mitglieder ausgewählt"
+        text = "Es wurden " + mitglieder.length + " Mitglieder ausgewählt"
             + "\nFolgende Mitglieder haben keine Mailadresse:";
-        for (Mitglied m: mitglieder)
+        for (Mitglied m : mitglieder)
         {
-          if ( m.getEmail() == null || m.getEmail().isEmpty())
+          if (m.getEmail() == null || m.getEmail().isEmpty())
           {
-            text = text + "\n - " + m.getName()
-            + ", " + m.getVorname();
+            text = text + "\n - " + m.getName() + ", " + m.getVorname();
           }
         }
       }
@@ -1238,8 +863,9 @@ public class MitgliedskontoControl extends DruckMailControl
 
     if (getMitgliedskonto().getMitglied() != null)
     {
-      Mitglied[] mitgliedArray = {getMitgliedskonto().getMitglied()};
-      mitglied = new SelectInput(mitgliedArray, getMitgliedskonto().getMitglied());
+      Mitglied[] mitgliedArray = { getMitgliedskonto().getMitglied() };
+      mitglied = new SelectInput(mitgliedArray,
+          getMitgliedskonto().getMitglied());
       mitglied.setEnabled(false);
     }
     else
@@ -1297,9 +923,10 @@ public class MitgliedskontoControl extends DruckMailControl
       try
       {
         @SuppressWarnings("unchecked")
-        ArrayList<Zahlungsweg> list = (ArrayList<Zahlungsweg>) getZahlungsweg().getList();
+        ArrayList<Zahlungsweg> list = (ArrayList<Zahlungsweg>) getZahlungsweg()
+            .getList();
         list.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
-        if(((Mitglied) getMitglied().getValue()).getZahlerID() != null)
+        if (((Mitglied) getMitglied().getValue()).getZahlerID() != null)
           list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
         getZahlungsweg().setList(list);
         
@@ -1312,10 +939,10 @@ public class MitgliedskontoControl extends DruckMailControl
       }
     }
   }
-  
+
   public boolean hasRechnung() throws RemoteException
   {
-    if(getMitgliedskonto().getRechnung() != null)
+    if (getMitgliedskonto().getRechnung() != null)
     {
       GUI.getStatusBar().setErrorText(
           "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
@@ -1323,23 +950,12 @@ public class MitgliedskontoControl extends DruckMailControl
     }
     return false;
   }
-  
 
-  public Object[] getCVSExportGrenzen(Mitglied selectedMitglied)
+  public Object[] getCVSExportGrenzen() throws RemoteException
   {
-    return new Object[] {
-        getDatumvon().getValue(),
-        getDatumbis().getValue(),
-        getDifferenz().getValue(), getCVSExportGrenzeOhneAbbucher(),
-        selectedMitglied };
-  }
-
-
-  private Boolean getCVSExportGrenzeOhneAbbucher()
-  {
-    if (null == ohneabbucher)
-      return Boolean.FALSE;
-    return (Boolean) ohneabbucher.getValue();
+    return new Object[] { getSuchname().getValue(), getDifferenz().getValue(),
+        getOhneAbbucher().getValue(), getDatumvon().getValue(),
+        getDatumbis().getValue(), getMailauswahl().getValue() };
   }
 
 }

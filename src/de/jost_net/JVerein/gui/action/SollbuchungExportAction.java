@@ -23,8 +23,7 @@ import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.Exporter;
 import de.jost_net.JVerein.io.IORegistry;
-import de.jost_net.JVerein.io.MitgliedskontoExport;
-import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.io.SollbuchungExport;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -32,34 +31,13 @@ import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoExportAction implements Action
+public class SollbuchungExportAction implements Action
 {
   private EXPORT_TYP exportTyp;
 
-  private Mitglied selectedMitglied;
-
-  public MitgliedskontoExportAction(EXPORT_TYP exportTyp, Object currentObject)
+  public SollbuchungExportAction(EXPORT_TYP exportTyp)
   {
-    try
-    {
-      this.exportTyp = exportTyp;
-      if (null != currentObject)
-      {
-        if (currentObject instanceof Mitglied)
-        {
-          selectedMitglied = (Mitglied) currentObject;
-        }
-        else if (currentObject instanceof Mitgliedskonto)
-        {
-          Mitgliedskonto konto = (Mitgliedskonto) currentObject;
-          selectedMitglied = konto.getMitglied();
-        }
-      }
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Export kann nicht initialisiert werden", e);
-    }
+    this.exportTyp = exportTyp;
   }
 
   /**
@@ -87,9 +65,8 @@ public class MitgliedskontoExportAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(
-
-      "Fehler beim exportieren der Sollbuchungen");
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim exportieren der Sollbuchungen");
     }
   }
 
@@ -102,20 +79,21 @@ public class MitgliedskontoExportAction implements Action
     Exporter[] exporters = IORegistry.getExporters();
     for (Exporter export : exporters)
     {
-      if (export instanceof MitgliedskontoExport)
+      if (export instanceof SollbuchungExport)
       {
-        MitgliedskontoExport mkexport = (MitgliedskontoExport) export;
-        mkexport.setExportTyp(exportTyp);
+        SollbuchungExport sollbexport = (SollbuchungExport) export;
+        sollbexport.setExportTyp(exportTyp);
       }
     }
   }
 
-  private Object[] gibSuchGrenzen(Object context) throws ApplicationException
+  private Object[] gibSuchGrenzen(Object context)
+      throws ApplicationException, RemoteException
   {
     if (context instanceof MitgliedskontoControl)
     {
       MitgliedskontoControl control = (MitgliedskontoControl) context;
-      return control.getCVSExportGrenzen(selectedMitglied);
+      return control.getCVSExportGrenzen();
     }
     throw new ApplicationException(
         "Dieser Export wurde aus dem falschen Context aufgerufen!");

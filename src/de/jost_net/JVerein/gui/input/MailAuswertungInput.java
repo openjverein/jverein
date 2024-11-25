@@ -71,14 +71,14 @@ public class MailAuswertungInput extends SelectInput
   /**
    * Hilfs-Objekt zur Anzeige der Labels.
    */
-  private static class MailAuswertungObject implements GenericObject
+  public static class MailAuswertungObject implements GenericObject
   {
 
     public int mailauswertung;
 
     private String label = null;
 
-    private MailAuswertungObject(int mail)
+    public MailAuswertungObject(int mail)
     {
       this.mailauswertung = mail;
       if (mail == 0)

@@ -35,7 +35,7 @@ import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ProgressMonitor;
 
-public class MitgliedskontoExportCSV extends MitgliedskontoExport
+public class SollbuchungExportCSV extends SollbuchungExport
 {
 
   private ArrayList<Mitgliedskonto> mkonten = null;
@@ -59,7 +59,7 @@ public class MitgliedskontoExportCSV extends MitgliedskontoExport
       @Override
       public String getName()
       {
-        return MitgliedskontoExportCSV.this.getName();
+        return SollbuchungExportCSV.this.getName();
       }
 
       /**

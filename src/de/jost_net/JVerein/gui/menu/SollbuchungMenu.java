@@ -21,10 +21,10 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoMahnungAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoRechnungAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungEditAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungLoeschenAction;
+import de.jost_net.JVerein.gui.action.SollbuchungMahnungAction;
+import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
+import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
+import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -47,16 +47,16 @@ public class SollbuchungMenu extends ContextMenu
   public SollbuchungMenu()
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new MitgliedskontoSollbuchungEditAction(), "text-x-generic.png"));
+        new SollbuchungEditAction(), "text-x-generic.png"));
     addItem(new SollOhneIstItem("Löschen",
-        new MitgliedskontoSollbuchungLoeschenAction(), "user-trash-full.png"));
+        new SollbuchungLoeschenAction(), "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
     /*addItem(new CheckedContextMenuItem("Rechnung erstellen",
-        new MitgliedskontoRechnungAction(), "file-invoice.png"));
+        new SollbuchungRechnungAction(), "file-invoice.png"));
     addItem(new CheckedContextMenuItem("Mahnung erstellen",
-        new MitgliedskontoMahnungAction(), "file-invoice.png"));
+        new SollbuchungMahnungAction(), "file-invoice.png"));
         */
   }
 
