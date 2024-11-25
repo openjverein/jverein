@@ -1,16 +1,16 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
  *  the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -81,8 +82,8 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
       }
       if (getEndedatum() != null)
       {
-        if (!Datum
-            .isImInterval(getStartdatum(), getEndedatum(), getIntervall()))
+        if (!Datum.isImInterval(getStartdatum(), getEndedatum(),
+            getIntervall()))
         {
           throw new ApplicationException("Endedatum liegt nicht im Intervall");
         }
@@ -92,8 +93,8 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
         throw new ApplicationException(
             "Das Fälligkeitsdatum darf nicht vor dem Startdatum liegen");
       }
-      if (!Datum
-          .isImInterval(getStartdatum(), getFaelligkeit(), getIntervall()))
+      if (!Datum.isImInterval(getStartdatum(), getFaelligkeit(),
+          getIntervall()))
       {
         throw new ApplicationException(
             "Nächste Fälligkeit liegt nicht im Intervall");
@@ -101,6 +102,26 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
       if (getBetrag() == null)
       {
         throw new ApplicationException("Bitte Betrag eingeben");
+      }
+      if (getZahlungsweg().getKey() == Zahlungsweg.BASISLASTSCHRIFT)
+      {
+        if (getMitglied().getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        {
+          Mitglied m = Einstellungen.getDBService().createObject(
+              MitgliedImpl.class, getMitglied().getZahlerID().toString());
+          if (m.getIban().length() == 0
+              || m.getMandatDatum().equals(Einstellungen.NODATE))
+          {
+            throw new ApplicationException(
+                "Beim Vollzahler ist keine IBAN oder Mandatdatum hinterlegt.");
+          }
+        }
+        else if (getMitglied().getIban().length() == 0
+            || getMitglied().getMandatDatum().equals(Einstellungen.NODATE))
+        {
+          throw new ApplicationException(
+              "Beim Mitglied ist keine IBAN oder Mandatdatum hinterlegt.");
+        }
       }
     }
     catch (RemoteException e)
@@ -126,14 +147,18 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   @Override
   public Mitglied getMitglied() throws RemoteException
   {
-    Object o = (Object) super.getAttribute("mitglied");
+    Object o = super.getAttribute("mitglied");
     if (o == null)
+    {
       return null;
-    
-    if(o instanceof Mitglied)
-      return (Mitglied)o;
-   
-    Cache cache = Cache.get(Mitglied.class,true);
+    }
+
+    if (o instanceof Mitglied)
+    {
+      return (Mitglied) o;
+    }
+
+    Cache cache = Cache.get(Mitglied.class, true);
     return (Mitglied) cache.get(o);
   }
 
@@ -242,14 +267,18 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
-    Object o = (Object) super.getAttribute("buchungsart");
+    Object o = super.getAttribute("buchungsart");
     if (o == null)
+    {
       return null;
-    
-    if(o instanceof Buchungsart)
-      return (Buchungsart)o;
-   
-    Cache cache = Cache.get(Buchungsart.class,true);
+    }
+
+    if (o instanceof Buchungsart)
+    {
+      return (Buchungsart) o;
+    }
+
+    Cache cache = Cache.get(Buchungsart.class, true);
     return (Buchungsart) cache.get(o);
   }
 
@@ -271,7 +300,7 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   {
     return (Long) super.getAttribute("buchungsklasse");
   }
-  
+
   @Override
   public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException
   {
@@ -325,9 +354,11 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
       }
     }
 
-    // Wenn das Endedatum gesetzt ist und das Fälligkeitsdatum liegt zum oder hinter
+    // Wenn das Endedatum gesetzt ist und das Fälligkeitsdatum liegt zum oder
+    // hinter
     // dem Endedatum: nicht mehr ausführen
-    if (getEndedatum() != null && getFaelligkeit().getTime() >= getEndedatum().getTime())
+    if (getEndedatum() != null
+        && getFaelligkeit().getTime() >= getEndedatum().getTime())
     {
       return false;
     }
@@ -361,6 +392,30 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
     else
     {
       setFaelligkeit(vorh);
+    }
+  }
+
+  @Override
+  public Zahlungsweg getZahlungsweg() throws RemoteException
+  {
+    Object o = getAttribute("zahlungsweg");
+    if (o == null)
+    {
+      return new Zahlungsweg(0);
+    }
+    return new Zahlungsweg((Integer) o);
+  }
+
+  @Override
+  public void setZahlungsweg(Zahlungsweg zahlungsweg) throws RemoteException
+  {
+    if (zahlungsweg == null)
+    {
+      setAttribute("zahlungsweg", 0);
+    }
+    else
+    {
+      setAttribute("zahlungsweg", zahlungsweg.getKey());
     }
   }
 }

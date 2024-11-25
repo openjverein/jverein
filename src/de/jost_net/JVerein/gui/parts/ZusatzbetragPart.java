@@ -29,6 +29,7 @@ import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -71,6 +72,8 @@ public class ZusatzbetragPart implements Part
   
   private boolean mitMitglied;
 
+  private SelectInput zahlungsweg;
+
   public ZusatzbetragPart(Zusatzbetrag zusatzbetrag, boolean mitMitglied)
   {
     this.zusatzbetrag = zusatzbetrag;
@@ -94,6 +97,7 @@ public class ZusatzbetragPart implements Part
     group.addLabelPair("Buchungsart", getBuchungsart());
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
       group.addLabelPair("Buchungsklasse", getBuchungsklasse());
+    group.addLabelPair("Zahlungsweg", getZahlungsweg());
   }
 
   public DateInput getFaelligkeit() throws RemoteException
@@ -302,7 +306,7 @@ public class ZusatzbetragPart implements Part
   {
     return buchungsklasse != null;
   }
-  
+    
   public Long getSelectedBuchungsKlasseId() throws ApplicationException
   {
     try
@@ -321,6 +325,18 @@ public class ZusatzbetragPart implements Part
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
+  }
+  
+
+  public SelectInput getZahlungsweg() throws RemoteException
+  {
+    if (zahlungsweg != null)
+    {
+      return zahlungsweg;
+    }
+    zahlungsweg = new SelectInput(Zahlungsweg.getArray(false),zusatzbetrag.getZahlungsweg());
+    zahlungsweg.setPleaseChoose("Standard");
+    return zahlungsweg;
   }
   
   public Input getMitglied() throws RemoteException

@@ -1710,9 +1710,9 @@ public class MitgliedControl extends FilterControl
 
     zusatzbetraegeList.addColumn("Startdatum", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    zusatzbetraegeList.addColumn("nächste Fälligkeit", "faelligkeit",
+    zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    zusatzbetraegeList.addColumn("letzte Ausführung", "ausfuehrung",
+    zusatzbetraegeList.addColumn("Letzte Ausführung", "ausfuehrung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Intervall", "intervalltext");
     zusatzbetraegeList.addColumn("Endedatum", "endedatum",
@@ -1720,6 +1720,13 @@ public class MitgliedControl extends FilterControl
     zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
     zusatzbetraegeList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter() {
+      @Override
+      public String format(Object o)
+      {
+        return new Zahlungsweg((Integer)o).getText();
+      }
+    });
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
       zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
