@@ -33,6 +33,7 @@ import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.hbci.HBCI;
 import de.willuhn.jameica.hbci.rmi.Umsatz;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 
 public class Buchungsuebernahme
@@ -76,6 +77,10 @@ public class Buchungsuebernahme
       BuchungUebernahmeProtokollDialog bup = new BuchungUebernahmeProtokollDialog(
           buchungen, fehlerbuchung, exception);
       bup.open();
+    }
+    catch (OperationCanceledException oce)
+    {
+      // Keine Ausgabe einer Fehlermeldung
     }
     catch (Exception e)
     {

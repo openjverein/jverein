@@ -32,6 +32,8 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
@@ -62,6 +64,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.formatter.TreeFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -525,6 +528,7 @@ public class MitgliedskontoControl extends DruckMailControl
     if (mitgliedskontoList == null)
     {
       mitgliedskontoList = new SollbuchungListTablePart(mitgliedskonten, action);
+      mitgliedskontoList.addColumn("Nr", "id-int");
       mitgliedskontoList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       mitgliedskontoList.addColumn("Abrechnungslauf", "abrechnungslauf");
@@ -533,9 +537,23 @@ public class MitgliedskontoControl extends DruckMailControl
       mitgliedskontoList.addColumn("Zweck", "zweck1");
       mitgliedskontoList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      mitgliedskontoList.addColumn("Zahlungsweg","zahlungsweg", new Formatter() {
+        @Override
+        public String format(Object o)
+        {
+          return new Zahlungsweg((Integer)o).getText();
+        }
+      });
       mitgliedskontoList.addColumn("Zahlungseingang", "istsumme",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       mitgliedskontoList.addColumn("Rechnung", "rechnung");
+      mitgliedskontoList.addColumn("Buchungsart", "buchungsart",
+          new BuchungsartFormatter());
+      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      {
+        mitgliedskontoList.addColumn("Buchungsklasse", "buchungsklasse",
+            new BuchungsklasseFormatter());
+      }
       mitgliedskontoList.setContextMenu(menu);
       mitgliedskontoList.setRememberColWidths(true);
       mitgliedskontoList.setRememberOrder(true);
@@ -1300,7 +1318,7 @@ public class MitgliedskontoControl extends DruckMailControl
     if(getMitgliedskonto().getRechnung() != null)
     {
       GUI.getStatusBar().setErrorText(
-          "Solbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
+          "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
       return true;
     }
     return false;

@@ -23,6 +23,7 @@ import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -72,6 +73,12 @@ public class SplitBuchungAction implements Action
           throw new ApplicationException(String.format(
               "Buchung wurde bereits am %s von %s abgeschlossen.",
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
+        }
+        Spendenbescheinigung spb = bu.getSpendenbescheinigung();
+        if(spb != null)
+        {
+          throw new ApplicationException(
+              "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
         }
         if (bu.getBuchungsart() == null)
         {

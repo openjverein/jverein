@@ -350,10 +350,6 @@ public class FilterControl extends AbstractControl
   public DialogInput getEigenschaftenAuswahl() throws RemoteException
   {
     String  tmp = settings.getString(settingsprefix + "eigenschaften", "");
-    final EigenschaftenAuswahlDialog d = new EigenschaftenAuswahlDialog(tmp,
-        false, true, this, false);
-    d.addCloseListener(new EigenschaftenCloseListener());
-
     StringTokenizer stt = new StringTokenizer(tmp, ",");
     StringBuilder text = new StringBuilder();
     while (stt.hasMoreElements())
@@ -365,11 +361,22 @@ public class FilterControl extends AbstractControl
       try
       {
         String s = stt.nextToken();
+        String eigenschaftId = s.substring(0,s.length()-1);
+        String plusMinus = s.substring(s.length()-1);
+        if (eigenschaftId.isEmpty() ||
+            !(plusMinus == EigenschaftenNode.PLUS ||
+            plusMinus == EigenschaftenNode.MINUS))
+        {
+          text = new StringBuilder();
+          tmp = "";
+          settings.setAttribute(settingsprefix + "eigenschaften", tmp);
+          break;
+        }
         String prefix = "+";
-        if (s.substring(s.length()-1).equals(EigenschaftenNode.MINUS))
+        if (plusMinus.equals(EigenschaftenNode.MINUS))
           prefix = "-";
         Eigenschaft ei = (Eigenschaft) Einstellungen.getDBService()
-            .createObject(Eigenschaft.class, s.substring(0,s.length()-1));
+            .createObject(Eigenschaft.class, eigenschaftId);
         text.append(prefix + ei.getBezeichnung());
       }
       catch (ObjectNotFoundException e)
@@ -377,6 +384,9 @@ public class FilterControl extends AbstractControl
         //
       }
     }
+    final EigenschaftenAuswahlDialog d = new EigenschaftenAuswahlDialog(tmp,
+         true, this, false);
+    d.addCloseListener(new EigenschaftenCloseListener());
     eigenschaftenabfrage = new DialogInput(text.toString(), d);
     eigenschaftenabfrage.setName("Eigenschaften");
     eigenschaftenabfrage.disableClientControl();
@@ -405,11 +415,11 @@ public class FilterControl extends AbstractControl
   }
   
   public TreePart getEigenschaftenAuswahlTree(String vorbelegung,
-      boolean ohnePflicht, boolean onlyChecked, 
+       boolean onlyChecked, 
       Mitglied[] mitglieder) throws RemoteException
   {
     eigenschaftenAuswahlTree = new TreePart(
-        new EigenschaftenNode(vorbelegung, ohnePflicht, onlyChecked, mitglieder), null);
+        new EigenschaftenNode(vorbelegung, onlyChecked, mitglieder), null);
     eigenschaftenAuswahlTree.addSelectionListener(
         new EigenschaftListener());
     eigenschaftenAuswahlTree.setFormatter(new EigenschaftTreeFormatter());

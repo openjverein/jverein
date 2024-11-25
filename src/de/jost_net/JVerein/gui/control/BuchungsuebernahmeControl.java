@@ -23,45 +23,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.io.Buchungsuebernahme;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.AbstractControl;
-import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 
-public class BuchungsuebernahmeControl extends AbstractControl
+public class BuchungsuebernahmeControl
 {
 
-  private Settings settings = null;
-
   private TablePart kontenlist = null;
-
-  public BuchungsuebernahmeControl(AbstractView view)
-  {
-    super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
-  }
-
-  public Button getStartButton()
-  {
-    Button button = new Button("Starten", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        new Buchungsuebernahme();
-      }
-    }, null, true, "walking.png");
-    return button;
-  }
 
   public TablePart getKontenList() throws RemoteException
   {

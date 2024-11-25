@@ -55,6 +55,8 @@ public class MitgliedQuery
   String zusatzfeld = null;
   
   String zusatzfelder = null;
+  
+  String sort = "";
 
   public MitgliedQuery(FilterControl control)
   {
@@ -65,6 +67,7 @@ public class MitgliedQuery
   public ArrayList<Mitglied> get(int adresstyp, String sort) throws RemoteException
   {
 
+    this.sort = sort;
     zusatzfeld = control.getAdditionalparamprefix1();
     zusatzfelder = control.getAdditionalparamprefix2();
 
@@ -72,13 +75,6 @@ public class MitgliedQuery
     ArrayList<Object> bedingungen = new ArrayList<>();
 
     sql = "select distinct mitglied.*, ucase(name), ucase(vorname) ";
-    if (sort != null && !sort.isEmpty())
-    {
-      if (sort.equals("Geburtstagsliste"))
-      {
-        sql += ", month(geburtsdatum), day(geburtsdatum) ";
-      }
-    }
     sql += "from mitglied ";
     Settings settings = control.getSettings();
     char synonym = 'a';
@@ -370,30 +366,6 @@ public class MitgliedQuery
       }
     }
 
-    if (sort != null && !sort.isEmpty())
-    {
-      if (sort.equals("Name, Vorname"))
-      {
-        sql += " ORDER BY ucase(name), ucase(vorname)";
-      }
-      else if (sort.equals("Eintrittsdatum"))
-      {
-        sql += " ORDER BY eintritt";
-      }
-      else if (sort.equals("Geburtsdatum"))
-      {
-        sql += " ORDER BY geburtsdatum";
-      }
-      else if (sort.equals("Geburtstagsliste"))
-      {
-        sql += " ORDER BY month(geburtsdatum), day(geburtsdatum)";
-      }
-    }
-    else
-    {
-      sql += " ORDER BY name, vorname";
-    }
-
     Logger.debug(sql);
 
     ResultSetExtractor rs = new ResultSetExtractor()
@@ -518,6 +490,29 @@ public class MitgliedQuery
     
     DBIterator<Mitglied> list = Einstellungen.getDBService().createList(Mitglied.class);
     list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
+    if (sort != null && !sort.isEmpty())
+    {
+      if (sort.equals("Name, Vorname"))
+      {
+        list.setOrder("ORDER BY ucase(name), ucase(vorname)");
+      }
+      else if (sort.equals("Eintrittsdatum"))
+      {
+        list.setOrder(" ORDER BY eintritt");
+      }
+      else if (sort.equals("Geburtsdatum"))
+      {
+        list.setOrder("ORDER BY geburtsdatum");
+      }
+      else if (sort.equals("Geburtstagsliste"))
+      {
+        list.setOrder("ORDER BY month(geburtsdatum), day(geburtsdatum)");
+      }
+    }
+    else
+    {
+      list.setOrder("ORDER BY name, vorname");
+    }
     @SuppressWarnings("unchecked")
     ArrayList<Mitglied> mitglieder = list != null ? 
         (ArrayList<Mitglied>) PseudoIterator.asList(list) : null;

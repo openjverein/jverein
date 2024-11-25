@@ -24,7 +24,6 @@ import com.schlevoigt.JVerein.gui.action.BuchungsTexteKorrigierenAction;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AboutAction;
-import de.jost_net.JVerein.gui.action.AbrechnungSEPAAction;
 import de.jost_net.JVerein.gui.action.AbrechnunslaufListAction;
 import de.jost_net.JVerein.gui.action.AbschreibungsListeAction;
 import de.jost_net.JVerein.gui.action.AdministrationEinstellungenAbrechnungAction;
@@ -55,7 +54,6 @@ import de.jost_net.JVerein.gui.action.BuchungsListeAction;
 import de.jost_net.JVerein.gui.action.BuchungsartListAction;
 import de.jost_net.JVerein.gui.action.BuchungsklasseListAction;
 import de.jost_net.JVerein.gui.action.BuchungsklasseSaldoAction;
-import de.jost_net.JVerein.gui.action.BuchungsuebernahmeAction;
 import de.jost_net.JVerein.gui.action.DbBereinigenAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.EigenschaftGruppeListeAction;
@@ -201,8 +199,6 @@ public class MyExtension implements Extension
           new KontoListAction(), "list.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbestände",
           new AnfangsbestandListAction(), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Hibiscus-Buchungen-Import",
-          new BuchungsuebernahmeAction(), "hibiscus-icon-64x64.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
           new BuchungsListeAction(), "euro-sign.png"));
       if (anlagenkonto)
@@ -225,8 +221,6 @@ public class MyExtension implements Extension
       
       NavigationItem abrechnung = null;
       abrechnung = new MyItem(abrechnung, "Abrechnung", null);
-      abrechnung.addChild(new MyItem(abrechnung, "Abrechnung",
-          new AbrechnungSEPAAction(), "calculator.png"));
       abrechnung.addChild(new MyItem(abrechnung, "Abrechnungsläufe",
           new AbrechnunslaufListAction(), "calculator.png"));
       abrechnung.addChild(new MyItem(abrechnung, "Lastschriften",

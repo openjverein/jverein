@@ -45,6 +45,7 @@ import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
@@ -61,6 +62,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -212,6 +214,7 @@ public class ZusatzbetragControl extends AbstractControl
           (Buchungsart) getZusatzbetragPart().getBuchungsart().getValue());
       z.setBuchungsklasseId(getZusatzbetragPart().getSelectedBuchungsKlasseId());
       z.setBetrag((Double) getZusatzbetragPart().getBetrag().getValue());
+      z.setZahlungsweg((Zahlungsweg) getZusatzbetragPart().getZahlungsweg().getValue());
       z.store();
       if (getVorlage().getValue().equals(MITDATUM)
           || getVorlage().getValue().equals(OHNEDATUM))
@@ -229,6 +232,7 @@ public class ZusatzbetragControl extends AbstractControl
         }
         zv.setBuchungsart(z.getBuchungsart());
         zv.setBuchungsklasseId(z.getBuchungsklasseId());
+        zv.setZahlungsweg(z.getZahlungsweg());
         zv.store();
       }
       GUI.getStatusBar().setSuccessText("Zusatzbetrag gespeichert");
@@ -266,6 +270,13 @@ public class ZusatzbetragControl extends AbstractControl
       zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
       zusatzbetraegeList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter() {
+        @Override
+        public String format(Object o)
+        {
+          return new Zahlungsweg((Integer)o).getText();
+        }
+      });
       if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
       {
         zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",

@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
@@ -95,6 +96,7 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
             zb.setStartdatum((Date) part.getStartdatum(true).getValue());
             zb.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
             zb.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
+            zb.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
             zb.store();
             count++;
           }
