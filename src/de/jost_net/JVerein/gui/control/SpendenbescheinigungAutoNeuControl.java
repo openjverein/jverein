@@ -57,13 +57,10 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
 
   private TreePart spbTree;
 
-  private SelectInput formularEinzelGeld;
+  private SelectInput formularEinzel;
 
-  private SelectInput formularEinzelSonstig;
+  private SelectInput formularSammel;
 
-  private SelectInput formularSammelGeld;
-
-  private SelectInput formularSammelSonstig;
 
   public SpendenbescheinigungAutoNeuControl(AbstractView view)
   {
@@ -104,57 +101,30 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
     return jahr;
   }
 
-  public SelectInput getFormularGeld() throws RemoteException
+  public SelectInput getFormular() throws RemoteException
   {
-    if (formularEinzelGeld != null)
+    if (formularEinzel != null)
     {
-      return formularEinzelGeld;
+      return formularEinzel;
     }
     String tmp = settings.getString("formular.einzel", "");
-    formularEinzelGeld = getFormularInput(tmp,
+    formularEinzel = getFormularInput(tmp,
         FormularArt.SPENDENBESCHEINIGUNG);
-    formularEinzelGeld.setPleaseChoose("Standard");
-    return formularEinzelGeld;
+    formularEinzel.setPleaseChoose("Standard");
+    return formularEinzel;
   }
 
-  public SelectInput getFormularSonstig() throws RemoteException
+  public SelectInput getFormularSammelbestaetigung() throws RemoteException
   {
-    if (formularEinzelSonstig != null)
+    if (formularSammel != null)
     {
-      return formularEinzelSonstig;
-    }
-    String tmp = settings.getString("formular.einzel.sonstig", "");
-    formularEinzelSonstig = getFormularInput(tmp,
-        FormularArt.SPENDENBESCHEINIGUNG);
-    formularEinzelSonstig.setPleaseChoose("Standard");
-    return formularEinzelSonstig;
-  }
-
-  public SelectInput getFormularSammelbestaetigungGeld() throws RemoteException
-  {
-    if (formularSammelGeld != null)
-    {
-      return formularSammelGeld;
+      return formularSammel;
     }
     String tmp = settings.getString("formular.sammel", "");
-    formularSammelGeld = getFormularInput(tmp,
+    formularSammel = getFormularInput(tmp,
         FormularArt.SAMMELSPENDENBESCHEINIGUNG);
-    formularSammelGeld.setPleaseChoose("Standard");
-    return formularSammelGeld;
-  }
-
-  public SelectInput getFormularSammelbestaetigungSonstig()
-      throws RemoteException
-  {
-    if (formularSammelSonstig != null)
-    {
-      return formularSammelSonstig;
-    }
-    String tmp = settings.getString("formular.sammel.sonstig", "");
-    formularSammelSonstig = getFormularInput(tmp,
-        FormularArt.SAMMELSPENDENBESCHEINIGUNG);
-    formularSammelSonstig.setPleaseChoose("Standard");
-    return formularSammelSonstig;
+    formularSammel.setPleaseChoose("Standard");
+    return formularSammel;
   }
 
   private SelectInput getFormularInput(String formular, FormularArt art)
@@ -194,39 +164,22 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
       {
         try
         {
-          if (formularEinzelGeld != null)
+          if (formularEinzel != null)
           {
-            Formular aa = (Formular) getFormularGeld().getValue();
+            Formular aa = (Formular) getFormular().getValue();
             if (aa != null)
               settings.setAttribute("formular.einzel", aa.getID());
             else
               settings.setAttribute("formular.einzel", "");
           }
-          if (formularEinzelSonstig != null)
+          if (formularSammel != null)
           {
-            Formular aa = (Formular) getFormularSonstig().getValue();
-            if (aa != null)
-              settings.setAttribute("formular.einzel.sonstig", aa.getID());
-            else
-              settings.setAttribute("formular.einzel.sonstig", "");
-          }
-          if (formularSammelGeld != null)
-          {
-            Formular aa = (Formular) getFormularSammelbestaetigungGeld()
+            Formular aa = (Formular) getFormularSammelbestaetigung()
                 .getValue();
             if (aa != null)
               settings.setAttribute("formular.sammel", aa.getID());
             else
               settings.setAttribute("formular.sammel", "");
-          }
-          if (formularSammelSonstig != null)
-          {
-            Formular aa = (Formular) getFormularSammelbestaetigungSonstig()
-                .getValue();
-            if (aa != null)
-              settings.setAttribute("formular.sammel.sonstig", aa.getID());
-            else
-              settings.setAttribute("formular.sammel.sonstig", "");
           }
 
           @SuppressWarnings("rawtypes")
@@ -273,30 +226,12 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
             // Nun noch das korrekte Formular setzen
             if (spbescheinigung.getBuchungen().size() > 1)
             {
-              if (spbescheinigung.isEchteGeldspende())
-              {
-                spbescheinigung.setFormular(
-                    (Formular) getFormularSammelbestaetigungGeld().getValue());
-              }
-              else
-              {
-                spbescheinigung.setFormular(
-                    (Formular) getFormularSammelbestaetigungSonstig()
-                        .getValue());
-              }
+              spbescheinigung.setFormular(
+                  (Formular) getFormularSammelbestaetigung().getValue());
             }
             else
             {
-              if (spbescheinigung.isEchteGeldspende())
-              {
-                spbescheinigung
-                    .setFormular((Formular) getFormularGeld().getValue());
-              }
-              else
-              {
-                spbescheinigung
-                    .setFormular((Formular) getFormularSonstig().getValue());
-              }
+              spbescheinigung.setFormular((Formular) getFormular().getValue());
             }
             // Spendenbescheinigungen erfolgreich erstellt
             spbescheinigung.store();

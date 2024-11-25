@@ -66,16 +66,12 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group2.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Einzelbestätigung für Geldsspende",
-        control.getFormularGeld());
-    left.addLabelPair("Einzelbestätigung für Erstattungsverzicht",
-        control.getFormularSonstig());
+    left.addLabelPair("Einzelbestätigung",
+        control.getFormular());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addLabelPair("Sammelbestätigung für Geldsspende",
-        control.getFormularSammelbestaetigungGeld());
-    right.addLabelPair("Sammelbestätigung für Erstattungsverzicht",
-        control.getFormularSammelbestaetigungSonstig());
+    right.addLabelPair("Sammelbestätigung",
+        control.getFormularSammelbestaetigung());
 
     control.getSpendenbescheinigungTree().paint(this.getParent());
 
