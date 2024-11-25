@@ -62,9 +62,20 @@ public class FormularInput extends SelectInput
 
   private static Object initdefault(String id) throws RemoteException
   {
-    Formular f = (Formular) Einstellungen.getDBService()
-        .createObject(Formular.class, id);
-    return f;
+    if (id == null || id.isEmpty())
+    {
+      return null;
+    }
+    try
+    {
+      Formular f = (Formular) Einstellungen.getDBService()
+          .createObject(Formular.class, id);
+      return f;
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }
   }
 
 }

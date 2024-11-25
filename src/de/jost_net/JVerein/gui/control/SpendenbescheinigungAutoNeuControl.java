@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +26,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Spendenart;
@@ -34,7 +34,6 @@ import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.server.SpendenbescheinigungNode;
 import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -108,8 +107,7 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
       return formularEinzel;
     }
     String tmp = settings.getString("formular.einzel", "");
-    formularEinzel = getFormularInput(tmp,
-        FormularArt.SPENDENBESCHEINIGUNG);
+    formularEinzel = new FormularInput(FormularArt.SPENDENBESCHEINIGUNG, tmp);
     formularEinzel.setPleaseChoose("Standard");
     return formularEinzel;
   }
@@ -121,29 +119,9 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
       return formularSammel;
     }
     String tmp = settings.getString("formular.sammel", "");
-    formularSammel = getFormularInput(tmp,
-        FormularArt.SAMMELSPENDENBESCHEINIGUNG);
+    formularSammel = new FormularInput(FormularArt.SAMMELSPENDENBESCHEINIGUNG, tmp);
     formularSammel.setPleaseChoose("Standard");
     return formularSammel;
-  }
-
-  private SelectInput getFormularInput(String formular, FormularArt art)
-      throws RemoteException
-  {
-    DBIterator<Formular> it = Einstellungen.getDBService()
-        .createList(Formular.class);
-    it.addFilter("art = ?", new Object[] { art.getKey() });
-    ArrayList<Formular> list = new ArrayList<>();
-    Formular preset = null;
-    while (it.hasNext())
-    {
-      Formular f = (Formular) it.next();
-      list.add(f);
-      if (formular != null && !formular.isEmpty()
-          && f.getID().equalsIgnoreCase(formular))
-        preset = f;
-    }
-    return new SelectInput(list, preset);
   }
 
   /**
