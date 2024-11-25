@@ -14,40 +14,62 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.view;
+package de.jost_net.JVerein.gui.dialogs;
+
+import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsuebernahmeControl;
-import de.jost_net.JVerein.io.Buchungsuebernahme;
-import de.willuhn.jameica.gui.AbstractView;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class BuchungsuebernahmeView extends AbstractView
+public class BuchungsuebernahmeDialog extends AbstractDialog<Boolean>
 {
 
-  @Override
-  public void bind() throws Exception
+  Boolean start = false;
+  
+  public BuchungsuebernahmeDialog(int position)
   {
-    GUI.getView().setTitle("Hibiscus-Buchungen-Import");
+    super(position);
+    setTitle("Hibiscus-Buchungen-Import");
+    setSize(900, 600);
+  }
 
-    final BuchungsuebernahmeControl control = new BuchungsuebernahmeControl(
-        this);
+  @Override
+  public void paint(Composite parent) throws Exception
+  {
+    final BuchungsuebernahmeControl control = new BuchungsuebernahmeControl();
 
-    control.getKontenList().paint(this.getParent());
+    control.getKontenList().paint(parent);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGSUEBERNAHME, false, "question-circle.png");
-    buttons.addButton("Import", new Action()
+    buttons.addButton("Import starten", new Action()
     {
       @Override
       public void handleAction(Object context)
       {
-        new Buchungsuebernahme();
+        start = true;
+        close();
       }
     }, null, true, "file-import.png");
-    buttons.paint(this.getParent());
+    buttons.addButton("Abbrechen", new Action()
+    {
+      @Override
+      public void handleAction(Object context)
+      {
+       close();
+      }
+    }, null, false, "process-stop.png");
+    buttons.paint(parent);
+  }
+
+  @Override
+  protected Boolean getData() throws Exception
+  {
+    return start;
   }
 }

@@ -1,16 +1,16 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
  *  the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -37,6 +38,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -72,6 +74,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
   private TablePart zusatzbetraegeList;
 
   public ZusatzbetragVorlage auswahl;
+
+  private SelectInput zahlungsweg;
 
   public ZusatzbetragVorlageControl(AbstractView view)
   {
@@ -200,10 +204,22 @@ public class ZusatzbetragVorlageControl extends AbstractControl
       return buchungsart;
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-      getZusatzbetragVorlage().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-      Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+        getZusatzbetragVorlage().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
+        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
 
     return buchungsart;
+  }
+
+  public SelectInput getZahlungsweg() throws RemoteException
+  {
+    if (zahlungsweg != null)
+    {
+      return zahlungsweg;
+    }
+    zahlungsweg = new SelectInput(Zahlungsweg.getArray(false),
+        getZusatzbetragVorlage().getZahlungsweg());
+    zahlungsweg.setPleaseChoose("Standard");
+    return zahlungsweg;
   }
 
   public DateInput getEndedatum() throws RemoteException
@@ -250,6 +266,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
       {
         z.setBuchungsart((Buchungsart) getBuchungsart().getValue());
       }
+      z.setZahlungsweg((Zahlungsweg) getZahlungsweg().getValue());
 
       z.store();
       GUI.getStatusBar().setSuccessText("Zusatzbetrag-Vorlage gespeichert");
@@ -292,6 +309,18 @@ public class ZusatzbetragVorlageControl extends AbstractControl
       zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
       zusatzbetraegeList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
+      {
+        @Override
+        public String format(Object o)
+        {
+          if (o == null)
+          {
+            return "";
+          }
+          return new Zahlungsweg((Integer) o).getText();
+        }
+      });
       // zusatzbetraegeList.setContextMenu(new ZusatzbetraegeMenu(
       // zusatzbetraegeList));
       zusatzbetraegeList.setRememberColWidths(true);

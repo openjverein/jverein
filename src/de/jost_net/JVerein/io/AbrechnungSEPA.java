@@ -1,26 +1,26 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
  *  the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
-import java.math.RoundingMode;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
@@ -32,6 +32,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.commons.lang.StringUtils;
+import org.kapott.hbci.GV.SepaUtil;
+import org.kapott.hbci.GV.generators.ISEPAGenerator;
+import org.kapott.hbci.GV.generators.SEPAGeneratorFactory;
 
 import com.itextpdf.text.DocumentException;
 
@@ -83,10 +88,6 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
-import org.apache.commons.lang.StringUtils;
-import org.kapott.hbci.GV.SepaUtil;
-import org.kapott.hbci.GV.generators.ISEPAGenerator;
-import org.kapott.hbci.GV.generators.SEPAGeneratorFactory;
 
 public class AbrechnungSEPA
 {
@@ -146,7 +147,8 @@ public class AbrechnungSEPA
     lastschrift.setMessageID(abrl.getID() + "-RCUR");
     if (param.kompakteabbuchung || param.sepaprint)
     {
-      // Für kompakte Abbuchung wird erst in write die Zahlerliste gefüllt. Das für die
+      // Für kompakte Abbuchung wird erst in write die Zahlerliste gefüllt. Das
+      // für die
       // PDF-Erzeugung benötigte Datum wird auch erst in write gesetzt
       File temp_file = Files.createTempFile("jv", ".xml").toFile();
       lastschrift.write(temp_file);
@@ -155,11 +157,14 @@ public class AbrechnungSEPA
 
     ArrayList<Zahler> z = lastschrift.getZahler();
     // Wenn keine Buchungen vorhanden sind, wird kein File erzeugt.
-    if ((param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI) && !z.isEmpty())
+    if ((param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
+        && !z.isEmpty())
     {
       writeSepaFile(param, lastschrift, z);
-      monitor.log(String.format("SEPA-Datei %s geschrieben.", param.sepafileRCUR.getAbsolutePath()));
-      param.setText(String.format(", SEPA-Datei %s geschrieben.", param.sepafileRCUR.getAbsolutePath()));
+      monitor.log(String.format("SEPA-Datei %s geschrieben.",
+          param.sepafileRCUR.getAbsolutePath()));
+      param.setText(String.format(", SEPA-Datei %s geschrieben.",
+          param.sepafileRCUR.getAbsolutePath()));
     }
 
     BigDecimal summemitgliedskonto = BigDecimal.valueOf(0);
@@ -191,7 +196,9 @@ public class AbrechnungSEPA
           ls.setStaat(k.getStaat());
           ls.setEmail(k.getEmail());
           if (k.getGeschlecht() != null)
+          {
             ls.setGeschlecht(k.getGeschlecht());
+          }
           break;
         case MITGLIED:
           ls.setMitglied(Integer.parseInt(vza.getPersonId()));
@@ -246,7 +253,8 @@ public class AbrechnungSEPA
     if (!summemitgliedskonto.equals(BigDecimal.valueOf(0)))
     {
       writeMitgliedskonto(null, param.faelligkeit, "Gegenbuchung",
-          summemitgliedskonto.doubleValue() * -1, abrl, true, getKonto(), null, null);
+          summemitgliedskonto.doubleValue() * -1, abrl, true, getKonto(), null,
+          null, null);
     }
     if (param.abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
     {
@@ -348,19 +356,19 @@ public class AbrechnungSEPA
       int count = 0;
       while (list.hasNext())
       {
-        Mitglied m = (Mitglied) list.next();
+        Mitglied m = list.next();
 
-        JVereinZahler z = abrechnungMitgliederSub(param, monitor,
-            abrl, konto, m, m.getBeitragsgruppe(), true);
+        JVereinZahler z = abrechnungMitgliederSub(param, monitor, abrl, konto,
+            m, m.getBeitragsgruppe(), true);
 
         DBIterator<SekundaereBeitragsgruppe> sekundaer = Einstellungen
             .getDBService().createList(SekundaereBeitragsgruppe.class);
         sekundaer.addFilter("mitglied=?", m.getID());
         while (sekundaer.hasNext())
         {
-          SekundaereBeitragsgruppe sb = (SekundaereBeitragsgruppe) sekundaer
-              .next();
-          JVereinZahler z2 = abrechnungMitgliederSub(param, monitor, abrl, konto, m, sb.getBeitragsgruppe(), false);
+          SekundaereBeitragsgruppe sb = sekundaer.next();
+          JVereinZahler z2 = abrechnungMitgliederSub(param, monitor, abrl,
+              konto, m, sb.getBeitragsgruppe(), false);
           if (z2 != null)
           {
             if (z != null)
@@ -377,25 +385,32 @@ public class AbrechnungSEPA
         {
           lastschrift.add(z);
         }
-        monitor.setPercentComplete((int) ((double) count++ / (double) list.size() * 100d));
-        monitor.setStatusText(String.format("%s, %s abgerechnet" , m.getName(), m.getVorname()));
+        monitor.setPercentComplete(
+            (int) ((double) count++ / (double) list.size() * 100d));
+        monitor.setStatusText(
+            String.format("%s, %s abgerechnet", m.getName(), m.getVorname()));
       }
     }
   }
 
-  private JVereinZahler abrechnungMitgliederSub(AbrechnungSEPAParam param, ProgressMonitor monitor,
-      Abrechnungslauf abrl, Konto konto, Mitglied m, Beitragsgruppe bg,
-      boolean primaer) throws RemoteException, ApplicationException
+  private JVereinZahler abrechnungMitgliederSub(AbrechnungSEPAParam param,
+      ProgressMonitor monitor, Abrechnungslauf abrl, Konto konto, Mitglied m,
+      Beitragsgruppe bg, boolean primaer)
+      throws RemoteException, ApplicationException
   {
     Double betr = 0d;
     JVereinZahler zahler = null;
     Mitglied mZahler = m;
-    if(m.getZahlungsweg() != null && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+    if (m.getZahlungsweg() != null
+        && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
     {
-      if(m.getZahlerID() == null)
-        throw new ApplicationException(
-          "Kein Vollzahler vorhanden: " + m.getName() + ", " + m.getVorname());
-      mZahler = Einstellungen.getDBService().createObject(Mitglied.class, m.getZahlerID().toString());
+      if (m.getZahlerID() == null)
+      {
+        throw new ApplicationException("Kein Vollzahler vorhanden: "
+            + m.getName() + ", " + m.getVorname());
+      }
+      mZahler = Einstellungen.getDBService().createObject(Mitglied.class,
+          m.getZahlerID().toString());
     }
     if (Einstellungen.getEinstellung()
         .getBeitragsmodel() == Beitragsmodel.FLEXIBEL)
@@ -411,8 +426,8 @@ public class AbrechnungSEPA
     {
       betr = BeitragsUtil.getBeitrag(
           Einstellungen.getEinstellung().getBeitragsmodel(),
-          mZahler.getZahlungstermin(), mZahler.getZahlungsrhythmus().getKey(), bg,
-          param.stichtag, m);
+          mZahler.getZahlungstermin(), mZahler.getZahlungsrhythmus().getKey(),
+          bg, param.stichtag, m);
     }
     catch (NullPointerException e)
     {
@@ -427,11 +442,7 @@ public class AbrechnungSEPA
         betr = m.getIndividuellerBeitrag();
       }
     }
-    if (betr == 0d)
-    {
-      return zahler;
-    }
-    if (!checkSEPA(mZahler, monitor))
+    if ((betr == 0d) || !checkSEPA(mZahler, monitor))
     {
       return zahler;
     }
@@ -448,11 +459,11 @@ public class AbrechnungSEPA
       Logger.error("Fehler bei der Aufbereitung der Variablen", e);
     }
 
-    writeMitgliedskonto(m,
-        param.faelligkeit,
+    writeMitgliedskonto(m, param.faelligkeit,
         primaer ? vzweck : bg.getBezeichnung(), betr, abrl,
         mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT, konto,
-        bg.getBuchungsart(), bg.getBuchungsklasseId());
+        bg.getBuchungsart(), bg.getBuchungsklasseId(),
+        mZahler.getZahlungsweg());
     if (mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
     {
       try
@@ -464,10 +475,15 @@ public class AbrechnungSEPA
             BigDecimal.valueOf(betr).setScale(2, RoundingMode.HALF_UP));
         IBAN i = new IBAN(mZahler.getIban()); // Prüfung der IBAN
         zahler.setIban(mZahler.getIban());
-        //Wenn BIC nicht vorhanden versuchen sie automatisch zu ermitteln
-        if(mZahler.getBic() == null || mZahler.getBic().length() == 0)
+        // Wenn BIC nicht vorhanden versuchen sie automatisch zu ermitteln
+        if (mZahler.getBic() == null || mZahler.getBic().length() == 0)
+        {
           zahler.setBic(i.getBIC());
-        else zahler.setBic(mZahler.getBic());
+        }
+        else
+        {
+          zahler.setBic(mZahler.getBic());
+        }
         new BIC(zahler.getBic()); // Prüfung des BIC
         zahler.setMandatid(mZahler.getMandatID());
         zahler.setMandatdatum(mZahler.getMandatDatum());
@@ -475,7 +491,8 @@ public class AbrechnungSEPA
         zahler.setFaelligkeit(param.faelligkeit);
         if (primaer && m.getZahlungsweg() != Zahlungsweg.VOLLZAHLER)
         {
-          String verwendungszweck = getVerwendungszweck2(mZahler) + " " + vzweck;
+          String verwendungszweck = getVerwendungszweck2(mZahler) + " "
+              + vzweck;
           if (verwendungszweck.length() >= 140)
           {
             verwendungszweck = verwendungszweck.substring(0, 136) + "...";
@@ -486,9 +503,10 @@ public class AbrechnungSEPA
         {
           zahler.setVerwendungszweck(bg.getBezeichnung());
         }
-        if(m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        if (m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
         {
-          zahler.setVerwendungszweck(zahler.getVerwendungszweck() + " " + m.getVorname());
+          zahler.setVerwendungszweck(
+              zahler.getVerwendungszweck() + " " + m.getVorname());
         }
         zahler.setName(mZahler.getKontoinhaber(1));
       }
@@ -511,7 +529,7 @@ public class AbrechnungSEPA
         .createList(Zusatzbetrag.class);
     while (list.hasNext())
     {
-      Zusatzbetrag z = (Zusatzbetrag) list.next();
+      Zusatzbetrag z = list.next();
       if (z.isAktiv(param.stichtag))
       {
         Mitglied m = z.getMitglied();
@@ -525,11 +543,25 @@ public class AbrechnungSEPA
           continue;
         }
         Mitglied mZahler = m;
-        if(m.getZahlungsweg() != null && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        if (m.getZahlungsweg() != null
+            && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
         {
-          mZahler = Einstellungen.getDBService().createObject(Mitglied.class, m.getZahlerID().toString());
+          mZahler = Einstellungen.getDBService().createObject(Mitglied.class,
+              m.getZahlerID().toString());
         }
-        if (!checkSEPA(mZahler, monitor))
+        Integer zahlungsweg;
+        if (z.getZahlungsweg() != null
+            && z.getZahlungsweg().getKey() != Zahlungsweg.STANDARD)
+        {
+          zahlungsweg = z.getZahlungsweg().getKey();
+        }
+        else
+        {
+          zahlungsweg = mZahler.getZahlungsweg();
+        }
+
+        if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT
+            && !checkSEPA(mZahler, monitor))
         {
           continue;
         }
@@ -546,7 +578,8 @@ public class AbrechnungSEPA
         {
           Logger.error("Fehler bei der Aufbereitung der Variablen", e);
         }
-        if (mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+
+        if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
         {
           try
           {
@@ -605,21 +638,21 @@ public class AbrechnungSEPA
           monitor.log(z.getMitglied().getName() + " " + debString + " " + e);
           throw e;
         }
-        writeMitgliedskonto(m,
-            param.faelligkeit,
-            vzweck, z.getBetrag(), abrl,
-            mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT, konto,
-            z.getBuchungsart(),
-            z.getBuchungsklasseId());
-        monitor.setStatusText(String.format("Zusatzbetrag von %s, %s abgerechnet" , m.getName(), m.getVorname()));
+        writeMitgliedskonto(m, param.faelligkeit, vzweck, z.getBetrag(), abrl,
+            zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT, konto,
+            z.getBuchungsart(), z.getBuchungsklasseId(), zahlungsweg);
+        monitor
+            .setStatusText(String.format("Zusatzbetrag von %s, %s abgerechnet",
+                m.getName(), m.getVorname()));
       }
-      monitor.setPercentComplete((int) ((double) count++ / (double) list.size() * 100d));
+      monitor.setPercentComplete(
+          (int) ((double) count++ / (double) list.size() * 100d));
     }
   }
 
   private void abbuchenKursteilnehmer(AbrechnungSEPAParam param,
-      Basislastschrift lastschrift, Abrechnungslauf abrl, Konto konto, ProgressMonitor monitor)
-      throws ApplicationException, IOException
+      Basislastschrift lastschrift, Abrechnungslauf abrl, Konto konto,
+      ProgressMonitor monitor) throws ApplicationException, IOException
   {
     int count = 0;
     DBIterator<Kursteilnehmer> list = Einstellungen.getDBService()
@@ -628,7 +661,7 @@ public class AbrechnungSEPA
     while (list.hasNext())
     {
       counter++;
-      Kursteilnehmer kt = (Kursteilnehmer) list.next();
+      Kursteilnehmer kt = list.next();
       try
       {
         JVereinZahler zahler = new JVereinZahler();
@@ -649,10 +682,13 @@ public class AbrechnungSEPA
         lastschrift.add(zahler);
         kt.setAbbudatum(param.faelligkeit);
         kt.store();
-        writeMitgliedskonto(kt, param.faelligkeit, kt.getVZweck1(), 
-            zahler.getBetrag().doubleValue(), abrl, true, konto, null, null);
-        monitor.setStatusText(String.format("Kursteilnehmer %s, %s abgerechnet" , kt.getName(), kt.getVorname()));
-        monitor.setPercentComplete((int) ((double) count++ / (double) list.size() * 100d));
+        writeMitgliedskonto(kt, param.faelligkeit, kt.getVZweck1(),
+            zahler.getBetrag().doubleValue(), abrl, true, konto, null, null,
+            null);
+        monitor.setStatusText(String.format("Kursteilnehmer %s, %s abgerechnet",
+            kt.getName(), kt.getVorname()));
+        monitor.setPercentComplete(
+            (int) ((double) count++ / (double) list.size() * 100d));
       }
       catch (Exception e)
       {
@@ -661,8 +697,8 @@ public class AbrechnungSEPA
     }
   }
 
-  private void ausdruckenSEPA(final Basislastschrift lastschrift, final String pdf_fn)
-      throws IOException, DocumentException, SEPAException
+  private void ausdruckenSEPA(final Basislastschrift lastschrift,
+      final String pdf_fn) throws IOException, DocumentException, SEPAException
   {
     new Basislastschrift2Pdf(lastschrift, pdf_fn);
     GUI.getDisplay().asyncExec(new Runnable()
@@ -684,7 +720,10 @@ public class AbrechnungSEPA
     });
   }
 
-  private void writeSepaFile(AbrechnungSEPAParam param, Basislastschrift lastschrift, ArrayList<Zahler> alle_zahler) throws Exception
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private void writeSepaFile(AbrechnungSEPAParam param,
+      Basislastschrift lastschrift, ArrayList<Zahler> alle_zahler)
+      throws Exception
   {
     Properties ls_properties = new Properties();
     ls_properties.setProperty("src.bic", lastschrift.getBIC());
@@ -696,29 +735,43 @@ public class AbrechnungSEPA
     ls_properties.setProperty("sepaid", epochtime_string);
     ls_properties.setProperty("pmtinfid", epochtime_string);
     ls_properties.setProperty("sequencetype", "RCUR");
-    ls_properties.setProperty("targetdate", param.faelligkeit != null ? ISO_DATE.format(param.faelligkeit) : SepaUtil.DATE_UNDEFINED);
+    ls_properties.setProperty("targetdate",
+        param.faelligkeit != null ? ISO_DATE.format(param.faelligkeit)
+            : SepaUtil.DATE_UNDEFINED);
     ls_properties.setProperty("type", "CORE");
     ls_properties.setProperty("batchbook", "");
     int counter = 0;
     String creditorid = lastschrift.getGlaeubigerID();
     for (Zahler zahler : alle_zahler)
     {
-      ls_properties.setProperty(SepaUtil.insertIndex("dst.bic", counter),       StringUtils.trimToEmpty(zahler.getBic()));
-      ls_properties.setProperty(SepaUtil.insertIndex("dst.iban", counter),      StringUtils.trimToEmpty(zahler.getIban()));
-      ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),      StringUtils.trimToEmpty(zahler.getName()));
-      ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),     zahler.getBetrag().toString());
-      ls_properties.setProperty(SepaUtil.insertIndex("btg.curr", counter),      HBCIProperties.CURRENCY_DEFAULT_DE);
-      ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),         StringUtils.trimToEmpty(zahler.getVerwendungszweck()));
-      ls_properties.setProperty(SepaUtil.insertIndex("endtoendid", counter),    "NOTPROVIDED");
-      ls_properties.setProperty(SepaUtil.insertIndex("creditorid", counter),    creditorid);
-      ls_properties.setProperty(SepaUtil.insertIndex("mandateid", counter),     StringUtils.trimToEmpty(zahler.getMandatid()));
-      ls_properties.setProperty(SepaUtil.insertIndex("manddateofsig", counter), ISO_DATE.format(zahler.getMandatdatum()));
-      ls_properties.setProperty(SepaUtil.insertIndex("purposecode", counter),   "OHTR");
+      ls_properties.setProperty(SepaUtil.insertIndex("dst.bic", counter),
+          StringUtils.trimToEmpty(zahler.getBic()));
+      ls_properties.setProperty(SepaUtil.insertIndex("dst.iban", counter),
+          StringUtils.trimToEmpty(zahler.getIban()));
+      ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),
+          StringUtils.trimToEmpty(zahler.getName()));
+      ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),
+          zahler.getBetrag().toString());
+      ls_properties.setProperty(SepaUtil.insertIndex("btg.curr", counter),
+          HBCIProperties.CURRENCY_DEFAULT_DE);
+      ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),
+          StringUtils.trimToEmpty(zahler.getVerwendungszweck()));
+      ls_properties.setProperty(SepaUtil.insertIndex("endtoendid", counter),
+          "NOTPROVIDED");
+      ls_properties.setProperty(SepaUtil.insertIndex("creditorid", counter),
+          creditorid);
+      ls_properties.setProperty(SepaUtil.insertIndex("mandateid", counter),
+          StringUtils.trimToEmpty(zahler.getMandatid()));
+      ls_properties.setProperty(SepaUtil.insertIndex("manddateofsig", counter),
+          ISO_DATE.format(zahler.getMandatdatum()));
+      ls_properties.setProperty(SepaUtil.insertIndex("purposecode", counter),
+          "OHTR");
       counter += 1;
     }
     final OutputStream os = Files.newOutputStream(param.sepafileRCUR.toPath());
     System.setProperty("sepa.pain.formatted", "true");
-    ISEPAGenerator sepagenerator = SEPAGeneratorFactory.get("LastSEPA", param.sepaVersion);
+    ISEPAGenerator sepagenerator = SEPAGeneratorFactory.get("LastSEPA",
+        param.sepaVersion);
     sepagenerator.generate(ls_properties, os, true);
     os.close();
   }
@@ -814,19 +867,28 @@ public class AbrechnungSEPA
 
   private void writeMitgliedskonto(Object mitglied, Date datum, String zweck1,
       double betrag, Abrechnungslauf abrl, boolean haben, Konto konto,
-      Buchungsart buchungsart, Long buchungsklasseId) throws ApplicationException, RemoteException
+      Buchungsart buchungsart, Long buchungsklasseId, Integer zahlungsweg)
+      throws ApplicationException, RemoteException
   {
     Mitgliedskonto mk = null;
-    if (mitglied != null && mitglied instanceof Mitglied) /*
-                           * Mitglied darf dann null sein, wenn die Gegenbuchung
-                           * geschrieben wird
-                           */
+    if (mitglied != null
+        && mitglied instanceof Mitglied) /*
+                                          * Mitglied darf dann null sein, wenn
+                                          * die Gegenbuchung geschrieben wird
+                                          */
     {
       Mitglied mg = (Mitglied) mitglied;
       mk = (Mitgliedskonto) Einstellungen.getDBService()
           .createObject(Mitgliedskonto.class, null);
       mk.setAbrechnungslauf(abrl);
-      mk.setZahlungsweg(mg.getZahlungsweg());
+      if (zahlungsweg != null)
+      {
+        mk.setZahlungsweg(zahlungsweg);
+      }
+      else
+      {
+        mk.setZahlungsweg(mg.getZahlungsweg());
+      }
       mk.setBetrag(betrag);
       mk.setDatum(datum);
       mk.setMitglied(mg);
@@ -841,10 +903,12 @@ public class AbrechnungSEPA
       // Set tax rate
       mk.setSteuersatz(steuersatz);
       // Set bill amount without taxes
-      double nettobetrag = (steuersatz != 0d) ? (betrag / (1d + (steuersatz / 100d))) : betrag;
+      double nettobetrag = (steuersatz != 0d)
+          ? (betrag / (1d + (steuersatz / 100d)))
+          : betrag;
       mk.setNettobetrag(nettobetrag);
       // Set tax amount
-      mk.setSteuerbetrag(betrag - nettobetrag);    
+      mk.setSteuerbetrag(betrag - nettobetrag);
       mk.store();
     }
     if (haben)
@@ -855,9 +919,9 @@ public class AbrechnungSEPA
       buchung.setBetrag(betrag);
       buchung.setDatum(datum);
       buchung.setKonto(konto);
-      buchung.setName(
-          mitglied != null ? Adressaufbereitung.getNameVorname((IAdresse) mitglied)
-              : "JVerein");
+      buchung.setName(mitglied != null
+          ? Adressaufbereitung.getNameVorname((IAdresse) mitglied)
+          : "JVerein");
       buchung.setZweck(zweck1);
       if (mk != null)
       {
@@ -874,7 +938,7 @@ public class AbrechnungSEPA
 
   /**
    * Ist das Abbuchungskonto in der Buchführung eingerichtet?
-   * 
+   *
    * @throws SEPAException
    */
   private Konto getKonto()
@@ -885,7 +949,7 @@ public class AbrechnungSEPA
     it.addFilter("nummer = ?", Einstellungen.getEinstellung().getIban());
     if (it.size() == 1)
     {
-      return (Konto) it.next();
+      return it.next();
     }
     // Variante 2: Kontonummer aus IBAN
     it = Einstellungen.getDBService().createList(Konto.class);
@@ -893,7 +957,7 @@ public class AbrechnungSEPA
     it.addFilter("nummer = ?", iban.getKonto());
     if (it.size() == 1)
     {
-      return (Konto) it.next();
+      return it.next();
     }
     throw new ApplicationException(String.format(
         "Weder Konto %s noch Konto %s ist in der Buchführung eingerichtet. Menu: Buchführung | Konten",
