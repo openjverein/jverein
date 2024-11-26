@@ -75,9 +75,9 @@ public class MailVorlageControl extends AbstractControl
     return betreff;
   }
 
-  public String getBetreffString() throws RemoteException
+  public String getBetreffString()
   {
-    return getMailVorlage().getBetreff();
+    return (String) betreff.getValue();
   }
 
   public TextAreaInput getTxt() throws RemoteException
@@ -92,9 +92,9 @@ public class MailVorlageControl extends AbstractControl
     return txt;
   }
 
-  public String getTxtString() throws RemoteException
+  public String getTxtString()
   {
-    return getMailVorlage().getTxt();
+    return (String) txt.getValue();
   }
 
   public void handleStore()
