@@ -92,10 +92,10 @@ public class SollbuchungQuery
         && (!control.isSuchtextAktiv()
             || control.getSuchtext().getValue() == null
             || ((String) control.getSuchtext().getValue()).isEmpty());
-    boolean ein_such_name = control.isSuchnameAktiv()
+    boolean ein_zahler_name = control.isSuchnameAktiv()
         && control.getSuchname().getValue() != null
         && !((String) control.getSuchname().getValue()).isEmpty();
-    boolean ein_text_name = control.isSuchtextAktiv()
+    boolean ein_mitglied_name = control.isSuchtextAktiv()
         && control.getSuchtext().getValue() != null
         && !((String) control.getSuchtext().getValue()).isEmpty();
     boolean keine_email = !control.isMailauswahlAktiv() || (Integer) control
@@ -103,7 +103,7 @@ public class SollbuchungQuery
     boolean filter_email = control.isMailauswahlAktiv() && !((Integer) control
         .getMailauswahl().getValue() == MailAuswertungInput.ALLE);
     
-    if (ein_such_name && ein_text_name)
+    if (ein_zahler_name && ein_mitglied_name)
     {
       throw new ApplicationException("Bitte nur entweder Mitglied oder Zahler eingeben");
     }
@@ -150,18 +150,18 @@ public class SollbuchungQuery
             new Object[] { Long.valueOf(mitglied.getID()) });
       }
 
-      if (ein_such_name)
+      if (ein_zahler_name)
       {
         if (!umwandeln || filter_email)
         {
           sollbuchungen.join("mitglied");
-          sollbuchungen.addFilter("mitglied.id = mitgliedskonto.mitglied");
+          sollbuchungen.addFilter("mitglied.id = mitgliedskonto.zahler");
         }
       }
-      else if (ein_text_name)
+      else if (ein_mitglied_name)
       {
         sollbuchungen.join("mitglied");
-        sollbuchungen.addFilter("mitglied.id = mitgliedskonto.zahler");
+        sollbuchungen.addFilter("mitglied.id = mitgliedskonto.mitglied");
       }
       else if (filter_email)
       {
@@ -169,7 +169,7 @@ public class SollbuchungQuery
         sollbuchungen.addFilter("mitglied.id = mitgliedskonto.mitglied");
       }
 
-      if (ein_text_name)
+      if (ein_mitglied_name)
       {
         String name = (String) control.getSuchtext().getValue();
         sollbuchungen.addFilter(
@@ -179,7 +179,7 @@ public class SollbuchungQuery
                 name.toLowerCase() + "%" });
       }
 
-      if (!umwandeln && ein_such_name)
+      if (!umwandeln && ein_zahler_name)
       {
         // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
         String name = (String) control.getSuchname().getValue();
@@ -189,7 +189,7 @@ public class SollbuchungQuery
             new Object[] { name.toLowerCase() + "%",
                 name.toLowerCase() + "%" });
       }
-      else if (umwandeln && ein_such_name)
+      else if (umwandeln && ein_zahler_name)
       {
         // Der Name muss umgewandelt werden, es kann mehrere Matches geben
         ArrayList<BigDecimal> namenids = getNamenIds(
@@ -203,19 +203,19 @@ public class SollbuchungQuery
           {
             if (anzahl == 1)
             {
-              querystring = "(mitgliedskonto.mitglied = ?) ";
+              querystring = "(mitgliedskonto.zahler = ?) ";
             }
             else if (i == 1)
             {
-              querystring = "((mitgliedskonto.mitglied = ?) OR ";
+              querystring = "((mitgliedskonto.zahler = ?) OR ";
             }
             else if (i < anzahl)
             {
-              querystring = querystring + "(mitgliedskonto.mitglied = ?) OR ";
+              querystring = querystring + "(mitgliedskonto.zahler = ?) OR ";
             }
             else if (i == anzahl)
             {
-              querystring = querystring + "(mitgliedskonto.mitglied = ?)) ";
+              querystring = querystring + "(mitgliedskonto.zahler = ?)) ";
             }
           }
           sollbuchungen.addFilter(querystring, namenids.toArray());
@@ -257,7 +257,7 @@ public class SollbuchungQuery
     // Eine Differenz ist ausgewählt
     final DBService service = Einstellungen.getDBService();
     String sql = "";
-    if (!ein_text_name)
+    if (ein_mitglied_name)
     {
       sql = "SELECT  mitgliedskonto.id, mitglied.name, mitglied.vorname, "
           + " mitgliedskonto.betrag, sum(buchung.betrag) FROM mitgliedskonto "
@@ -279,7 +279,7 @@ public class SollbuchungQuery
           + "mitgliedskonto.mitglied = ? ";
       param.add(Long.valueOf(mitglied.getID()));
     }
-    if (ein_text_name)
+    if (ein_mitglied_name)
     {
       // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
       String tmpSuchname = (String) control.getSuchtext().getValue();
@@ -288,7 +288,7 @@ public class SollbuchungQuery
       param.add(tmpSuchname.toLowerCase() + "%");
       param.add(tmpSuchname.toLowerCase() + "%");
     }
-    if (ein_such_name && umwandeln == false)
+    if (ein_zahler_name && umwandeln == false)
     {
       // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
       String tmpSuchname = (String) control.getSuchname().getValue();
@@ -297,7 +297,7 @@ public class SollbuchungQuery
       param.add(tmpSuchname.toLowerCase() + "%");
       param.add(tmpSuchname.toLowerCase() + "%");
     }
-    else if (ein_such_name && umwandeln == true)
+    else if (ein_zahler_name && umwandeln == true)
     {
       // Der Name muss umgewandelt werden, es kann mehrere Matches geben
       ArrayList<BigDecimal> namenids = getNamenIds(
@@ -312,20 +312,20 @@ public class SollbuchungQuery
           if (anzahl == 1)
           {
             where += (where.length() > 0 ? "and " : "")
-                + "mitgliedskonto.mitglied = ? ";
+                + "mitgliedskonto.zahler = ? ";
           }
           else if (count == 1)
           {
             where += (where.length() > 0 ? "and " : "")
-                + "(mitgliedskonto.mitglied = ? ";
+                + "(mitgliedskonto.zahler = ? ";
           }
           else if (count < anzahl)
           {
-            where += " OR mitgliedskonto.mitglied = ? ";
+            where += " OR mitgliedskonto.zahler = ? ";
           }
           else if (count == anzahl)
           {
-            where += " OR mitgliedskonto.mitglied = ?) ";
+            where += " OR mitgliedskonto.zahler = ?) ";
           }
           param.add(id);
         }
