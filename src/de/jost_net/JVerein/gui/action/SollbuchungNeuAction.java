@@ -44,12 +44,20 @@ public class SollbuchungNeuAction implements Action
     mkn = (MitgliedskontoNode) context;
     try
     {
-      Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
-          Mitglied.class, mkn.getID());
-      mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-          Mitgliedskonto.class, null);
+      Mitglied m = (Mitglied) Einstellungen.getDBService()
+          .createObject(Mitglied.class, mkn.getID());
+      mk = (Mitgliedskonto) Einstellungen.getDBService()
+          .createObject(Mitgliedskonto.class, null);
       mk.setZahlungsweg(m.getZahlungsweg());
       mk.setMitglied(m);
+      if (m.getZahlerID() != null)
+      {
+        mk.setZahlerId(m.getZahlerID());
+      }
+      else
+      {
+        mk.setZahler(m);
+      }
     }
     catch (RemoteException e)
     {

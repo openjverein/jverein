@@ -566,7 +566,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spbList = new TablePart(getSpendenbescheinigungen(),
         new SpendenbescheinigungAction(Spendenart.SACHSPENDE));
     spbList.addColumn("Nr", "id-int");
-    spbList.addColumn("Mitglied", "mitglied");
+    spbList.addColumn("Spender", "mitglied");
     spbList.addColumn("Spendenart", "spendenart", new Formatter()
     {
       @Override

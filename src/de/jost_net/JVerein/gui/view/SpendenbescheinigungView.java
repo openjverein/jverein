@@ -48,7 +48,7 @@ public class SpendenbescheinigungView extends AbstractView
     left.addLabelPair("Spendenart", control.getSpendenart());
 
     left.addHeadline("Spender");
-    left.addLabelPair("Mitglied", control.getMitglied());
+    left.addLabelPair("Spender", control.getMitglied());
     left.addLabelPair("Zeile 1", control.getZeile1(true));
     left.addLabelPair("Zeile 2", control.getZeile2());
     left.addLabelPair("Zeile 3", control.getZeile3());

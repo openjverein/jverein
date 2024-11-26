@@ -43,7 +43,7 @@ public class SpendenbescheinigungListeView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getSuchname());
+    left.addLabelPair("Zeile 2", control.getSuchname());
     left.addInput(control.getMailauswahl());
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());

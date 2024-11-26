@@ -38,6 +38,7 @@ import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
+import de.willuhn.util.ApplicationException;
 
 public class SollbuchungQuery
 {
@@ -57,7 +58,7 @@ public class SollbuchungQuery
   }
 
   @SuppressWarnings("unchecked")
-  public GenericIterator<Mitgliedskonto> get() throws RemoteException
+  public GenericIterator<Mitgliedskonto> get() throws RemoteException, ApplicationException
   {
     Date d1 = null;
     java.sql.Date vd = null;
@@ -85,16 +86,27 @@ public class SollbuchungQuery
       diff = (DIFFERENZ) control.getDifferenz().getValue();
     }
 
-    boolean kein_name = !control.isSuchnameAktiv()
+    boolean kein_name = (!control.isSuchnameAktiv()
         || control.getSuchname().getValue() == null
-        || ((String) control.getSuchname().getValue()).isEmpty();
-    boolean ein_name = control.isSuchnameAktiv()
+        || ((String) control.getSuchname().getValue()).isEmpty())
+        && (!control.isSuchtextAktiv()
+            || control.getSuchtext().getValue() == null
+            || ((String) control.getSuchtext().getValue()).isEmpty());
+    boolean ein_such_name = control.isSuchnameAktiv()
         && control.getSuchname().getValue() != null
         && !((String) control.getSuchname().getValue()).isEmpty();
+    boolean ein_text_name = control.isSuchtextAktiv()
+        && control.getSuchtext().getValue() != null
+        && !((String) control.getSuchtext().getValue()).isEmpty();
     boolean keine_email = !control.isMailauswahlAktiv() || (Integer) control
         .getMailauswahl().getValue() == MailAuswertungInput.ALLE;
     boolean filter_email = control.isMailauswahlAktiv() && !((Integer) control
         .getMailauswahl().getValue() == MailAuswertungInput.ALLE);
+    
+    if (ein_such_name && ein_text_name)
+    {
+      throw new ApplicationException("Bitte nur entweder Mitglied oder Zahler eingeben");
+    }
 
     // Falls kein Name, kein Mailfilter und keine Differenz dann alles lesen
     if (kein_name && keine_email && diff == DIFFERENZ.EGAL)
@@ -128,7 +140,7 @@ public class SollbuchungQuery
 
     // Falls ein Name oder Mailfilter aber keine Differenz dann alles des
     // Mitglieds lesen
-    if ((ein_name || filter_email) && diff == DIFFERENZ.EGAL)
+    if ((!kein_name || filter_email) && diff == DIFFERENZ.EGAL)
     {
       DBIterator<Mitgliedskonto> sollbuchungen = Einstellungen.getDBService()
           .createList(Mitgliedskonto.class);
@@ -137,13 +149,37 @@ public class SollbuchungQuery
         sollbuchungen.addFilter("mitgliedskonto.mitglied = ?",
             new Object[] { Long.valueOf(mitglied.getID()) });
       }
-      if ((!umwandeln && ein_name) || filter_email)
+
+      if (ein_such_name)
+      {
+        if (!umwandeln || filter_email)
+        {
+          sollbuchungen.join("mitglied");
+          sollbuchungen.addFilter("mitglied.id = mitgliedskonto.mitglied");
+        }
+      }
+      else if (ein_text_name)
+      {
+        sollbuchungen.join("mitglied");
+        sollbuchungen.addFilter("mitglied.id = mitgliedskonto.zahler");
+      }
+      else if (filter_email)
       {
         sollbuchungen.join("mitglied");
         sollbuchungen.addFilter("mitglied.id = mitgliedskonto.mitglied");
       }
 
-      if (!umwandeln && ein_name)
+      if (ein_text_name)
+      {
+        String name = (String) control.getSuchtext().getValue();
+        sollbuchungen.addFilter(
+            "((lower(mitglied.name) like ?)"
+                + " OR (lower(mitglied.vorname) like ?))",
+            new Object[] { name.toLowerCase() + "%",
+                name.toLowerCase() + "%" });
+      }
+
+      if (!umwandeln && ein_such_name)
       {
         // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
         String name = (String) control.getSuchname().getValue();
@@ -153,7 +189,7 @@ public class SollbuchungQuery
             new Object[] { name.toLowerCase() + "%",
                 name.toLowerCase() + "%" });
       }
-      else if (umwandeln && ein_name)
+      else if (umwandeln && ein_such_name)
       {
         // Der Name muss umgewandelt werden, es kann mehrere Matches geben
         ArrayList<BigDecimal> namenids = getNamenIds(
@@ -220,10 +256,21 @@ public class SollbuchungQuery
 
     // Eine Differenz ist ausgewählt
     final DBService service = Einstellungen.getDBService();
-    String sql = "SELECT  mitgliedskonto.id, mitglied.name, mitglied.vorname, "
-        + " mitgliedskonto.betrag, sum(buchung.betrag) FROM mitgliedskonto "
-        + "JOIN mitglied on (mitgliedskonto.mitglied = mitglied.id) "
-        + "LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto ";
+    String sql = "";
+    if (!ein_text_name)
+    {
+      sql = "SELECT  mitgliedskonto.id, mitglied.name, mitglied.vorname, "
+          + " mitgliedskonto.betrag, sum(buchung.betrag) FROM mitgliedskonto "
+          + "JOIN mitglied on (mitgliedskonto.mitglied = mitglied.id) "
+          + "LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto ";
+    }
+    else
+    {
+      sql = "SELECT  mitgliedskonto.id, mitglied.name, mitglied.vorname, "
+          + " mitgliedskonto.betrag, sum(buchung.betrag) FROM mitgliedskonto "
+          + "JOIN mitglied on (mitgliedskonto.zahler = mitglied.id) "
+          + "LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto ";
+    }
     String where = "";
     ArrayList<Object> param = new ArrayList<>();
     if (mitglied != null)
@@ -232,9 +279,16 @@ public class SollbuchungQuery
           + "mitgliedskonto.mitglied = ? ";
       param.add(Long.valueOf(mitglied.getID()));
     }
-    if (control.isSuchnameAktiv() && control.getSuchname().getValue() != null
-        && !((String) control.getSuchname().getValue()).isEmpty()
-        && umwandeln == false)
+    if (ein_text_name)
+    {
+      // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
+      String tmpSuchname = (String) control.getSuchtext().getValue();
+      where += (where.length() > 0 ? "and " : "")
+          + "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?)) ";
+      param.add(tmpSuchname.toLowerCase() + "%");
+      param.add(tmpSuchname.toLowerCase() + "%");
+    }
+    if (ein_such_name && umwandeln == false)
     {
       // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
       String tmpSuchname = (String) control.getSuchname().getValue();
@@ -243,10 +297,7 @@ public class SollbuchungQuery
       param.add(tmpSuchname.toLowerCase() + "%");
       param.add(tmpSuchname.toLowerCase() + "%");
     }
-    else if (control.isSuchnameAktiv()
-        && control.getSuchname().getValue() != null
-        && !((String) control.getSuchname().getValue()).isEmpty()
-        && umwandeln == true)
+    else if (ein_such_name && umwandeln == true)
     {
       // Der Name muss umgewandelt werden, es kann mehrere Matches geben
       ArrayList<BigDecimal> namenids = getNamenIds(
