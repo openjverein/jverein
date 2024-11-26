@@ -904,10 +904,14 @@ public class MitgliedskontoControl extends DruckMailControl
     try
     {
       if (zahler == null)
+      {
         return null;
+      }
       Mitglied derZahler = (Mitglied) getZahler().getValue();
       if (null == derZahler)
+      {
         return null;
+      }
       return Long.valueOf(derZahler.getID());
     }
     catch (RemoteException ex)

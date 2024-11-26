@@ -265,10 +265,14 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   {
   Object o = (Object) super.getAttribute("zahler");
     if (o == null)
+    {
       return null;
+    }
 
     if(o instanceof Mitglied)
+    {
       return (Mitglied)o;
+    }
    
     Cache cache = Cache.get(Mitglied.class,true);
     return (Mitglied) cache.get(o);
@@ -278,9 +282,13 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   public void setZahler(Mitglied zahler) throws RemoteException
   {
     if (zahler != null)
+    {
       setAttribute("zahler", Long.valueOf(zahler.getID()));
+    }
     else
+    {
       setAttribute("zahler", null);
+    }
   }
   
   public Long getZahlerId() throws RemoteException
