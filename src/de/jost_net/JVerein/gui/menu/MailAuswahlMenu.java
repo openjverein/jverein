@@ -32,7 +32,7 @@ public class MailAuswahlMenu extends ContextMenu
 
   public MailAuswahlMenu(MailControl control)
   {
-    addItem(new CheckedSingleContextMenuItem("Variable",
+    addItem(new CheckedSingleContextMenuItem("Variablen anzeigen",
         new OpenInsertVariableDialogAction(), "bookmark.png"));
     addItem(new CheckedSingleContextMenuItem("Vorschau",
         new MailVorschauAction(control),
