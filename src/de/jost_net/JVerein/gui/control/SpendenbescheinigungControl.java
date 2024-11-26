@@ -200,7 +200,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
     String text = "";
     Mitglied m = getSpendenbescheinigung().getMitglied();
     if (m != null)
+    {
       text = Adressaufbereitung.getVornameName(m);
+    }
     mitglied = new TextInput(text);
     mitglied.disable();
     return mitglied;

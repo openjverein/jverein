@@ -99,7 +99,9 @@ public class SpendenbescheinigungAction implements Action
                 // Zahler aus Sollbuchung lesen
                 Mitglied zahler = b.getMitgliedskonto().getZahler();
                 if (zahler != null)
+                {
                   SpbAdressaufbereitung.adressaufbereitung(zahler, spb);
+                }
               }
               spb.setBuchung(b);
               spb.setSpendedatum(b.getDatum());
