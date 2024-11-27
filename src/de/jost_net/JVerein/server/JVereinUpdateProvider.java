@@ -1026,7 +1026,7 @@ public class JVereinUpdateProvider
     sb.append(" rechnungfuerbarzahlung CHAR(5),");
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
-    sb.append(" )  ENGINE=InnoDB ROW_FORMAT=DYNAMIC;\n");
+    sb.append(" )  ENGINE=InnoDB COLLATE='latin1_swedish_ci';\n");
     statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
 
     execute(conn, statements, 28);
