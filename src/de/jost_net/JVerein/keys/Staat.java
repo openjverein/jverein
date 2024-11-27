@@ -20,11 +20,14 @@ public enum Staat
 {
   AD ("ANDORRA"),
   AL ("ALBANIEN"),
+  AM ("ARMENIEN"),
   AT ("ÖSTER­REICH"),
+  AZ ("ASERBAIDSCHAN"),
   BA ("BOSNIEN UND HERZEGOWINA"),
   BE ("BELGIEN"),
   BG ("BULGARIEN"),
   BY ("BELARUS"),
+  CA ("KANADA"),
   CH ("SCHWEIZ"),
   CY ("ZYPERN"),
   CZ ("TSCHECHIEN"),
@@ -35,12 +38,14 @@ public enum Staat
   FI ("FINNLAND"),
   FR ("FRANKREICH"),
   GB ("VEREINIGTES KÖNIGREICH"),
+  GE ("GEORGIEN"),
   GR ("GRIECHENLAND"),
   HR ("KROATIEN"),
   HU ("UNGARN"),
   IE ("IRLAND"),
   IS ("ISLAND"),
   IT ("ITALIEN"),
+  KZ ("KASACHSTAN"),
   LI ("LIECHTENSTEIN"),
   LT ("LITAUEN"),
   LU ("LUXEM­BURG"),
@@ -63,7 +68,20 @@ public enum Staat
   SM ("SAN MARINO"),
   TR ("TÜRKEI"),
   UA ("UKRAINE"),
-  VA ("VATIKANSTADT");
+  US ("VEREINIGTE STAATEN VON AMERIKA"),
+  VA ("VATIKANSTADT"),
+  // Nicht universell anerkannte Länder
+  XK ("KOSOVO"),
+  // Transnistrien (Republik Moldau)
+  TN ("TRANSNISTRIEN"),
+  // Südossetien (Georgien)
+  SO ("SÜDOSSETIEN"),
+  // Abchasien (Georgien)
+  AB ("ABCHASIEN"),
+  // Nordzypern (Türkei)
+  NC ("NORDZYPERN"),
+  // Bergkarabach (Armenien/Aserbaidschan)
+  AR ("BERGKARABACH");
 
   private final String text;
 
