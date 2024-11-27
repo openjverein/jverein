@@ -648,9 +648,9 @@ public class FormularAufbereitung
 
     Invoice invoice = new Invoice()
         // Fälligkeitsdatum
-        .setDueDate(mklist.get(mklist.size()).getDatum())
+        .setDueDate(mklist.get(mklist.size()-1).getDatum())
         // Lieferdatum
-        .setDeliveryDate(mklist.get(mklist.size()).getDatum())
+        .setDeliveryDate(mklist.get(mklist.size()-1).getDatum())
         // Rechnungsdatum
         .setIssueDate(re.getDatum())
         // Rechnungsnummer
