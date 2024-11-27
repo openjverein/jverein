@@ -32,7 +32,7 @@ public class Update0452 extends AbstractDDLUpdate
   {
     {
       execute(addColumn("einstellung",
-          new Column("staat", COLTYPE.VARCHAR, 2, null, true, false)));
+          new Column("staat", COLTYPE.VARCHAR, 2, null, false, false)));
 
       execute(addColumn("einstellung",
           new Column("ustid", COLTYPE.VARCHAR, 20, null, false, false)));
