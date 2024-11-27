@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -635,7 +636,8 @@ public class FormularAufbereitung
   @SuppressWarnings("resource")
   public void addZUGFeRD(Rechnung re, boolean mahnung) throws IOException
   {
-    if (re.getMitgliedskontoList().size() == 0)
+    ArrayList<Mitgliedskonto> mklist = re.getMitgliedskontoList();
+    if (mklist.size() == 0)
       return;
 
     String sourcePDF = f.getAbsolutePath();
@@ -646,9 +648,9 @@ public class FormularAufbereitung
 
     Invoice invoice = new Invoice()
         // Fälligkeitsdatum
-        .setDueDate(re.getMitgliedskontoList().getLast().getDatum())
+        .setDueDate(mklist.get(mklist.size()).getDatum())
         // Lieferdatum
-        .setDeliveryDate(re.getMitgliedskontoList().getLast().getDatum())
+        .setDeliveryDate(mklist.get(mklist.size()).getDatum())
         // Rechnungsdatum
         .setIssueDate(re.getDatum())
         // Rechnungsnummer
