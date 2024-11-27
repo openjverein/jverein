@@ -694,7 +694,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
           addCondition("buchung.verzicht = 1");
           break;
         case GELDSPENDE_ECHT:
-          addCondition("buchung.verzicht != 1 AND spendenart = ?");
+          addCondition(
+              "(buchung.verzicht != 1 or buchung.verzicht is null) AND spendenart = ?");
           bedingungen.add(Spendenart.GELDSPENDE);
           break;
         case SACHSPENDE_ERSTATTUNGSVERZICHT:
