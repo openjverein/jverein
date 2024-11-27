@@ -247,7 +247,7 @@ public class SollbuchungQuery
         }
         if (mailauswahl == MailAuswertungInput.MIT)
         {
-          sollbuchungen.addFilter("(email is  not null and length(email) > 0)");
+          sollbuchungen.addFilter("(email is not null and length(email) > 0)");
         }
       }
       sollbuchungen.setOrder("ORDER BY mitgliedskonto.datum desc");
@@ -256,35 +256,37 @@ public class SollbuchungQuery
 
     // Eine Differenz ist ausgewählt
     final DBService service = Einstellungen.getDBService();
-    String sql = "";
+
+    StringBuilder sql;
     if (ein_mitglied_name)
     {
-      sql = "SELECT  mitgliedskonto.id, mitglied.name, mitglied.vorname, "
-          + " mitgliedskonto.betrag, sum(buchung.betrag) FROM mitgliedskonto "
-          + "JOIN mitglied on (mitgliedskonto.mitglied = mitglied.id) "
-          + "LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto ";
+      sql = new StringBuilder("SELECT mitgliedskonto.id, mitglied.name, mitglied.vorname, "
+          + "mitgliedskonto.betrag, SUM(buchung.betrag) FROM mitgliedskonto "
+          + "JOIN mitglied ON (mitgliedskonto.mitglied = mitglied.id) "
+          + "LEFT JOIN buchung ON mitgliedskonto.id = buchung.mitgliedskonto");
     }
     else
     {
-      sql = "SELECT  mitgliedskonto.id, mitglied.name, mitglied.vorname, "
-          + " mitgliedskonto.betrag, sum(buchung.betrag) FROM mitgliedskonto "
-          + "JOIN mitglied on (mitgliedskonto.zahler = mitglied.id) "
-          + "LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto ";
+      sql = new StringBuilder("SELECT mitgliedskonto.id, mitglied.name, mitglied.vorname, "
+          + "mitgliedskonto.betrag, SUM(buchung.betrag) FROM mitgliedskonto "
+          + "JOIN mitglied ON (mitgliedskonto.zahler = mitglied.id) "
+          + "LEFT JOIN buchung ON mitgliedskonto.id = buchung.mitgliedskonto");
     }
-    String where = "";
+
+    StringBuilder where = new StringBuilder();
     ArrayList<Object> param = new ArrayList<>();
     if (mitglied != null)
     {
-      where += (where.length() > 0 ? "and " : "")
-          + "mitgliedskonto.mitglied = ? ";
+      where.append(where.isEmpty() ? "" : " AND ")
+          .append("mitgliedskonto.mitglied = ? ");
       param.add(Long.valueOf(mitglied.getID()));
     }
     if (ein_mitglied_name)
     {
       // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
       String tmpSuchname = (String) control.getSuchtext().getValue();
-      where += (where.length() > 0 ? "and " : "")
-          + "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?)) ";
+      where.append(where.isEmpty() ? "" : " AND ")
+      .append("((LOWER(mitglied.name) LIKE ?) OR (LOWER(mitglied.vorname) LIKE ?))");
       param.add(tmpSuchname.toLowerCase() + "%");
       param.add(tmpSuchname.toLowerCase() + "%");
     }
@@ -292,8 +294,8 @@ public class SollbuchungQuery
     {
       // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
       String tmpSuchname = (String) control.getSuchname().getValue();
-      where += (where.length() > 0 ? "and " : "")
-          + "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?)) ";
+      where.append(where.isEmpty() ? "" : " AND ")
+          .append("((LOWER(mitglied.name) LIKE ?) OR (LOWER(mitglied.vorname) LIKE ?))");
       param.add(tmpSuchname.toLowerCase() + "%");
       param.add(tmpSuchname.toLowerCase() + "%");
     }
@@ -311,21 +313,21 @@ public class SollbuchungQuery
           count++;
           if (anzahl == 1)
           {
-            where += (where.length() > 0 ? "and " : "")
-                + "mitgliedskonto.zahler = ? ";
+            where.append(where.isEmpty() ? "" : " AND ")
+                .append("mitgliedskonto.zahler = ?");
           }
           else if (count == 1)
           {
-            where += (where.length() > 0 ? "and " : "")
-                + "(mitgliedskonto.zahler = ? ";
+            where.append(where.isEmpty() ? "" : " AND ")
+                .append("(mitgliedskonto.zahler = ?");
           }
           else if (count < anzahl)
           {
-            where += " OR mitgliedskonto.zahler = ? ";
+            where.append(" OR mitgliedskonto.zahler = ?");
           }
           else if (count == anzahl)
           {
-            where += " OR mitgliedskonto.zahler = ?) ";
+            where.append(" OR mitgliedskonto.zahler = ?)");
           }
           param.add(id);
         }
@@ -333,21 +335,21 @@ public class SollbuchungQuery
     }
     if (vd != null)
     {
-      where += (where.length() > 0 ? "and " : "")
-          + "mitgliedskonto.datum >= ? ";
+      where.append(where.isEmpty() ? "" : " AND ")
+          .append("mitgliedskonto.datum >= ?");
       param.add(vd);
     }
     if (bd != null)
     {
-      where += (where.length() > 0 ? "and " : "")
-          + "mitgliedskonto.datum <= ? ";
+      where.append(where.isEmpty() ? "" : " AND ")
+          .append("mitgliedskonto.datum <= ?");
       param.add(bd);
     }
     if (control.isOhneAbbucherAktiv()
         && (Boolean) control.getOhneAbbucher().getValue())
     {
-      where += (where.length() > 0 ? "and " : "")
-          + "mitgliedskonto.zahlungsweg <> ?";
+      where.append(where.isEmpty() ? "" : " AND ")
+          .append("mitgliedskonto.zahlungsweg <> ?");
       param.add(Zahlungsweg.BASISLASTSCHRIFT);
     }
     if (filter_email)
@@ -355,33 +357,33 @@ public class SollbuchungQuery
       int mailauswahl = (Integer) control.getMailauswahl().getValue();
       if (mailauswahl == MailAuswertungInput.OHNE)
       {
-        where += (where.length() > 0 ? "and " : "")
-            + "(email is null or length(email) = 0)";
+        where.append(where.isEmpty() ? "" : " AND ")
+            .append("(email IS NULL OR LENGTH(email) = 0)");
       }
       if (mailauswahl == MailAuswertungInput.MIT)
       {
-        where += (where.length() > 0 ? "and " : "")
-            + "(email is not null and length(email) > 0)";
+        where.append(where.isEmpty() ? "" : " AND ")
+            .append("(email IS NOT NULL AND LENGTH(email) > 0)");
       }
     }
 
-    if (where.length() > 0)
+    if (!where.isEmpty())
     {
-      sql += "WHERE " + where;
+      sql.append(" WHERE ").append(where);
     }
-    sql += "group by mitgliedskonto.id ";
+    sql.append(" GROUP BY mitgliedskonto.id");
 
     if (DIFFERENZ.FEHLBETRAG == diff)
     {
-      sql += "having sum(buchung.betrag) < mitgliedskonto.betrag or "
-          + "(sum(buchung.betrag) is null and mitgliedskonto.betrag > 0) ";
+      sql.append(" HAVING SUM(buchung.betrag) < mitgliedskonto.betrag OR "
+          + "(SUM(buchung.betrag) IS NULL AND mitgliedskonto.betrag > 0)");
     }
     if (DIFFERENZ.UEBERZAHLUNG == diff)
     {
-      sql += "having sum(buchung.betrag) > mitgliedskonto.betrag ";
+      sql.append(" HAVING SUM(buchung.betrag) > mitgliedskonto.betrag");
     }
 
-    List<Long> ids = (List<Long>) service.execute(sql, param.toArray(),
+    List<Long> ids = (List<Long>) service.execute(sql.toString(), param.toArray(),
         new ResultSetExtractor()
         {
           @Override
