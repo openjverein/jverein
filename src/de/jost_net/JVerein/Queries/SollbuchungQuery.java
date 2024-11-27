@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.Queries;
 
-import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -192,33 +191,12 @@ public class SollbuchungQuery
       else if (umwandeln && ein_zahler_name)
       {
         // Der Name muss umgewandelt werden, es kann mehrere Matches geben
-        ArrayList<BigDecimal> namenids = getNamenIds(
+        ArrayList<Long> namenids = getNamenIds(
             (String) control.getSuchname().getValue());
         if (namenids != null)
         {
-          int anzahl = namenids.size();
-          String querystring = null;
-
-          for (int i = 1; i <= anzahl; i++)
-          {
-            if (anzahl == 1)
-            {
-              querystring = "(mitgliedskonto.zahler = ?) ";
-            }
-            else if (i == 1)
-            {
-              querystring = "((mitgliedskonto.zahler = ?) OR ";
-            }
-            else if (i < anzahl)
-            {
-              querystring = querystring + "(mitgliedskonto.zahler = ?) OR ";
-            }
-            else if (i == anzahl)
-            {
-              querystring = querystring + "(mitgliedskonto.zahler = ?)) ";
-            }
-          }
-          sollbuchungen.addFilter(querystring, namenids.toArray());
+          sollbuchungen.addFilter("mitgliedskonto.zahler in ("
+              + StringUtils.join(namenids, ",") + ")");
         }
       }
 
@@ -302,35 +280,13 @@ public class SollbuchungQuery
     else if (ein_zahler_name && umwandeln == true)
     {
       // Der Name muss umgewandelt werden, es kann mehrere Matches geben
-      ArrayList<BigDecimal> namenids = getNamenIds(
+      ArrayList<Long> namenids = getNamenIds(
           (String) control.getSuchname().getValue());
       if (namenids != null)
       {
-        int count = 0;
-        int anzahl = namenids.size();
-        for (BigDecimal id : namenids)
-        {
-          count++;
-          if (anzahl == 1)
-          {
-            where.append(where.isEmpty() ? "" : " AND ")
-                .append("mitgliedskonto.zahler = ?");
-          }
-          else if (count == 1)
-          {
-            where.append(where.isEmpty() ? "" : " AND ")
-                .append("(mitgliedskonto.zahler = ?");
-          }
-          else if (count < anzahl)
-          {
-            where.append(" OR mitgliedskonto.zahler = ?");
-          }
-          else if (count == anzahl)
-          {
-            where.append(" OR mitgliedskonto.zahler = ?)");
-          }
-          param.add(id);
-        }
+        where.append(where.isEmpty() ? "" : " AND ")
+        .append("mitgliedskonto.zahler in ("
+            + StringUtils.join(namenids, ",") + ")");
       }
     }
     if (vd != null)
@@ -406,21 +362,21 @@ public class SollbuchungQuery
     return list;
   }
 
-  private ArrayList<BigDecimal> getNamenIds(final String suchname)
+  private ArrayList<Long> getNamenIds(final String suchname)
       throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     String sql = "SELECT  mitglied.id, mitglied.name, mitglied.vorname from mitglied";
 
     @SuppressWarnings("unchecked")
-    ArrayList<BigDecimal> mitgliedids = (ArrayList<BigDecimal>) service
+    ArrayList<Long> mitgliedids = (ArrayList<Long>) service
         .execute(sql, new Object[] {}, new ResultSetExtractor()
         {
           @Override
           public Object extract(ResultSet rs)
               throws RemoteException, SQLException
           {
-            ArrayList<BigDecimal> ergebnis = new ArrayList<>();
+            ArrayList<Long> ergebnis = new ArrayList<>();
 
             // In case the text search input is used, we calculate
             // an "equality" score for each Mitglied entry.
@@ -429,14 +385,14 @@ public class SollbuchungQuery
             Integer maxScore = 0;
             int count = 0;
             String name = reduceWord(suchname);
-            BigDecimal mgid = null;
+            Long mgid = null;
             String nachname = null;
             String vorname = null;
             while (rs.next())
             {
               count++;
               // Nur die ids der Mitglieder speichern
-              mgid = rs.getBigDecimal(1);
+              mgid = rs.getLong(1);
 
               StringTokenizer tok = new StringTokenizer(name, " ,-");
               Integer score = 0;
