@@ -581,6 +581,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
         {
           spbList.addItem(spb);
         }
+        spbList.sort();
       }
       catch (RemoteException e1)
       {

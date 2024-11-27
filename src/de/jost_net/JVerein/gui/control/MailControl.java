@@ -654,6 +654,7 @@ public class MailControl extends FilterControl
       {
         mailsList.addItem(mails.next());
       }
+      mailsList.sort();
     }
     catch (RemoteException e1)
     {

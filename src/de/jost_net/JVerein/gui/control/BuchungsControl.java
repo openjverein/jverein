@@ -1453,6 +1453,7 @@ public class BuchungsControl extends AbstractControl
     {
       splitbuchungsList.addItem(b);
     }
+    splitbuchungsList.sort();
   }
 
   private void starteAuswertung(boolean einzelbuchungen)

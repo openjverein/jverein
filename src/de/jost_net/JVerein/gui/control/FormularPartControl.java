@@ -79,6 +79,7 @@ public class FormularPartControl extends AbstractControl
     {
       formularfelderList.addItem(formularfelder.next());
     }
+    formularfelderList.sort();
   }
 
 }
