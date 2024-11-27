@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.rmi.Einstellung;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -55,8 +56,10 @@ public class BuchungPart implements Part
   @Override
   public void paint(Composite parent) throws RemoteException
   {
-    String title = (control.getBuchung().getSpeicherung() ? "Buchung"
-        : "Splitbuchung");
+    Einstellung einstellung = Einstellungen.getEinstellung();
+    String title = (control.getBuchung().getSpeicherung() ?
+        "Buchung" :
+        "Splitbuchung");
     GUI.getView().setTitle(title);
 
     ScrolledContainer scrolled = new ScrolledContainer(parent, 1);
@@ -76,7 +79,14 @@ public class BuchungPart implements Part
     DateInput date = control.getDatum();
     grKontoauszug.addLabelPair("Datum", date);
     if (!control.getBuchung().getSpeicherung())
+    {
       date.setEnabled(false);
+    }
+    if (einstellung.getWirtschaftsplanung())
+    {
+      DateInput leistungsdatum = control.getLeistunsgdatum();
+      grKontoauszug.addLabelPair("Leistungsdatum", leistungsdatum);
+    }
     grKontoauszug.addLabelPair("Art", control.getArt());
     grKontoauszug.addLabelPair("Sollbuchung", control.getMitgliedskonto());
     grKontoauszug.addLabelPair("Kommentar", control.getKommentar());

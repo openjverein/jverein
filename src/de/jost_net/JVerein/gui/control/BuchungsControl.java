@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import de.jost_net.JVerein.rmi.Einstellung;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
@@ -153,6 +154,8 @@ public class BuchungsControl extends AbstractControl
 
   private DateInput datum = null;
 
+  private DateInput leistunsgdatum = null;
+
   private Input art;
 
   private DialogInput mitgliedskonto;
@@ -174,6 +177,8 @@ public class BuchungsControl extends AbstractControl
   private SelectInput suchprojekt;
 
   private SelectInput hasmitglied;
+
+  private SelectInput datumsart;
 
   private DateInput vondatum = null;
 
@@ -210,7 +215,9 @@ public class BuchungsControl extends AbstractControl
   private Kontenart kontoart = Kontenart.ALLE;
   
   private boolean geldkonto = true;
-  
+
+  private boolean standardLeistungsdatum;
+
   public enum Kontenart
   {
     GELDKONTO,
@@ -225,6 +232,25 @@ public class BuchungsControl extends AbstractControl
     MONAT, TAG
   }
 
+  public enum Datumsart
+  {
+    BUCHUNGSDATUM, LEISTUNGSDATUM;
+
+    @Override
+    public String toString()
+    {
+      switch (this)
+      {
+        case BUCHUNGSDATUM:
+          return "Buchungsdatum";
+        case LEISTUNGSDATUM:
+          return "Leistungsdatum";
+        default:
+          return null;
+      }
+    }
+  }
+
   public BuchungsControl(AbstractView view, Kontenart kontoart)
   {
     super(view);
@@ -235,6 +261,16 @@ public class BuchungsControl extends AbstractControl
     {
       geldkonto = false;
       settingsprefix = "anlagenkonto.";
+    }
+    try
+    {
+      this.standardLeistungsdatum = getBuchung().getLeistungsdatum()
+          .equals(getBuchung().getDatum());
+
+    }
+    catch (RemoteException | NullPointerException e)
+    {
+      this.standardLeistungsdatum = false;
     }
   }
 
@@ -278,6 +314,7 @@ public class BuchungsControl extends AbstractControl
     }
     b.setZweck((String) getZweck().getValue());
     b.setDatum((Date) getDatum().getValue());
+    b.setLeistungsdatum((Date) getLeistunsgdatum().getValue());
     b.setArt((String) getArt().getValue());
     b.setVerzicht((Boolean) getVerzicht().getValue());
     b.setMitgliedskonto(getSelectedMitgliedsKonto(b));
@@ -464,7 +501,41 @@ public class BuchungsControl extends AbstractControl
     this.datum.setTitle("Datum");
     this.datum.setText("Bitte Datum wählen");
     datum.setMandatory(true);
+    this.datum.addListener(event -> {
+      if (standardLeistungsdatum)
+      {
+        try
+        {
+          getLeistunsgdatum().setValue(datum.getValue());
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+    });
     return datum;
+  }
+
+  public DateInput getLeistunsgdatum() throws RemoteException
+  {
+
+    if (leistunsgdatum != null)
+    {
+      return leistunsgdatum;
+    }
+    Date d = getBuchung().getLeistungsdatum();
+    this.leistunsgdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    this.leistunsgdatum.setTitle("Leistungsdatum");
+    this.leistunsgdatum.setText("Bitte Leistungsdatum wählen");
+    this.leistunsgdatum.addListener(event -> {
+      if (leistunsgdatum.getValue() != null && !leistunsgdatum.getValue()
+          .equals(datum.getValue()))
+      {
+        standardLeistungsdatum = false;
+      }
+    });
+    return leistunsgdatum;
   }
 
   public TextInput getSuchtext()
@@ -515,54 +586,54 @@ public class BuchungsControl extends AbstractControl
 
   public DialogInput getMitgliedskonto() throws RemoteException
   {
-    mitgliedskonto = new SollbuchungAuswahlInput(getBuchung())
-        .getMitgliedskontoAuswahl();
-    mitgliedskonto.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
+    mitgliedskonto = new SollbuchungAuswahlInput(
+        getBuchung()).getMitgliedskontoAuswahl();
+    mitgliedskonto.addListener(event -> {
+      try
       {
-        try
+        String name = (String) getName().getValue();
+        String zweck1 = (String) getZweck().getValue();
+        if (mitgliedskonto.getValue() != null && name.length() == 0 && zweck1.length() == 0)
         {
-          String name = (String) getName().getValue();
-          String zweck1 = (String) getZweck().getValue();
-          if (mitgliedskonto.getValue() != null && name.length() == 0
-              && zweck1.length() == 0)
-          {
-            if (mitgliedskonto.getValue() instanceof Mitgliedskonto)
-            {
-              Mitgliedskonto mk = (Mitgliedskonto) mitgliedskonto.getValue();
-              getName().setValue(
-                  Adressaufbereitung.getNameVorname(mk.getMitglied()));
-              getBetrag().setValue(mk.getBetrag());
-              getZweck().setValue(mk.getZweck1());
-              getDatum().setValue(mk.getDatum());
-            }
-            if (mitgliedskonto.getValue() instanceof Mitglied)
-            {
-              Mitglied m2 = (Mitglied) mitgliedskonto.getValue();
-              getName().setValue(Adressaufbereitung.getNameVorname(m2));
-              getDatum().setValue(new Date());
-            }
-          }
           if (mitgliedskonto.getValue() instanceof Mitgliedskonto)
           {
             Mitgliedskonto mk = (Mitgliedskonto) mitgliedskonto.getValue();
-            if (getBuchungsart().getValue() == null)
-            {
-              getBuchungsart().setValue(mk.getBuchungsart());
-            }
-            if (isBuchungsklasseActive() && getBuchungsklasse().getValue() == null)
-            {
-              getBuchungsklasse().setValue(mk.getBuchungsklasse());
-            }
+            getName().setValue(
+                Adressaufbereitung.getNameVorname(mk.getMitglied()));
+            getBetrag().setValue(mk.getBetrag());
+            getZweck().setValue(mk.getZweck1());
+            getDatum().setValue(mk.getDatum());
+            getLeistunsgdatum().setValue(mk.getDatum());
+          }
+          if (mitgliedskonto.getValue() instanceof Mitglied)
+          {
+            Mitglied m2 = (Mitglied) mitgliedskonto.getValue();
+            getName().setValue(Adressaufbereitung.getNameVorname(m2));
+            getDatum().setValue(new Date());
+            getLeistunsgdatum().setValue(new Date());
           }
         }
-        catch (RemoteException e)
+        if (mitgliedskonto.getValue() instanceof Mitgliedskonto)
         {
-          Logger.error("Fehler", e);
+          Mitgliedskonto mk = (Mitgliedskonto) mitgliedskonto.getValue();
+          if (getBuchungsart().getValue() == null)
+          {
+            getBuchungsart().setValue(mk.getBuchungsart());
+          }
+          if (isBuchungsklasseActive() && getBuchungsklasse().getValue() == null)
+          {
+            getBuchungsklasse().setValue(mk.getBuchungsklasse());
+          }
+          if (standardLeistungsdatum)
+          {
+            getLeistunsgdatum().setValue(mk.getDatum());
+            standardLeistungsdatum = false;
+          }
         }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
       }
     });
     return mitgliedskonto;
@@ -815,6 +886,19 @@ public class BuchungsControl extends AbstractControl
     return suchbuchungsart;
   }
 
+  public SelectInput getDatumsart()
+  {
+    if (datumsart != null)
+    {
+      return datumsart;
+    }
+    Datumsart art = Datumsart.valueOf(
+        settings.getString(settingsprefix + "datumsart", "Buchungsdatum")
+            .toUpperCase());
+    datumsart = new SelectInput(Datumsart.values(), art);
+    return datumsart;
+  }
+
   public DateInput getVondatum()
   {
     if (vondatum != null)
@@ -1051,7 +1135,7 @@ public class BuchungsControl extends AbstractControl
         Mitgliedskonto mk = (Mitgliedskonto) Einstellungen.getDBService()
             .createObject(Mitgliedskonto.class, null);
         mk.setBetrag(b.getBetrag());
-        mk.setDatum(b.getDatum());
+        mk.setDatum(b.getLeistungsdatum());
         mk.setMitglied(mitglied);
         mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
         mk.setZweck1(b.getZweck());
@@ -1168,7 +1252,15 @@ public class BuchungsControl extends AbstractControl
 
   public Part getBuchungsList() throws RemoteException
   {
+    Einstellung einstellung = Einstellungen.getEinstellung();
+
     // Werte speichern
+    Datumsart art = (Datumsart) getDatumsart().getValue();
+    if (art == null)
+    {
+      throw new RemoteException("Keine Datumsart gewählt");
+    }
+    settings.setAttribute(settingsprefix + "datumsart", art.toString());
     Date dv = (Date) getVondatum().getValue();
     if (dv == null)
     {
@@ -1224,7 +1316,8 @@ public class BuchungsControl extends AbstractControl
 
     query = new BuchungQuery(dv, db, k, b, p, (String) getSuchtext().getValue(),
         (String) getSuchBetrag().getValue(), m.getValue(),
-        (String) getMitglied().getValue(), geldkonto);
+        (String) getMitglied().getValue(), geldkonto,
+        (Datumsart) datumsart.getValue());
 
     if (buchungsList == null)
     {
@@ -1267,6 +1360,12 @@ public class BuchungsControl extends AbstractControl
       });
       buchungsList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
+
+      if (einstellung.getWirtschaftsplanung())
+      {
+        buchungsList.addColumn("Leistungsdatum", "leistungsdatum",
+            new DateFormatter(new JVDateFormatTTMMJJJJ()));
+      }
 
       if (geldkonto)
       {
@@ -2171,6 +2270,7 @@ public class BuchungsControl extends AbstractControl
         startGJ = Datum.toDate(Einstellungen.getEinstellung()
             .getBeginnGeschaeftsjahr() + year);
       }
+      datumsart.setValue(Datumsart.BUCHUNGSDATUM);
       vondatum.setValue(startGJ);
       calendar.setTime(startGJ);
       calendar.add(Calendar.YEAR, 1);

@@ -22,6 +22,7 @@ import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
@@ -97,7 +98,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
           }
 
           mk.setBetrag(betrag);
-          mk.setDatum(b[0].getDatum());
+          mk.setDatum(b[0].getLeistungsdatum());
           mk.setMitglied(m);
           mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
           mk.setZweck1(b[0].getZweck());
@@ -107,12 +108,22 @@ public class BuchungSollbuchungZuordnungAction implements Action
         for (Buchung buchung : b)
         {
           buchung.setMitgliedskonto(mk);
+          Einstellung einstellung = Einstellungen.getEinstellung();
           if (mk != null)
           {
             if (buchung.getBuchungsartId() == null)
+            {
               buchung.setBuchungsartId(mk.getBuchungsartId());
+            }
             if (buchung.getBuchungsklasseId() == null)
+            {
               buchung.setBuchungsklasseId(mk.getBuchungsklasseId());
+            }
+            if (einstellung.getWirtschaftsplanung() && buchung.getLeistungsdatum()
+                .equals(buchung.getDatum()))
+            {
+              buchung.setLeistungsdatum(mk.getDatum());
+            }
           }
           buchung.store();
         }
