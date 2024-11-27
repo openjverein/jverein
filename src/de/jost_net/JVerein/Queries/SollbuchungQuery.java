@@ -91,9 +91,12 @@ public class SollbuchungQuery
         && (!control.isSuchtextAktiv()
             || control.getSuchtext().getValue() == null
             || ((String) control.getSuchtext().getValue()).isEmpty());
+    // Zahler ist gesetzt in Sollbuchungen Liste View oder bei Sollbuchungen
+    // Zuweisung Dialog
     boolean ein_zahler_name = control.isSuchnameAktiv()
         && control.getSuchname().getValue() != null
         && !((String) control.getSuchname().getValue()).isEmpty();
+    // Mitglied ist gesetzt in Sollbuchungen Liste View
     boolean ein_mitglied_name = control.isSuchtextAktiv()
         && control.getSuchtext().getValue() != null
         && !((String) control.getSuchtext().getValue()).isEmpty();
@@ -101,7 +104,7 @@ public class SollbuchungQuery
         .getMailauswahl().getValue() == MailAuswertungInput.ALLE;
     boolean filter_email = control.isMailauswahlAktiv() && !((Integer) control
         .getMailauswahl().getValue() == MailAuswertungInput.ALLE);
-    
+
     if (ein_zahler_name && ein_mitglied_name)
     {
       throw new ApplicationException("Bitte nur entweder Mitglied oder Zahler eingeben");
@@ -151,6 +154,10 @@ public class SollbuchungQuery
 
       if (ein_zahler_name)
       {
+        // Bei Zahler aus Sollbuchungen Liste View filtern wir auf den Zahler
+        // aber auch wenn nach Mail gefiltert wird.
+        // Bei umwandeln aus dem Sollbuchungen Zuweisung Dialog brauchen wird
+        // den join nicht weil das Mitglied per extra Query gesucht wird
         if (!umwandeln || filter_email)
         {
           sollbuchungen.join("mitglied");
@@ -159,11 +166,14 @@ public class SollbuchungQuery
       }
       else if (ein_mitglied_name)
       {
+        // Filter nach Mitglied
         sollbuchungen.join("mitglied");
         sollbuchungen.addFilter("mitglied.id = mitgliedskonto.mitglied");
       }
       else if (filter_email)
       {
+        // Wenn kein Zahler oder Mitglied aber Mail, dann suchen wir die
+        // Mail beim Mitglied
         sollbuchungen.join("mitglied");
         sollbuchungen.addFilter("mitglied.id = mitgliedskonto.mitglied");
       }
@@ -238,6 +248,7 @@ public class SollbuchungQuery
     StringBuilder sql;
     if (ein_mitglied_name)
     {
+      // Suche nach dem Mitglied
       sql = new StringBuilder("SELECT mitgliedskonto.id, mitglied.name, mitglied.vorname, "
           + "mitgliedskonto.betrag, SUM(buchung.betrag) FROM mitgliedskonto "
           + "JOIN mitglied ON (mitgliedskonto.mitglied = mitglied.id) "
@@ -245,9 +256,12 @@ public class SollbuchungQuery
     }
     else
     {
+      // Suche nach dem Zahler, der LEFT JOIN beim Mitglied behält auch Sollbuchungen
+      // bei denen kein Zahel gesetzt ist. Er könnte gelöscht worden sein, aber die
+      // Sollbuchung existiert noch und evtl. musss eine Buchung zugeordnet werden
       sql = new StringBuilder("SELECT mitgliedskonto.id, mitglied.name, mitglied.vorname, "
           + "mitgliedskonto.betrag, SUM(buchung.betrag) FROM mitgliedskonto "
-          + "JOIN mitglied ON (mitgliedskonto.zahler = mitglied.id) "
+          + "LEFT JOIN mitglied ON (mitgliedskonto.zahler = mitglied.id) "
           + "LEFT JOIN buchung ON mitgliedskonto.id = buchung.mitgliedskonto");
     }
 
