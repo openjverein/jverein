@@ -55,13 +55,7 @@ public class MailVorschauAction implements Action
         throw new ApplicationException("Fehler beim Anzeigen der Vorschau");
       }
     }
-    else if (context instanceof Mitglied && control instanceof MailControl)
-    {
-      Mitglied m = (Mitglied) context;
-      new MailVorschauDialog(control, m,
-          MailEmpfaengerAuswahlDialog.POSITION_CENTER);
-    }
-    else if (context instanceof Mitglied && control instanceof MailVorlageControl)
+    else if (context instanceof Mitglied && (control instanceof MailControl || control instanceof MailVorlageControl))
     {
       Mitglied m = (Mitglied) context;
       new MailVorschauDialog(control, m,
