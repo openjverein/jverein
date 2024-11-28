@@ -298,6 +298,7 @@ public class ZusatzbetragControl extends AbstractControl
       {
         zusatzbetraegeList.addItem(zusatzbetraege.next());
       }
+      zusatzbetraegeList.sort();
     }
     if (this.ausfuehrungSuch.getText().equals("Aktive"))
     {

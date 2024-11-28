@@ -344,11 +344,11 @@ public class KontoControl extends AbstractControl
     kontenList.removeAll();
     DBIterator<Konto> konten = Einstellungen.getDBService()
         .createList(Konto.class);
-    konten.setOrder("ORDER BY nummer");
     while (konten.hasNext())
     {
       kontenList.addItem(konten.next());
     }
+    kontenList.sort();
   }
 
   public Input getBuchungsart() throws RemoteException

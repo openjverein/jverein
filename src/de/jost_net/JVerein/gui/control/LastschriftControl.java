@@ -138,6 +138,7 @@ public class LastschriftControl extends FilterControl
       {
         lastschriftList.addItem(lastschriften.next());
       }
+      lastschriftList.sort();
     }
     catch (RemoteException e1)
     {

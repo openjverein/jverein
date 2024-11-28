@@ -397,6 +397,7 @@ public class AbrechnungslaufControl extends FilterControl
       {
         abrechnungslaufList.addItem(abrechnungslaeufe.next());
       }
+      abrechnungslaufList.sort();
     }
     return abrechnungslaufList;
   }

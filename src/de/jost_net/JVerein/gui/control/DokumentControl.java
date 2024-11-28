@@ -227,6 +227,7 @@ public class DokumentControl extends AbstractControl
     {
       docsList.addItem(docs.next());
     }
+    docsList.sort();
   }
 
   /**

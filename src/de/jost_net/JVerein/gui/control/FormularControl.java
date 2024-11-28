@@ -277,6 +277,7 @@ public class FormularControl extends FormularPartControl
     {
       formularList.addItem(formulare.next());
     }
+    formularList.sort();
   }
 
 }

@@ -297,6 +297,7 @@ public class JahresabschlussControl extends AbstractControl
     {
       jahresabschlussList.addItem(jahresabschluesse.next());
     }
+    jahresabschlussList.sort();
   }
   
   public String getInfo()

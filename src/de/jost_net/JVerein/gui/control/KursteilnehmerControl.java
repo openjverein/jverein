@@ -416,6 +416,7 @@ public class KursteilnehmerControl extends FilterControl
         Kursteilnehmer kt = kursteilnehmer.next();
         part.addItem(kt);
       }
+      part.sort();
     }
     catch (RemoteException e1)
     {

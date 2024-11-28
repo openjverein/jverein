@@ -269,7 +269,7 @@ public class SollbuchungQuery
     ArrayList<Object> param = new ArrayList<>();
     if (mitglied != null)
     {
-      where.append(where.isEmpty() ? "" : " AND ")
+      where.append(where.length() == 0 ? "" : " AND ")
           .append("mitgliedskonto.mitglied = ? ");
       param.add(Long.valueOf(mitglied.getID()));
     }
@@ -286,7 +286,7 @@ public class SollbuchungQuery
     {
       // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
       String tmpSuchname = (String) control.getSuchname().getValue();
-      where.append(where.isEmpty() ? "" : " AND ")
+      where.append(where.length() == 0 ? "" : " AND ")
           .append("((LOWER(mitglied.name) LIKE ?) OR (LOWER(mitglied.vorname) LIKE ?))");
       param.add(tmpSuchname.toLowerCase() + "%");
       param.add(tmpSuchname.toLowerCase() + "%");
@@ -305,20 +305,20 @@ public class SollbuchungQuery
     }
     if (vd != null)
     {
-      where.append(where.isEmpty() ? "" : " AND ")
+      where.append(where.length() == 0 ? "" : " AND ")
           .append("mitgliedskonto.datum >= ?");
       param.add(vd);
     }
     if (bd != null)
     {
-      where.append(where.isEmpty() ? "" : " AND ")
+      where.append(where.length() == 0 ? "" : " AND ")
           .append("mitgliedskonto.datum <= ?");
       param.add(bd);
     }
     if (control.isOhneAbbucherAktiv()
         && (Boolean) control.getOhneAbbucher().getValue())
     {
-      where.append(where.isEmpty() ? "" : " AND ")
+      where.append(where.length() == 0 ? "" : " AND ")
           .append("mitgliedskonto.zahlungsweg <> ?");
       param.add(Zahlungsweg.BASISLASTSCHRIFT);
     }
@@ -327,17 +327,17 @@ public class SollbuchungQuery
       int mailauswahl = (Integer) control.getMailauswahl().getValue();
       if (mailauswahl == MailAuswertungInput.OHNE)
       {
-        where.append(where.isEmpty() ? "" : " AND ")
+        where.append(where.length() == 0 ? "" : " AND ")
             .append("(email IS NULL OR LENGTH(email) = 0)");
       }
       if (mailauswahl == MailAuswertungInput.MIT)
       {
-        where.append(where.isEmpty() ? "" : " AND ")
+        where.append(where.length() == 0 ? "" : " AND ")
             .append("(email IS NOT NULL AND LENGTH(email) > 0)");
       }
     }
 
-    if (!where.isEmpty())
+    if (where.length() > 0)
     {
       sql.append(" WHERE ").append(where);
     }

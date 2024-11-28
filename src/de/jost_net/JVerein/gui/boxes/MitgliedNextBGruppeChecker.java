@@ -169,6 +169,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
       aenderungsListenPart.addItem(mitgliedBeitraege);
       datenVorhanden = true;
     }
+    aenderungsListenPart.sort();
     this.isAktiv = datenVorhanden;
   }
 

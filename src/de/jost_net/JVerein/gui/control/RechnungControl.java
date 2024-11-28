@@ -245,6 +245,7 @@ public class RechnungControl extends DruckMailControl
         {
           rechnungList.addItem(rechnungen.next());
         }
+        rechnungList.sort();
       }
       else if (rechnungTree != null)
       {

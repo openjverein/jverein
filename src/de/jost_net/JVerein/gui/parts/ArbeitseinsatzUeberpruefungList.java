@@ -92,6 +92,7 @@ public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
         {
           arbeitseinsatzueberpruefungList.addItem(az);
         }
+        arbeitseinsatzueberpruefungList.sort();
       }
     }
     catch (RemoteException e)

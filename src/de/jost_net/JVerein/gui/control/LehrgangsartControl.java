@@ -186,11 +186,11 @@ public class LehrgangsartControl extends AbstractControl
     lehrgangsartList.removeAll();
     DBIterator<Lehrgangsart> lehrgangsarten = Einstellungen.getDBService()
         .createList(Lehrgangsart.class);
-    lehrgangsarten.setOrder("ORDER BY bezeichnung");
     while (lehrgangsarten.hasNext())
     {
       lehrgangsartList.addItem(lehrgangsarten.next());
     }
+    lehrgangsartList.sort();
   }
 
 }

@@ -163,6 +163,7 @@ public class EigenschaftControl extends AbstractControl
       {
         eigenschaftList.addItem(eigenschaften.next());
       }
+      eigenschaftList.sort();
     }
     return eigenschaftList;
   }

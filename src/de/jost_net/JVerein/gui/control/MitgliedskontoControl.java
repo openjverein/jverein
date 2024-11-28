@@ -567,6 +567,7 @@ public class MitgliedskontoControl extends DruckMailControl
       {
         mitgliedskontoList.addItem(mitgliedskonten.next());
       }
+      mitgliedskontoList.sort();
     }
     return mitgliedskontoList;
   }
@@ -594,6 +595,7 @@ public class MitgliedskontoControl extends DruckMailControl
       {
         mitgliedskontoList2.addItem(mitglieder.next());
       }
+      mitgliedskontoList2.sort();
     }
     return mitgliedskontoList2;
   }
@@ -606,6 +608,7 @@ public class MitgliedskontoControl extends DruckMailControl
     {
       mitgliedskontoList2.addItem(mitglieder.next());
     }
+    mitgliedskontoList2.sort();
   }
 
   private GenericIterator<Mitglied> getMitgliedIterator() throws RemoteException
@@ -658,6 +661,7 @@ public class MitgliedskontoControl extends DruckMailControl
     {
       mitgliedskontoList.addItem(mitgliedskonten.next());
     }
+    mitgliedskontoList.sort();
   }
 
   public Button getStartKontoauszugButton(final Object currentObject,

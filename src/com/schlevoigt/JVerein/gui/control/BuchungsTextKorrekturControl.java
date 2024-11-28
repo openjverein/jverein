@@ -144,6 +144,7 @@ public class BuchungsTextKorrekturControl extends AbstractControl {
 		for (Buchung b : query.get()) {
 			buchungsList.addItem(b);
 		}
+		buchungsList.sort();
 	}
 
 	private void starteKorrektur() {

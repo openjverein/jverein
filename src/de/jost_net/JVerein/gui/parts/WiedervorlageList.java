@@ -75,6 +75,7 @@ public class WiedervorlageList extends TablePart implements Part
       {
         wiedervorlageList.addItem(wiedervorlagen.next());
       }
+      wiedervorlageList.sort();
     }
     return wiedervorlageList;
   }
