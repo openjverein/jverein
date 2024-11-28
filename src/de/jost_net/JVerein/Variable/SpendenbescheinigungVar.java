@@ -36,6 +36,7 @@ public enum SpendenbescheinigungVar {
   BEZEICHNUNGSACHZUWENDUNG("spendenbescheinigung_bezeichnungsachzuwendung"), //
   HERKUNFTSACHZUWENDUNG("spendenbescheinigung_herkunftsachzuwendung"), //
   UNTERLAGENWERTERMITTUNG("spendenbescheinigung_unterlagenwertermittlung"), //
+  UNTERSCHRIFT("spendenbescheinigung_unterschrift"), //
   ZEILE1("spendenbescheinigung_zeile1"), //
   ZEILE2("spendenbescheinigung_zeile2"), //
   ZEILE3("spendenbescheinigung_zeile3"), //

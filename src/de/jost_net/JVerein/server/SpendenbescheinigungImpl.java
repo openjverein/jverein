@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +24,9 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Image;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
@@ -426,6 +430,26 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
     if (getBuchungen() == null)
       return false;
     return getBuchungen().size() > 1;
+  }
+
+  /**
+   * Liefert als Kennzeichen zurück, ob die Spendenbescheinigung eine echte
+   * Geldspende ist. Dies ist der Fall, wenn es sich um eine Gelspende handelt
+   * bei der bei keiner Buchung das Flag Erstattungsverzicht gesetzt ist.
+   * 
+   * @return Flag, ob echte Geldspende
+   * @throws RemoteException
+   */
+  public boolean isEchteGeldspende() throws RemoteException
+  {
+    if (getBuchungen() == null)
+      return false;
+    for (Buchung buchung : getBuchungen())
+    {
+      if (buchung.getVerzicht())
+        return false;
+    }
+    return true;
   }
 
   /**
@@ -863,6 +887,37 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
     else
     {
       map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), spendedatum);
+    }
+    
+    if (isEchteGeldspende()
+        && Einstellungen.getEinstellung().getUnterschriftdrucken()
+        && Einstellungen.getEinstellung().getUnterschrift() != null)
+    {
+      Image i;
+      try
+      {
+        i = Image.getInstance(Einstellungen.getEinstellung().getUnterschrift());
+        int width = 400;
+        int height = 55;
+        float w = i.getWidth() / width;
+        float h = i.getHeight() / height;
+        if (w > h)
+        {
+          h = i.getHeight() / w;
+          w = width;
+        }
+        else
+        {
+          w = i.getWidth() / h;
+          h = height;
+        }
+        i.scaleToFit(w, h);
+        map.put(SpendenbescheinigungVar.UNTERSCHRIFT.getName(), i);
+      }
+      catch (BadElementException | IOException e)
+      {
+        // Dann drucken wir halt keine Unterschrift
+      }
     }
     return map;
   }
