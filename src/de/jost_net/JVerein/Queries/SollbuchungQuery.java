@@ -277,7 +277,7 @@ public class SollbuchungQuery
     {
       // Der Name kann so verwendet werden ohne Umwandeln der Umlaute
       String tmpSuchname = (String) control.getSuchtext().getValue();
-      where.append(where.isEmpty() ? "" : " AND ")
+      where.append(where.length() == 0 ? "" : " AND ")
       .append("((LOWER(mitglied.name) LIKE ?) OR (LOWER(mitglied.vorname) LIKE ?))");
       param.add(tmpSuchname.toLowerCase() + "%");
       param.add(tmpSuchname.toLowerCase() + "%");
@@ -298,7 +298,7 @@ public class SollbuchungQuery
           (String) control.getSuchname().getValue());
       if (namenids != null)
       {
-        where.append(where.isEmpty() ? "" : " AND ")
+        where.append(where.length() == 0 ? "" : " AND ")
         .append("mitgliedskonto.zahler in ("
             + StringUtils.join(namenids, ",") + ")");
       }
