@@ -19,7 +19,6 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import de.willuhn.datasource.rmi.DBObject;
 
@@ -152,9 +151,6 @@ public interface Spendenbescheinigung extends DBObject
   public void setUnterlagenWertermittlung(Boolean unterlagenwertermittlung)
       throws RemoteException;
 
-  public Map<String, Object> getMap(Map<String, Object> inma)
-      throws RemoteException;
-
   /**
    * Gibt an, ob die Spendenbescheinigung automaitsch oder manuell erstellt
    * wurde.
@@ -174,5 +170,7 @@ public interface Spendenbescheinigung extends DBObject
    * @throws RemoteException
    */
   public void setAutocreate(Boolean autocreate) throws RemoteException;
+
+  public Date getZeitraumBis() throws RemoteException;
 
 }

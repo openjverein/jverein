@@ -39,6 +39,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.io.FileViewer;
@@ -246,7 +247,7 @@ public class SpendenbescheinigungPrintAction implements Action
         {
           Formular fo = (Formular) Einstellungen.getDBService()
               .createObject(Formular.class, spb.getFormular().getID());
-          Map<String, Object> map = spb.getMap(null);
+          Map<String, Object> map = new SpendenbescheinigungMap().getMap(spb, null);
           map = new AllgemeineMap().getMap(map);
           if(spb.getMitglied() != null)
             map = new MitgliedMap().getMap(spb.getMitglied(), map);
@@ -306,7 +307,7 @@ public class SpendenbescheinigungPrintAction implements Action
     final File file = new File(fileName);
     FileOutputStream fos = new FileOutputStream(file);
 
-    Map<String, Object> map = spb.getMap(null);
+    Map<String, Object> map = new SpendenbescheinigungMap().getMap(spb, null);
     map = new AllgemeineMap().getMap(map);
     boolean isSammelbestaetigung = spb.isSammelbestaetigung();
     Reporter rpt = new Reporter(fos, 80, 50, 50, 50);
