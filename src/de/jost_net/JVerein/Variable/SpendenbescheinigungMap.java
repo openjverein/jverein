@@ -18,7 +18,7 @@ package de.jost_net.JVerein.Variable;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -367,6 +367,12 @@ public class SpendenbescheinigungMap
     String bescheiddatum = new JVDateFormatTTMMJJJJ()
         .format(Einstellungen.getEinstellung().getBescheiddatum());
     map.put(SpendenbescheinigungVar.DATUM_BESCHEID.getName(), bescheiddatum);
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(Einstellungen.getEinstellung().getVeranlagungVon());
+    String start = "" + cal.get(Calendar.YEAR);
+    cal.setTime(Einstellungen.getEinstellung().getVeranlagungBis());
+    map.put(SpendenbescheinigungVar.VERANLAGUNGSZEITRAUM.getName(), String
+        .format("%s bis %s", start, "" + cal.get(Calendar.YEAR)));
     map.put(SpendenbescheinigungVar.ZWECK.getName(),
         Einstellungen.getEinstellung().getBeguenstigterzweck());
 

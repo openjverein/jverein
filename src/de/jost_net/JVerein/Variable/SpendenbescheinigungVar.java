@@ -39,6 +39,7 @@ public enum SpendenbescheinigungVar {
   FINANZAMT("spendenbescheinigung_finanzamt"), //
   STEUER_NR("spendenbescheinigung_steuer_nummmer"), //
   DATUM_BESCHEID("spendenbescheinigung_datum_bescheid"), //
+  VERANLAGUNGSZEITRAUM("spendenbescheinigung_veranlagungszeitraum"), //
   ZWECK("spendenbescheinigung_beguenstigter_zweck"), //
   UNTERSCHRIFT("spendenbescheinigung_unterschrift"), //
   ZEILE1("spendenbescheinigung_zeile1"), //
