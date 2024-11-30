@@ -27,6 +27,7 @@ import org.junit.runners.JUnit4;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.Staat;
 
 @RunWith(JUnit4.class)
 public class AdressaufbereitungTest
@@ -221,6 +222,20 @@ public class AdressaufbereitungTest
 
       @Override
       public String getStaat() throws RemoteException
+      {
+        String code = getStaatCode();
+        if(Staat.getByKey(code) != null)
+        {
+          return Staat.getByKey(code).getText(); 
+        }
+        //Wenn der Code nicht vorhenden ist, nehmen wir
+        //zur komabilität den Text wie er in der DB Steht
+        return code;
+      }
+
+
+      @Override
+      public String getStaatCode() throws RemoteException
       {
         return staat;
       }

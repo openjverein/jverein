@@ -28,7 +28,6 @@ import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Spendenart;
-import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -157,7 +156,7 @@ public class SpendenbescheinigungAction implements Action
     }
     adresse.add(m.getStrasse());
     adresse.add(m.getPlz() + " " + m.getOrt());
-    adresse.add(Staat.getByKey(m.getStaat()).getText());
+    adresse.add(m.getStaat());
     switch (adresse.size())
     {
       case 7:

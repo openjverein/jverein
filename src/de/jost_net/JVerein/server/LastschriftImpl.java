@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.io.IAdresse;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
@@ -233,11 +234,28 @@ public class LastschriftImpl extends AbstractDBObject implements Lastschrift
   {
     setAttribute("ort", ort);
   }
-
+  
   @Override
   public String getStaat() throws RemoteException
   {
-    return (String) getAttribute("staat");
+    String code = getStaatCode();
+    if(Staat.getByKey(code) != null)
+    {
+      return Staat.getByKey(code).getText(); 
+    }
+    //Wenn der Code nicht vorhenden ist, nehmen wir
+    //zur komabilität den Text wie er in der DB Steht
+    return code;
+  }
+
+  @Override
+  public String getStaatCode() throws RemoteException
+  {
+    String code = (String) getAttribute("staat");
+    //Wenn noch das ganze Land drin steht, bestimmen wir den Code
+    if(Staat.getByText(code) != null)
+      return Staat.getByText(code).getKey(); 
+    return code;
   }
 
   @Override

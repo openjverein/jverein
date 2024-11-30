@@ -18,70 +18,69 @@ package de.jost_net.JVerein.keys;
 
 public enum Staat
 {
-  AD ("ANDORRA"),
+  //Abchasien (Georgien)
+  AB ("ABCHASIEN"),
   AL ("ALBANIEN"),
+  AD ("ANDORRA"),
   AM ("ARMENIEN"),
-  AT ("ÖSTER­REICH"),
   AZ ("ASERBAIDSCHAN"),
-  BA ("BOSNIEN UND HERZEGOWINA"),
-  BE ("BELGIEN"),
-  BG ("BULGARIEN"),
   BY ("BELARUS"),
-  CA ("KANADA"),
-  CH ("SCHWEIZ"),
-  CY ("ZYPERN"),
-  CZ ("TSCHECHIEN"),
-  DE ("DEUTSCHLAND"),
+  BE ("BELGIEN"),
+  //Bergkarabach (Armenien/Aserbaidschan)
+  AR ("BERGKARABACH"),
+  BA ("BOSNIEN UND HERZEGOWINA"),
+  BG ("BULGARIEN"),
   DK ("DÄNEMARK"),
+  DE ("DEUTSCHLAND"),
   EE ("ESTLAND"),
-  ES ("SPANIEN"),
   FI ("FINNLAND"),
   FR ("FRANKREICH"),
-  GB ("VEREINIGTES KÖNIGREICH"),
   GE ("GEORGIEN"),
   GR ("GRIECHENLAND"),
-  HR ("KROATIEN"),
-  HU ("UNGARN"),
   IE ("IRLAND"),
   IS ("ISLAND"),
   IT ("ITALIEN"),
+  CA ("KANADA"),
   KZ ("KASACHSTAN"),
+  XK ("KOSOVO"),
+  HR ("KROATIEN"),
+  LV ("LETTLAND"),
   LI ("LIECHTENSTEIN"),
   LT ("LITAUEN"),
   LU ("LUXEM­BURG"),
-  LV ("LETTLAND"),
-  MC ("MONACO"),
-  MD ("MOLDAU, REPUBLIK"),
-  ME ("MONTENEGRO"),
-  MK ("NORDMAZEDONIEN"),
   MT ("MALTA"),
+  MD ("MOLDAU, REPUBLIK"),
+  MC ("MONACO"),
+  ME ("MONTENEGRO"),
   NL ("NIEDER­LANDE"),
+  MK ("NORDMAZEDONIEN"),
+  //Nordzypern (Türkei)
+  NC ("NORDZYPERN"),
   NO ("NORWEGEN"),
+  AT ("ÖSTER­REICH"),
   PL ("POLEN"),
   PT ("PORTUGAL"),
   RO ("RUMÄNIEN"),
-  RS ("SERBIEN"),
   RU ("RUSSISCHE FÖDERATION"),
-  SE ("SCHWEDEN"),
-  SI ("SLOWENIEN"),
-  SK ("SLOWAKEI"),
   SM ("SAN MARINO"),
+  SE ("SCHWEDEN"),
+  CH ("SCHWEIZ"),
+  RS ("SERBIEN"),
+  SK ("SLOWAKEI"),
+  SI ("SLOWENIEN"),
+  ES ("SPANIEN"),
+  //Südossetien (Georgien)
+  SO ("SÜDOSSETIEN"),
+  //Transnistrien (Republik Moldau)
+  TN ("TRANSNISTRIEN"),
+  CZ ("TSCHECHIEN"),
   TR ("TÜRKEI"),
   UA ("UKRAINE"),
-  US ("VEREINIGTE STAATEN VON AMERIKA"),
+  HU ("UNGARN"),
   VA ("VATIKANSTADT"),
-  // Nicht universell anerkannte Länder
-  XK ("KOSOVO"),
-  // Transnistrien (Republik Moldau)
-  TN ("TRANSNISTRIEN"),
-  // Südossetien (Georgien)
-  SO ("SÜDOSSETIEN"),
-  // Abchasien (Georgien)
-  AB ("ABCHASIEN"),
-  // Nordzypern (Türkei)
-  NC ("NORDZYPERN"),
-  // Bergkarabach (Armenien/Aserbaidschan)
-  AR ("BERGKARABACH");
+  US ("VEREINIGTE STAATEN VON AMERIKA"),
+  GB ("VEREINIGTES KÖNIGREICH"),
+  CY ("ZYPERN");
 
   private final String text;
 
@@ -102,9 +101,29 @@ public enum Staat
 
   public static Staat getByKey(String key)
   {
+    if(key == null)
+    {
+      return null;
+    }
     for (Staat s : Staat.values())
     {
-      if (s.getKey().equals(key))
+      if (s.getKey().equals(key.toUpperCase()))
+      {
+        return s;
+      }
+    }
+    return null;
+  }
+  
+  public static Staat getByText(String text)
+  {
+    if(text == null)
+    {
+      return null;
+    }
+    for (Staat s : Staat.values())
+    {
+      if (s.getText().equals(text.toUpperCase()))
       {
         return s;
       }

@@ -648,9 +648,9 @@ public class FormularAufbereitung
 
     Invoice invoice = new Invoice()
         // Fälligkeitsdatum
-        .setDueDate(mklist.get(mklist.size()-1).getDatum())
+        .setDueDate(mklist.get(mklist.size() - 1).getDatum())
         // Lieferdatum
-        .setDeliveryDate(mklist.get(mklist.size()-1).getDatum())
+        .setDeliveryDate(mklist.get(mklist.size() - 1).getDatum())
         // Rechnungsdatum
         .setIssueDate(re.getDatum())
         // Rechnungsnummer
@@ -703,7 +703,8 @@ public class FormularAufbereitung
             + StringTool.toNotNullString(re.getName()),
         StringTool.toNotNullString(re.getStrasse()),
         StringTool.toNotNullString(re.getPlz()),
-        StringTool.toNotNullString(re.getOrt()), re.getStaat())
+        StringTool.toNotNullString(re.getOrt()),
+        re.getStaatCode() == null ? e.getStaat() : re.getStaatCode())
             .setID(id)
             .setContact(new Contact(
                 StringTool.toNotNullString(re.getVorname()) + " "

@@ -29,6 +29,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -532,15 +533,24 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public String getStaat() throws RemoteException
   {
-    String staat = (String) getAttribute("staat");
-    if (staat != null && staat.length() > 0)
+    String code = getStaatCode();
+    if(Staat.getByKey(code) != null)
     {
-      return staat;
+      return Staat.getByKey(code).getText(); 
     }
-    else
-    {
-      return "DE";
-    }
+    //Wenn der Code nicht vorhenden ist, nehmen wir
+    //zur komabilität den Text wie er in der DB Steht
+    return code;
+  }
+
+  @Override
+  public String getStaatCode() throws RemoteException
+  {
+    String code = (String) getAttribute("staat");
+    //Wenn noch das ganze Land drin steht, bestimmen wir den Code
+    if(Staat.getByText(code) != null)
+      return Staat.getByText(code).getKey(); 
+    return code;
   }
 
   @Override
@@ -824,15 +834,25 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public String getKtoiStaat() throws RemoteException
   {
-    String staat = (String) getAttribute("ktoistaat");
-    if (staat != null && staat.length() > 0)
+    String code = getKtoiStaatCode();
+    if(Staat.getByKey(code) != null)
     {
-      return staat;
+      return Staat.getByKey(code).getText(); 
     }
-    else
-    {
-      return "DE";
-    }
+    //Wenn der Code nicht vorhenden ist, nehmen wir
+    //zur komabilität den Text wie er in der DB Steht
+    return code;
+  }
+
+
+  @Override
+  public String getKtoiStaatCode() throws RemoteException
+  {
+    String code = (String) getAttribute("ktoistaat");
+    //Wenn noch das ganze Land drin steht, bestimmen wir den Code
+    if(Staat.getByText(code) != null)
+      return Staat.getByText(code).getKey(); 
+    return code;
   }
 
   @Override

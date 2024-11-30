@@ -22,6 +22,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.IAdresse;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
@@ -201,6 +202,20 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
 
   @Override
   public String getStaat() throws RemoteException
+  {
+    String code = getStaatCode();
+    if(Staat.getByKey(code) != null)
+    {
+      return Staat.getByKey(code).getText(); 
+    }
+    //Wenn der Code nicht vorhenden ist, nehmen wir
+    //zur komabilität den Text wie er in der DB Steht
+    return code;
+  }
+
+
+  @Override
+  public String getStaatCode() throws RemoteException
   {
     return (String) getAttribute("staat");
   }

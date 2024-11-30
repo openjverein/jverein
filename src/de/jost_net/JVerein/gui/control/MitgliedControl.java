@@ -520,7 +520,15 @@ public class MitgliedControl extends FilterControl
     {
       return staat;
     }
-    staat = new SelectNoScrollInput(Staat.values(), Staat.getByKey(getMitglied().getStaat()));
+    if(getMitglied().getStaat() != null 
+        && getMitglied().getStaat().length() > 0 
+        && Staat.getByKey(getMitglied().getStaatCode()) == null)
+    {
+      GUI.getStatusBar().setErrorText(
+          "Konnte Staat \"" + getMitglied().getStaat() + "\" nicht finden, bitte anpassen.");
+    }
+    staat = new SelectNoScrollInput(Staat.values(), Staat.getByKey(getMitglied().getStaatCode()));
+    staat.setPleaseChoose("Nicht gesetzt");
     staat.setName("Staat");
     return staat;
   }
@@ -970,7 +978,15 @@ public class MitgliedControl extends FilterControl
     {
       return ktoistaat;
     }
-    ktoistaat = new SelectNoScrollInput(Staat.values(), Staat.getByKey(getMitglied().getKtoiStaat()));
+    if(getMitglied().getKtoiStaat() != null 
+        && getMitglied().getKtoiStaat().length() > 0 
+        && Staat.getByKey(getMitglied().getKtoiStaatCode()) == null)
+    {
+      GUI.getStatusBar().setErrorText(
+          "Konnte Konntoinhaber Staat \"" + getMitglied().getKtoiStaat() + "\" nicht finden, bitte anpassen.");
+    }
+    ktoistaat = new SelectNoScrollInput(Staat.values(), Staat.getByKey(getMitglied().getKtoiStaatCode()));
+    ktoistaat.setPleaseChoose("Nicht gesetzt");
     ktoistaat.setName("Staat");
     return ktoistaat;
   }

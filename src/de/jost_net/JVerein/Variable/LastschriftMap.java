@@ -65,7 +65,7 @@ public class LastschriftMap
       ls.setOrt("Testenhausen");
       ls.setPersonenart("n");
       ls.setPlz("12345");
-      ls.setStaat("Deutschland");
+      ls.setStaat("DEUTSCHLAND");
       ls.setStrasse("Bahnhofstr. 1");
       ls.setTitel("Dr.");
       ls.setVerwendungszweck("Beitrag 2013 Willi Wichtig");
@@ -109,7 +109,7 @@ public class LastschriftMap
         ls.getAdressierungszusatz());
     map.put(LastschriftVar.PLZ.getName(), ls.getPlz());
     map.put(LastschriftVar.ORT.getName(), ls.getOrt());
-    map.put(LastschriftVar.STAAT.getName(), ls.getStaat());
+    map.put(LastschriftVar.STAAT.getName(),ls.getStaat());
     map.put(LastschriftVar.EMAIL.getName(), ls.getEmail());
     map.put(LastschriftVar.MANDATID.getName(), ls.getMandatID());
     map.put(LastschriftVar.MANDATDATUM.getName(), ls.getMandatDatum());

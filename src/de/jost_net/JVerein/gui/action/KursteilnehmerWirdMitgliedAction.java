@@ -51,7 +51,7 @@ public class KursteilnehmerWirdMitgliedAction implements Action
       m.setOrt(k.getOrt());
       m.setPersonenart(PersonenartInput.NATUERLICHE_PERSON.substring(0, 1));
       m.setPlz(k.getPlz());
-      m.setStaat(k.getStaat());
+      m.setStaat(k.getStaatCode());
       m.setStrasse(k.getStrasse());
       m.setTitel(k.getTitel());
       m.setVorname(k.getVorname());

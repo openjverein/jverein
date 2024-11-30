@@ -225,4 +225,6 @@ public interface Mitglied extends DBObject, ILastschrift
 
   public Map<String, String> getVariablen() throws RemoteException;
 
+  public String getKtoiStaatCode() throws RemoteException;
+
 }
