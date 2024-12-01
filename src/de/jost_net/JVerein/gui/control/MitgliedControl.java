@@ -174,6 +174,8 @@ public class MitgliedControl extends FilterControl
   private Input ort;
 
   private SelectNoScrollInput staat;
+  
+  private TextInput leitwegID;
 
   private DateInput geburtsdatum = null;
 
@@ -531,6 +533,17 @@ public class MitgliedControl extends FilterControl
     staat.setPleaseChoose("Nicht gesetzt");
     staat.setName("Staat");
     return staat;
+  }
+  
+  public TextInput getLeitwegID() throws RemoteException
+  {
+    if (leitwegID != null)
+    {
+      return leitwegID;
+    }
+    leitwegID = new TextInput(getMitglied().getLeitwegID());
+    leitwegID.setName("LeitwegID");
+    return leitwegID;
   }
 
   public DateInput getGeburtsdatum() throws RemoteException
@@ -2377,6 +2390,10 @@ public class MitgliedControl extends FilterControl
 
         m.setGeschlecht((String) getGeschlecht().getValue());
       }
+      else
+      {
+        m.setLeitwegId((String) getLeitwegID().getValue());
+      }
       m.setKtoiAdressierungszusatz(
           (String) getKtoiAdressierungszusatz().getValue());
       m.setKtoiAnrede((String) getKtoiAnrede().getValue());
@@ -2386,7 +2403,7 @@ public class MitgliedControl extends FilterControl
       String persa = (String) getKtoiPersonenart().getValue();
       m.setKtoiPersonenart(persa.substring(0, 1));
       m.setKtoiPlz((String) getKtoiPlz().getValue());
-      m.setKtoiStaat(((Staat) getKtoiStaat().getValue()).getKey());
+      m.setKtoiStaat(getKtoiStaat().getValue() == null?"":((Staat) getKtoiStaat().getValue()).getKey());
       m.setKtoiStrasse((String) getKtoiStrasse().getValue());
       m.setKtoiTitel((String) getKtoiTitel().getValue());
       m.setKtoiVorname((String) getKtoiVorname().getValue());
@@ -2396,7 +2413,7 @@ public class MitgliedControl extends FilterControl
       m.setName((String) getName(false).getValue());
       m.setOrt((String) getOrt().getValue());
       m.setPlz((String) getPlz().getValue());
-      m.setStaat(((Staat) getStaat().getValue()).getKey());
+      m.setStaat(getStaat().getValue() == null?"":((Staat) getStaat().getValue()).getKey());
       m.setStrasse((String) getStrasse().getValue());
       m.setTelefondienstlich((String) getTelefondienstlich().getValue());
       m.setTelefonprivat((String) getTelefonprivat().getValue());

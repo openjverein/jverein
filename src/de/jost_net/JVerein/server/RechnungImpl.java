@@ -348,4 +348,16 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
     setAttribute("iban", iban);
   }
 
+
+  @Override
+  public String getLeitwegID() throws RemoteException
+  {
+    return (String) getAttribute("leitwegid");
+  }
+
+  @Override
+  public void setLeitwegId(String leitwegid) throws RemoteException
+  {
+    setAttribute("leitwegid", leitwegid);
+  }
 }

@@ -713,6 +713,12 @@ public class FormularAufbereitung
                 re.getMitglied().getEmail()))
             .setAdditionalAddress(
                 StringTool.toNotNullString(re.getAdressierungszusatz())));
+    
+    //LeitwegID
+    if(re.getLeitwegID() != null && re.getLeitwegID().length() > 0)
+    {
+      invoice.setReferenceNumber(re.getLeitwegID());
+    }
 
     // Sollbuchungen
     for (Mitgliedskonto mk : re.getMitgliedskontoList())

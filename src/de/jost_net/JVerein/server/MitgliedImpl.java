@@ -560,6 +560,18 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   }
 
   @Override
+  public String getLeitwegID() throws RemoteException
+  {
+    return (String) getAttribute("leitwegid");
+  }
+
+  @Override
+  public void setLeitwegId(String leitwegid) throws RemoteException
+  {
+    setAttribute("leitwegid", leitwegid);
+  }
+
+  @Override
   public Integer getZahlungsweg() throws RemoteException
   {
     return (Integer) getAttribute("zahlungsweg");

@@ -227,4 +227,8 @@ public interface Mitglied extends DBObject, ILastschrift
 
   public String getKtoiStaatCode() throws RemoteException;
 
+  public String getLeitwegID() throws RemoteException;
+
+  public void setLeitwegId(String leitwegid) throws RemoteException;
+
 }

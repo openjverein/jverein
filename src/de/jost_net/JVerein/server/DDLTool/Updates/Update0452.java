@@ -37,6 +37,11 @@ public class Update0452 extends AbstractDDLUpdate
       execute(addColumn("einstellung",
           new Column("ustid", COLTYPE.VARCHAR, 20, null, false, false)));
 
+      execute(addColumn("mitglied",
+          new Column("leitwegid", COLTYPE.VARCHAR, 50, null, false, false)));
+      
+      execute(addColumn("rechnung",
+          new Column("leitwegid", COLTYPE.VARCHAR, 50, null, false, false)));
     }
   }
 }

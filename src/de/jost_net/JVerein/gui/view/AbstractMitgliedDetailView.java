@@ -639,6 +639,10 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
       cols.addInput(control.getGeburtsdatum());
       cols.addInput(control.getGeschlecht());
     }
+    else
+    {
+      cols.addInput(control.getLeitwegID());
+    }
 
     if (Einstellungen.getEinstellung().getKommunikationsdaten())
     {
