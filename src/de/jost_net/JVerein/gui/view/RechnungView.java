@@ -64,6 +64,7 @@ public class RechnungView extends AbstractView
     rigth.addInput(control.getBic());
     rigth.addInput(control.getMandatdatum());
     rigth.addInput(control.getMandatid());
+    rigth.addInput(control.getZahlungsweg());
     
     LabelGroup cont = new LabelGroup(getParent(), "Sollbuchungen", true);
     cont.addPart(control.getBuchungenList());

@@ -17,17 +17,22 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.IAdresse;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 
 public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
@@ -37,6 +42,7 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
    * 
    */
   private static final long serialVersionUID = -286067581211521888L;
+  private Double ist;
 
   public RechnungImpl() throws RemoteException
   {
@@ -224,6 +230,36 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
   }
 
   @Override
+  public Double getIstSumme() throws RemoteException
+  {
+    if (ist != null)
+    {
+      return ist;
+    }
+    DBService service = Einstellungen.getDBService();
+    String sql = "select sum(buchung.betrag) from buchung "
+        + "join mitgliedskonto on mitgliedskonto.id = buchung.mitgliedskonto "
+        + "where mitgliedskonto.rechnung = "
+        + this.getID();
+
+    ResultSetExtractor rs = new ResultSetExtractor()
+    {
+
+      @Override
+      public Object extract(ResultSet rs) throws SQLException
+      {
+        if (!rs.next())
+        {
+          return Double.valueOf(0.0d);
+        }
+        return Double.valueOf(rs.getDouble(1));
+      }
+    };
+    ist = Double.valueOf((Double) service.execute(sql, new Object[] {}, rs));
+    return ist;
+  }
+  
+  @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
     if ("id-int".equals(fieldName))
@@ -237,6 +273,14 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
         Logger.error("unable to parse id: " + getID());
         return getID();
       }
+    }
+    if ("ist".equals(fieldName))
+    {
+      return getIstSumme();
+    }
+    if ("differenz".equals(fieldName))
+    {
+      return getBetrag() - getIstSumme();
     }
     return super.getAttribute(fieldName);
   }
@@ -332,5 +376,19 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
   {
     setAttribute("iban", iban);
   }
+
+	@Override
+	public Zahlungsweg getZahlungsweg() throws RemoteException {
+	  if(getAttribute("zahlungsweg") == null)
+	  {
+	    return null;
+	  }
+		return new Zahlungsweg((Integer)getAttribute("zahlungsweg"));
+	}
+	
+	@Override
+	public void setZahlungsweg(Integer zahlungsweg) throws RemoteException {
+		setAttribute("zahlungsweg", zahlungsweg);
+	}
 
 }

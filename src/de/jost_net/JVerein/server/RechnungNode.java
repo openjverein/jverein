@@ -19,7 +19,9 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,12 +62,16 @@ public class RechnungNode implements GenericObjectNode
 
   private int nodetype = NONE;
 
+  private Zahlungsweg zahlungsweg;
+
+  @SuppressWarnings("unchecked")
   public RechnungNode(FilterControl control) throws RemoteException
   {
     childrens = new ArrayList<>();
     nodetype = ROOT;
 
-    Map<String, ArrayList<Mitgliedskonto>> mitgliedskontoMap = new HashMap<>();
+    // Map mit Sollbuchungen im Zeitraum nach Zahlungsweg und MitgliedsID
+    Map<Zahlungsweg, Map<String, ArrayList<Mitgliedskonto>>> mitgliedskontoMap = new HashMap<>();
     DBIterator<Mitgliedskonto> mitgliedskontoIterator = Einstellungen
         .getDBService().createList(Mitgliedskonto.class);
 
@@ -80,87 +86,142 @@ public class RechnungNode implements GenericObjectNode
       mitgliedskontoIterator.addFilter("zahlungsweg != ? ",
           Zahlungsweg.BASISLASTSCHRIFT);
 
-    if (control.isDifferenzAktiv()
-        && control.getDifferenz().getValue() != DIFFERENZ.EGAL)
+    while (mitgliedskontoIterator.hasNext())
     {
-      String sql = "SELECT mitgliedskonto.id, mitgliedskonto.betrag, "
-          + "sum(buchung.betrag) FROM mitgliedskonto "
-          + "LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto "
-          + "group by mitgliedskonto.id ";
-      if (control.getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
+      Mitgliedskonto mitgliedskonto = mitgliedskontoIterator.next();
+      Map<String, ArrayList<Mitgliedskonto>> map = mitgliedskontoMap
+          .get(new Zahlungsweg(mitgliedskonto.getZahlungsweg()));
+      if (map == null)
       {
-        sql += "having sum(buchung.betrag) < mitgliedskonto.betrag or "
-            + "sum(buchung.betrag) is null and mitgliedskonto.betrag > 0 ";
+        map = new HashMap<>();
+      }
+      ArrayList<Mitgliedskonto> list = map.get(mitgliedskonto.getMitgliedId());
+      if (list == null)
+      {
+        list = new ArrayList<Mitgliedskonto>();
+        list.add(mitgliedskonto);
+        map.put(mitgliedskonto.getMitgliedId(), list);
       }
       else
       {
-        sql += "having sum(buchung.betrag) > mitgliedskonto.betrag ";
+        list.add(mitgliedskonto);
+        map.replace(mitgliedskonto.getMitgliedId(), list);
+      }
+      if (mitgliedskontoMap
+          .get(new Zahlungsweg(mitgliedskonto.getZahlungsweg())) == null)
+      {
+        mitgliedskontoMap.put(new Zahlungsweg(mitgliedskonto.getZahlungsweg()),
+            map);
+      }
+      else
+      {
+        mitgliedskontoMap
+            .replace(new Zahlungsweg(mitgliedskonto.getZahlungsweg()), map);
+      }
+    }
+
+    // Map der Mitglieder mit Differenz nach Zahlungsweg
+    Map<Zahlungsweg, ArrayList<String>> diffIdsMap = null;
+    if (control.isDifferenzAktiv()
+        && control.getDifferenz().getValue() != DIFFERENZ.EGAL)
+    {
+      String sql = "SELECT mitgliedskonto.mitglied, mitgliedskonto.zahlungsweg,"
+          + " sum(mitgliedskonto.betrag), "
+          + "sum(buchung.betrag) FROM mitgliedskonto "
+          + "LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto "
+          + "WHERE 1 = 1 ";
+
+      SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+      if (control.getDatumvon().getValue() != null)
+        sql += " AND mitgliedskonto.datum >= '"
+            + format.format((Date) control.getDatumvon().getValue()) + "'";
+      if (control.getDatumbis().getValue() != null)
+        sql += " AND mitgliedskonto.datum <= '"
+            + format.format((Date) control.getDatumbis().getValue()) + "'";
+
+      sql += " group by mitgliedskonto.mitglied, mitgliedskonto.zahlungsweg";
+
+      if (control.getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
+      {
+        sql += " having sum(buchung.betrag) < sum(mitgliedskonto.betrag)"
+            + " OR (sum(buchung.betrag) IS null and sum(mitgliedskonto.betrag) > 0)";
+      }
+      else
+      {
+        sql += " having sum(buchung.betrag) > sum(mitgliedskonto.betrag)"
+            + " OR (sum(buchung.betrag) IS null and sum(mitgliedskonto.betrag) < 0)";
       }
 
-      @SuppressWarnings("unchecked")
-      ArrayList<String> diffIds = (ArrayList<String>) Einstellungen
+      diffIdsMap = (Map<Zahlungsweg, ArrayList<String>>) Einstellungen
           .getDBService().execute(sql, null, new ResultSetExtractor()
           {
             @Override
             public Object extract(ResultSet rs)
                 throws RemoteException, SQLException
             {
-              ArrayList<String> list = new ArrayList<>();
+              Map<Zahlungsweg, ArrayList<String>> map = new HashMap<>();
               while (rs.next())
               {
+                Zahlungsweg z = new Zahlungsweg((Integer) rs.getObject(2));
+                ArrayList<String> list = map.get(z);
+                if (list == null)
+                  list = new ArrayList<String>();
                 list.add(rs.getString(1));
+                if (map.get(z) == null)
+                {
+                  map.put(z, list);
+                }
+                else
+                {
+                  map.replace(z, list);
+                }
               }
-              return list;
+              return map;
             }
           });
-      if (diffIds.size() == 0)
-        return;
-      mitgliedskontoIterator
-          .addFilter("id in (" + String.join(",", diffIds) + ")");
     }
 
-    while (mitgliedskontoIterator.hasNext())
+    for (Zahlungsweg weg : Zahlungsweg.getArray(false))
     {
-      Mitgliedskonto mitgliedskonto = mitgliedskontoIterator.next();
-      ArrayList<Mitgliedskonto> list = mitgliedskontoMap
-          .get(mitgliedskonto.getMitgliedId());
-      if (list == null)
-      {
-        list = new ArrayList<Mitgliedskonto>();
-        list.add(mitgliedskonto);
-        mitgliedskontoMap.put(mitgliedskonto.getMitgliedId(), list);
-      }
-      else
-      {
-        list.add(mitgliedskonto);
-        mitgliedskontoMap.replace(mitgliedskonto.getMitgliedId(), list);
-      }
-    }
-
-    DBIterator<Mitglied> mitgliedterator = Einstellungen.getDBService()
-        .createList(Mitglied.class);
-    if (control.isSuchnameAktiv()
-        && !((String) control.getSuchname().getValue()).isEmpty())
-    {
-      mitgliedterator.addFilter(
-          " (upper(name) like upper(?) or upper(vorname) like upper(?)) ",
-          new Object[] { control.getSuchname().getValue(),
-              control.getSuchname().getValue() });
-    }
-
-    while (mitgliedterator.hasNext())
-    {
-      Mitglied m = mitgliedterator.next();
-      if (mitgliedskontoMap.get(m.getID()) == null)
+      if (mitgliedskontoMap.get(weg) == null)
         continue;
-      childrens.add(new RechnungNode(mitgliedskontoMap.get(m.getID()), m));
+      DBIterator<Mitglied> mitgliedIterator = Einstellungen.getDBService()
+          .createList(Mitglied.class);
+      if (control.isSuchnameAktiv()
+          && !((String) control.getSuchname().getValue()).isEmpty())
+      {
+        mitgliedIterator.addFilter(
+            " (upper(name) like upper(?) or upper(vorname) like upper(?)) ",
+            new Object[] { "%" +control.getSuchname().getValue() + "%",
+                "%" + control.getSuchname().getValue() + "%" });
+      }
+      // Bei Differenz ids Filtern
+      if (diffIdsMap != null)
+      {
+        if (diffIdsMap.get(weg) == null)
+          continue;
+        ArrayList<String> diffIds = diffIdsMap.get(weg);
+        if (diffIds.size() == 0)
+          continue;
+        mitgliedIterator.addFilter("id in (" + String.join(",", diffIds) + ")");
+      }
+      while (mitgliedIterator.hasNext())
+      {
+        Mitglied m = mitgliedIterator.next();
+        if (mitgliedskontoMap.get(weg).get(m.getID()) == null)
+          continue;
+        childrens.add(new RechnungNode(weg,
+            mitgliedskontoMap.get(weg).get(m.getID()), m));
+      }
     }
   }
 
-  private RechnungNode(ArrayList<Mitgliedskonto> mitgliedskontoList,
-      Mitglied mitglied) throws RemoteException
+  private RechnungNode(Zahlungsweg weg,
+      ArrayList<Mitgliedskonto> mitgliedskontoList, Mitglied mitglied)
+      throws RemoteException
   {
     this.mitglied = mitglied;
+    this.zahlungsweg = weg;
 
     childrens = new ArrayList<>();
     nodetype = MITGLIED;
@@ -190,31 +251,63 @@ public class RechnungNode implements GenericObjectNode
     {
       case ROOT:
       {
-        return "Rechnungen";
+        switch (name)
+        {
+          case "name":
+            return "Rechnungen";
+          default:
+            return null;
+        }
       }
       case MITGLIED:
       {
         @SuppressWarnings("rawtypes")
         GenericIterator it1 = getChildren();
-        double betrag = 0.0;
+        double soll = 0.0;
+        double ist = 0.0;
         while (it1.hasNext())
         {
           RechnungNode rn = (RechnungNode) it1.next();
           if (rn.getNodeType() == BUCHUNG)
           {
-            betrag += rn.getBuchung().getBetrag();
+            soll += rn.getBuchung().getBetrag();
+            ist += rn.getBuchung().getIstSumme();
           }
         }
-        return Adressaufbereitung.getNameVorname(mitglied) + " ("
-            + Einstellungen.DECIMALFORMAT.format(betrag) + ")";
+        switch (name)
+        {
+          case "name":
+            return Adressaufbereitung.getNameVorname(mitglied);
+          case "zahlungsweg":
+            return zahlungsweg.getText();
+          case "soll":
+            return soll;
+          case "ist":
+            return ist;
+          case "differenz":
+            return soll - ist;
+          default:
+            return null;
+        }
       }
       case BUCHUNG:
       {
-        return new JVDateFormatTTMMJJJJ().format(buchung.getDatum()) + ", "
-            + (buchung.getZweck1() != null && buchung.getZweck1().length() > 0
-                ? buchung.getZweck1()
-                : "")
-            + ", " + Einstellungen.DECIMALFORMAT.format(buchung.getBetrag());
+        switch (name)
+        {
+          case "name":
+            return new JVDateFormatTTMMJJJJ().format(buchung.getDatum()) + ", "
+                + (buchung.getZweck1() != null
+                    && buchung.getZweck1().length() > 0 ? buchung.getZweck1()
+                        : "");
+          case "soll":
+            return buchung.getBetrag();
+          case "ist":
+            return buchung.getIstSumme();
+          case "differenz":
+            return buchung.getBetrag() - buchung.getIstSumme();
+          default:
+            return null;
+        }
       }
     }
     return "bla";
@@ -334,7 +427,7 @@ public class RechnungNode implements GenericObjectNode
   @Override
   public String[] getAttributeNames() throws RemoteException
   {
-    return null;
+    return new String[] { "name", "zahlungsweg", "soll", "ist", "differenz" };
   }
 
   @Override

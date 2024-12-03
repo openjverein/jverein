@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import de.jost_net.JVerein.io.IAdresse;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.willuhn.datasource.rmi.DBObject;
 
 public interface Rechnung extends DBObject, IAdresse
@@ -36,10 +37,11 @@ public interface Rechnung extends DBObject, IAdresse
   void setBetrag(double betrag) throws RemoteException;
 
   public void setDatum(Date date) throws RemoteException;
-  
+
   public Date getDatum() throws RemoteException;
 
-  public ArrayList<Mitgliedskonto> getMitgliedskontoList() throws RemoteException;
+  public ArrayList<Mitgliedskonto> getMitgliedskontoList()
+      throws RemoteException;
 
   public Formular getFormular() throws RemoteException;
 
@@ -97,18 +99,24 @@ public interface Rechnung extends DBObject, IAdresse
   void setPersonenart(String personenart) throws RemoteException;
 
   public String getMandatID() throws RemoteException;
-  
+
   public void setMandatID(String id) throws RemoteException;
 
   public Date getMandatDatum() throws RemoteException;
-  
+
   public void setMandatDatum(Date datum) throws RemoteException;
 
   public String getBIC() throws RemoteException;
-  
+
   public void setBIC(String bic) throws RemoteException;
 
   public String getIBAN() throws RemoteException;
-  
+
   public void setIBAN(String iban) throws RemoteException;
+
+  public Zahlungsweg getZahlungsweg() throws RemoteException;
+
+  public void setZahlungsweg(Integer zahlungsweg) throws RemoteException;
+
+  public Double getIstSumme() throws RemoteException;
 }

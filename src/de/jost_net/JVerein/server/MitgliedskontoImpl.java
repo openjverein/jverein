@@ -410,6 +410,10 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
     {
       return getAbrechnungslauf();
     }
+    if (fieldName.equals("buchungsart"))
+    {
+      return getBuchungsart();
+    }
     if (fieldName.equals("buchungsklasse"))
     {
       return getBuchungsklasse();

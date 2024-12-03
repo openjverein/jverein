@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.RechnungAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
@@ -121,6 +122,8 @@ public class RechnungControl extends DruckMailControl
 
   private TextInput personenart;
 
+  private TextInput zahlungsweg;
+
   public enum TYP
   {
     RECHNUNG, MAHNUNG
@@ -148,6 +151,11 @@ public class RechnungControl extends DruckMailControl
     rechnungList.addColumn("Mitglied", "mitglied");
     rechnungList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    rechnungList.addColumn("Ist", "ist",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    rechnungList.addColumn("Differenz", "differenz",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    rechnungList.addColumn("Zahlungsweg", "zahlungsweg", new ZahlungswegFormatter());
 
     rechnungList.setRememberColWidths(true);
     rechnungList.setContextMenu(new RechnungMenu());
@@ -181,6 +189,14 @@ public class RechnungControl extends DruckMailControl
         }
       }
     });
+    rechnungTree.addColumn("", "name");
+    rechnungTree.addColumn("Zahlungsweg", "zahlungsweg");
+    rechnungTree.addColumn("Soll", "soll",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    rechnungTree.addColumn("Ist", "ist",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    rechnungTree.addColumn("Differenz", "differenz",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     return rechnungTree;
   }
 
@@ -276,12 +292,11 @@ public class RechnungControl extends DruckMailControl
           new Object[] { datumbis.getValue() });
     }
 
-    // Wenn Filtern nach Name, Mail oder "Ohne Abbucher" JOIN mitglied
+    // Wenn Filtern nach Name oder Mail JOIN mitglied
     if ((suchname != null && suchname.getValue() != null
         && !((String) suchname.getValue()).isEmpty())
         || (mailAuswahl != null
-            && (Integer) mailAuswahl.getValue() != MailAuswertungInput.ALLE)
-        || (ohneabbucher != null && (Boolean) ohneabbucher.getValue()))
+            && (Integer) mailAuswahl.getValue() != MailAuswertungInput.ALLE))
     {
       rechnungenIt.join("mitglied");
       rechnungenIt.addFilter("mitglied.id = rechnung.mitglied");
@@ -292,8 +307,8 @@ public class RechnungControl extends DruckMailControl
     {
       rechnungenIt.addFilter(
           "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?))",
-          new Object[] { ((String) suchname.getValue()).toLowerCase() + "%",
-              ((String) suchname.getValue()).toLowerCase() + "%" });
+          new Object[] { "%" + ((String) suchname.getValue()).toLowerCase() + "%",
+              "%" + ((String) suchname.getValue()).toLowerCase() + "%" });
     }
 
     if (mailAuswahl != null
@@ -309,7 +324,7 @@ public class RechnungControl extends DruckMailControl
 
     if (ohneabbucher != null && (Boolean) ohneabbucher.getValue())
     {
-      rechnungenIt.addFilter("mitglied.zahlungsweg <> ?",
+      rechnungenIt.addFilter("rechnung.zahlungsweg <> ?",
           Zahlungsweg.BASISLASTSCHRIFT);
     }
 
@@ -410,8 +425,10 @@ public class RechnungControl extends DruckMailControl
             GenericIterator it2 = sp1.getChildren();
             while (it2.hasNext())
             {
-              RechnungNode re = (RechnungNode) it2.next();
-              betrag += re.getBuchung().getBetrag();
+              RechnungNode rn = (RechnungNode) it2.next();
+              betrag += rn.getBuchung().getBetrag();
+              if(rechnung.getZahlungsweg() == null)
+            	  rechnung.setZahlungsweg(rn.getBuchung().getZahlungsweg());
             }
             rechnung.setBetrag(betrag);
             rechnung.store();
@@ -787,5 +804,18 @@ public class RechnungControl extends DruckMailControl
     buchungList.setRememberOrder(true);
     buchungList.addFeature(new FeatureSummary());
     return buchungList;
+  }
+
+  public TextInput getZahlungsweg() throws RemoteException
+  {
+    if (zahlungsweg != null)
+    {
+      return zahlungsweg;
+    }
+
+    zahlungsweg = new TextInput(getRechnung().getZahlungsweg().getText());
+    zahlungsweg.setName("Zahlungsweg");
+    zahlungsweg.disable();
+    return zahlungsweg;
   }
 }
