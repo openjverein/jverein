@@ -53,7 +53,7 @@ public class SollbuchungListeView extends AbstractView
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
-    right.addInput(control.getMailauswahl());
+    right.addLabelPair("Zahler Mail", control.getMailauswahl());
 
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());
