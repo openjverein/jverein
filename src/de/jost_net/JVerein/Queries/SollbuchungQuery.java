@@ -350,7 +350,7 @@ public class SollbuchungQuery
     {
       sql.append(" WHERE ").append(where);
     }
-    sql.append(" GROUP BY mitgliedskonto.id");
+    sql.append(" GROUP BY mitgliedskonto.id, mitgliedskonto.betrag");
 
     if (DIFFERENZ.FEHLBETRAG == diff)
     {
