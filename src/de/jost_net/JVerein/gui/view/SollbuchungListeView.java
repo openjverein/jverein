@@ -55,6 +55,10 @@ public class SollbuchungListeView extends AbstractView
     right.addInput(control.getMailauswahl());
 
     ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(
+        control.getZurueckButton(control.getDatumvon(), control.getDatumbis()));
+    fbuttons.addButton(
+        control.getVorButton(control.getDatumvon(), control.getDatumbis()));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);

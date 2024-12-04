@@ -70,8 +70,16 @@ public class KursteilnehmerSucheView extends AbstractView
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getAbbuchungsdatumvon());
     right.addInput(control.getAbbuchungsdatumbis());
-    
+
     ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getZurueckButton(control.getEingabedatumvon(),
+        control.getEingabedatumbis()));
+    fbuttons.addButton(control.getVorButton(control.getEingabedatumvon(),
+        control.getEingabedatumbis()));
+    fbuttons.addButton(control.getZurueckButton(control.getAbbuchungsdatumvon(),
+        control.getAbbuchungsdatumbis()));
+    fbuttons.addButton(control.getVorButton(control.getAbbuchungsdatumvon(),
+        control.getAbbuchungsdatumbis()));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
