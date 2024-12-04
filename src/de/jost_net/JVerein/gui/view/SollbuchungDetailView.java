@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -30,21 +30,18 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 public class SollbuchungDetailView extends AbstractView
 {
 
-  private int typ;
-
-  public SollbuchungDetailView(int typ)
-  {
-    this.typ = typ;
-  }
-
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Buchung");
+    GUI.getView().setTitle("Sollbuchung");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
-    LabelGroup grBuchung = new LabelGroup(getParent(),
-        (typ == MitgliedskontoNode.SOLL ? "Soll" : "Ist") + "buchung");
+    Mitgliedskonto mkto = control.getMitgliedskonto();
+    if (mkto.isNewObject())
+    {
+      control.setEditable();
+    }
+    LabelGroup grBuchung = new LabelGroup(getParent(), "Sollbuchung");
     grBuchung.addLabelPair("Mitglied", control.getMitglied());
     grBuchung.addLabelPair("Zahler", control.getZahler());
     grBuchung.addLabelPair("Datum", control.getDatum());
@@ -63,19 +60,20 @@ public class SollbuchungDetailView extends AbstractView
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
     
-    boolean hasRechnung = control.hasRechnung();
-    Button save = new Button("Speichern", new Action()
+    if (mkto.isNewObject())
     {
-
-      @Override
-      public void handleAction(Object context)
+      Button save = new Button("Speichern", new Action()
       {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
-    save.setEnabled(!hasRechnung);
-    buttons.addButton(save);
-    
+
+        @Override
+        public void handleAction(Object context)
+        {
+          control.handleStore();
+        }
+      }, null, true, "document-save.png");
+
+      buttons.addButton(save);
+    }
     
     buttons.paint(this.getParent());
   }

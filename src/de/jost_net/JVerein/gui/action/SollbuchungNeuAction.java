@@ -64,6 +64,6 @@ public class SollbuchungNeuAction implements Action
       throw new ApplicationException(
           "Fehler bei der Erzeugung einer Sollbuchung");
     }
-    GUI.startView(new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
+    GUI.startView(new SollbuchungDetailView(), mk);
   }
 }

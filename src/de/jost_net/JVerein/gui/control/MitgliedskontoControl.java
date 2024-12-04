@@ -130,6 +130,8 @@ public class MitgliedskontoControl extends DruckMailControl
   private Mitgliedskonto mkto;
 
   private TreePart mitgliedskontoTree;
+  
+  private boolean editable = false;
 
   // SollbuchungListeView, SollbuchungAuswahldialog
   private TablePart mitgliedskontoList;
@@ -153,6 +155,11 @@ public class MitgliedskontoControl extends DruckMailControl
     super(view);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
+  }
+  
+  public void setEditable()
+  {
+    editable = true;
   }
 
   public Mitgliedskonto getMitgliedskonto()
@@ -200,6 +207,7 @@ public class MitgliedskontoControl extends DruckMailControl
       }
     });
     this.datum.setMandatory(true);
+    this.datum.setEnabled(editable);
     return datum;
   }
 
@@ -217,6 +225,7 @@ public class MitgliedskontoControl extends DruckMailControl
     zweck1 = new TextAreaInput(z, 500);
     zweck1.setHeight(50);
     zweck1.setMandatory(true);
+    zweck1.setEnabled(editable);
     return zweck1;
   }
 
@@ -242,6 +251,7 @@ public class MitgliedskontoControl extends DruckMailControl
             ? new Zahlungsweg(Einstellungen.getEinstellung().getZahlungsweg())
             : new Zahlungsweg(getMitgliedskonto().getZahlungsweg()));
     zahlungsweg.setName("Zahlungsweg");
+    zahlungsweg.setEnabled(editable);;
     return zahlungsweg;
   }
 
@@ -257,6 +267,7 @@ public class MitgliedskontoControl extends DruckMailControl
       b = getMitgliedskonto().getBetrag();
     }
     betrag = new DecimalInput(b, Einstellungen.DECIMALFORMAT);
+    betrag.setEnabled(editable);
     return betrag;
   }
 
@@ -287,6 +298,7 @@ public class MitgliedskontoControl extends DruckMailControl
         }
       }
     });
+    buchungsart.setEnabled(editable);
     return buchungsart;
   }
 
@@ -298,6 +310,7 @@ public class MitgliedskontoControl extends DruckMailControl
     }
     buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(
         buchungsklasse, getMitgliedskonto().getBuchungsklasse());
+    buchungsklasse.setEnabled(editable);
     return buchungsklasse;
   }
 
@@ -462,7 +475,7 @@ public class MitgliedskontoControl extends DruckMailControl
                     .getDBService()
                     .createObject(Mitgliedskonto.class, mkn.getID());
                 GUI.startView(
-                    new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
+                    new SollbuchungDetailView(), mk);
               }
             }
             catch (RemoteException e)
@@ -900,6 +913,7 @@ public class MitgliedskontoControl extends DruckMailControl
         getMitgliedskonto().getZahler(),
         Einstellungen.getEinstellung().getMitgliedAuswahl());
     zahler.setMandatory(true);
+    zahler.setEnabled(editable);
     return zahler;
   }
 
@@ -966,17 +980,6 @@ public class MitgliedskontoControl extends DruckMailControl
         e.printStackTrace();
       }
     }
-  }
-
-  public boolean hasRechnung() throws RemoteException
-  {
-    if (getMitgliedskonto().getRechnung() != null)
-    {
-      GUI.getStatusBar().setErrorText(
-          "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
-      return true;
-    }
-    return false;
   }
 
   public Object[] getCVSExportGrenzen() throws RemoteException
