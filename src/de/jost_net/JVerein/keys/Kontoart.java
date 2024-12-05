@@ -21,7 +21,8 @@ public enum KontoArt
 
   GELD(1, "Geldkonto"),
   ANLAGE(2, "Anlagenkonto"),
-  RUECKLAGE(3, "Rücklagenkonto");
+  LIMIT(100, "-- Limit --"),
+  RUECKLAGE(101, "Rücklagenkonto");
 
   private final String text;
 
