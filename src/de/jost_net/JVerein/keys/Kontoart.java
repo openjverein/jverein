@@ -16,31 +16,19 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
-/**
- * Suchspendenart
- */
-public enum SuchSpendenart
+public enum KontoArt
 {
 
-<<<<<<< HEAD:src/de/jost_net/JVerein/keys/SuchSpendenart.java
-  ALLE(1, "Alle"),
-  GELDSPENDE(2, "Geldspende"),
-  SACHSPENDE(3, "Sachspende"),
-  ERSTATTUNGSVERZICHT(4, "Geldspende mit Erstattungsverzicht"),
-  GELDSPENDE_ECHT(5, "Geldspende ohne Erstattungsverzicht"),
-  SACHSPENDE_ERSTATTUNGSVERZICHT(6, "Sachspende oder Geldspende mit Erstattungsverzicht");
-=======
   GELD(1, "Geldkonto"),
   ANLAGE(2, "Anlagenkonto"),
   LIMIT(100, "-- Limit --"),
   RUECKLAGE(101, "Rücklagenkonto");
->>>>>>> 5cc29b7b (Endstand):src/de/jost_net/JVerein/keys/KontoArt.java
 
   private final String text;
 
   private final int key;
-
-  SuchSpendenart(int key, String text)
+  
+  KontoArt(int key, String text)
   {
     this.key = key;
     this.text = text;
@@ -56,13 +44,13 @@ public enum SuchSpendenart
     return text;
   }
 
-  public static SuchSpendenart getByKey(int key)
+  public static KontoArt getByKey(int key)
   {
-    for (SuchSpendenart sb : SuchSpendenart.values())
+    for (KontoArt art : KontoArt.values())
     {
-      if (sb.getKey() == key)
+      if (art.getKey() == key)
       {
-        return sb;
+        return art;
       }
     }
     return null;
