@@ -43,6 +43,11 @@ public class Update0452 extends AbstractDDLUpdate
     execute("update konto set kontoart = 1 where anlagenkonto IS NULL");
     execute("update konto set kontoart = 1 where anlagenkonto IS FALSE");
     execute("update konto set kontoart = 2 where anlagenkonto IS TRUE");
+<<<<<<< HEAD
 >>>>>>> 53604250 (Switch to Auswahlliste)
+=======
+    
+    execute(dropColumn("konto", "anlagenkonto"));
+>>>>>>> 5cce65b6 (Endstand)
   }
 }

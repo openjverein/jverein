@@ -294,7 +294,11 @@ public class KontoControl extends AbstractControl
       String sql = "SELECT DISTINCT konto.id from konto "
           + "WHERE (kontoart = ?) ";
       boolean exist = (boolean) service.execute(sql,
+<<<<<<< HEAD
           new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
+=======
+          new Object[] { KontoArt.ANLAGE.getKey() }, new ResultSetExtractor()
+>>>>>>> 5cce65b6 (Endstand)
       {
         @Override
         public Object extract(ResultSet rs)
@@ -307,7 +311,11 @@ public class KontoControl extends AbstractControl
           return false;
         }
       });
+<<<<<<< HEAD
       if (!exist && getKonto().getKontoArt() == Kontoart.ANLAGE)
+=======
+      if (!exist && getKonto().getKontoArt() == KontoArt.ANLAGE)
+>>>>>>> 5cce65b6 (Endstand)
       {
         SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
         d.setTitle("Erstes Anlagenkonto");
@@ -580,6 +588,7 @@ public class KontoControl extends AbstractControl
       return kontoart;
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     Kontoart art = Kontoart.GELD;
     if (!getKonto().isNewObject())
     {
@@ -595,24 +604,21 @@ public class KontoControl extends AbstractControl
         + "WHERE (kontoart = ?) ";
     boolean exist = (boolean) service.execute(sql,
         new Object[] { KontoArt.ANLAGE.getKey() }, new ResultSetExtractor()
+=======
+    KontoArt art = KontoArt.GELD;
+    if (!getKonto().isNewObject())
+>>>>>>> 5cce65b6 (Endstand)
     {
-      @Override
-      public Object extract(ResultSet rs)
-          throws RemoteException, SQLException
-      {
-        if (rs.next())
-        {
-          return true;
-        }
-        return false;
-      }
-    });
-    if (!exist)
-    {
-      kontoart.setName(" *Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
+      art = getKonto().getKontoArt();
     }
+<<<<<<< HEAD
    
 >>>>>>> 53604250 (Switch to Auswahlliste)
+=======
+    ArrayList<KontoArt> values = new ArrayList<KontoArt>(Arrays.asList(KontoArt.values()));
+    values.remove(KontoArt.LIMIT);
+    kontoart = new SelectInput(values, art);   
+>>>>>>> 5cce65b6 (Endstand)
     kontoart.addListener(new Listener()
     {
 

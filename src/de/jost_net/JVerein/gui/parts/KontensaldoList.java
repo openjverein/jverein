@@ -124,7 +124,11 @@ public class KontensaldoList extends TablePart implements Part
     Konto k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
         null);
     DBIterator<Konto> konten = k.getKontenVonBis(von, bis);
+<<<<<<< HEAD
     konten.addFilter("kontoart < ?", Kontoart.LIMIT.getKey());
+=======
+    konten.addFilter("kontoart < ?", KontoArt.LIMIT.getKey());
+>>>>>>> 5cce65b6 (Endstand)
     double anfangsbestand = 0;
     double einnahmen = 0;
     double ausgaben = 0;
@@ -194,7 +198,11 @@ public class KontensaldoList extends TablePart implements Part
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
         null);
     konten = k.getKontenVonBis(von, bis);
+<<<<<<< HEAD
     konten.addFilter("kontoart > ?", Kontoart.LIMIT.getKey());
+=======
+    konten.addFilter("kontoart > ?", KontoArt.LIMIT.getKey());
+>>>>>>> 5cce65b6 (Endstand)
     if (von != null && konten.hasNext())
     {
       SaldoZeile sz = null;
