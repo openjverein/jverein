@@ -27,7 +27,11 @@ import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
 import de.jost_net.JVerein.gui.parts.KontensaldoList;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.io.SaldoZeile;
+<<<<<<< HEAD
 import de.jost_net.JVerein.keys.Kontoart;
+=======
+import de.jost_net.JVerein.keys.KontoArt;
+>>>>>>> 53604250 (Switch to Auswahlliste)
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
@@ -311,7 +315,11 @@ public class JahresabschlussControl extends AbstractControl
       DBService service = Einstellungen.getDBService();
       DBIterator<Konto> kontenIt = service.createList(Konto.class);
       kontenIt.addFilter("kontoart = ?",
+<<<<<<< HEAD
           new Object[] { Kontoart.ANLAGE.getKey() });
+=======
+          new Object[] { KontoArt.ANLAGE.getKey() });
+>>>>>>> 53604250 (Switch to Auswahlliste)
       kontenIt.addFilter("(eroeffnung IS NULL OR eroeffnung <= ?)",
           new Object[] { new java.sql.Date(bisgj.getTime()) });
       kontenIt.addFilter("(aufloesung IS NULL OR aufloesung >= ?)",

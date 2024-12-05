@@ -33,7 +33,11 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.AfaMode;
+<<<<<<< HEAD
 import de.jost_net.JVerein.keys.Kontoart;
+=======
+import de.jost_net.JVerein.keys.KontoArt;
+>>>>>>> 53604250 (Switch to Auswahlliste)
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -156,7 +160,11 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       konto.setNummer((String) getNummer().getValue());
       konto.setBezeichnung((String) getBezeichnung().getValue());
       konto.setEroeffnung(buchung.getDatum());
+<<<<<<< HEAD
       konto.setKontoArt(Kontoart.ANLAGE);
+=======
+      konto.setKontoArt(KontoArt.ANLAGE);
+>>>>>>> 53604250 (Switch to Auswahlliste)
       konto.setHibiscusId(-1);
       konto.setAnlagenartId(getSelectedAnlagenartId());
       konto.setAnlagenklasseId(getSelectedAnlagenklasseId());
@@ -315,7 +323,11 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     String sql = "SELECT DISTINCT konto.id from konto "
         + "WHERE (kontoart = ?) ";
     boolean exist = (boolean) service.execute(sql,
+<<<<<<< HEAD
         new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
+=======
+        new Object[] { KontoArt.ANLAGE.getKey() }, new ResultSetExtractor()
+>>>>>>> 53604250 (Switch to Auswahlliste)
     {
       @Override
       public Object extract(ResultSet rs)

@@ -27,7 +27,10 @@ import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
+<<<<<<< HEAD
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
+=======
+>>>>>>> 53604250 (Switch to Auswahlliste)
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;

@@ -37,7 +37,11 @@ import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+<<<<<<< HEAD
 import de.jost_net.JVerein.keys.Kontoart;
+=======
+import de.jost_net.JVerein.keys.KontoArt;
+>>>>>>> 53604250 (Switch to Auswahlliste)
 import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -186,7 +190,11 @@ public class KontoControl extends AbstractControl
     }
     anschaffung = new DateInput(getKonto().getAnschaffung(),
         new JVDateFormatTTMMJJJJ());
+<<<<<<< HEAD
     if (((Kontoart) getKontoArt().getValue()) != Kontoart.ANLAGE)
+=======
+    if (((KontoArt) getKontoArt().getValue()) != KontoArt.ANLAGE)
+>>>>>>> 53604250 (Switch to Auswahlliste)
     {
       anschaffung.setValue(null);
       anschaffung.disable();
@@ -252,7 +260,11 @@ public class KontoControl extends AbstractControl
       k.setAufloesung((Date) getAufloesung().getValue());
       k.setBuchungsartId(getSelectedBuchungsArtId());
       k.setKommentar((String) getKommentar().getValue());
+<<<<<<< HEAD
       k.setKontoArt((Kontoart) getKontoArt().getValue());
+=======
+      k.setKontoArt((KontoArt) getKontoArt().getValue());
+>>>>>>> 53604250 (Switch to Auswahlliste)
       if (getHibiscusId().getValue() == null)
       {
         k.setHibiscusId(-1);
@@ -346,7 +358,11 @@ public class KontoControl extends AbstractControl
         }
         if (o instanceof Integer)
         {
+<<<<<<< HEAD
           return Kontoart.getByKey((Integer) o).getText();
+=======
+          return KontoArt.getByKey((Integer) o).getText();
+>>>>>>> 53604250 (Switch to Auswahlliste)
         }
         return "ungültig";
       }
@@ -563,6 +579,7 @@ public class KontoControl extends AbstractControl
     {
       return kontoart;
     }
+<<<<<<< HEAD
     Kontoart art = Kontoart.GELD;
     if (!getKonto().isNewObject())
     {
@@ -571,6 +588,31 @@ public class KontoControl extends AbstractControl
     ArrayList<Kontoart> values = new ArrayList<Kontoart>(Arrays.asList(Kontoart.values()));
     values.remove(Kontoart.LIMIT);
     kontoart = new SelectInput(values, art);   
+=======
+    kontoart = new SelectInput(KontoArt.values(), getKonto().getKontoArt());
+    DBService service = Einstellungen.getDBService();
+    String sql = "SELECT DISTINCT konto.id from konto "
+        + "WHERE (kontoart = ?) ";
+    boolean exist = (boolean) service.execute(sql,
+        new Object[] { KontoArt.ANLAGE.getKey() }, new ResultSetExtractor()
+    {
+      @Override
+      public Object extract(ResultSet rs)
+          throws RemoteException, SQLException
+      {
+        if (rs.next())
+        {
+          return true;
+        }
+        return false;
+      }
+    });
+    if (!exist)
+    {
+      kontoart.setName(" *Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
+    }
+   
+>>>>>>> 53604250 (Switch to Auswahlliste)
     kontoart.addListener(new Listener()
     {
 
@@ -594,7 +636,11 @@ public class KontoControl extends AbstractControl
         getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART,
         Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
     anlagenart.addListener(new AnlagenartListener());
+<<<<<<< HEAD
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
+=======
+    if (getKontoArt().getValue() == KontoArt.ANLAGE)
+>>>>>>> 53604250 (Switch to Auswahlliste)
     {
       anlagenart.setMandatory(true);
     }
@@ -638,7 +684,11 @@ public class KontoControl extends AbstractControl
         getKonto().getAnlagenklasse());
     anlagenklasse.setAttribute(getBuchungartAttribute());
     anlagenklasse.setPleaseChoose("Bitte auswählen");
+<<<<<<< HEAD
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
+=======
+    if (getKontoArt().getValue() == KontoArt.ANLAGE)
+>>>>>>> 53604250 (Switch to Auswahlliste)
     {
       anlagenklasse.setMandatory(true);
     }
@@ -679,7 +729,11 @@ public class KontoControl extends AbstractControl
         getKonto().getAfaart(), buchungsarttyp.AFAART,
         Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
     afaart.addListener(new AnlagenartListener());
+<<<<<<< HEAD
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
+=======
+    if (getKontoArt().getValue() == KontoArt.ANLAGE)
+>>>>>>> 53604250 (Switch to Auswahlliste)
     {
       afaart.setMandatory(true);
     }
@@ -734,7 +788,11 @@ public class KontoControl extends AbstractControl
         }
       }
      });
+<<<<<<< HEAD
     if (getKontoArt().getValue() != Kontoart.ANLAGE)
+=======
+    if (getKontoArt().getValue() != KontoArt.ANLAGE)
+>>>>>>> 53604250 (Switch to Auswahlliste)
     {
       betrag.setValue(null);
       betrag.disable();
@@ -756,7 +814,11 @@ public class KontoControl extends AbstractControl
     {
       nutzungsdauer = new IntegerNullInput();
     }
+<<<<<<< HEAD
     if (getKontoArt().getValue() != Kontoart.ANLAGE)
+=======
+    if (getKontoArt().getValue() != KontoArt.ANLAGE)
+>>>>>>> 53604250 (Switch to Auswahlliste)
     {
       nutzungsdauer.setValue(null);
       nutzungsdauer.disable();
@@ -783,7 +845,11 @@ public class KontoControl extends AbstractControl
     }
     afastart = new DecimalInput(getKonto().getAfaStart(),
         Einstellungen.DECIMALFORMAT);
+<<<<<<< HEAD
     if (getKontoArt().getValue() != Kontoart.ANLAGE ||
+=======
+    if (getKontoArt().getValue() != KontoArt.ANLAGE ||
+>>>>>>> 53604250 (Switch to Auswahlliste)
         getAfaMode().getValue() == null ||
         ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
     {
@@ -806,7 +872,11 @@ public class KontoControl extends AbstractControl
     }
     afadauer = new DecimalInput(getKonto().getAfaDauer(),
         Einstellungen.DECIMALFORMAT);
+<<<<<<< HEAD
     if (getKontoArt().getValue() != Kontoart.ANLAGE ||
+=======
+    if (getKontoArt().getValue() != KontoArt.ANLAGE ||
+>>>>>>> 53604250 (Switch to Auswahlliste)
         getAfaMode().getValue() == null ||
         ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
     {
@@ -829,7 +899,11 @@ public class KontoControl extends AbstractControl
     }
     afarestwert = new DecimalInput(getKonto().getAfaRestwert(),
         Einstellungen.DECIMALFORMAT);
+<<<<<<< HEAD
     if (getKontoArt().getValue() != Kontoart.ANLAGE)
+=======
+    if (getKontoArt().getValue() != KontoArt.ANLAGE)
+>>>>>>> 53604250 (Switch to Auswahlliste)
     {
       afarestwert.setValue(null);
       afarestwert.disable();
@@ -881,7 +955,11 @@ public class KontoControl extends AbstractControl
         }
       }
     });
+<<<<<<< HEAD
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
+=======
+    if (getKontoArt().getValue() == KontoArt.ANLAGE)
+>>>>>>> 53604250 (Switch to Auswahlliste)
     {
       afamode.setMandatory(true);
     }
@@ -974,7 +1052,11 @@ public class KontoControl extends AbstractControl
   {
     try
     {
+<<<<<<< HEAD
       if (getKontoArt().getValue() == Kontoart.ANLAGE)
+=======
+      if (getKontoArt().getValue() == KontoArt.ANLAGE)
+>>>>>>> 53604250 (Switch to Auswahlliste)
       {
         getAnlagenklasse().enable();
         getAnlagenklasse().setMandatory(true);
@@ -1052,7 +1134,11 @@ public class KontoControl extends AbstractControl
     {
       if (getBetrag().getValue() != null)
         autobutton.setEnabled(false);
+<<<<<<< HEAD
       if (getKontoArt().getValue() != Kontoart.ANLAGE)
+=======
+      if (getKontoArt().getValue() != KontoArt.ANLAGE)
+>>>>>>> 53604250 (Switch to Auswahlliste)
       {
         autobutton.setEnabled(false);
       }
@@ -1081,7 +1167,11 @@ public class KontoControl extends AbstractControl
     }, null, true, "view-refresh.png");
     try
     {
+<<<<<<< HEAD
       if (getKontoArt().getValue() != Kontoart.ANLAGE ||
+=======
+      if (getKontoArt().getValue() != KontoArt.ANLAGE ||
+>>>>>>> 53604250 (Switch to Auswahlliste)
           getAfaMode().getValue() == null ||
           ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
       {

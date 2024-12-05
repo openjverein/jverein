@@ -30,10 +30,19 @@ public class Update0452 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
+<<<<<<< HEAD
     execute("update mitgliedskonto set betrag = 0 where betrag IS NULL");
     
     Column betrag = new Column("betrag", COLTYPE.DOUBLE, 0, null, true,
         false);
     execute(alterColumnNotNull("mitgliedskonto", betrag));
+=======
+    execute(addColumn("konto", new Column("kontoart",
+        COLTYPE.INTEGER, 0, null, false, false)));
+
+    execute("update konto set kontoart = 1 where anlagenkonto IS NULL");
+    execute("update konto set kontoart = 1 where anlagenkonto IS FALSE");
+    execute("update konto set kontoart = 2 where anlagenkonto IS TRUE");
+>>>>>>> 53604250 (Switch to Auswahlliste)
   }
 }

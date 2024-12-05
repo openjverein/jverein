@@ -19,7 +19,11 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+<<<<<<< HEAD
 import de.jost_net.JVerein.keys.Kontoart;
+=======
+import de.jost_net.JVerein.keys.KontoArt;
+>>>>>>> 53604250 (Switch to Auswahlliste)
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
@@ -52,9 +56,15 @@ public interface Konto extends DBObject
 
   public void setBuchungsartId(Long buchungsartId) throws RemoteException;
   
+<<<<<<< HEAD
   public Kontoart getKontoArt() throws RemoteException;
 
   public void setKontoArt(Kontoart kontoart) throws RemoteException;
+=======
+  public KontoArt getKontoArt() throws RemoteException;
+
+  public void setKontoArt(KontoArt kontoart) throws RemoteException;
+>>>>>>> 53604250 (Switch to Auswahlliste)
 
   public Buchungsart getAnlagenart() throws RemoteException;
 

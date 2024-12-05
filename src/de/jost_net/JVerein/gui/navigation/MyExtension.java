@@ -93,7 +93,11 @@ import de.jost_net.JVerein.gui.action.WiedervorlageListeAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanungListAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeListeAction;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+<<<<<<< HEAD
 import de.jost_net.JVerein.keys.Kontoart;
+=======
+import de.jost_net.JVerein.keys.KontoArt;
+>>>>>>> 53604250 (Switch to Auswahlliste)
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -119,10 +123,17 @@ public class MyExtension implements Extension
       try
       {
         DBService service = Einstellungen.getDBService();
+<<<<<<< HEAD
         String sql = "SELECT konto.id from konto "
             + "WHERE (kontoart = ?) ";
         anlagenkonto = (boolean) service.execute(sql,
             new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
+=======
+        String sql = "SELECT konto.anlagenkonto from konto "
+            + "WHERE (kontoart = ?) ";
+        anlagenkonto = (boolean) service.execute(sql,
+            new Object[] { KontoArt.ANLAGE.getKey() }, new ResultSetExtractor()
+>>>>>>> 53604250 (Switch to Auswahlliste)
         {
           @Override
           public Object extract(ResultSet rs)
