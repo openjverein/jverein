@@ -68,7 +68,14 @@ public class KontensaldoList extends TablePart implements Part
 
       if (saldoList == null)
       {
-        saldoList = new TablePart(zeile, null);
+        saldoList = new TablePart(zeile, null)
+        {
+          @Override
+          protected void orderBy(int index)
+          {
+            return;
+          }
+        };
         saldoList.addColumn("Kontonummer", "kontonummer", null, false,
             Column.ALIGN_RIGHT);
         saldoList.addColumn("Bezeichnung", "kontobezeichnung");
@@ -113,6 +120,7 @@ public class KontensaldoList extends TablePart implements Part
     Konto k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
         null);
     DBIterator<Konto> konten = k.getKontenVonBis(von, bis);
+    konten.addFilter("kontoart < ?", KontoArt.LIMIT.getKey());
     double anfangsbestand = 0;
     double einnahmen = 0;
     double ausgaben = 0;
@@ -174,6 +182,33 @@ public class KontensaldoList extends TablePart implements Part
     k.setBezeichnung("Überschuss/Verlust(-)");
     zeile.add(new SaldoZeile(k, null, null, null, null, jahressaldo));
     
+    // Konten ohne Berücksichtigung im Saldo
+    k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
+        null);
+    konten = k.getKontenVonBis(von, bis);
+    konten.addFilter("kontoart > ?", KontoArt.LIMIT.getKey());
+    if (von != null && konten.hasNext())
+    {
+      SaldoZeile sz = null;
+      // Leerzeile als Trenner
+      k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
+      k.setNummer("");
+      k.setBezeichnung("");
+      zeile.add(new SaldoZeile(k, null, null, null, null, null));
+      // Überschrift
+      k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
+      k.setNummer("");
+      k.setBezeichnung("Konten ohne Berücksichtigung im Saldo:");
+      zeile.add(new SaldoZeile(k, null, null, null, null, null));
+      // Jetzt die Konten
+      while (konten.hasNext())
+      {
+        konto = konten.next();
+        sz = new SaldoZeile(von, bis, konto);
+        zeile.add(sz);
+      }
+    }
+
     // Leerzeile am Ende wegen Scrollbar
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
     k.setNummer("");
