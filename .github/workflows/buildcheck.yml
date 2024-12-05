@@ -1,0 +1,64 @@
+# This workflow will build a Java project with Ant
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-ant
+
+name: openjverein build check
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+    paths:
+      - 'plugin.xml'
+      - 'build/**'
+      - 'lib/**'
+      - 'lib.src/**'
+      - 'src/**'
+jobs:
+  build:
+    name: Try to compile the current pull request
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up JDK for x64
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        architecture: x64
+
+    - name: Check out jameica
+      uses: actions/checkout@v4
+      with:
+        repository: willuhn/jameica
+        path: jameica
+
+    - name: Build jameica nightly
+      working-directory: ./
+      run: |
+        sed -i -r 's/deprecation="(true|on)"/deprecation="off"/g' jameica/build/build.xml
+        ant -noinput -quiet -buildfile jameica/build/build.xml jar
+        find jameica/releases/ -type f -name jameica.jar -exec cp {} jameica/releases/jameica-lib.jar \;
+
+    - name: Check out hibiscus
+      uses: actions/checkout@v4
+      with:
+        repository: willuhn/hibiscus
+        path: hibiscus
+
+    - name: Build hibiscus nightly
+      working-directory: ./
+      run: |
+        sed -i -r 's/deprecation="(true|on)"/deprecation="off"/g' hibiscus/build/build.xml
+        ant -noinput -quiet -buildfile hibiscus/build/build.xml jar
+        find hibiscus/releases/ -type f -name hibiscus.jar -exec cp {} hibiscus/releases/hibiscus-lib.jar \;
+
+    - name: Checkout openjverein
+      id: openjverein_checkout
+      uses: actions/checkout@v4
+      with:
+        path: jverein
+
+    - name: Build openjverein plugin
+      id: buildtest
+      working-directory: ./
+      run: ant -noinput -buildfile jverein/build/build.xml compile
