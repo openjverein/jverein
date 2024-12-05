@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -56,6 +57,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.dialogs.SimpleDialog;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -275,6 +277,37 @@ public class KontoControl extends AbstractControl
       else
       {
         k.setAfaMode(Integer.valueOf(((AfaMode) getAfaMode().getValue()).getKey()));
+      }
+      DBService service = Einstellungen.getDBService();
+      String sql = "SELECT DISTINCT konto.id from konto "
+          + "WHERE (kontoart = ?) ";
+      boolean exist = (boolean) service.execute(sql,
+          new Object[] { KontoArt.ANLAGE.getKey() }, new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs)
+            throws RemoteException, SQLException
+        {
+          if (rs.next())
+          {
+            return true;
+          }
+          return false;
+        }
+      });
+      if (!exist && getKonto().getKontoArt() == KontoArt.ANLAGE)
+      {
+        SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
+        d.setTitle("Erstes Anlagenkonto");
+        d.setText("Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
+        try
+        {
+          d.open();
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler", e);
+        }
       }
       k.store();
       GUI.getStatusBar().setSuccessText("Konto gespeichert");
@@ -530,29 +563,14 @@ public class KontoControl extends AbstractControl
     {
       return kontoart;
     }
-    kontoart = new SelectInput(KontoArt.values(), getKonto().getKontoArt());
-    DBService service = Einstellungen.getDBService();
-    String sql = "SELECT DISTINCT konto.id from konto "
-        + "WHERE (kontoart = ?) ";
-    boolean exist = (boolean) service.execute(sql,
-        new Object[] { KontoArt.ANLAGE.getKey() }, new ResultSetExtractor()
+    KontoArt art = KontoArt.GELD;
+    if (!getKonto().isNewObject())
     {
-      @Override
-      public Object extract(ResultSet rs)
-          throws RemoteException, SQLException
-      {
-        if (rs.next())
-        {
-          return true;
-        }
-        return false;
-      }
-    });
-    if (!exist)
-    {
-      kontoart.setName(" *Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
+      art = getKonto().getKontoArt();
     }
-   
+    ArrayList<KontoArt> values = new ArrayList<KontoArt>(Arrays.asList(KontoArt.values()));
+    values.remove(KontoArt.LIMIT);
+    kontoart = new SelectInput(values, art);   
     kontoart.addListener(new Listener()
     {
 
