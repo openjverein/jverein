@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.dialogs.KontoAuswahlDialog;
 import de.jost_net.JVerein.gui.view.AnfangsbestandView;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
@@ -49,7 +49,7 @@ public class AnfangsbestandNeuAction implements Action
       else
       {
         KontoAuswahlDialog d = new KontoAuswahlDialog(
-            KontoAuswahlDialog.POSITION_CENTER, false, false, true, Kontenart.ALLE);
+            KontoAuswahlDialog.POSITION_CENTER, false, false, true, Kontenfilter.ALLE);
         try
         {
           context = d.open();

@@ -30,13 +30,13 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.KontoAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
-import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.KontoArt;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -59,7 +59,6 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
-import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -96,7 +95,7 @@ public class KontoControl extends AbstractControl
   
   private SelectInput buchungsart;
   
-  private CheckboxInput anlagenkonto;
+  private SelectInput kontoart;
   
   private int unterdrueckunglaenge = 0;
   
@@ -185,7 +184,7 @@ public class KontoControl extends AbstractControl
     }
     anschaffung = new DateInput(getKonto().getAnschaffung(),
         new JVDateFormatTTMMJJJJ());
-    if (!((boolean) getAnlagenkonto().getValue()))
+    if (((KontoArt) getKontoArt().getValue()) != KontoArt.ANLAGE)
     {
       anschaffung.setValue(null);
       anschaffung.disable();
@@ -251,7 +250,7 @@ public class KontoControl extends AbstractControl
       k.setAufloesung((Date) getAufloesung().getValue());
       k.setBuchungsartId(getSelectedBuchungsArtId());
       k.setKommentar((String) getKommentar().getValue());
-      k.setAnlagenkonto((Boolean) getAnlagenkonto().getValue());
+      k.setKontoArt((KontoArt) getKontoArt().getValue());
       if (getHibiscusId().getValue() == null)
       {
         k.setHibiscusId(-1);
@@ -303,8 +302,22 @@ public class KontoControl extends AbstractControl
     kontenList = new TablePart(konten, new KontoAction());
     kontenList.addColumn("Nummer", "nummer");
     kontenList.addColumn("Bezeichnung", "bezeichnung");
-    kontenList.addColumn("Anlagenkonto", "anlagenkonto", 
-        new JaNeinFormatter());
+    kontenList.addColumn("Kontoart", "kontoart", new Formatter()
+    {
+      @Override
+      public String format(Object o)
+      {
+        if (o == null)
+        {
+          return "";
+        }
+        if (o instanceof Integer)
+        {
+          return KontoArt.getByKey((Integer) o).getText();
+        }
+        return "ungültig";
+      }
+    }, false, Column.ALIGN_LEFT);
     kontenList.addColumn("Hibiscus-Konto", "hibiscusid", new Formatter()
     {
 
@@ -511,18 +524,18 @@ public class KontoControl extends AbstractControl
     }
   }
   
-  public CheckboxInput getAnlagenkonto() throws RemoteException
+  public SelectInput getKontoArt() throws RemoteException
   {
-    if (anlagenkonto != null)
+    if (kontoart != null)
     {
-      return anlagenkonto;
+      return kontoart;
     }
-    anlagenkonto = new CheckboxInput(getKonto().getAnlagenkonto());
+    kontoart = new SelectInput(KontoArt.values(), getKonto().getKontoArt());
     DBService service = Einstellungen.getDBService();
     String sql = "SELECT DISTINCT konto.id from konto "
-        + "WHERE (anlagenkonto = TRUE) ";
+        + "WHERE (kontoart = ?) ";
     boolean exist = (boolean) service.execute(sql,
-        new Object[] { }, new ResultSetExtractor()
+        new Object[] { KontoArt.ANLAGE.getKey() }, new ResultSetExtractor()
     {
       @Override
       public Object extract(ResultSet rs)
@@ -537,10 +550,10 @@ public class KontoControl extends AbstractControl
     });
     if (!exist)
     {
-      anlagenkonto.setName(" *Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
+      kontoart.setName(" *Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
     }
    
-    anlagenkonto.addListener(new Listener()
+    kontoart.addListener(new Listener()
     {
 
       @Override
@@ -549,7 +562,7 @@ public class KontoControl extends AbstractControl
         refreshGui();
       }
     });
-    return anlagenkonto;
+    return kontoart;
   }
   
   
@@ -563,7 +576,7 @@ public class KontoControl extends AbstractControl
         getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART,
         Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
     anlagenart.addListener(new AnlagenartListener());
-    if ((boolean) getAnlagenkonto().getValue())
+    if (getKontoArt().getValue() == KontoArt.ANLAGE)
     {
       anlagenart.setMandatory(true);
     }
@@ -607,7 +620,7 @@ public class KontoControl extends AbstractControl
         getKonto().getAnlagenklasse());
     anlagenklasse.setAttribute(getBuchungartAttribute());
     anlagenklasse.setPleaseChoose("Bitte auswählen");
-    if ((boolean) getAnlagenkonto().getValue())
+    if (getKontoArt().getValue() == KontoArt.ANLAGE)
     {
       anlagenklasse.setMandatory(true);
     }
@@ -648,7 +661,7 @@ public class KontoControl extends AbstractControl
         getKonto().getAfaart(), buchungsarttyp.AFAART,
         Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
     afaart.addListener(new AnlagenartListener());
-    if ((boolean) getAnlagenkonto().getValue())
+    if (getKontoArt().getValue() == KontoArt.ANLAGE)
     {
       afaart.setMandatory(true);
     }
@@ -703,7 +716,7 @@ public class KontoControl extends AbstractControl
         }
       }
      });
-    if (!((boolean) getAnlagenkonto().getValue()))
+    if (getKontoArt().getValue() != KontoArt.ANLAGE)
     {
       betrag.setValue(null);
       betrag.disable();
@@ -725,7 +738,7 @@ public class KontoControl extends AbstractControl
     {
       nutzungsdauer = new IntegerNullInput();
     }
-    if (!((boolean) getAnlagenkonto().getValue()))
+    if (getKontoArt().getValue() != KontoArt.ANLAGE)
     {
       nutzungsdauer.setValue(null);
       nutzungsdauer.disable();
@@ -752,7 +765,7 @@ public class KontoControl extends AbstractControl
     }
     afastart = new DecimalInput(getKonto().getAfaStart(),
         Einstellungen.DECIMALFORMAT);
-    if (!((boolean) getAnlagenkonto().getValue()) ||
+    if (getKontoArt().getValue() != KontoArt.ANLAGE ||
         getAfaMode().getValue() == null ||
         ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
     {
@@ -775,7 +788,7 @@ public class KontoControl extends AbstractControl
     }
     afadauer = new DecimalInput(getKonto().getAfaDauer(),
         Einstellungen.DECIMALFORMAT);
-    if (!((boolean) getAnlagenkonto().getValue()) ||
+    if (getKontoArt().getValue() != KontoArt.ANLAGE ||
         getAfaMode().getValue() == null ||
         ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
     {
@@ -798,7 +811,7 @@ public class KontoControl extends AbstractControl
     }
     afarestwert = new DecimalInput(getKonto().getAfaRestwert(),
         Einstellungen.DECIMALFORMAT);
-    if (!((boolean) getAnlagenkonto().getValue()))
+    if (getKontoArt().getValue() != KontoArt.ANLAGE)
     {
       afarestwert.setValue(null);
       afarestwert.disable();
@@ -850,7 +863,7 @@ public class KontoControl extends AbstractControl
         }
       }
     });
-    if ((boolean) getAnlagenkonto().getValue())
+    if (getKontoArt().getValue() == KontoArt.ANLAGE)
     {
       afamode.setMandatory(true);
     }
@@ -943,7 +956,7 @@ public class KontoControl extends AbstractControl
   {
     try
     {
-      if ((boolean) getAnlagenkonto().getValue())
+      if (getKontoArt().getValue() == KontoArt.ANLAGE)
       {
         getAnlagenklasse().enable();
         getAnlagenklasse().setMandatory(true);
@@ -1021,7 +1034,7 @@ public class KontoControl extends AbstractControl
     {
       if (getBetrag().getValue() != null)
         autobutton.setEnabled(false);
-      if (!((boolean) getAnlagenkonto().getValue()))
+      if (getKontoArt().getValue() != KontoArt.ANLAGE)
       {
         autobutton.setEnabled(false);
       }
@@ -1050,7 +1063,7 @@ public class KontoControl extends AbstractControl
     }, null, true, "view-refresh.png");
     try
     {
-      if (!((boolean) getAnlagenkonto().getValue()) ||
+      if (getKontoArt().getValue() != KontoArt.ANLAGE ||
           getAfaMode().getValue() == null ||
           ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
       {

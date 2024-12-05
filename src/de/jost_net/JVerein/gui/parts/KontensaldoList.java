@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.SaldoZeile;
+import de.jost_net.JVerein.keys.KontoArt;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -132,7 +133,7 @@ public class KontensaldoList extends TablePart implements Part
       {
         konto = konten.next();
         sz = new SaldoZeile(von, bis, konto);
-        if (summensaldo && konto.getAnlagenkonto())
+        if (summensaldo && konto.getKontoArt() == KontoArt.ANLAGE)
         {
           sanfangsbestand += (Double) sz.getAttribute("anfangsbestand");
           seinnahmen += (Double) sz.getAttribute("einnahmen");
