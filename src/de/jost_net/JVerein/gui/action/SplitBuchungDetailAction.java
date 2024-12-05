@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.dialogs.SplitBuchungDialog;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -39,7 +39,7 @@ public class SplitBuchungDetailAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    BuchungsControl bc = new BuchungsControl(view, Kontenart.GELDKONTO);
+    BuchungsControl bc = new BuchungsControl(view, Kontenfilter.GELDKONTO);
     SplitBuchungDialog spd = new SplitBuchungDialog(bc, view);
     try
     {
