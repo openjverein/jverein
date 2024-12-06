@@ -137,7 +137,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
     labelGroup.addPart(getListeZuAendern());
     ButtonArea buttonArea = new ButtonArea();
     buttonArea.addButton(new Button("Alle Änderungen durchführen",
-        new AlleAenderungenDurchfuehrenAction()));
+        new AlleAenderungenDurchfuehrenAction(), null, false, "ok.png"));
     labelGroup.addButtonArea(buttonArea);
   }
 
