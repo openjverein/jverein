@@ -39,6 +39,7 @@ import de.jost_net.JVerein.gui.dialogs.ZusatzfelderAuswahlDialog;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Adresstyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -1589,9 +1590,9 @@ public class FilterControl extends AbstractControl
     }
   }
   
-  public Button getZurueckButton(DateInput vonDatum, DateInput bisDatum)
+  public ToolTipButton getZurueckButton(DateInput vonDatum, DateInput bisDatum)
   {
-    return new Button("", new Action()
+    return new ToolTipButton("", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
@@ -1627,9 +1628,9 @@ public class FilterControl extends AbstractControl
     }, null, false, "go-previous.png");
   }
 
-  public Button getVorButton(DateInput vonDatum, DateInput bisDatum)
+  public ToolTipButton getVorButton(DateInput vonDatum, DateInput bisDatum)
   {
-    return new Button("", new Action()
+    return new ToolTipButton("", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException

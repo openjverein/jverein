@@ -60,6 +60,7 @@ import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.SplitbuchungListTablePart;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.io.BuchungAuswertungCSV;
 import de.jost_net.JVerein.io.BuchungAuswertungPDF;
@@ -2197,9 +2198,9 @@ public class BuchungsControl extends AbstractControl
     return settingsprefix;
   }
 
-  public Button getZurueckButton()
+  public ToolTipButton getZurueckButton()
   {
-    return new Button("", new Action()
+    return new ToolTipButton("", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
@@ -2242,9 +2243,9 @@ public class BuchungsControl extends AbstractControl
     }, null, false, "go-previous.png");
   }
 
-  public Button getVorButton()
+  public ToolTipButton getVorButton()
   {
-    return new Button("", new Action()
+    return new ToolTipButton("", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException

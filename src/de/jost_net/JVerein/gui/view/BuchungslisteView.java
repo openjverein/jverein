@@ -27,6 +27,7 @@ import de.jost_net.JVerein.gui.action.BuchungsuebernahmeAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -68,14 +69,16 @@ public class BuchungslisteView extends AbstractView
     left.addLabelPair("Projekt", control.getSuchProjekt());
     left.addLabelPair("Betrag", control.getSuchBetrag());
     left.addLabelPair("Mitglied zugeordnet?", control.getSuchMitgliedZugeordnet());
-    right.addLabelPair("Von Datum", control.getVondatum());
-    right.addLabelPair("Bis Datum", control.getBisdatum());
+    right.addLabelPair("Datum von", control.getVondatum());
+    right.addLabelPair("Datum bis", control.getBisdatum());
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
     right.addLabelPair("Mitglied Name", control.getMitglied());
     
     ButtonArea buttons1 = new ButtonArea();
-    buttons1.addButton(control.getZurueckButton());
-    buttons1.addButton(control.getVorButton());
+    ToolTipButton zurueck = control.getZurueckButton();
+    buttons1.addButton(zurueck);
+    ToolTipButton vor = control.getVorButton();
+    buttons1.addButton(vor);
     Button reset = new Button("Filter-Reset", new Action()
     {
       @Override
@@ -96,6 +99,8 @@ public class BuchungslisteView extends AbstractView
     }, null, true, "search.png");
     buttons1.addButton(suchen);
     labelgroup1.addButtonArea(buttons1);
+    zurueck.setToolTipText("Datumsbereich zurück");
+    vor.setToolTipText("Datumsbereich vowärts");
 
     // Zweiter Tab
     final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(
