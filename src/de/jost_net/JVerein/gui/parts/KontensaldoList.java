@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.SaldoZeile;
-import de.jost_net.JVerein.keys.KontoArt;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -120,7 +120,7 @@ public class KontensaldoList extends TablePart implements Part
     Konto k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
         null);
     DBIterator<Konto> konten = k.getKontenVonBis(von, bis);
-    konten.addFilter("kontoart < ?", KontoArt.LIMIT.getKey());
+    konten.addFilter("kontoart < ?", Kontoart.LIMIT.getKey());
     double anfangsbestand = 0;
     double einnahmen = 0;
     double ausgaben = 0;
@@ -141,7 +141,7 @@ public class KontensaldoList extends TablePart implements Part
       {
         konto = konten.next();
         sz = new SaldoZeile(von, bis, konto);
-        if (summensaldo && konto.getKontoArt() == KontoArt.ANLAGE)
+        if (summensaldo && konto.getKontoArt() == Kontoart.ANLAGE)
         {
           sanfangsbestand += (Double) sz.getAttribute("anfangsbestand");
           seinnahmen += (Double) sz.getAttribute("einnahmen");
@@ -186,7 +186,7 @@ public class KontensaldoList extends TablePart implements Part
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
         null);
     konten = k.getKontenVonBis(von, bis);
-    konten.addFilter("kontoart > ?", KontoArt.LIMIT.getKey());
+    konten.addFilter("kontoart > ?", Kontoart.LIMIT.getKey());
     if (von != null && konten.hasNext())
     {
       SaldoZeile sz = null;

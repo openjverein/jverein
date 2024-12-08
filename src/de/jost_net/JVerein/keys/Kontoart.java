@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
-public enum KontoArt
+public enum Kontoart
 {
   // LIMIT ist keine Kontoart sondern dient zur Abgrenzung.
   // Ids unter dem Limit werden regulär im Buchungsklassensaldo und Kontensaldo
@@ -25,13 +25,14 @@ public enum KontoArt
   GELD(1, "Geldkonto"),
   ANLAGE(2, "Anlagenkonto"),
   LIMIT(100, "-- Limit --"),
-  RUECKLAGE(101, "Rücklagenkonto");
+  RUECKLAGE(101, "Rücklagenkonto nach § 62 Abs. 1 (AO)"),
+  VERMOEGEN(102, "Vermögenskonto nach § 62 Abs. 3 und 4 (AO)");
 
   private final String text;
 
   private final int key;
   
-  KontoArt(int key, String text)
+  Kontoart(int key, String text)
   {
     this.key = key;
     this.text = text;
@@ -47,9 +48,9 @@ public enum KontoArt
     return text;
   }
 
-  public static KontoArt getByKey(int key)
+  public static Kontoart getByKey(int key)
   {
-    for (KontoArt art : KontoArt.values())
+    for (Kontoart art : Kontoart.values())
     {
       if (art.getKey() == key)
       {

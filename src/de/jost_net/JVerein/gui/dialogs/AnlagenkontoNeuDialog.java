@@ -33,7 +33,7 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.AfaMode;
-import de.jost_net.JVerein.keys.KontoArt;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -156,7 +156,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       konto.setNummer((String) getNummer().getValue());
       konto.setBezeichnung((String) getBezeichnung().getValue());
       konto.setEroeffnung(buchung.getDatum());
-      konto.setKontoArt(KontoArt.ANLAGE);
+      konto.setKontoArt(Kontoart.ANLAGE);
       konto.setHibiscusId(-1);
       konto.setAnlagenartId(getSelectedAnlagenartId());
       konto.setAnlagenklasseId(getSelectedAnlagenklasseId());
@@ -315,7 +315,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     String sql = "SELECT DISTINCT konto.id from konto "
         + "WHERE (kontoart = ?) ";
     boolean exist = (boolean) service.execute(sql,
-        new Object[] { KontoArt.ANLAGE.getKey() }, new ResultSetExtractor()
+        new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
     {
       @Override
       public Object extract(ResultSet rs)

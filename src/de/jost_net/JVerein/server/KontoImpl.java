@@ -21,7 +21,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.AfaMode;
-import de.jost_net.JVerein.keys.KontoArt;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
@@ -104,7 +104,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
       {
         throw new ApplicationException("Bitte Nummer eingeben");
       }
-      if (getKontoArt() == KontoArt.ANLAGE)
+      if (getKontoArt() == Kontoart.ANLAGE)
       {
         if (getBetrag() != null && getBetrag() < 0.0)
         {
@@ -283,13 +283,21 @@ public class KontoImpl extends AbstractDBObject implements Konto
   }
   
   @Override
-  public KontoArt getKontoArt() throws RemoteException
+  public Kontoart getKontoArt() throws RemoteException
   {
-    return KontoArt.getByKey((int) super.getAttribute("kontoart"));
+    Integer tmp = (Integer) super.getAttribute("kontoart");
+    if (tmp == null)
+    {
+      return Kontoart.GELD;
+    }
+    else
+    {
+      return Kontoart.getByKey((int) super.getAttribute("kontoart"));
+    }
   }
 
   @Override
-  public void setKontoArt(KontoArt kontoart)
+  public void setKontoArt(Kontoart kontoart)
       throws RemoteException
   {
     setAttribute("kontoart", kontoart.getKey());

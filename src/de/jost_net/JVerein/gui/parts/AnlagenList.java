@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.AnlagenlisteZeile;
-import de.jost_net.JVerein.keys.KontoArt;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -189,7 +189,7 @@ public class AnlagenList extends TablePart implements Part
             + "and anlagenklasse = ? "
             + "and anlagenart = ? ";
         int anz = (Integer) service.execute(sqlc,
-            new Object[] { KontoArt.ANLAGE.getKey(), datumvon, datumbis, buchungsklasse.getID(), 
+            new Object[] { Kontoart.ANLAGE.getKey(), datumvon, datumbis, buchungsklasse.getID(), 
                 buchungsart.getID() }, rsi);
         if (anz == 0)
         {
@@ -202,7 +202,7 @@ public class AnlagenList extends TablePart implements Part
         DBIterator<Konto> kontenIt = service
             .createList(Konto.class);
         kontenIt.addFilter("kontoart = ?",
-          new Object[] { KontoArt.ANLAGE.getKey() });
+          new Object[] { Kontoart.ANLAGE.getKey() });
         kontenIt.addFilter("anlagenklasse = ?",
             new Object[] { buchungsklasse.getID() });
         kontenIt.addFilter("anlagenart = ?",
