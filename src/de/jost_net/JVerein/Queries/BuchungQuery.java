@@ -23,7 +23,7 @@ import java.util.HashMap;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Suchbetrag;
-import de.jost_net.JVerein.keys.KontoArt;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Konto;
@@ -182,7 +182,7 @@ public class BuchungQuery
       it.join("konto");
       it.addFilter("konto.id = buchung.konto");
       it.addFilter("kontoart = ?",
-          new Object[] { KontoArt.ANLAGE.getKey() });
+          new Object[] { Kontoart.ANLAGE.getKey() });
     }
 
 

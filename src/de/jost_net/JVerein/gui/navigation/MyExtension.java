@@ -92,7 +92,7 @@ import de.jost_net.JVerein.gui.action.StatistikMitgliedAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageListeAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeListeAction;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
-import de.jost_net.JVerein.keys.KontoArt;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -121,7 +121,7 @@ public class MyExtension implements Extension
         String sql = "SELECT konto.anlagenkonto from konto "
             + "WHERE (kontoart = ?) ";
         anlagenkonto = (boolean) service.execute(sql,
-            new Object[] { KontoArt.ANLAGE.getKey() }, new ResultSetExtractor()
+            new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
         {
           @Override
           public Object extract(ResultSet rs)

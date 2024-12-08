@@ -24,7 +24,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.AfaMode;
-import de.jost_net.JVerein.keys.KontoArt;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
@@ -67,7 +67,7 @@ public class AfaUtil
           service = Einstellungen.getDBService();
           DBIterator<Konto> kontenIt = service.createList(Konto.class);
           kontenIt.addFilter("kontoart = ?",
-              new Object[] { KontoArt.ANLAGE.getKey() });
+              new Object[] { Kontoart.ANLAGE.getKey() });
           kontenIt.addFilter("(eroeffnung IS NULL OR eroeffnung <= ?)",
               new Object[] { new java.sql.Date(aktuellesGJ.getEndeGeschaeftsjahr().getTime()) });
           kontenIt.addFilter("(aufloesung IS NULL OR aufloesung >= ?)",

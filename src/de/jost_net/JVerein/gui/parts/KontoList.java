@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
-import de.jost_net.JVerein.keys.KontoArt;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -106,10 +106,10 @@ public class KontoList extends TablePart implements Part
     }
     if (art == Kontenfilter.GELDKONTO)
       i.addFilter("kontoart != ?",
-          new Object[] { KontoArt.ANLAGE.getKey() });
+          new Object[] { Kontoart.ANLAGE.getKey() });
     if (art == Kontenfilter.ANLAGEKONTO)
       i.addFilter("kontoart = ?",
-          new Object[] { KontoArt.ANLAGE.getKey() });
+          new Object[] { Kontoart.ANLAGE.getKey() });
     i.setOrder("ORDER BY nummer, bezeichnung");
     return i != null ? PseudoIterator.asList(i) : null;
   }

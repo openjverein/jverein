@@ -21,7 +21,7 @@ import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
-import de.jost_net.JVerein.keys.KontoArt;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.gui.parts.BuchungPart;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -41,7 +41,7 @@ public class BuchungView extends AbstractView
     if (this.getCurrentObject() != null && this.getCurrentObject() instanceof Buchung)
     {
       Buchung bu = (Buchung) this.getCurrentObject();
-      if (bu.getKonto() != null && bu.getKonto().getKontoArt() == KontoArt.ANLAGE)
+      if (bu.getKonto() != null && bu.getKonto().getKontoArt() == Kontoart.ANLAGE)
         art = Kontenfilter.ANLAGEKONTO;
     }
     final BuchungsControl control = new BuchungsControl(this, art);
