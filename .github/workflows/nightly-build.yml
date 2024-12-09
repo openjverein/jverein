@@ -27,6 +27,9 @@ jobs:
       id: openjverein
       working-directory: ./
       run: |
+        ls -la
+        mkdir -p jameica/lib
+        mkdir -p hibiscus/lib
         ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml nightly)
         echo $ant_output
 

@@ -81,8 +81,6 @@ jobs:
     - name: Create cache files and needed folders
       run: |
         mkdir -p ./cached-tags
-        mkdir -p jameica/lib
-        mkdir -p hibiscus/lib
         echo "${{ steps.setenvs.outputs.jameica_tag }}" > ./cached-tags/jameica_tag
         echo "${{ steps.setenvs.outputs.hibiscus_tag }}" > ./cached-tags/hibiscus_tag
 
