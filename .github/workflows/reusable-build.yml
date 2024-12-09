@@ -30,7 +30,7 @@ jobs:
           ./cached-tags
           jameica/releases/jameica-lib.jar
           hibiscus/releases/hibiscus-lib.jar
-        key: ${{ runner.os }}-tags
+        key: ${{ runner.os }}-${{ github.ref_name }}
 
     - name: Load cached tags
       id: load-cache
@@ -90,6 +90,6 @@ jobs:
       with:
         path: |
             ./cached-tags
-            jameica/releases/jameica-lib.jar
-            hibiscus/releases/hibiscus-lib.jar
-        key: ${{ runner.os }}-tags
+            jameica
+            hibiscus
+        key: ${{ runner.os }}-${{ github.ref_name }}

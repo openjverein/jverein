@@ -13,12 +13,22 @@ jobs:
     needs: call-reusable-workflow
     runs-on: ubuntu-latest
     steps:
+    - name: Restore cached tags and jars
+      id: cache-tags-jars
+      uses: actions/cache@v4
+      with:
+        path: |
+          ./cached-tags
+          jameica
+          hibiscus
+        key: ${{ runner.os }}-${{ github.ref_name }}
+
     - name: Build openjverein plugin
       id: openjverein
       working-directory: ./
       run: |
         ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml)
-        echo $ant_output
+        echo ${ant_output}
 
         ssa="SELECTED_VERSION="
         ssb=".zip"
@@ -37,12 +47,12 @@ jobs:
         text="${text%${ssb}*}.zip"
         tmp_path=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
 
-        echo "selected_version=$tmp_version" >> $GITHUB_OUTPUT
-        echo "selected_filename=$tmp_filename" >> $GITHUB_OUTPUT
-        echo "selected_path=$tmp_path" >> $GITHUB_OUTPUT
+        echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
+        echo "selected_filename=${tmp_filename}" >> $GITHUB_OUTPUT
+        echo "selected_path=${tmp_path}" >> $GITHUB_OUTPUT
 
         builddatetime=$(date +'%Y-%m-%d %H:%M')
-        echo "### Version: $tmp_version | filename: $tmp_filename | build datetime: $builddatetime" >> $GITHUB_STEP_SUMMARY
+        echo "### Version: ${tmp_version} | filename: ${tmp_filename} | build datetime: ${builddatetime}" >> $GITHUB_STEP_SUMMARY
 
     - name: Release
       uses: softprops/action-gh-release@v2
