@@ -13,15 +13,15 @@ on:
       - 'lib.src/**'
       - 'src/**'
 jobs:
+  call-reusable-workflow:
+    uses: ./.github/workflows/reusable-build.yml
+
   build:
     name: Try to compile the current pull request
 
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout and Build (Reusable)
-      uses: ./.github/workflows/reusable-build.yml
-
     - name: Checkout openjverein
       id: openjverein_checkout
       uses: actions/checkout@v4

@@ -6,15 +6,15 @@ name: openjverein official release
 on: workflow_dispatch
 
 jobs:
+  call-reusable-workflow:
+    uses: ./.github/workflows/reusable-build.yml
+
   build:
     name: Building release and upload to branch
 
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout and Build (Reusable)
-      uses: ./.github/workflows/reusable-build.yml
-
     - name: Build openjverein plugin
       id: openjverein
       working-directory: ./
