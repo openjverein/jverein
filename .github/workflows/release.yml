@@ -9,11 +9,9 @@ jobs:
   call-reusable-workflow:
     uses: ./.github/workflows/reusable-build.yml
 
-  build:
-    name: Building release and upload to branch
-
+  release:
+    needs: call-reusable-workflow
     runs-on: ubuntu-latest
-
     steps:
     - name: Build openjverein plugin
       id: openjverein

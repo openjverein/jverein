@@ -14,14 +14,11 @@ jobs:
   call-reusable-workflow:
     uses: ./.github/workflows/reusable-build.yml
 
-  build:
-    name: Building release and upload to branch
-
+  nightly-build:
+    needs: call-reusable-workflow
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout openjverein
-      id: openjverein_checkout
       uses: actions/checkout@v4
       with:
         path: jverein
