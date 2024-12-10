@@ -22,21 +22,29 @@ jobs:
     - name: Set up JDK for x64
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '11'
         distribution: 'temurin'
         architecture: x64
+
+    - name: Set env
+      id: setenvs
+      run: |
+        jameica_tag=`git ls-remote --refs --tags --sort="-v:refname"  https://github.com/willuhn/jameica.git V_\* | head -1 | cut -f 2 | cut -d / -f 3`
+        echo "jameica_tag=${jameica_tag}" >> $GITHUB_OUTPUT
+        hibiscus_tag=`git ls-remote --refs --tags --sort="-v:refname"  https://github.com/willuhn/hibiscus.git V_\* | head -1 | cut -f 2 | cut -d / -f 3`
+        echo "hibiscus_tag=${hibiscus_tag}" >> $GITHUB_OUTPUT
 
     - name: Check out jameica
       uses: actions/checkout@v4
       with:
         repository: willuhn/jameica
         path: jameica
+        ref: ${{ steps.setenvs.outputs.jameica_tag }}
 
-    - name: Build jameica nightly
+    - name: Build jameica jar
       working-directory: ./
       run: |
-        sed -i -r 's/deprecation="(true|on)"/deprecation="off"/g' jameica/build/build.xml
-        ant -noinput -quiet -buildfile jameica/build/build.xml jar
+        ant -noinput -buildfile jameica/build/build.xml jar
         find jameica/releases/ -type f -name jameica.jar -exec cp {} jameica/releases/jameica-lib.jar \;
 
     - name: Check out hibiscus
@@ -44,8 +52,9 @@ jobs:
       with:
         repository: willuhn/hibiscus
         path: hibiscus
+        ref: ${{ steps.setenvs.outputs.hibiscus_tag }}
 
-    - name: Build hibiscus nightly
+    - name: Build hibiscus jar
       working-directory: ./
       run: |
         sed -i -r 's/deprecation="(true|on)"/deprecation="off"/g' hibiscus/build/build.xml
