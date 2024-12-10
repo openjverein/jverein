@@ -18,9 +18,9 @@ jobs:
       id: setenvs
       run: |
         jameica_tag=$(git ls-remote --refs --tags --sort="-v:refname" https://github.com/willuhn/jameica.git V_\* | head -1 | cut -f 2 | cut -d / -f 3)
-        echo "jameica_tag=${jameica_tag}" >> $GITHUB_OUTPUT
+        echo "jameica_tag=${jameica_tag}" >> $GITHUB_ENV
         hibiscus_tag=$(git ls-remote --refs --tags --sort="-v:refname" https://github.com/willuhn/hibiscus.git V_\* | head -1 | cut -f 2 | cut -d / -f 3)
-        echo "hibiscus_tag=${hibiscus_tag}" >> $GITHUB_OUTPUT
+        echo "hibiscus_tag=${hibiscus_tag}" >> $GITHUB_ENV
         echo "### jameica_tag: ${jameica_tag} | hibiscus_tag: ${hibiscus_tag}"
 
     - name: Restore cached tags and jars
@@ -50,31 +50,31 @@ jobs:
         fi
         echo "### cached_jameica_tag: ${cached_jameica_tag} | cached_hibiscus_tag: ${cached_hibiscus_tag}"
 
-    - name: Check out jameica
-      if: ${{ steps.load-cache.cached_jameica_tag == '' || steps.load-cache.cached_jameica_tag == null }} || ${{ steps.load-cache.cached_jameica_tag == '' }} != ${{ steps.setenvs.outputs.jameica_tag }}
+    - name: Checkout jameica
+      if: ${{ env.cached_jameica_tag == '' }} || ${{ env.cached_jameica_tag == '' }} != ${{ env.jameica_tag }}
       uses: actions/checkout@v4
       with:
         repository: willuhn/jameica
         path: jameica
-        ref: ${{ steps.setenvs.outputs.jameica_tag }}
+        ref: ${{ env.jameica_tag }}
 
     - name: Build jameica jar
-      if: ${{ steps.load-cache.cached_jameica_tag == '' || steps.load-cache.cached_jameica_tag == null }} || ${{ steps.load-cache.cached_jameica_tag == '' }} != ${{ steps.setenvs.outputs.jameica_tag }}
+      if: ${{ env.cached_jameica_tag == '' }} || ${{ env.cached_jameica_tag }} != ${{ env.jameica_tag }}
       working-directory: ./ 
       run: |
         ant -noinput -buildfile jameica/build/build.xml jar
         find jameica/releases/ -type f -name jameica.jar -exec cp {} jameica/releases/jameica-lib.jar \;
 
-    - name: Check out hibiscus
-      if: ${{ steps.load-cache.cached_hibiscus_tag == '' || steps.load-cache.cached_hibiscus_tag == null }} || ${{ steps.load-cache.cached_hibiscus_tag == '' }} != ${{ steps.setenvs.outputs.hibiscus_tag }}
+    - name: Checkout hibiscus
+      if: ${{ env.cached_hibiscus_tag == '' }} || ${{ env.cached_hibiscus_tag }} != ${{ env.hibiscus_tag }}
       uses: actions/checkout@v4
       with:
         repository: willuhn/hibiscus
         path: hibiscus
-        ref: ${{ steps.setenvs.outputs.hibiscus_tag }}
+        ref: ${{ env.hibiscus_tag }}
 
     - name: Build hibiscus jar
-      if: ${{ steps.load-cache.cached_hibiscus_tag == '' || steps.load-cache.cached_hibiscus_tag == null }} || ${{ steps.load-cache.cached_hibiscus_tag == '' }} != ${{ steps.setenvs.outputs.hibiscus_tag }}
+      if: ${{ env.cached_hibiscus_tag == '' }} || ${{ env.cached_hibiscus_tag }} != ${{ env.hibiscus_tag }}
       working-directory: ./ 
       run: |
         ant -noinput -buildfile hibiscus/build/build.xml jar
@@ -83,8 +83,8 @@ jobs:
     - name: Create cache files and needed folders
       run: |
         mkdir -p ./cached-tags
-        echo "${{ steps.setenvs.outputs.jameica_tag }}" > ./cached-tags/jameica_tag
-        echo "${{ steps.setenvs.outputs.hibiscus_tag }}" > ./cached-tags/hibiscus_tag
+        echo "${{ env.jameica_tag }}" > ./cached-tags/jameica_tag
+        echo "${{ env.hibiscus_tag }}" > ./cached-tags/hibiscus_tag
 
     - name: Cache tags and folders
       uses: actions/cache@v4
