@@ -50,8 +50,12 @@ jobs:
         fi
         echo "### cached_jameica_tag: ${cached_jameica_tag} | cached_hibiscus_tag: ${cached_hibiscus_tag}"
 
+    - name: Strings are not equal
+      if: ${{ env.cached_jameica_tag != env.jameica_tag }}
+      run: echo "The strings are not equal."
+
     - name: Checkout jameica
-      if: ${{ env.cached_jameica_tag == '' }} || ${{ env.cached_jameica_tag != env.jameica_tag }}
+      if: ${{ env.cached_jameica_tag != env.jameica_tag }}
       uses: actions/checkout@v4
       with:
         repository: willuhn/jameica
@@ -59,14 +63,14 @@ jobs:
         ref: ${{ env.jameica_tag }}
 
     - name: Build jameica jar
-      if: ${{ env.cached_jameica_tag == '' }} || ${{ env.cached_jameica_tag != env.jameica_tag }}
+      if: ${{ env.cached_jameica_tag != env.jameica_tag }}
       working-directory: ./ 
       run: |
         ant -noinput -buildfile jameica/build/build.xml jar
         find jameica/releases/ -type f -name jameica.jar -exec cp {} jameica/releases/jameica-lib.jar \;
 
     - name: Checkout hibiscus
-      if: ${{ env.cached_hibiscus_tag == '' }} || ${{ env.cached_hibiscus_tag != env.hibiscus_tag }}
+      if: ${{ env.cached_hibiscus_tag != env.hibiscus_tag }}
       uses: actions/checkout@v4
       with:
         repository: willuhn/hibiscus
@@ -74,7 +78,7 @@ jobs:
         ref: ${{ env.hibiscus_tag }}
 
     - name: Build hibiscus jar
-      if: ${{ env.cached_hibiscus_tag == '' }} || ${{ env.cached_hibiscus_tag != env.hibiscus_tag }}
+      if: ${{ env.cached_hibiscus_tag != env.hibiscus_tag }}
       working-directory: ./ 
       run: |
         ant -noinput -buildfile hibiscus/build/build.xml jar
