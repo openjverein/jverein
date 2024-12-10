@@ -26,7 +26,7 @@ jobs:
           ./cached-tags
           jameica
           hibiscus
-        key: ${{ runner.os }}-${{ github.ref_name }}
+        key: ${{ runner.os }}-${{ github.workflow_sha }}
 
     - name: Checkout openjverein
       uses: actions/checkout@v4

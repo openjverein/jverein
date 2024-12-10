@@ -18,14 +18,12 @@ jobs:
       id: setenvs
       run: |
         jameica_tag=$(git ls-remote --refs --tags --sort="-v:refname" https://github.com/willuhn/jameica.git V_\* | head -1 | cut -f 2 | cut -d / -f 3)
-        jameica_tag=$(echo "$jameica_tag" | sed 's/^[ \t]*//;s/[ \t]*$//')
         echo "jameica_tag=${jameica_tag}" >> $GITHUB_ENV
         hibiscus_tag=$(git ls-remote --refs --tags --sort="-v:refname" https://github.com/willuhn/hibiscus.git V_\* | head -1 | cut -f 2 | cut -d / -f 3)
-        hibiscus_tag=$(echo "$hibiscus_tag" | sed 's/^[ \t]*//;s/[ \t]*$//')
         echo "hibiscus_tag=${hibiscus_tag}" >> $GITHUB_ENV
         echo "### jameica_tag: ${jameica_tag} | hibiscus_tag: ${hibiscus_tag}"
 
-    - name: Restore cached tags and jars
+    - name: Restore cached tags and folders
       id: cache-tags-jars
       uses: actions/cache@v4
       with:
@@ -33,32 +31,24 @@ jobs:
           ./cached-tags
           jameica
           hibiscus
-        key: ${{ runner.os }}-${{ github.ref_name }}
+        key: ${{ runner.os }}-${{ github.workflow_sha }}
 
     - name: Load cached tags
       id: load-cache
       run: |
         if [ -f ./cached-tags/jameica_tag ]; then
           cached_jameica_tag=$(cat ./cached-tags/jameica_tag)
-          cached_jameica_tag=$(echo "$cached_jameica_tag" | sed 's/^[ \t]*//;s/[ \t]*$//')
           echo "cached_jameica_tag=${cached_jameica_tag}" >> $GITHUB_ENV
         else
           echo "cached_jameica_tag=" >> $GITHUB_ENV
         fi
         if [ -f ./cached-tags/hibiscus_tag ]; then
           cached_hibiscus_tag=$(cat ./cached-tags/hibiscus_tag)
-          cached_hibiscus_tag=$(echo "$cached_hibiscus_tag" | sed 's/^[ \t]*//;s/[ \t]*$//')
           echo "cached_hibiscus_tag=${cached_hibiscus_tag}" >> $GITHUB_ENV
         else
           echo "cached_hibiscus_tag=" >> $GITHUB_ENV
         fi
         echo "### cached_jameica_tag: ${cached_jameica_tag} | cached_hibiscus_tag: ${cached_hibiscus_tag}"
-
-    - name: Strings are not equal
-      if: ${{ env.cached_jameica_tag != env.jameica_tag }}
-      run: |
-        echo "The strings are not equal."
-        cmp <(echo -n ${{ env.cached_jameica_tag }}) <(echo -n ${{ env.jameica_tag }})
 
     - name: Checkout jameica
       if: ${{ env.cached_jameica_tag != env.jameica_tag }}
@@ -104,4 +94,4 @@ jobs:
             ./cached-tags
             jameica
             hibiscus
-        key: ${{ runner.os }}-${{ github.ref_name }}
+        key: ${{ runner.os }}-${{ github.workflow_sha }}
