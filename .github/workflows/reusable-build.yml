@@ -1,4 +1,4 @@
-name: Reusable Build Steps
+name: Reusable build steps
 
 on:
   workflow_call:
@@ -28,8 +28,8 @@ jobs:
       with:
         path: |
           ./cached-tags
-          jameica/releases/jameica-lib.jar
-          hibiscus/releases/hibiscus-lib.jar
+          jameica
+          hibiscus
         key: ${{ runner.os }}-${{ github.ref_name }}
 
     - name: Load cached tags
@@ -64,7 +64,7 @@ jobs:
         find jameica/releases/ -type f -name jameica.jar -exec cp {} jameica/releases/jameica-lib.jar \;
 
     - name: Check out hibiscus
-      if: ${{ env.cached_hibiscus_tag == '' || env.cached_hibiscus_tag == null }} || env.cached_hibiscus_tag != ${{ steps.setenvs.outputs.hibiscus_tag }}
+      if: ${{ env.cached_hibiscus_tag == '' || env.cached_hibiscus_tag == null }} || ${{ env.cached_hibiscus_tag == '' }} != ${{ steps.setenvs.outputs.hibiscus_tag }}
       uses: actions/checkout@v4
       with:
         repository: willuhn/hibiscus
@@ -72,7 +72,7 @@ jobs:
         ref: ${{ steps.setenvs.outputs.hibiscus_tag }}
 
     - name: Build hibiscus jar
-      if: ${{ env.cached_hibiscus_tag == '' || env.cached_hibiscus_tag == null }} || env.cached_hibiscus_tag != ${{ steps.setenvs.outputs.hibiscus_tag }}
+      if: ${{ env.cached_hibiscus_tag == '' || env.cached_hibiscus_tag == null }} || ${{ env.cached_hibiscus_tag == '' }} != ${{ steps.setenvs.outputs.hibiscus_tag }}
       working-directory: ./ 
       run: |
         ant -noinput -buildfile hibiscus/build/build.xml jar
@@ -84,7 +84,7 @@ jobs:
         echo "${{ steps.setenvs.outputs.jameica_tag }}" > ./cached-tags/jameica_tag
         echo "${{ steps.setenvs.outputs.hibiscus_tag }}" > ./cached-tags/hibiscus_tag
 
-    - name: Cache tags and jars
+    - name: Cache tags and folders
       uses: actions/cache@v4
       if: always()
       with:
