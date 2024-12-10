@@ -118,7 +118,7 @@ public class MyExtension implements Extension
       try
       {
         DBService service = Einstellungen.getDBService();
-        String sql = "SELECT konto.anlagenkonto from konto "
+        String sql = "SELECT konto.id from konto "
             + "WHERE (kontoart = ?) ";
         anlagenkonto = (boolean) service.execute(sql,
             new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
