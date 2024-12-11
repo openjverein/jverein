@@ -33,10 +33,14 @@ public class Update0453 extends AbstractDDLUpdate
     execute(addColumn("konto", new Column("kontoart",
         COLTYPE.INTEGER, 0, null, false, false)));
 
+<<<<<<< HEAD
     execute("update konto set kontoart = 1 where anlagenkonto IS NULL");
     execute("update konto set kontoart = 1 where anlagenkonto IS FALSE");
     execute("update konto set kontoart = 2 where anlagenkonto IS TRUE");
     
     execute(dropColumn("konto", "anlagenkonto"));
+=======
+    execute("INSERT INTO wirtschaftsplanung(geschaeftsjahr, buchungsart, betrag) VALUES (2024, 1, 200), (2023, 1, 1000)");
+>>>>>>> 517b61e9 (Added WirtschaftsplanungListView)
   }
 }

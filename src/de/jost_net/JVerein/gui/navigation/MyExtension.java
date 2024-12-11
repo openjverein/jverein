@@ -90,6 +90,7 @@ import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
 import de.jost_net.JVerein.gui.action.StatistikJahrgaengeAction;
 import de.jost_net.JVerein.gui.action.StatistikMitgliedAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageListeAction;
+import de.jost_net.JVerein.gui.action.WirtschaftsplanungListAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeListeAction;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -218,6 +219,9 @@ public class MyExtension implements Extension
             new AnlagenlisteAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
           new JahresabschlussListAction(), "euro-sign.png"));
+      if (Einstellungen.getEinstellung().getWirtschaftsplanung()) {
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Wirtschaftsplanung", new WirtschaftsplanungListAction(), "euro-sign.png"));
+      }
       jverein.addChild(buchfuehrung);
       
       NavigationItem abrechnung = null;
