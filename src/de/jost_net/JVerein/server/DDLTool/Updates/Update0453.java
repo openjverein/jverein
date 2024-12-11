@@ -43,5 +43,6 @@ public class Update0453 extends AbstractDDLUpdate
     execute(createForeignKey("fk_wirtschaftsplanung", "wirtschaftsplanung",
         "buchungsart", "buchungsart", "id", "RESTRICT", "CASCADE"));
 
+    execute("INSERT INTO wirtschaftsplanung(geschaeftsjahr, buchungsart, betrag) VALUES (2024, 1, 200), (2023, 1, 1000)");
   }
 }
