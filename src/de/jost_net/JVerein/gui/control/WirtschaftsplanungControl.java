@@ -1,33 +1,16 @@
 package de.jost_net.JVerein.gui.control;
 
 import de.jost_net.JVerein.Einstellungen;
-<<<<<<< HEAD
-import de.jost_net.JVerein.gui.action.OpenWirtschaftsplanungAction;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.keys.Kontoart;
-=======
-import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
->>>>>>> 39c603e0 (Added WirtschaftsplanungListView)
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
-<<<<<<< HEAD
-import de.willuhn.jameica.gui.formatter.Formatter;
-import de.willuhn.jameica.gui.input.DecimalInput;
-import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.util.ApplicationException;
-
-import java.rmi.RemoteException;
-import java.text.DecimalFormat;
-=======
 import de.willuhn.jameica.gui.parts.TablePart;
 
 import java.rmi.RemoteException;
->>>>>>> 39c603e0 (Added WirtschaftsplanungListView)
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,10 +38,6 @@ public class WirtschaftsplanungControl extends AbstractControl
   {
     DBService service = Einstellungen.getDBService();
 
-<<<<<<< HEAD
-=======
-    //TODO: Filter Rückstellungen etc.
->>>>>>> 39c603e0 (Added WirtschaftsplanungListView)
     String sql = "SELECT geschaeftsjahr, SUM(betrag) FROM wirtschaftsplanung, buchungsart WHERE wirtschaftsplanung.buchungsart = buchungsart.id AND buchungsart.art = ? GROUP BY geschaeftsjahr";
 
     Map<Integer, WirtschaftsplanungZeile> zeileMap = new HashMap<>();
@@ -101,7 +80,6 @@ public class WirtschaftsplanungControl extends AbstractControl
       return resultSet;
     });
 
-<<<<<<< HEAD
     String startGJ = Einstellungen.getEinstellung().getBeginnGeschaeftsjahr();
     sql = "WITH buchung_mit_gj AS ( " + "SELECT buchung.*, CASE WHEN datum >= TO_DATE( ? || EXTRACT(YEAR FROM datum), 'DD.MM.YYYY') THEN " + "EXTRACT(YEAR FROM datum) ELSE EXTRACT(YEAR FROM datum) - 1 " + "END AS geschaeftsjahr " + "FROM buchung " + ") SELECT buchung_mit_gj.geschaeftsjahr, SUM(buchung_mit_gj.betrag) AS ist " + "FROM buchung_mit_gj, wirtschaftsplanung, buchungsart, konto " + "WHERE buchung_mit_gj.geschaeftsjahr = wirtschaftsplanung.geschaeftsjahr " + "AND buchung_mit_gj.buchungsart = buchungsart.id " + "AND buchung_mit_gj.konto = konto.id " + "AND buchungsart.art = ? " + "AND konto.kontoart < ? " + "GROUP BY buchung_mit_gj.geschaeftsjahr";
 
@@ -133,7 +111,7 @@ public class WirtschaftsplanungControl extends AbstractControl
           return resultSet;
         });
 
-    wirtschaftsplaene = new TablePart(new ArrayList<>(zeileMap.values()), new OpenWirtschaftsplanungAction());
+    wirtschaftsplaene = new TablePart(new ArrayList<>(zeileMap.values()), null);
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
@@ -149,28 +127,4 @@ public class WirtschaftsplanungControl extends AbstractControl
 
     return wirtschaftsplaene;
   }
-
-  public WirtschaftsplanungZeile getWirtschaftsplanungZeile()
-  {
-    if (getCurrentObject() instanceof WirtschaftsplanungZeile) {
-      return (WirtschaftsplanungZeile) getCurrentObject();
-    }
-    return null;
-  }
-=======
-    wirtschaftsplaene = new TablePart(new ArrayList<>(zeileMap.values()), null);
-
-    wirtschaftsplaene.addColumn("Geschäftsjahr", "geschaeftsjahr");
-    wirtschaftsplaene.addColumn("Einnahmen Soll", "planEinnahme",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    wirtschaftsplaene.addColumn("Ausgaben Soll", "planAusgabe",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    wirtschaftsplaene.addColumn("Einnahmen Ist", "istEinnahme",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    wirtschaftsplaene.addColumn("Ausgaben Ist", "istAusgabe",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-
-    return wirtschaftsplaene;
-  }
->>>>>>> 39c603e0 (Added WirtschaftsplanungListView)
 }

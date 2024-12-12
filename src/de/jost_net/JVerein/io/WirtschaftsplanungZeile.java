@@ -29,12 +29,9 @@ public class WirtschaftsplanungZeile implements GenericObject
   @Override
   public Object getAttribute(String s) throws RemoteException
   {
-<<<<<<< HEAD
     double planSaldo = planEinnahme + planAusgabe;
     double istSaldo = istEinnahme + istAusgabe;
 
-=======
->>>>>>> 39c603e0 (Added WirtschaftsplanungListView)
     switch (s)
     {
       case "geschaeftsjahr":
@@ -47,15 +44,12 @@ public class WirtschaftsplanungZeile implements GenericObject
         return istEinnahme;
       case "istAusgabe":
         return istAusgabe;
-<<<<<<< HEAD
       case "planSaldo":
         return planSaldo;
       case "istSaldo":
         return istSaldo;
       case "differenz":
         return istSaldo - planSaldo;
-=======
->>>>>>> 39c603e0 (Added WirtschaftsplanungListView)
       default:
         throw new RemoteException(
             String.format("Ungültige Spaltenbezeichung: %s", s));
@@ -65,11 +59,7 @@ public class WirtschaftsplanungZeile implements GenericObject
   @Override
   public String[] getAttributeNames() throws RemoteException
   {
-<<<<<<< HEAD
     return new String[] {"geschaeftsjahr", "planEinnahme", "planAusgabe", "istEinnahme", "istAusgabe", "planSaldo", "istSaldo", "differenz"};
-=======
-    return new String[] {"geschaeftsjahr", "planEinnahme", "planAusgabe", "istEinnahme", "istAusgabe"};
->>>>>>> 39c603e0 (Added WirtschaftsplanungListView)
   }
 
   @Override
