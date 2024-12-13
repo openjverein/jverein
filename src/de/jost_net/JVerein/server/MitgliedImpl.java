@@ -10,21 +10,14 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
-import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
@@ -45,14 +38,25 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
+import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.Listener;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+
+import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MitgliedImpl extends AbstractDBObject implements Mitglied
 {
@@ -60,6 +64,8 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   private transient Map<String, String> variable;
 
   private static final long serialVersionUID = 1L;
+
+  private static MitgliedDummy DUMMY_INSTANCE;
 
   public MitgliedImpl() throws RemoteException
   {
@@ -122,8 +128,8 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   {
     checkExterneMitgliedsnummer();
 
-    if (getPersonenart() == null
-        || (!getPersonenart().equalsIgnoreCase("n") && !getPersonenart().equalsIgnoreCase("j")))
+    if (getPersonenart() == null || (!getPersonenart().equalsIgnoreCase(
+        "n") && !getPersonenart().equalsIgnoreCase("j")))
     {
       throw new ApplicationException("Personenstatus ist nicht 'N' oder 'J'");
     }
@@ -131,19 +137,19 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       throw new ApplicationException("Bitte Namen eingeben");
     }
-    if (getPersonenart().equalsIgnoreCase("n")
-        && (getVorname() == null || getVorname().length() == 0))
+    if (getPersonenart().equalsIgnoreCase(
+        "n") && (getVorname() == null || getVorname().length() == 0))
     {
       throw new ApplicationException("Bitte Vornamen eingeben");
     }
-    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equalsIgnoreCase("n")
-        && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime()
-        && Einstellungen.getEinstellung().getGeburtsdatumPflicht())
+    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equalsIgnoreCase(
+        "n") && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime() && Einstellungen.getEinstellung()
+        .getGeburtsdatumPflicht())
     {
       throw new ApplicationException("Bitte Geburtsdatum eingeben");
     }
-    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equalsIgnoreCase("n")
-        && Einstellungen.getEinstellung().getGeburtsdatumPflicht())
+    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equalsIgnoreCase(
+        "n") && Einstellungen.getEinstellung().getGeburtsdatumPflicht())
     {
       Calendar cal1 = Calendar.getInstance();
       cal1.setTime(getGeburtsdatum());
@@ -175,9 +181,8 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       }
     }
 
-    if (getAdresstyp().getJVereinid() == 1
-        && getEintritt().getTime() == Einstellungen.NODATE.getTime()
-        && Einstellungen.getEinstellung().getEintrittsdatumPflicht())
+    if (getAdresstyp().getJVereinid() == 1 && getEintritt().getTime() == Einstellungen.NODATE.getTime() && Einstellungen.getEinstellung()
+        .getEintrittsdatumPflicht())
     {
       throw new ApplicationException("Bitte Eintrittsdatum eingeben");
     }
@@ -237,7 +242,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
         DBIterator<Mitglied> famang = Einstellungen.getDBService()
             .createList(Mitglied.class);
         famang.addFilter("zahlerid = " + getID());
-        famang.addFilter("(austritt is null or austritt > ?)",getAustritt());
+        famang.addFilter("(austritt is null or austritt > ?)", getAustritt());
         if (famang.hasNext())
         {
           throw new ApplicationException(
@@ -246,27 +251,29 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       }
     }
     // Ist das Mitglied Teil eines Familienverbandes?
-    if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
-        && getZahlerID() != null)
+    if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER && getZahlerID() != null)
     {
       // ja, suche Vollzahler. Er darf nicht, bzw nicht früher, ausgetreten sein!
       DBIterator<Mitglied> zahler = Einstellungen.getDBService()
           .createList(Mitglied.class);
       zahler.addFilter("id = " + getZahlerID());
-      if(getAustritt() != null)
-        zahler.addFilter("(austritt is not null and austritt < ?)",getAustritt());
+      if (getAustritt() != null)
+        zahler.addFilter("(austritt is not null and austritt < ?)",
+            getAustritt());
       Mitglied z = null;
-      if(zahler.hasNext())
+      if (zahler.hasNext())
         z = zahler.next();
       if (z != null && ((Mitglied) z).getAustritt() != null)
       {
         throw new ApplicationException(
             "Der ausgewählte Vollzahler ist ausgetreten zu " + z.getAustritt() + ". Bitte anderen Vollzahler wählen!");
       }
-      if(z != null && ((Mitglied)z).getEintritt().after(new Date()) && ((Mitglied)z).getEintritt().after(getEintritt()))
+      if (z != null && ((Mitglied) z).getEintritt()
+          .after(new Date()) && ((Mitglied) z).getEintritt()
+          .after(getEintritt()))
       {
-    	throw new ApplicationException(
-    	    "Der ausgewählte Vollzahler tritt erst ein zu " + z.getEintritt() + ". Bitte anderen Vollzahler wählen!");
+        throw new ApplicationException(
+            "Der ausgewählte Vollzahler tritt erst ein zu " + z.getEintritt() + ". Bitte anderen Vollzahler wählen!");
       }
     }
     // Check ob das Mitglied vorher ein Vollzahler eines Familienverbandes war
@@ -282,18 +289,16 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
             "Dieses Mitglied ist Vollzahler in einem Familienverband.. Zunächst Beitragsart der Angehörigen ändern!");
       }
     }
-    if (getBeitragsgruppe() != null
-        && getBeitragsgruppe()
-            .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
-        && getZahlerID() == null)
+    if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER && getZahlerID() == null)
     {
       throw new ApplicationException("Bitte Vollzahler auswählen!");
     }
-    
+
     // Individueller Beitrag darf nicht kleiner als 0 sein
     if (getIndividuellerBeitrag() != null && getIndividuellerBeitrag() < 0)
     {
-      throw new ApplicationException("Individueller Beitrag darf nicht negativ sein!");
+      throw new ApplicationException(
+          "Individueller Beitrag darf nicht negativ sein!");
     }
   }
 
@@ -301,7 +306,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
    * Prüfe die externe Mitgliedsnummer. Ist es ein Mitgliedssatz und ist in den
    * Einstellungen die externe Mitgliedsnummer aktiviert, dann muss eine
    * vorhanden sein und diese muss eindeutig sein.
-   * 
+   *
    * @throws RemoteException
    * @throws ApplicationException
    */
@@ -327,8 +332,8 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       Mitglied mitglied = (Mitglied) mitglieder.next();
       throw new ApplicationException(
-          "Die externe Mitgliedsnummer wird bereits verwendet für Mitglied : "
-              + mitglied.getAttribute("namevorname"));
+          "Die externe Mitgliedsnummer wird bereits verwendet für Mitglied : " + mitglied.getAttribute(
+              "namevorname"));
     }
 
   }
@@ -668,10 +673,9 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       }
     };
 
-    String sql = "select max(abrechnungslauf.FAELLIGKEIT) from lastschrift, abrechnungslauf "
-        + "where lastschrift.ABRECHNUNGSLAUF = abrechnungslauf.id and lastschrift.MITGLIED = ? and lastschrift.mandatid = ?";
-    Date d = (Date) Einstellungen.getDBService().execute(sql,
-        new Object[] { getID(), getMandatID() }, rs);
+    String sql = "select max(abrechnungslauf.FAELLIGKEIT) from lastschrift, abrechnungslauf " + "where lastschrift.ABRECHNUNGSLAUF = abrechnungslauf.id and lastschrift.MITGLIED = ? and lastschrift.mandatid = ?";
+    Date d = (Date) Einstellungen.getDBService()
+        .execute(sql, new Object[] { getID(), getMandatID() }, rs);
 
     return d;
   }
@@ -1035,8 +1039,8 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     Object o = (Object) super.getAttribute("beitragsgruppe");
     if (o == null)
       return null;
-   
-    Cache cache = Cache.get(Beitragsgruppe.class,true);
+
+    Cache cache = Cache.get(Beitragsgruppe.class, true);
     return (Beitragsgruppe) cache.get(o);
   }
 
@@ -1194,8 +1198,9 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public boolean isAngemeldet(Date stichtag) throws RemoteException
   {
-    return getEintritt() != null && !stichtag.before(getEintritt())
-        && (getAustritt() == null || getAustritt().after(stichtag));
+    return getEintritt() != null && !stichtag.before(
+        getEintritt()) && (getAustritt() == null || getAustritt().after(
+        stichtag));
   }
 
   @Override
@@ -1222,10 +1227,10 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       Long l = (Long) super.getAttribute("beitragsgruppe");
       if (l == null)
         return null;
-       
-      Cache cache = Cache.get(Beitragsgruppe.class,true);
+
+      Cache cache = Cache.get(Beitragsgruppe.class, true);
       cache.get(l);
-        
+
       DBIterator<Felddefinition> it = Einstellungen.getDBService()
           .createList(Felddefinition.class);
       it.addFilter("name = ?", new Object[] { fieldName.substring(13) });
@@ -1265,8 +1270,8 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       return getAlter();
     }
-    else if("beitragsgruppe".equals(fieldName))
-    	return getBeitragsgruppe();
+    else if ("beitragsgruppe".equals(fieldName))
+      return getBeitragsgruppe();
     return super.getAttribute(fieldName);
   }
 
@@ -1301,16 +1306,704 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   public void delete() throws RemoteException, ApplicationException
   {
     DBService service = Einstellungen.getDBService();
-    DBIterator<MitgliedDokument> docs = service.createList(MitgliedDokument.class);
+    DBIterator<MitgliedDokument> docs = service.createList(
+        MitgliedDokument.class);
     docs.addFilter("referenz = ?", new Object[] { this.getID() });
     while (docs.hasNext())
     {
-      QueryMessage qm = new QueryMessage(
-          ((MitgliedDokument) docs.next()).getUUID(), null);
-      Application.getMessagingFactory().getMessagingQueue(
-          "jameica.messaging.del").sendSyncMessage(qm);
+      QueryMessage qm = new QueryMessage(docs.next().getUUID(), null);
+      Application.getMessagingFactory()
+          .getMessagingQueue("jameica.messaging.del").sendSyncMessage(qm);
     }
     super.delete();
   }
-  
+
+  public static MitgliedDummy getDummy()
+  {
+    if (DUMMY_INSTANCE == null)
+    {
+      try
+      {
+        DUMMY_INSTANCE = new MitgliedDummy();
+      }
+      catch (RemoteException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
+
+    return DUMMY_INSTANCE;
+  }
+
+  private static final class MitgliedDummy extends MitgliedImpl
+  {
+    private static final long serialVersionUID = 1L;
+
+    private final static String PERSONENART = "n";
+
+    private final static String ANREDE = "Herrn";
+
+    private final static String TITEL = "Dr. Dr.";
+
+    private final static String NAME = "Wichtig";
+
+    private final static String VORNAME = "Willi";
+
+    private final static String STRASSE = "Bahnhofstr. 22";
+
+    private final static String ADRESSZUSATZ = "Hinterhof bei Müller";
+
+    private final static String PLZ = "12345";
+
+    private final static String ORT = "Testenhausen";
+
+    private final static String STAAT = "Deutschland";
+
+    private final static String BIC = "XXXXXXXXXXX";
+
+    private final static String IBAN = "DE89370400440532013000";
+
+    private final static Integer ZAHLUNGSWEG = 1;
+
+    private final static Date MANDATDATUM = new Date();
+
+    private final static String MANDATID = "12345";
+
+    private final static Date LETZTE_LASTSCHRIFT = new Date();
+
+    private final static String EXTERNE_MITGLIEDSNUMMER = "123456";
+
+    private final static String ID = "1";
+
+    private final static Zahlungsrhythmus ZAHLUNGSRHYTHMUS = new Zahlungsrhythmus(
+        12);
+
+    private final static Zahlungstermin ZAHLUNGSTERMIN = Zahlungstermin.HALBJAEHRLICH4;
+
+    private final static Integer MANDATVERSION = 1;
+
+    private final static String MAIL = "willi.wichtig@jverein.de";
+
+    private final static String GESCHLECHT = GeschlechtInput.MAENNLICH;
+
+    private final static Date GEBURTSDATUM = toDate("02.03.1980");
+
+    private final static String TELEFON_PRIVAT = "011/123456";
+
+    private final static String TELEFON_DIENSTLICH = "011/123456789";
+
+    private final static String HANDY = "0170/123456789";
+
+    private final static Date EINTRITT = toDate("01.01.2010");
+
+    private final static Beitragsgruppe BEITRAGSGRUPPE = beitragsgruppe();
+
+    private final static double INDIVIDUELLER_BEITRAG = 123.45;
+
+    private final static long ZAHLERID = 123456;
+
+    private final static Date AUSTRITT = toDate("01.01.2025");
+
+    private final static Date KUENDIGUNG = toDate("01.11.2024");
+
+    private final static Date STERBETAG = toDate(("31.12.2024"));
+
+    private final static String VERMERK1 = "Vermerk 1";
+
+    private final static String VERMERK2 = "Vermerk 2";
+
+    private final static Date EINGABEDATUM = toDate("01.02.2010");
+
+    private final static Date LETTZTE_AENDERUNG = new Date();
+
+    private final static boolean IS_ANGEMELDET = true;
+
+    private final static Map<String, String> VARIABLEN = new HashMap<>();
+
+    private final static Adresstyp ADRESSTYP = new Adresstyp()
+    {
+      @Override
+      public void transactionBegin() throws RemoteException
+      {
+
+      }
+
+      @Override
+      public void transactionCommit() throws RemoteException
+      {
+
+      }
+
+      @Override
+      public void transactionRollback() throws RemoteException
+      {
+
+      }
+
+      @Override
+      public String getBezeichnung() throws RemoteException
+      {
+        return "Mitglied";
+      }
+
+      @Override
+      public void setBezeichnung(String bezeichnung) throws RemoteException
+      {
+
+      }
+
+      @Override
+      public String getBezeichnungPlural() throws RemoteException
+      {
+        return "Mitglieder";
+      }
+
+      @Override
+      public void setBezeichnungPlural(String bezeichnungplural)
+          throws RemoteException
+      {
+
+      }
+
+      @Override
+      public int getJVereinid() throws RemoteException
+      {
+        return 1;
+      }
+
+      @Override
+      public void setJVereinid(int jvereinid) throws RemoteException
+      {
+
+      }
+
+      @Override
+      public void load(String s) throws RemoteException
+      {
+
+      }
+
+      @Override
+      public Object getAttribute(String s) throws RemoteException
+      {
+        return null;
+      }
+
+      @Override
+      public String getAttributeType(String s) throws RemoteException
+      {
+        return null;
+      }
+
+      @Override
+      public String getPrimaryAttribute() throws RemoteException
+      {
+        return null;
+      }
+
+      @SuppressWarnings("rawtypes")
+      @Override
+      public DBIterator getList() throws RemoteException
+      {
+        return null;
+      }
+
+      @Override
+      public boolean equals(GenericObject genericObject) throws RemoteException
+      {
+        return false;
+      }
+
+      @Override
+      public void addDeleteListener(Listener listener) throws RemoteException
+      {
+
+      }
+
+      @Override
+      public void addStoreListener(Listener listener) throws RemoteException
+      {
+
+      }
+
+      @Override
+      public void removeDeleteListener(Listener listener) throws RemoteException
+      {
+
+      }
+
+      @Override
+      public void removeStoreListener(Listener listener) throws RemoteException
+      {
+
+      }
+
+      @Override
+      public String[] getAttributeNames() throws RemoteException
+      {
+        return new String[0];
+      }
+
+      @Override
+      public String getID() throws RemoteException
+      {
+        return ID;
+      }
+
+      @Override
+      public void store() throws RemoteException
+      {
+
+      }
+
+      @Override
+      public void delete() throws RemoteException
+      {
+
+      }
+
+      @Override
+      public void clear() throws RemoteException
+      {
+
+      }
+
+      @Override
+      public boolean isNewObject() throws RemoteException
+      {
+        return false;
+      }
+
+      @Override
+      public void overwrite(DBObject dbObject) throws RemoteException
+      {
+
+      }
+    };
+
+    private MitgliedDummy() throws RemoteException
+    {
+    }
+
+    @Override
+    public String getPersonenart() throws RemoteException
+    {
+      return PERSONENART;
+    }
+
+    @Override
+    public String getAnrede() throws RemoteException
+    {
+      return ANREDE;
+    }
+
+    @Override
+    public String getTitel() throws RemoteException
+    {
+      return TITEL;
+    }
+
+    @Override
+    public String getName() throws RemoteException
+    {
+      return NAME;
+    }
+
+    @Override
+    public String getVorname() throws RemoteException
+    {
+      return VORNAME;
+    }
+
+    @Override
+    public String getStrasse() throws RemoteException
+    {
+      return STRASSE;
+    }
+
+    @Override
+    public String getAdressierungszusatz() throws RemoteException
+    {
+      return ADRESSZUSATZ;
+    }
+
+    @Override
+    public String getPlz() throws RemoteException
+    {
+      return PLZ;
+    }
+
+    @Override
+    public String getOrt() throws RemoteException
+    {
+      return ORT;
+    }
+
+    @Override
+    public String getStaat() throws RemoteException
+    {
+      return STAAT;
+    }
+
+    @Override
+    public String getBic() throws RemoteException
+    {
+      return BIC;
+    }
+
+    @Override
+    public String getIban() throws RemoteException
+    {
+      return IBAN;
+    }
+
+    @Override
+    public Integer getZahlungsweg() throws RemoteException
+    {
+      return ZAHLUNGSWEG;
+    }
+
+    @Override
+    public Date getMandatDatum() throws RemoteException
+    {
+      return MANDATDATUM;
+    }
+
+    @Override
+    public String getMandatID() throws RemoteException
+    {
+      return MANDATID;
+    }
+
+    @Override
+    public Date getLetzteLastschrift() throws RemoteException
+    {
+      return LETZTE_LASTSCHRIFT;
+    }
+
+    @Override
+    public String getExterneMitgliedsnummer() throws RemoteException
+    {
+      return EXTERNE_MITGLIEDSNUMMER;
+    }
+
+    @Override
+    public Adresstyp getAdresstyp() throws RemoteException
+    {
+      return ADRESSTYP;
+    }
+
+    @Override
+    public Zahlungsrhythmus getZahlungsrhythmus() throws RemoteException
+    {
+      return ZAHLUNGSRHYTHMUS;
+    }
+
+    @Override
+    public Zahlungstermin getZahlungstermin() throws RemoteException
+    {
+      return ZAHLUNGSTERMIN;
+    }
+
+    @Override
+    public void setMandatDatum(Date mandatdatum) throws RemoteException
+    {
+
+    }
+
+    @Override
+    public Integer getMandatVersion() throws RemoteException
+    {
+      return MANDATVERSION;
+    }
+
+    @Override
+    public String getKtoiPersonenart() throws RemoteException
+    {
+      return PERSONENART;
+    }
+
+    @Override
+    public void setKtoiPersonenart(String ktoipersonenart)
+        throws RemoteException
+    {
+
+    }
+
+    @Override
+    public String getKtoiAnrede() throws RemoteException
+    {
+      return ANREDE;
+    }
+
+    @Override
+    public String getKtoiTitel() throws RemoteException
+    {
+      return TITEL;
+    }
+
+    @Override
+    public String getKtoiName() throws RemoteException
+    {
+      return NAME;
+    }
+
+    @Override
+    public String getKtoiVorname() throws RemoteException
+    {
+      return VORNAME;
+    }
+
+    @Override
+    public String getKtoiStrasse() throws RemoteException
+    {
+      return STRASSE;
+    }
+
+    @Override
+    public String getKtoiAdressierungszusatz() throws RemoteException
+    {
+      return ADRESSZUSATZ;
+    }
+
+    @Override
+    public String getKtoiPlz() throws RemoteException
+    {
+      return PLZ;
+    }
+
+    @Override
+    public String getKtoiOrt() throws RemoteException
+    {
+      return ORT;
+    }
+
+    @Override
+    public String getKtoiStaat() throws RemoteException
+    {
+      return STAAT;
+    }
+
+    @Override
+    public String getKtoiEmail() throws RemoteException
+    {
+      return MAIL;
+    }
+
+    @Override
+    public String getKtoiGeschlecht() throws RemoteException
+    {
+      return GESCHLECHT;
+    }
+
+    @Override
+    public String getKontoinhaber(int art) throws RemoteException
+    {
+      return null;
+    }
+
+    @Override
+    public Date getGeburtsdatum() throws RemoteException
+    {
+      return GEBURTSDATUM;
+    }
+
+    @Override
+    public Integer getAlter() throws RemoteException
+    {
+      return null;
+    }
+
+    @Override
+    public String getGeschlecht() throws RemoteException
+    {
+      return GESCHLECHT;
+    }
+
+    @Override
+    public String getTelefonprivat() throws RemoteException
+    {
+      return TELEFON_PRIVAT;
+    }
+
+    @Override
+    public String getTelefondienstlich() throws RemoteException
+    {
+      return TELEFON_DIENSTLICH;
+    }
+
+    @Override
+    public String getHandy() throws RemoteException
+    {
+      return HANDY;
+    }
+
+    @Override
+    public String getEmail() throws RemoteException
+    {
+      return MAIL;
+    }
+
+    @Override
+    public Date getEintritt() throws RemoteException
+    {
+      return EINTRITT;
+    }
+
+    @Override
+    public Beitragsgruppe getBeitragsgruppe() throws RemoteException
+    {
+      return BEITRAGSGRUPPE;
+    }
+
+    @Override
+    public int getBeitragsgruppeId() throws RemoteException
+    {
+      return 0;
+    }
+
+    @Override
+    public Double getIndividuellerBeitrag() throws RemoteException
+    {
+      return INDIVIDUELLER_BEITRAG;
+    }
+
+    @Override
+    public Long getZahlerID() throws RemoteException
+    {
+      return ZAHLERID;
+    }
+
+    @Override
+    public Date getAustritt() throws RemoteException
+    {
+      return AUSTRITT;
+    }
+
+    @Override
+    public Date getKuendigung() throws RemoteException
+    {
+      return KUENDIGUNG;
+    }
+
+    @Override
+    public Date getSterbetag() throws RemoteException
+    {
+      return STERBETAG;
+    }
+
+    @Override
+    public String getVermerk1() throws RemoteException
+    {
+      return VERMERK1;
+    }
+
+    @Override
+    public String getVermerk2() throws RemoteException
+    {
+      return VERMERK2;
+    }
+
+    @Override
+    public Date getEingabedatum() throws RemoteException
+    {
+      return EINGABEDATUM;
+    }
+
+    @Override
+    public Date getLetzteAenderung() throws RemoteException
+    {
+      return LETTZTE_AENDERUNG;
+    }
+
+    @Override
+    public Mitgliedfoto getFoto() throws RemoteException
+    {
+      return null;
+    }
+
+    @Override
+    public boolean isAngemeldet(Date stichtag) throws RemoteException
+    {
+      return IS_ANGEMELDET;
+    }
+
+    @Override
+    public void addVariable(String name, String wert)
+    {
+      VARIABLEN.put(name, wert);
+    }
+
+    @Override
+    public Map<String, String> getVariablen()
+    {
+      return VARIABLEN;
+    }
+
+    @Override
+    public Object getAttribute(String s) throws RemoteException
+    {
+      return null;
+    }
+
+    @Override
+    public String getPrimaryAttribute()
+    {
+      return null;
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    public DBIterator getList() throws RemoteException
+    {
+      return null;
+    }
+
+    @Override
+    public boolean equals(GenericObject genericObject) throws RemoteException
+    {
+      return genericObject instanceof MitgliedDummy;
+    }
+
+    @Override
+    public void store() throws RemoteException
+    {
+
+    }
+
+    @Override
+    public void delete() throws RemoteException
+    {
+
+    }
+
+    private static Date toDate(String datum)
+    {
+      Date d = null;
+
+      try
+      {
+        d = new JVDateFormatTTMMJJJJ().parse(datum);
+      }
+      catch (Exception ignored)
+      {
+      }
+      return d;
+    }
+
+    private static Beitragsgruppe beitragsgruppe()
+    {
+      try
+      {
+        DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
+            .createList(Beitragsgruppe.class);
+        return it.next();
+      }
+      catch (RemoteException rmi)
+      {
+        return null;
+      }
+    }
+  }
+
 }
