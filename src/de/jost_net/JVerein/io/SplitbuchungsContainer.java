@@ -73,7 +73,6 @@ public class SplitbuchungsContainer
   {
     splitbuchungen = new ArrayList<>();
     dependencyid = 0;
-
     // Wenn eine gesplittete Buchung aufgerufen wird, wird die Hauptbuchung
     // gelesen
     if (b.getSplitId() != null)
@@ -89,7 +88,6 @@ public class SplitbuchungsContainer
     DBIterator<Buchung> it = Einstellungen.getDBService()
         .createList(Buchung.class);
     it.addFilter("splitid = ?", b.getID());
-
     if (!it.hasNext())
     {
       // Wenn keine Buchung gefunden wurde, gibt es auch keine Gegenbuchung.
@@ -294,7 +292,7 @@ public class SplitbuchungsContainer
     buch.setDatum(b.getDatum());
     buch.setKommentar(b.getKommentar());
     buch.setKonto(b.getKonto());
-    buch.setMitgliedskonto(b.getMitgliedskonto());
+    buch.setMitgliedskontoID(b.getMitgliedskontoID());
     buch.setName(b.getName());
     buch.setProjekt(b.getProjekt());
     buch.setSplitId(Long.valueOf(b.getID()));
@@ -316,7 +314,7 @@ public class SplitbuchungsContainer
     buch.setDatum(master.getDatum());
     buch.setKommentar(origin.getKommentar());
     buch.setKonto(master.getKonto());
-    buch.setMitgliedskonto(master.getMitgliedskonto());
+    buch.setMitgliedskontoID(master.getMitgliedskontoID());
     buch.setName(master.getName());
     buch.setProjekt(master.getProjekt());
     buch.setSplitId(Long.valueOf(master.getID()));

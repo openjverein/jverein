@@ -442,7 +442,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   public Long getAbrechnungslaufID() throws RemoteException
   {
-    return Long.parseLong(getAbrechnungslauf().getID());
+    return (Long) super.getAttribute("abrechnungslauf");
   }
 
   @Override
@@ -505,7 +505,6 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     {
       return null;
     }
-
     Cache cache = Cache.get(Mitgliedskonto.class, true);
     return (Mitgliedskonto) cache.get(o);
   }
@@ -513,7 +512,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   public Long getMitgliedskontoID() throws RemoteException
   {
-    return Long.parseLong(getMitgliedskonto().getID());
+    return (Long) super.getAttribute("mitgliedskonto");
   }
 
   @Override
@@ -545,7 +544,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   public Long getProjektID() throws RemoteException
   {
-    return Long.parseLong(getProjekt().getID());
+    return (Long) super.getAttribute("project");
   }
 
   @Override
@@ -610,10 +609,6 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     else
     {
       map = inma;
-    }
-    if (this.getID() == null)
-    {
-      //
     }
     map.put(BuchungVar.ABRECHNUNGSLAUF.getName(),
         (this.getAbrechnungslauf() != null

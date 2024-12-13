@@ -48,6 +48,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -145,6 +146,8 @@ public class MitgliedskontoControl extends DruckMailControl
   private Action action;
 
   private boolean umwandeln;
+
+  private TablePart buchungList;
 
   public MitgliedskontoControl(AbstractView view)
   {
@@ -543,7 +546,7 @@ public class MitgliedskontoControl extends DruckMailControl
       });
       mitgliedskontoList.addColumn("Zahlungseingang", "istsumme",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      mitgliedskontoList.addColumn("Rechnung", "rechnung");
+      mitgliedskontoList.addColumn("Rechnung", "rechnungid");
       mitgliedskontoList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
       if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
@@ -608,6 +611,35 @@ public class MitgliedskontoControl extends DruckMailControl
     mitgliedskontoList2.sort();
   }
 
+  public Part getBuchungenList() throws RemoteException
+  {
+    if (buchungList != null)
+    {
+      return buchungList;
+    }
+    DBIterator<SollbuchungPosition> sps = Einstellungen.getDBService().createList(SollbuchungPosition.class);
+    sps.addFilter( "sollbuchung = ?", getMitgliedskonto().getID());
+    
+    buchungList = new TablePart(sps, null);
+    buchungList.addColumn("Datum", "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    buchungList.addColumn("Zweck", "zweck");
+    buchungList.addColumn("Betrag", "betrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    buchungList.addColumn("Steuersatz", "steuersatz");
+    buchungList.addColumn("Buchungsart", "buchungsart");
+    buchungList.addColumn("Buchungsklasse","buchungsklasse");
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      buchungList.addColumn("Buchungsklasse", "buchungsklasse");
+    }
+
+    buchungList.setRememberColWidths(true);
+    buchungList.setRememberOrder(true);
+    buchungList.addFeature(new FeatureSummary());
+    return buchungList;
+  }
+  
   private GenericIterator<Mitglied> getMitgliedIterator() throws RemoteException
   {
     DBIterator<Mitglied> mitglieder = Einstellungen.getDBService()

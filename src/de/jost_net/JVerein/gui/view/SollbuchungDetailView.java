@@ -57,6 +57,9 @@ public class SollbuchungDetailView extends AbstractView
       grBuchung.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     }
 
+    LabelGroup cont = new LabelGroup(getParent(), "Sollbuchungspositionen", true);
+    cont.addPart(control.getBuchungenList());
+    
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,

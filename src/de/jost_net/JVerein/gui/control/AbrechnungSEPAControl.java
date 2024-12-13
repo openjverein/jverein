@@ -30,12 +30,15 @@ import org.kapott.hbci.sepa.SepaVersion;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
+import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.Bankarbeitstage;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
+import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Monat;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -49,7 +52,6 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -83,6 +85,14 @@ public class AbrechnungSEPAControl extends AbstractControl
   private SelectInput ausgabe;
 
   private Settings settings = null;
+
+  private CheckboxInput sollbuchungenzusammenfassen;
+
+  private CheckboxInput rechnung;
+
+  private FormularInput rechnungsformular;
+
+  private TextInput rechnungstext;
 
   public AbrechnungSEPAControl(AbstractView view)
   {
@@ -241,7 +251,52 @@ public class AbrechnungSEPAControl extends AbstractControl
         settings.getBoolean("kompakteabbuchung", false));
     return kompakteabbuchung;
   }
+  
+  public CheckboxInput getSollbuchungenZusammenfassen()
+  {
+    if (sollbuchungenzusammenfassen != null)
+    {
+      return sollbuchungenzusammenfassen;
+    }
+    sollbuchungenzusammenfassen = new CheckboxInput(
+        settings.getBoolean("sollbuchungenzusammenfassen", false));
+    return sollbuchungenzusammenfassen;
+  }
 
+
+  public CheckboxInput getRechnung()
+  {
+    if (rechnung != null)
+    {
+      return rechnung;
+    }
+    rechnung = new CheckboxInput(
+        settings.getBoolean("rechnung", false));
+    return rechnung;
+  }
+  
+  public FormularInput getRechnungFormular() throws RemoteException
+  {
+    if (rechnungsformular != null)
+    {
+      return rechnungsformular;
+    }
+    rechnungsformular = new FormularInput(
+        FormularArt.RECHNUNG, settings.getString("rechnungsformular", ""));
+    return rechnungsformular;
+  }
+
+  public TextInput getRechnungstext()
+  {
+    if (rechnungstext != null)
+    {
+      return rechnungstext;
+    }
+    rechnungstext = new TextInput(
+        settings.getString("rechnungstext", "RE$rechnung_nummer"));
+    return rechnungstext;
+  }
+  
   public CheckboxInput getSEPAPrint()
   {
     if (sepaprint != null)
@@ -302,6 +357,14 @@ public class AbrechnungSEPAControl extends AbstractControl
         (Boolean) kursteilnehmer.getValue());
     settings.setAttribute("kompakteabbuchung",
         (Boolean) kompakteabbuchung.getValue());
+    settings.setAttribute("sollbuchungenzusammenfassen",
+        (Boolean) sollbuchungenzusammenfassen.getValue());
+    settings.setAttribute("rechnung",
+        (Boolean) rechnung.getValue());
+    settings.setAttribute("rechnungstext",
+        (String) rechnungstext.getValue());
+    settings.setAttribute("rechnungsformular",
+        ((Formular) rechnungsformular.getValue()).getID());
     settings.setAttribute("sepaprint", (Boolean) sepaprint.getValue());
     Abrechnungsausgabe aa = (Abrechnungsausgabe) this.getAbbuchungsausgabe().getValue();
     settings.setAttribute("abrechnungsausgabe", aa.getKey());
@@ -409,6 +472,8 @@ public class AbrechnungSEPAControl extends AbstractControl
       }
       BackgroundTask t = new BackgroundTask()
       {
+        private boolean interrupt = false;
+
         @Override
         public void run(ProgressMonitor monitor) throws ApplicationException
         {
@@ -416,7 +481,7 @@ public class AbrechnungSEPAControl extends AbstractControl
           {
 
             DBTransaction.starten();            
-            new AbrechnungSEPA(abupar, monitor);
+            new AbrechnungSEPA(abupar, monitor, this);
             DBTransaction.commit();
 
             monitor.setPercentComplete(100);
@@ -457,13 +522,13 @@ public class AbrechnungSEPAControl extends AbstractControl
         @Override
         public void interrupt()
         {
-          //
+          interrupt = true;
         }
 
         @Override
         public boolean isInterrupted()
         {
-          return false;
+          return interrupt;
         }
       };
       Application.getController().start(t);

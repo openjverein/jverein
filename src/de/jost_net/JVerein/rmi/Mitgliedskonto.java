@@ -81,4 +81,6 @@ public interface Mitgliedskonto extends DBObject
   public Rechnung getRechnung() throws RemoteException;
 
   public void setRechnung(Rechnung rechnung) throws RemoteException;
+
+  public Long getRechnungId() throws RemoteException;
 }

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import de.jost_net.JVerein.io.IAdresse;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.willuhn.datasource.rmi.DBObject;
 
 public interface Rechnung extends DBObject, IAdresse
@@ -111,4 +112,15 @@ public interface Rechnung extends DBObject, IAdresse
   public String getIBAN() throws RemoteException;
   
   public void setIBAN(String iban) throws RemoteException;
+  
+  public Double getIstSumme() throws RemoteException;
+  
+  public Zahlungsweg getZahlungsweg() throws RemoteException;
+
+  public void setZahlungsweg(Integer zahlungsweg) throws RemoteException;
+
+  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException;
+
+  public Mitgliedskonto getMitgliedskonto() throws RemoteException;
 }

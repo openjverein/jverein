@@ -40,7 +40,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-
 import de.willuhn.logging.Logger;
 
 public class FormularfeldControl extends FormularPartControl
@@ -75,14 +74,6 @@ public class FormularfeldControl extends FormularPartControl
   public static final String TAGESDATUMMM = "Tagesdatum MM";
 
   public static final String TAGESDATUMJJJJ = "Tagesdatum JJJJ";
-
-  public static final String ZAHLUNGSGRUND = "Zahlungsgrund";
-
-  public static final String ZAHLUNGSGRUND1 = "Zahlungsgrund 1";
-
-  public static final String BUCHUNGSDATUM = "Buchungsdatum";
-
-  public static final String BETRAG = "Betrag";
 
   public static final String ZAHLUNGSWEG = "Zahlungsweg";
 

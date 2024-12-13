@@ -92,7 +92,6 @@ class Cache
       throws RemoteException
   {
     Cache cache = caches.get(type);
-
     if (cache != null)
     {
       if (cache.validTo < System.currentTimeMillis())
@@ -105,7 +104,6 @@ class Cache
         cache.touch(); // Verfallsdatum aktualisieren
       }
     }
-
     // Cache erzeugen und mit Daten fuellen
     if (cache == null)
     {
@@ -124,6 +122,7 @@ class Cache
       }
       caches.put(type, cache);
     }
+    cache.touch(); // hier nötig wenn das erstellen des Caches lange gedauert hat
     return cache;
   }
 
