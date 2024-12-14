@@ -40,6 +40,7 @@ import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
+import de.jost_net.JVerein.keys.SuchSpendenart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Adresstyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -158,6 +159,8 @@ public class FilterControl extends AbstractControl
   {
     MONAT, TAG
   }
+
+  protected SelectInput suchspendenart = null;
 
   public enum Mitgliedstyp {
     MITGLIED,
@@ -1070,6 +1073,26 @@ public class FilterControl extends AbstractControl
     return integerausw != null;
   }
   
+  public SelectInput getSuchSpendenart()
+  {
+    if (suchspendenart != null)
+    {
+      return suchspendenart;
+    }
+    SuchSpendenart defaultwert = SuchSpendenart
+        .getByKey(settings.getInt(settingsprefix + "suchspendenart.key", 1));
+    suchspendenart = new SelectInput(SuchSpendenart.values(), defaultwert);
+    suchspendenart.setName("Spendenart");
+    suchspendenart.addListener(new FilterListener());
+    return suchspendenart;
+  }
+
+  public boolean isSuchSpendenartAktiv()
+  {
+    return suchspendenart != null;
+  }
+  
+  
   /**
    * Buttons
    */
@@ -1188,6 +1211,8 @@ public class FilterControl extends AbstractControl
           suchtext.setValue("");
         if (integerausw != null)
           integerausw.setValue(null);
+        if (suchspendenart != null)
+          suchspendenart.setValue(SuchSpendenart.ALLE);
         refresh();
       }
     }, null, false, "eraser.png");
@@ -1574,6 +1599,12 @@ public class FilterControl extends AbstractControl
       {
         settings.setAttribute(settingsprefix + "intergerauswahl", "");
       }
+    }
+    
+    if (suchspendenart != null )
+    {
+      SuchSpendenart ss = (SuchSpendenart) suchspendenart.getValue();
+      settings.setAttribute(settingsprefix + "suchspendenart.key", ss.getKey());
     }
   }
   

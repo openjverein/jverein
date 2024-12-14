@@ -19,6 +19,8 @@ package de.jost_net.JVerein.gui.boxes;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.ButtonArea;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -133,7 +135,10 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
     LabelGroup labelGroup = new LabelGroup(parent,
         "Mitgliederdaten wollen angepasst werden:", true);
     labelGroup.addPart(getListeZuAendern());
-
+    ButtonArea buttonArea = new ButtonArea();
+    buttonArea.addButton(new Button("Alle Änderungen durchführen",
+        new AlleAenderungenDurchfuehrenAction(), null, false, "ok.png"));
+    labelGroup.addButtonArea(buttonArea);
   }
 
   private TablePart getListeZuAendern() throws RemoteException

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.eclipse.swt.widgets.Event;
@@ -54,6 +55,7 @@ import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
+import de.jost_net.JVerein.keys.SuchSpendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
@@ -64,6 +66,8 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
@@ -591,15 +595,119 @@ public class SpendenbescheinigungControl extends DruckMailControl
   }
 
   @SuppressWarnings("unchecked")
-  private ArrayList<Spendenbescheinigung> getSpendenbescheinigungen() throws RemoteException
+  private ArrayList<Spendenbescheinigung> getSpendenbescheinigungen()
+      throws RemoteException
+  {
+    SuchSpendenart suchSpendenart = SuchSpendenart.ALLE;
+    if (isSuchSpendenartAktiv())
+    {
+      suchSpendenart = (SuchSpendenart) getSuchSpendenart().getValue();
+    }
+    ArrayList<Long> ids = new ArrayList<>();
+    ArrayList<Long> queryIds = querySpendenbescheinigungen(suchSpendenart);
+
+    // Bei GELDSPENDE_ECHT liefert das Query auch Splittbuchungen die neben
+    // echten Geldbuchungen auch Geldbuchungen mit Verzicht haben.
+    // Darum lesen wir nochmal mit ERSTATTUNGSVERZICHT. Wenn eine Id da
+    // auch dabei ist dürfen wir die Splittbuchung nicht nehmen
+    if (suchSpendenart == SuchSpendenart.GELDSPENDE_ECHT)
+    {
+      ArrayList<Long> erstattungsIds = querySpendenbescheinigungen(
+          SuchSpendenart.ERSTATTUNGSVERZICHT);
+      for (Long id : queryIds)
+      {
+        if (!erstattungsIds.contains(id))
+        {
+          ids.add(id);
+        }
+      }
+    }
+    else
+    {
+      ids = queryIds;
+    }
+
+    if (ids.size() == 0)
+      return new ArrayList<Spendenbescheinigung>();
+
+    DBIterator<Spendenbescheinigung> list = Einstellungen.getDBService()
+        .createList(Spendenbescheinigung.class);
+    list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
+    list.setOrder(" ORDER BY bescheinigungsdatum desc ");
+    ArrayList<Spendenbescheinigung> spendenbescheinigungen = list != null
+        ? (ArrayList<Spendenbescheinigung>) PseudoIterator.asList(list)
+        : null;
+    return spendenbescheinigungen;
+  }
+
+  @SuppressWarnings("unchecked")
+  private ArrayList<Long> querySpendenbescheinigungen(
+      SuchSpendenart suchSpendenart) throws RemoteException
   {
     final DBService service = Einstellungen.getDBService();
     ArrayList<Object> bedingungen = new ArrayList<>();
     and = false;
-    
-    sql = "select spendenbescheinigung.*  from spendenbescheinigung ";
-    sql +=  "left join mitglied on (spendenbescheinigung.mitglied = mitglied.id) ";
-    
+
+    sql = "select DISTINCT spendenbescheinigung.id, bescheinigungsdatum from spendenbescheinigung ";
+    int mailauswahl = MailAuswertungInput.ALLE;
+    if (isMailauswahlAktiv())
+    {
+      mailauswahl = (Integer) getMailauswahl().getValue();
+      if (mailauswahl != MailAuswertungInput.ALLE)
+      {
+        sql += "left join mitglied on (spendenbescheinigung.mitglied = mitglied.id) ";
+      }
+    }
+    if (suchSpendenart != SuchSpendenart.ALLE
+        && suchSpendenart != SuchSpendenart.GELDSPENDE
+        && suchSpendenart != SuchSpendenart.SACHSPENDE)
+    {
+      sql += "left join buchung on (spendenbescheinigung.id = buchung.spendenbescheinigung) ";
+    }
+
+    if (isMailauswahlAktiv())
+    {
+      if (mailauswahl == MailAuswertungInput.OHNE)
+      {
+        addCondition("(email is null or length(email) = 0) ");
+      }
+      if (mailauswahl == MailAuswertungInput.MIT)
+      {
+        addCondition("(email is not null and length(email) > 0) ");
+      }
+    }
+
+    if (isSuchSpendenartAktiv())
+    {
+      switch (suchSpendenart)
+      {
+        case ALLE:
+          break;
+        case GELDSPENDE:
+          addCondition("spendenart = ?");
+          bedingungen.add(Spendenart.GELDSPENDE);
+          break;
+        case SACHSPENDE:
+          addCondition("spendenart = ?");
+          bedingungen.add(Spendenart.SACHSPENDE);
+          break;
+        case ERSTATTUNGSVERZICHT:
+          addCondition("buchung.verzicht = 1");
+          break;
+        case GELDSPENDE_ECHT:
+          addCondition(
+              "(buchung.verzicht != 1 or buchung.verzicht is null) AND spendenart = ?");
+          bedingungen.add(Spendenart.GELDSPENDE);
+          break;
+        case SACHSPENDE_ERSTATTUNGSVERZICHT:
+          addCondition("(buchung.verzicht = 1 OR spendenart = ?)");
+          bedingungen.add(Spendenart.SACHSPENDE);
+          break;
+        default:
+          break;
+      }
+    }
+
     if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) getSuchname().getValue();
@@ -609,18 +717,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
         bedingungen.add("%" + tmpSuchname.toLowerCase() + "%");
       }
     }
-    if (isMailauswahlAktiv())
-    {
-      int mailauswahl = (Integer) getMailauswahl().getValue();
-      if (mailauswahl == MailAuswertungInput.OHNE)
-      {
-        addCondition("(email is null or length(email) = 0)");
-      }
-      if (mailauswahl == MailAuswertungInput.MIT)
-      {
-        addCondition("(email is  not null and length(email) > 0)");
-      }
-    }
+
     if (isDatumvonAktiv() && getDatumvon().getValue() != null)
     {
       addCondition("bescheinigungsdatum >= ?");
@@ -645,27 +742,24 @@ public class SpendenbescheinigungControl extends DruckMailControl
       Date d = (Date) getEingabedatumbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    sql += " ORDER BY bescheinigungsdatum desc ";
-    
+
     ResultSetExtractor rs = new ResultSetExtractor()
     {
       @Override
       public Object extract(ResultSet rs) throws RemoteException, SQLException
       {
-        ArrayList<Spendenbescheinigung> list = new ArrayList<>();
+        ArrayList<Long> list = new ArrayList<>();
         while (rs.next())
         {
-          list.add(
-              (Spendenbescheinigung) service.createObject(Spendenbescheinigung.class, rs.getString(1)));
+          list.add(rs.getLong(1));
         }
         return list;
       }
     };
 
-    return (ArrayList<Spendenbescheinigung>) service.execute(sql, bedingungen.toArray(),
-        rs);
+    return (ArrayList<Long>) service.execute(sql, bedingungen.toArray(), rs);
   }
-  
+
   private void addCondition(String condition)
   {
     if (and)
@@ -679,7 +773,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     and = true;
     sql += condition;
   }
-  
+
   // Mail/Drucken View
   @Override
   public String getInfoText(Object spbArray)

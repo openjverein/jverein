@@ -644,8 +644,15 @@ public class SpendenbescheinigungPrintAction implements Action
           8);
     }
 
-    if (Einstellungen.getEinstellung().getUnterschriftdrucken() &&
-        Einstellungen.getEinstellung().getUnterschrift() != null)
+    boolean unterschriftDrucken = false;
+    if (Einstellungen.getEinstellung().getUnterschriftdrucken()
+        && Einstellungen.getEinstellung().getUnterschrift() != null
+        && spb.isEchteGeldspende())
+    {
+      unterschriftDrucken = true;
+    }
+
+    if (unterschriftDrucken)
     {
       rpt.add("\n", 8);
       rpt.add(Einstellungen.getEinstellung().getUnterschrift(), 400, 55, 0);
@@ -665,8 +672,7 @@ public class SpendenbescheinigungPrintAction implements Action
             + "(Ort, Datum und Unterschrift des Zuwendungsempfängers)",
             8);
 
-    if (Einstellungen.getEinstellung().getUnterschriftdrucken() &&
-        Einstellungen.getEinstellung().getUnterschrift() != null)
+    if (unterschriftDrucken)
     {
       rpt.addLight("\nDie maschinelle Erstellung der Zuwendungsbestätigung wurde dem "
           + "zuständigen Finanzamt " + Einstellungen.getEinstellung().getFinanzamt()
