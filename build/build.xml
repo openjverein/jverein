@@ -54,7 +54,7 @@
 
   <target name="compile" depends="init, clean">
     <mkdir dir="${class.dir}" />
-    <javac debug="true" includeantruntime="false" debuglevel="lines,vars,source" source="${define.java.version}" target="${define.java.version}" encoding="${define.encoding}" deprecation="true" destdir="${class.dir}" srcdir="${src.dir}">
+    <javac debug="true" includeantruntime="false" debuglevel="lines,vars,source" release="${define.java.version}" encoding="${define.encoding}" deprecation="true" destdir="${class.dir}" srcdir="${src.dir}">
 			<classpath refid="compilepath" />
 		</javac>
   </target>

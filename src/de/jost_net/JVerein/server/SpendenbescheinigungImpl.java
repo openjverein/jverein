@@ -427,6 +427,26 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
       return false;
     return getBuchungen().size() > 1;
   }
+  
+  /**
+   * Liefert als Kennzeichen zurück, ob die Spendenbescheinigung eine echte
+   * Geldspende ist. Dies ist der Fall, wenn es sich um eine Gelspende handelt
+   * bei der bei keiner Buchung das Flag Erstattungsverzicht gesetzt ist.
+   * 
+   * @return Flag, ob echte Geldspende
+   * @throws RemoteException
+   */
+  public boolean isEchteGeldspende() throws RemoteException
+  {
+    if (getBuchungen() == null)
+      return false;
+    for (Buchung buchung : getBuchungen())
+    {
+      if (buchung.getVerzicht())
+        return false;
+    }
+    return true;
+  }
 
   /**
    * Fügt der Liste der Buchungen eine Buchung hinzu. Der Gesamtbetrag der

@@ -10,43 +10,26 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.rmi.RemoteException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-import java.util.TreeSet;
-
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-import org.apache.velocity.exception.MethodInvocationException;
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.ResourceNotFoundException;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.gui.action.MailDetailAction;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailAuswahlMenu;
 import de.jost_net.JVerein.gui.menu.MailMenu;
+import de.jost_net.JVerein.gui.util.EvalMail;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
@@ -66,6 +49,15 @@ import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
+import org.apache.velocity.app.Velocity;
+
+import java.rmi.RemoteException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+import java.util.TreeSet;
 
 public class MailControl extends FilterControl
 {
@@ -83,7 +75,6 @@ public class MailControl extends FilterControl
   private Mail mail;
 
   private TablePart mailsList;
-
 
   public MailControl(AbstractView view)
   {
@@ -292,10 +283,9 @@ public class MailControl extends FilterControl
           {
             YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
             d.setTitle("Mail senden?");
-            d.setText("Diese Mail wurde bereits an "
-                + (getMail().getEmpfaenger().size() - toBeSentCount)
-                + " der gewählten Empfänger versendet. Wollen Sie diese Mail an alle weiteren "
-                + toBeSentCount + " Empfänger senden?");
+            d.setText(
+                "Diese Mail wurde bereits an " + (getMail().getEmpfaenger()
+                    .size() - toBeSentCount) + " der gewählten Empfänger versendet. Wollen Sie diese Mail an alle weiteren " + toBeSentCount + " Empfänger senden?");
             try
             {
               Boolean choice = (Boolean) d.open();
@@ -417,13 +407,13 @@ public class MailControl extends FilterControl
   private void sendeMail(final boolean erneutSenden) throws RemoteException
   {
     String text = getTxtString();
-    if (text.toLowerCase().contains("<html")
-        && text.toLowerCase().contains("</body"))
+    if (text.toLowerCase().contains("<html") && text.toLowerCase()
+        .contains("</body"))
     {
       // MailSignatur ohne Separator mit vorangestellten hr in den body einbauen
       text = text.substring(0, text.toLowerCase().indexOf("</body") - 1);
-      text = text + "<hr />"
-          + Einstellungen.getEinstellung().getMailSignatur(false);
+      text = text + "<hr />" + Einstellungen.getEinstellung()
+          .getMailSignatur(false);
       text = text + "</body></html>";
     }
     else
@@ -436,7 +426,7 @@ public class MailControl extends FilterControl
     BackgroundTask t = new BackgroundTask()
     {
 
-      private boolean cancel= false;
+      private boolean cancel = false;
 
       @Override
       public void run(ProgressMonitor monitor)
@@ -465,7 +455,7 @@ public class MailControl extends FilterControl
           int sentCount = 0;
           for (final MailEmpfaenger empf : getMail().getEmpfaenger())
           {
-            if(isInterrupted())
+            if (isInterrupted())
             {
               monitor.setStatus(ProgressMonitor.STATUS_ERROR);
               monitor.setStatusText("Mailversand abgebrochen");
@@ -503,8 +493,8 @@ public class MailControl extends FilterControl
               monitor.log(empf.getMailAdresse() + " - " + e.getMessage());
             }
             zae++;
-            double proz = (double) zae
-                / (double) getMail().getEmpfaenger().size() * 100d;
+            double proz = (double) zae / (double) getMail().getEmpfaenger()
+                .size() * 100d;
             monitor.setPercentComplete((int) proz);
           }
           monitor.setPercentComplete(100);
@@ -543,18 +533,11 @@ public class MailControl extends FilterControl
     Application.getController().start(t);
   }
 
-  public Map<String, Object> getVariables(Mitglied m) throws RemoteException
-  {
-    Map<String, Object> map = new MitgliedMap().getMap(m, null);
-    map = new AllgemeineMap().getMap(map);
-    return map;
-  }
-
   /**
    * Speichert die Mail in der DB.
-   * 
+   *
    * @param mitversand
-   *          wenn true, wird Spalte Versand auf aktuelles Datum gesetzt.
+   *     wenn true, wird Spalte Versand auf aktuelles Datum gesetzt.
    */
   public void handleStore(boolean mitversand)
   {
@@ -612,8 +595,7 @@ public class MailControl extends FilterControl
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler bei speichern der Mail: "
-          + e.getLocalizedMessage();
+      String fehler = "Fehler bei speichern der Mail: " + e.getLocalizedMessage();
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
@@ -639,7 +621,7 @@ public class MailControl extends FilterControl
     mailsList.setRememberOrder(true);
     return mailsList;
   }
-  
+
   public void TabRefresh()
   {
     try
@@ -661,13 +643,12 @@ public class MailControl extends FilterControl
       Logger.error("Fehler", e1);
     }
   }
-  
-  private  DBIterator<Mail> getMails() throws RemoteException
+
+  private DBIterator<Mail> getMails() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Mail> mails = service.createList(Mail.class);
 
-    
     if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) getSuchname().getValue();
@@ -677,9 +658,9 @@ public class MailControl extends FilterControl
         mails.addFilter("mailempfaenger.mail = mail.id");
         mails.join("mitglied");
         mails.addFilter("mitglied.id = mailempfaenger.mitglied");
-        mails.addFilter("(lower(name) like ? or lower(vorname) like ?) ", 
+        mails.addFilter("(lower(name) like ? or lower(vorname) like ?) ",
             new Object[] { "%" + tmpSuchname.toLowerCase() + "%",
-                "%" + tmpSuchname.toLowerCase() + "%"});
+                "%" + tmpSuchname.toLowerCase() + "%" });
       }
     }
     if (isSuchtextAktiv() && getSuchtext().getValue() != null)
@@ -687,76 +668,40 @@ public class MailControl extends FilterControl
       String tmpSuchtext = (String) getSuchtext().getValue();
       if (tmpSuchtext.length() > 0)
       {
-        mails.addFilter("(lower(betreff) like ?)", 
+        mails.addFilter("(lower(betreff) like ?)",
             new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
       }
     }
-    if (isEingabedatumvonAktiv()  && getEingabedatumvon().getValue() != null)
+    if (isEingabedatumvonAktiv() && getEingabedatumvon().getValue() != null)
     {
       Date d = (Date) getEingabedatumvon().getValue();
-      mails.addFilter("bearbeitung >= ?", new Object[] { new java.sql.Date(d.getTime()) });
+      mails.addFilter("bearbeitung >= ?",
+          new Object[] { new java.sql.Date(d.getTime()) });
     }
     if (isEingabedatumbisAktiv() && getEingabedatumbis().getValue() != null)
     {
       Calendar cal = Calendar.getInstance();
       cal.setTime((Date) getEingabedatumbis().getValue());
       cal.add(Calendar.DAY_OF_MONTH, 1);
-      mails.addFilter("bearbeitung <= ?", 
+      mails.addFilter("bearbeitung <= ?",
           new Object[] { new java.sql.Date(cal.getTimeInMillis()) });
     }
     if (isDatumvonAktiv() && getDatumvon().getValue() != null)
     {
       Date d = (Date) getDatumvon().getValue();
-      mails.addFilter("mail.versand >= ?", new Object[] { new java.sql.Date(d.getTime()) });
+      mails.addFilter("mail.versand >= ?",
+          new Object[] { new java.sql.Date(d.getTime()) });
     }
     if (isDatumbisAktiv() && getDatumbis().getValue() != null)
     {
       Calendar cal = Calendar.getInstance();
       cal.setTime((Date) getDatumbis().getValue());
       cal.add(Calendar.DAY_OF_MONTH, 1);
-      mails.addFilter("mail.versand <= ?", 
+      mails.addFilter("mail.versand <= ?",
           new Object[] { new java.sql.Date(cal.getTimeInMillis()) });
     }
     mails.setOrder("ORDER BY betreff");
 
     return mails;
   }
-
-  public class EvalMail
-  {
-
-    VelocityContext context = null;
-
-    public EvalMail(MailEmpfaenger empf) throws RemoteException
-    {
-      context = new VelocityContext();
-      context.put("dateformat", new JVDateFormatTTMMJJJJ());
-      context.put("decimalformat", Einstellungen.DECIMALFORMAT);
-      context.put("email", empf.getMailAdresse());
-      context.put("empf", empf.getMitglied());
-      Map<String, Object> map = getVariables(empf.getMitglied());
-      VarTools.add(context, map);
-    }
-
-    public String evalBetreff(String betr) throws ParseErrorException,
-        MethodInvocationException, ResourceNotFoundException, IOException
-    {
-      if (context == null)
-        return null;
-      StringWriter wbetr = new StringWriter();
-      Velocity.evaluate(context, wbetr, "LOG", betr);
-      return wbetr.getBuffer().toString();
-    }
-
-    public String evalText(String txt) throws ParseErrorException,
-        MethodInvocationException, ResourceNotFoundException, IOException
-    {
-      if (context == null)
-        return null;
-      StringWriter wtext = new StringWriter();
-      Velocity.evaluate(context, wtext, "LOG", txt);
-      return wtext.getBuffer().toString();
-    }
-  }
-
 }

@@ -83,7 +83,7 @@ auxiliary.show.customizer.message=<message>
                 <package-root>src</package-root>
                 <classpath mode="compile">${define.compilepath}</classpath>
                 <built-to>releases</built-to>
-                <source-level>1.6</source-level>
+                <source-level>11</source-level>
             </compilation-unit>
         </java-data>
     </configuration>

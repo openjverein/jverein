@@ -10,25 +10,17 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
 
 package de.jost_net.JVerein.gui.view;
 
-import java.rmi.RemoteException;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.dialogs.ShowVariablesDialog;
+import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
-import de.jost_net.JVerein.gui.menu.ShowVariablesMenu;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
@@ -42,17 +34,21 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+
+import java.rmi.RemoteException;
 
 /**
- * Ein View zum Bearbeiten von Skripten für ein Lesefeld.
+ * Ein View zum Bearbeiten von Skripten fÃ¼r ein Lesefeld.
  */
-public class LesefeldDetailView extends AbstractView implements Listener
+public class LesefeldDetailView extends AbstractView
 {
 
-  private LesefeldAuswerter lesefeldAuswerter;
+  private final LesefeldAuswerter lesefeldAuswerter;
 
   private Lesefeld lesefeld;
 
@@ -61,22 +57,19 @@ public class LesefeldDetailView extends AbstractView implements Listener
   private TextAreaInput textAreaInputScriptResult;
 
   private TextInput textInputScriptName;
-  
+
   private AbstractInput mitglied;
-  
+
   private Mitglied selectedMitglied;
 
-  
   public LesefeldDetailView(LesefeldAuswerter lesefeldAuswerter,
       Lesefeld lesefeld, Mitglied mitglied)
   {
     this.lesefeldAuswerter = lesefeldAuswerter;
     this.lesefeld = lesefeld;
     this.selectedMitglied = mitglied;
-    // KeyListener für HotKeys.
-    GUI.getDisplay().addFilter(SWT.KeyDown, this);
   }
-  
+
   @Override
   public void bind() throws Exception
   {
@@ -84,8 +77,8 @@ public class LesefeldDetailView extends AbstractView implements Listener
     SimpleContainer container = new SimpleContainer(parent, true);
 
     container.addLabelPair("Mitglied", getMitglied());
-    
-    // Auf diese Input-Felder sollte nur über die Funktionen
+
+    // Auf diese Input-Felder sollte nur Ã¼ber die Funktionen
     // updateLesefeldFromGUI() und updateScriptResult() zugegriffen werden.
     textInputScriptName = new TextInput(
         lesefeld != null ? lesefeld.getBezeichnung() : "");
@@ -102,21 +95,15 @@ public class LesefeldDetailView extends AbstractView implements Listener
       updateScriptResult();
 
     ButtonArea buttonArea = new ButtonArea();
-    Button button = new Button("Aktualisieren", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        updateScriptResult();
-      }
-    }, null, false, "view-refresh.png");
+    Button button = new Button("Aktualisieren", context -> updateScriptResult(),
+        null, false, "view-refresh.png");
     buttonArea.addButton(button);
     button = new Button("Variablen anzeigen",
-        new OpenInsertVariableDialogAction(), null, false, "bookmark.png");
+        new OpenInsertVariableDialogAction(), lesefeldAuswerter, false,
+        "bookmark.png");
     buttonArea.addButton(button);
-    button = new Button("Speichern", new SaveLesefeldAction(), null,
-        false, "document-save.png");
+    button = new Button("Speichern", new SaveLesefeldAction(), null, false,
+        "document-save.png");
     buttonArea.addButton(button);
     buttonArea.paint(this.getParent());
   }
@@ -125,7 +112,6 @@ public class LesefeldDetailView extends AbstractView implements Listener
    * Aktualisiert lokales Feld lesefeld mit den vom Nutzer eingegebenen Daten
    * aus der GUI. Dabei wird ggf. lesefeld initialisiert und die Eindeutigkeit
    * des Namens des Skriptes sichergestellt.
-   * 
    */
   private boolean updateLesefeldFromGUI()
   {
@@ -142,8 +128,8 @@ public class LesefeldDetailView extends AbstractView implements Listener
         if (lesefeld.getBezeichnung().equals(textInputScriptName.getValue()))
         {
           String currentid = lesefeld.getID();
-          if (this.lesefeld == null || (this.lesefeld != null
-              && !this.lesefeld.getID().equalsIgnoreCase((currentid))))
+          if (this.lesefeld == null || !this.lesefeld.getID()
+              .equalsIgnoreCase(currentid))
           {
             GUI.getStatusBar()
                 .setErrorText("Bitte eindeutigen Skript-Namen eingeben!");
@@ -152,15 +138,15 @@ public class LesefeldDetailView extends AbstractView implements Listener
         }
       }
 
-      // erstelle neues lesefeld, wenn nötig.
+      // erstelle neues lesefeld, wenn nÃ¶tig.
       if (lesefeld == null)
-        lesefeld = (Lesefeld) Einstellungen.getDBService()
+        lesefeld = Einstellungen.getDBService()
             .createObject(Lesefeld.class, null);
 
       lesefeld.setBezeichnung((String) textInputScriptName.getValue());
       lesefeld.setScript((String) textAreaInputScriptCode.getValue());
-      lesefeld
-          .setEvaluatedContent((String) textAreaInputScriptResult.getValue());
+      lesefeld.setEvaluatedContent(
+          (String) textAreaInputScriptResult.getValue());
     }
     catch (RemoteException e)
     {
@@ -172,18 +158,12 @@ public class LesefeldDetailView extends AbstractView implements Listener
     return true;
   }
 
-  @Override
-  public void unbind()
-  {
-    GUI.getDisplay().removeFilter(SWT.KeyDown, this);
-  }
-
   /**
    * Holt akutelles Skript von GUI, evaluiert dieses und schreibt Ergebnis
-   * zurück in die GUI.
-   * 
+   * zurÃ¼ck in die GUI.
+   *
    * @return true bei Erfolg, sonst false (Fehlermeldung wird in
-   *         Skript-Ausgabe-Feld geschrieben).
+   *     Skript-Ausgabe-Feld geschrieben).
    */
   private boolean updateScriptResult()
   {
@@ -196,7 +176,7 @@ public class LesefeldDetailView extends AbstractView implements Listener
       result = (String) lesefeldAuswerter.eval(lesefeld.getScript());
       if (result == null)
       {
-        result = "Skript-Fehler: Skript muss Rückgabewert liefern.";
+        result = "Skript-Fehler: Skript muss RÃ¼ckgabewert liefern.";
         success = false;
       }
     }
@@ -212,11 +192,6 @@ public class LesefeldDetailView extends AbstractView implements Listener
     }
 
     return success;
-  }
-
-  @Override
-  public void handleEvent(Event event)
-  {
   }
 
   private final class SaveLesefeldAction implements Action
@@ -245,41 +220,10 @@ public class LesefeldDetailView extends AbstractView implements Listener
       }
       else
         GUI.getStatusBar().setErrorText(
-            "Skript enthält Fehler. Kann nicht gespeichert werden.");
+            "Skript enthÃ¤lt Fehler. Kann nicht gespeichert werden.");
     }
   }
 
-  private final class OpenInsertVariableDialogAction implements Action
-  {
-
-    @Override
-    public void handleAction(Object context)
-    {
-      try
-      {
-        ShowVariablesDialog d = new ShowVariablesDialog(
-            lesefeldAuswerter.getMap(), false);
-        ShowVariablesMenu menu = new ShowVariablesMenu();
-        menu.setPrependCopyText("");
-        menu.setAppendCopyText("");
-        d.setContextMenu(menu);
-        d.setDoubleClickAction(menu.getCopyToClipboardAction());
-        d.open();
-      }
-      catch (OperationCanceledException e)
-      {
-        
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Anzeigen der Variablen.", e);
-        GUI.getStatusBar().setErrorText("Fehler beim Anzeigen der Variablen.");
-      }
-
-    }
-
-  }
-  
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
@@ -293,7 +237,7 @@ public class LesefeldDetailView extends AbstractView implements Listener
     mitglied.setMandatory(true);
     return mitglied;
   }
-  
+
   public class MitgliedListener implements Listener
   {
 
@@ -310,13 +254,13 @@ public class LesefeldDetailView extends AbstractView implements Listener
         if (selected == null || selected == selectedMitglied)
           return;
         selectedMitglied = selected;
-        lesefeldAuswerter
-            .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
+        lesefeldAuswerter.setMap(
+            new MitgliedMap().getMap(selectedMitglied, null, true));
         updateScriptResult();
       }
       catch (RemoteException e)
       {
-        String fehler = "Fehler beim Auswählen des Mitgliedes";
+        String fehler = "Fehler beim AuswÃ¤hlen des Mitgliedes";
         Logger.error(fehler, e);
         GUI.getStatusBar().setErrorText(fehler);
       }
