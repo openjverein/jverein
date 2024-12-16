@@ -1,8 +1,11 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.control.SaldoControl;
+<<<<<<< HEAD
 import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
+=======
+>>>>>>> 165f99cd (WirtschaftsplanungView skizziert)
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -24,10 +27,17 @@ public class WirtschaftsplanungView extends AbstractView
     }
     GUI.getView().setTitle("Wirtschaftsplanung " + ((WirtschaftsplanungZeile) this.getCurrentObject()).getGeschaeftsjahr());
 
+<<<<<<< HEAD
     final WirtschaftsplanungControl control = new WirtschaftsplanungControl(this);
 
     WirtschaftsplanUebersichtPart uebersicht = new WirtschaftsplanUebersichtPart(control);
     uebersicht.paint(this.getParent());
+=======
+    LabelGroup general = new LabelGroup(this.getParent(), "Übersicht");
+    TextInput text = new TextInput(((WirtschaftsplanungZeile) this.getCurrentObject()).getPlanEinnahme().toString());
+    text.disable();
+    general.addLabelPair("Einnahmen Soll", text);
+>>>>>>> 165f99cd (WirtschaftsplanungView skizziert)
 
     SimpleContainer group = new SimpleContainer(this.getParent(), true, 2);
 
