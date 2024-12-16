@@ -598,7 +598,12 @@ public interface Einstellung extends DBObject, IBankverbindung
   
   public Boolean getBuchungsklasseInBuchung() throws RemoteException;
 
-  public void setBuchungsklasseInBuchung(Boolean bkinbuchung) throws RemoteException;
+  public void setBuchungsklasseInBuchung(Boolean bkinbuchung)
+      throws RemoteException;
+
+  Boolean getWirtschaftsplanung() throws RemoteException;
+
+  void setWirtschaftsplanung(Boolean wirtschaftsplanung) throws RemoteException;
 
   public Boolean getSummenAnlagenkonto() throws RemoteException;
 

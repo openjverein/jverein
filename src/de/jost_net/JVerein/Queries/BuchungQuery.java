@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.HashMap;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.io.Suchbetrag;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -31,6 +32,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.logging.Logger;
 
 public class BuchungQuery
 {
@@ -58,6 +60,8 @@ public class BuchungQuery
   
   private HashMap<String, String> sortValues = new HashMap<String, String>();
 
+  private final BuchungsControl.Datumsart datumsart;
+
   private void SortHashMap() {
 	  sortValues.put("ORDER_ID","order by id");
 	  sortValues.put("ORDER_DATUM","order by datum");
@@ -78,7 +82,8 @@ public class BuchungQuery
 
   public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
       Buchungsart buchungsart, Projekt projekt, String text, String betrag,
-      Boolean hasMitglied, String mitglied, boolean geldkonto)
+      Boolean hasMitglied, String mitglied, boolean geldkonto,
+      BuchungsControl.Datumsart datumsart)
   {
     this.datumvon = datumvon;
     this.datumbis = datumbis;
@@ -90,6 +95,7 @@ public class BuchungQuery
     this.hasMitglied = hasMitglied;
     this.geldkonto = geldkonto;
     this.mitglied = mitglied;
+    this.datumsart = datumsart;
   }
   
   public String getOrder(String value) {
@@ -168,9 +174,21 @@ public class BuchungQuery
       it.addFilter("(lower(mitglied.name) like ? or lower(mitglied.vorname) like ?)",
           new Object[] { mitgliedsuche, mitgliedsuche });
     }
-    
-    it.addFilter("buchung.datum >= ? ", datumvon);
-    it.addFilter("buchung.datum <= ? ", datumbis);
+
+    switch (datumsart)
+    {
+      case BUCHUNGSDATUM:
+        it.addFilter("buchung.datum >= ? ", datumvon);
+        it.addFilter("buchung.datum <= ? ", datumbis);
+        break;
+      case LEISTUNGSDATUM:
+        it.addFilter("buchung.leistungsdatum >= ? ", datumvon);
+        it.addFilter("buchung.leistungsdatum <= ? ", datumbis);
+        break;
+      default:
+        Logger.error("Fehler beim Filtern!");
+        break;
+    }
 
     if (konto != null)
     {

@@ -16,7 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Einstellung;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
@@ -48,8 +49,10 @@ public class BuchungslisteView extends AbstractView
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Buchungen");
-    
-    final BuchungsControl control = new BuchungsControl(this, Kontenart.GELDKONTO);
+    Einstellung einstellung = Einstellungen.getEinstellung();
+
+    final BuchungsControl control = new BuchungsControl(this,
+        Kontenart.GELDKONTO);
 
     LabelGroup group = new LabelGroup(getParent(), "Konto");
     group.addLabelPair("Konto", control.getSuchKonto());
@@ -67,7 +70,12 @@ public class BuchungslisteView extends AbstractView
     left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
     left.addLabelPair("Projekt", control.getSuchProjekt());
     left.addLabelPair("Betrag", control.getSuchBetrag());
-    left.addLabelPair("Mitglied zugeordnet?", control.getSuchMitgliedZugeordnet());
+    left.addLabelPair("Mitglied zugeordnet?",
+        control.getSuchMitgliedZugeordnet());
+    if (einstellung.getWirtschaftsplanung())
+    {
+      right.addLabelPair("Datumsart", control.getDatumsart());
+    }
     right.addLabelPair("Von Datum", control.getVondatum());
     right.addLabelPair("Bis Datum", control.getBisdatum());
     right.addLabelPair("Enthaltener Text", control.getSuchtext());

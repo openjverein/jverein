@@ -67,6 +67,10 @@ public interface Buchung extends DBObject
 
   public void setDatum(Date datum) throws RemoteException;
 
+  Date getLeistungsdatum() throws RemoteException;
+
+  void setLeistungsdatum(Date leistungsdatum) throws RemoteException;
+
   public String getArt() throws RemoteException;
 
   public void setArt(String art) throws RemoteException;

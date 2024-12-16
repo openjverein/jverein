@@ -54,6 +54,7 @@ public class BuchungNeuAction implements Action
           buch.setBuchungsartId(konto.getAfaartId());
         }
         buch.setDatum(new Date());
+        buch.setLeistungsdatum(new Date());
         buch.setKonto(konto);
       }
       else
@@ -72,6 +73,7 @@ public class BuchungNeuAction implements Action
                 buch.setBuchungsartId(k.getAfaartId());
               }
               buch.setDatum(new Date());
+              buch.setLeistungsdatum(new Date());
               buch.setKonto(k);
             }
           }

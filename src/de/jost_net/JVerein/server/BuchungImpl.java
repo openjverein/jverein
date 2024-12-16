@@ -356,7 +356,24 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
 
   public void setDatum(String datum) throws RemoteException
   {
-    setAttribute("datum", toDate(datum));
+    setDatum(toDate(datum));
+  }
+
+  @Override
+  public Date getLeistungsdatum() throws RemoteException
+  {
+    return (Date) getAttribute("leistungsdatum");
+  }
+
+  @Override
+  public void setLeistungsdatum(Date leistungsdatum) throws RemoteException
+  {
+    setAttribute("leistungsdatum", leistungsdatum);
+  }
+
+  public void setLeistungsdatum(String datum) throws RemoteException
+  {
+    setLeistungsdatum(toDate(datum));
   }
 
   @Override

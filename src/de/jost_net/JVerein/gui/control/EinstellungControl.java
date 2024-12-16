@@ -307,6 +307,8 @@ public class EinstellungControl extends AbstractControl
   
   private CheckboxInput freiebuchungsklasse;
 
+  private CheckboxInput wirtschaftsplanung;
+
   private CheckboxInput summenAnlagenkonto;
 
 
@@ -822,6 +824,19 @@ public class EinstellungControl extends AbstractControl
     freiebuchungsklasse = new CheckboxInput(Einstellungen.getEinstellung().getBuchungsklasseInBuchung());
     freiebuchungsklasse.setName("Keine feste Zuordnung von Buchungsklasse zu Buchungsart z.B. SKR 42");
     return freiebuchungsklasse;
+  }
+
+  public CheckboxInput getWirtschaftsplanung() throws RemoteException
+  {
+    if (wirtschaftsplanung != null)
+    {
+      return wirtschaftsplanung;
+    }
+    wirtschaftsplanung = new CheckboxInput(
+        Einstellungen.getEinstellung().getWirtschaftsplanung());
+    wirtschaftsplanung.setName(
+        "Zusätzliches Leistungsdatum aktivieren"); //TODO: Text zu Wirtschaftsplanung ändern, sobald implementiert.
+    return wirtschaftsplanung;
   }
 
   public CheckboxInput getExterneMitgliedsnummer() throws RemoteException
