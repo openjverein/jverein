@@ -351,7 +351,7 @@ public class ZusatzbetragControl extends AbstractControl
     while (it.hasNext())
     {
       Zusatzbetrag z = (Zusatzbetrag) it.next();
-      if (!z.isAktiv(new Date()))
+      if (!z.isOffen(new Date()))
       {
         table.removeItem(z);
       }
