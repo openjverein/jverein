@@ -1,15 +1,20 @@
 # This workflow will build a Java project with Ant
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-ant
 
-name: OpenJVerein official release
+name: OpenJVerein nightly release
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - '**'
 
 jobs:
   call-reusable-workflow:
     uses: ./.github/workflows/reusable-build.yml
 
-  release:
+  nightly-build:
     needs: call-reusable-workflow
     runs-on: ubuntu-latest
     steps:
@@ -32,7 +37,7 @@ jobs:
       id: openjverein
       working-directory: ./
       run: |
-        ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml)
+        ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml nightly)
         echo ${ant_output}
 
         ssa="SELECTED_VERSION="
@@ -40,7 +45,6 @@ jobs:
         text="${ant_output#*${ssa}}"
         text="${text%${ssb}*}.zip"
         tmp_version=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-        tmp_version=$tmp_version
 
         ssa="SELECTED_FILENAME="
         text="${ant_output#*${ssa}}"
@@ -59,11 +63,19 @@ jobs:
         builddatetime=$(date +'%Y-%m-%d %H:%M')
         echo "### Version: ${tmp_version} | filename: ${tmp_filename} | build datetime: ${builddatetime}" >> $GITHUB_STEP_SUMMARY
 
+    # Update tag
+    - name: Tag repo
+      uses: richardsimko/update-tag@v1
+      with:
+        tag_name: ${{ steps.openjverein.outputs.selected_version }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.openjverein.outputs.selected_version }}
-        prerelease: false
+        prerelease: true
         name: Release ${{ steps.openjverein.outputs.selected_version }}
         files: ./jverein/${{ steps.openjverein.outputs.selected_path }}
-        generate_release_notes: true
+        generate_release_notes: false

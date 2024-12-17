@@ -20,6 +20,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAutoNeuAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -54,17 +55,35 @@ public class SpendenbescheinigungListeView extends AbstractView
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Spendedatum von", control.getEingabedatumvon());
     right.addLabelPair("Spendedatum bis", control.getEingabedatumbis());
-    
+
     ButtonArea fbuttons = new ButtonArea();
+    ToolTipButton zurueck1 = control.getZurueckButton(control.getDatumvon(),
+        control.getDatumbis());
+    fbuttons.addButton(zurueck1);
+    ToolTipButton vor1 = control.getVorButton(control.getDatumvon(),
+        control.getDatumbis());
+    fbuttons.addButton(vor1);
+    ToolTipButton zurueck2 = control.getZurueckButton(
+        control.getEingabedatumvon(), control.getEingabedatumbis());
+    fbuttons.addButton(zurueck2);
+    ToolTipButton vor2 = control.getVorButton(control.getEingabedatumvon(),
+        control.getEingabedatumbis());
+    fbuttons.addButton(vor2);
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
+    zurueck1.setToolTipText("Bescheinigung Datumsbereich zurück");
+    vor1.setToolTipText("Bescheinigung Datumsbereich vowärts");
+    zurueck2.setToolTipText("Spende Datumsbereich zurück");
+    vor2.setToolTipText("Spende Datumsbereich vowärts");
 
     control.getSpendenbescheinigungList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
+    buttons.addButton(control.getCSVExportButton());
+    buttons.addButton(control.getPDFExportButton());
     buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(Spendenart.SACHSPENDE), null,
         false, "document-new.png");
     buttons.addButton("Neu (automatisch)",

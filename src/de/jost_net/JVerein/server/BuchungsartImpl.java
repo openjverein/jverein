@@ -89,10 +89,6 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   @Override
   protected Class<?> getForeignObject(String arg0)
   {
-    if ("buchungsklasse".equals(arg0))
-    {
-      return Buchungsklasse.class;
-    }
     return null;
   }
 
@@ -160,7 +156,14 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   @Override
   public Buchungsklasse getBuchungsklasse() throws RemoteException
   {
-    return (Buchungsklasse) getAttribute("buchungsklasse");
+    Long l = (Long) super.getAttribute("buchungsklasse");
+    if (l == null)
+    {
+      return null; // Keine Buchungsklasse zugeordnet
+    }
+
+    Cache cache = Cache.get(Buchungsklasse.class, true);
+    return (Buchungsklasse) cache.get(l);
   }
 
   @Override

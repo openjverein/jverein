@@ -18,6 +18,9 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -36,6 +39,7 @@ import de.jost_net.JVerein.gui.dialogs.ZusatzfelderAuswahlDialog;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.SuchSpendenart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Adresstyp;
@@ -149,8 +153,15 @@ public class FilterControl extends AbstractControl
   
   protected IntegerNullInput integerausw = null;
   
+  private Calendar calendar = Calendar.getInstance();
+
+  private enum RANGE
+  {
+    MONAT, TAG
+  }
+
   protected SelectInput suchspendenart = null;
-  
+
   public enum Mitgliedstyp {
     MITGLIED,
     NICHTMITGLIED,
@@ -1607,6 +1618,111 @@ public class FilterControl extends AbstractControl
     else
     {
       settings.setAttribute(settingsprefix + setting, "");
+    }
+  }
+  
+  public ToolTipButton getZurueckButton(DateInput vonDatum, DateInput bisDatum)
+  {
+    return new ToolTipButton("", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Date von = (Date) vonDatum.getValue();
+        Date bis = (Date) bisDatum.getValue();
+        if (getRangeTyp(von, bis) == RANGE.TAG)
+        {
+          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+          delta++;
+          calendar.setTime(von);
+          calendar.add(Calendar.DAY_OF_MONTH, -delta);
+          vonDatum.setValue(calendar.getTime());
+          calendar.setTime(bis);
+          calendar.add(Calendar.DAY_OF_MONTH, -delta);
+          bisDatum.setValue(calendar.getTime());
+        }
+        else
+        {
+          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
+          delta++;
+          calendar.setTime(von);
+          calendar.add(Calendar.MONTH, -delta);
+          vonDatum.setValue(calendar.getTime());
+          calendar.add(Calendar.MONTH, delta);
+          calendar.add(Calendar.DAY_OF_MONTH, -1);
+          bisDatum.setValue(calendar.getTime());
+        }
+        TabRefresh();
+      }
+    }, null, false, "go-previous.png");
+  }
+
+  public ToolTipButton getVorButton(DateInput vonDatum, DateInput bisDatum)
+  {
+    return new ToolTipButton("", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Date von = (Date) vonDatum.getValue();
+        Date bis = (Date) bisDatum.getValue();
+        if (getRangeTyp(von, bis) == RANGE.TAG)
+        {
+          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+          delta++;
+          calendar.setTime(von);
+          calendar.add(Calendar.DAY_OF_MONTH, delta);
+          vonDatum.setValue(calendar.getTime());
+          calendar.setTime(bis);
+          calendar.add(Calendar.DAY_OF_MONTH, delta);
+          bisDatum.setValue(calendar.getTime());
+        }
+        else
+        {
+          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
+          delta++;
+          calendar.setTime(von);
+          calendar.add(Calendar.MONTH, delta);
+          vonDatum.setValue(calendar.getTime());
+          calendar.add(Calendar.MONTH, delta);
+          calendar.add(Calendar.DAY_OF_MONTH, -1);
+          bisDatum.setValue(calendar.getTime());
+        }
+        TabRefresh();
+      }
+    }, null, false, "go-next.png");
+  }
+
+  private RANGE getRangeTyp(Date von, Date bis) throws ApplicationException
+  {
+    checkDate(von, bis);
+    calendar.setTime(von);
+    if (calendar.get(Calendar.DAY_OF_MONTH) != 1)
+      return RANGE.TAG;
+    calendar.setTime(bis);
+    calendar.add(Calendar.DAY_OF_MONTH, 1);
+    if (calendar.get(Calendar.DAY_OF_MONTH) != 1)
+      return RANGE.TAG;
+    return RANGE.MONAT;
+  }
+  
+  private void checkDate(Date von, Date bis) throws ApplicationException
+  {
+    if (von == null)
+    {
+      throw new ApplicationException("Bitte Von Datum eingeben!");
+    }
+    if (bis == null)
+    {
+      throw new ApplicationException("Bitte Bis Datum eingeben!");
+    }
+    if (von.after(bis))
+    {
+      throw new ApplicationException("Von Datum ist nach Bis Datum!");
     }
   }
 }

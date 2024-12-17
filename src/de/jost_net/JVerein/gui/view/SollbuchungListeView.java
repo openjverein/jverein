@@ -22,6 +22,7 @@ import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.SollbuchungExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -56,9 +57,17 @@ public class SollbuchungListeView extends AbstractView
     right.addLabelPair("Zahler Mail", control.getMailauswahl());
 
     ButtonArea fbuttons = new ButtonArea();
+    ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),
+        control.getDatumbis());
+    fbuttons.addButton(zurueck);
+    ToolTipButton vor = control.getVorButton(control.getDatumvon(),
+        control.getDatumbis());
+    fbuttons.addButton(vor);
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
+    zurueck.setToolTipText("Datumsbereich zurück");
+    vor.setToolTipText("Datumsbereich vowärts");
 
     control.getMitgliedskontoList(new SollbuchungEditAction(),
         new SollbuchungMenu(), false).paint(this.getParent());

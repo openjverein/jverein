@@ -32,7 +32,9 @@ import java.util.TreeSet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -49,8 +51,11 @@ import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
+import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.io.SpendenbescheinigungExportCSV;
+import de.jost_net.JVerein.io.SpendenbescheinigungExportPDF;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -141,7 +146,10 @@ public class SpendenbescheinigungControl extends DruckMailControl
   private String sql = "";
   
   private boolean editable = false;
-  
+
+  final static String ExportPDF = "PDF";
+
+  final static String ExportCSV = "CSV";
 
   public SpendenbescheinigungControl(AbstractView view)
   {
@@ -1088,6 +1096,114 @@ public class SpendenbescheinigungControl extends DruckMailControl
       public boolean isInterrupted()
       {
         return this.cancel;
+      }
+    };
+    Application.getController().start(t);
+  }
+  
+  public Button getPDFExportButton()
+  {
+    Button b = new Button("PDF", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        starteExport(ExportPDF);
+      }
+    }, null, false, "file-pdf.png");
+    // button
+    return b;
+  }
+
+  public Button getCSVExportButton()
+  {
+    Button b = new Button("CSV", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        starteExport(ExportCSV);
+      }
+    }, null, false, "xsd.png");
+    // button
+    return b;
+  }
+
+  private void starteExport(String type) throws ApplicationException
+  {
+    try
+    {
+      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+      fd.setText("Ausgabedatei wählen.");
+      String path = settings.getString("lastdir",
+          System.getProperty("user.home"));
+      if (path != null && path.length() > 0)
+      {
+        fd.setFilterPath(path);
+      }
+      fd.setFileName(new Dateiname("spendenbescheinigungen", "",
+          Einstellungen.getEinstellung().getDateinamenmuster(), type).get());
+
+      final String s = fd.open();
+
+      if (s == null || s.length() == 0)
+      {
+        return;
+      }
+
+      final File file = new File(s);
+      settings.setAttribute("lastdir", file.getParent());
+      ArrayList<Spendenbescheinigung> spbList = getSpendenbescheinigungen();
+      ausgabe(type, file, spbList);
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(
+          String.format("Fehler beim Aufbau des Reports: %s", e.getMessage()));
+    }
+  }
+
+  private void ausgabe(final String type, final File file,
+      final ArrayList<Spendenbescheinigung> spbList)
+  {
+    BackgroundTask t = new BackgroundTask()
+    {
+      @Override
+      public void run(ProgressMonitor monitor) throws ApplicationException
+      {
+        try
+        {
+          switch (type)
+          {
+            case ExportCSV:
+              new SpendenbescheinigungExportCSV(file, spbList);
+              break;
+            case ExportPDF:
+              new SpendenbescheinigungExportPDF(file, spbList);
+              break;
+          }
+          GUI.getCurrentView().reload();
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler", e);
+          GUI.getStatusBar().setErrorText(e.getMessage());
+          throw new ApplicationException(e);
+        }
+        FileViewer.show(file);
+      }
+
+      @Override
+      public void interrupt()
+      {
+        //
+      }
+
+      @Override
+      public boolean isInterrupted()
+      {
+        return false;
       }
     };
     Application.getController().start(t);
