@@ -42,6 +42,7 @@ import org.mustangproject.Product;
 import org.mustangproject.TradeParty;
 import org.mustangproject.ZUGFeRD.IZUGFeRDExporter;
 import org.mustangproject.ZUGFeRD.ZUGFeRDExporterFromPDFA;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -723,13 +724,18 @@ public class FormularAufbereitung
     // Sollbuchungen
     for (Mitgliedskonto mk : re.getMitgliedskontoList())
     {
+      Double betrag = mk.getNettobetrag();
+      if (betrag == null || betrag == 0)
+      {
+        betrag = mk.getBetrag();
+      }
       if (mk.getBetrag() < 0)
       {
         invoice.addItem(new Item(
             new Product(mk.getZweck1(), "", "LS",
                 new BigDecimal(mk.getSteuersatz()).setScale(2,
                     RoundingMode.HALF_DOWN)),
-            new BigDecimal(mk.getBetrag() * -1).setScale(2,
+            new BigDecimal(betrag * -1).setScale(2,
                 RoundingMode.HALF_DOWN),
             new BigDecimal(-1.0)));
       }
@@ -739,7 +745,8 @@ public class FormularAufbereitung
                                                                        // pauschal
             new BigDecimal(mk.getSteuersatz()).setScale(2,
                 RoundingMode.HALF_DOWN)),
-            new BigDecimal(mk.getBetrag()).setScale(2, RoundingMode.HALF_DOWN),
+            new BigDecimal(betrag).setScale(2,
+                RoundingMode.HALF_DOWN),
             new BigDecimal(1.0)));
       }
     }
