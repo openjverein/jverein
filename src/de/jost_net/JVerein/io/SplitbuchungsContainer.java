@@ -158,6 +158,7 @@ public class SplitbuchungsContainer
       if (b.getSplitTyp() == SplitbuchungTyp.HAUPT)
       {
         b.setSplitId(null);
+        b.setSplitTyp(null);
         b.store();
       }
       else
