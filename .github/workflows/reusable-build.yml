@@ -31,7 +31,7 @@ jobs:
           ./cached-tags
           jameica
           hibiscus
-        key: ${{ runner.os }}-${{ github.workflow_sha }}
+        key: ${{ runner.os }}-${{ github.repository_id }}
 
     - name: Load cached tags
       id: load-cache
@@ -94,4 +94,4 @@ jobs:
             ./cached-tags
             jameica
             hibiscus
-        key: ${{ runner.os }}-${{ github.workflow_sha }}
+        key: ${{ runner.os }}-${{ github.repository_id }}
