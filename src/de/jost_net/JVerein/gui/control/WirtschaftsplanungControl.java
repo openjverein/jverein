@@ -9,9 +9,15 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
+import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.util.ApplicationException;
 
 import java.rmi.RemoteException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +27,8 @@ public class WirtschaftsplanungControl extends AbstractControl
   private de.willuhn.jameica.system.Settings settings;
 
   private TablePart wirtschaftsplaene;
+
+  private LabelGroup uebersicht;
 
   /**
    * Erzeugt einen neuen AbstractControl der fuer die angegebene View.
@@ -127,5 +135,36 @@ public class WirtschaftsplanungControl extends AbstractControl
     wirtschaftsplaene.addColumn("Saldo Differenz", "differenz", formatter);
 
     return wirtschaftsplaene;
+  }
+
+  public LabelGroup getUebersicht() {
+    if (uebersicht != null) {
+      return uebersicht;
+    }
+
+    uebersicht = new LabelGroup(view.getParent(), "Übersicht");
+
+    DecimalInput sollEinnahme = new DecimalInput(getWirtschaftsplanungZeile().getPlanEinnahme(), Einstellungen.DECIMALFORMAT);;
+    sollEinnahme.disable();
+    uebersicht.addLabelPair("Einnahmen Soll", sollEinnahme);
+    DecimalInput istEinnahme = new DecimalInput(getWirtschaftsplanungZeile().getIstEinnahme(), Einstellungen.DECIMALFORMAT);
+    istEinnahme.disable();
+    uebersicht.addLabelPair("Einnahmen Ist", istEinnahme);
+    DecimalInput sollAusgaben = new DecimalInput(getWirtschaftsplanungZeile().getPlanAusgabe(), Einstellungen.DECIMALFORMAT);
+    sollAusgaben.disable();
+    uebersicht.addLabelPair("Ausgaben Soll", sollAusgaben);
+    DecimalInput istAusgaben = new DecimalInput(getWirtschaftsplanungZeile().getIstAusgabe(), Einstellungen.DECIMALFORMAT);
+    istAusgaben.disable();
+    uebersicht.addLabelPair("Ausgaben Ist", istAusgaben);
+
+    return uebersicht;
+  }
+
+  public WirtschaftsplanungZeile getWirtschaftsplanungZeile()
+  {
+    if (getCurrentObject() instanceof WirtschaftsplanungZeile) {
+      return (WirtschaftsplanungZeile) getCurrentObject();
+    }
+    return null;
   }
 }
