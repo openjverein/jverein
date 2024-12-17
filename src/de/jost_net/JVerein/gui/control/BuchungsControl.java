@@ -988,6 +988,7 @@ public class BuchungsControl extends AbstractControl
           }
           
           b_steuer.setBuchungsartId(Long.valueOf(b_art.getSteuerBuchungsart().getID()));
+          b_steuer.setBuchungsklasseId(b_art.getBuchungsklasseId());
           b_steuer.setBetrag(steuer.doubleValue());
           b_steuer.setZweck(b.getZweck() + zweck_postfix);          
           b_steuer.setSplitId(b.getSplitId());
