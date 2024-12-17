@@ -64,7 +64,10 @@ public class SollbuchungListTablePart extends TablePart
         for (int i = 0; i < l.size(); i++)
         {
           Mitgliedskonto b = (Mitgliedskonto) l.get(i);
-          sumBetrag += b.getBetrag();
+          if (b.getBetrag() != null)
+          {
+            sumBetrag += b.getBetrag();
+          }
         }
         summary += " / " + "Gesamtbetrag:" + " "
             + Einstellungen.DECIMALFORMAT.format(sumBetrag) + " "
