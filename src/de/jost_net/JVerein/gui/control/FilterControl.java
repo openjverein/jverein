@@ -378,8 +378,8 @@ public class FilterControl extends AbstractControl
         String eigenschaftId = s.substring(0,s.length()-1);
         String plusMinus = s.substring(s.length()-1);
         if (eigenschaftId.isEmpty() ||
-            !(plusMinus == EigenschaftenNode.PLUS ||
-            plusMinus == EigenschaftenNode.MINUS))
+            !(plusMinus.equals(EigenschaftenNode.PLUS) ||
+            plusMinus.equals(EigenschaftenNode.MINUS)))
         {
           text = new StringBuilder();
           tmp = "";

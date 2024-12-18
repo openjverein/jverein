@@ -30,6 +30,7 @@ import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungVar;
+import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
@@ -137,7 +138,7 @@ public class FormularAnzeigeAction implements Action
 
       Spendenbescheinigung spb = (Spendenbescheinigung) Einstellungen
           .getDBService().createObject(Spendenbescheinigung.class, null);
-      map = spb.getMap(map);
+      map = new SpendenbescheinigungMap().getMap(spb, map);
       map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), "15.12.2008");
       map.put("Buchungsdatum", new Date());
       map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(),
