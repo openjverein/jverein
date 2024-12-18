@@ -14,6 +14,7 @@
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
+import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
@@ -30,5 +31,9 @@ public class Update0452 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute("update mitgliedskonto set betrag = 0 where betrag IS NULL");
+    
+    Column betrag = new Column("betrag", COLTYPE.DOUBLE, 0, null, true,
+        false);
+    execute(alterColumnNotNull("mitgliedskonto", betrag));
   }
 }
