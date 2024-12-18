@@ -283,6 +283,10 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
     {
       return getSteuerBuchungsart();
     }
+    else if (fieldName.equals("buchungsklasse"))
+    {
+      return getBuchungsklasse();
+    }
     else
     {
       return super.getAttribute(fieldName);
