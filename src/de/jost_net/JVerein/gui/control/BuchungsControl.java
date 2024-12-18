@@ -291,27 +291,42 @@ public class BuchungsControl extends AbstractControl
     {
       return dependent_buchungen;
     }
-
+    boolean isSteuerBuchung = false;
     // Falls noch nichts erzeugt wurde, neue Liste erzeugen und DependencyId setzen!
     dependent_buchungen = new ArrayList<Buchung>();
-    if (getBuchung().getDependencyId() == -1) {
+    if (getBuchung().getDependencyId() == -1)
+    {
       Buchung new_dependent_buchung = (Buchung) Einstellungen.getDBService()
-        .createObject(Buchung.class, null);
+          .createObject(Buchung.class, null);
       getBuchung().setDependencyId(SplitbuchungsContainer.getNewDependencyId());
       new_dependent_buchung.setDependencyId(getBuchung().getDependencyId());
       dependent_buchungen.add(new_dependent_buchung);
     }
     // Falls DependencyId vorhanden ist, alle anderen Elemente mit gleicher Id raussuchen
-    else {
+    // Ein Container wird nicht für die Steuerbuchungen generiert, sonst werden zugehörige
+    // Buchungen gelöscht
+    else
+    {
       int pos_b = SplitbuchungsContainer.get().indexOf(getBuchung());
-      for (Buchung b_tmp : SplitbuchungsContainer.get()) {
+      Double buchungBetrag = Math.abs(getBuchung().getBetrag());
+      for (Buchung b_tmp : SplitbuchungsContainer.get())
+      {
         if (b_tmp.getDependencyId() == getBuchung().getDependencyId() && 
-            SplitbuchungsContainer.get().indexOf(b_tmp) != pos_b) {
+            SplitbuchungsContainer.get().indexOf(b_tmp) != pos_b)
+        {
+          if (Math.abs(b_tmp.getBetrag()) > buchungBetrag)
+          {
+            // Das ist eine Steuerbuchung
+            isSteuerBuchung = true;
+            dependent_buchungen = new ArrayList<Buchung>();
+            break;
+          }
           dependent_buchungen.add(b_tmp);
         }
       }
     }
-    if (dependent_buchungen.size() == 0) {
+    if (dependent_buchungen.size() == 0 && !isSteuerBuchung)
+    {
       throw new RemoteException("Buchungen mit Id " + getBuchung().getDependencyId() + " konnten nicht gefunden werden!");
     }
     return dependent_buchungen;
@@ -968,7 +983,9 @@ public class BuchungsControl extends AbstractControl
       {
         b.plausi();
         Buchungsart b_art = b.getBuchungsart();
-        if (b_art.getSteuersatz() > 0) {
+        // Keine Steuer Buchungen erzeugen beim Speichern einer Haupt- bzw. Gegenbuchung
+        if (b.getSplitTyp() == SplitbuchungTyp.SPLIT && b_art.getSteuersatz() > 0)
+        {
           Buchung b_steuer = getDependentBuchungen().get(0);     
           fillBuchung(b_steuer);
 
@@ -998,10 +1015,12 @@ public class BuchungsControl extends AbstractControl
           SplitbuchungsContainer.add(b);
           SplitbuchungsContainer.add(b_steuer);
         }
-        else {
+        else
+        {
           // Falls vorher abhängige Buchungen erzeugt wurden, nun dies aber durch ändern der Buchungsart o.ä. aufgehoben wird, 
           // alle abhängigen Buchungen löschen und Abhängigkeit resetten
-          if (b.getDependencyId() != -1) {
+          if (b.getDependencyId() != -1 && getDependentBuchungen().size() > 0)
+          {
             for (Buchung b_tmp : getDependentBuchungen()) {
               b_tmp.setDependencyId(-1);
               b_tmp.setDelete(true);

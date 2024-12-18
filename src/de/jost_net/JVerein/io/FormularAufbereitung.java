@@ -422,6 +422,13 @@ public class FormularAufbereitung
       float sz = mm2point(Einstellungen.getEinstellung().getQRCodeSizeInMm());
       contentByte.addImage(i, sz, 0, 0, sz, x, y);
     }
+    else if (val instanceof com.itextpdf.text.Image)
+    {
+      com.itextpdf.text.Image i = (com.itextpdf.text.Image) val;
+      float sh = i.getScaledHeight();
+      float sw = i.getScaledWidth();
+      contentByte.addImage(i, sw, 0, 0, sh, x, y);
+    }
     else
     {
       buendig = links;
