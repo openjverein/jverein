@@ -1027,7 +1027,7 @@ public class JVereinUpdateProvider
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
     sb.append(
-        " )  ENGINE=InnoDB CHARACTER SET='latin1' COLLATE='latin1_german1_ci' ROW_FORMAT=DYNAMIC;\n");
+        " )  ENGINE=InnoDB CHARACTER SET latin1 COLLATE latin1_german1_ci  ROW_FORMAT=DYNAMIC;\n");
     statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
 
     execute(conn, statements, 28);
