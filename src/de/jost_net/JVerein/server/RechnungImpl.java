@@ -208,8 +208,8 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
     {
       return Staat.getByKey(code).getText(); 
     }
-    //Wenn der Code nicht vorhenden ist, nehmen wir
-    //zur komabilität den Text wie er in der DB Steht
+    // Wenn der Code nicht vorhanden ist, nehmen wir
+    // zur Kompatibilität den Text wie er in der DB Steht
     return code;
   }
 
@@ -356,7 +356,7 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
   }
 
   @Override
-  public void setLeitwegId(String leitwegid) throws RemoteException
+  public void setLeitwegID(String leitwegid) throws RemoteException
   {
     setAttribute("leitwegid", leitwegid);
   }

@@ -48,7 +48,7 @@ public class EinstellungenAllgemeinView extends AbstractView
     cont.addLabelPair("IBAN", control.getIban());
     cont.addLabelPair("BIC", bic);
     cont.addLabelPair("Gläubiger-ID", control.getGlaeubigerID());
-    cont.addLabelPair("USt-Id", control.getUstid());
+    cont.addLabelPair("USt-ID", control.getUstID());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

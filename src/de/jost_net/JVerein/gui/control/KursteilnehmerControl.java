@@ -254,12 +254,13 @@ public class KursteilnehmerControl extends FilterControl
     {
       return staat;
     }
-    if(getKursteilnehmer().getStaat() != null 
-        && getKursteilnehmer().getStaat().length() > 0 
+    if (getKursteilnehmer().getStaat() != null
+        && getKursteilnehmer().getStaat().length() > 0
         && Staat.getByKey(getKursteilnehmer().getStaat()) == null)
     {
-      GUI.getStatusBar().setErrorText(
-          "Konnte Staat \"" + getKursteilnehmer().getStaat() + "\" nicht finden, bitte anpassen.");
+      GUI.getStatusBar()
+          .setErrorText("Konnte Staat \"" + getKursteilnehmer().getStaat()
+              + "\" nicht finden, bitte anpassen.");
     }
     staat = new SelectInput(Staat.values(), Staat.getByKey(getKursteilnehmer().getStaat()));
     staat.setPleaseChoose("Nicht gesetzt");

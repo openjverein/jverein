@@ -114,5 +114,5 @@ public interface Rechnung extends DBObject, IAdresse
 
   public String getLeitwegID() throws RemoteException;
 
-  public void setLeitwegId(String leitwegid) throws RemoteException;
+  public void setLeitwegID(String leitwegid) throws RemoteException;
 }

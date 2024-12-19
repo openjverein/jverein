@@ -616,9 +616,9 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public void setBeitragAltersstufen(String altersstufen) throws RemoteException;
 
-  void setUStId(String ustid) throws RemoteException;
+  void setUStID(String ustid) throws RemoteException;
 
-  String getUStId() throws RemoteException;
+  String getUStID() throws RemoteException;
 
   void setStaat(String land) throws RemoteException;
 

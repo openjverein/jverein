@@ -663,8 +663,8 @@ public class FormularAufbereitung
         StringTool.toNotNullString(e.getPlz()),
         StringTool.toNotNullString(e.getOrt()), e.getStaat())
             .addTaxID(e.getSteuernummer());
-    if (e.getUStId().length() > 0)
-      sender.addVATID(e.getUStId());
+    if (e.getUStID().length() > 0)
+      sender.addVATID(e.getUStID());
 
     // TODO Zahlungsweg aus Rechnung lesen sobald implementiert
     if (re.getMandatDatum() != null

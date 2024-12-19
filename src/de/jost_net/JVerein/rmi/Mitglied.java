@@ -229,6 +229,6 @@ public interface Mitglied extends DBObject, ILastschrift
 
   public String getLeitwegID() throws RemoteException;
 
-  public void setLeitwegId(String leitwegid) throws RemoteException;
+  public void setLeitwegID(String leitwegid) throws RemoteException;
 
 }

@@ -2392,7 +2392,7 @@ public class MitgliedControl extends FilterControl
       }
       else
       {
-        m.setLeitwegId((String) getLeitwegID().getValue());
+        m.setLeitwegID((String) getLeitwegID().getValue());
       }
       m.setKtoiAdressierungszusatz(
           (String) getKtoiAdressierungszusatz().getValue());

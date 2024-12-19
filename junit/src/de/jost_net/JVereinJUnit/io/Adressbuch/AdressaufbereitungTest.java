@@ -224,12 +224,12 @@ public class AdressaufbereitungTest
       public String getStaat() throws RemoteException
       {
         String code = getStaatCode();
-        if(Staat.getByKey(code) != null)
+        if (Staat.getByKey(code) != null)
         {
-          return Staat.getByKey(code).getText(); 
+          return Staat.getByKey(code).getText();
         }
-        //Wenn der Code nicht vorhenden ist, nehmen wir
-        //zur komabilität den Text wie er in der DB Steht
+        // Wenn der Code nicht vorhanden ist, nehmen wir
+        // zur Kompatibilität den Text wie er in der DB Steht
         return code;
       }
 

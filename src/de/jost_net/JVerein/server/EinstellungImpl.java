@@ -2170,7 +2170,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
   
   @Override
-  public String getUStId() throws RemoteException
+  public String getUStID() throws RemoteException
   {
     String ustid = (String) getAttribute("ustid");
     if (ustid == null)
@@ -2181,7 +2181,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
 
   @Override
-  public void setUStId(String ustid) throws RemoteException
+  public void setUStID(String ustid) throws RemoteException
   {
     setAttribute("ustid", ustid);
   }

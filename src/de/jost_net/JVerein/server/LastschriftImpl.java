@@ -243,8 +243,8 @@ public class LastschriftImpl extends AbstractDBObject implements Lastschrift
     {
       return Staat.getByKey(code).getText(); 
     }
-    //Wenn der Code nicht vorhenden ist, nehmen wir
-    //zur komabilität den Text wie er in der DB Steht
+    // Wenn der Code nicht vorhanden ist, nehmen wir
+    // zur Kompatibilität den Text wie er in der DB Steht
     return code;
   }
 

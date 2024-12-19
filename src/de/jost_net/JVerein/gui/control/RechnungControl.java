@@ -400,7 +400,7 @@ public class RechnungControl extends DruckMailControl
             rechnung.setPlz(mitglied.getPlz());
             rechnung.setOrt(mitglied.getOrt());
             rechnung.setStaat(mitglied.getStaatCode());
-            rechnung.setLeitwegId(mitglied.getLeitwegID());
+            rechnung.setLeitwegID(mitglied.getLeitwegID());
             rechnung.setPersonenart(mitglied.getPersonenart());
             if(!mitglied.getMandatDatum().equals(Einstellungen.NODATE))
               rechnung.setMandatDatum(mitglied.getMandatDatum());
