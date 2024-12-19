@@ -177,9 +177,8 @@ public class FormularAufbereitung
     try
     {
       PdfReader reader = new PdfReader(formular.getInhalt());
-
       int numOfPages = reader.getNumberOfPages();
-
+      
       // Get current counter
       Integer zaehler = formular.getZaehler();
       // Get settings and length of counter
@@ -198,13 +197,13 @@ public class FormularAufbereitung
             .createList(Formularfeld.class);
         it.addFilter("formular = ? and seite = ?",
             new Object[] { formular.getID(), i });
-
+        
         Boolean increased = false;
-
+        
         while (it.hasNext())
         {
           Formularfeld f = (Formularfeld) it.next();
-
+          
           // Increase counter if form field is zaehler or qrcode (counter is
           // needed in QR code, so it needs to be incremented)
           if ((f.getName().equals(AllgemeineVar.ZAEHLER.getName())
@@ -214,12 +213,11 @@ public class FormularAufbereitung
             zaehler++;
             // Prevent multiple increases by next page
             increased = true;
-            // Set new value to field with leading zero to get the defined
-            // length
-            map.put(AllgemeineVar.ZAEHLER.getName(),
-                StringTool.lpad(zaehler.toString(), zaehlerLaenge, "0"));
+            // Set new value to field with leading zero to get the defined length
+            map.put(AllgemeineVar.ZAEHLER.getName(), StringTool.lpad(
+                zaehler.toString(), zaehlerLaenge, "0"));
           }
-
+          
           // create QR code for invoice sum if form field is QRCODE_SUM
           if (f.getName().equals(RechnungVar.QRCODE_SUMME.getName()))
           {
@@ -230,7 +228,7 @@ public class FormularAufbereitung
           goFormularfeld(contentByte, f, map.get(f.getName()));
         }
       }
-
+         
       // Set counter to form (not yet saved to the DB)
       formular.setZaehler(zaehler);
     }
@@ -355,10 +353,10 @@ public class FormularAufbereitung
     sbEpc.append(e.getName()).append("\n");
     sbEpc.append(e.getIban()).append("\n");
     sbEpc.append(EPC_EUR);
-    Object[] oPosten = (Object[]) fieldsMap.get(RechnungVar.BETRAG.getName());
+    Object[] oPosten = (Object[]) fieldsMap
+        .get(RechnungVar.BETRAG.getName());
     // Der letzte Eintrag in dem Array ist die Rechnungssumme
-    // Ersetze das Dezimalkomma durch einen Punkt, um der Spezifikation zu
-    // entsprechen
+    // Ersetze das Dezimalkomma durch einen Punkt, um der Spezifikation zu entsprechen
     String betrag = getString(oPosten[oPosten.length - 1]).replace(',', '.');
     sbEpc.append(betrag);
     sbEpc.append("\n");
@@ -444,10 +442,8 @@ public class FormularAufbereitung
       {
         filename += feld.getFont().substring(9);
       }
-      bf = BaseFont.createFont(filename + ".ttf", BaseFont.IDENTITY_H, true);
-    }
-    else if (feld.getFont().startsWith("PTSans"))
-    {
+      bf = BaseFont.createFont(filename+".ttf", BaseFont.IDENTITY_H, true);
+    } else if (feld.getFont().startsWith("PTSans")) {
       String filename = String.format("/fonts/%s.ttf", feld.getFont());
       bf = BaseFont.createFont(filename, BaseFont.IDENTITY_H, true);
     }
@@ -522,10 +518,9 @@ public class FormularAufbereitung
           stringVal.append((String) ostr);
           stringVal.append("\n");
         }
-
+        
         // Format Strings with percent numbers and closing bracket e.g. taxes
-        if (((String) o[0]).contains("%)"))
-        {
+        if (((String) o[0]).contains("%)")) {
           buendig = rechts;
         }
       }
@@ -553,8 +548,7 @@ public class FormularAufbereitung
       stringVal = new StringBuilder((String) val);
 
       // Format Strings with percent numbers and closing bracket e.g. taxes
-      if (((String) val).contains("%)"))
-      {
+      if (((String) val).contains("%)")) {
         buendig = rechts;
       }
     }
@@ -575,13 +569,13 @@ public class FormularAufbereitung
     }
     return stringVal.toString();
   }
-
+  
   public void printNeueSeite()
   {
     // Neue Seite mit Anschrift für Fenster in querem Brief
-    doc.newPage();
+      doc.newPage();
   }
-
+  
   public void printAdressfenster(String aussteller, String empfaenger)
       throws RemoteException
   {
@@ -590,8 +584,7 @@ public class FormularAufbereitung
     {
       doc.add(new Paragraph(" ", Reporter.getFreeSans(12)));
       doc.add(new Paragraph("\n\n\n\n\n\n", Reporter.getFreeSans(12)));
-      Paragraph paragraph = new Paragraph(aussteller,
-          Reporter.getFreeSansUnderline(8));
+      Paragraph paragraph = new Paragraph(aussteller, Reporter.getFreeSansUnderline(8));
       paragraph.setIndentationLeft(40);
       doc.add(paragraph);
       paragraph = new Paragraph(empfaenger, Reporter.getFreeSans(9));
@@ -603,14 +596,14 @@ public class FormularAufbereitung
       throw new RemoteException("Fehler", e);
     }
   }
-
+  
   public void printAnschreiben(Spendenbescheinigung spb, String text)
       throws RemoteException
   {
     // Anschreiben drucken
     try
     {
-      doc.add(new Paragraph("\n\n\n", Reporter.getFreeSans(12)));
+      doc.add(new Paragraph("\n\n\n",  Reporter.getFreeSans(12)));
       Mitglied m = spb.getMitglied();
       Paragraph p = null;
       if (m != null)
@@ -625,8 +618,7 @@ public class FormularAufbereitung
         VarTools.add(context, mmap);
         StringWriter wtext = new StringWriter();
         Velocity.evaluate(context, wtext, "LOG", text);
-        p = new Paragraph(wtext.getBuffer().toString(),
-            Reporter.getFreeSans(10));
+        p = new Paragraph(wtext.getBuffer().toString(), Reporter.getFreeSans(10));
       }
       else
       {
