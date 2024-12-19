@@ -16,15 +16,41 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.BuchungsuebernahmeView;
+import de.jost_net.JVerein.gui.dialogs.BuchungsuebernahmeDialog;
+import de.jost_net.JVerein.io.Buchungsuebernahme;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class BuchungsuebernahmeAction implements Action
 {
   @Override
-  public void handleAction(Object context) 
+  public void handleAction(Object context) throws ApplicationException
   {
-    GUI.startView(BuchungsuebernahmeView.class.getName(), null);
+  
+    try
+    {
+      BuchungsuebernahmeDialog d = new BuchungsuebernahmeDialog(BuchungsuebernahmeDialog.POSITION_CENTER);
+      if (d.open())
+      {
+        new Buchungsuebernahme();
+      }
+    }
+    catch (OperationCanceledException oce)
+    {
+      return;
+    }
+    catch (ApplicationException ae)
+    {
+      throw ae;
+    }
+    catch (Exception e)
+    {
+      Logger.error("Error while importing from Hibiscus", e);
+      GUI.getStatusBar().setErrorText("Fehler beim Importieren von Hibiscus Buchungen");
+    }
   }
+  
 }

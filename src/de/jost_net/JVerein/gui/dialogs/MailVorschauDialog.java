@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -21,6 +21,10 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import de.jost_net.JVerein.gui.control.MailVorlageControl;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.willuhn.jameica.gui.AbstractControl;
+import de.willuhn.util.ApplicationException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -28,7 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 import de.jost_net.JVerein.gui.control.MailControl;
-import de.jost_net.JVerein.gui.control.MailControl.EvalMail;
+import de.jost_net.JVerein.gui.util.EvalMail;
 import de.jost_net.JVerein.gui.formatter.DateiGroesseFormatter;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
@@ -51,19 +55,25 @@ import de.willuhn.logging.Logger;
 public class MailVorschauDialog extends AbstractDialog<Object>
 {
 
-  private MailControl control;
+  private final AbstractControl control;
 
-  private MailEmpfaenger empf;
+  private final Mitglied empfaenger;
 
-  private de.willuhn.jameica.system.Settings settings;
+  private final de.willuhn.jameica.system.Settings settings;
 
   public MailVorschauDialog(MailControl control, MailEmpfaenger mitglied,
+      int position) throws RemoteException
+  {
+    this(control, mitglied.getMitglied(), position);
+  }
+
+  public MailVorschauDialog(AbstractControl control, Mitglied mitglied,
       int position)
   {
     super(position);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     this.control = control;
-    this.empf = mitglied;
+    this.empfaenger = mitglied;
     setTitle("Mail-Vorschau");
     setSize(settings.getInt("width", 550), settings.getInt("height", 450));
 
@@ -89,23 +99,39 @@ public class MailVorschauDialog extends AbstractDialog<Object>
     // ScrolledContainer scrolled = new ScrolledContainer(parent, 1);
     SimpleContainer container = new SimpleContainer(parent, true, 2);
 
-    EvalMail em = control.new EvalMail(empf);
+    EvalMail em = new EvalMail(empfaenger);
 
-    TextInput empfaenger = new TextInput(empf.getMailAdresse());
+    TextInput empfaenger = new TextInput(this.empfaenger.getEmail());
     empfaenger.setEnabled(false);
     container.addLabelPair("Empfänger", empfaenger);
-    TextInput betreff = new TextInput(
-        em.evalBetreff(control.getBetreffString()));
+    String betreffString;
+    String text;
+    if (control instanceof MailControl)
+    {
+      betreffString = ((MailControl) control).getBetreffString();
+      text = ((MailControl) control).getTxtString();
+    }
+    else if (control instanceof MailVorlageControl)
+    {
+      betreffString = ((MailVorlageControl) control).getBetreffString();
+      text = ((MailVorlageControl) control).getTxtString();
+    }
+    else
+    {
+      throw new ApplicationException("Fehler beim Anzeigen der Vorschau");
+    }
+    TextInput betreff = new TextInput(em.evalBetreff(betreffString));
     betreff.setEnabled(false);
     container.addLabelPair("Betreff", betreff);
-    TextAreaInput body = new TextAreaInput(em.evalText(control.getTxtString()));
+    TextAreaInput body = new TextAreaInput(em.evalText(text));
     body.setEnabled(false);
     container.addInput(body);
 
-    if (control.getAnhang().getItems().size() > 0)
+    if (control instanceof MailControl && ((MailControl) control).getAnhang()
+        .getItems().size() > 0)
     {
       ArrayList<VorschauAnhang> anhang2 = new ArrayList<>();
-      for (Object o : control.getAnhang().getItems())
+      for (Object o : ((MailControl) control).getAnhang().getItems())
       {
         MailAnhang a = (MailAnhang) o;
         if (a == null)
@@ -138,15 +164,8 @@ public class MailVorschauDialog extends AbstractDialog<Object>
     }
 
     ButtonArea b = new ButtonArea();
-    b.addButton("Schließen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        close();
-      }
-    }, null, false, "process-stop.png");
+    b.addButton("Schließen", context -> close(), null, false,
+        "process-stop.png");
     b.paint(parent);
   }
 

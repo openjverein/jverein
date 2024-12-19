@@ -1688,6 +1688,7 @@ public class MitgliedControl extends FilterControl
         m = getMitglied();
       familienangehoerige.addItem(m);
     }
+    familienangehoerige.sort();
   }
 
   public Part getFamilienangehoerigenTable() throws RemoteException
@@ -2215,6 +2216,7 @@ public class MitgliedControl extends FilterControl
     {
       part.addItem(m);
     }
+    part.sort();
     return part;
   }
   
@@ -3008,6 +3010,7 @@ public class MitgliedControl extends FilterControl
       MitgliedNextBGruppe m = datenIterator.next();
       beitragsTabelle.addItem(m);
     }
+    beitragsTabelle.sort();
   }
   
   @Override

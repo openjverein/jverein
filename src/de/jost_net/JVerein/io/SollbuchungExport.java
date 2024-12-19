@@ -21,21 +21,22 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Date;
 
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Queries.MitgliedskontoQuery;
-import de.jost_net.JVerein.gui.action.MitgliedskontoExportAction.EXPORT_TYP;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
+import de.jost_net.JVerein.Queries.SollbuchungQuery;
+import de.jost_net.JVerein.gui.action.SollbuchungExportAction.EXPORT_TYP;
+import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
+import de.jost_net.JVerein.gui.input.MailAuswertungInput.MailAuswertungObject;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.util.ProgressMonitor;
 
-public abstract class MitgliedskontoExport implements Exporter
+public abstract class SollbuchungExport implements Exporter
 {
 
   @Override
@@ -48,43 +49,36 @@ public abstract class MitgliedskontoExport implements Exporter
 
   protected File file;
 
-  protected Date vonDatum;
-
-  protected Date bisDatum;
-
-  protected DIFFERENZ differenz;
-
-  protected Boolean ohneAbbucher;
-
-  protected Mitglied selectedMitglied;
+  protected MitgliedskontoControl control = new MitgliedskontoControl(null);
 
   @Override
-  public void doExport(Object[] objects, IOFormat format, File file,
+  public void doExport(final Object[] objects, IOFormat format, File file,
       ProgressMonitor monitor) throws DocumentException, IOException
   {
     this.file = file;
-    vonDatum = (Date) objects[0];
-    bisDatum = (Date) objects[1];
-    differenz = (DIFFERENZ) objects[2];
-    ohneAbbucher = (Boolean) objects[3];
-    selectedMitglied = (Mitglied) objects[4];
+    this.control.getSuchname().setValue(objects[0]);
+    this.control.getDifferenz().setValue(objects[1]);
+    this.control.getOhneAbbucher().setValue(objects[2]);
+    this.control.getDatumvon().setValue(objects[3]);
+    this.control.getDatumbis().setValue(objects[4]);
+    this.control.getMailauswahl()
+        .setValue(new MailAuswertungObject((int) objects[5]));
+
     open();
 
     DBIterator<Mitglied> mitgl = Einstellungen.getDBService()
         .createList(Mitglied.class);
-    if (null != selectedMitglied)
-      mitgl.addFilter("id = ? ", selectedMitglied.getID());
     mitgl.setOrder("ORDER BY name, vorname");
 
     while (mitgl.hasNext())
     {
       Mitglied m = (Mitglied) mitgl.next();
       startMitglied(m);
-      MitgliedskontoQuery mkq = new MitgliedskontoQuery(m, vonDatum, bisDatum,
-          differenz, ohneAbbucher);
-      for (Mitgliedskonto mk : mkq.get())
+      GenericIterator<Mitgliedskonto> sollbuchnungen = new SollbuchungQuery(
+          control, false, m).get();
+      while (sollbuchnungen.hasNext())
       {
-        add(mk);
+        add(sollbuchnungen.next());
         monitor.log("Vorbereitung: " + Adressaufbereitung.getNameVorname(m));
       }
       endeMitglied();

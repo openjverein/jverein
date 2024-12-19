@@ -36,6 +36,12 @@ public enum SpendenbescheinigungVar {
   BEZEICHNUNGSACHZUWENDUNG("spendenbescheinigung_bezeichnungsachzuwendung"), //
   HERKUNFTSACHZUWENDUNG("spendenbescheinigung_herkunftsachzuwendung"), //
   UNTERLAGENWERTERMITTUNG("spendenbescheinigung_unterlagenwertermittlung"), //
+  FINANZAMT("spendenbescheinigung_finanzamt"), //
+  STEUER_NR("spendenbescheinigung_steuer_nummmer"), //
+  DATUM_BESCHEID("spendenbescheinigung_datum_bescheid"), //
+  VERANLAGUNGSZEITRAUM("spendenbescheinigung_veranlagungszeitraum"), //
+  ZWECK("spendenbescheinigung_beguenstigter_zweck"), //
+  UNTERSCHRIFT("spendenbescheinigung_unterschrift"), //
   ZEILE1("spendenbescheinigung_zeile1"), //
   ZEILE2("spendenbescheinigung_zeile2"), //
   ZEILE3("spendenbescheinigung_zeile3"), //

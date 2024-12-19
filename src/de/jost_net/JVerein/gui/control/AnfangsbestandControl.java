@@ -180,6 +180,7 @@ public class AnfangsbestandControl extends FilterControl
       {
         anfangsbestandList.addItem(anfangsbestaende.next());
       }
+      anfangsbestandList.sort();
     }
     catch (RemoteException e1)
     {

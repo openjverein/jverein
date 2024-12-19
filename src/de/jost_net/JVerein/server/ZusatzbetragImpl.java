@@ -329,6 +329,36 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
     return super.getAttribute(fieldName);
   }
 
+  /*
+   * 
+   */
+  @Override
+  public boolean isOffen(Date datum) throws RemoteException
+  {
+    if (!getMitglied().isAngemeldet(datum))
+    {
+      if (!Einstellungen.getEinstellung().getZusatzbetragAusgetretene())
+      {
+        return false;
+      }
+    }
+    // Einmalige Ausführung
+    if (getIntervall().intValue() == IntervallZusatzzahlung.KEIN)
+    {
+      return (getAusfuehrung() == null);
+    }
+
+    // Wenn das Endedatum gesetzt ist und das Fälligkeitsdatum liegt zum oder
+    // hinter
+    // dem Endedatum: nicht mehr ausführen
+    if (getEndedatum() != null
+        && getFaelligkeit().getTime() >= getEndedatum().getTime())
+    {
+      return false;
+    }
+    return true;
+  }
+
   @Override
   public boolean isAktiv(Date datum) throws RemoteException
   {
@@ -345,7 +375,14 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
       // Ist das Ausführungsdatum gesetzt?
       if (getAusfuehrung() == null)
       {
-        return true;
+        if (getFaelligkeit().getTime() <= datum.getTime())
+        {
+          return true;
+        }
+        else
+        {
+          return false;
+        }
       }
       else
       {
@@ -354,11 +391,10 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
       }
     }
 
-    // Wenn das Endedatum gesetzt ist und das Fälligkeitsdatum liegt zum oder
-    // hinter
+    // Wenn das Endedatum gesetzt ist und das Ausführungsdatum liegt hinter
     // dem Endedatum: nicht mehr ausführen
-    if (getEndedatum() != null
-        && getFaelligkeit().getTime() >= getEndedatum().getTime())
+    if ((getEndedatum() != null && datum.getTime() >= getEndedatum().getTime())
+        || getFaelligkeit().getTime() > datum.getTime())
     {
       return false;
     }

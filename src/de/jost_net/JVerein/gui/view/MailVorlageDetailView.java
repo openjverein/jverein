@@ -10,20 +10,26 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.MailVorschauAction;
+import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
+import de.jost_net.JVerein.server.MitgliedImpl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+
+import java.util.Map;
 
 public class MailVorlageDetailView extends AbstractView
 {
@@ -40,18 +46,18 @@ public class MailVorlageDetailView extends AbstractView
     SimpleContainer t = new SimpleContainer(getParent(), true);
     t.addPart(control.getTxt());
 
+    Map<String, Object> map = new MitgliedMap().getMap(MitgliedImpl.getDummy(),
+        null);
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAILVORLAGE, false, "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton("Variablen anzeigen",
+        new OpenInsertVariableDialogAction(), map, false, "bookmark.png");
+    buttons.addButton(new Button("Vorschau", new MailVorschauAction(control),
+        MitgliedImpl.getDummy(), false, "edit-copy.png"));
+    buttons.addButton("Speichern", context -> control.handleStore(), null, true,
+        "document-save.png");
     buttons.paint(this.getParent());
   }
 }

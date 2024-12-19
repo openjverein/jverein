@@ -335,6 +335,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
       {
         zusatzbetraegeList.addItem(zusatzbetragsvorlagen.next());
       }
+      zusatzbetraegeList.sort();
     }
     return zusatzbetraegeList;
   }

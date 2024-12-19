@@ -231,6 +231,7 @@ public class LehrgangControl extends FilterControl
       {
         lehrgaengeList.addItem(lehrgaenge.next());
       }
+      lehrgaengeList.sort();
     }
     catch (RemoteException e1)
     {
@@ -301,6 +302,7 @@ public class LehrgangControl extends FilterControl
       {
         lehrgaengeList.addItem(lehrgaenge.next());
       }
+      lehrgaengeList.sort();
     }
     return lehrgaengeList;
   }

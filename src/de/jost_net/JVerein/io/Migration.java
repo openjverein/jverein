@@ -717,7 +717,7 @@ public class Migration
     }
     else
     {
-      if (m.getBic() == "" && m.getIban() != null)
+      if (m.getBic() == "" && m.getIban() != null && m.getIban().length() > 0)
       {
         IBAN i;
         try

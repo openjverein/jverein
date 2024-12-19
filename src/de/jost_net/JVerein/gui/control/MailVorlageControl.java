@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -75,6 +75,11 @@ public class MailVorlageControl extends AbstractControl
     return betreff;
   }
 
+  public String getBetreffString()
+  {
+    return (String) betreff.getValue();
+  }
+
   public TextAreaInput getTxt() throws RemoteException
   {
     if (txt != null)
@@ -85,6 +90,11 @@ public class MailVorlageControl extends AbstractControl
     txt.setName("Text");
     txt.setMandatory(true);
     return txt;
+  }
+
+  public String getTxtString()
+  {
+    return (String) txt.getValue();
   }
 
   public void handleStore()
@@ -103,8 +113,7 @@ public class MailVorlageControl extends AbstractControl
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler bei speichern der MailVorlage: "
-          + e.getLocalizedMessage();
+      String fehler = "Fehler bei speichern der MailVorlage: " + e.getLocalizedMessage();
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }

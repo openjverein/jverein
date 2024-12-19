@@ -190,6 +190,7 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
       {
         SollbuchungsList.addItem(it.next());
       }
+      SollbuchungsList.sort();
     }
     return SollbuchungsList;
   }

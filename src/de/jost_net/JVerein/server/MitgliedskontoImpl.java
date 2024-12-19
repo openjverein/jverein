@@ -346,7 +346,7 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   @Override
   public Double getBetrag() throws RemoteException
   {
-    return (Double) getAttribute("betrag");
+    return (Double) super.getAttribute("betrag");
   }
 
   @Override
@@ -413,6 +413,10 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
     if (fieldName.equals("buchungsklasse"))
     {
       return getBuchungsklasse();
+    }
+    if (fieldName.equals("buchungsart"))
+    {
+      return getBuchungsart();
     }
     return super.getAttribute(fieldName);
   }

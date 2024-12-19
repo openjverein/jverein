@@ -24,7 +24,6 @@ import com.schlevoigt.JVerein.gui.action.BuchungsTexteKorrigierenAction;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AboutAction;
-import de.jost_net.JVerein.gui.action.AbrechnungSEPAAction;
 import de.jost_net.JVerein.gui.action.AbrechnunslaufListAction;
 import de.jost_net.JVerein.gui.action.AbschreibungsListeAction;
 import de.jost_net.JVerein.gui.action.AdministrationEinstellungenAbrechnungAction;
@@ -55,7 +54,6 @@ import de.jost_net.JVerein.gui.action.BuchungsListeAction;
 import de.jost_net.JVerein.gui.action.BuchungsartListAction;
 import de.jost_net.JVerein.gui.action.BuchungsklasseListAction;
 import de.jost_net.JVerein.gui.action.BuchungsklasseSaldoAction;
-import de.jost_net.JVerein.gui.action.BuchungsuebernahmeAction;
 import de.jost_net.JVerein.gui.action.DbBereinigenAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.EigenschaftGruppeListeAction;
@@ -81,8 +79,8 @@ import de.jost_net.JVerein.gui.action.MailVorlagenAction;
 import de.jost_net.JVerein.gui.action.MitgliedMigrationAction;
 import de.jost_net.JVerein.gui.action.MitgliedSucheAction;
 import de.jost_net.JVerein.gui.action.SollbuchungListeAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoMahnungAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoRechnungAction;
+import de.jost_net.JVerein.gui.action.SollbuchungMahnungAction;
+import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
 import de.jost_net.JVerein.gui.action.ProjektListAction;
 import de.jost_net.JVerein.gui.action.ProjektSaldoAction;
 import de.jost_net.JVerein.gui.action.QIFBuchungsImportViewAction;
@@ -201,8 +199,6 @@ public class MyExtension implements Extension
           new KontoListAction(), "list.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbestände",
           new AnfangsbestandListAction(), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Hibiscus-Buchungen-Import",
-          new BuchungsuebernahmeAction(), "hibiscus-icon-64x64.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
           new BuchungsListeAction(), "euro-sign.png"));
       if (anlagenkonto)
@@ -225,8 +221,6 @@ public class MyExtension implements Extension
       
       NavigationItem abrechnung = null;
       abrechnung = new MyItem(abrechnung, "Abrechnung", null);
-      abrechnung.addChild(new MyItem(abrechnung, "Abrechnung",
-          new AbrechnungSEPAAction(), "calculator.png"));
       abrechnung.addChild(new MyItem(abrechnung, "Abrechnungsläufe",
           new AbrechnunslaufListAction(), "calculator.png"));
       abrechnung.addChild(new MyItem(abrechnung, "Lastschriften",
@@ -260,9 +254,9 @@ public class MyExtension implements Extension
       NavigationItem mail = null;
       mail = new MyItem(mail, "Druck & Mail", null);
       mail.addChild(new MyItem(mail, "Rechnungen",
-          new MitgliedskontoRechnungAction(), "document-print.png"));
+          new SollbuchungRechnungAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Mahnungen",
-          new MitgliedskontoMahnungAction(), "document-print.png"));
+          new SollbuchungMahnungAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Kontoauszüge",
           new KontoauszugAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Freie Formulare",

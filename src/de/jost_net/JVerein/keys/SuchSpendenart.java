@@ -14,31 +14,56 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.action;
+package de.jost_net.JVerein.keys;
 
-import de.jost_net.JVerein.gui.view.MahnungMailView;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-
-public class MitgliedskontoMahnungAction implements Action
+/**
+ * Suchspendenart
+ */
+public enum SuchSpendenart
 {
-  @Override
-  public void handleAction(Object context)
+
+  ALLE(1, "Alle"),
+  GELDSPENDE(2, "Geldspende"),
+  SACHSPENDE(3, "Sachspende"),
+  ERSTATTUNGSVERZICHT(4, "Geldspende mit Erstattungsverzicht"),
+  GELDSPENDE_ECHT(5, "Geldspende ohne Erstattungsverzicht"),
+  SACHSPENDE_ERSTATTUNGSVERZICHT(6, "Sachspende oder Geldspende mit Erstattungsverzicht");
+
+  private final String text;
+
+  private final int key;
+
+  SuchSpendenart(int key, String text)
   {
-    if (context != null && context instanceof Mitgliedskonto)
+    this.key = key;
+    this.text = text;
+  }
+
+  public int getKey()
+  {
+    return key;
+  }
+
+  public String getText()
+  {
+    return text;
+  }
+
+  public static SuchSpendenart getByKey(int key)
+  {
+    for (SuchSpendenart sb : SuchSpendenart.values())
     {
-      Mitgliedskonto mk = (Mitgliedskonto) context;
-      GUI.startView(MahnungMailView.class.getName(), mk);
+      if (sb.getKey() == key)
+      {
+        return sb;
+      }
     }
-    else if (context != null && context instanceof Mitgliedskonto[])
-    {
-      Mitgliedskonto[] mk = (Mitgliedskonto[]) context;
-      GUI.startView(MahnungMailView.class.getName(), mk);
-    }
-    else
-    {
-      GUI.startView(MahnungMailView.class, null);
-    }
+    return null;
+  }
+
+  @Override
+  public String toString()
+  {
+    return getText();
   }
 }
