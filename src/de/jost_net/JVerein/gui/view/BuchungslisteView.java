@@ -26,7 +26,7 @@ import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.BuchungsuebernahmeAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -50,7 +50,7 @@ public class BuchungslisteView extends AbstractView
   {
     GUI.getView().setTitle("Buchungen");
     
-    final BuchungsControl control = new BuchungsControl(this, Kontenart.GELDKONTO);
+    final BuchungsControl control = new BuchungsControl(this, Kontenfilter.GELDKONTO);
 
     LabelGroup group = new LabelGroup(getParent(), "Konto");
     group.addLabelPair("Konto", control.getSuchKonto());

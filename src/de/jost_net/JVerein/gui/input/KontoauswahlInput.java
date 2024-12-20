@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.dialogs.KontoAuswahlDialog;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
@@ -69,7 +69,7 @@ public class KontoauswahlInput
    * @throws RemoteException
    */
   public DialogInput getKontoAuswahl(boolean keinkonto, String kontoid,
-      boolean onlyHibiscus, boolean nurAktuelleKonten, Kontenart art) throws RemoteException
+      boolean onlyHibiscus, boolean nurAktuelleKonten, Kontenfilter art) throws RemoteException
   {
     if (kontoAuswahl != null)
     {
@@ -133,8 +133,8 @@ public class KontoauswahlInput
           try
           {
             // TODO warum wird das doppelt aufgerufen?
-            getKontoAuswahl(keinkonto, "", false, false, Kontenart.ALLE).setText("");
-            getKontoAuswahl(keinkonto, "", false, false, Kontenart.ALLE).setComment("");
+            getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE).setText("");
+            getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE).setComment("");
             settings.setAttribute("kontoid", "");
           }
           catch (RemoteException e)
@@ -148,8 +148,8 @@ public class KontoauswahlInput
       try
       {
         String b = konto.getBezeichnung();
-        getKontoAuswahl(keinkonto, "", false, false, Kontenart.ALLE).setText(konto.getNummer());
-        getKontoAuswahl(keinkonto, "", false, false, Kontenart.ALLE).setComment(
+        getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE).setText(konto.getNummer());
+        getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE).setComment(
             b == null ? "" : b);
         settings.setAttribute("kontoid", konto.getID());
       }

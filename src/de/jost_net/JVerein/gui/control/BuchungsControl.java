@@ -208,13 +208,13 @@ public class BuchungsControl extends AbstractControl
   
   protected String settingsprefix = "geldkonto.";
   
-  private Kontenart kontoart = Kontenart.ALLE;
+  private Kontenfilter kontenfilter = Kontenfilter.ALLE;
   
   private boolean geldkonto = true;
   
-  public enum Kontenart
+  public enum Kontenfilter
   {
-    GELDKONTO,
+    GELDKONTO,  // Beinhaltet Rückstellungen
     ANLAGEKONTO,
     ALLE
   }
@@ -226,13 +226,13 @@ public class BuchungsControl extends AbstractControl
     MONAT, TAG
   }
 
-  public BuchungsControl(AbstractView view, Kontenart kontoart)
+  public BuchungsControl(AbstractView view, Kontenfilter kontenfilter)
   {
     super(view);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
-    this.kontoart = kontoart;
-    if (kontoart == Kontenart.ANLAGEKONTO)
+    this.kontenfilter = kontenfilter;
+    if (kontenfilter == Kontenfilter.ANLAGEKONTO)
     {
       geldkonto = false;
       settingsprefix = "anlagenkonto.";
@@ -367,7 +367,7 @@ public class BuchungsControl extends AbstractControl
     }
     String kontoid = getVorauswahlKontoId();
     konto = new KontoauswahlInput(getBuchung().getKonto())
-        .getKontoAuswahl(false, kontoid, false, true, kontoart);
+        .getKontoAuswahl(false, kontoid, false, true, kontenfilter);
     if (withFocus)
     {
       konto.focus();
@@ -689,7 +689,7 @@ public class BuchungsControl extends AbstractControl
     }
     String kontoid = settings.getString(settingsprefix + "suchkontoid", "");
     suchkonto = new KontoauswahlInput().getKontoAuswahl(true, kontoid, false,
-        true, kontoart);
+        true, kontenfilter);
     suchkonto.addListener(new FilterListener());
     return suchkonto;
   }
