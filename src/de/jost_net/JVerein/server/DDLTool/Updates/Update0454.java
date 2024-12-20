@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**********************************************************************
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
@@ -11,10 +12,17 @@
  * see <http://www.gnu.org/licenses/>.
  * 
  **********************************************************************/
+=======
+>>>>>>> 11971163 (UebersichtPart)
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
+<<<<<<< HEAD
+=======
+import de.jost_net.JVerein.server.DDLTool.Index;
+import de.jost_net.JVerein.server.DDLTool.Table;
+>>>>>>> 11971163 (UebersichtPart)
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
@@ -30,6 +38,7 @@ public class Update0454 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
+<<<<<<< HEAD
 <<<<<<< HEAD:src/de/jost_net/JVerein/server/DDLTool/Updates/Update0453.java
     execute(addColumn("konto", new Column("kontoart",
         COLTYPE.INTEGER, 0, null, false, false)));
@@ -44,6 +53,8 @@ public class Update0454 extends AbstractDDLUpdate
     execute("INSERT INTO wirtschaftsplanung(geschaeftsjahr, buchungsart, betrag) VALUES (2024, 1, 200), (2023, 1, 1000)");
 >>>>>>> 517b61e9 (Added WirtschaftsplanungListView)
 =======
+=======
+>>>>>>> 11971163 (UebersichtPart)
     execute(addColumn("einstellung",
         new Column("wirtschaftsplanung", COLTYPE.BOOLEAN, 0, null, false,
             false)));
@@ -67,6 +78,9 @@ public class Update0454 extends AbstractDDLUpdate
 
     execute(createForeignKey("fk_wirtschaftsplanung", "wirtschaftsplanung",
         "buchungsart", "buchungsart", "id", "RESTRICT", "CASCADE"));
+<<<<<<< HEAD
 >>>>>>> 9995d22c (UebersichtPart):src/de/jost_net/JVerein/server/DDLTool/Updates/Update0454.java
+=======
+>>>>>>> 11971163 (UebersichtPart)
   }
 }
