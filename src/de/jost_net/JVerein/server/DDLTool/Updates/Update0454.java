@@ -20,9 +20,9 @@ import de.willuhn.util.ProgressMonitor;
 
 import java.sql.Connection;
 
-public class Update0453 extends AbstractDDLUpdate
+public class Update0454 extends AbstractDDLUpdate
 {
-  public Update0453(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0454(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -30,6 +30,7 @@ public class Update0453 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
+<<<<<<< HEAD:src/de/jost_net/JVerein/server/DDLTool/Updates/Update0453.java
     execute(addColumn("konto", new Column("kontoart",
         COLTYPE.INTEGER, 0, null, false, false)));
 
@@ -42,5 +43,30 @@ public class Update0453 extends AbstractDDLUpdate
 =======
     execute("INSERT INTO wirtschaftsplanung(geschaeftsjahr, buchungsart, betrag) VALUES (2024, 1, 200), (2023, 1, 1000)");
 >>>>>>> 517b61e9 (Added WirtschaftsplanungListView)
+=======
+    execute(addColumn("einstellung",
+        new Column("wirtschaftsplanung", COLTYPE.BOOLEAN, 0, null, false,
+            false)));
+
+    Table wirtschaftsplanung = new Table("wirtschaftsplanung");
+    Column gj = new Column("geschaeftsjahr", COLTYPE.INTEGER, 4, null, true,
+        false);
+    wirtschaftsplanung.add(gj);
+    Column buchungsart = new Column("buchungsart", COLTYPE.BIGINT, 4, null,
+        true, false);
+    wirtschaftsplanung.add(buchungsart);
+    wirtschaftsplanung.setPrimaryKey(gj, buchungsart);
+    wirtschaftsplanung.add(
+        new Column("betrag", COLTYPE.DOUBLE, 10, "0.0", true, false));
+
+    execute(createTable(wirtschaftsplanung));
+
+    Index idx = new Index("ix_wirtschaftsplanung", false);
+    idx.add(buchungsart);
+    execute(idx.getCreateIndex("wirtschaftsplanung"));
+
+    execute(createForeignKey("fk_wirtschaftsplanung", "wirtschaftsplanung",
+        "buchungsart", "buchungsart", "id", "RESTRICT", "CASCADE"));
+>>>>>>> 9995d22c (UebersichtPart):src/de/jost_net/JVerein/server/DDLTool/Updates/Update0454.java
   }
 }

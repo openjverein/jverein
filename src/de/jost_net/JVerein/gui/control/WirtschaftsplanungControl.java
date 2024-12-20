@@ -28,8 +28,6 @@ public class WirtschaftsplanungControl extends AbstractControl
 
   private TablePart wirtschaftsplaene;
 
-  private LabelGroup uebersicht;
-
   /**
    * Erzeugt einen neuen AbstractControl der fuer die angegebene View.
    *
@@ -135,29 +133,6 @@ public class WirtschaftsplanungControl extends AbstractControl
     wirtschaftsplaene.addColumn("Saldo Differenz", "differenz", formatter);
 
     return wirtschaftsplaene;
-  }
-
-  public LabelGroup getUebersicht() {
-    if (uebersicht != null) {
-      return uebersicht;
-    }
-
-    uebersicht = new LabelGroup(view.getParent(), "Übersicht");
-
-    DecimalInput sollEinnahme = new DecimalInput(getWirtschaftsplanungZeile().getPlanEinnahme(), Einstellungen.DECIMALFORMAT);;
-    sollEinnahme.disable();
-    uebersicht.addLabelPair("Einnahmen Soll", sollEinnahme);
-    DecimalInput istEinnahme = new DecimalInput(getWirtschaftsplanungZeile().getIstEinnahme(), Einstellungen.DECIMALFORMAT);
-    istEinnahme.disable();
-    uebersicht.addLabelPair("Einnahmen Ist", istEinnahme);
-    DecimalInput sollAusgaben = new DecimalInput(getWirtschaftsplanungZeile().getPlanAusgabe(), Einstellungen.DECIMALFORMAT);
-    sollAusgaben.disable();
-    uebersicht.addLabelPair("Ausgaben Soll", sollAusgaben);
-    DecimalInput istAusgaben = new DecimalInput(getWirtschaftsplanungZeile().getIstAusgabe(), Einstellungen.DECIMALFORMAT);
-    istAusgaben.disable();
-    uebersicht.addLabelPair("Ausgaben Ist", istAusgaben);
-
-    return uebersicht;
   }
 
   public WirtschaftsplanungZeile getWirtschaftsplanungZeile()
