@@ -1,6 +1,6 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
@@ -11,7 +11,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If
  * not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de | www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
@@ -27,11 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.BuchungsklasseSaldoZeile;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
-<<<<<<< HEAD
 import de.jost_net.JVerein.keys.Kontoart;
-=======
-import de.jost_net.JVerein.keys.KontoArt;
->>>>>>> 5cce65b6 (Endstand)
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -48,12 +44,12 @@ import de.willuhn.util.ApplicationException;
 public class BuchungsklasseSaldoList extends TablePart implements Part
 {
 
-	private TablePart saldoList;
+  private TablePart saldoList;
 
-	private Date datumvon = null;
+  private Date datumvon = null;
 
-	private Date datumbis = null;
-	
+  private Date datumbis = null;
+
   Double einnahmen;
   Double ausgaben;
   Double umbuchungen;
@@ -178,7 +174,7 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
           BuchungsklasseSaldoZeile.HEADER, buchungsklasse));
       createBuchungsklasse(buchungsklasse, zeile);
     }
-    
+
     // Buchungen ohne Buchungsklasse
     Buchungsklasse b = (Buchungsklasse) service
         .createObject(Buchungsklasse.class, null);
@@ -236,7 +232,7 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
           BuchungsklasseSaldoZeile.NICHTZUGEORDNETEBUCHUNGEN,
           "Anzahl Buchungen ohne Buchungsart", anzahl));
     }
-    
+
     // Leerzeile am Ende wegen Scrollbar
     zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.UNDEFINED, ""));
     return zeile;
@@ -264,8 +260,8 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
     super.paint(parent);
   }
 
-  private void createBuchungsklasse(Buchungsklasse buchungsklasse, 
-      ArrayList<BuchungsklasseSaldoZeile> zeile) throws RemoteException 
+  private void createBuchungsklasse(Buchungsklasse buchungsklasse,
+      ArrayList<BuchungsklasseSaldoZeile> zeile) throws RemoteException
   {
     Buchungsart buchungsart = null;
     String buchungsklasseId = null;
@@ -306,7 +302,7 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
         }
       }
     }
-    
+
     DBIterator<Buchungsart> buchungsartenIt = service
         .createList(Buchungsart.class);
     if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
@@ -338,11 +334,7 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
             + "and buchung.konto = konto.id "
             + "and konto.kontoart < ? ";
         anz = (Integer) service.execute(sqlc, new Object[] { datumvon, datumbis,
-<<<<<<< HEAD
             buchungsart.getID(), Kontoart.LIMIT.getKey() }, rsi);
-=======
-            buchungsart.getID(), KontoArt.LIMIT.getKey() }, rsi);
->>>>>>> 5cce65b6 (Endstand)
       }
       else
       {
@@ -357,12 +349,8 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
               + "and buchung.konto = konto.id "
               + "and konto.kontoart < ? ";
           anz = (Integer) service.execute(sqlc,
-              new Object[] { datumvon, datumbis, buchungsart.getID(), 
-<<<<<<< HEAD
+              new Object[] { datumvon, datumbis, buchungsart.getID(),
                   buchungsklasseId, Kontoart.LIMIT.getKey() }, rsi);
-=======
-                  buchungsklasseId, KontoArt.LIMIT.getKey() }, rsi);
->>>>>>> 5cce65b6 (Endstand)
         }
         else
         {
@@ -375,11 +363,7 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
               + "and buchung.konto = konto.id "
               + "and konto.kontoart < ? ";
           anz = (Integer) service.execute(sqlc, new Object[] { datumvon,
-<<<<<<< HEAD
               datumbis, buchungsart.getID(), Kontoart.LIMIT.getKey() }, rsi);
-=======
-              datumbis, buchungsart.getID(), KontoArt.LIMIT.getKey() }, rsi);
->>>>>>> 5cce65b6 (Endstand)
         }
       }
 
@@ -399,7 +383,6 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
             + "and buchung.buchungsart = buchungsart.id "
             + "and buchungsart.id = ? " + "and buchungsart.art = ?";
         einnahmen = (Double) service.execute(sql, new Object[] { datumvon,
-<<<<<<< HEAD
             datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 0 }, rsd);
         suBukEinnahmen += einnahmen;
         ausgaben = (Double) service.execute(sql, new Object[] { datumvon,
@@ -407,15 +390,6 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
         suBukAusgaben += ausgaben;
         umbuchungen = (Double) service.execute(sql, new Object[] { datumvon,
             datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 2 }, rsd);
-=======
-            datumbis, KontoArt.LIMIT.getKey(), buchungsart.getID(), 0 }, rsd);
-        suBukEinnahmen += einnahmen;
-        ausgaben = (Double) service.execute(sql, new Object[] { datumvon,
-            datumbis, KontoArt.LIMIT.getKey(), buchungsart.getID(), 1 }, rsd);
-        suBukAusgaben += ausgaben;
-        umbuchungen = (Double) service.execute(sql, new Object[] { datumvon,
-            datumbis, KontoArt.LIMIT.getKey(), buchungsart.getID(), 2 }, rsd);
->>>>>>> 5cce65b6 (Endstand)
         suBukUmbuchungen += umbuchungen;
       }
       else
@@ -432,29 +406,17 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
               + "and buchungsart.id = ? " + "and buchungsart.art = ? "
               + "and buchung.buchungsklasse = ? ";
           einnahmen = (Double) service.execute(sql,
-<<<<<<< HEAD
               new Object[] { datumvon, datumbis, Kontoart.LIMIT.getKey(),
-=======
-              new Object[] { datumvon, datumbis, KontoArt.LIMIT.getKey(),
->>>>>>> 5cce65b6 (Endstand)
                   buchungsart.getID(), 0, buchungsklasseId },
               rsd);
           suBukEinnahmen += einnahmen;
           ausgaben = (Double) service.execute(sql,
-<<<<<<< HEAD
               new Object[] { datumvon, datumbis, Kontoart.LIMIT.getKey(),
-=======
-              new Object[] { datumvon, datumbis, KontoArt.LIMIT.getKey(),
->>>>>>> 5cce65b6 (Endstand)
                   buchungsart.getID(), 1, buchungsklasseId },
               rsd);
           suBukAusgaben += ausgaben;
           umbuchungen = (Double) service.execute(sql,
-<<<<<<< HEAD
               new Object[] { datumvon, datumbis, Kontoart.LIMIT.getKey(),
-=======
-              new Object[] { datumvon, datumbis, KontoArt.LIMIT.getKey(),
->>>>>>> 5cce65b6 (Endstand)
                   buchungsart.getID(), 2, buchungsklasseId },
               rsd);
           suBukUmbuchungen += umbuchungen;
@@ -470,27 +432,15 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
               + "and buchungsart.id = ? " + "and buchungsart.art = ? "
               + "and buchung.buchungsklasse is null ";
           einnahmen = (Double) service.execute(sql, new Object[] { datumvon,
-<<<<<<< HEAD
-              datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 0 },
+                  datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 0 },
               rsd);
           suBukEinnahmen += einnahmen;
           ausgaben = (Double) service.execute(sql, new Object[] { datumvon,
-              datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 1 },
+                  datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 1 },
               rsd);
           suBukAusgaben += ausgaben;
           umbuchungen = (Double) service.execute(sql, new Object[] { datumvon,
-              datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 2 },
-=======
-              datumbis, KontoArt.LIMIT.getKey(), buchungsart.getID(), 0 },
-              rsd);
-          suBukEinnahmen += einnahmen;
-          ausgaben = (Double) service.execute(sql, new Object[] { datumvon,
-              datumbis, KontoArt.LIMIT.getKey(), buchungsart.getID(), 1 },
-              rsd);
-          suBukAusgaben += ausgaben;
-          umbuchungen = (Double) service.execute(sql, new Object[] { datumvon,
-              datumbis, KontoArt.LIMIT.getKey(), buchungsart.getID(), 2 },
->>>>>>> 5cce65b6 (Endstand)
+                  datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 2 },
               rsd);
           suBukUmbuchungen += umbuchungen;
         }

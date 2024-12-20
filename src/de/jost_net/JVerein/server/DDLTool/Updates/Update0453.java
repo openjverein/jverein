@@ -20,9 +20,9 @@ import de.willuhn.util.ProgressMonitor;
 
 import java.sql.Connection;
 
-public class Update0452 extends AbstractDDLUpdate
+public class Update0453 extends AbstractDDLUpdate
 {
-  public Update0452(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0453(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -30,10 +30,13 @@ public class Update0452 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute("update mitgliedskonto set betrag = 0 where betrag IS NULL");
+    execute(addColumn("konto", new Column("kontoart",
+        COLTYPE.INTEGER, 0, null, false, false)));
 
-    Column betrag = new Column("betrag", COLTYPE.DOUBLE, 0, null, true,
-        false);
-    execute(alterColumnNotNull("mitgliedskonto", betrag));
+    execute("update konto set kontoart = 1 where anlagenkonto IS NULL");
+    execute("update konto set kontoart = 1 where anlagenkonto IS FALSE");
+    execute("update konto set kontoart = 2 where anlagenkonto IS TRUE");
+
+    execute(dropColumn("konto", "anlagenkonto"));
   }
 }

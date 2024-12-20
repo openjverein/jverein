@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -21,27 +21,13 @@ package de.jost_net.JVerein.keys;
  */
 public enum SuchSpendenart
 {
-<<<<<<< HEAD:src/de/jost_net/JVerein/keys/SuchSpendenart.java
 
-<<<<<<< HEAD:src/de/jost_net/JVerein/keys/SuchSpendenart.java
   ALLE(1, "Alle"),
   GELDSPENDE(2, "Geldspende"),
   SACHSPENDE(3, "Sachspende"),
   ERSTATTUNGSVERZICHT(4, "Geldspende mit Erstattungsverzicht"),
   GELDSPENDE_ECHT(5, "Geldspende ohne Erstattungsverzicht"),
   SACHSPENDE_ERSTATTUNGSVERZICHT(6, "Sachspende oder Geldspende mit Erstattungsverzicht");
-=======
-=======
-  // LIMIT ist keine Kontoart sondern dient zur Abgrenzung.
-  // Ids unter dem Limit werden regulär im Buchungsklassensaldo und Kontensaldo
-  // berücksichtigt.
-  // Ids über dem Limit werden in beiden Salden ignoriert.
->>>>>>> b3a42199 (Add Kommentar):src/de/jost_net/JVerein/keys/KontoArt.java
-  GELD(1, "Geldkonto"),
-  ANLAGE(2, "Anlagenkonto"),
-  LIMIT(100, "-- Limit --"),
-  RUECKLAGE(101, "Rücklagenkonto");
->>>>>>> 5cc29b7b (Endstand):src/de/jost_net/JVerein/keys/KontoArt.java
 
   private final String text;
 

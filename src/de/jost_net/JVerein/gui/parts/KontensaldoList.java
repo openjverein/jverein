@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -24,11 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.SaldoZeile;
-<<<<<<< HEAD
 import de.jost_net.JVerein.keys.Kontoart;
-=======
-import de.jost_net.JVerein.keys.KontoArt;
->>>>>>> 53604250 (Switch to Auswahlliste)
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -44,9 +40,9 @@ public class KontensaldoList extends TablePart implements Part
 {
 
   private TablePart saldoList;
-  
+
   private Date von = null;
-  
+
   private Date bis = null;
 
   public KontensaldoList(Action action, Geschaeftsjahr gj)
@@ -55,7 +51,7 @@ public class KontensaldoList extends TablePart implements Part
     this.von = gj.getBeginnGeschaeftsjahr();
     this.bis = gj.getEndeGeschaeftsjahr();
   }
-  
+
   public KontensaldoList(Action action, Date von, Date bis)
   {
     super(action);
@@ -124,11 +120,7 @@ public class KontensaldoList extends TablePart implements Part
     Konto k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
         null);
     DBIterator<Konto> konten = k.getKontenVonBis(von, bis);
-<<<<<<< HEAD
     konten.addFilter("kontoart < ?", Kontoart.LIMIT.getKey());
-=======
-    konten.addFilter("kontoart < ?", KontoArt.LIMIT.getKey());
->>>>>>> 5cce65b6 (Endstand)
     double anfangsbestand = 0;
     double einnahmen = 0;
     double ausgaben = 0;
@@ -141,7 +133,7 @@ public class KontensaldoList extends TablePart implements Part
     double sumbuchungen = 0;
     double sendbestand = 0;
     Konto konto = null;
-    
+
     if (von != null)
     {
       SaldoZeile sz = null;
@@ -149,11 +141,7 @@ public class KontensaldoList extends TablePart implements Part
       {
         konto = konten.next();
         sz = new SaldoZeile(von, bis, konto);
-<<<<<<< HEAD
         if (summensaldo && konto.getKontoArt() == Kontoart.ANLAGE)
-=======
-        if (summensaldo && konto.getKontoArt() == KontoArt.ANLAGE)
->>>>>>> 53604250 (Switch to Auswahlliste)
         {
           sanfangsbestand += (Double) sz.getAttribute("anfangsbestand");
           seinnahmen += (Double) sz.getAttribute("einnahmen");
@@ -187,22 +175,18 @@ public class KontensaldoList extends TablePart implements Part
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
     k.setNummer("");
     k.setBezeichnung("Summe aller Konten");
-    zeile.add(new SaldoZeile(k, anfangsbestand + sanfangsbestand, einnahmen + seinnahmen, 
+    zeile.add(new SaldoZeile(k, anfangsbestand + sanfangsbestand, einnahmen + seinnahmen,
         ausgaben + sausgaben, umbuchungen + sumbuchungen, endbestand + sendbestand));
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
     k.setNummer("");
     k.setBezeichnung("Überschuss/Verlust(-)");
     zeile.add(new SaldoZeile(k, null, null, null, null, jahressaldo));
-    
+
     // Konten ohne Berücksichtigung im Saldo
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
         null);
     konten = k.getKontenVonBis(von, bis);
-<<<<<<< HEAD
     konten.addFilter("kontoart > ?", Kontoart.LIMIT.getKey());
-=======
-    konten.addFilter("kontoart > ?", KontoArt.LIMIT.getKey());
->>>>>>> 5cce65b6 (Endstand)
     if (von != null && konten.hasNext())
     {
       SaldoZeile sz = null;
@@ -238,7 +222,7 @@ public class KontensaldoList extends TablePart implements Part
     this.von = gj.getBeginnGeschaeftsjahr();
     this.bis = gj.getEndeGeschaeftsjahr();
   }
-  
+
   public void setVonBis(Date von, Date bis)
   {
     this.von = von;

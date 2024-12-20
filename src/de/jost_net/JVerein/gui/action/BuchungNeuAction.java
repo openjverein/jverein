@@ -1,16 +1,17 @@
+
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
  *  the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -22,11 +23,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.view.BuchungView;
-<<<<<<< HEAD
 import de.jost_net.JVerein.keys.Kontoart;
-=======
-import de.jost_net.JVerein.keys.KontoArt;
->>>>>>> 53604250 (Switch to Auswahlliste)
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
@@ -42,7 +39,7 @@ public class BuchungNeuAction implements Action
   {
     this.control = control;
   }
-  
+
   @Override
   public void handleAction(Object context)
   {
@@ -54,11 +51,7 @@ public class BuchungNeuAction implements Action
       Konto konto = (Konto) control.getSuchKonto().getValue();
       if (null != konto)
       {
-<<<<<<< HEAD
         if (konto.getKontoArt() == Kontoart.ANLAGE)
-=======
-        if (konto.getKontoArt() == KontoArt.ANLAGE)
->>>>>>> 53604250 (Switch to Auswahlliste)
         {
           buch.setBuchungsartId(konto.getAfaartId());
         }
@@ -76,11 +69,7 @@ public class BuchungNeuAction implements Action
             k = (Konto) Einstellungen.getDBService().createObject(Konto.class, kontoid);
             if (null != k)
             {
-<<<<<<< HEAD
               if (k.getKontoArt() == Kontoart.ANLAGE)
-=======
-              if (k.getKontoArt() == KontoArt.ANLAGE)
->>>>>>> 53604250 (Switch to Auswahlliste)
               {
                 buch.setBuchungsartId(k.getAfaartId());
               }

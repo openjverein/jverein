@@ -11,7 +11,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -26,11 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
-<<<<<<< HEAD
 import de.jost_net.JVerein.keys.Kontoart;
-=======
-import de.jost_net.JVerein.keys.KontoArt;
->>>>>>> 53604250 (Switch to Auswahlliste)
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -71,24 +67,24 @@ public class KontoList extends TablePart implements Part
 
   /**
    * Update Konten-Liste nach neuen Kriterien.
-   * 
+   *
    * @param onlyHibiscus, nurAktuelleKonten
    * @throws RemoteException
-   */ 
+   */
   public synchronized void update(boolean onlyHibiscus,
-	      boolean nurAktuelleKonten, Kontenfilter art) throws RemoteException
+      boolean nurAktuelleKonten, Kontenfilter art) throws RemoteException
   {
     super.removeAll();
     List<Konto> list = init(onlyHibiscus, nurAktuelleKonten, art);
-    for (Konto kto: list) 
+    for (Konto kto: list)
     {
       super.addItem(kto);
     }
   }
-  
+
   /**
    * Initialisiert die Konten-Liste.
-   * 
+   *
    * @return Liste der Konten.
    * @throws RemoteException
    */
@@ -110,17 +106,10 @@ public class KontoList extends TablePart implements Part
     }
     if (art == Kontenfilter.GELDKONTO)
       i.addFilter("kontoart != ?",
-<<<<<<< HEAD
           new Object[] { Kontoart.ANLAGE.getKey() });
     if (art == Kontenfilter.ANLAGEKONTO)
       i.addFilter("kontoart = ?",
           new Object[] { Kontoart.ANLAGE.getKey() });
-=======
-          new Object[] { KontoArt.ANLAGE.getKey() });
-    if (art == Kontenfilter.ANLAGEKONTO)
-      i.addFilter("kontoart = ?",
-          new Object[] { KontoArt.ANLAGE.getKey() });
->>>>>>> 53604250 (Switch to Auswahlliste)
     i.setOrder("ORDER BY nummer, bezeichnung");
     return i != null ? PseudoIterator.asList(i) : null;
   }

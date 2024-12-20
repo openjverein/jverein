@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -21,11 +21,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.AfaMode;
-<<<<<<< HEAD
 import de.jost_net.JVerein.keys.Kontoart;
-=======
-import de.jost_net.JVerein.keys.KontoArt;
->>>>>>> 53604250 (Switch to Auswahlliste)
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
@@ -108,11 +104,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
       {
         throw new ApplicationException("Bitte Nummer eingeben");
       }
-<<<<<<< HEAD
       if (getKontoArt() == Kontoart.ANLAGE)
-=======
-      if (getKontoArt() == KontoArt.ANLAGE)
->>>>>>> 53604250 (Switch to Auswahlliste)
       {
         if (getBetrag() != null && getBetrag() < 0.0)
         {
@@ -235,7 +227,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
     konten.setOrder("order by bezeichnung");
     return konten;
   }
-  
+
   @Override
   public DBIterator<Konto> getKontenVonBis(Date von, Date bis)
       throws RemoteException
@@ -264,7 +256,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
     super.store();
     Cache.get(Konto.class, false).put(this); // Cache aktualisieren
   }
-  
+
   @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
@@ -289,9 +281,8 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("buchungsart", buchungsartId);
   }
-  
+
   @Override
-<<<<<<< HEAD
   public Kontoart getKontoArt() throws RemoteException
   {
     Integer tmp = (Integer) super.getAttribute("kontoart");
@@ -307,20 +298,11 @@ public class KontoImpl extends AbstractDBObject implements Konto
 
   @Override
   public void setKontoArt(Kontoart kontoart)
-=======
-  public KontoArt getKontoArt() throws RemoteException
-  {
-    return KontoArt.getByKey((int) super.getAttribute("kontoart"));
-  }
-
-  @Override
-  public void setKontoArt(KontoArt kontoart)
->>>>>>> 53604250 (Switch to Auswahlliste)
       throws RemoteException
   {
     setAttribute("kontoart", kontoart.getKey());
   }
-  
+
   @Override
   public Buchungsart getAnlagenart() throws RemoteException
   {
@@ -345,7 +327,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("anlagenart", anlagenartId);
   }
-  
+
   @Override
   public Buchungsklasse getAnlagenklasse() throws RemoteException
   {
@@ -370,7 +352,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("anlagenklasse", anlagenklasseId);
   }
-  
+
   @Override
   public Buchungsart getAfaart() throws RemoteException
   {
@@ -395,7 +377,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("afaart", afaartId);
   }
-  
+
   @Override
   public Integer getNutzungsdauer() throws RemoteException
   {
@@ -407,7 +389,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("nutzungsdauer", nutzungsdauer);
   }
-  
+
   @Override
   public Double getBetrag() throws RemoteException
   {
@@ -419,7 +401,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("betrag", d);
   }
-  
+
   @Override
   public String getKommentar() throws RemoteException
   {
@@ -431,7 +413,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("kommentar", kommentar);
   }
-  
+
 
   @Override
   public Date getAnschaffung() throws RemoteException
@@ -444,7 +426,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("anschaffung", anschaffung);
   }
-  
+
   @Override
   public Double getAfaStart() throws RemoteException
   {
@@ -456,7 +438,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("afastart", afastart);
   }
-  
+
   @Override
   public Double getAfaDauer() throws RemoteException
   {
@@ -468,7 +450,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("afadauer", afadauer);
   }
-  
+
   @Override
   public Double getAfaRestwert() throws RemoteException
   {
@@ -480,7 +462,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("afarestwert", afarestwert);
   }
-  
+
   @Override
   public Integer getAfaMode() throws RemoteException
   {
@@ -492,7 +474,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("afamode", afamode);
   }
-  
+
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
