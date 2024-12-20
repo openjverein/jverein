@@ -153,9 +153,12 @@ public class MittelverwendungList extends TablePart implements Part
     sql = "SELECT SUM(anfangsbestand.betrag) FROM anfangsbestand, konto"
         + " WHERE anfangsbestand.datum = ?"
         + " AND anfangsbestand.konto = konto.id "
-        + " AND (konto.kontoart = ? OR konto.kontoart = ?)";
-    Double pos2 = (Double) service.execute(sql, new Object[] { datumvon,
-        Kontoart.RUECKLAGE.getKey(), Kontoart.VERMOEGEN.getKey() }, rsd);
+        + " AND (konto.kontoart = ? OR konto.kontoart = ? OR konto.kontoart = ?)";
+    Double pos2 = (Double) service.execute(sql,
+        new Object[] { datumvon, Kontoart.RUECKLAGE.getKey(),
+            Kontoart.VERMOEGEN.getKey(),
+            Kontoart.SONSTIGE_RUECKLAGEN.getKey() },
+        rsd);
     addZeile(zeilen, MittelverwendungZeile.AUSGABE, pos++, bezeichnung, null,
         pos2);
 
