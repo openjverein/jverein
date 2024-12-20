@@ -9,9 +9,9 @@ import de.willuhn.util.ProgressMonitor;
 
 import java.sql.Connection;
 
-public class Update0453 extends AbstractDDLUpdate
+public class Update0454 extends AbstractDDLUpdate
 {
-  public Update0453(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0454(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -42,7 +42,5 @@ public class Update0453 extends AbstractDDLUpdate
 
     execute(createForeignKey("fk_wirtschaftsplanung", "wirtschaftsplanung",
         "buchungsart", "buchungsart", "id", "RESTRICT", "CASCADE"));
-
-    execute("INSERT INTO wirtschaftsplanung(geschaeftsjahr, buchungsart, betrag) VALUES (2024, 1, 200), (2023, 1, 1000)");
   }
 }
