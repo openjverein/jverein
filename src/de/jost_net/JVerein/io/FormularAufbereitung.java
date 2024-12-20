@@ -702,15 +702,17 @@ public class FormularAufbereitung
         StringTool.toNotNullString(re.getStrasse()),
         StringTool.toNotNullString(re.getPlz()),
         StringTool.toNotNullString(re.getOrt()),
-        re.getStaatCode() == null ? e.getStaat() : re.getStaatCode())
-            .setID(id)
-            .setContact(new Contact(
-                StringTool.toNotNullString(re.getVorname()) + " "
-                    + StringTool.toNotNullString(re.getName()),
-                re.getMitglied().getTelefonprivat(),
-                re.getMitglied().getEmail()))
-            .setAdditionalAddress(
-                StringTool.toNotNullString(re.getAdressierungszusatz())));
+        re.getStaatCode() == null || re.getStaatCode().length() == 0
+            ? e.getStaat()
+            : re.getStaatCode())
+                .setID(id)
+                .setContact(new Contact(
+                    StringTool.toNotNullString(re.getVorname()) + " "
+                        + StringTool.toNotNullString(re.getName()),
+                    re.getMitglied().getTelefonprivat(),
+                    re.getMitglied().getEmail()))
+                .setAdditionalAddress(
+                    StringTool.toNotNullString(re.getAdressierungszusatz())));
 
     // LeitwegID
     if (re.getLeitwegID() != null && re.getLeitwegID().length() > 0)
