@@ -20,9 +20,9 @@ import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class Update0453 extends AbstractDDLUpdate
+public class Update0454 extends AbstractDDLUpdate
 {
-  public Update0453(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0454(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
