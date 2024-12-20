@@ -616,4 +616,7 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public void setBeitragAltersstufen(String altersstufen) throws RemoteException;
 
+  public Boolean getMittelverwendung() throws RemoteException;
+
+  public void setMittelverwendung(Boolean mittelverwendung) throws RemoteException;
 }
