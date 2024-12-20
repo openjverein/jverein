@@ -9,7 +9,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  **********************************************************************/
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
@@ -31,7 +31,7 @@ public class Update0452 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute("update mitgliedskonto set betrag = 0 where betrag IS NULL");
-
+    
     Column betrag = new Column("betrag", COLTYPE.DOUBLE, 0, null, true,
         false);
     execute(alterColumnNotNull("mitgliedskonto", betrag));

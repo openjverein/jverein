@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -94,39 +94,39 @@ public class KontoControl extends AbstractControl
   private SelectInput hibiscusid;
 
   private Konto konto;
-
+  
   private SelectInput buchungsart;
-
+  
   private SelectInput kontoart;
-
+  
   private int unterdrueckunglaenge = 0;
-
+  
   private AbstractInput anlagenart;
-
+  
   private SelectInput anlagenklasse;
-
+  
   private AbstractInput afaart;
-
+  
   private DecimalInput betrag;
-
+  
   private IntegerNullInput nutzungsdauer;
-
+  
   private TextAreaInput kommentar;
-
+  
   private DateInput anschaffung;
-
+  
   private DecimalInput afastart;
-
+  
   private DecimalInput afadauer;
-
+  
   private DecimalInput afarestwert;
-
+  
   private SelectInput afamode;
-
+  
   Button autobutton;
-
+  
   Button afabutton;
-
+  
 
   public KontoControl(AbstractView view)
   {
@@ -177,7 +177,7 @@ public class KontoControl extends AbstractControl
         new JVDateFormatTTMMJJJJ());
     return eroeffnung;
   }
-
+  
   public DateInput getAnschaffung() throws RemoteException
   {
     if (anschaffung != null)
@@ -283,18 +283,18 @@ public class KontoControl extends AbstractControl
           + "WHERE (kontoart = ?) ";
       boolean exist = (boolean) service.execute(sql,
           new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
+      {
+        @Override
+        public Object extract(ResultSet rs)
+            throws RemoteException, SQLException
+        {
+          if (rs.next())
           {
-            @Override
-            public Object extract(ResultSet rs)
-                throws RemoteException, SQLException
-            {
-              if (rs.next())
-              {
-                return true;
-              }
-              return false;
-            }
-          });
+            return true;
+          }
+          return false;
+        }
+      });
       if (!exist && getKonto().getKontoArt() == Kontoart.ANLAGE)
       {
         SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
@@ -376,7 +376,7 @@ public class KontoControl extends AbstractControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     kontenList.addColumn("Auflösungsdatum", "aufloesung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart",
+    kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart", 
         new BuchungsartFormatter());
     kontenList.setRememberColWidths(true);
     kontenList.setContextMenu(new KontoMenu());
@@ -406,7 +406,7 @@ public class KontoControl extends AbstractControl
     ArrayList<Buchungsart> liste = new ArrayList<>();
     unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
     final DBService service = Einstellungen.getDBService();
-
+    
     ResultSetExtractor rs = new ResultSetExtractor()
     {
       @Override
@@ -416,7 +416,7 @@ public class KontoControl extends AbstractControl
         while (rs.next())
         {
           list.add(
-              (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
+            (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
         }
         return list;
       }
@@ -455,15 +455,15 @@ public class KontoControl extends AbstractControl
       {
         @SuppressWarnings("unchecked")
         ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-            new Object[] { ArtBuchungsart.UMBUCHUNG, dv, db,
-                StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE }, rs);
+            new Object[] { ArtBuchungsart.UMBUCHUNG, dv, db,  
+                StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE }, rs);    
         addToList(liste, ergebnis);
       }
       else
       {
         @SuppressWarnings("unchecked")
         ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-            new Object[] { konto.getBuchungsartId(), ArtBuchungsart.UMBUCHUNG, dv, db,
+            new Object[] { konto.getBuchungsartId(), ArtBuchungsart.UMBUCHUNG, dv, db,  
                 StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE}, rs);
         addToList(liste, ergebnis);
       }
@@ -495,19 +495,19 @@ public class KontoControl extends AbstractControl
       {
         @SuppressWarnings("unchecked")
         ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-            new Object[] { ArtBuchungsart.UMBUCHUNG, StatusBuchungsart.INACTIVE }, rs);
+            new Object[] { ArtBuchungsart.UMBUCHUNG, StatusBuchungsart.INACTIVE }, rs);    
         addToList(liste, ergebnis);
       }
       else
       {
         @SuppressWarnings("unchecked")
         ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-            new Object[] { konto.getBuchungsartId(), ArtBuchungsart.UMBUCHUNG,
+            new Object[] { konto.getBuchungsartId(), ArtBuchungsart.UMBUCHUNG, 
                 StatusBuchungsart.INACTIVE }, rs);
         addToList(liste, ergebnis);
       }
     }
-
+    
     Buchungsart b = konto.getBuchungsart();
     if (liste != null && b != null && !liste.contains(b))
       liste.add(b);
@@ -526,10 +526,10 @@ public class KontoControl extends AbstractControl
         buchungsart.setAttribute("bezeichnung");
         break;
     }
-
+    
     return buchungsart;
   }
-
+  
   private Long getSelectedBuchungsArtId() throws ApplicationException
   {
     try
@@ -547,7 +547,7 @@ public class KontoControl extends AbstractControl
       throw new ApplicationException(meldung, ex);
     }
   }
-
+  
   private void addToList(ArrayList<Buchungsart> liste, ArrayList<Buchungsart> ergebnis)
   {
     int size = ergebnis.size();
@@ -556,7 +556,7 @@ public class KontoControl extends AbstractControl
       liste.add(ergebnis.get(i));
     }
   }
-
+  
   public SelectInput getKontoArt() throws RemoteException
   {
     if (kontoart != null)
@@ -570,7 +570,7 @@ public class KontoControl extends AbstractControl
     }
     ArrayList<Kontoart> values = new ArrayList<Kontoart>(Arrays.asList(Kontoart.values()));
     values.remove(Kontoart.LIMIT);
-    kontoart = new SelectInput(values, art);
+    kontoart = new SelectInput(values, art);   
     kontoart.addListener(new Listener()
     {
 
@@ -582,8 +582,8 @@ public class KontoControl extends AbstractControl
     });
     return kontoart;
   }
-
-
+  
+  
   public Input getAnlagenart() throws RemoteException
   {
     if (anlagenart != null)
@@ -606,7 +606,7 @@ public class KontoControl extends AbstractControl
     }
     return anlagenart;
   }
-
+  
   private Long getSelectedAnlagenartId() throws ApplicationException
   {
     try
@@ -624,7 +624,7 @@ public class KontoControl extends AbstractControl
       throw new ApplicationException(meldung, ex);
     }
   }
-
+  
   public Input getAnlagenklasse() throws RemoteException
   {
     if (anlagenklasse != null)
@@ -650,7 +650,7 @@ public class KontoControl extends AbstractControl
     }
     return anlagenklasse;
   }
-
+  
   private Long getSelectedAnlagenklasseId() throws ApplicationException
   {
     try
@@ -668,7 +668,7 @@ public class KontoControl extends AbstractControl
       throw new ApplicationException(meldung, ex);
     }
   }
-
+  
   public Input getAfaart() throws RemoteException
   {
     if (afaart != null)
@@ -691,7 +691,7 @@ public class KontoControl extends AbstractControl
     }
     return afaart;
   }
-
+  
   private Long getSelectedAfaartId() throws ApplicationException
   {
     try
@@ -733,7 +733,7 @@ public class KontoControl extends AbstractControl
           e1.printStackTrace();
         }
       }
-    });
+     });
     if (getKontoArt().getValue() != Kontoart.ANLAGE)
     {
       betrag.setValue(null);
@@ -763,7 +763,7 @@ public class KontoControl extends AbstractControl
     }
     return nutzungsdauer;
   }
-
+  
   public Input getKommentar() throws RemoteException
   {
     if (kommentar != null && !kommentar.getControl().isDisposed())
@@ -774,7 +774,7 @@ public class KontoControl extends AbstractControl
     kommentar.setHeight(90);
     return kommentar;
   }
-
+  
   public DecimalInput getAfaStart() throws RemoteException
   {
     if (afastart != null)
@@ -797,7 +797,7 @@ public class KontoControl extends AbstractControl
     }
     return afastart;
   }
-
+  
   public DecimalInput getAfaDauer() throws RemoteException
   {
     if (afadauer != null)
@@ -820,7 +820,7 @@ public class KontoControl extends AbstractControl
     }
     return afadauer;
   }
-
+  
   public DecimalInput getAfaRestwert() throws RemoteException
   {
     if (afarestwert != null)
@@ -836,7 +836,7 @@ public class KontoControl extends AbstractControl
     }
     return afarestwert;
   }
-
+  
   public SelectInput getAfaMode() throws RemoteException
   {
     if (afamode != null)
@@ -846,8 +846,8 @@ public class KontoControl extends AbstractControl
     if (getKonto().getAfaMode() == null)
       afamode = new SelectInput(AfaMode.getArray(), null);
     else
-      afamode = new SelectInput(AfaMode.getArray(),
-          new AfaMode(getKonto().getAfaMode()));
+      afamode = new SelectInput(AfaMode.getArray(), 
+        new AfaMode(getKonto().getAfaMode()));
     afamode.setPleaseChoose("Bitte auswählen");
     afamode.addListener(new Listener(){
       public void handleEvent (Event e) {
@@ -855,7 +855,7 @@ public class KontoControl extends AbstractControl
         {
           if (getAfaMode().getValue() != null &&
               ((AfaMode) getAfaMode().getValue()).getKey() ==
-                  AfaMode.ANGEPASST)
+              AfaMode.ANGEPASST)
           {
             getAfaStart().enable();
             getAfaStart().setMandatory(true);
@@ -912,10 +912,10 @@ public class KontoControl extends AbstractControl
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
-
+    
     return "ORDER BY bezeichnung";
   }
-
+  
   public String getBuchungartAttribute()
   {
     try
@@ -936,10 +936,10 @@ public class KontoControl extends AbstractControl
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
-
+    
     return "bezeichnung";
   }
-
+  
   public class AnlagenartListener implements Listener
   {
 
@@ -969,7 +969,7 @@ public class KontoControl extends AbstractControl
       }
     }
   }
-
+  
   public void refreshGui()
   {
     try
@@ -1032,12 +1032,12 @@ public class KontoControl extends AbstractControl
       Logger.error("Fehler", e);
     }
   }
-
+  
   public Button getAutobutton()
   {
     if (autobutton != null)
       return autobutton;
-
+    
     autobutton = new Button("Auto Anlagenwert", new Action()
     {
 
@@ -1064,12 +1064,12 @@ public class KontoControl extends AbstractControl
     }
     return autobutton;
   }
-
+  
   public Button getAfabutton()
   {
     if (afabutton != null)
       return afabutton;
-
+    
     afabutton = new Button("Auto AfA", new Action()
     {
 
@@ -1095,7 +1095,7 @@ public class KontoControl extends AbstractControl
     }
     return afabutton;
   }
-
+  
   private void handleAuto()
   {
     Double betrag = 0d;
@@ -1130,7 +1130,7 @@ public class KontoControl extends AbstractControl
       e.printStackTrace();
     }
   }
-
+  
   private void handleAfa()
   {
     try
@@ -1197,5 +1197,5 @@ public class KontoControl extends AbstractControl
       GUI.getStatusBar().setErrorText("Fehler bei der AfA Berechnung");
     }
   }
-
+  
 }

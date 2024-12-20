@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -90,7 +90,7 @@ public class BuchungView extends AbstractView
             if (Math.abs(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT)
                 .doubleValue()
                 - SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT)
-                .doubleValue()) >= .01d)
+                    .doubleValue()) >= .01d)
               new SplitbuchungNeuAction().handleAction(context);
             else
               GUI.startView(SplitBuchungView.class.getName(),

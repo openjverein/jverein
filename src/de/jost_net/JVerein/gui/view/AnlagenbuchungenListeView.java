@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -49,7 +49,7 @@ public class AnlagenbuchungenListeView extends AbstractView
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Anlagenbuchungen");
-
+    
     final BuchungsControl control = new BuchungsControl(this, Kontenfilter.ANLAGEKONTO);
 
     LabelGroup group = new LabelGroup(getParent(), "Konto");
@@ -71,7 +71,7 @@ public class AnlagenbuchungenListeView extends AbstractView
     right.addLabelPair("Datum von", control.getVondatum());
     right.addLabelPair("Datum bis", control.getBisdatum());
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
-
+    
     ButtonArea buttons1 = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton();
     buttons1.addButton(zurueck);
@@ -86,7 +86,7 @@ public class AnlagenbuchungenListeView extends AbstractView
       }
     }, null, false, "eraser.png");
     buttons1.addButton(reset);
-
+    
     Button suchen = new Button("Suchen", new Action()
     {
       @Override

@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -227,7 +227,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
     konten.setOrder("order by bezeichnung");
     return konten;
   }
-
+  
   @Override
   public DBIterator<Konto> getKontenVonBis(Date von, Date bis)
       throws RemoteException
@@ -256,7 +256,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
     super.store();
     Cache.get(Konto.class, false).put(this); // Cache aktualisieren
   }
-
+  
   @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
@@ -281,7 +281,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("buchungsart", buchungsartId);
   }
-
+  
   @Override
   public Kontoart getKontoArt() throws RemoteException
   {
@@ -302,7 +302,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("kontoart", kontoart.getKey());
   }
-
+  
   @Override
   public Buchungsart getAnlagenart() throws RemoteException
   {
@@ -327,7 +327,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("anlagenart", anlagenartId);
   }
-
+  
   @Override
   public Buchungsklasse getAnlagenklasse() throws RemoteException
   {
@@ -352,7 +352,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("anlagenklasse", anlagenklasseId);
   }
-
+  
   @Override
   public Buchungsart getAfaart() throws RemoteException
   {
@@ -377,7 +377,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("afaart", afaartId);
   }
-
+  
   @Override
   public Integer getNutzungsdauer() throws RemoteException
   {
@@ -389,7 +389,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("nutzungsdauer", nutzungsdauer);
   }
-
+  
   @Override
   public Double getBetrag() throws RemoteException
   {
@@ -401,7 +401,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("betrag", d);
   }
-
+  
   @Override
   public String getKommentar() throws RemoteException
   {
@@ -413,7 +413,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("kommentar", kommentar);
   }
-
+  
 
   @Override
   public Date getAnschaffung() throws RemoteException
@@ -426,7 +426,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("anschaffung", anschaffung);
   }
-
+  
   @Override
   public Double getAfaStart() throws RemoteException
   {
@@ -438,7 +438,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("afastart", afastart);
   }
-
+  
   @Override
   public Double getAfaDauer() throws RemoteException
   {
@@ -450,7 +450,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("afadauer", afadauer);
   }
-
+  
   @Override
   public Double getAfaRestwert() throws RemoteException
   {
@@ -462,7 +462,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("afarestwert", afarestwert);
   }
-
+  
   @Override
   public Integer getAfaMode() throws RemoteException
   {
@@ -474,7 +474,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("afamode", afamode);
   }
-
+  
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {

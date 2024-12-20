@@ -1,6 +1,6 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
@@ -11,7 +11,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If
  * not, see <http://www.gnu.org/licenses/>.
- *
+ * 
  * heiner@jverein.de | www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
@@ -44,12 +44,12 @@ import de.willuhn.util.ApplicationException;
 public class BuchungsklasseSaldoList extends TablePart implements Part
 {
 
-  private TablePart saldoList;
+	private TablePart saldoList;
 
-  private Date datumvon = null;
+	private Date datumvon = null;
 
-  private Date datumbis = null;
-
+	private Date datumbis = null;
+	
   Double einnahmen;
   Double ausgaben;
   Double umbuchungen;
@@ -174,7 +174,7 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
           BuchungsklasseSaldoZeile.HEADER, buchungsklasse));
       createBuchungsklasse(buchungsklasse, zeile);
     }
-
+    
     // Buchungen ohne Buchungsklasse
     Buchungsklasse b = (Buchungsklasse) service
         .createObject(Buchungsklasse.class, null);
@@ -232,7 +232,7 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
           BuchungsklasseSaldoZeile.NICHTZUGEORDNETEBUCHUNGEN,
           "Anzahl Buchungen ohne Buchungsart", anzahl));
     }
-
+    
     // Leerzeile am Ende wegen Scrollbar
     zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.UNDEFINED, ""));
     return zeile;
@@ -260,8 +260,8 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
     super.paint(parent);
   }
 
-  private void createBuchungsklasse(Buchungsklasse buchungsklasse,
-      ArrayList<BuchungsklasseSaldoZeile> zeile) throws RemoteException
+  private void createBuchungsklasse(Buchungsklasse buchungsklasse, 
+      ArrayList<BuchungsklasseSaldoZeile> zeile) throws RemoteException 
   {
     Buchungsart buchungsart = null;
     String buchungsklasseId = null;
@@ -302,7 +302,7 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
         }
       }
     }
-
+    
     DBIterator<Buchungsart> buchungsartenIt = service
         .createList(Buchungsart.class);
     if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
@@ -349,7 +349,7 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
               + "and buchung.konto = konto.id "
               + "and konto.kontoart < ? ";
           anz = (Integer) service.execute(sqlc,
-              new Object[] { datumvon, datumbis, buchungsart.getID(),
+              new Object[] { datumvon, datumbis, buchungsart.getID(), 
                   buchungsklasseId, Kontoart.LIMIT.getKey() }, rsi);
         }
         else
@@ -432,15 +432,15 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
               + "and buchungsart.id = ? " + "and buchungsart.art = ? "
               + "and buchung.buchungsklasse is null ";
           einnahmen = (Double) service.execute(sql, new Object[] { datumvon,
-                  datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 0 },
+              datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 0 },
               rsd);
           suBukEinnahmen += einnahmen;
           ausgaben = (Double) service.execute(sql, new Object[] { datumvon,
-                  datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 1 },
+              datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 1 },
               rsd);
           suBukAusgaben += ausgaben;
           umbuchungen = (Double) service.execute(sql, new Object[] { datumvon,
-                  datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 2 },
+              datumbis, Kontoart.LIMIT.getKey(), buchungsart.getID(), 2 },
               rsd);
           suBukUmbuchungen += umbuchungen;
         }

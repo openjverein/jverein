@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -40,9 +40,9 @@ public class KontensaldoList extends TablePart implements Part
 {
 
   private TablePart saldoList;
-
+  
   private Date von = null;
-
+  
   private Date bis = null;
 
   public KontensaldoList(Action action, Geschaeftsjahr gj)
@@ -51,7 +51,7 @@ public class KontensaldoList extends TablePart implements Part
     this.von = gj.getBeginnGeschaeftsjahr();
     this.bis = gj.getEndeGeschaeftsjahr();
   }
-
+  
   public KontensaldoList(Action action, Date von, Date bis)
   {
     super(action);
@@ -133,7 +133,7 @@ public class KontensaldoList extends TablePart implements Part
     double sumbuchungen = 0;
     double sendbestand = 0;
     Konto konto = null;
-
+    
     if (von != null)
     {
       SaldoZeile sz = null;
@@ -175,13 +175,13 @@ public class KontensaldoList extends TablePart implements Part
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
     k.setNummer("");
     k.setBezeichnung("Summe aller Konten");
-    zeile.add(new SaldoZeile(k, anfangsbestand + sanfangsbestand, einnahmen + seinnahmen,
+    zeile.add(new SaldoZeile(k, anfangsbestand + sanfangsbestand, einnahmen + seinnahmen, 
         ausgaben + sausgaben, umbuchungen + sumbuchungen, endbestand + sendbestand));
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
     k.setNummer("");
     k.setBezeichnung("Überschuss/Verlust(-)");
     zeile.add(new SaldoZeile(k, null, null, null, null, jahressaldo));
-
+    
     // Konten ohne Berücksichtigung im Saldo
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
         null);
@@ -222,7 +222,7 @@ public class KontensaldoList extends TablePart implements Part
     this.von = gj.getBeginnGeschaeftsjahr();
     this.bis = gj.getEndeGeschaeftsjahr();
   }
-
+  
   public void setVonBis(Date von, Date bis)
   {
     this.von = von;

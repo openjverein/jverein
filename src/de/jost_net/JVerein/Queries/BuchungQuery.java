@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -48,33 +48,33 @@ public class BuchungQuery
   public String text;
 
   public String betrag;
-
+  
   private String mitglied;
 
   private List<Buchung> ergebnis;
 
   private Boolean hasMitglied;
-
+  
   private boolean geldkonto;
-
+  
   private HashMap<String, String> sortValues = new HashMap<String, String>();
 
   private void SortHashMap() {
-    sortValues.put("ORDER_ID","order by id");
-    sortValues.put("ORDER_DATUM","order by datum");
-    sortValues.put("ORDER_DATUM_NAME","order by datum, name");
-    sortValues.put("ORDER_DATUM_ID","order by datum, id");
-    sortValues.put("ORDER_DATUM_ID_NAME","order by datum, id, name");
-    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER","order by datum, auszugsnummer");
-    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_NAME","order by datum, auszugsnummer, name");
-    sortValues.put("ORDER_DATUM_BLATTNUMMER","order by datum, blattnummer");
-    sortValues.put("ORDER_DATUM_BLATTNUMMER_NAME","order by datum, blattnummer, name");
-    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_ID","order by datum, auszugsnummer, id");
-    sortValues.put("ORDER_DATUM_BLATTNUMMER_ID","order by datum, blattnummer, id");
-    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_BLATTNUMMER_ID","order by datum, auszugsnummer, blattnummer, id");
-    sortValues.put("DEFAULT","order by datum");
+	  sortValues.put("ORDER_ID","order by id");
+	  sortValues.put("ORDER_DATUM","order by datum");
+	  sortValues.put("ORDER_DATUM_NAME","order by datum, name");
+	  sortValues.put("ORDER_DATUM_ID","order by datum, id");
+	  sortValues.put("ORDER_DATUM_ID_NAME","order by datum, id, name");
+	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER","order by datum, auszugsnummer");
+	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_NAME","order by datum, auszugsnummer, name");
+	  sortValues.put("ORDER_DATUM_BLATTNUMMER","order by datum, blattnummer");
+	  sortValues.put("ORDER_DATUM_BLATTNUMMER_NAME","order by datum, blattnummer, name");
+	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_ID","order by datum, auszugsnummer, id");
+	  sortValues.put("ORDER_DATUM_BLATTNUMMER_ID","order by datum, blattnummer, id");
+	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_BLATTNUMMER_ID","order by datum, auszugsnummer, blattnummer, id");
+	  sortValues.put("DEFAULT","order by datum");
   }
-
+  
   public String ordername = null;
 
   public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
@@ -92,27 +92,27 @@ public class BuchungQuery
     this.geldkonto = geldkonto;
     this.mitglied = mitglied;
   }
-
+  
   public String getOrder(String value) {
-    SortHashMap();
-    String newvalue = null;
-    if ( value == null ) {
-      return sortValues.get("DEFAULT");
-    } else {
-      newvalue = value.replaceAll(", ", "_");
-      newvalue = newvalue.toUpperCase();
-      newvalue = "ORDER_" + newvalue;
-      return sortValues.get(newvalue);
-    }
+	  SortHashMap();
+	  String newvalue = null;
+	  if ( value == null ) {
+		  return sortValues.get("DEFAULT");
+	  } else {
+		  newvalue = value.replaceAll(", ", "_");
+		  newvalue = newvalue.toUpperCase();
+		  newvalue = "ORDER_" + newvalue;
+          return sortValues.get(newvalue);
+	  }
   }
-
+  
   public void setOrdername(String value)
   {
     if ( value != null ) {
-      ordername = value;
+    	ordername = value;
     }
   }
-
+  
   public Boolean getHasMitglied()
   {
     return hasMitglied;
@@ -158,7 +158,7 @@ public class BuchungQuery
   {
     final DBService service = Einstellungen.getDBService();
     DBIterator<Buchung> it = service.createList(Buchung.class);
-
+    
     if (mitglied != null && !mitglied.isEmpty())
     {
       String mitgliedsuche = "%" + mitglied.toLowerCase() + "%";
@@ -169,7 +169,7 @@ public class BuchungQuery
       it.addFilter("(lower(mitglied.name) like ? or lower(mitglied.vorname) like ?)",
           new Object[] { mitgliedsuche, mitgliedsuche });
     }
-
+    
     it.addFilter("buchung.datum >= ? ", datumvon);
     it.addFilter("buchung.datum <= ? ", datumbis);
 
@@ -284,7 +284,7 @@ public class BuchungQuery
       ttext = "%" + ttext + "%";
       it.addFilter(
           "(upper(buchung.name) like ? or upper(buchung.zweck) like ? "
-              + "or upper(buchung.kommentar) like ? or buchung.id = ?) ",
+          + "or upper(buchung.kommentar) like ? or buchung.id = ?) ",
           ttext, ttext, ttext, id);
     }
 
@@ -293,7 +293,7 @@ public class BuchungQuery
     String orderString = getOrder(ordername);
     // System.out.println("ordervalue : " + ordername + " ,orderString : " + orderString);
     it.setOrder(orderString);
-
+    
     this.ergebnis = it != null ? PseudoIterator.asList(it) : null;
     return ergebnis;
   }

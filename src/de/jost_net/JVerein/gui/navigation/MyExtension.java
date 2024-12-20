@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -122,28 +122,28 @@ public class MyExtension implements Extension
             + "WHERE (kontoart = ?) ";
         anlagenkonto = (boolean) service.execute(sql,
             new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
+        {
+          @Override
+          public Object extract(ResultSet rs)
+              throws RemoteException, SQLException
+          {
+            if (rs.next())
             {
-              @Override
-              public Object extract(ResultSet rs)
-                  throws RemoteException, SQLException
-              {
-                if (rs.next())
-                {
-                  return true;
-                }
-                return false;
-              }
-            });
+              return true;
+            }
+            return false;
+          }
+        });
       }
       catch (Exception e)
       {
         ;
       }
       NavigationItem jverein = (NavigationItem) extendable;
-
+      
       NavigationItem mitglieder = null;
       mitglieder = new MyItem(mitglieder, "Mitglieder", null);
-
+      
       mitglieder.addChild(new MyItem(mitglieder, "Mitglieder",
           new MitgliedSucheAction(), "user-friends.png"));
       if (Einstellungen.getEinstellung().getZusatzadressen())
@@ -165,7 +165,7 @@ public class MyExtension implements Extension
         mitglieder.addChild(new MyItem(mitglieder, "Familienbeitrag",
             new FamilienbeitragAction(), "users.png"));
       }
-
+      
       mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new SollbuchungListeAction(), "calculator.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
@@ -204,7 +204,7 @@ public class MyExtension implements Extension
           new BuchungsListeAction(), "euro-sign.png"));
       if (anlagenkonto)
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenbuchungen",
-            new AbschreibungsListeAction(), "euro-sign.png"));
+          new AbschreibungsListeAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
           new BuchungsTexteKorrigierenAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",
@@ -219,7 +219,7 @@ public class MyExtension implements Extension
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
           new JahresabschlussListAction(), "euro-sign.png"));
       jverein.addChild(buchfuehrung);
-
+      
       NavigationItem abrechnung = null;
       abrechnung = new MyItem(abrechnung, "Abrechnung", null);
       abrechnung.addChild(new MyItem(abrechnung, "Abrechnungsläufe",
@@ -271,7 +271,7 @@ public class MyExtension implements Extension
       mail.addChild(new MyItem(mail, "Mail-Vorlagen", new MailVorlagenAction(),
           "envelope-open.png"));
       jverein.addChild(mail);
-
+      
       NavigationItem administration = null;
       administration = new MyItem(administration, "Administration", null);
 
@@ -347,7 +347,7 @@ public class MyExtension implements Extension
             new MitgliedstypListAction(), "user-friends.png"));
       }
       administration.addChild(einstellungenmitglieder);
-
+      
       NavigationItem einstellungenbuchfuehrung = null;
       einstellungenbuchfuehrung = new MyItem(einstellungenbuchfuehrung,
           "Buchführung", null);
@@ -364,15 +364,15 @@ public class MyExtension implements Extension
       einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
           "Projekte", new ProjektListAction(), "screwdriver.png"));
       administration.addChild(einstellungenbuchfuehrung);
-
+      
       NavigationItem einstellungenerweitert = null;
       einstellungenerweitert = new MyItem(einstellungenerweitert, "Erweitert",
           null);
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert, "Migration",
           new MitgliedMigrationAction(), "file-import.png"));
       einstellungenerweitert
-          .addChild(new MyItem(einstellungenerweitert, "QIF-Datei-Import",
-              new QIFBuchungsImportViewAction(), "file-import.png"));
+      .addChild(new MyItem(einstellungenerweitert, "QIF-Datei-Import",
+          new QIFBuchungsImportViewAction(), "file-import.png"));
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,
           "Datenbank-Bereinigung", new DbBereinigenAction(), "placeholder-loading.png"));
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,

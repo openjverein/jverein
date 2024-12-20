@@ -9,7 +9,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  **********************************************************************/
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
@@ -36,7 +36,7 @@ public class Update0453 extends AbstractDDLUpdate
     execute("update konto set kontoart = 1 where anlagenkonto IS NULL");
     execute("update konto set kontoart = 1 where anlagenkonto IS FALSE");
     execute("update konto set kontoart = 2 where anlagenkonto IS TRUE");
-
+    
     execute(dropColumn("konto", "anlagenkonto"));
   }
 }

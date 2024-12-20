@@ -1,16 +1,16 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
  *  the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not,
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -70,7 +70,7 @@ public class JahresabschlussControl extends AbstractControl
   private Jahresabschluss jahresabschluss;
 
   private CheckboxInput anfangsbestaende;
-
+  
   private CheckboxInput afaberechnung;
 
   public JahresabschlussControl(AbstractView view)
@@ -173,7 +173,7 @@ public class JahresabschlussControl extends AbstractControl
     anfangsbestaende = new CheckboxInput(true);
     return anfangsbestaende;
   }
-
+  
   public CheckboxInput getAfaberechnung()
   {
     if (afaberechnung != null)
@@ -300,7 +300,7 @@ public class JahresabschlussControl extends AbstractControl
     }
     jahresabschlussList.sort();
   }
-
+  
   public String getInfo()
   {
     String text = "";
@@ -321,13 +321,13 @@ public class JahresabschlussControl extends AbstractControl
         Konto konto = (Konto) kontenIt.next();
         if (konto.getEroeffnung() == null)
         {
-          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer()
-              + " hat kein Eröffnungsdatum\n";
+          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer() 
+          + " hat kein Eröffnungsdatum\n";
         }
         if (konto.getAnschaffung() == null)
         {
-          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer()
-              + " hat kein Anschaffungsdatum. Bitte auf Plausibilität prüfen!\n";
+          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer() 
+          + " hat kein Anschaffungsdatum. Bitte auf Plausibilität prüfen!\n";
         }
         else if (konto.getAnschaffung().after(Datum.addTage(vongj, -1)) &&
             konto.getAnschaffung().before(Datum.addTage(bisgj, 1)))
@@ -348,9 +348,9 @@ public class JahresabschlussControl extends AbstractControl
           }
           if (Math.abs(betrag - konto.getBetrag()) > Double.MIN_NORMAL)
           {
-            text = text + "Für das Anlagenkonto mit der Nummer " + konto.getNummer()
-                + " stimmt die Summe der Buchungen (" + betrag + ") nicht mit den Anschaffungskosten ("
-                + konto.getBetrag() + ") überein. Bitte auf Plausibilität prüfen!\n";
+            text = text + "Für das Anlagenkonto mit der Nummer " + konto.getNummer() 
+            + " stimmt die Summe der Buchungen (" + betrag + ") nicht mit den Anschaffungskosten (" 
+            + konto.getBetrag() + ") überein. Bitte auf Plausibilität prüfen!\n";
           }
         }
       }

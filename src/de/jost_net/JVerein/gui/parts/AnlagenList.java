@@ -1,6 +1,6 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- *
+ * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
@@ -11,7 +11,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If
  * not, see <http://www.gnu.org/licenses/>.
- *
+ * 
  * heiner@jverein.de | www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
@@ -48,11 +48,11 @@ import de.willuhn.util.ApplicationException;
 public class AnlagenList extends TablePart implements Part
 {
 
-  private TablePart saldoList;
+	private TablePart saldoList;
 
-  private Date datumvon = null;
+	private Date datumvon = null;
 
-  private Date datumbis = null;
+	private Date datumbis = null;
 
   public AnlagenList(Action action, Date datumvon, Date datumbis)
   {
@@ -171,14 +171,14 @@ public class AnlagenList extends TablePart implements Part
       DBIterator<Buchungsart> buchungsartenIt = service
           .createList(Buchungsart.class);
       buchungsartenIt.setOrder("order by nummer");
-
+      
       suBukStartwert = null;
       suBukAbschreibung = null;
       suBukZugang = null;
       suBukAbgang = null;
       suBukEndwert = null;
       boolean ausgabe = false;
-
+      
       while (buchungsartenIt.hasNext())
       {
         buchungsart = (Buchungsart) buchungsartenIt.next();
@@ -189,7 +189,7 @@ public class AnlagenList extends TablePart implements Part
             + "and anlagenklasse = ? "
             + "and anlagenart = ? ";
         int anz = (Integer) service.execute(sqlc,
-            new Object[] { Kontoart.ANLAGE.getKey(), datumvon, datumbis, buchungsklasse.getID(),
+            new Object[] { Kontoart.ANLAGE.getKey(), datumvon, datumbis, buchungsklasse.getID(), 
                 buchungsart.getID() }, rsi);
         if (anz == 0)
         {
@@ -198,11 +198,11 @@ public class AnlagenList extends TablePart implements Part
         ausgabe = true;
         zeile.add(new AnlagenlisteZeile(AnlagenlisteZeile.HEADER2,
             buchungsart));
-
+        
         DBIterator<Konto> kontenIt = service
             .createList(Konto.class);
         kontenIt.addFilter("kontoart = ?",
-            new Object[] { Kontoart.ANLAGE.getKey() });
+          new Object[] { Kontoart.ANLAGE.getKey() });
         kontenIt.addFilter("anlagenklasse = ?",
             new Object[] { buchungsklasse.getID() });
         kontenIt.addFilter("anlagenart = ?",
@@ -211,7 +211,7 @@ public class AnlagenList extends TablePart implements Part
             new Object[] { new java.sql.Date(datumbis.getTime())  });
         kontenIt.addFilter("(aufloesung IS NULL OR aufloesung >= ?)",
             new Object[] { new java.sql.Date(datumvon.getTime())  });
-
+        
         while (kontenIt.hasNext())
         {
           konto = (Konto) kontenIt.next();
@@ -230,7 +230,7 @@ public class AnlagenList extends TablePart implements Part
             else
               suBukStartwert += startwert;
           }
-
+          
           Calendar cal = Calendar.getInstance();
           cal.setTime(datumbis);
           cal.add(Calendar.DATE, 1);
@@ -249,7 +249,7 @@ public class AnlagenList extends TablePart implements Part
             else
               suBukEndwert += endwert;
           }
-
+          
           // Abschreibung
           DBIterator<Buchung> buchungenIt = service
               .createList(Buchung.class);
@@ -262,7 +262,7 @@ public class AnlagenList extends TablePart implements Part
               new Object[] { new java.sql.Date(datumbis.getTime()) });
           buchungenIt.addFilter("datum >= ?",
               new Object[] { new java.sql.Date(datumvon.getTime()) });
-
+          
           abschreibung = null;
           while (buchungenIt.hasNext())
           {
@@ -278,7 +278,7 @@ public class AnlagenList extends TablePart implements Part
             else
               suBukAbschreibung += abschreibung;
           }
-
+          
           // Zugang
           buchungenIt = service
               .createList(Buchung.class);
@@ -292,7 +292,7 @@ public class AnlagenList extends TablePart implements Part
               new Object[] { new java.sql.Date(datumbis.getTime()) });
           buchungenIt.addFilter("datum >= ?",
               new Object[] { new java.sql.Date(datumvon.getTime()) });
-
+          
           zugang = null;
           while (buchungenIt.hasNext())
           {
@@ -308,7 +308,7 @@ public class AnlagenList extends TablePart implements Part
             else
               suBukZugang += zugang;
           }
-
+          
           // Abgang
           buchungenIt = service
               .createList(Buchung.class);
@@ -322,7 +322,7 @@ public class AnlagenList extends TablePart implements Part
               new Object[] { new java.sql.Date(datumbis.getTime()) });
           buchungenIt.addFilter("datum >= ?",
               new Object[] { new java.sql.Date(datumvon.getTime()) });
-
+          
           abgang = null;
           while (buchungenIt.hasNext())
           {
@@ -352,7 +352,7 @@ public class AnlagenList extends TablePart implements Part
         zeile.remove(zeile.size() - 1);
         continue;
       }
-
+      
       if (suBukStartwert != null)
       {
         if (suStartwert == null)
@@ -390,10 +390,10 @@ public class AnlagenList extends TablePart implements Part
       }
       zeile.add(
           new AnlagenlisteZeile(AnlagenlisteZeile.SALDOFOOTER,
-              "Saldo" + " " + buchungsklasse.getBezeichnung(),
+              "Saldo" + " " + buchungsklasse.getBezeichnung(), 
               suBukStartwert, suBukZugang, suBukAbschreibung, suBukAbgang, suBukEndwert));
     }
-
+    
     zeile.add(new AnlagenlisteZeile(
         AnlagenlisteZeile.GESAMTSALDOFOOTER, "Saldo Gesamt",
         suStartwert, suZugang, suAbschreibung, suAbgang, suEndwert));
