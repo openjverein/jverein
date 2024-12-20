@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.parts.KontoList;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.jameica.gui.Action;
@@ -50,7 +50,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
   
   private boolean nurAktuelleKonten;
   
-  private Kontenart art;
+  private Kontenfilter art;
   
   private CheckboxInput box = null;
   
@@ -65,7 +65,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
    * @param abschreibung Es sollen nur Anlagekonten angezeigt werden
    */
   public KontoAuswahlDialog(int position, boolean keinkonto,
-      boolean nurHibiscus, boolean nurAktuelleKonten, Kontenart art)
+      boolean nurHibiscus, boolean nurAktuelleKonten, Kontenfilter art)
   {
     super(position);
     super.setSize(400, SWT.DEFAULT);

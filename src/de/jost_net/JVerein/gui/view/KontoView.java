@@ -40,7 +40,7 @@ public class KontoView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Anlagenkonto", control.getAnlagenkonto());
+    left.addLabelPair("Kontoart", control.getKontoArt());
     left.addLabelPair("Nummer", control.getNummer());
     left.addLabelPair("Bezeichnung", control.getBezeichnung());
     left.addLabelPair("Eröffnungsdatum", control.getEroeffnung());

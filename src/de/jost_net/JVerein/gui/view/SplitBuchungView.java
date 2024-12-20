@@ -20,7 +20,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungAufloesenAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -37,7 +37,7 @@ public class SplitBuchungView extends AbstractView
   {
     GUI.getView().setTitle("Splitbuchungen");
 
-    final BuchungsControl control = new BuchungsControl(this, Kontenart.GELDKONTO);
+    final BuchungsControl control = new BuchungsControl(this, Kontenfilter.GELDKONTO);
     
     final boolean buchungabgeschlossen = control.isSplitBuchungAbgeschlossen();
     
