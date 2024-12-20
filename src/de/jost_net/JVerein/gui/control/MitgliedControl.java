@@ -522,14 +522,15 @@ public class MitgliedControl extends FilterControl
     {
       return staat;
     }
-    if(getMitglied().getStaat() != null 
-        && getMitglied().getStaat().length() > 0 
+    if (getMitglied().getStaat() != null
+        && getMitglied().getStaat().length() > 0
         && Staat.getByKey(getMitglied().getStaatCode()) == null)
     {
-      GUI.getStatusBar().setErrorText(
-          "Konnte Staat \"" + getMitglied().getStaat() + "\" nicht finden, bitte anpassen.");
+      GUI.getStatusBar().setErrorText("Konnte Staat \""
+          + getMitglied().getStaat() + "\" nicht finden, bitte anpassen.");
     }
-    staat = new SelectNoScrollInput(Staat.values(), Staat.getByKey(getMitglied().getStaatCode()));
+    staat = new SelectNoScrollInput(Staat.values(),
+        Staat.getByKey(getMitglied().getStaatCode()));
     staat.setPleaseChoose("Nicht gesetzt");
     staat.setName("Staat");
     return staat;
@@ -991,14 +992,15 @@ public class MitgliedControl extends FilterControl
     {
       return ktoistaat;
     }
-    if(getMitglied().getKtoiStaat() != null 
-        && getMitglied().getKtoiStaat().length() > 0 
+    if (getMitglied().getKtoiStaat() != null
+        && getMitglied().getKtoiStaat().length() > 0
         && Staat.getByKey(getMitglied().getKtoiStaatCode()) == null)
     {
-      GUI.getStatusBar().setErrorText(
-          "Konnte Konntoinhaber Staat \"" + getMitglied().getKtoiStaat() + "\" nicht finden, bitte anpassen.");
+      GUI.getStatusBar().setErrorText("Konnte Kontoinhaber Staat \""
+          + getMitglied().getKtoiStaat() + "\" nicht finden, bitte anpassen.");
     }
-    ktoistaat = new SelectNoScrollInput(Staat.values(), Staat.getByKey(getMitglied().getKtoiStaatCode()));
+    ktoistaat = new SelectNoScrollInput(Staat.values(),
+        Staat.getByKey(getMitglied().getKtoiStaatCode()));
     ktoistaat.setPleaseChoose("Nicht gesetzt");
     ktoistaat.setName("Staat");
     return ktoistaat;
@@ -2405,7 +2407,8 @@ public class MitgliedControl extends FilterControl
       String persa = (String) getKtoiPersonenart().getValue();
       m.setKtoiPersonenart(persa.substring(0, 1));
       m.setKtoiPlz((String) getKtoiPlz().getValue());
-      m.setKtoiStaat(getKtoiStaat().getValue() == null?"":((Staat) getKtoiStaat().getValue()).getKey());
+      m.setKtoiStaat(getKtoiStaat().getValue() == null ? ""
+          : ((Staat) getKtoiStaat().getValue()).getKey());
       m.setKtoiStrasse((String) getKtoiStrasse().getValue());
       m.setKtoiTitel((String) getKtoiTitel().getValue());
       m.setKtoiVorname((String) getKtoiVorname().getValue());
@@ -2415,7 +2418,8 @@ public class MitgliedControl extends FilterControl
       m.setName((String) getName(false).getValue());
       m.setOrt((String) getOrt().getValue());
       m.setPlz((String) getPlz().getValue());
-      m.setStaat(getStaat().getValue() == null?"":((Staat) getStaat().getValue()).getKey());
+      m.setStaat(getStaat().getValue() == null ? ""
+          : ((Staat) getStaat().getValue()).getKey());
       m.setStrasse((String) getStrasse().getValue());
       m.setTelefondienstlich((String) getTelefondienstlich().getValue());
       m.setTelefonprivat((String) getTelefonprivat().getValue());

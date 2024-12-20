@@ -204,9 +204,9 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
   public String getStaat() throws RemoteException
   {
     String code = getStaatCode();
-    if(Staat.getByKey(code) != null)
+    if (Staat.getByKey(code) != null)
     {
-      return Staat.getByKey(code).getText(); 
+      return Staat.getByKey(code).getText();
     }
     // Wenn der Code nicht vorhanden ist, nehmen wir
     // zur Kompatibilität den Text wie er in der DB Steht

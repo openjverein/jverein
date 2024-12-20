@@ -154,8 +154,6 @@ public class FormularAufbereitung
             PdfWriter.ENCRYPTION_AES_256);
         doc.open();
       }
-
-      ;
     }
     catch (IOException e)
     {
@@ -713,9 +711,9 @@ public class FormularAufbereitung
                 re.getMitglied().getEmail()))
             .setAdditionalAddress(
                 StringTool.toNotNullString(re.getAdressierungszusatz())));
-    
-    //LeitwegID
-    if(re.getLeitwegID() != null && re.getLeitwegID().length() > 0)
+
+    // LeitwegID
+    if (re.getLeitwegID() != null && re.getLeitwegID().length() > 0)
     {
       invoice.setReferenceNumber(re.getLeitwegID());
     }
@@ -734,8 +732,7 @@ public class FormularAufbereitung
             new Product(mk.getZweck1(), "", "LS",
                 new BigDecimal(mk.getSteuersatz()).setScale(2,
                     RoundingMode.HALF_DOWN)),
-            new BigDecimal(betrag * -1).setScale(2,
-                RoundingMode.HALF_DOWN),
+            new BigDecimal(betrag * -1).setScale(2, RoundingMode.HALF_DOWN),
             new BigDecimal(-1.0)));
       }
       else
@@ -744,8 +741,7 @@ public class FormularAufbereitung
                                                                        // pauschal
             new BigDecimal(mk.getSteuersatz()).setScale(2,
                 RoundingMode.HALF_DOWN)),
-            new BigDecimal(betrag).setScale(2,
-                RoundingMode.HALF_DOWN),
+            new BigDecimal(betrag).setScale(2, RoundingMode.HALF_DOWN),
             new BigDecimal(1.0)));
       }
     }

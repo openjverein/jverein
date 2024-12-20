@@ -754,18 +754,7 @@ public class Migration
     String staat = getResultFrom(results, InternalColumns.KTOISTAAT);
     if (staat != null && staat.length() != 0)
     {
-      if(Staat.getByKey(staat.toUpperCase()) != null)
-      {
-        m.setKtoiStaat(staat.toUpperCase());
-      }
-      else if(Staat.getByText(staat.toUpperCase()) != null)
-      {
-        m.setKtoiStaat(Staat.getByText(staat.toUpperCase()).getKey());
-      }
-      else
-      {
-        throw new ApplicationException("Staat nicht erkannt: " + staat);
-      }
+      m.setStaat(getStaat(staat));
     }
     m.setKtoiEmail(getResultFrom(results, InternalColumns.KTOIEMAIL));
     Integer bg = beitragsGruppen
@@ -880,18 +869,7 @@ public class Migration
     staat = getResultFrom(results, InternalColumns.STAAT);
     if (staat != null && staat.length() != 0)
     {
-      if(Staat.getByKey(staat.toUpperCase()) != null)
-      {
-        m.setStaat(staat.toUpperCase());
-      }
-      else if(Staat.getByText(staat.toUpperCase()) != null)
-      {
-        m.setStaat(Staat.getByText(staat.toUpperCase()).getKey());
-      }
-      else
-      {
-        throw new ApplicationException("Staat nicht erkannt: " + staat);
-      }
+      m.setStaat(getStaat(staat));
     }
 
     String zahlungsrhythmus = getResultFrom(results, InternalColumns.ZAHLRYTHM);
@@ -1205,4 +1183,19 @@ public class Migration
     }
   }
 
+  String getStaat(String staat) throws ApplicationException
+  {
+    if (Staat.getByKey(staat.toUpperCase()) != null)
+    {
+      return staat.toUpperCase();
+    }
+    else if (Staat.getByText(staat.toUpperCase()) != null)
+    {
+      return Staat.getByText(staat.toUpperCase()).getKey();
+    }
+    else
+    {
+      throw new ApplicationException("Staat nicht erkannt: " + staat);
+    }
+  }
 }

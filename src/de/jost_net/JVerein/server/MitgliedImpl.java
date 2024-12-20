@@ -16,6 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -50,14 +58,6 @@ import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-
-import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MitgliedImpl extends AbstractDBObject implements Mitglied
 {
@@ -539,9 +539,9 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   public String getStaat() throws RemoteException
   {
     String code = getStaatCode();
-    if(Staat.getByKey(code) != null)
+    if (Staat.getByKey(code) != null)
     {
-      return Staat.getByKey(code).getText(); 
+      return Staat.getByKey(code).getText();
     }
     // Wenn der Code nicht vorhanden ist, nehmen wir
     // zur Kompatibilität den Text wie er in der DB Steht
@@ -552,9 +552,9 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   public String getStaatCode() throws RemoteException
   {
     String code = (String) getAttribute("staat");
-    //Wenn noch das ganze Land drin steht, bestimmen wir den Code
-    if(Staat.getByText(code) != null)
-      return Staat.getByText(code).getKey(); 
+    // Wenn noch das ganze Land drin steht, bestimmen wir den Code
+    if (Staat.getByText(code) != null)
+      return Staat.getByText(code).getKey();
     return code;
   }
 
@@ -851,23 +851,22 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   public String getKtoiStaat() throws RemoteException
   {
     String code = getKtoiStaatCode();
-    if(Staat.getByKey(code) != null)
+    if (Staat.getByKey(code) != null)
     {
-      return Staat.getByKey(code).getText(); 
+      return Staat.getByKey(code).getText();
     }
-    //Wenn der Code nicht vorhenden ist, nehmen wir
-    //zur komabilität den Text wie er in der DB Steht
+    // Wenn der Code nicht vorhenden ist, nehmen wir
+    // zur komabilität den Text wie er in der DB Steht
     return code;
   }
-
 
   @Override
   public String getKtoiStaatCode() throws RemoteException
   {
     String code = (String) getAttribute("ktoistaat");
-    //Wenn noch das ganze Land drin steht, bestimmen wir den Code
-    if(Staat.getByText(code) != null)
-      return Staat.getByText(code).getKey(); 
+    // Wenn noch das ganze Land drin steht, bestimmen wir den Code
+    if (Staat.getByText(code) != null)
+      return Staat.getByText(code).getKey();
     return code;
   }
 
