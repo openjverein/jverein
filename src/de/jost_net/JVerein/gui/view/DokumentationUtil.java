@@ -114,6 +114,8 @@ public class DokumentationUtil
   
   public static final String ANLAGENLISTE = PRE + FUNKTIONEN + BUCHF + "anlagenverzeichnis";
 
+  public static final String WIRTSCHAFTSPLANUNG = PRE + FUNKTIONEN + BUCHF + "wirtschaftsplanung";
+
 
   // Abrechnung
   public static final String ABRECHNUNG = PRE + FUNKTIONEN + ABRECH + "abrechnung";
