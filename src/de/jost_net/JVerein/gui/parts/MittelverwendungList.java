@@ -39,7 +39,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
 
-public class MittelverwendungList extends TablePart implements Part
+public class MittelverwendungList extends TablePart
 {
 
   private TablePart saldoList;
