@@ -390,9 +390,10 @@ public class MitgliedskontoControl extends DruckMailControl
           throw new ApplicationException("Bitte Mitglied eingeben");
         }
       }
-      
-      if(mkto.getRechnung() != null)
-        throw new ApplicationException("Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
+
+      if (mkto.getRechnung() != null)
+        throw new ApplicationException(
+            "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
       mkto.setZahlerId(getSelectedZahlerId());
       mkto.setBetrag((Double) getBetrag().getValue());
       mkto.setDatum((Date) getDatum().getValue());
