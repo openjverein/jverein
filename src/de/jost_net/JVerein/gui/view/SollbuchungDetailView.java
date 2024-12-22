@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -36,11 +35,6 @@ public class SollbuchungDetailView extends AbstractView
     GUI.getView().setTitle("Sollbuchung");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
-    Mitgliedskonto mkto = control.getMitgliedskonto();
-    if (mkto.isNewObject())
-    {
-      control.setEditable();
-    }
     LabelGroup grBuchung = new LabelGroup(getParent(), "Sollbuchung");
     grBuchung.addLabelPair("Mitglied", control.getMitglied());
     grBuchung.addLabelPair("Zahler", control.getZahler());
@@ -59,22 +53,19 @@ public class SollbuchungDetailView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
-    
-    if (mkto.isNewObject())
+
+    boolean hasRechnung = control.hasRechnung();
+    Button save = new Button("Speichern", new Action()
     {
-      Button save = new Button("Speichern", new Action()
+      @Override
+      public void handleAction(Object context)
       {
+        control.handleStore();
+      }
+    }, null, true, "document-save.png");
+    save.setEnabled(!hasRechnung);
+    buttons.addButton(save);
 
-        @Override
-        public void handleAction(Object context)
-        {
-          control.handleStore();
-        }
-      }, null, true, "document-save.png");
-
-      buttons.addButton(save);
-    }
-    
     buttons.paint(this.getParent());
   }
 }
