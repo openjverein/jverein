@@ -38,7 +38,7 @@
 		<insert tableName="adresstyp">
 			<column name="id" value="1" />
 			<column name="bezeichnung" value="Mitglied" />
-			<column name="bezeichnungplural" value="Mitgieder" />
+			<column name="bezeichnungplural" value="Mitglieder" />
 			<column name="jvereinid" value="1" />
 		</insert>
 	</changeSet>
