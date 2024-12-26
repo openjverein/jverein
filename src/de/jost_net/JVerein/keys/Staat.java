@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
+import java.rmi.RemoteException;
+
 public enum Staat
 {
   //Abchasien (Georgien)
@@ -129,6 +131,25 @@ public enum Staat
       }
     }
     return null;
+  }
+
+  public static String getStaat(String code) throws RemoteException
+  {
+    if (Staat.getByKey(code) != null)
+    {
+      return Staat.getByKey(code).getText();
+    }
+    // Wenn der Code nicht vorhanden ist, nehmen wir
+    // zur Kompatibilität den Text wie er in der DB Steht
+    return code;
+  }
+
+  public static String getStaatCode(String code) throws RemoteException
+  {
+    // Wenn noch das ganze Land drin steht, bestimmen wir den Code
+    if (Staat.getByText(code) != null)
+      return Staat.getByText(code).getKey();
+    return code;
   }
 
   @Override

@@ -276,24 +276,14 @@ public class KursteilnehmerImpl extends AbstractDBObject implements
   @Override
   public String getStaat() throws RemoteException
   {
-    String code = getStaatCode();
-    if (Staat.getByKey(code) != null)
-    {
-      return Staat.getByKey(code).getText();
-    }
-    // Wenn der Code nicht vorhanden ist, nehmen wir
-    // zur Kompatibilität den Text wie er in der DB Steht
-    return code;
+    return Staat.getStaat(getStaatCode());
   }
 
   @Override
   public String getStaatCode() throws RemoteException
   {
     String code = (String) getAttribute("staat");
-    // Wenn noch das ganze Land drin steht, bestimmen wir den Code
-    if (Staat.getByText(code) != null)
-      return Staat.getByText(code).getKey();
-    return code;
+    return Staat.getStaatCode(code);
   }
 
   @Override
