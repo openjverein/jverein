@@ -34,9 +34,9 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
-import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.gui.view.BuchungView;
@@ -628,7 +628,6 @@ public class MitgliedskontoControl extends DruckMailControl
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     buchungList.addColumn("Steuersatz", "steuersatz");
     buchungList.addColumn("Buchungsart", "buchungsart");
-    buchungList.addColumn("Buchungsklasse","buchungsklasse");
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
       buchungList.addColumn("Buchungsklasse", "buchungsklasse");

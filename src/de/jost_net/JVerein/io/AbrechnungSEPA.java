@@ -220,7 +220,7 @@ public class AbrechnungSEPA
 
           writeSollbuchung(zahler, sbArray, param.faelligkeit, abrl, konto,
               zahler.getZahlungsweg().getKey() == Zahlungsweg.BASISLASTSCHRIFT,
-              param);
+              param, null);
         }
 
         // Bei kompakter Abbuchung Zahler zusammenfassen.
@@ -282,7 +282,7 @@ public class AbrechnungSEPA
           writeSollbuchung(zahler, spArray, param.faelligkeit, abrl, konto,
               ((Zahlungsweg) entry.getKey())
                   .getKey() == Zahlungsweg.BASISLASTSCHRIFT,
-              param);
+              param, null);
         }
       }
     }
@@ -373,7 +373,8 @@ public class AbrechnungSEPA
     // Gegenbuchung für die Sollbuchungen schreiben
     if (!summelastschriften.equals(BigDecimal.valueOf(0)))
     {
-      writeSollbuchung(null, null, param.faelligkeit, abrl, konto, true, param);
+      writeSollbuchung(null, null, param.faelligkeit, abrl, konto, true, param,
+          summelastschriften.doubleValue());
     }
 
     // Wenn keine Lastschriften vorhanden sind, wird kein File erzeugt.
@@ -898,7 +899,7 @@ public class AbrechnungSEPA
         ArrayList<SollbuchungPosition> spArray = new ArrayList<>();
         spArray.add(getSollbuchungPosition(zahler));
         writeSollbuchung(zahler, spArray, param.faelligkeit, abrl, konto, true,
-            param);
+            param, null);
 
         monitor.setStatusText(String.format("Kursteilnehmer %s, %s abgerechnet",
             kt.getName(), kt.getVorname()));
@@ -1117,11 +1118,10 @@ public class AbrechnungSEPA
 
   private void writeSollbuchung(JVereinZahler zahler,
       ArrayList<SollbuchungPosition> spArray, Date datum, Abrechnungslauf abrl,
-      Konto konto, boolean haben, AbrechnungSEPAParam param)
+      Konto konto, boolean haben, AbrechnungSEPAParam param, Double summe)
       throws ApplicationException, RemoteException, SEPAException
   {
     Mitgliedskonto mk = null;
-    double summe = 0d;
     String zweck = null;
     Rechnung re = null;
     if (spArray != null)
@@ -1230,6 +1230,10 @@ public class AbrechnungSEPA
       mk.setBetrag(0d);
       mk.store();
 
+      if (summe == null)
+      {
+        summe = 0d;
+      }
       for (SollbuchungPosition sp : spArray)
       {
         summe += sp.getBetrag().doubleValue();
@@ -1263,26 +1267,11 @@ public class AbrechnungSEPA
       buchung.setName(
           adr != null ? Adressaufbereitung.getNameVorname(adr) : "JVerein");
       buchung.setZweck(zahler == null ? "Gegenbuchung" : zweck);
-      if (mk != null)
-      {
-        buchung.setMitgliedskonto(mk);
-      }
       buchung.store();
 
       if (spArray == null)
       {
         return;
-      }
-
-      if (spArray.get(0).getBuchungsartId() != null)
-      {
-        buchung.setBuchungsartId(
-            Long.parseLong(spArray.get(0).getBuchungsartId()));
-      }
-      if (spArray.get(0).getBuchungsklasseId() != null)
-      {
-        buchung.setBuchungsklasseId(
-            Long.parseLong(spArray.get(0).getBuchungsklasseId()));
       }
 
       // Buchungen automatisch splitten
@@ -1350,6 +1339,21 @@ public class AbrechnungSEPA
           SplitbuchungsContainer.add(splitBuchung);
         }
         SplitbuchungsContainer.store();
+      }
+      else
+      {
+        if (spArray.get(0).getBuchungsartId() != null)
+        {
+          buchung.setBuchungsartId(
+              Long.parseLong(spArray.get(0).getBuchungsartId()));
+        }
+        if (spArray.get(0).getBuchungsklasseId() != null)
+        {
+          buchung.setBuchungsklasseId(
+              Long.parseLong(spArray.get(0).getBuchungsklasseId()));
+        }
+        buchung.setMitgliedskonto(mk);
+        buchung.store();
       }
     }
   }
