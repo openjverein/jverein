@@ -150,7 +150,7 @@ public class SpendenbescheinigungAction implements Action
           "Fehler bei der Erstellung der Spendenbescheinigung");
     }
   }
-  
+
   private void handleMitglied(Mitglied mg) throws RemoteException, ApplicationException
   {
     /* Ermitteln der Buchungen zu der neuen Spendenbescheinigung */

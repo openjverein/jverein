@@ -112,7 +112,7 @@ public class FreiesFormularAction implements Action
     final File file = new File(s);
     settings.setAttribute("lastdir", file.getParent());
 
-    FormularAufbereitung fa = new FormularAufbereitung(file);
+    FormularAufbereitung fa = new FormularAufbereitung(file, false);
     for (Mitglied mi : m)
     {
       Formular fo = (Formular) Einstellungen.getDBService().createObject(

@@ -2153,6 +2153,39 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
   
   @Override
+  public String getStaat() throws RemoteException
+  {
+    String staat = (String) getAttribute("staat");
+    if (staat == null || staat.length() == 0)
+    {
+      return "DE";
+    }
+    return staat;
+  }
+
+  @Override
+  public void setStaat(String staat) throws RemoteException
+  {
+    setAttribute("staat", staat);
+  }
+
+  @Override
+  public String getUStID() throws RemoteException
+  {
+    String ustid = (String) getAttribute("ustid");
+    if (ustid == null)
+    {
+      return "";
+    }
+    return ustid;
+  }
+
+  @Override
+  public void setUStID(String ustid) throws RemoteException
+  {
+    setAttribute("ustid", ustid);
+  }
+
   public Boolean getMittelverwendung() throws RemoteException
   {
     return Util.getBoolean(getAttribute("mittelverwendung"));

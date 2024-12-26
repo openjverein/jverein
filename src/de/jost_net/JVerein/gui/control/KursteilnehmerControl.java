@@ -39,6 +39,7 @@ import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.KursteilnehmerMenu;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -52,6 +53,7 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -85,7 +87,7 @@ public class KursteilnehmerControl extends FilterControl
 
   private TextInput ort;
 
-  private TextInput staat;
+  private SelectInput staat;
 
   private EmailInput email;
 
@@ -246,13 +248,22 @@ public class KursteilnehmerControl extends FilterControl
     return ort;
   }
 
-  public TextInput getStaat() throws RemoteException
+  public SelectInput getStaat() throws RemoteException
   {
     if (staat != null)
     {
       return staat;
     }
-    staat = new TextInput(getKursteilnehmer().getStaat(), 50);
+    if (getKursteilnehmer().getStaat() != null
+        && getKursteilnehmer().getStaat().length() > 0
+        && Staat.getByKey(getKursteilnehmer().getStaat()) == null)
+    {
+      GUI.getStatusBar()
+          .setErrorText("Konnte Staat \"" + getKursteilnehmer().getStaat()
+              + "\" nicht finden, bitte anpassen.");
+    }
+    staat = new SelectInput(Staat.values(), Staat.getByKey(getKursteilnehmer().getStaat()));
+    staat.setPleaseChoose("Nicht gesetzt");
     staat.setName("Staat");
     return staat;
   }
@@ -455,7 +466,7 @@ public class KursteilnehmerControl extends FilterControl
       k.setAdressierungszuatz((String) getAdressierungszusatz().getValue());
       k.setPlz((String) getPLZ().getValue());
       k.setOrt((String) getOrt().getValue());
-      k.setStaat((String) getStaat().getValue());
+      k.setStaat(((Staat) getStaat().getValue()).getKey());
       k.setEmail((String) getEmail().getValue());
       k.setVZweck1((String) getVZweck1().getValue());
       k.setMandatDatum((Date) getMandatDatum().getValue());

@@ -193,7 +193,7 @@ public class AbrechnungSEPA
           ls.setAdressierungszusatz(k.getAdressierungszusatz());
           ls.setPlz(k.getPlz());
           ls.setOrt(k.getOrt());
-          ls.setStaat(k.getStaat());
+          ls.setStaat(k.getStaatCode());
           ls.setEmail(k.getEmail());
           if (k.getGeschlecht() != null)
           {
@@ -215,7 +215,7 @@ public class AbrechnungSEPA
             ls.setAdressierungszusatz(m.getAdressierungszusatz());
             ls.setPlz(m.getPlz());
             ls.setOrt(m.getOrt());
-            ls.setStaat(m.getStaat());
+            ls.setStaat(m.getStaatCode());
             ls.setEmail(m.getEmail());
             ls.setGeschlecht(m.getGeschlecht());
           }
@@ -230,7 +230,7 @@ public class AbrechnungSEPA
             ls.setAdressierungszusatz(m.getKtoiAdressierungszusatz());
             ls.setPlz(m.getKtoiPlz());
             ls.setOrt(m.getKtoiOrt());
-            ls.setStaat(m.getKtoiStaat());
+            ls.setStaat(m.getKtoiStaatCode());
             ls.setEmail(m.getKtoiEmail());
             ls.setGeschlecht(m.getKtoiGeschlecht());
           }

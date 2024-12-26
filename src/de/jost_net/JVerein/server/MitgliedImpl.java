@@ -16,12 +16,21 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -49,14 +58,6 @@ import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-
-import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MitgliedImpl extends AbstractDBObject implements Mitglied
 {
@@ -537,24 +538,32 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public String getStaat() throws RemoteException
   {
-    if (getAttribute("staat") != null)
-    {
-      return (String) getAttribute("staat");
-    }
-    else
-    {
-      return "";
-    }
+    return Staat.getStaat(getStaatCode());
+  }
+
+  @Override
+  public String getStaatCode() throws RemoteException
+  {
+    String code = (String) getAttribute("staat");
+    return Staat.getStaatCode(code);
   }
 
   @Override
   public void setStaat(String staat) throws RemoteException
   {
-    if (staat != null)
-    {
-      staat = staat.toUpperCase();
-    }
     setAttribute("staat", staat);
+  }
+
+  @Override
+  public String getLeitwegID() throws RemoteException
+  {
+    return (String) getAttribute("leitwegid");
+  }
+
+  @Override
+  public void setLeitwegID(String leitwegid) throws RemoteException
+  {
+    setAttribute("leitwegid", leitwegid);
   }
 
   @Override
@@ -831,7 +840,14 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public String getKtoiStaat() throws RemoteException
   {
-    return (String) getAttribute("ktoistaat");
+    return Staat.getStaat(getKtoiStaatCode());
+  }
+
+  @Override
+  public String getKtoiStaatCode() throws RemoteException
+  {
+    String code = (String) getAttribute("ktoistaat");
+    return Staat.getStaatCode(code);
   }
 
   @Override

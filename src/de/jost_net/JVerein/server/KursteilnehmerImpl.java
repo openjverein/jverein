@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -275,7 +276,14 @@ public class KursteilnehmerImpl extends AbstractDBObject implements
   @Override
   public String getStaat() throws RemoteException
   {
-    return (String) getAttribute("staat");
+    return Staat.getStaat(getStaatCode());
+  }
+
+  @Override
+  public String getStaatCode() throws RemoteException
+  {
+    String code = (String) getAttribute("staat");
+    return Staat.getStaatCode(code);
   }
 
   @Override
