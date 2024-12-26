@@ -223,14 +223,7 @@ public class AdressaufbereitungTest
       @Override
       public String getStaat() throws RemoteException
       {
-        String code = getStaatCode();
-        if (Staat.getByKey(code) != null)
-        {
-          return Staat.getByKey(code).getText();
-        }
-        // Wenn der Code nicht vorhanden ist, nehmen wir
-        // zur Kompatibilität den Text wie er in der DB Steht
-        return code;
+        return Staat.getStaat(getStaatCode());
       }
 
 
