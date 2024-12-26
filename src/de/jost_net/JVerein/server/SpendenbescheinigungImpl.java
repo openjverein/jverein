@@ -19,26 +19,19 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import jonelo.NumericalChameleon.SpokenNumbers.GermanNumber;
 
 public class SpendenbescheinigungImpl extends AbstractDBObject
     implements Spendenbescheinigung
@@ -258,6 +251,7 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
    * 
    * @throws RemoteException
    */
+  @Override
   public Date getZeitraumBis() throws RemoteException
   {
     Date maxDate = getSpendedatum();
@@ -427,6 +421,26 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
       return false;
     return getBuchungen().size() > 1;
   }
+  
+  /**
+   * Liefert als Kennzeichen zurück, ob die Spendenbescheinigung eine echte
+   * Geldspende ist. Dies ist der Fall, wenn es sich um eine Gelspende handelt
+   * bei der bei keiner Buchung das Flag Erstattungsverzicht gesetzt ist.
+   * 
+   * @return Flag, ob echte Geldspende
+   * @throws RemoteException
+   */
+  public boolean isEchteGeldspende() throws RemoteException
+  {
+    if (getBuchungen() == null)
+      return false;
+    for (Buchung buchung : getBuchungen())
+    {
+      if (buchung.getVerzicht())
+        return false;
+    }
+    return true;
+  }
 
   /**
    * Fügt der Liste der Buchungen eine Buchung hinzu. Der Gesamtbetrag der
@@ -547,324 +561,6 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
   public void setAutocreate(Boolean autocreate) throws RemoteException
   {
     setAttribute("autocreate", Boolean.valueOf(autocreate));
-  }
-
-  @Override
-  public Map<String, Object> getMap(Map<String, Object> inma)
-      throws RemoteException
-  {
-    Map<String, Object> map = null;
-    final String newLineStr = "\n";
-    if (inma == null)
-    {
-      map = new HashMap<>();
-    }
-    else
-    {
-      map = inma;
-    }
-    if (this.getID() == null)
-    {
-      this.setBescheinigungsdatum(new Date());
-      this.setBetrag(1234.56);
-      this.setBezeichnungSachzuwendung("Buch");
-      this.setErsatzAufwendungen(false);
-      this.setHerkunftSpende(1);
-      this.setSpendedatum(new Date());
-      this.setSpendenart(Spendenart.GELDSPENDE);
-      this.setUnterlagenWertermittlung(true);
-      this.setZeile1("Herr");
-      this.setZeile2("Dr. Willi Wichtig");
-      this.setZeile3("Hinterm Bahnhof 1");
-      this.setZeile4("12345 Testenhausen");
-      this.setZeile5(null);
-      this.setZeile6(null);
-      this.setZeile7(null);
-    }
-    String empfaenger = getZeile1() + newLineStr + getZeile2() + newLineStr
-        + getZeile3() + newLineStr + getZeile4() + newLineStr + getZeile5()
-        + newLineStr + getZeile6() + newLineStr + getZeile7() + newLineStr;
-    map.put(SpendenbescheinigungVar.EMPFAENGER.getName(), empfaenger);
-    String anrede = (getZeile1().length() > 0) ? getZeile1() + " " + getZeile2() : getZeile2();
-    map.put(SpendenbescheinigungVar.ANREDE.getName(), anrede);
-    map.put(SpendenbescheinigungVar.ZEILE1.getName(), getZeile1());
-    map.put(SpendenbescheinigungVar.ZEILE2.getName(), getZeile2());
-    map.put(SpendenbescheinigungVar.ZEILE3.getName(), getZeile3());
-    map.put(SpendenbescheinigungVar.ZEILE4.getName(), getZeile4());
-    map.put(SpendenbescheinigungVar.ZEILE5.getName(), getZeile5());
-    map.put(SpendenbescheinigungVar.ZEILE6.getName(), getZeile6());
-    map.put(SpendenbescheinigungVar.ZEILE7.getName(), getZeile7());
-    Double dWert = getBetrag();
-    // Hier keinen String, sondern ein Double-Objekt in die Map stellen,
-    // damit eine rechtsbündige Ausrichtung des Betrages in der Formular-
-    // aufbereitung.getString() erfolgt.
-    // Dies ist der Zustand vor Version 2.0
-    // map.put(SpendenbescheinigungVar.BETRAG.getName(),
-    // Einstellungen.DECIMALFORMAT.format(getBetrag()));
-    map.put(SpendenbescheinigungVar.BETRAG.getName(), dWert);
-    try
-    {
-      String betraginworten = GermanNumber.toString(dWert.longValue());
-      map.put(SpendenbescheinigungVar.BETRAGINWORTEN.getName(),
-          "-" + betraginworten + "-");
-    }
-    catch (Exception e)
-    {
-      Logger.error("Fehler", e);
-      throw new RemoteException(
-          "Fehler bei der Aufbereitung des Betrages in Worten");
-    }
-    // Calendar für Alt/Neu
-    GregorianCalendar gc = new GregorianCalendar();
-    gc.setTime(getBescheinigungsdatum());
-
-    String bescheinigungsdatum = new JVDateFormatTTMMJJJJ()
-        .format(getBescheinigungsdatum());
-    map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(),
-        bescheinigungsdatum);
-    switch (getSpendenart())
-    {
-      case Spendenart.GELDSPENDE:
-        String art = "Geldzuwendungen";
-        if (Einstellungen.getEinstellung().getMitgliedsbetraege())
-        {
-          art += "/Mitgliedsbeitrag";
-        }
-        map.put(SpendenbescheinigungVar.SPENDEART.getName(), art);
-        break;
-      case Spendenart.SACHSPENDE:
-        map.put(SpendenbescheinigungVar.SPENDEART.getName(), "Sachzuwendungen");
-        break;
-    }
-    String spendedatum = new JVDateFormatTTMMJJJJ().format(getSpendedatum());
-    boolean printBuchungsart = Einstellungen.getEinstellung()
-        .getSpendenbescheinigungPrintBuchungsart();
-    map.put(SpendenbescheinigungVar.BEZEICHNUNGSACHZUWENDUNG.getName(),
-        getBezeichnungSachzuwendung());
-    map.put(SpendenbescheinigungVar.UNTERLAGENWERTERMITTUNG.getName(),
-        getUnterlagenWertermittlung()
-            ? "Geeignete Unterlagen, die zur Wertermittlung gedient haben, z. B. Rechnung, Gutachten, liegen vor."
-            : "");
-    // Unterscheidung bis 2012 / ab 2013
-    if (gc.get(GregorianCalendar.YEAR) <= 2012)
-    {
-      map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-          HerkunftSpende.get(getHerkunftSpende()));
-      map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(),
-          (getErsatzAufwendungen() ? "X" : ""));
-    }
-    else
-    {
-      // ab 2013
-      switch (getHerkunftSpende())
-      {
-        case HerkunftSpende.BETRIEBSVERMOEGEN:
-          map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-              "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Betriebsvermögen und ist"
-                  + newLineStr
-                  + "mit dem Entnahmewert (ggf. mit dem niedrigeren gemeinen Wert) bewertet.");
-          break;
-        case HerkunftSpende.PRIVATVERMOEGEN:
-          map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-              "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Privatvermögen.");
-          break;
-        case HerkunftSpende.KEINEANGABEN:
-          map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-              "Der Zuwendende hat trotz Aufforderung keine Angaben zur Herkunft der Sachzuwendung gemacht.");
-          break;
-      }
-      map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(),
-          (getErsatzAufwendungen() ? "Ja" : "Nein"));
-      map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_JA.getName(),
-          (getErsatzAufwendungen() ? "X" : " "));
-      map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(),
-          (getErsatzAufwendungen() ? " " : "X"));
-    }
-
-    // bei Sammelbestätigungen ein Zeitraum und "siehe Anlage"
-    if (getBuchungen() != null && getBuchungen().size() > 1)
-    {
-      String zeitraumende = new JVDateFormatTTMMJJJJ().format(getZeitraumBis());
-      map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), "s. Anlage");
-      map.put(SpendenbescheinigungVar.SPENDENZEITRAUM.getName(),
-          String.format("%s bis %s", spendedatum, zeitraumende));
-      StringBuilder bl = new StringBuilder();
-      StringBuilder bl_daten = new StringBuilder();
-      StringBuilder bl_art = new StringBuilder();
-      StringBuilder bl_verzicht = new StringBuilder();
-      StringBuilder bl_betrag = new StringBuilder();
-      if (gc.get(GregorianCalendar.YEAR) <= 2012)
-      {
-        bl.append(StringTool.rpad("Datum", 10));
-        bl.append("  ");
-        bl.append(StringTool.rpad(StringTool.lpad("Betrag", 8), 11));
-        bl.append("  ");
-        bl.append("Verwendung");
-        bl.append(newLineStr);
-
-        bl.append("----------");
-        bl.append("  ");
-        bl.append("-----------");
-        bl.append("  ");
-        bl.append("-----------------------------------------");
-        bl.append(newLineStr);
-        for (Buchung b : buchungen)
-        {
-          bl.append(new JVDateFormatTTMMJJJJ().format(b.getDatum()));
-          bl.append("  ");
-          String str = Einstellungen.DECIMALFORMAT.format(b.getBetrag());
-          bl.append(StringTool.lpad(str, 11));
-          bl.append("  ");
-          if (printBuchungsart)
-          {
-            bl.append(b.getBuchungsart().getBezeichnung());
-          }
-          else
-          {
-            bl.append(b.getZweck());
-          }
-          bl.append(" ");
-          bl.append((b.getVerzicht() ? "(b)" : "(a)"));
-          bl.append(newLineStr);
-        }
-        bl.append(newLineStr);
-        bl.append("----------");
-        bl.append("  ");
-        bl.append("-----------");
-        bl.append("  ");
-        bl.append("-----------------------------------------");
-        bl.append(newLineStr);
-        bl.append(StringTool.rpad("Summe:", 10));
-        bl.append("  ");
-        String str = Einstellungen.DECIMALFORMAT.format(getBetrag());
-        bl.append(StringTool.lpad(str, 11));
-        bl.append(newLineStr);
-        bl.append(newLineStr);
-        bl.append(newLineStr);
-        bl.append("Legende:");
-        bl.append(newLineStr);
-        bl.append(
-            "(a): Es handelt sich nicht um den Verzicht auf Erstattung von Aufwendungen");
-        bl.append(newLineStr);
-        bl.append(
-            "(b): Es handelt sich um den Verzicht auf Erstattung von Aufwendungen");
-        bl.append(newLineStr);
-      }
-      else
-      {
-        final int colDatumLen = 10;
-        final int colArtLen = 27;
-        final int colVerzichtLen = 17;
-        final int colBetragLen = 11;
-        bl.append(StringTool.rpad(" ", colDatumLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad(" ", colArtLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad("Verzicht auf", colVerzichtLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad(" ", colBetragLen));
-        bl.append(newLineStr);
-
-        bl.append(StringTool.rpad("Datum der ", colDatumLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad("Art der", colArtLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad("die Erstattung", colVerzichtLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad(" ", colBetragLen));
-        bl.append(newLineStr);
-
-        bl.append(StringTool.rpad("Zuwendung", colDatumLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad("Zuwendung", colArtLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad("von Aufwendungen", colVerzichtLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad(StringTool.lpad("Betrag", 8), colBetragLen));
-        bl.append(newLineStr);
-
-        bl.append(StringTool.rpad("-", colDatumLen, "-"));
-        bl.append("  ");
-        bl.append(StringTool.rpad("-", colArtLen, "-"));
-        bl.append("  ");
-        bl.append(StringTool.rpad("-", colVerzichtLen, "-"));
-        bl.append("  ");
-        bl.append(StringTool.rpad("-", colBetragLen, "-"));
-        bl.append(newLineStr);
-
-        for (Buchung b : buchungen)
-        {
-          bl.append(StringTool.rpad(
-              new JVDateFormatTTMMJJJJ().format(b.getDatum()), colDatumLen));
-          bl_daten.append(new JVDateFormatTTMMJJJJ().format(b.getDatum()));
-          bl_daten.append(newLineStr);
-          bl.append("  ");
-          if (printBuchungsart)
-          {
-            bl.append(StringTool.rpad(b.getBuchungsart().getBezeichnung(),
-                colArtLen));
-            bl_art.append(b.getBuchungsart().getBezeichnung());
-            bl_art.append(newLineStr);
-          }
-          else
-          {
-            bl.append(StringTool.rpad(b.getZweck(), colArtLen));
-          }
-          bl.append("  ");
-          if (b.getVerzicht().booleanValue())
-          {
-            bl.append(StringTool.rpad(
-                StringTool.lpad("ja", colVerzichtLen / 2 - 2), colVerzichtLen));
-            bl_verzicht.append("ja");
-          }
-          else
-          {
-            bl.append(
-                StringTool.rpad(StringTool.lpad("nein", colVerzichtLen / 2 - 2),
-                    colVerzichtLen));
-            bl_verzicht.append("nein");
-          }
-          bl_verzicht.append(newLineStr);
-          bl.append("  ");
-          String str = Einstellungen.DECIMALFORMAT.format(b.getBetrag());
-          bl.append(StringTool.lpad(str, colBetragLen));
-          bl_betrag.append(StringTool.lpad(str, colBetragLen));
-          bl_betrag.append(newLineStr);
-          bl.append(newLineStr);
-        }
-
-        bl.append(StringTool.rpad("-", colDatumLen, "-"));
-        bl.append("  ");
-        bl.append(StringTool.rpad("-", colArtLen, "-"));
-        bl.append("  ");
-        bl.append(StringTool.rpad("-", colVerzichtLen, "-"));
-        bl.append("  ");
-        bl.append(StringTool.rpad("-", colBetragLen, "-"));
-        bl.append(newLineStr);
-        // bl.append(StringTool.rpad("-",
-        // colDatumLen+2+colArtLen+2+colVerzichtLen, "-"));
-        // bl.append(" ");
-        // bl.append(StringTool.rpad("-", colBetragLen, "-"));
-        // bl.append(newLineStr);
-
-        bl.append(StringTool.rpad("Gesamtsumme:",
-            colDatumLen + 2 + colArtLen + 2 + colVerzichtLen));
-        bl.append("  ");
-        String str = Einstellungen.DECIMALFORMAT.format(getBetrag());
-        bl.append(StringTool.lpad(str, colBetragLen));
-        bl.append(newLineStr);
-      }
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE.getName(), bl.toString());
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_DATEN.getName(), bl_daten.toString());
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_ART.getName(), bl_art.toString());
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_VERZICHT.getName(), bl_verzicht.toString());
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_BETRAG.getName(), bl_betrag.toString());
-    }
-    else
-    {
-      map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), spendedatum);
-    }
-    return map;
   }
 
 }

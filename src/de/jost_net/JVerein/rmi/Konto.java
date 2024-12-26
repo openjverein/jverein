@@ -19,6 +19,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
@@ -51,11 +52,10 @@ public interface Konto extends DBObject
 
   public void setBuchungsartId(Long buchungsartId) throws RemoteException;
   
-  public Boolean getAnlagenkonto() throws RemoteException;
+  public Kontoart getKontoArt() throws RemoteException;
 
-  public void setAnlagenkonto(Boolean anlagenkonto)
-      throws RemoteException;
-  
+  public void setKontoArt(Kontoart kontoart) throws RemoteException;
+
   public Buchungsart getAnlagenart() throws RemoteException;
 
   public Long getAnlagenartId() throws RemoteException;

@@ -351,7 +351,7 @@ public class ZusatzbetragControl extends AbstractControl
     while (it.hasNext())
     {
       Zusatzbetrag z = (Zusatzbetrag) it.next();
-      if (!z.isAktiv(new Date()))
+      if (!z.isOffen(new Date()))
       {
         table.removeItem(z);
       }
@@ -421,9 +421,9 @@ public class ZusatzbetragControl extends AbstractControl
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Startdatum", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("nächste Fälligkeit", Element.ALIGN_LEFT, 30,
+          reporter.addHeaderColumn("Nächste Fälligkeit", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("letzte Ausführung", Element.ALIGN_LEFT, 30,
+          reporter.addHeaderColumn("Letzte Ausführung", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Intervall", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);

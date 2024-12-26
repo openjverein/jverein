@@ -40,6 +40,7 @@ import de.jost_net.JVerein.gui.action.AdministrationEinstellungenStatistikAction
 import de.jost_net.JVerein.gui.action.NichtMitgliedSucheAction;
 import de.jost_net.JVerein.gui.action.PreNotificationAction;
 import de.jost_net.JVerein.gui.action.MitgliedstypListAction;
+import de.jost_net.JVerein.gui.action.MittelverwendungListeAction;
 import de.jost_net.JVerein.gui.action.AnfangsbestandListAction;
 import de.jost_net.JVerein.gui.action.AnlagenlisteAction;
 import de.jost_net.JVerein.gui.action.ArbeitseinsaetzeListeAction;
@@ -92,6 +93,7 @@ import de.jost_net.JVerein.gui.action.StatistikMitgliedAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageListeAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeListeAction;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -117,10 +119,10 @@ public class MyExtension implements Extension
       try
       {
         DBService service = Einstellungen.getDBService();
-        String sql = "SELECT konto.anlagenkonto from konto "
-            + "WHERE (anlagenkonto = true) ";
+        String sql = "SELECT konto.id from konto "
+            + "WHERE (kontoart = ?) ";
         anlagenkonto = (boolean) service.execute(sql,
-            new Object[] { }, new ResultSetExtractor()
+            new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
         {
           @Override
           public Object extract(ResultSet rs)
@@ -212,6 +214,11 @@ public class MyExtension implements Extension
           new ProjektSaldoAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
           new KontensaldoAction(), "euro-sign.png"));
+      if (Einstellungen.getEinstellung().getMittelverwendung())
+      {
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendung",
+            new MittelverwendungListeAction(), "euro-sign.png"));
+      }
       if (anlagenkonto)
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenverzeichnis",
             new AnlagenlisteAction(), "euro-sign.png"));

@@ -23,6 +23,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.KursteilnehmerDetailAction;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
@@ -70,11 +71,27 @@ public class KursteilnehmerSucheView extends AbstractView
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getAbbuchungsdatumvon());
     right.addInput(control.getAbbuchungsdatumbis());
-    
+
     ButtonArea fbuttons = new ButtonArea();
+    ToolTipButton zurueck1 = control.getZurueckButton(
+        control.getEingabedatumvon(), control.getEingabedatumbis());
+    fbuttons.addButton(zurueck1);
+    ToolTipButton vor1 = control.getVorButton(control.getEingabedatumvon(),
+        control.getEingabedatumbis());
+    fbuttons.addButton(vor1);
+    ToolTipButton zurueck2 = control.getZurueckButton(
+        control.getAbbuchungsdatumvon(), control.getAbbuchungsdatumbis());
+    fbuttons.addButton(zurueck2);
+    ToolTipButton vor2 = control.getVorButton(control.getAbbuchungsdatumvon(),
+        control.getAbbuchungsdatumbis());
+    fbuttons.addButton(vor2);
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
+    zurueck1.setToolTipText("Eingabe Datumsbereich zurück");
+    vor1.setToolTipText("Eingabe Datumsbereich vowärts");
+    zurueck2.setToolTipText("Abbuchung Datumsbereich zurück");
+    vor2.setToolTipText("Abbuchung Datumsbereich vowärts");
 
     if (anzahl.longValue() > 0)
     {

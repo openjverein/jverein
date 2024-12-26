@@ -226,6 +226,12 @@ public class MitgliedskontoImpl extends AbstractDBObject implements Mitgliedskon
 		setAttribute("datum", datum);
 	}
 
+  @Override
+  public Double getBetrag() throws RemoteException
+  {
+    return (Double) super.getAttribute("betrag");
+  }
+
 	@Override
 	public String getZweck1() throws RemoteException {
 		return (String) getAttribute("zweck1");
@@ -286,11 +292,6 @@ public class MitgliedskontoImpl extends AbstractDBObject implements Mitgliedskon
 	@Override
 	public void setSteuerbetrag(Double d) throws RemoteException {
 		setAttribute("steuerbetrag", d);
-	}
-
-	@Override
-	public Double getBetrag() throws RemoteException {
-		return (Double) getAttribute("betrag");
 	}
 
 	@Override

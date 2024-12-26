@@ -203,7 +203,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     {
       case H2:
         return "ALTER TABLE " + table + " ALTER COLUMN " + col.getName()
-            + " SET NULL\n";
+            + " SET NOT NULL;\n";
       case MYSQL:
         return "ALTER TABLE " + table + " MODIFY COLUMN " + col.getName() + " "
             + getType(col) + ";\n";

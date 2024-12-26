@@ -18,6 +18,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.willuhn.datasource.rmi.DBObject;
 
@@ -58,6 +59,8 @@ public interface Zusatzbetrag extends DBObject
   public void setAusfuehrung(Date ausfuehrung) throws RemoteException;
 
   public boolean isAktiv(Date datum) throws RemoteException;
+
+  public boolean isOffen(Date datum) throws RemoteException;
 
   public void naechsteFaelligkeit() throws RemoteException;
 

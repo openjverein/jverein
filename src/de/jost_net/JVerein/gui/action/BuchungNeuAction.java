@@ -22,6 +22,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.view.BuchungView;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
@@ -49,7 +50,7 @@ public class BuchungNeuAction implements Action
       Konto konto = (Konto) control.getSuchKonto().getValue();
       if (null != konto)
       {
-        if (konto.getAnlagenkonto())
+        if (konto.getKontoArt() == Kontoart.ANLAGE)
         {
           buch.setBuchungsartId(konto.getAfaartId());
         }
@@ -67,7 +68,7 @@ public class BuchungNeuAction implements Action
             k = (Konto) Einstellungen.getDBService().createObject(Konto.class, kontoid);
             if (null != k)
             {
-              if (k.getAnlagenkonto())
+              if (k.getKontoArt() == Kontoart.ANLAGE)
               {
                 buch.setBuchungsartId(k.getAfaartId());
               }

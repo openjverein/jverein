@@ -309,7 +309,6 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput summenAnlagenkonto;
 
-
   private IntegerInput qrcodesize;
 
   private CheckboxInput qrcodeptext;
@@ -335,6 +334,8 @@ public class EinstellungControl extends AbstractControl
   private SelectInput afaort;
 
   private TextInput beitragaltersstufen;
+  
+  private CheckboxInput mittelverwendung;
 
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
@@ -2027,6 +2028,17 @@ public class EinstellungControl extends AbstractControl
     return afaort;
   }
 
+  public CheckboxInput getMittelverwendung() throws RemoteException
+  {
+    if (mittelverwendung != null)
+    {
+      return mittelverwendung;
+    }
+    mittelverwendung = new CheckboxInput(
+        Einstellungen.getEinstellung().getMittelverwendung());
+    return mittelverwendung;
+  }
+
   public void handleStoreAllgemein()
   {
     try
@@ -2114,6 +2126,7 @@ public class EinstellungControl extends AbstractControl
         e.setAfaInJahresabschluss(false);
       else
         e.setAfaInJahresabschluss(true);
+      e.setMittelverwendung((Boolean) mittelverwendung.getValue());
 
       e.store();
       Einstellungen.setEinstellung(e);

@@ -113,6 +113,8 @@ public class DokumentationUtil
   public static final String SPLITBUCHUNG = PRE + FUNKTIONEN + BUCHF + "splittbuchungen";
   
   public static final String ANLAGENLISTE = PRE + FUNKTIONEN + BUCHF + "anlagenverzeichnis";
+  
+  public static final String MITTELVERWENDUNG = PRE + FUNKTIONEN + BUCHF + "mittelverwendung";
 
 
   // Abrechnung

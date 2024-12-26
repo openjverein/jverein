@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.LastschriftControl;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -47,11 +48,19 @@ public class LastschriftListeView extends AbstractView
     right.addLabelPair("Fälligkeit von", control.getDatumvon());
     right.addLabelPair("Fälligkeit bis", control.getDatumbis());
     right.addLabelPair("Abrechnungslauf ab", control.getIntegerAusw());
-    
+
     ButtonArea fbuttons = new ButtonArea();
+    ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),
+        control.getDatumbis());
+    fbuttons.addButton(zurueck);
+    ToolTipButton vor = control.getVorButton(control.getDatumvon(),
+        control.getDatumbis());
+    fbuttons.addButton(vor);
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
+    zurueck.setToolTipText("Datumsbereich zurück");
+    vor.setToolTipText("Datumsbereich vowärts");
     
     control.getLastschriftList().paint(this.getParent());
 
