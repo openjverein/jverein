@@ -22,9 +22,9 @@ import de.willuhn.util.ProgressMonitor;
 
 import java.sql.Connection;
 
-public class Update0452 extends AbstractDDLUpdate
+public class Update0455 extends AbstractDDLUpdate
 {
-  public Update0452(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0455(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
