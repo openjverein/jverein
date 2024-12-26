@@ -24,9 +24,11 @@ public enum Kontoart
   // Ids über dem Limit werden in beiden Salden ignoriert.
   GELD(1, "Geldkonto"),
   ANLAGE(2, "Anlagenkonto"),
+  VERBINDLICHKEITEN(3, "Verbindlichkeitskonto"),
   LIMIT(100, "-- Limit --"),
-  RUECKLAGE(101, "Rücklagenkonto nach § 62 Abs. 1 (AO)"),
-  VERMOEGEN(102, "Vermögenskonto nach § 62 Abs. 3 und 4 (AO)");
+  RUECKLAGE(101, "Rücklagenkonto nach § 62 Abs. 1 AO"),
+  VERMOEGEN(102, "Vermögenskonto nach § 62 Abs. 3 und 4 AO"),
+  SONSTIGE_RUECKLAGEN(103, "Konto für sonstige Rücklagen");
 
   private final String text;
 

@@ -40,6 +40,7 @@ import de.jost_net.JVerein.gui.action.AdministrationEinstellungenStatistikAction
 import de.jost_net.JVerein.gui.action.NichtMitgliedSucheAction;
 import de.jost_net.JVerein.gui.action.PreNotificationAction;
 import de.jost_net.JVerein.gui.action.MitgliedstypListAction;
+import de.jost_net.JVerein.gui.action.MittelverwendungListeAction;
 import de.jost_net.JVerein.gui.action.AnfangsbestandListAction;
 import de.jost_net.JVerein.gui.action.AnlagenlisteAction;
 import de.jost_net.JVerein.gui.action.ArbeitseinsaetzeListeAction;
@@ -213,6 +214,11 @@ public class MyExtension implements Extension
           new ProjektSaldoAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
           new KontensaldoAction(), "euro-sign.png"));
+      if (Einstellungen.getEinstellung().getMittelverwendung())
+      {
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendung",
+            new MittelverwendungListeAction(), "euro-sign.png"));
+      }
       if (anlagenkonto)
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenverzeichnis",
             new AnlagenlisteAction(), "euro-sign.png"));

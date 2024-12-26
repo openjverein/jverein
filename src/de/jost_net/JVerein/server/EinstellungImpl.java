@@ -2168,7 +2168,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("staat", staat);
   }
-  
+
   @Override
   public String getUStID() throws RemoteException
   {
@@ -2184,5 +2184,17 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   public void setUStID(String ustid) throws RemoteException
   {
     setAttribute("ustid", ustid);
+  }
+
+  public Boolean getMittelverwendung() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("mittelverwendung"));
+  }
+
+  @Override
+  public void setMittelverwendung(Boolean mittelverwendung)
+      throws RemoteException
+  {
+    setAttribute("mittelverwendung", mittelverwendung);
   }
 }

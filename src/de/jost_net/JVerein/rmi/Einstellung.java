@@ -616,12 +616,15 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public void setBeitragAltersstufen(String altersstufen) throws RemoteException;
 
-  void setUStID(String ustid) throws RemoteException;
+  public void setUStID(String ustid) throws RemoteException;
 
-  String getUStID() throws RemoteException;
+  public String getUStID() throws RemoteException;
 
-  void setStaat(String land) throws RemoteException;
+  public void setStaat(String land) throws RemoteException;
 
-  String getStaat() throws RemoteException;
+  public String getStaat() throws RemoteException;
 
+  public Boolean getMittelverwendung() throws RemoteException;
+
+  public void setMittelverwendung(Boolean mittelverwendung) throws RemoteException;
 }
