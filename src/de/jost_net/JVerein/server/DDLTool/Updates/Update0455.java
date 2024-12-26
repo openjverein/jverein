@@ -20,9 +20,9 @@ import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class Update0454 extends AbstractDDLUpdate
+public class Update0455 extends AbstractDDLUpdate
 {
-  public Update0454(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0455(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -32,7 +32,7 @@ public class Update0454 extends AbstractDDLUpdate
   {
     {
       execute(addColumn("einstellung",
-          new Column("staat", COLTYPE.VARCHAR, 2, null, false, false)));
+          new Column("staat", COLTYPE.CHAR, 2, null, false, false)));
 
       execute(addColumn("einstellung",
           new Column("ustid", COLTYPE.VARCHAR, 20, null, false, false)));
