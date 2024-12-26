@@ -17,21 +17,23 @@
 
 package de.jost_net.JVerein.gui.util;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.Variable.VarTools;
-import de.jost_net.JVerein.rmi.MailEmpfaenger;
-import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import java.io.StringWriter;
+import java.rmi.RemoteException;
+import java.util.Map;
+
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 
-import java.io.StringWriter;
-import java.rmi.RemoteException;
-import java.util.Map;
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.VarTools;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 
 public class EvalMail
 {
@@ -50,7 +52,8 @@ public class EvalMail
     context.put("decimalformat", Einstellungen.DECIMALFORMAT);
     context.put("email", mitglied.getEmail());
     context.put("empf", mitglied);
-    Map<String, Object> map = new MitgliedMap().getMap(mitglied, null);
+    Map<String, Object> map = new MitgliedMap().getMap(mitglied,
+        new AllgemeineMap().getMap(null));
     VarTools.add(context, map);
   }
 

@@ -16,7 +16,17 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.io.File;
+import java.io.FileInputStream;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
+
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
@@ -38,14 +48,6 @@ import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
-
-import java.io.File;
-import java.io.FileInputStream;
 
 public class MailDetailView extends AbstractView
 {
@@ -185,7 +187,8 @@ public class MailDetailView extends AbstractView
     }
     buttons.addButton(
         new Button("Variablen anzeigen", new OpenInsertVariableDialogAction(),
-            new MitgliedMap().getMap(m, null), false, "bookmark.png"));
+            new MitgliedMap().getMap(m, new AllgemeineMap().getMap(null)),
+            false, "bookmark.png"));
     buttons.addButton(
         new Button("Vorschau", new MailVorschauAction(control), m, false,
             "edit-copy.png"));

@@ -67,6 +67,8 @@ public class EinstellungenAnzeigeView extends AbstractView
     left.addLabelPair("Juristische Personen erlaubt",
         control.getJuristischePersonen());
     left.addLabelPair("Mitgliedsfoto *", control.getMitgliedfoto());
+    left.addLabelPair("Mittelverwendung anzeigen" + "*",
+        control.getMittelverwendung());
 
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
     right.addLabelPair("Lesefelder anzeigen *", control.getUseLesefelder());

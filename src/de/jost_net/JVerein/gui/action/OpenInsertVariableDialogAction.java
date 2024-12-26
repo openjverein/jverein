@@ -17,6 +17,9 @@
 
 package de.jost_net.JVerein.gui.action;
 
+import java.util.Map;
+
+import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.dialogs.ShowVariablesDialog;
 import de.jost_net.JVerein.gui.menu.ShowVariablesMenu;
@@ -27,8 +30,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-
-import java.util.Map;
 
 public class OpenInsertVariableDialogAction implements Action
 {
@@ -53,7 +54,7 @@ public class OpenInsertVariableDialogAction implements Action
       else if (context instanceof MailEmpfaenger)
       {
         map = new MitgliedMap().getMap(((MailEmpfaenger) context).getMitglied(),
-            null);
+            new AllgemeineMap().getMap(null));
         prependCopyText = "$";
       }
       else
