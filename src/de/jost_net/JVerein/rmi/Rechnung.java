@@ -40,8 +40,6 @@ public interface Rechnung extends DBObject, IAdresse
   
   public Date getDatum() throws RemoteException;
 
-  public ArrayList<Mitgliedskonto> getMitgliedskontoList() throws RemoteException;
-
   public Formular getFormular() throws RemoteException;
 
   public void setAnrede(String anrede) throws RemoteException;

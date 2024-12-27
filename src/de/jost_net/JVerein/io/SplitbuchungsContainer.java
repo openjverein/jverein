@@ -20,12 +20,17 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -326,6 +331,101 @@ public class SplitbuchungsContainer
     return buch;
   }
   
+  public static void autoSplit(Buchung buchung, Mitgliedskonto mk)
+      throws NumberFormatException, RemoteException, ApplicationException
+  {
+    HashMap<String, Double> splitMap = new HashMap<>();
+    ArrayList<SollbuchungPosition> spArray = mk.getSollbuchungPositionList();
+    for (SollbuchungPosition sp : spArray)
+    {
+      // Wenn eine Buchungsart fehlt können wir nicht automatisch splitten
+      if (sp.getBuchungsartId() == null)
+      {
+        splitMap = new HashMap<>();
+        break;
+      }
+      String key = sp.getBuchungsartId() + "-"
+          + (sp.getBuchungsklasseId() != null ? sp.getBuchungsklasseId() : "");
+      Double betrag = splitMap.get(key);
+      if (sp.getBetrag().doubleValue() == 0)
+      {
+        continue;
+      }
+
+      if (betrag == null)
+      {
+        splitMap.put(key, sp.getBetrag().doubleValue());
+      }
+      else
+      {
+        splitMap.replace(key, betrag + sp.getBetrag().doubleValue());
+      }
+    }
+
+    // Automatisches spliten ist nur möglich wenn der Betrag von Buchung und
+    // Sollbuchung gleich sind
+    if (splitMap.size() > 1 && mk.getBetrag().equals(buchung.getBetrag()))
+    {
+      buchung.setSplitTyp(SplitbuchungTyp.HAUPT);
+      buchung.store();
+
+      Iterator<Entry<String, Double>> iterator = splitMap.entrySet().iterator();
+      SplitbuchungsContainer.init(buchung);
+      while (iterator.hasNext())
+      {
+        Entry<String, Double> entry = iterator.next();
+
+        Buchung splitBuchung = (Buchung) Einstellungen.getDBService()
+            .createObject(Buchung.class, null);
+        splitBuchung.setBetrag(entry.getValue());
+        splitBuchung.setDatum(buchung.getDatum());
+        splitBuchung.setKonto(buchung.getKonto());
+        splitBuchung.setName(buchung.getName());
+        splitBuchung.setZweck(buchung.getZweck());
+        splitBuchung.setMitgliedskonto(mk);
+        String buchungsart = entry.getKey().substring(0,
+            entry.getKey().indexOf("-"));
+        splitBuchung.setBuchungsartId(Long.parseLong(buchungsart));
+        String buchungsklasse = entry.getKey()
+            .substring(entry.getKey().indexOf("-") + 1);
+        if (buchungsklasse.length() > 0)
+        {
+          splitBuchung.setBuchungsklasseId(Long.parseLong(buchungsklasse));
+        }
+        splitBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
+        splitBuchung.setSplitId(Long.parseLong(buchung.getID()));
+
+        SplitbuchungsContainer.add(splitBuchung);
+      }
+      SplitbuchungsContainer.store();
+    }
+    else if (spArray != null && spArray.size() > 0)
+    {
+      // Wenn kein automatisches Spliten möglich ist nur Buchungsart,
+      // Buchungsklasse und Sollbuchung zuweisen
+      if (spArray.get(0).getBuchungsartId() != null)
+      {
+        buchung.setBuchungsartId(
+            Long.parseLong(spArray.get(0).getBuchungsartId()));
+      }
+      if (spArray.get(0).getBuchungsklasseId() != null)
+      {
+        buchung.setBuchungsklasseId(
+            Long.parseLong(spArray.get(0).getBuchungsklasseId()));
+      }
+      buchung.setMitgliedskonto(mk);
+      buchung.store();
+    }
+    else
+    {
+      // Für alte Sollbuchungen ohne Sollbuchungspositionen
+      buchung.setBuchungsartId(mk.getBuchungsartId());
+      buchung.setBuchungsklasseId(mk.getBuchungsklasseId());
+      buchung.setMitgliedskonto(mk);
+      buchung.store();
+    }
+  }
+
   public static int getAnzahl() 
   {
     return anzahl;

@@ -19,6 +19,7 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -28,7 +29,9 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -351,4 +354,20 @@ public class MitgliedskontoImpl extends AbstractDBObject implements Mitgliedskon
 		}
 		return super.getAttribute(fieldName);
 	}
+
+  @Override
+  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException
+  {
+    ArrayList<SollbuchungPosition> sps = new ArrayList<>();
+    DBIterator<SollbuchungPosition> it = Einstellungen.getDBService()
+        .createList(SollbuchungPosition.class);
+    it.addFilter("sollbuchungposition.sollbuchung = ?", getID());
+    it.setOrder("ORDER BY datum");
+    while (it.hasNext())
+    {
+      sps.add((SollbuchungPosition) it.next());
+    }
+    return sps;
+  }
 }

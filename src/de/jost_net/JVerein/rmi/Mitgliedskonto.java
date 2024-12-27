@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import de.willuhn.datasource.rmi.DBObject;
@@ -83,4 +84,7 @@ public interface Mitgliedskonto extends DBObject
   public void setRechnung(Rechnung rechnung) throws RemoteException;
 
   public Long getRechnungId() throws RemoteException;
+
+  ArrayList<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException;
 }

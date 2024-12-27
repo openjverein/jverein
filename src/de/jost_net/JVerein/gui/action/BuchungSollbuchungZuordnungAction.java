@@ -20,10 +20,12 @@ package de.jost_net.JVerein.gui.action;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
+import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -62,10 +64,6 @@ public class BuchungSollbuchungZuordnungAction implements Action
       {
         b = (Buchung[]) context;
       }
-      if (b == null)
-      {
-        return;
-      }
       if (b.length == 0)
       {
         return;
@@ -102,19 +100,37 @@ public class BuchungSollbuchungZuordnungAction implements Action
           mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
           mk.setZweck1(b[0].getZweck());
           mk.store();
+
+          for (Buchung buchung : b)
+          {
+            SollbuchungPosition sbp = (SollbuchungPosition) Einstellungen
+                .getDBService().createObject(SollbuchungPosition.class, null);
+            sbp.setBetrag(buchung.getBetrag());
+            if (buchung.getBuchungsartId() != null)
+            {
+              sbp.setBuchungsartId(buchung.getBuchungsartId().toString());
+            }
+            if (buchung.getBuchungsklasseId() != null)
+            {
+              sbp.setBuchungsklasseId(buchung.getBuchungsklasseId().toString());
+            }
+            sbp.setDatum(buchung.getDatum());
+            sbp.setZweck(buchung.getZweck());
+            sbp.setSollbuchung(mk.getID());
+          }
         }
 
-        for (Buchung buchung : b)
+        if (b.length == 1)
         {
-          buchung.setMitgliedskonto(mk);
-          if (mk != null)
+          SplitbuchungsContainer.autoSplit(b[0], mk);
+        }
+        else
+        {
+          for (Buchung buchung : b)
           {
-            if (buchung.getBuchungsartId() == null)
-              buchung.setBuchungsartId(mk.getBuchungsartId());
-            if (buchung.getBuchungsklasseId() == null)
-              buchung.setBuchungsklasseId(mk.getBuchungsklasseId());
+            buchung.setMitgliedskonto(mk);
+            buchung.store();
           }
-          buchung.store();
         }
         control.getBuchungsList();
 

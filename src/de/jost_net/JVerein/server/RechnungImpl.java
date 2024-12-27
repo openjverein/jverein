@@ -313,22 +313,6 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
     }
     return null;
   }
-
-  @Override
-  public ArrayList<Mitgliedskonto> getMitgliedskontoList()
-      throws RemoteException
-  {
-    ArrayList<Mitgliedskonto> mks = new ArrayList<>();
-    DBIterator<Mitgliedskonto> it = Einstellungen.getDBService()
-        .createList(Mitgliedskonto.class);
-    it.addFilter("rechnung = ?", getID());
-    it.setOrder("ORDER BY datum");
-    while (it.hasNext())
-    {
-      mks.add((Mitgliedskonto) it.next());
-    }
-    return mks;
-  }
   
   @Override
   public Mitgliedskonto getMitgliedskonto() throws RemoteException

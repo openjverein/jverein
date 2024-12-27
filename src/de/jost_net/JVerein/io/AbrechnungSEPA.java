@@ -54,7 +54,6 @@ import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
-import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
@@ -1269,91 +1268,10 @@ public class AbrechnungSEPA
       buchung.setZweck(zahler == null ? "Gegenbuchung" : zweck);
       buchung.store();
 
-      if (spArray == null)
+      if (spArray != null)
       {
-        return;
-      }
-
-      // Buchungen automatisch splitten
-      HashMap<String, Double> splitMap = new HashMap<>();
-      for (SollbuchungPosition sp : spArray)
-      {
-        // Wenn eine Buchungsart fehlt können wir nicht automatisch splitten
-        if (sp.getBuchungsartId() == null)
-        {
-          splitMap = new HashMap<>();
-          break;
-        }
-        String key = sp.getBuchungsartId() + "-"
-            + (sp.getBuchungsklasseId() != null ? sp.getBuchungsklasseId()
-                : "");
-        Double betrag = splitMap.get(key);
-        if (sp.getBetrag().doubleValue() == 0)
-        {
-          continue;
-        }
-
-        if (betrag == null)
-        {
-          splitMap.put(key, sp.getBetrag().doubleValue());
-        }
-        else
-        {
-          splitMap.replace(key, betrag + sp.getBetrag().doubleValue());
-        }
-      }
-
-      if (splitMap.size() > 1)
-      {
-        buchung.setSplitTyp(SplitbuchungTyp.HAUPT);
-        buchung.store();
-
-        Iterator<Entry<String, Double>> iterator = splitMap.entrySet()
-            .iterator();
-        SplitbuchungsContainer.init(buchung);
-        while (iterator.hasNext())
-        {
-          Entry<String, Double> entry = iterator.next();
-
-          Buchung splitBuchung = (Buchung) Einstellungen.getDBService()
-              .createObject(Buchung.class, null);
-          splitBuchung.setAbrechnungslauf(abrl);
-          splitBuchung.setBetrag(entry.getValue());
-          splitBuchung.setDatum(datum);
-          splitBuchung.setKonto(konto);
-          splitBuchung.setName(buchung.getName());
-          splitBuchung.setZweck(buchung.getZweck());
-          splitBuchung.setMitgliedskonto(mk);
-          String buchungsart = entry.getKey().substring(0,
-              entry.getKey().indexOf("-"));
-          splitBuchung.setBuchungsartId(Long.parseLong(buchungsart));
-          String buchungsklasse = entry.getKey()
-              .substring(entry.getKey().indexOf("-") + 1);
-          if (buchungsklasse.length() > 0)
-          {
-            splitBuchung.setBuchungsklasseId(Long.parseLong(buchungsklasse));
-          }
-          splitBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
-          splitBuchung.setSplitId(Long.parseLong(buchung.getID()));
-
-          SplitbuchungsContainer.add(splitBuchung);
-        }
-        SplitbuchungsContainer.store();
-      }
-      else
-      {
-        if (spArray.get(0).getBuchungsartId() != null)
-        {
-          buchung.setBuchungsartId(
-              Long.parseLong(spArray.get(0).getBuchungsartId()));
-        }
-        if (spArray.get(0).getBuchungsklasseId() != null)
-        {
-          buchung.setBuchungsklasseId(
-              Long.parseLong(spArray.get(0).getBuchungsklasseId()));
-        }
-        buchung.setMitgliedskonto(mk);
-        buchung.store();
+        // Buchungen automatisch splitten
+        SplitbuchungsContainer.autoSplit(buchung, mk);
       }
     }
   }
