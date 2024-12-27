@@ -125,6 +125,8 @@ public class RechnungControl extends DruckMailControl
 
   private TextInput zahlungsweg;
 
+  private TextInput leitwegID;
+
   public enum TYP
   {
     RECHNUNG, MAHNUNG
@@ -408,7 +410,8 @@ public class RechnungControl extends DruckMailControl
             rechnung.setAdressierungszusatz(mitglied.getAdressierungszusatz());
             rechnung.setPlz(mitglied.getPlz());
             rechnung.setOrt(mitglied.getOrt());
-            rechnung.setStaat(mitglied.getStaat());
+            rechnung.setStaat(mitglied.getStaatCode());
+            rechnung.setLeitwegID(mitglied.getLeitwegID());
             rechnung.setPersonenart(mitglied.getPersonenart());
             if (!mitglied.getMandatDatum().equals(Einstellungen.NODATE))
               rechnung.setMandatDatum(mitglied.getMandatDatum());
@@ -777,6 +780,18 @@ public class RechnungControl extends DruckMailControl
     iban.setName("IBAN");
     iban.disable();
     return iban;
+  }
+
+  public TextInput getLeitwegID() throws RemoteException
+  {
+    if (leitwegID != null)
+    {
+      return leitwegID;
+    }
+    leitwegID = new TextInput(getRechnung().getLeitwegID());
+    leitwegID.setName("LeitwegID");
+    leitwegID.disable();
+    return leitwegID;
   }
 
   public Part getBuchungenList() throws RemoteException

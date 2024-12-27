@@ -25,6 +25,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
@@ -209,7 +210,14 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
   @Override
   public String getStaat() throws RemoteException
   {
-    return (String) getAttribute("staat");
+    return Staat.getStaat(getStaatCode());
+  }
+
+  @Override
+  public String getStaatCode() throws RemoteException
+  {
+    String code = (String) getAttribute("staat");
+    return Staat.getStaatCode(code);
   }
   
   @Override
@@ -405,5 +413,17 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
   @Override
   public void setZahlungsweg(Integer zahlungsweg) throws RemoteException {
     setAttribute("zahlungsweg", zahlungsweg);
+  }
+
+  @Override
+  public String getLeitwegID() throws RemoteException
+  {
+    return (String) getAttribute("leitwegid");
+  }
+
+  @Override
+  public void setLeitwegID(String leitwegid) throws RemoteException
+  {
+    setAttribute("leitwegid", leitwegid);
   }
 }

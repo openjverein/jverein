@@ -17,6 +17,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -695,7 +696,18 @@ public class MitgliederImport implements Importer
           String ktoistaat = results.getString("ktoistaat");
           if (ktoistaat != null && ktoistaat.length() != 0)
           {
-            m.setKtoiStaat(ktoistaat);
+            if(Staat.getByText(ktoistaat.toUpperCase()) != null)
+            {
+              m.setKtoiStaat(Staat.getByText(ktoistaat.toUpperCase()).getKey());
+            }
+            else if(Staat.getByKey(ktoistaat.toUpperCase()) != null)
+            {
+              m.setKtoiStaat(ktoistaat.toUpperCase());
+            }
+            else
+            {
+              throw new ApplicationException("Zeile " + anz + ": Kontoinhaber Staat nicht erkannt: " + ktoistaat);
+            }
           }
         }
         catch (SQLException e)
@@ -828,7 +840,18 @@ public class MitgliederImport implements Importer
           String staat = results.getString("staat");
           if (staat != null && staat.length() != 0)
           {
-            m.setStaat(staat);
+            if(Staat.getByKey(staat.toUpperCase()) != null)
+            {
+              m.setStaat(staat.toUpperCase());
+            }
+            else if(Staat.getByText(staat.toUpperCase()) != null)
+            {
+              m.setStaat(Staat.getByText(staat.toUpperCase()).getKey());
+            }
+            else
+            {
+              throw new ApplicationException("Zeile " + anz + ": Staat nicht erkannt: " + staat);
+            }
           }
         }
         catch (SQLException e)

@@ -55,6 +55,7 @@ public class RechnungView extends AbstractView
     middle.addInput(control.getVorname());
     middle.addInput(control.getStrasse());
     middle.addInput(control.getAdressierungszusatz());
+    middle.addInput(control.getLeitwegID()); 
     
     SimpleContainer rigth = new SimpleContainer(cl.getComposite());
     rigth.addInput(control.getPlz());

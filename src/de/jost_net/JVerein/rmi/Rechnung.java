@@ -121,4 +121,8 @@ public interface Rechnung extends DBObject, IAdresse
       throws RemoteException;
 
   public Mitgliedskonto getMitgliedskonto() throws RemoteException;
+
+  public String getLeitwegID() throws RemoteException;
+
+  public void setLeitwegID(String leitwegid) throws RemoteException;
 }

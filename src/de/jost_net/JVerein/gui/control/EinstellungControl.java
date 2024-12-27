@@ -39,6 +39,7 @@ import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Einstellung;
@@ -342,6 +343,10 @@ public class EinstellungControl extends AbstractControl
    */
   private Wallet wallet = null;
 
+  private TextInput ustid;
+
+  private SelectInput staat;
+
   public EinstellungControl(AbstractView view)
   {
     super(view);
@@ -406,6 +411,27 @@ public class EinstellungControl extends AbstractControl
     }
     ort = new TextInput(Einstellungen.getEinstellung().getOrt(), 50);
     return ort;
+  }
+
+  public SelectInput getStaat() throws RemoteException
+  {
+    if (staat != null)
+    {
+      return staat;
+    }
+    staat = new SelectInput(Staat.values(),
+        Staat.getByKey(Einstellungen.getEinstellung().getStaat()));
+    return staat;
+  }
+
+  public Input getUstID() throws RemoteException
+  {
+    if (ustid != null)
+    {
+      return ustid;
+    }
+    ustid = new TextInput(Einstellungen.getEinstellung().getUStID(), 50);
+    return ustid;
   }
 
   public TextInput getFinanzamt() throws RemoteException
@@ -2056,6 +2082,8 @@ public class EinstellungControl extends AbstractControl
       else
         e.setIban(ib.toUpperCase().replace(" ",""));
       e.setGlaeubigerID((String) getGlaeubigerID().getValue());
+      e.setStaat(((Staat)getStaat().getValue()).getKey());
+      e.setUStID((String) getUstID().getValue());
       e.store();
       Einstellungen.setEinstellung(e);
 

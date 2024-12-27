@@ -156,10 +156,7 @@ public class SpendenbescheinigungAction implements Action
     }
     adresse.add(m.getStrasse());
     adresse.add(m.getPlz() + " " + m.getOrt());
-    if (m.getStaat() != null && m.getStaat().length() > 0)
-    {
-      adresse.add(m.getStaat());
-    }
+    adresse.add(m.getStaat());
     switch (adresse.size())
     {
       case 7:
