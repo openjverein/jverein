@@ -32,17 +32,17 @@ public interface SollbuchungPosition extends DBObject
 
   public void setSteuersatz(Double satz) throws RemoteException;
   
-  public String getBuchungsartId() throws RemoteException;
+  public Long getBuchungsartId() throws RemoteException;
 
-  public void setBuchungsartId(String buchungsart) throws RemoteException;
+  public void setBuchungsartId(Long buchungsart) throws RemoteException;
   
   public Buchungsart getBuchungsart() throws RemoteException;
   
   public Buchungsklasse getBuchungsklasse() throws RemoteException;
   
-  public String getBuchungsklasseId() throws RemoteException;
+  public Long getBuchungsklasseId() throws RemoteException;
 
-  public void setBuchungsklasseId(String buchungsklasse) throws RemoteException;
+  public void setBuchungsklasseId(Long buchungsklasse) throws RemoteException;
   
   public Date getDatum() throws RemoteException;
 

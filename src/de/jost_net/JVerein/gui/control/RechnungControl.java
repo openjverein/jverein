@@ -29,6 +29,8 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.RechnungAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
@@ -812,10 +814,12 @@ public class RechnungControl extends DruckMailControl
     buchungList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     buchungList.addColumn("Steuersatz", "steuersatz");
-    buchungList.addColumn("Buchungsart", "buchungsart");
+    buchungList.addColumn("Buchungsart", "buchungsart",
+        new BuchungsartFormatter());
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
-      buchungList.addColumn("Buchungsklasse", "buchungsklasse");
+      buchungList.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
     }
 
     buchungList.setRememberColWidths(true);

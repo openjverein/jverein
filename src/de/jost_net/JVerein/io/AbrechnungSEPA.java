@@ -648,11 +648,12 @@ public class AbrechnungSEPA
       zahler.setZahlungsweg(new Zahlungsweg(mZahler.getZahlungsweg()));
       if (bg.getBuchungsart() != null)
       {
-        zahler.setBuchungsartId(bg.getBuchungsart().getID());
+        zahler.setBuchungsartId(Long.parseLong(bg.getBuchungsart().getID()));
       }
       if (bg.getBuchungsklasseId() != null)
       {
-        zahler.setBuchungsklasseId(bg.getBuchungsklasseId().toString());
+        zahler.setBuchungsklasseId(
+            Long.parseLong(bg.getBuchungsklasseId().toString()));
       }
       zahler.setDatum(param.faelligkeit);
       zahler.setMitglied(m);
@@ -781,11 +782,11 @@ public class AbrechnungSEPA
           zahler.setZahlungsweg(new Zahlungsweg(zahlungsweg));
           if (z.getBuchungsart() != null)
           {
-            zahler.setBuchungsartId(z.getBuchungsart().getID());
+            zahler.setBuchungsartId(Long.parseLong(z.getBuchungsart().getID()));
           }
           if (z.getBuchungsklasseId() != null)
           {
-            zahler.setBuchungsklasseId(z.getBuchungsklasseId().toString());
+            zahler.setBuchungsklasseId(z.getBuchungsklasseId());
           }
           zahler.setDatum(z.getFaelligkeit());
           zahler.setMitglied(m);

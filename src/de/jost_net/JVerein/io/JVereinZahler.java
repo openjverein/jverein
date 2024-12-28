@@ -31,9 +31,9 @@ public class JVereinZahler extends Zahler
 
   private Zahlungsweg zahlungsweg;
 
-  private String buchungsart;
+  private Long buchungsart;
 
-  private String buchungsklasse;
+  private Long buchungsklasse;
 
   private Date datum;
 
@@ -73,22 +73,22 @@ public class JVereinZahler extends Zahler
     this.zahlungsweg = zahlungsweg;
   }
 
-  public String getBuchungsartId()
+  public Long getBuchungsartId()
   {
     return buchungsart;
   }
 
-  public void setBuchungsartId(String buchungsart)
+  public void setBuchungsartId(Long buchungsart)
   {
     this.buchungsart = buchungsart;
   }
 
-  public String getBuchungsklasseId()
+  public Long getBuchungsklasseId()
   {
     return buchungsklasse;
   }
 
-  public void setBuchungsklasseId(String buchungsklasse)
+  public void setBuchungsklasseId(Long buchungsklasse)
   {
     this.buchungsklasse = buchungsklasse;
   }

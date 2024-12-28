@@ -108,11 +108,11 @@ public class BuchungSollbuchungZuordnungAction implements Action
             sbp.setBetrag(buchung.getBetrag());
             if (buchung.getBuchungsartId() != null)
             {
-              sbp.setBuchungsartId(buchung.getBuchungsartId().toString());
+              sbp.setBuchungsartId(buchung.getBuchungsartId());
             }
             if (buchung.getBuchungsklasseId() != null)
             {
-              sbp.setBuchungsklasseId(buchung.getBuchungsklasseId().toString());
+              sbp.setBuchungsklasseId(buchung.getBuchungsklasseId());
             }
             sbp.setDatum(buchung.getDatum());
             sbp.setZweck(buchung.getZweck());

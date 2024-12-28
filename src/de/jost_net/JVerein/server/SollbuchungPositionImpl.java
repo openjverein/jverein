@@ -107,9 +107,9 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   }
 
   @Override
-  public String getBuchungsartId() throws RemoteException
+  public Long getBuchungsartId() throws RemoteException
   {
-    return (String) super.getAttribute("buchungsart");
+    return (Long) super.getAttribute("buchungsart");
   }
 
   @Override
@@ -127,7 +127,7 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   }
 
   @Override
-  public void setBuchungsartId(String buchungsart) throws RemoteException
+  public void setBuchungsartId(Long buchungsart) throws RemoteException
   {
     setAttribute("buchungsart", buchungsart);
   }
@@ -147,13 +147,13 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   }
 
   @Override
-  public String getBuchungsklasseId() throws RemoteException
+  public Long getBuchungsklasseId() throws RemoteException
   {
-    return (String) super.getAttribute("buchungsklasse");
+    return (Long) super.getAttribute("buchungsklasse");
   }
 
   @Override
-  public void setBuchungsklasseId(String buchungsklasse) throws RemoteException
+  public void setBuchungsklasseId(Long buchungsklasse) throws RemoteException
   {
     setAttribute("buchungsklasse", buchungsklasse);
   }

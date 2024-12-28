@@ -366,6 +366,16 @@ public class SplitbuchungsContainer
     // Sollbuchung gleich sind
     if (splitMap.size() > 1 && mk.getBetrag().equals(buchung.getBetrag()))
     {
+      // Wenn kein automatisches Spliten möglich ist nur Buchungsart,
+      // Buchungsklasse und Sollbuchung zuweisen
+      if (spArray.get(0).getBuchungsartId() != null)
+      {
+        buchung.setBuchungsartId(spArray.get(0).getBuchungsartId());
+      }
+      if (spArray.get(0).getBuchungsklasseId() != null)
+      {
+        buchung.setBuchungsklasseId(spArray.get(0).getBuchungsklasseId());
+      }
       buchung.setSplitTyp(SplitbuchungTyp.HAUPT);
       buchung.store();
 
@@ -405,13 +415,11 @@ public class SplitbuchungsContainer
       // Buchungsklasse und Sollbuchung zuweisen
       if (spArray.get(0).getBuchungsartId() != null)
       {
-        buchung.setBuchungsartId(
-            Long.parseLong(spArray.get(0).getBuchungsartId()));
+        buchung.setBuchungsartId(spArray.get(0).getBuchungsartId());
       }
       if (spArray.get(0).getBuchungsklasseId() != null)
       {
-        buchung.setBuchungsklasseId(
-            Long.parseLong(spArray.get(0).getBuchungsklasseId()));
+        buchung.setBuchungsklasseId(spArray.get(0).getBuchungsklasseId());
       }
       buchung.setMitgliedskonto(mk);
       buchung.store();
