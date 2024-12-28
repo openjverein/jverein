@@ -577,7 +577,6 @@ public class RechnungControl extends DruckMailControl
         Einstellungen.DECIMALFORMAT);
     betrag.setName("Betrag");
     betrag.disable();
-    ;
     return betrag;
   }
 
