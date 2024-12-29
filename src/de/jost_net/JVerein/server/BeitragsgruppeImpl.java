@@ -362,6 +362,12 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   }
 
   @Override
+  public Long getBuchungsartId() throws RemoteException
+  {
+    return (Long) super.getAttribute("buchungsart");
+  }
+
+  @Override
   public void setArbeitseinsatzBetrag(double arbeitseinsatzBetrag)
       throws RemoteException
   {

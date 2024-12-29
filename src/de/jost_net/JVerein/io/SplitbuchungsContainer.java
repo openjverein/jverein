@@ -366,8 +366,6 @@ public class SplitbuchungsContainer
     // Sollbuchung gleich sind
     if (splitMap.size() > 1 && mk.getBetrag().equals(buchung.getBetrag()))
     {
-      // Wenn kein automatisches Spliten möglich ist nur Buchungsart,
-      // Buchungsklasse und Sollbuchung zuweisen
       if (spArray.get(0).getBuchungsartId() != null)
       {
         buchung.setBuchungsartId(spArray.get(0).getBuchungsartId());
