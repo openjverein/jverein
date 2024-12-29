@@ -390,6 +390,10 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
     {
       return getBuchungsklasse();
     }
+    else if (fieldName.equals("buchungsart"))
+    {
+      return getBuchungsart();
+    }
     return super.getAttribute(fieldName);
   }
 
