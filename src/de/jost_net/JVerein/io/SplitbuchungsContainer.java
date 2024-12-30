@@ -33,6 +33,8 @@ import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class SplitbuchungsContainer
@@ -40,12 +42,12 @@ public class SplitbuchungsContainer
   private static ArrayList<Buchung> splitbuchungen = null;
 
   private static int dependencyid = 0;
-  
+
   private static Buchung[] buchungen = null;
-  
+
   private static int anzahl = 0;
-  
-  private static String text = null; 
+
+  private static String text = null;
 
   public static void init(Buchung[] bl)
       throws RemoteException, ApplicationException
@@ -63,7 +65,7 @@ public class SplitbuchungsContainer
     }
     initiate(bl[0]);
   }
-  
+
   public static void init(Buchung b)
       throws RemoteException, ApplicationException
   {
@@ -72,7 +74,7 @@ public class SplitbuchungsContainer
     text = "Es wird eine Splitbuchung erzeugt.";
     initiate(b);
   }
-  
+
   public static void initiate(Buchung b)
       throws RemoteException, ApplicationException
   {
@@ -234,7 +236,7 @@ public class SplitbuchungsContainer
       throw ex;
     }
   }
-  
+
   public static void handleStore() throws RemoteException, ApplicationException
   {
     for (Buchung b : get())
@@ -277,14 +279,16 @@ public class SplitbuchungsContainer
     }
   }
 
-  public static int getNewDependencyId() {
+  public static int getNewDependencyId()
+  {
     return ++dependencyid;
   }
-  
-  public static String getText() {
+
+  public static String getText()
+  {
     return text;
   }
-  
+
   private static Buchung getGegenbuchung(Buchung b) throws RemoteException
   {
     Buchung buch = (Buchung) Einstellungen.getDBService()
@@ -307,11 +311,12 @@ public class SplitbuchungsContainer
     buch.setSplitTyp(SplitbuchungTyp.GEGEN);
     return buch;
   }
-  
-  private static Buchung getSplitbuchung(Buchung master, Buchung origin) throws RemoteException
+
+  private static Buchung getSplitbuchung(Buchung master, Buchung origin)
+      throws RemoteException
   {
-    Buchung buch = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
-        null);
+    Buchung buch = (Buchung) Einstellungen.getDBService()
+        .createObject(Buchung.class, null);
     buch.setAuszugsnummer(master.getAuszugsnummer());
     buch.setBetrag(origin.getBetrag());
     buch.setBlattnummer(master.getBlattnummer());
@@ -330,10 +335,16 @@ public class SplitbuchungsContainer
     buch.setSplitTyp(SplitbuchungTyp.SPLIT);
     return buch;
   }
-  
+
   public static void autoSplit(Buchung buchung, Mitgliedskonto mk)
       throws NumberFormatException, RemoteException, ApplicationException
   {
+    if (mk == null)
+    {
+      buchung.setMitgliedskonto(null);
+      buchung.store();
+      return;
+    }
     HashMap<String, Double> splitMap = new HashMap<>();
     ArrayList<SollbuchungPosition> spArray = mk.getSollbuchungPositionList();
     for (SollbuchungPosition sp : spArray)
@@ -362,24 +373,54 @@ public class SplitbuchungsContainer
       }
     }
 
-    // Automatisches spliten ist nur möglich wenn der Betrag von Buchung und
-    // Sollbuchung gleich sind
-    if (splitMap.size() > 1 && mk.getBetrag().equals(buchung.getBetrag()))
+    boolean splitten = false;
+    if (splitMap.size() > 0 && mk.getBetrag().equals(buchung.getBetrag()))
+    {
+      splitten = true;
+    }
+    else if (splitMap.size() > 0)
+    {
+      YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+      dialog.setTitle("Buchung spliten");
+      dialog.setText(
+          "Der Betrag der Sollbuchung entspricht nicht dem der Buchung.\n"
+              + "Soll die Buchung trotzdem anhand der Sollbuchungs-Positionen\n"
+              + "gesplittet werden und eine Restbuchung erzeugt werden?");
+      try
+      {
+        splitten = ((Boolean) dialog.open()).booleanValue();
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Buchung-Sollbuchung-zuordnen-Dialog.", e);
+      }
+    }
+    if(splitten)
     {
       boolean ersetzen = false;
-      if (spArray.get(0).getBuchungsartId() != null)
+      if (buchung.getBuchungsartId() != null
+          && spArray.get(0).getBuchungsartId() != null)
       {
         buchung.setBuchungsartId(spArray.get(0).getBuchungsartId());
       }
-      if (spArray.get(0).getBuchungsklasseId() != null)
+      if (buchung.getBuchungsklasseId() != null
+          && spArray.get(0).getBuchungsklasseId() != null)
       {
         buchung.setBuchungsklasseId(spArray.get(0).getBuchungsklasseId());
       }
+
       if (buchung.getSplitTyp() == null)
       {
         buchung.setSplitTyp(SplitbuchungTyp.HAUPT);
       }
+      // Haupt- und Gegen-Buchungen können nicht gesplittet werden
+      else if (buchung.getSplitTyp() == SplitbuchungTyp.GEGEN
+          || buchung.getSplitTyp() == SplitbuchungTyp.HAUPT)
+      {
+        return;
+      }
       else
+      // Spitbuchungen müssen durch die neuen Buchungen ersetzt werden
       {
         ersetzen = true;
       }
@@ -426,6 +467,22 @@ public class SplitbuchungsContainer
 
         SplitbuchungsContainer.add(splitBuchung);
       }
+      if (!mk.getBetrag().equals(buchung.getBetrag()))
+      {
+        Buchung splitBuchung = (Buchung) Einstellungen.getDBService()
+            .createObject(Buchung.class, null);
+        splitBuchung.setBetrag(buchung.getBetrag() - mk.getBetrag());
+        splitBuchung.setDatum(buchung.getDatum());
+        splitBuchung.setKonto(buchung.getKonto());
+        splitBuchung.setName(buchung.getName());
+        splitBuchung.setZweck(buchung.getZweck());
+        splitBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
+        splitBuchung.setSplitId(Long.parseLong(getMaster().getID()));
+        splitBuchung.setBuchungsartId(buchung.getBuchungsartId());
+        splitBuchung.setBuchungsklasseId(buchung.getBuchungsklasseId());
+
+        SplitbuchungsContainer.add(splitBuchung);
+      }
       SplitbuchungsContainer.store();
     }
     else if (spArray != null && spArray.size() > 0)
@@ -453,7 +510,7 @@ public class SplitbuchungsContainer
     }
   }
 
-  public static int getAnzahl() 
+  public static int getAnzahl()
   {
     return anzahl;
   }
