@@ -563,9 +563,12 @@ public class MitgliedskontoControl extends DruckMailControl
     else
     {
       mitgliedskontoList.removeAll();
-      while (mitgliedskonten.hasNext())
+      if (mitgliedskonten != null)
       {
-        mitgliedskontoList.addItem(mitgliedskonten.next());
+        while (mitgliedskonten.hasNext())
+        {
+          mitgliedskontoList.addItem(mitgliedskonten.next());
+        }
       }
       mitgliedskontoList.sort();
     }
@@ -687,9 +690,12 @@ public class MitgliedskontoControl extends DruckMailControl
     GenericIterator mitgliedskonten = new SollbuchungQuery(this, umwandeln,
         null).get();
     mitgliedskontoList.removeAll();
-    while (mitgliedskonten.hasNext())
+    if (mitgliedskonten != null)
     {
-      mitgliedskontoList.addItem(mitgliedskonten.next());
+      while (mitgliedskonten.hasNext())
+      {
+        mitgliedskontoList.addItem(mitgliedskonten.next());
+      }
     }
     mitgliedskontoList.sort();
   }

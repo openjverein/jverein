@@ -366,6 +366,7 @@ public class SplitbuchungsContainer
     // Sollbuchung gleich sind
     if (splitMap.size() > 1 && mk.getBetrag().equals(buchung.getBetrag()))
     {
+      boolean ersetzen = false;
       if (spArray.get(0).getBuchungsartId() != null)
       {
         buchung.setBuchungsartId(spArray.get(0).getBuchungsartId());
@@ -374,11 +375,31 @@ public class SplitbuchungsContainer
       {
         buchung.setBuchungsklasseId(spArray.get(0).getBuchungsklasseId());
       }
-      buchung.setSplitTyp(SplitbuchungTyp.HAUPT);
+      if (buchung.getSplitTyp() == null)
+      {
+        buchung.setSplitTyp(SplitbuchungTyp.HAUPT);
+      }
+      else
+      {
+        ersetzen = true;
+      }
       buchung.store();
 
       Iterator<Entry<String, Double>> iterator = splitMap.entrySet().iterator();
       SplitbuchungsContainer.init(buchung);
+
+      if (ersetzen)
+      {
+        for (Buchung b : splitbuchungen)
+
+        {
+          if (b.getID().equals(buchung.getID()))
+          {
+            b.setDelete(true);
+            break;
+          }
+        }
+      }
       while (iterator.hasNext())
       {
         Entry<String, Double> entry = iterator.next();
@@ -401,7 +422,7 @@ public class SplitbuchungsContainer
           splitBuchung.setBuchungsklasseId(Long.parseLong(buchungsklasse));
         }
         splitBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
-        splitBuchung.setSplitId(Long.parseLong(buchung.getID()));
+        splitBuchung.setSplitId(Long.parseLong(getMaster().getID()));
 
         SplitbuchungsContainer.add(splitBuchung);
       }
