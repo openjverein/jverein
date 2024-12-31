@@ -431,10 +431,31 @@ public class SplitbuchungsContainer
       if (ersetzen)
       {
         for (Buchung b : splitbuchungen)
-
         {
           if (b.getID().equals(buchung.getID()))
           {
+            if (b.getSpendenbescheinigung() != null)
+            {
+              YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+              dialog.setTitle("Spendenbescheinigung löschen");
+              dialog.setText(
+                  "Der Buchung ist eine Spendenbescheinigung zugeordnet.\n"
+                      + "Wenn die Buchung der Sollbuchung zugeordnet und gesplittet wir,\n"
+                      + "wird die Spendenbescheinigung gelöscht.\n"
+                      + "Fortfahren und Spendenbescheinigung löschen?");
+              try
+              {
+                if (!((Boolean) dialog.open()).booleanValue())
+                {
+                  return;
+                }
+              }
+              catch (Exception e)
+              {
+                Logger.error("Fehler beim Buchung-Sollbuchung-zuordnen-Dialog.",
+                    e);
+              }
+            }
             b.setDelete(true);
             break;
           }
