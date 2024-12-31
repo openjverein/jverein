@@ -381,7 +381,7 @@ public class SplitbuchungsContainer
     else if (splitMap.size() > 0)
     {
       YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      dialog.setTitle("Buchung spliten");
+      dialog.setTitle("Buchung splitten");
       dialog.setText(
           "Der Betrag der Sollbuchung entspricht nicht dem der Buchung.\n"
               + "Soll die Buchung trotzdem anhand der Sollbuchungs-Positionen\n"
@@ -398,12 +398,12 @@ public class SplitbuchungsContainer
     if(splitten)
     {
       boolean ersetzen = false;
-      if (buchung.getBuchungsartId() != null
+      if (buchung.getBuchungsartId() == null
           && spArray.get(0).getBuchungsartId() != null)
       {
         buchung.setBuchungsartId(spArray.get(0).getBuchungsartId());
       }
-      if (buchung.getBuchungsklasseId() != null
+      if (buchung.getBuchungsklasseId() == null
           && spArray.get(0).getBuchungsklasseId() != null)
       {
         buchung.setBuchungsklasseId(spArray.get(0).getBuchungsklasseId());
@@ -424,7 +424,6 @@ public class SplitbuchungsContainer
       {
         ersetzen = true;
       }
-      buchung.store();
 
       Iterator<Entry<String, Double>> iterator = splitMap.entrySet().iterator();
       SplitbuchungsContainer.init(buchung);

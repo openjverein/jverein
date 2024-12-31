@@ -38,9 +38,9 @@ import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.db.AbstractDBObject;
-import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
@@ -505,7 +505,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     {
       return null;
     }
-    Cache cache = Cache.get(Mitgliedskonto.class, true);
+    Cache cache = Cache.get(Mitgliedskonto.class, false);
     return (Mitgliedskonto) cache.get(o);
   }
 
