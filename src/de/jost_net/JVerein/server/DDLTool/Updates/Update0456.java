@@ -13,14 +13,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
+import java.sql.Connection;
+
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
 import de.jost_net.JVerein.server.DDLTool.Index;
 import de.jost_net.JVerein.server.DDLTool.Table;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
-
-import java.sql.Connection;
 
 public class Update0456 extends AbstractDDLUpdate
 {
@@ -91,6 +91,14 @@ public class Update0456 extends AbstractDDLUpdate
             "sollbuchungposition", "buchungsklasse", "buchungsklasse", "id",
             "RESTRICT", "NO ACTION"));
     
+    // Für bestehende Sollbuchungen Sollbuchungpositionen erstellen
+    // Vorerst bleiben in der Tabelle Mitgliedskonto die Spalten
+    // buchungsart, buchungsklasse, steuersatz, nettobetrag, steuerbetrag
+    // bestehen damit eine Abwertskompabilität besteht
+    execute("INSERT INTO sollbuchungposition"
+        + " (sollbuchung, betrag, steuersatz, buchungsart, buchungsklasse, datum, zweck)"
+        + " SELECT id,betrag,steuersatz,buchungsart,buchungsklasse,datum,zweck1 FROM mitgliedskonto;");
+
     execute(addColumn("rechnung", new Column("zahlungsweg",
         COLTYPE.INTEGER, 1, "0", true, false)));
   }

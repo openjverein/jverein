@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
@@ -51,11 +50,6 @@ public class SollbuchungDetailView extends AbstractView
     grBuchung.addLabelPair("Zahlungsweg", control.getZahlungsweg());
     control.getBetrag().setMandatory(true);
     grBuchung.addLabelPair("Betrag", control.getBetrag());
-    grBuchung.addLabelPair("Buchungsart", control.getBuchungsart());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-    {
-      grBuchung.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
-    }
 
     LabelGroup cont = new LabelGroup(getParent(), "Sollbuchungspositionen", true);
     cont.addPart(control.getBuchungenList());

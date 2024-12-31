@@ -520,14 +520,6 @@ public class SplitbuchungsContainer
       buchung.setMitgliedskonto(mk);
       buchung.store();
     }
-    else
-    {
-      // Für alte Sollbuchungen ohne Sollbuchungspositionen
-      buchung.setBuchungsartId(mk.getBuchungsartId());
-      buchung.setBuchungsklasseId(mk.getBuchungsklasseId());
-      buchung.setMitgliedskonto(mk);
-      buchung.store();
-    }
   }
 
   public static int getAnzahl()
