@@ -34,6 +34,7 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -346,6 +347,7 @@ public class SplitbuchungsContainer
       return;
     }
     HashMap<String, Double> splitMap = new HashMap<>();
+    HashMap<String, String> splitZweckMap = new HashMap<>();
     ArrayList<SollbuchungPosition> spArray = mk.getSollbuchungPositionList();
     for (SollbuchungPosition sp : spArray)
     {
@@ -366,10 +368,14 @@ public class SplitbuchungsContainer
       if (betrag == null)
       {
         splitMap.put(key, sp.getBetrag().doubleValue());
+        splitZweckMap.put(key, sp.getZweck() + " " + sp.getBetrag());
       }
       else
       {
         splitMap.replace(key, betrag + sp.getBetrag().doubleValue());
+        String zweck = splitZweckMap.get(key);
+        splitZweckMap.replace(key,
+            zweck + ", " + sp.getZweck() + " " + sp.getBetrag());
       }
     }
 
@@ -461,6 +467,8 @@ public class SplitbuchungsContainer
           }
         }
       }
+      boolean splitPositionZweck = new Settings(SplitbuchungsContainer.class)
+          .getBoolean("splitPositionZweck", true);
       while (iterator.hasNext())
       {
         Entry<String, Double> entry = iterator.next();
@@ -471,7 +479,14 @@ public class SplitbuchungsContainer
         splitBuchung.setDatum(buchung.getDatum());
         splitBuchung.setKonto(buchung.getKonto());
         splitBuchung.setName(buchung.getName());
-        splitBuchung.setZweck(buchung.getZweck());
+        if(splitPositionZweck)
+        {
+          splitBuchung.setZweck(splitZweckMap.get(entry.getKey()));
+        }
+        else
+        {
+          splitBuchung.setZweck(mk.getZweck1());
+        }
         splitBuchung.setMitgliedskonto(mk);
         String buchungsart = entry.getKey().substring(0,
             entry.getKey().indexOf("-"));
