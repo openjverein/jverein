@@ -384,8 +384,8 @@ public class SplitbuchungsContainer
       dialog.setTitle("Buchung splitten");
       dialog.setText(
           "Der Betrag der Sollbuchung entspricht nicht dem der Buchung.\n"
-              + "Soll die Buchung trotzdem anhand der Sollbuchungs-Positionen\n"
-              + "gesplittet werden und eine Restbuchung erzeugt werden?");
+              + "Soll die Buchung trotzdem anhand der Sollbuchungspositionen\n"
+              + "gesplittet und eine Restbuchung erzeugt werden?");
       try
       {
         splitten = ((Boolean) dialog.open()).booleanValue();
@@ -395,7 +395,7 @@ public class SplitbuchungsContainer
         Logger.error("Fehler beim Buchung-Sollbuchung-zuordnen-Dialog.", e);
       }
     }
-    if(splitten)
+    if (splitten)
     {
       boolean ersetzen = false;
       if (buchung.getBuchungsartId() == null

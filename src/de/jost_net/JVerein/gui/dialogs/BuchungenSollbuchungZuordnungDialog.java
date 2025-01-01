@@ -79,7 +79,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
   private CheckboxInput useMemberNumber = null;
   private CheckboxInput useName = null;
 
-  private CheckboxInput useZweck = null;
+  private CheckboxInput useZweck;
 
   private Settings settings = null;
 
@@ -260,6 +260,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
               {
                 while (rs.next())
                 {
+                  // 1 = MitgliedID, 2 = Zweck1
                   uniqueZweck.put(rs.getString(2), rs.getString(1));
                 }
                 return new Object();

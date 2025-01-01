@@ -208,8 +208,8 @@ public class AbrechnungslaufDeleteAction implements Action
         }
         catch (RemoteException ignore)
         {
-          //Ignorieren, da die Exeption auftritt wenn die Buchung bereits gelöscht wurde
-          //zB. bei Splitbuchungen
+          // Ignorieren, da die Exception auftritt, wenn die Buchung bereits
+          // gelöscht wurde, z. B. bei Splitbuchungen.
         }
       }
       DBIterator<Mitgliedskonto> mitgliedskontoIt = Einstellungen.getDBService()

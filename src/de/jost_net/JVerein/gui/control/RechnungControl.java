@@ -801,10 +801,11 @@ public class RechnungControl extends DruckMailControl
     {
       return buchungList;
     }
-    DBIterator<SollbuchungPosition> sps = Einstellungen.getDBService().createList(SollbuchungPosition.class);
+    DBIterator<SollbuchungPosition> sps = Einstellungen.getDBService()
+        .createList(SollbuchungPosition.class);
     sps.join("mitgliedskonto");
-    sps.addFilter( "mitgliedskonto.id = sollbuchungposition.sollbuchung");
-    sps.addFilter("mitgliedskonto.rechnung = ?",getRechnung().getID());
+    sps.addFilter("mitgliedskonto.id = sollbuchungposition.sollbuchung");
+    sps.addFilter("mitgliedskonto.rechnung = ?", getRechnung().getID());
     sps.setOrder("order by sollbuchungposition.datum");
     
     buchungList = new TablePart(sps, null);

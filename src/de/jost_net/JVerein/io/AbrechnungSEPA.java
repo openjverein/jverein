@@ -400,7 +400,7 @@ public class AbrechnungSEPA
 
     if (param.pdffileRCUR != null)
     {
-      // Nur für die PDF erstellung müssen die Zahler in der Lastschrift
+      // Nur für die PDF-Erzeugung müssen die Zahler in der Lastschrift
       // enthalten sein
       for (JVereinZahler z : zahlerarray)
       {

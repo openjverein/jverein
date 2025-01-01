@@ -94,7 +94,7 @@ public class Update0456 extends AbstractDDLUpdate
     // Für bestehende Sollbuchungen Sollbuchungpositionen erstellen
     // Vorerst bleiben in der Tabelle Mitgliedskonto die Spalten
     // buchungsart, buchungsklasse, steuersatz, nettobetrag, steuerbetrag
-    // bestehen damit eine Abwertskompabilität besteht
+    // bestehen damit eine Abwärtskompatibilität besteht
     execute("INSERT INTO sollbuchungposition"
         + " (sollbuchung, betrag, steuersatz, buchungsart, buchungsklasse, datum, zweck)"
         + " SELECT id,betrag,steuersatz,buchungsart,buchungsklasse,datum,zweck1 FROM mitgliedskonto;");

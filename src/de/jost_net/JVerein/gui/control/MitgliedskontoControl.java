@@ -521,7 +521,8 @@ public class MitgliedskontoControl extends DruckMailControl
     {
       return buchungList;
     }
-    DBIterator<SollbuchungPosition> sps = Einstellungen.getDBService().createList(SollbuchungPosition.class);
+    DBIterator<SollbuchungPosition> sps = Einstellungen.getDBService()
+        .createList(SollbuchungPosition.class);
     sps.addFilter( "sollbuchung = ?", getMitgliedskonto().getID());
     
     buchungList = new TablePart(sps, null);
