@@ -1211,7 +1211,19 @@ public class AbrechnungSEPA
       }
       else
       {
-        zweck = zahler.getVerwendungszweckOrig();
+        if (spArray.size() == 1)
+        {
+          zweck = spArray.get(0).getZweck();
+        }
+        else
+        {
+          zweck = "";
+          for (SollbuchungPosition sp : spArray)
+          {
+            zweck += ", " + sp.getZweck() + " " + sp.getBetrag();
+          }
+          zweck = zweck.substring(2);
+        }
       }
 
       mk = (Mitgliedskonto) Einstellungen.getDBService()
@@ -1223,7 +1235,6 @@ public class AbrechnungSEPA
       if (zahler.getMitglied() != null)
       {
         mk.setMitglied(zahler.getMitglied());
-        zweck = getVerwendungszweckName(zahler.getMitglied(), zweck);
       }
       mk.setZweck1(zweck);
       mk.setBetrag(0d);
