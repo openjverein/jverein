@@ -374,11 +374,11 @@ public class SplitbuchungsContainer
     }
 
     boolean splitten = false;
-    if (splitMap.size() > 0 && mk.getBetrag().equals(buchung.getBetrag()))
+    if (splitMap.size() > 1 && mk.getBetrag().equals(buchung.getBetrag()))
     {
       splitten = true;
     }
-    else if (splitMap.size() > 0)
+    else if (splitMap.size() > 1)
     {
       YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       dialog.setTitle("Buchung splitten");

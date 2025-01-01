@@ -30,8 +30,6 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
-import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
-import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
@@ -457,13 +455,6 @@ public class MitgliedskontoControl extends DruckMailControl
       mitgliedskontoList.addColumn("Zahlungseingang", "istsumme",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       mitgliedskontoList.addColumn("Rechnung", "rechnungid");
-      mitgliedskontoList.addColumn("Buchungsart", "buchungsart",
-          new BuchungsartFormatter());
-      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-      {
-        mitgliedskontoList.addColumn("Buchungsklasse", "buchungsklasse",
-            new BuchungsklasseFormatter());
-      }
       mitgliedskontoList.setContextMenu(menu);
       mitgliedskontoList.setRememberColWidths(true);
       mitgliedskontoList.setRememberOrder(true);
@@ -540,13 +531,6 @@ public class MitgliedskontoControl extends DruckMailControl
     buchungList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     buchungList.addColumn("Steuersatz", "steuersatz");
-    buchungList.addColumn("Buchungsart", "buchungsart",
-        new BuchungsartFormatter());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-    {
-      buchungList.addColumn("Buchungsklasse", "buchungsklasse",
-          new BuchungsklasseFormatter());
-    }
 
     buchungList.setRememberColWidths(true);
     buchungList.setRememberOrder(true);
