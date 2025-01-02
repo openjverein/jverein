@@ -242,7 +242,11 @@ public class FormularfeldControl extends FormularPartControl
       }
       for (RechnungVar mkv : RechnungVar.values())
       {
-        namen.add(mkv.getName());
+        if (!RechnungVar.class.getField(mkv.name())
+            .isAnnotationPresent(Deprecated.class))
+        {
+          namen.add(mkv.getName());
+        }
       }
 
     }
