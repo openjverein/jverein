@@ -532,6 +532,11 @@ public class MitgliedskontoControl extends DruckMailControl
     buchungList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     buchungList.addColumn("Steuersatz", "steuersatz");
+    buchungList.addColumn("Buchungsart", "buchungsart");
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      buchungList.addColumn("Buchungsklasse", "buchungsklasse");
+    }
 
     buchungList.setRememberColWidths(true);
     buchungList.setRememberOrder(true);

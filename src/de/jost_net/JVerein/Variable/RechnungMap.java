@@ -28,7 +28,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.StringTool;
@@ -187,31 +186,6 @@ public class RechnungMap
     }
     map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(), zahlungsweg);
 
-    return map;
-  }
-
-  public Map<String, Object> getMap(Mitgliedskonto mk, Map<String, Object> inma)
-      throws RemoteException
-  {
-    Map<String, Object> map = null;
-    if (inma == null)
-    {
-      map = new HashMap<>();
-    }
-    else
-    {
-      map = inma;
-    }
-    map.put(RechnungVar.BUCHUNGSDATUM.getName(), mk.getDatum());
-    map.put(RechnungVar.ZAHLUNGSGRUND.getName(), mk.getZweck1());
-    /*
-     * map.put(RechnungVar.NETTOBETRAG.getName(), mk.getNettobetrag());
-     * map.put(RechnungVar.STEUERSATZ.getName(), mk.getSteuersatz());
-     * map.put(RechnungVar.STEUERBETRAG.getName(), mk.getSteuerbetrag());
-     */
-    map.put(RechnungVar.BETRAG.getName(), mk.getBetrag());
-    map.put(RechnungVar.IST.getName(), mk.getIstSumme());
-    map.put(RechnungVar.DIFFERENZ.getName(), mk.getBetrag() - mk.getIstSumme());
     return map;
   }
 }
