@@ -51,11 +51,11 @@ import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SollbuchungAuswahlInput;
-import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
@@ -67,8 +67,8 @@ import de.jost_net.JVerein.io.BuchungAuswertungPDF;
 import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -1120,6 +1120,11 @@ public class BuchungsControl extends AbstractControl
     try
     {
       Konto konto = (Konto) getKonto(false).getValue();
+      if (konto == null)
+      {
+        throw new ApplicationException(
+            "Kein Konto Ausgewählt. Ggfs. erst unter Buchführung->Konten ein Konto anlegen.");
+      }
       settings.setAttribute(settingsprefix + "kontoid", konto.getID());
       return konto;
     }
