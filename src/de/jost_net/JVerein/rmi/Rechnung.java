@@ -23,6 +23,7 @@ import java.util.Date;
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.util.ApplicationException;
 
 public interface Rechnung extends DBObject, IAdresse
 {
@@ -31,6 +32,9 @@ public interface Rechnung extends DBObject, IAdresse
   public void setMitglied(int mitglied) throws RemoteException;
 
   public void setFormular(Formular formular) throws RemoteException;
+
+  public void fill(Mitgliedskonto mk)
+      throws RemoteException, ApplicationException;
 
   double getBetrag() throws RemoteException;
 

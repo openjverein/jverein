@@ -454,7 +454,7 @@ public class MitgliedskontoControl extends DruckMailControl
       });
       mitgliedskontoList.addColumn("Zahlungseingang", "istsumme",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      mitgliedskontoList.addColumn("Rechnung", "rechnungid");
+      mitgliedskontoList.addColumn("Rechnung", "rechnung");
       mitgliedskontoList.setContextMenu(menu);
       mitgliedskontoList.setRememberColWidths(true);
       mitgliedskontoList.setRememberOrder(true);

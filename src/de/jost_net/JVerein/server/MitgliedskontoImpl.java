@@ -160,12 +160,6 @@ public class MitgliedskontoImpl extends AbstractDBObject
   }
 
   @Override
-  public Long getRechnungId() throws RemoteException
-  {
-    return (Long) super.getAttribute("rechnung");
-  }
-
-  @Override
   public void setRechnung(Rechnung rechnung) throws RemoteException
   {
     if (rechnung != null)
@@ -301,10 +295,6 @@ public class MitgliedskontoImpl extends AbstractDBObject
     if (fieldName.equals("abrechnungslauf"))
     {
       return getAbrechnungslauf();
-    }
-    if (fieldName.equals("rechnungId"))
-    {
-      return getRechnungId();
     }
     return super.getAttribute(fieldName);
   }

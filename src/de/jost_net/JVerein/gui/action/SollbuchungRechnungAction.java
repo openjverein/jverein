@@ -16,29 +16,36 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.RechnungMailView;
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.gui.view.RechnungView;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.util.ApplicationException;
 
 public class SollbuchungRechnungAction implements Action
 {
   @Override
   public void handleAction(Object context)
+      throws ApplicationException
   {
-    if (context != null && context instanceof Mitgliedskonto)
+    if (context instanceof Mitgliedskonto)
     {
       Mitgliedskonto mk = (Mitgliedskonto) context;
-      GUI.startView(RechnungMailView.class.getName(), mk);
-    }
-    else if (context != null && context instanceof Mitgliedskonto[])
-    {
-      Mitgliedskonto[] mk = (Mitgliedskonto[]) context;
-      GUI.startView(RechnungMailView.class.getName(), mk);
-    }
-    else
-    {
-      GUI.startView(RechnungMailView.class, null);
+      try
+      {
+        if (mk.getRechnung() == null)
+        {
+          throw new ApplicationException(
+              "Keine Rechnung zu ausgewählter Sollbuchung vorhanden!");
+        }
+        GUI.startView(RechnungView.class.getName(), mk.getRechnung());
+      }
+      catch (RemoteException e)
+      {
+        throw new ApplicationException("Fehler beim anzeigen der Rechnung!");
+      }
     }
   }
 }

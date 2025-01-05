@@ -24,8 +24,8 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.IAdresse;
-import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.keys.Staat;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
@@ -36,6 +36,7 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
 {
@@ -351,6 +352,59 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
       sps.add((SollbuchungPosition) it.next());
     }
     return sps;
+  }
+
+  @Override
+  public void fill(Mitgliedskonto mk)
+      throws RemoteException, ApplicationException
+  {
+    Mitglied mitglied = mk.getMitglied();
+
+    if (mitglied == null)
+    {
+      throw new ApplicationException("Sollbuchung enthält kein Mitglied.");
+    }
+    setMitglied(Integer.parseInt(mitglied.getID()));
+
+    if (mitglied.getKtoiName() == null || mitglied.getKtoiName().length() == 0)
+    {
+      setPersonenart(mitglied.getPersonenart());
+      setAnrede(mitglied.getAnrede());
+      setTitel(mitglied.getTitel());
+      setName(mitglied.getName());
+      setVorname(mitglied.getVorname());
+      setStrasse(mitglied.getStrasse());
+      setAdressierungszusatz(mitglied.getAdressierungszusatz());
+      setPlz(mitglied.getPlz());
+      setOrt(mitglied.getOrt());
+      setStaat(mitglied.getStaat());
+      setGeschlecht(mitglied.getGeschlecht());
+    }
+    else
+    {
+      setPersonenart(mitglied.getKtoiPersonenart());
+      setAnrede(mitglied.getKtoiAnrede());
+      setTitel(mitglied.getKtoiTitel());
+      setName(mitglied.getKtoiName());
+      setVorname(mitglied.getKtoiVorname());
+      setStrasse(mitglied.getKtoiStrasse());
+      setAdressierungszusatz(mitglied.getKtoiAdressierungszusatz());
+      setPlz(mitglied.getKtoiPlz());
+      setOrt(mitglied.getKtoiOrt());
+      setStaat(mitglied.getKtoiStaat());
+      setGeschlecht(mitglied.getKtoiGeschlecht());
+    }
+    setDatum(new Date());
+    if (!mitglied.getMandatDatum().equals(Einstellungen.NODATE))
+    {
+      setMandatDatum(mitglied.getMandatDatum());
+    }
+    setLeitwegID(mitglied.getLeitwegID());
+    setMandatID(mitglied.getMandatID());
+    setBIC(mitglied.getBic());
+    setIBAN(mitglied.getIban());
+    setZahlungsweg(mk.getZahlungsweg());
+    setBetrag(mk.getBetrag());
   }
 
   @Override

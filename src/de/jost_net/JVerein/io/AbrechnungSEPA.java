@@ -1125,6 +1125,34 @@ public class AbrechnungSEPA
     Rechnung re = null;
     if (spArray != null)
     {
+      mk = (Mitgliedskonto) Einstellungen.getDBService()
+          .createObject(Mitgliedskonto.class, null);
+      mk.setAbrechnungslauf(abrl);
+      mk.setZahlungsweg(zahler.getZahlungsweg().getKey());
+
+      mk.setDatum(datum);
+      if (zahler.getMitglied() != null)
+      {
+        mk.setMitglied(zahler.getMitglied());
+      }
+      // Zweck wird später gefüllt, es muss aber schon was drin stehen damit
+      // gespeichert werden kann
+      mk.setZweck1(" ");
+      mk.setBetrag(0d);
+      mk.store();
+
+      if (summe == null)
+      {
+        summe = 0d;
+      }
+      for (SollbuchungPosition sp : spArray)
+      {
+        summe += sp.getBetrag().doubleValue();
+        sp.setSollbuchung(mk.getID());
+        sp.store();
+      }
+      mk.setBetrag(summe);
+      
       // Rechnungen nur für (Nicht-)Mitglieder unterstützt
       // (nicht für Kursteilnehmer)
       if (param.rechnung && zahler.getMitglied() != null)
@@ -1134,65 +1162,19 @@ public class AbrechnungSEPA
         {
           throw new ApplicationException("Kein Rechnungs-Formular ausgewählt");
         }
-        Mitglied mitglied = zahler.getMitglied();
+
         re = (Rechnung) Einstellungen.getDBService()
             .createObject(Rechnung.class, null);
 
-        re.setMitglied(Integer.parseInt(mitglied.getID()));
         re.setFormular(form);
-        if (mitglied.getKtoiName() == null
-            || mitglied.getKtoiName().length() == 0)
-        {
-          re.setPersonenart(mitglied.getPersonenart());
-          re.setAnrede(mitglied.getAnrede());
-          re.setTitel(mitglied.getTitel());
-          re.setName(mitglied.getName());
-          re.setVorname(mitglied.getVorname());
-          re.setStrasse(mitglied.getStrasse());
-          re.setAdressierungszusatz(mitglied.getAdressierungszusatz());
-          re.setPlz(mitglied.getPlz());
-          re.setOrt(mitglied.getOrt());
-          re.setStaat(mitglied.getStaat());
-          // re.setEmail(mitglied.getEmail());
-          re.setGeschlecht(mitglied.getGeschlecht());
-        }
-        else
-        {
-          re.setPersonenart(mitglied.getKtoiPersonenart());
-          re.setAnrede(mitglied.getKtoiAnrede());
-          re.setTitel(mitglied.getKtoiTitel());
-          re.setName(mitglied.getKtoiName());
-          re.setVorname(mitglied.getKtoiVorname());
-          re.setStrasse(mitglied.getKtoiStrasse());
-          re.setAdressierungszusatz(mitglied.getKtoiAdressierungszusatz());
-          re.setPlz(mitglied.getKtoiPlz());
-          re.setOrt(mitglied.getKtoiOrt());
-          re.setStaat(mitglied.getKtoiStaat());
-          // re.setEmail(mitglied.getKtoiEmail());
-          re.setGeschlecht(mitglied.getKtoiGeschlecht());
-        }
-        re.setDatum(new Date());
-        if (!mitglied.getMandatDatum().equals(Einstellungen.NODATE))
-        {
-          re.setMandatDatum(mitglied.getMandatDatum());
-        }
-        re.setMandatID(mitglied.getMandatID());
-        re.setBIC(mitglied.getBic());
-        re.setIBAN(mitglied.getIban());
-        re.setZahlungsweg(zahler.getZahlungsweg().getKey());
-
-        double reSumme = 0;
-        for (SollbuchungPosition sp : spArray)
-        {
-          reSumme += sp.getBetrag().doubleValue();
-        }
-        re.setBetrag(reSumme);
+        re.fill(mk);
         re.store();
 
         zweck = param.rechnungstext;
         boolean ohneLesefelder = !zweck.contains(Einstellungen.LESEFELD_PRE);
         Map<String, Object> map = new AllgemeineMap().getMap(null);
-        map = new MitgliedMap().getMap(mitglied, map, ohneLesefelder);
+        map = new MitgliedMap().getMap(zahler.getMitglied(), map,
+            ohneLesefelder);
         map = new RechnungMap().getMap(re, map);
         map = new AbrechnungsParameterMap().getMap(param, map);
         try
@@ -1208,6 +1190,10 @@ public class AbrechnungSEPA
           Logger.error("Fehler bei der Aufbereitung der Variablen", e);
         }
         zahler.setVerwendungszweck(zweck);
+
+        mk.setZweck1(zweck);
+        mk.setRechnung(re);
+        mk.store();
       }
       else
       {
@@ -1224,35 +1210,9 @@ public class AbrechnungSEPA
           }
           zweck = zweck.substring(2);
         }
+        mk.setZweck1(zweck);
+        mk.store();
       }
-
-      mk = (Mitgliedskonto) Einstellungen.getDBService()
-          .createObject(Mitgliedskonto.class, null);
-      mk.setAbrechnungslauf(abrl);
-      mk.setZahlungsweg(zahler.getZahlungsweg().getKey());
-
-      mk.setDatum(datum);
-      if (zahler.getMitglied() != null)
-      {
-        mk.setMitglied(zahler.getMitglied());
-      }
-      mk.setZweck1(zweck);
-      mk.setBetrag(0d);
-      mk.store();
-
-      if (summe == null)
-      {
-        summe = 0d;
-      }
-      for (SollbuchungPosition sp : spArray)
-      {
-        summe += sp.getBetrag().doubleValue();
-        sp.setSollbuchung(mk.getID());
-        sp.store();
-      }
-      mk.setBetrag(summe);
-      mk.setRechnung(re);
-      mk.store();
     }
 
     if (haben)
@@ -1279,7 +1239,7 @@ public class AbrechnungSEPA
       buchung.setZweck(zahler == null ? "Gegenbuchung" : zweck);
       buchung.store();
 
-      if (spArray != null)
+      if (mk != null)
       {
         // Buchungen automatisch splitten
         SplitbuchungsContainer.autoSplit(buchung, mk);

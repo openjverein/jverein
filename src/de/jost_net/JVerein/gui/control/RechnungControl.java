@@ -20,11 +20,7 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
-
-import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.RechnungAction;
@@ -42,12 +38,9 @@ import de.jost_net.JVerein.gui.menu.RechnungMenu;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
-import de.jost_net.JVerein.server.RechnungNode;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
@@ -61,25 +54,19 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.formatter.TreeFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
-import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 
 public class RechnungControl extends DruckMailControl
 {
 
   private TablePart rechnungList;
-
-  private TreePart rechnungTree;
 
   private Rechnung rechnung;
 
@@ -170,33 +157,6 @@ public class RechnungControl extends DruckMailControl
     return rechnungList;
   }
 
-  public Part getRechnungTree() throws RemoteException
-  {
-    rechnungTree = new TreePart(new RechnungNode(this), null);
-    rechnungTree.setFormatter(new TreeFormatter()
-    {
-      @Override
-      public void format(TreeItem item)
-      {
-        RechnungNode rechnungnode = (RechnungNode) item.getData();
-        try
-        {
-          if (rechnungnode.getNodeType() == RechnungNode.ROOT)
-            item.setImage(SWTUtil.getImage("file-invoice.png"));
-          if (rechnungnode.getNodeType() == RechnungNode.MITGLIED)
-            item.setImage(SWTUtil.getImage("user.png"));
-          if (rechnungnode.getNodeType() == RechnungNode.BUCHUNG)
-            item.setImage(SWTUtil.getImage("euro-sign.png"));
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler beim TreeFormatter", e);
-        }
-      }
-    });
-    return rechnungTree;
-  }
-
   public Button getStartRechnungButton(final Object currentObject)
   {
     final RechnungControl control = this;
@@ -259,11 +219,6 @@ public class RechnungControl extends DruckMailControl
           rechnungList.addItem(rechnungen.next());
         }
         rechnungList.sort();
-      }
-      else if (rechnungTree != null)
-      {
-        rechnungTree.removeAll();
-        rechnungTree.setList(Arrays.asList(new RechnungNode(this)));
       }
     }
     catch (RemoteException e1)
@@ -366,93 +321,6 @@ public class RechnungControl extends DruckMailControl
     }
 
     return rechnungenIt;
-  }
-
-  public Button getRechnungErstellenButton()
-  {
-    Button b = new Button("Erstellen", new Action()
-    {
-
-      @SuppressWarnings("rawtypes")
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          List items = rechnungTree.getItems();
-
-          if (items == null)
-            return;
-
-          RechnungNode ren = (RechnungNode) items.get(0);
-          // Loop über die Mitglieder
-          GenericIterator it1 = ren.getChildren();
-
-          Formular form = (Formular) getFormular(FormularArt.RECHNUNG)
-              .getValue();
-          if (form == null)
-          {
-            throw new ApplicationException("Kein Formular ausgewählt");
-          }
-          while (it1.hasNext())
-          {
-            RechnungNode sp1 = (RechnungNode) it1.next();
-            Mitglied mitglied = sp1.getMitglied();
-            Rechnung rechnung = (Rechnung) Einstellungen.getDBService()
-                .createObject(Rechnung.class, null);
-            rechnung.setMitglied(Integer.parseInt(mitglied.getID()));
-            rechnung.setFormular(form);
-            rechnung.setDatum(new Date());
-            rechnung.setGeschlecht(mitglied.getGeschlecht());
-            rechnung.setAnrede(mitglied.getAnrede());
-            rechnung.setTitel(mitglied.getTitel());
-            rechnung.setName(mitglied.getName());
-            rechnung.setVorname(mitglied.getVorname());
-            rechnung.setStrasse(mitglied.getStrasse());
-            rechnung.setAdressierungszusatz(mitglied.getAdressierungszusatz());
-            rechnung.setPlz(mitglied.getPlz());
-            rechnung.setOrt(mitglied.getOrt());
-            rechnung.setStaat(mitglied.getStaatCode());
-            rechnung.setLeitwegID(mitglied.getLeitwegID());
-            rechnung.setPersonenart(mitglied.getPersonenart());
-            if (!mitglied.getMandatDatum().equals(Einstellungen.NODATE))
-              rechnung.setMandatDatum(mitglied.getMandatDatum());
-            rechnung.setMandatID(mitglied.getMandatID());
-            rechnung.setBIC(mitglied.getBic());
-            rechnung.setIBAN(mitglied.getIban());
-
-            double betrag = 0;
-            GenericIterator it2 = sp1.getChildren();
-            while (it2.hasNext())
-            {
-              RechnungNode re = (RechnungNode) it2.next();
-              betrag += re.getBuchung().getBetrag();
-            }
-            rechnung.setBetrag(betrag);
-            rechnung.store();
-
-            // Loop über die Buchungen eines Mitglieds
-            GenericIterator it3 = sp1.getChildren();
-            while (it3.hasNext())
-            {
-              RechnungNode re = (RechnungNode) it3.next();
-              Mitgliedskonto b = (Mitgliedskonto) re.getBuchung();
-              b.setRechnung(rechnung);
-              b.store();
-            }
-            rechnungTree.removeAll();
-            GUI.getStatusBar().setSuccessText("Rechnung(en) erstellt");
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler bei der erstellen der Rechnungen");
-        }
-      }
-    }, null, false, "document-save.png");
-    return b;
   }
 
   @Override
