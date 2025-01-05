@@ -260,6 +260,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     sollbuchungenzusammenfassen = new CheckboxInput(
         settings.getBoolean("sollbuchungenzusammenfassen", false));
+    sollbuchungenzusammenfassen.addListener(new ZusammenfassenListener());
     return sollbuchungenzusammenfassen;
   }
 
@@ -272,6 +273,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     rechnung = new CheckboxInput(
         settings.getBoolean("rechnung", false));
+    rechnung.addListener(new RechnungListener());
     return rechnung;
   }
   
@@ -283,6 +285,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     rechnungsformular = new FormularInput(
         FormularArt.RECHNUNG, settings.getString("rechnungsformular", ""));
+    rechnungsformular.setEnabled(settings.getBoolean("rechnung", false));
     return rechnungsformular;
   }
 
@@ -294,6 +297,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     rechnungstext = new TextInput(
         settings.getString("rechnungstext", "RE$rechnung_nummer"));
+    rechnungstext.setEnabled(settings.getBoolean("rechnung", false));
     return rechnungstext;
   }
   
@@ -532,6 +536,46 @@ public class AbrechnungSEPAControl extends AbstractControl
         }
       };
       Application.getController().start(t);
+    }
+  }
+
+  public class RechnungListener implements Listener
+  {
+
+    RechnungListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      rechnungsformular.setEnabled((boolean) rechnung.getValue());
+      rechnungstext.setEnabled((boolean) rechnung.getValue());
+    }
+  }
+
+  public class ZusammenfassenListener implements Listener
+  {
+
+    ZusammenfassenListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      if ((boolean) sollbuchungenzusammenfassen.getValue())
+      {
+        kompakteabbuchung.setValue(true);
+      }
     }
   }
 }
