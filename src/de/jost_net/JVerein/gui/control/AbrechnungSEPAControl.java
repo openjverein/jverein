@@ -249,6 +249,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     kompakteabbuchung = new CheckboxInput(
         settings.getBoolean("kompakteabbuchung", false));
+    kompakteabbuchung.addListener(new KompaktListener());
     return kompakteabbuchung;
   }
   
@@ -575,6 +576,27 @@ public class AbrechnungSEPAControl extends AbstractControl
       if ((boolean) sollbuchungenzusammenfassen.getValue())
       {
         kompakteabbuchung.setValue(true);
+      }
+    }
+  }
+
+  public class KompaktListener implements Listener
+  {
+
+    KompaktListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      if (!(boolean) kompakteabbuchung.getValue())
+      {
+        sollbuchungenzusammenfassen.setValue(false);
       }
     }
   }
