@@ -367,8 +367,15 @@ public class SplitbuchungsContainer
 
       splitMap.put(key, betrag + sp.getBetrag().doubleValue());
       String zweck = splitZweckMap.get(key);
-      splitZweckMap.put(key,
-          zweck + ", " + sp.getZweck() + " " + sp.getBetrag());
+      if (zweck == null)
+      {
+        zweck = sp.getZweck() + " " + sp.getBetrag();
+      }
+      else
+      {
+        zweck = zweck + ", " + sp.getZweck() + " " + sp.getBetrag();
+      }
+      splitZweckMap.put(key, zweck);
     }
 
     boolean splitten = false;

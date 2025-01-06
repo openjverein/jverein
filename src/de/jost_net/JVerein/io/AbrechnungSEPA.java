@@ -212,6 +212,11 @@ public class AbrechnungSEPA
           if (!param.kompakteabbuchung && zahler.getZahlungsweg()
               .getKey() == Zahlungsweg.BASISLASTSCHRIFT)
           {
+            if (!zahler.getMitglied().getID().equals(zahler.getPersonId()))
+            {
+              zahler.setVerwendungszweck(zahler.getVerwendungszweck() + " "
+                  + zahler.getMitglied().getVorname());
+            }
             zahlerarray.add(zahler);
           }
         }
