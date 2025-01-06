@@ -1032,6 +1032,11 @@ public class BuchungsControl extends AbstractControl
     try
     {
       Konto konto = (Konto) getKonto(false).getValue();
+      if (konto == null)
+      {
+        throw new ApplicationException(
+            "Kein Konto Ausgewählt. Ggfs. erst unter Buchführung->Konten ein Konto anlegen.");
+      }
       settings.setAttribute(settingsprefix + "kontoid", konto.getID());
       return konto;
     }
