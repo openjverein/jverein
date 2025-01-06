@@ -44,7 +44,7 @@ public class AbrechnungSEPAView extends AbstractView
     {
       group.addLabelPair("Abrechnungsmonat", control.getAbrechnungsmonat());
     }
-    group.addLabelPair("Stichtag", control.getStichtag());
+    group.addLabelPair("Stichtag¹", control.getStichtag());
     group.addLabelPair("Von Eintrittsdatum", control.getVondatum());
     group.addLabelPair("Bis Austrittsdatum", control.getBisdatum());
     group.addLabelPair("Zahlungsgrund für Beiträge",
@@ -57,7 +57,7 @@ public class AbrechnungSEPAView extends AbstractView
     group.addLabelPair("Kursteilnehmer", control.getKursteilnehmer());
     group.addLabelPair("Kompakte Abbuchung", control.getKompakteAbbuchung());
     group.addLabelPair("Sollbuchungen zusammenfassen", control.getSollbuchungenZusammenfassen());
-    group.addLabelPair("Rechnungen erstellen", control.getRechnung());
+    group.addLabelPair("Rechnungen erstellen²", control.getRechnung());
     group.addLabelPair("Rechnung Formular", control.getRechnungFormular());
     group.addLabelPair("Rechnung Text", control.getRechnungstext());
     group.addLabelPair("SEPA-Datei drucken", control.getSEPAPrint());
@@ -69,7 +69,9 @@ public class AbrechnungSEPAView extends AbstractView
     group.addLabelPair("Abbuchungsausgabe", control.getAbbuchungsausgabe());
     group.addSeparator();
     group.addText(
-        "*) für die Berechnung, ob ein Mitglied bereits eingetreten oder ausgetreten ist. ",
+        "¹) Für die Berechnung, ob ein Mitglied bereits eingetreten oder ausgetreten ist. "
+            + "Und für Berechnung ob Zusatzbeträge fällig sind.\n"
+            + "²) Es wird für jede (zusammengefasste) Sollbuchung eine separate Rechnung erstellt.",
         true);
 
     ButtonArea buttons = new ButtonArea();

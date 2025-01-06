@@ -158,7 +158,6 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.stichtag = new DateInput(null, new JVDateFormatTTMMJJJJ());
     this.stichtag.setTitle("Stichtag für die Abrechnung");
     this.stichtag.setText("Bitte Stichtag für die Abrechnung wählen");
-    this.stichtag.setComment("*)");
     return stichtag;
   }
 
