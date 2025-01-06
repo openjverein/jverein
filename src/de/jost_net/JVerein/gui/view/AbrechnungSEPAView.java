@@ -55,9 +55,11 @@ public class AbrechnungSEPAView extends AbstractView
       control.getZusatzbetrag().setEnabled(false);
     }
     group.addLabelPair("Kursteilnehmer", control.getKursteilnehmer());
-    group.addLabelPair("Kompakte Abbuchung", control.getKompakteAbbuchung());
-    group.addLabelPair("Sollbuchungen zusammenfassen", control.getSollbuchungenZusammenfassen());
-    group.addLabelPair("Rechnungen erstellen²", control.getRechnung());
+    group.addLabelPair("Kompakte Abbuchung(en)",
+        control.getKompakteAbbuchung());
+    group.addLabelPair("Sollbuchung(en) zusammenfassen",
+        control.getSollbuchungenZusammenfassen());
+    group.addLabelPair("Rechnung(en) erstellen²", control.getRechnung());
     group.addLabelPair("Rechnung Formular", control.getRechnungFormular());
     group.addLabelPair("Rechnung Text", control.getRechnungstext());
     group.addLabelPair("SEPA-Datei drucken", control.getSEPAPrint());

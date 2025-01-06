@@ -82,7 +82,7 @@ public class RechnungNeuAction implements Action
       if (erstellt == 0)
       {
         GUI.getStatusBar().setErrorText("Keine Rechnung erstellt, alle " + skip
-            + " Sollbuchunge enthalten bereits Rechnungen.");
+            + " Sollbuchungen enthalten bereits Rechnungen.");
       }
       else {
         GUI.getStatusBar().setSuccessText(erstellt + " Rechnung(en) erstellt"

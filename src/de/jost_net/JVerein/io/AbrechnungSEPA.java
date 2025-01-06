@@ -294,69 +294,67 @@ public class AbrechnungSEPA
       }
     }
 
-    // Lastschriften erstellen
-    monitor.setStatusText("Lastschriften erstellen");
-    count = 0;
-    BigDecimal summelastschriften = BigDecimal.valueOf(0);
-    for (JVereinZahler zahler : zahlerarray)
+    if (zahlerarray.size() > 0)
     {
-      monitor.setPercentComplete(
-          (int) (count++ / (double) zahlerarray.size() * 100d));
-      summelastschriften = summelastschriften.add(zahler.getBetrag());
-      Lastschrift ls = getLastschrift(zahler, abrl);
-      ls.store();
-    }
-
-    // Gegenbuchung für die Sollbuchungen schreiben
-    if (!summelastschriften.equals(BigDecimal.valueOf(0)))
-    {
-      writeSollbuchung(Zahlungsweg.BASISLASTSCHRIFT, null, null,
-          param.faelligkeit, abrl, konto, param,
-          summelastschriften.doubleValue());
-    }
-
-    // Wenn keine Lastschriften vorhanden sind, wird kein File erzeugt.
-    if ((param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
-        && !zahlerarray.isEmpty())
-    {
-      writeSepaFile(param, lastschrift, zahlerarray);
-      monitor.log(String.format("SEPA-Datei %s geschrieben.",
-          param.sepafileRCUR.getAbsolutePath()));
-      param.setText(String.format(", SEPA-Datei %s geschrieben.",
-          param.sepafileRCUR.getAbsolutePath()));
-    }
-
-    // Wenn keine Buchungen vorhanden sind, wird nichts an Hibiscus übergeben.
-    if ((param.abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
-        && (zahlerarray.size() != 0))
-    {
-      buchenHibiscus(param, zahlerarray);
-      monitor.log("Hibiscus-Lastschrift erzeugt.");
-      param.setText(String.format(", Hibiscus-Lastschrift erzeugt."));
-    }
-
-    if (param.pdffileRCUR != null)
-    {
-      // Nur für die PDF-Erzeugung müssen die Zahler in der Lastschrift
-      // enthalten sein
-      for (JVereinZahler z : zahlerarray)
+      monitor.setStatusText("Lastschriften erstellen");
+      count = 0;
+      BigDecimal summelastschriften = BigDecimal.valueOf(0);
+      for (JVereinZahler zahler : zahlerarray)
       {
-        lastschrift.add(z);
+        monitor.setPercentComplete(
+            (int) (count++ / (double) zahlerarray.size() * 100d));
+        summelastschriften = summelastschriften.add(zahler.getBetrag());
+        Lastschrift ls = getLastschrift(zahler, abrl);
+        ls.store();
       }
-      // Das für die
-      // PDF-Erzeugung benötigte Datum wird erst in write gesetzt
-      File temp_file = Files.createTempFile("jv", ".xml").toFile();
-      lastschrift.write(temp_file);
-      temp_file.delete();
 
-      ausdruckenSEPA(lastschrift, param.pdffileRCUR);
+      // Gegenbuchung für die Sollbuchungen schreiben
+      if (!summelastschriften.equals(BigDecimal.valueOf(0)))
+      {
+        writeSollbuchung(Zahlungsweg.BASISLASTSCHRIFT, null, null,
+            param.faelligkeit, abrl, konto, param,
+            summelastschriften.doubleValue());
+      }
+
+      // Wenn keine Lastschriften vorhanden sind, wird kein File erzeugt.
+      if (param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
+      {
+        writeSepaFile(param, lastschrift, zahlerarray);
+        monitor.log(String.format("SEPA-Datei %s geschrieben.",
+            param.sepafileRCUR.getAbsolutePath()));
+        param.setText(String.format(", SEPA-Datei %s geschrieben.",
+            param.sepafileRCUR.getAbsolutePath()));
+      }
+
+      if (param.abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
+      {
+        buchenHibiscus(param, zahlerarray);
+        monitor.log("Hibiscus-Lastschrift erzeugt.");
+        param.setText(String.format(", Hibiscus-Lastschrift erzeugt."));
+      }
+
+      if (param.pdffileRCUR != null)
+      {
+        // Nur für die PDF-Erzeugung müssen die Zahler in der Lastschrift
+        // enthalten sein
+        for (JVereinZahler z : zahlerarray)
+        {
+          lastschrift.add(z);
+        }
+        // Das für die
+        // PDF-Erzeugung benötigte Datum wird erst in write gesetzt
+        File temp_file = Files.createTempFile("jv", ".xml").toFile();
+        lastschrift.write(temp_file);
+        temp_file.delete();
+
+        ausdruckenSEPA(lastschrift, param.pdffileRCUR);
+      }
     }
     monitor.setStatusText(counter + " abgerechnete Fälle");
   }
 
   private void abrechnenMitglieder(AbrechnungSEPAParam param,
-      ProgressMonitor monitor)
-      throws Exception
+      ProgressMonitor monitor) throws Exception
   {
     if (param.abbuchungsmodus != Abrechnungsmodi.KEINBEITRAG)
     {
@@ -502,8 +500,7 @@ public class AbrechnungSEPA
   }
 
   private JVereinZahler abrechnungMitgliederSub(AbrechnungSEPAParam param,
-      ProgressMonitor monitor, Mitglied m,
-      Beitragsgruppe bg, boolean primaer)
+      ProgressMonitor monitor, Mitglied m, Beitragsgruppe bg, boolean primaer)
       throws RemoteException, ApplicationException
   {
     Double betr = 0d;
@@ -545,10 +542,12 @@ public class AbrechnungSEPA
     {
       betr = m.getIndividuellerBeitrag();
     }
-    if ((betr == 0d) || !checkSEPA(mZahler, monitor))
+    if (betr == 0d)
     {
       return null;
     }
+    checkSEPA(mZahler, monitor);
+
     counter++;
 
     try
@@ -662,10 +661,11 @@ public class AbrechnungSEPA
           zahlungsweg = mZahler.getZahlungsweg();
         }
 
-        if (!checkSEPA(mZahler, monitor))
+        if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
         {
-          continue;
+          checkSEPA(mZahler, monitor);
         }
+
         counter++;
         String vzweck = z.getBuchungstext();
         boolean ohneLesefelder = !vzweck.contains(Einstellungen.LESEFELD_PRE);
@@ -1265,13 +1265,13 @@ public class AbrechnungSEPA
         Einstellungen.getEinstellung().getIban(), iban.getKonto()));
   }
 
-  private boolean checkSEPA(Mitglied m, ProgressMonitor monitor)
+  private void checkSEPA(Mitglied m, ProgressMonitor monitor)
       throws RemoteException, ApplicationException
   {
     if (m.getZahlungsweg() == null
         || m.getZahlungsweg() != Zahlungsweg.BASISLASTSCHRIFT)
     {
-      return true;
+      return;
     }
     Date letzte_lastschrift = m.getLetzteLastschrift();
     if (letzte_lastschrift != null
@@ -1289,7 +1289,6 @@ public class AbrechnungSEPA
       throw new ApplicationException(Adressaufbereitung.getNameVorname(m)
           + ": Kein Mandat-Datum vorhanden.");
     }
-    return true;
   }
 
 }
