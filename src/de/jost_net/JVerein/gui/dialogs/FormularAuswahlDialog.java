@@ -51,8 +51,8 @@ public class FormularAuswahlDialog extends AbstractDialog<Formular>
   {
     LabelGroup group = new LabelGroup(parent, "");
     group.addText(
-        "Bitte Formular für das für die\n"
-            + "Rechnungen verwendet werden soll auswählen.",
+        "Bitte Formular, das für die\n"
+            + "Rechnungen verwendet werden soll, auswählen.",
         true);
     formular = new FormularInput(FormularArt.RECHNUNG);
     group.addLabelPair("Formular", formular);

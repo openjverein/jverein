@@ -359,24 +359,16 @@ public class SplitbuchungsContainer
       }
       String key = sp.getBuchungsartId() + "-"
           + (sp.getBuchungsklasseId() != null ? sp.getBuchungsklasseId() : "");
-      Double betrag = splitMap.get(key);
+      Double betrag = splitMap.getOrDefault(key, 0d);
       if (sp.getBetrag().doubleValue() == 0)
       {
         continue;
       }
 
-      if (betrag == null)
-      {
-        splitMap.put(key, sp.getBetrag().doubleValue());
-        splitZweckMap.put(key, sp.getZweck() + " " + sp.getBetrag());
-      }
-      else
-      {
-        splitMap.replace(key, betrag + sp.getBetrag().doubleValue());
-        String zweck = splitZweckMap.get(key);
-        splitZweckMap.replace(key,
-            zweck + ", " + sp.getZweck() + " " + sp.getBetrag());
-      }
+      splitMap.put(key, betrag + sp.getBetrag().doubleValue());
+      String zweck = splitZweckMap.get(key);
+      splitZweckMap.put(key,
+          zweck + ", " + sp.getZweck() + " " + sp.getBetrag());
     }
 
     boolean splitten = false;
@@ -401,6 +393,7 @@ public class SplitbuchungsContainer
         Logger.error("Fehler beim Buchung-Sollbuchung-zuordnen-Dialog.", e);
       }
     }
+
     if (splitten)
     {
       boolean ersetzen = false;
@@ -419,7 +412,8 @@ public class SplitbuchungsContainer
       {
         buchung.setSplitTyp(SplitbuchungTyp.HAUPT);
       }
-      // Haupt- und Gegen-Buchungen können nicht gesplittet werden
+      // Haupt- und Gegen-Buchungen können nicht gesplittet werden.
+      // Das Zuweisen zu einer Sollbuchung macht keinen sinn, daher abbrechen.
       else if (buchung.getSplitTyp() == SplitbuchungTyp.GEGEN
           || buchung.getSplitTyp() == SplitbuchungTyp.HAUPT)
       {
@@ -431,7 +425,6 @@ public class SplitbuchungsContainer
         ersetzen = true;
       }
 
-      Iterator<Entry<String, Double>> iterator = splitMap.entrySet().iterator();
       SplitbuchungsContainer.init(buchung);
 
       if (ersetzen)
@@ -442,33 +435,22 @@ public class SplitbuchungsContainer
           {
             if (b.getSpendenbescheinigung() != null)
             {
-              YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-              dialog.setTitle("Spendenbescheinigung löschen");
-              dialog.setText(
-                  "Der Buchung ist eine Spendenbescheinigung zugeordnet.\n"
-                      + "Wenn die Buchung der Sollbuchung zugeordnet und gesplittet wir,\n"
-                      + "wird die Spendenbescheinigung gelöscht.\n"
-                      + "Fortfahren und Spendenbescheinigung löschen?");
-              try
-              {
-                if (!((Boolean) dialog.open()).booleanValue())
-                {
-                  return;
-                }
-              }
-              catch (Exception e)
-              {
-                Logger.error("Fehler beim Buchung-Sollbuchung-zuordnen-Dialog.",
-                    e);
-              }
+              Logger.error(
+                  "Splitbuchung ist einer Spendenbescheinigung zugeordnet, neu spliten nicht möglich.");
+              splitten = false;
+              break;
             }
             b.setDelete(true);
             break;
           }
         }
       }
+    }
+    if (splitten)
+    {
       boolean splitPositionZweck = new Settings(SplitbuchungsContainer.class)
           .getBoolean("splitPositionZweck", true);
+      Iterator<Entry<String, Double>> iterator = splitMap.entrySet().iterator();
       while (iterator.hasNext())
       {
         Entry<String, Double> entry = iterator.next();
@@ -479,7 +461,7 @@ public class SplitbuchungsContainer
         splitBuchung.setDatum(buchung.getDatum());
         splitBuchung.setKonto(buchung.getKonto());
         splitBuchung.setName(buchung.getName());
-        if(splitPositionZweck)
+        if (splitPositionZweck)
         {
           splitBuchung.setZweck(splitZweckMap.get(entry.getKey()));
         }
