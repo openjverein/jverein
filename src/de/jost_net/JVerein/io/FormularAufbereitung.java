@@ -730,7 +730,8 @@ public class FormularAufbereitung
       {
         invoice.addItem(new Item(
             new Product(sp.getZweck(), "", "LS",
-                new BigDecimal(sp.getSteuersatz()).setScale(2,
+                new BigDecimal(sp.getBuchungsart() == null ? 0
+                    : sp.getBuchungsart().getSteuersatz()).setScale(2,
                     RoundingMode.HALF_DOWN)),
             new BigDecimal(betrag * -1).setScale(2, RoundingMode.HALF_DOWN),
             new BigDecimal(-1.0)));

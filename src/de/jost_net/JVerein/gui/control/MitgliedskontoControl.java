@@ -531,7 +531,8 @@ public class MitgliedskontoControl extends DruckMailControl
     buchungList.addColumn("Zweck", "zweck");
     buchungList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    buchungList.addColumn("Steuersatz", "steuersatz");
+    // TODO Steuer muss überrbeitet werden
+    // buchungList.addColumn("Steuersatz", "steuersatz");
     buchungList.addColumn("Buchungsart", "buchungsart");
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
