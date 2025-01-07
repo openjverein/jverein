@@ -16,17 +16,34 @@ package de.jost_net.JVerein.rmi;
 import de.willuhn.datasource.rmi.DBObject;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 
-public interface Wirtschaftsplan extends DBObject
+public interface WirtschaftsplanItem extends DBObject
 {
   void setId(String id) throws RemoteException;
 
-  Date getDatumVon() throws RemoteException;
+  Long getWirtschaftsplanId() throws RemoteException;
 
-  void setDatumVon(Date date) throws RemoteException;
+  Wirtschaftsplan getWirtschaftsplan() throws RemoteException;
 
-  Date getDatumBis() throws RemoteException;
+  void setWirtschaftsplanId(Long wirtschaftsplanId) throws RemoteException;
 
-  void setDatumBis(Date date) throws RemoteException;
+  Long getBuchungsartId() throws RemoteException;
+
+  Buchungsart getBuchungsart() throws RemoteException;
+
+  void setBuchungsartId(Long buchungsartId) throws RemoteException;
+
+  Long getBuchungsklasseId() throws RemoteException;
+
+  Buchungsklasse getBuchungsklasse() throws RemoteException;
+
+  void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
+
+  String getPosten() throws RemoteException;
+
+  void setPosten(String posten) throws RemoteException;
+
+  double getSoll() throws RemoteException;
+
+  void setSoll(double soll) throws RemoteException;
 }
