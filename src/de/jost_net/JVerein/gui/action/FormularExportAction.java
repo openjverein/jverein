@@ -37,7 +37,7 @@ public class FormularExportAction implements Action
     try
     {
       ExportDialog d = new ExportDialog(new Object[] { context },
-          Formular.class, DokumentationUtil.KONTENRAHMEN);// TODO Doku erstellen
+          Formular.class, DokumentationUtil.FORMULARE);
       d.open();
     }
     catch (OperationCanceledException oce)

@@ -38,8 +38,7 @@ public class FormularImportAction implements Action
     try
     {
       ImportDialog d = new ImportDialog((GenericObject) context,
-          Formular.class, true, DokumentationUtil.KONTENRAHMEN);// TODO Doku
-                                                                // erstellen
+          Formular.class, true, DokumentationUtil.FORMULARE);
       d.open();
     }
     catch (OperationCanceledException oce)
