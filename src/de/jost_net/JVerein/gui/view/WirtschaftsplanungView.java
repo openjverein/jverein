@@ -1,10 +1,15 @@
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.WirtschaftsplanungNeuAction;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
+import de.jost_net.JVerein.gui.parts.WirtschaftsplanungDetailPart;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
