@@ -4,6 +4,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.OpenWirtschaftsplanungAction;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -27,6 +28,10 @@ public class WirtschaftsplanungControl extends AbstractControl
   private de.willuhn.jameica.system.Settings settings;
 
   private TablePart wirtschaftsplaene;
+
+  private TablePart einnahmen;
+
+  private TablePart ausgaben;
 
   /**
    * Erzeugt einen neuen AbstractControl der fuer die angegebene View.
@@ -141,5 +146,28 @@ public class WirtschaftsplanungControl extends AbstractControl
       return (WirtschaftsplanungZeile) getCurrentObject();
     }
     return null;
+  }
+
+  public TablePart getEinnahmen() throws RemoteException
+  {
+    WirtschaftsplanungZeile zeile = getWirtschaftsplanungZeile();
+
+    if (zeile == null) {
+      return null;
+    }
+
+    if (einnahmen == null) {
+      einnahmen = new TablePart(null);
+    }
+
+    einnahmen.removeAll();
+
+    DBService service = Einstellungen.getDBService();
+    String sql = "SELECT buchungsart, betrag FROM wirtschaftsplanung WHERE geschaeftsjahr = ?";
+    service.execute(sql, new Object[] {zeile.getGeschaeftsjahr()}, null);
+
+    //TODO
+
+    return einnahmen;
   }
 }
