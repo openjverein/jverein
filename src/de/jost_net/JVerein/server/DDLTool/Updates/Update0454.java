@@ -34,7 +34,7 @@ public class Update0454 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute(addColumn("einstellung",
-        new Column("wirtschaftsplan", COLTYPE.BOOLEAN, 0, null, false, false)));
+        new Column("wirtschaftsplanung", COLTYPE.BOOLEAN, 0, null, false, false)));
 
     Table wirtschaftsplan = new Table("wirtschaftsplan");
     Column id = new Column("id", COLTYPE.BIGINT, 4, null, true, false);
@@ -64,6 +64,8 @@ public class Update0454 extends AbstractDDLUpdate
         new Column("posten", COLTYPE.VARCHAR, 40, null, true, false));
     wirtschaftsplanItem.add(
         new Column("soll", COLTYPE.DOUBLE, 10, null, true, false));
+
+    execute(createTable(wirtschaftsplanItem));
 
     Index idx = new Index("ix_wirtschaftsplanitem", false);
     idx.add(wirtschaftsplanCol);

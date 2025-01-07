@@ -33,7 +33,7 @@ public class WirtschaftsplanungView extends AbstractView
     if (! (this.getCurrentObject() instanceof WirtschaftsplanungZeile)) {
       throw new ApplicationException("Fehler beim Anzeigen des Wirtschaftsplans!");
     }
-    GUI.getView().setTitle("Wirtschaftsplanung " + ((WirtschaftsplanungZeile) this.getCurrentObject()).getGeschaeftsjahr());
+    GUI.getView().setTitle("Wirtschaftsplanung vom " + ((WirtschaftsplanungZeile) this.getCurrentObject()).getVon() + " bis " + ((WirtschaftsplanungZeile) this.getCurrentObject()).getBis());
 
     final WirtschaftsplanungControl control = new WirtschaftsplanungControl(this);
 

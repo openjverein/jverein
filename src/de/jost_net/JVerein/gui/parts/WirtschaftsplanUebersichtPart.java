@@ -2,7 +2,9 @@ package de.jost_net.JVerein.gui.parts;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -29,7 +31,10 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     SimpleContainer einnahmen = new SimpleContainer(columns.getComposite());
 
-    DecimalInput sollEinnahme = new DecimalInput(control.getWirtschaftsplanungZeile().getPlanEinnahme(), Einstellungen.DECIMALFORMAT);;
+    DateInput von = new DateInput(control.getWirtschaftsplanungZeile().getVon(), new JVDateFormatTTMMJJJJ());
+    von.disable();
+    einnahmen.addLabelPair("Von", von);
+    DecimalInput sollEinnahme = new DecimalInput(control.getWirtschaftsplanungZeile().getPlanEinnahme(), Einstellungen.DECIMALFORMAT);
     sollEinnahme.disable();
     einnahmen.addLabelPair("Einnahmen Soll", sollEinnahme);
     DecimalInput istEinnahme = new DecimalInput(control.getWirtschaftsplanungZeile().getIstEinnahme(), Einstellungen.DECIMALFORMAT);
@@ -38,6 +43,9 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     SimpleContainer ausgaben = new SimpleContainer(columns.getComposite());
 
+    DateInput bis = new DateInput(control.getWirtschaftsplanungZeile().getBis(), new JVDateFormatTTMMJJJJ());
+    bis.disable();
+    ausgaben.addLabelPair("Bis", bis);
     DecimalInput sollAusgaben = new DecimalInput(control.getWirtschaftsplanungZeile().getPlanAusgabe(), Einstellungen.DECIMALFORMAT);
     sollAusgaben.disable();
     ausgaben.addLabelPair("Ausgaben Soll", sollAusgaben);

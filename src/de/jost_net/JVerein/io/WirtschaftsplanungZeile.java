@@ -3,11 +3,16 @@ package de.jost_net.JVerein.io;
 import de.willuhn.datasource.GenericObject;
 
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.Objects;
 
 public class WirtschaftsplanungZeile implements GenericObject
 {
-  private Integer geschaeftsjahr;
+  private final Long id;
+
+  private Date von;
+
+  private Date bis;
 
   private Double planEinnahme;
 
@@ -17,9 +22,11 @@ public class WirtschaftsplanungZeile implements GenericObject
 
   private Double istAusgabe;
 
-  public WirtschaftsplanungZeile(Integer geschaeftsjahr)
+  public WirtschaftsplanungZeile(Long id, Date von, Date bis)
   {
-    this.geschaeftsjahr = geschaeftsjahr;
+    this.id = id;
+    this.von = von;
+    this.bis = bis;
     this.planEinnahme = 0.;
     this.planAusgabe = 0.;
     this.istAusgabe = 0.;
@@ -34,8 +41,12 @@ public class WirtschaftsplanungZeile implements GenericObject
 
     switch (s)
     {
-      case "geschaeftsjahr":
-        return geschaeftsjahr;
+      case "id":
+        return id;
+      case "datum_von":
+        return von;
+      case "datum_bis":
+        return bis;
       case "planEinnahme":
         return planEinnahme;
       case "planAusgabe":
@@ -59,44 +70,63 @@ public class WirtschaftsplanungZeile implements GenericObject
   @Override
   public String[] getAttributeNames() throws RemoteException
   {
-    return new String[] {"geschaeftsjahr", "planEinnahme", "planAusgabe", "istEinnahme", "istAusgabe", "planSaldo", "istSaldo", "differenz"};
+    return new String[] { "id", "datum_von", "datum_bis", "planEinnahme", "planAusgabe",
+        "istEinnahme", "istAusgabe", "planSaldo", "istSaldo", "differenz" };
   }
 
   @Override
   public String getID() throws RemoteException
   {
-    return geschaeftsjahr.toString();
+    return id.toString();
   }
 
   @Override
   public String getPrimaryAttribute() throws RemoteException
   {
-    return "geschaeftsjahr";
+    return "id";
   }
 
   @Override
-  public boolean equals(GenericObject genericObject) throws RemoteException
+  public boolean equals(GenericObject o)
   {
-    if (genericObject instanceof WirtschaftsplanungZeile) {
-      return this.getID().equals(genericObject.getID());
-    }
-    return false;
+    if (this == o)
+      return true;
+    if (!(o instanceof WirtschaftsplanungZeile))
+      return false;
+    WirtschaftsplanungZeile zeile = (WirtschaftsplanungZeile) o;
+    return getId().equals(zeile.getId()) && getVon().equals(
+        zeile.getVon()) && getBis().equals(zeile.getBis());
   }
 
   @Override
   public int hashCode()
   {
-    return Objects.hash(geschaeftsjahr);
+    return Objects.hash(getId(), getVon(), getBis());
   }
 
-  public Integer getGeschaeftsjahr()
+  public Long getId()
   {
-    return geschaeftsjahr;
+    return id;
   }
 
-  public void setGeschaeftsjahr(Integer geschaeftsjahr)
+  public Date getVon()
   {
-    this.geschaeftsjahr = geschaeftsjahr;
+    return von;
+  }
+
+  public void setVon(Date von)
+  {
+    this.von = von;
+  }
+
+  public Date getBis()
+  {
+    return bis;
+  }
+
+  public void setBis(Date bis)
+  {
+    this.bis = bis;
   }
 
   public Double getPlanEinnahme()

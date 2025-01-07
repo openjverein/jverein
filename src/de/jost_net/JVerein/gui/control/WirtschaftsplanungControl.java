@@ -4,21 +4,16 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.OpenWirtschaftsplanungAction;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.keys.Kontoart;
-import de.willuhn.datasource.rmi.DBIterator;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
-import de.willuhn.jameica.gui.formatter.Formatter;
-import de.willuhn.jameica.gui.input.DecimalInput;
-import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.util.ApplicationException;
 
 import java.rmi.RemoteException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,24 +45,29 @@ public class WirtschaftsplanungControl extends AbstractControl
   {
     DBService service = Einstellungen.getDBService();
 
-    String sql = "SELECT geschaeftsjahr, SUM(betrag) FROM wirtschaftsplanung, buchungsart WHERE wirtschaftsplanung.buchungsart = buchungsart.id AND buchungsart.art = ? GROUP BY geschaeftsjahr";
+    String sql = "SELECT wirtschaftsplan.id, wirtschaftsplan.datum_von, wirtschaftsplan.datum_bis, SUM(wirtschaftsplanitem.soll) " +
+        "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart " +
+        "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " +
+        "AND wirtschaftsplanitem.buchungsart = buchungsart.id " +
+        "AND buchungsart.art = ? " +
+        "GROUP BY wirtschaftsplan.id, wirtschaftsplan.datum_von, wirtschaftsplan.datum_bis";
 
-    Map<Integer, WirtschaftsplanungZeile> zeileMap = new HashMap<>();
+    Map<Long, WirtschaftsplanungZeile> zeileMap = new HashMap<>();
 
     service.execute(sql, new Object[] { 0 }, resultSet -> {
       while (resultSet.next())
       {
-        if (zeileMap.containsKey(resultSet.getInt(1)))
+        if (zeileMap.containsKey(resultSet.getLong(1)))
         {
-          zeileMap.get(resultSet.getInt(1))
-              .setPlanEinnahme(resultSet.getDouble(2));
+          zeileMap.get(resultSet.getLong(1))
+              .setPlanEinnahme(resultSet.getDouble(4));
         }
         else
         {
           WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
-              resultSet.getInt(1));
-          zeile.setPlanEinnahme(resultSet.getDouble(2));
-          zeileMap.put(resultSet.getInt(1), zeile);
+              resultSet.getLong(1), resultSet.getDate(2), resultSet.getDate(3));
+          zeile.setPlanEinnahme(resultSet.getDouble(4));
+          zeileMap.put(resultSet.getLong(1), zeile);
         }
       }
       return resultSet;
@@ -76,32 +76,40 @@ public class WirtschaftsplanungControl extends AbstractControl
     service.execute(sql, new Object[] { 1 }, resultSet -> {
       while (resultSet.next())
       {
-        if (zeileMap.containsKey(resultSet.getInt(1)))
+        if (zeileMap.containsKey(resultSet.getLong(1)))
         {
-          zeileMap.get(resultSet.getInt(1))
-              .setPlanAusgabe(resultSet.getDouble(2));
+          zeileMap.get(resultSet.getLong(1))
+              .setPlanAusgabe(resultSet.getDouble(4));
         }
         else
         {
           WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
-              resultSet.getInt(1));
-          zeile.setPlanAusgabe(resultSet.getDouble(2));
-          zeileMap.put(resultSet.getInt(1), zeile);
+              resultSet.getLong(1), resultSet.getDate(2), resultSet.getDate(3));
+          zeile.setPlanAusgabe(resultSet.getDouble(4));
+          zeileMap.put(resultSet.getLong(1), zeile);
         }
       }
       return resultSet;
     });
 
-    String startGJ = Einstellungen.getEinstellung().getBeginnGeschaeftsjahr();
-    sql = "WITH buchung_mit_gj AS ( " + "SELECT buchung.*, CASE WHEN datum >= TO_DATE( ? || EXTRACT(YEAR FROM datum), 'DD.MM.YYYY') THEN " + "EXTRACT(YEAR FROM datum) ELSE EXTRACT(YEAR FROM datum) - 1 " + "END AS geschaeftsjahr " + "FROM buchung " + ") SELECT buchung_mit_gj.geschaeftsjahr, SUM(buchung_mit_gj.betrag) AS ist " + "FROM buchung_mit_gj, wirtschaftsplanung, buchungsart, konto " + "WHERE buchung_mit_gj.geschaeftsjahr = wirtschaftsplanung.geschaeftsjahr " + "AND buchung_mit_gj.buchungsart = buchungsart.id " + "AND buchung_mit_gj.konto = konto.id " + "AND buchungsart.art = ? " + "AND konto.kontoart < ? " + "GROUP BY buchung_mit_gj.geschaeftsjahr";
+    sql = "SELECT wirtschaftsplan.id, SUM(buchung.betrag) AS ist " +
+        "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart, buchung, konto " +
+        "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " +
+        "AND buchung.buchungsart = buchungsart.id " +
+        "AND buchung.konto = konto.id " +
+        "AND buchung.datum >= wirtschaftsplan.datum_von " +
+        "AND buchung.datum <= wirtschaftsplan.datum_bis " +
+        "AND buchungsart.art = ? " +
+        "AND konto.kontoart < ? " +
+        "GROUP BY wirtschaftsplan.id";
 
-    service.execute(sql, new Object[] { startGJ, 0, Kontoart.LIMIT.getKey() },
+    service.execute(sql, new Object[] { 0, Kontoart.LIMIT.getKey() },
         resultSet -> {
           while (resultSet.next())
           {
-            if (zeileMap.containsKey(resultSet.getInt(1)))
+            if (zeileMap.containsKey(resultSet.getLong(1)))
             {
-              zeileMap.get(resultSet.getInt(1))
+              zeileMap.get(resultSet.getLong(1))
                   .setIstEinnahme(resultSet.getDouble(2));
             }
           }
@@ -109,13 +117,13 @@ public class WirtschaftsplanungControl extends AbstractControl
           return resultSet;
         });
 
-    service.execute(sql, new Object[] { startGJ, 1, Kontoart.LIMIT.getKey() },
+    service.execute(sql, new Object[] { 1, Kontoart.LIMIT.getKey() },
         resultSet -> {
           while (resultSet.next())
           {
-            if (zeileMap.containsKey(resultSet.getInt(1)))
+            if (zeileMap.containsKey(resultSet.getLong(1)))
             {
-              zeileMap.get(resultSet.getInt(1))
+              zeileMap.get(resultSet.getLong(1))
                   .setIstAusgabe(resultSet.getDouble(2));
             }
           }
@@ -127,8 +135,11 @@ public class WirtschaftsplanungControl extends AbstractControl
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
+    DateFormatter dateFormatter = new DateFormatter(new JVDateFormatTTMMJJJJ());
 
-    wirtschaftsplaene.addColumn("Geschäftsjahr", "geschaeftsjahr");
+    wirtschaftsplaene.addColumn("ID", "id");
+    wirtschaftsplaene.addColumn("Von", "datum_von", dateFormatter);
+    wirtschaftsplaene.addColumn("Bis", "datum_bis", dateFormatter);
     wirtschaftsplaene.addColumn("Einnahmen Soll", "planEinnahme", formatter);
     wirtschaftsplaene.addColumn("Ausgaben Soll", "planAusgabe", formatter);
     wirtschaftsplaene.addColumn("Saldo Soll", "planSaldo", formatter);
@@ -163,8 +174,8 @@ public class WirtschaftsplanungControl extends AbstractControl
     einnahmen.removeAll();
 
     DBService service = Einstellungen.getDBService();
-    String sql = "SELECT buchungsart, betrag FROM wirtschaftsplanung WHERE geschaeftsjahr = ?";
-    service.execute(sql, new Object[] {zeile.getGeschaeftsjahr()}, null);
+    String sql = "SELECT buchungsart, betrag FROM wirtschaftsplanitem WHERE wirtschaftsplan = ?";
+    service.execute(sql, new Object[] {zeile.getID()}, null);
 
     //TODO
 
