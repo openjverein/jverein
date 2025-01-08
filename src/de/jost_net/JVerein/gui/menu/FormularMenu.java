@@ -21,12 +21,10 @@ import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
 import de.jost_net.JVerein.gui.action.FormularDeleteAction;
 import de.jost_net.JVerein.gui.action.FormularDuplizierenAction;
 import de.jost_net.JVerein.gui.action.FormularExportAction;
-import de.jost_net.JVerein.gui.action.FormularImportAction;
 import de.jost_net.JVerein.gui.control.FormularControl;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 /**
  * Kontext-Menu zu den Formularen.
@@ -52,7 +50,5 @@ public class FormularMenu extends ContextMenu
     addItem(
         new CheckedContextMenuItem("Exportieren",
             new FormularExportAction(), "document-save.png"));
-    addItem(new ContextMenuItem("Importieren", new FormularImportAction(),
-        "file-import.png"));
   }
 }
