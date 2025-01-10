@@ -340,16 +340,16 @@ public class SplitbuchungsContainer
 
   /**
    * Splittet eine Buchung anhand der in der Sollbuchung enthaltenen
-   * Sollbuchungspositionen
+   * Sollbuchungspositionen.
    * 
    * @param Buchung
-   *          die zu splittende Buchung.
+   *          die zu splittende Buchung
    * @param Mitgliedskonto
-   *          die Sollbuchung die der Buchung zugewiesen werden soll
+   *          die Sollbuchung, die der Buchung zugewiesen werden soll
    * @param immerSpliten
    *          auch bei nur einer Sollbuchungsposition splitten
    * @return Wenn die Beträge von Sollbuchung und Buchung verschieden sind, wird
-   *         die erzeugte Rest-Buchung zurückgegeben, sonst null
+   *         die erzeugte Restbuchung zurückgegeben, sonst <code>null</code>.
    */
   public static Buchung autoSplit(Buchung buchung, Mitgliedskonto mk,
       boolean immerSplitten)
