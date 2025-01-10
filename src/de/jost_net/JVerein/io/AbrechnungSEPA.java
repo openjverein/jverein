@@ -1238,7 +1238,7 @@ public class AbrechnungSEPA
       if (mk != null)
       {
         // Buchungen automatisch splitten
-        SplitbuchungsContainer.autoSplit(buchung, mk);
+        SplitbuchungsContainer.autoSplit(buchung, mk, false);
       }
     }
     return zweck;

@@ -21,6 +21,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
+import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -28,6 +29,7 @@ import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -121,16 +123,86 @@ public class BuchungSollbuchungZuordnungAction implements Action
           }
         }
 
-        if (b.length == 1)
+        if (open instanceof Mitgliedskonto[])
         {
-          SplitbuchungsContainer.autoSplit(b[0], mk);
+          if (b.length > 1)
+          {
+            throw new ApplicationException(
+                "Mehrere Buchungen mehreren Sollbuchungen zuordnen nicht möglich!");
+          }
+
+          b[0].transactionBegin();
+          Mitgliedskonto[] mks = (Mitgliedskonto[]) open;
+          mk = mks[0];
+          Buchung buchung = b[0];
+
+          double summe = 0d;
+          for (Mitgliedskonto m : mks)
+          {
+            summe += m.getBetrag();
+          }
+          if (buchung.getBetrag() != summe)
+          {
+            YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+            dialog.setTitle("Buchung splitten");
+            dialog.setText(
+                "Die Summe der Sollbuchungen entspricht nicht dem Betrag der Buchung.\n"
+                    + "Soll die Buchung trotzdem anhand der Sollbuchungspositionen\n"
+                    + "gesplittet und eine Restbuchung erzeugt werden?");
+            if (!((Boolean) dialog.open()).booleanValue())
+            {
+              throw new OperationCanceledException();
+            }
+          }
+          try
+          {
+            for (Mitgliedskonto m : mks)
+            {
+              if (buchung == null)
+              {
+                // Wenn keine Restbuchung existiert muss eine neue erstellt
+                // werden
+                buchung = (Buchung) Einstellungen.getDBService()
+                    .createObject(Buchung.class, null);
+
+                buchung.setBetrag(0);
+                buchung.setDatum(b[0].getDatum());
+                buchung.setKonto(b[0].getKonto());
+                buchung.setName(b[0].getName());
+                buchung.setZweck(b[0].getZweck());
+                buchung.setSplitTyp(SplitbuchungTyp.SPLIT);
+                buchung.setSplitId(b[0].getSplitId());
+                buchung.setBuchungsartId(b[0].getBuchungsartId());
+                buchung.setBuchungsklasseId(b[0].getBuchungsklasseId());
+
+                SplitbuchungsContainer.init(b[0]);
+                SplitbuchungsContainer.add(buchung);
+                SplitbuchungsContainer.store();
+              }
+              buchung = SplitbuchungsContainer.autoSplit(buchung, m, true);
+            }
+            b[0].transactionCommit();
+          }
+          catch (Exception e)
+          {
+            b[0].transactionRollback();
+            Logger.error("Fehler", e);
+            throw new ApplicationException("Fehler beim Splitten der Buchung.");
+          }
         }
         else
         {
-          for (Buchung buchung : b)
+          if (b.length == 1)
           {
-            buchung.setMitgliedskonto(mk);
-            buchung.store();
+            SplitbuchungsContainer.autoSplit(b[0], mk, false);
+          }
+          else
+          {
+            for (Buchung buchung : b)
+            {
+              buchung.setMitgliedskonto(mk);
+              buchung.store();
+            }
           }
         }
         control.getBuchungsList();

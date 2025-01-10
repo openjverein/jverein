@@ -130,7 +130,7 @@ public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<
       {
         Mitgliedskonto mk = dao.getMitgliedskonto();
         Buchung buchung = dao.getBuchung();
-        SplitbuchungsContainer.autoSplit(buchung, mk);
+        SplitbuchungsContainer.autoSplit(buchung, mk, false);
       }
 
       //Darstellung aktualisieren
