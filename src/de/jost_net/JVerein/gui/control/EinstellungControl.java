@@ -1381,7 +1381,7 @@ public class EinstellungControl extends AbstractControl
     return ct1sepaversion;
   }
 
-  public DialogInput getVerechnungskonto() throws RemoteException
+  public DialogInput getVerrechnungskonto() throws RemoteException
   {
     if (verrechnungskonto != null)
     {

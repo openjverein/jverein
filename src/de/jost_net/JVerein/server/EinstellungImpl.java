@@ -41,6 +41,7 @@ import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.HBCI;
+import de.willuhn.jameica.hbci.rmi.Konto;
 import de.willuhn.jameica.security.Wallet;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.Settings;
@@ -433,7 +434,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
 
   @Override
-  public de.willuhn.jameica.hbci.rmi.Konto getHibiscusKonto()
+  public Konto getHibiscusKonto()
       throws RemoteException
   {
     try
@@ -441,13 +442,12 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
       // DB-Service holen
       DBService service = (DBService) Application.getServiceFactory()
           .lookup(HBCI.class, "database");
-      DBIterator<de.willuhn.jameica.hbci.rmi.Konto> konten = service
-          .createList(de.willuhn.jameica.hbci.rmi.Konto.class);
+      DBIterator<Konto> konten = service.createList(Konto.class);
       konten.addFilter("iban = ?", Einstellungen.getEinstellung().getIban());
       Logger.debug("Vereinskonto: " + Einstellungen.getEinstellung().getIban());
       if (konten.hasNext())
       {
-        return (de.willuhn.jameica.hbci.rmi.Konto) konten.next();
+        return (Konto) konten.next();
       }
       else
       {
