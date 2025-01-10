@@ -22,7 +22,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 
 public class EinstellungenRechnungenView extends AbstractView
@@ -43,21 +42,21 @@ public class EinstellungenRechnungenView extends AbstractView
     cont.addLabelPair("Text Bar", control.getRechnungTextBar());
     cont.addLabelPair("Länge Rechnungsnummer", control.getZaehlerLaenge());
 
-    LabelGroup group = new LabelGroup(getParent(), "QR-Code");
-    group.addLabelPair("Kantenlänge QR-Code", control.getQRCodeSizeInMm());
-    group.addLabelPair("Verwendungszweck", control.getQRCodeVerwendungszweck());
-    group.addLabelPair("Verwendungszweck hinzufügen",
+    cont.addHeadline("QR-Code");
+    cont.addLabelPair("Kantenlänge QR-Code", control.getQRCodeSizeInMm());
+    cont.addLabelPair("Verwendungszweck", control.getQRCodeVerwendungszweck());
+    cont.addLabelPair("Verwendungszweck hinzufügen",
         control.getQRCodePrintVerwendungszweck());
-    group.addLabelPair("Bei einzelner Position Verwendungszweck ersetzen",
+    cont.addLabelPair("Bei einzelner Position Verwendungszweck ersetzen",
         control.getQRCodeSingle());
-    group.addLabelPair("Rechnungsdatum in QR-Code", control.getQRCodeReDa());
-    group.addLabelPair("Rechnungsnummer in QR-Code", control.getQRCodeReNr());
-    group.addLabelPair("Mitgliedsnummer in QR-Code",
+    cont.addLabelPair("Rechnungsdatum in QR-Code", control.getQRCodeReDa());
+    cont.addLabelPair("Rechnungsnummer in QR-Code", control.getQRCodeReNr());
+    cont.addLabelPair("Mitgliedsnummer in QR-Code",
         control.getQRCodeMemberNr());
-    group.addLabelPair("Information an Mitglied in QR-Code",
+    cont.addLabelPair("Information an Mitglied in QR-Code",
         control.getQRCodeInfoToMember());
-    group.addLabelPair("Texte in QR-Code kürzen", control.getQRCodeKuerzen());
-    group.addLabelPair("Beschreibungstext für QR-Code",
+    cont.addLabelPair("Texte in QR-Code kürzen", control.getQRCodeKuerzen());
+    cont.addLabelPair("Beschreibungstext für QR-Code",
         control.getQRCodeIntro());
 
     ButtonArea buttons = new ButtonArea();
