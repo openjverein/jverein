@@ -965,10 +965,11 @@ public class BuchungsControl extends AbstractControl
               break;
           }
           
+          b_steuer.setMitgliedskontoID(b.getMitgliedskontoID());
           b_steuer.setBuchungsartId(Long.valueOf(b_art.getSteuerBuchungsart().getID()));
           b_steuer.setBuchungsklasseId(b_art.getBuchungsklasseId());
           b_steuer.setBetrag(steuer.doubleValue());
-          b_steuer.setZweck(b.getZweck() + zweck_postfix);          
+          b_steuer.setZweck(b.getZweck() + zweck_postfix);
           b_steuer.setSplitId(b.getSplitId());
           b_steuer.setSplitTyp(SplitbuchungTyp.SPLIT);
           

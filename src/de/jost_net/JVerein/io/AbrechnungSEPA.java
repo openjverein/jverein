@@ -1025,8 +1025,15 @@ public class AbrechnungSEPA
     SollbuchungPosition sp = Einstellungen.getDBService()
         .createObject(SollbuchungPosition.class, null);
     sp.setBetrag(zahler.getBetrag().doubleValue());
-    sp.setSteuersatz(0d);
     sp.setBuchungsartId(zahler.getBuchungsartId());
+    if (zahler.getBuchungsartId() != null)
+    {
+      sp.setSteuersatz(sp.getBuchungsart().getSteuersatz());
+    }
+    else
+    {
+      sp.setSteuersatz(0d);
+    }
     sp.setBuchungsklasseId(zahler.getBuchungsklasseId());
     sp.setDatum(zahler.getDatum());
     sp.setZweck(zahler.getVerwendungszweckOrig());

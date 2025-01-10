@@ -83,11 +83,11 @@ public class RechnungNeuAction implements Action
       {
         GUI.getStatusBar().setErrorText("Keine Rechnung erstellt, alle " + skip
             + " Sollbuchungen enthalten bereits Rechnungen.");
-        GUI.getCurrentView().reload();
       }
       else {
         GUI.getStatusBar().setSuccessText(erstellt + " Rechnung(en) erstellt"
             + (skip > 0 ? ", " + skip + " vorhandene übersprungen." : "."));
+        GUI.getCurrentView().reload();
       }
     }
     catch (Exception e)
