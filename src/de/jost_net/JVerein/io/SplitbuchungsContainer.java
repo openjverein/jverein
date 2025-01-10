@@ -339,7 +339,7 @@ public class SplitbuchungsContainer
   }
 
   /**
-   * Splittet eine Buchung anhand der in der SOllbuchung enthaltenen
+   * Splittet eine Buchung anhand der in der Sollbuchung enthaltenen
    * Sollbuchungspositionen
    * 
    * @param Buchung
@@ -348,8 +348,8 @@ public class SplitbuchungsContainer
    *          die Sollbuchung die der Buchung zugewiesen werden soll
    * @param immerSpliten
    *          auch bei nur einer Sollbuchungsposition splitten
-   * @return Wenn die Beträge von Sollbuchung und Buchung verschieden sind wird
-   *         die erzeugte restBuchung zurückgegeben, sonst null
+   * @return Wenn die Beträge von Sollbuchung und Buchung verschieden sind, wird
+   *         die erzeugte Rest-Buchung zurückgegeben, sonst null
    */
   public static Buchung autoSplit(Buchung buchung, Mitgliedskonto mk,
       boolean immerSplitten)
@@ -460,9 +460,9 @@ public class SplitbuchungsContainer
               if (b.getSpendenbescheinigung() != null)
               {
                 Logger.error(
-                    "Splitbuchung ist einer Spendenbescheinigung zugeordnet, neu spliten nicht möglich.");
+                    "Splitbuchung ist einer Spendenbescheinigung zugeordnet, neu splitten nicht möglich.");
                 throw new ApplicationException(
-                    "Splitbuchung ist einer Spendenbescheinigung zugeordnet, neu spliten nicht möglich.");
+                    "Splitbuchung ist einer Spendenbescheinigung zugeordnet, neu splitten nicht möglich.");
               }
               b.setDelete(true);
               break;

@@ -78,7 +78,7 @@ public class SollbuchungListeView extends AbstractView
     buttons.addButton(new Button("Export",
         new SollbuchungExportAction(EXPORT_TYP.MITGLIEDSKONTO), control, false,
         "document-save.png"));
-    // TODO das Bearbeiten der Sollbucuhgen muss noch überarbeitet werden
+    // TODO das Bearbeiten der Sollbuchungen muss noch überarbeitet werden
     // buttons.addButton("Neu", new SollbuchungEditAction(), control, false,
     // "document-new.png");
     buttons.paint(this.getParent());

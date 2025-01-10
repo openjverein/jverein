@@ -45,7 +45,7 @@ public class MitgliedskontoMenu extends ContextMenu
    */
   public MitgliedskontoMenu()
   {
-    // TODO Das mauelle erstellen von SOllbucuhgen muss überarbeitet werden
+    // TODO Das mauelle erstellen von Sollbuchungen muss überarbeitet werden
     // addItem(new MitgliedItem("Neue Sollbuchung",
     // new SollbuchungNeuAction(), "document-new.png"));
     addItem(new SollItem("Sollbuchung bearbeiten",
