@@ -22,27 +22,25 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import de.jost_net.JVerein.util.Datum;
-import de.jost_net.JVerein.util.VonBis;
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
-
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.io.JubilaeenParser;
+import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.Beitragsmodel;
-import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.util.Datum;
+import de.jost_net.JVerein.util.VonBis;
+import de.jost_net.OBanToo.SEPA.IBAN;
+import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.HBCI;
-import de.willuhn.jameica.hbci.rmi.Konto;
 import de.willuhn.jameica.security.Wallet;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.Settings;
@@ -435,19 +433,21 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
 
   @Override
-  public Konto getHibiscusKonto() throws RemoteException
+  public de.willuhn.jameica.hbci.rmi.Konto getHibiscusKonto()
+      throws RemoteException
   {
     try
     {
       // DB-Service holen
       DBService service = (DBService) Application.getServiceFactory()
           .lookup(HBCI.class, "database");
-      DBIterator<Konto> konten = service.createList(Konto.class);
+      DBIterator<de.willuhn.jameica.hbci.rmi.Konto> konten = service
+          .createList(de.willuhn.jameica.hbci.rmi.Konto.class);
       konten.addFilter("iban = ?", Einstellungen.getEinstellung().getIban());
       Logger.debug("Vereinskonto: " + Einstellungen.getEinstellung().getIban());
       if (konten.hasNext())
       {
-        return (Konto) konten.next();
+        return (de.willuhn.jameica.hbci.rmi.Konto) konten.next();
       }
       else
       {
@@ -2196,5 +2196,17 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
       throws RemoteException
   {
     setAttribute("mittelverwendung", mittelverwendung);
+  }
+
+  @Override
+  public Long getVerrechnungskonto() throws RemoteException
+  {
+    return (Long) getAttribute("verrechnungskonto");
+  }
+
+  @Override
+  public void setVerrechnungskonto(Long konto) throws RemoteException
+  {
+    setAttribute("verrechnungskonto", konto);
   }
 }

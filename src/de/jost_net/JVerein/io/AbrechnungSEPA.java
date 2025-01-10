@@ -936,32 +936,21 @@ public class AbrechnungSEPA
     }
   }
 
-  /**
-   * Ist das Abbuchungskonto in der Buchführung eingerichtet?
-   *
-   * @throws SEPAException
-   */
-  private Konto getKonto()
-      throws ApplicationException, RemoteException, SEPAException
+  private Konto getKonto() throws RemoteException, ApplicationException
   {
-    // Variante 1: IBAN
-    DBIterator<Konto> it = Einstellungen.getDBService().createList(Konto.class);
-    it.addFilter("nummer = ?", Einstellungen.getEinstellung().getIban());
-    if (it.size() == 1)
+    if (Einstellungen.getEinstellung().getVerrechnungskonto() == null)
     {
-      return it.next();
+      throw new ApplicationException(
+          "Verrechnungskonto nicht gesetzt. Unter Abminstration->Einstellungen->Abrechnung erfassen.");
     }
-    // Variante 2: Kontonummer aus IBAN
-    it = Einstellungen.getDBService().createList(Konto.class);
-    IBAN iban = new IBAN(Einstellungen.getEinstellung().getIban());
-    it.addFilter("nummer = ?", iban.getKonto());
-    if (it.size() == 1)
+    Konto k = Einstellungen.getDBService().createObject(Konto.class,
+        Einstellungen.getEinstellung().getVerrechnungskonto().toString());
+    if (k == null)
     {
-      return it.next();
+      throw new ApplicationException(
+          "Verrechnungskonto nicht gefunden. Unter Abminstration->Einstellungen->Abrechnung erfassen.");
     }
-    throw new ApplicationException(String.format(
-        "Weder Konto %s noch Konto %s ist in der Buchführung eingerichtet. Menu: Buchführung | Konten",
-        Einstellungen.getEinstellung().getIban(), iban.getKonto()));
+    return k;
   }
 
   private String getVerwendungszweck2(Mitglied m) throws RemoteException
