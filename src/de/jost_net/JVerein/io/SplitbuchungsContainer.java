@@ -533,7 +533,10 @@ public class SplitbuchungsContainer
     catch (Exception e)
     {
       splitten = false;
-      splitbuchungen.clear();
+      if (splitbuchungen != null)
+      {
+        splitbuchungen.clear();
+      }
       GUI.getStatusBar().setErrorText(
           "Fehler beim Autosplit, ordne Buchung Sollbuchung ohne splitten zu.");
     }

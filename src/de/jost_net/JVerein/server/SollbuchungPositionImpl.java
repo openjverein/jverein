@@ -91,7 +91,7 @@ public class SollbuchungPositionImpl extends AbstractDBObject
     {
       return betrag;
     }
-    return betrag / (1 + steuersatz);
+    return betrag / (1 + steuersatz / 100);
   }
 
   @Override
@@ -101,9 +101,9 @@ public class SollbuchungPositionImpl extends AbstractDBObject
     Double steuersatz = (Double) getAttribute("steuersatz");
     if (steuersatz == null || betrag == null)
     {
-      return betrag;
+      return 0d;
     }
-    return betrag - betrag / (1 + steuersatz);
+    return betrag - betrag / (1 + steuersatz / 100);
   }
 
   @Override

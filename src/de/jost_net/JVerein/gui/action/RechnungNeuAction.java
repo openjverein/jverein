@@ -85,9 +85,9 @@ public class RechnungNeuAction implements Action
             + " Sollbuchungen enthalten bereits Rechnungen.");
       }
       else {
+        GUI.getCurrentView().reload();
         GUI.getStatusBar().setSuccessText(erstellt + " Rechnung(en) erstellt"
             + (skip > 0 ? ", " + skip + " vorhandene übersprungen." : "."));
-        GUI.getCurrentView().reload();
       }
     }
     catch (Exception e)
