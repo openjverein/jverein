@@ -66,7 +66,7 @@ public class MittelverwendungExportCSV
       String[] header = {"Nr", "Bezeichnung", "Betrag", "Summe"};
       writer.writeHeader(header);
 
-      String title = "Mittelverwendung";
+      String title = "Mittelverwendungsrechnung";
       csvzeile.put(header[1], title);
       writer.write(csvzeile, header, processors);
       csvzeile = new HashMap<>();
