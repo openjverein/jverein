@@ -938,13 +938,13 @@ public class AbrechnungSEPA
 
   private Konto getKonto() throws RemoteException, ApplicationException
   {
-    if (Einstellungen.getEinstellung().getVerrechnungskonto() == null)
+    if (Einstellungen.getEinstellung().getVerrechnungskontoId() == null)
     {
       throw new ApplicationException(
           "Verrechnungskonto nicht gesetzt. Unter Administration->Einstellungen->Abrechnung erfassen.");
     }
     Konto k = Einstellungen.getDBService().createObject(Konto.class,
-        Einstellungen.getEinstellung().getVerrechnungskonto().toString());
+        Einstellungen.getEinstellung().getVerrechnungskontoId().toString());
     if (k == null)
     {
       throw new ApplicationException(

@@ -629,7 +629,7 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public void setMittelverwendung(Boolean mittelverwendung) throws RemoteException;
 
-  public Long getVerrechnungskonto() throws RemoteException;
+  public Long getVerrechnungskontoId() throws RemoteException;
 
-  public void setVerrechnungskonto(Long konto) throws RemoteException;
+  public void setVerrechnungskontoId(Long konto) throws RemoteException;
 }

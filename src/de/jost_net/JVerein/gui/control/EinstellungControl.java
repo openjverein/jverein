@@ -1388,7 +1388,7 @@ public class EinstellungControl extends AbstractControl
       return verrechnungskonto;
     }
     verrechnungskonto = new KontoauswahlInput(null).getKontoAuswahl(false,
-        Einstellungen.getEinstellung().getVerrechnungskonto().toString(), false,
+        Einstellungen.getEinstellung().getVerrechnungskontoId().toString(), false,
         false,
         null);
     return verrechnungskonto;
@@ -2224,7 +2224,7 @@ public class EinstellungControl extends AbstractControl
       e.setSEPADatumOffset((Integer) sepadatumoffset.getValue());
       e.setAbrlAbschliessen((Boolean) abrlabschliessen.getValue());
       e.setBeitragAltersstufen((String)beitragaltersstufen.getValue());
-      e.setVerrechnungskonto((Long
+      e.setVerrechnungskontoId((Long
           .parseLong((String) ((Konto) verrechnungskonto.getValue()).getID())));
       e.store();
       Einstellungen.setEinstellung(e);

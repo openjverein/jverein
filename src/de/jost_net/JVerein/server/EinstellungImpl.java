@@ -2199,13 +2199,13 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
 
   @Override
-  public Long getVerrechnungskonto() throws RemoteException
+  public Long getVerrechnungskontoId() throws RemoteException
   {
     return (Long) getAttribute("verrechnungskonto");
   }
 
   @Override
-  public void setVerrechnungskonto(Long konto) throws RemoteException
+  public void setVerrechnungskontoId(Long konto) throws RemoteException
   {
     setAttribute("verrechnungskonto", konto);
   }
