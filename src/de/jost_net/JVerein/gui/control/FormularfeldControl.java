@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.itextpdf.text.pdf.BaseFont;
 
@@ -40,7 +41,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-
 import de.willuhn.logging.Logger;
 
 public class FormularfeldControl extends FormularPartControl
@@ -277,6 +277,7 @@ public class FormularfeldControl extends FormularPartControl
         namen.add(Einstellungen.ZUSATZFELD_PRE + zusatzfeld.getName());
       }
     }
+    Collections.sort(namen);
     name = new SelectInput(namen, getFormularfeld().getName());
     return name;
   }
