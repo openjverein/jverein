@@ -45,7 +45,7 @@ public class EinstellungenAbrechnungView extends AbstractView
         control.getCt1SepaVersion());
     cont.addLabelPair("SEPA XML-Version - Lastschrift",
         control.getSepaVersion());
-    cont.addLabelPair("Verrechnungs-Konto für Lastschriften",
+    cont.addLabelPair("Verrechnungskonto für Lastschriften",
         control.getVerrechnungskonto());
     cont.addLabelPair("Arbeitsstunden Modell",
         control.getArbeitsstundenmodel());

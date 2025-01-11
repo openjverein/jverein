@@ -34,7 +34,7 @@ public class Update0456 extends AbstractDDLUpdate
       execute(addColumn("einstellung", new Column("verrechnungskonto",
           COLTYPE.BIGINT, 20, null, false, false)));
 
-      // Standart Verrechnungskonto setzen wie es auch bisher bestimmt wurde
+      // Standard Verrechnungskonto setzen wie es auch bisher bestimmt wurde
       execute("UPDATE einstellung SET verrechnungskonto =  "
           + " (SELECT konto.id from konto"
           + "  JOIN einstellung ON einstellung.iban LIKE CONCAT('%', konto.nummer)"
