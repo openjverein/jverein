@@ -532,6 +532,10 @@ public class SplitbuchungsContainer
     }
     catch (Exception e)
     {
+      if (immerSplitten)
+      {
+        throw new ApplicationException("Fehler beim Splitten: ", e);
+      }
       splitten = false;
       if (splitbuchungen != null)
       {
