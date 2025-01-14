@@ -437,11 +437,11 @@ public class SplitbuchungsContainer
           buchung.setMitgliedskontoID(null);
         }
         // Haupt- und Gegen-Buchungen können nicht gesplittet werden.
-        // Das Zuweisen zu einer Sollbuchung macht keinen sinn, daher abbrechen.
         else if (buchung.getSplitTyp() == SplitbuchungTyp.GEGEN
             || buchung.getSplitTyp() == SplitbuchungTyp.HAUPT)
         {
-          return null;
+          throw new ApplicationException(
+              "Splitten von Haupt und Gegenbuchung nicht möglich.");
         }
         else
         {
@@ -534,7 +534,7 @@ public class SplitbuchungsContainer
     {
       if (immerSplitten)
       {
-        throw new ApplicationException("Fehler beim Splitten: ", e);
+        throw new ApplicationException(e.getLocalizedMessage());
       }
       splitten = false;
       if (splitbuchungen != null)

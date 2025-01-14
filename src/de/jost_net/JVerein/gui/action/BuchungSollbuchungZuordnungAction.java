@@ -130,6 +130,13 @@ public class BuchungSollbuchungZuordnungAction implements Action
             throw new ApplicationException(
                 "Mehrere Buchungen mehreren Sollbuchungen zuordnen nicht möglich!");
           }
+          if (b[0].getSplitTyp() != null
+              && (b[0].getSplitTyp() == SplitbuchungTyp.GEGEN
+                  || b[0].getSplitTyp() == SplitbuchungTyp.HAUPT))
+          {
+            throw new ApplicationException(
+                "Haupt- oder Gegen-Buchungen können nicht mehreren Sollbuchungen zugeordnet werden!");
+          }
 
           b[0].transactionBegin();
           Mitgliedskonto[] mks = (Mitgliedskonto[]) open;
@@ -187,7 +194,8 @@ public class BuchungSollbuchungZuordnungAction implements Action
           {
             b[0].transactionRollback();
             Logger.error("Fehler", e);
-            throw new ApplicationException("Fehler beim Splitten der Buchung.");
+            throw new ApplicationException(
+                "Fehler beim Splitten der Buchung: " + e.getLocalizedMessage());
           }
         }
         else
