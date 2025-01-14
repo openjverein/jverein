@@ -38,7 +38,7 @@ public class Update0456 extends AbstractDDLUpdate
       execute("UPDATE einstellung SET verrechnungskonto =  "
           + " (SELECT konto.id from konto"
           + "  JOIN einstellung ON einstellung.iban LIKE CONCAT('%', konto.nummer)"
-          + "   AND length(konto.nummer) > 8 LIMIT 1)");
+          + "  ORDER by length(konto.nummer) DESC  LIMIT 1)");
     }
   }
 }

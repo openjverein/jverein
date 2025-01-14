@@ -1388,9 +1388,10 @@ public class EinstellungControl extends AbstractControl
       return verrechnungskonto;
     }
     verrechnungskonto = new KontoauswahlInput(null).getKontoAuswahl(false,
-        Einstellungen.getEinstellung().getVerrechnungskontoId().toString(), false,
-        false,
-        null);
+        Einstellungen.getEinstellung().getVerrechnungskontoId() == null ? null
+            : Einstellungen.getEinstellung().getVerrechnungskontoId()
+                .toString(),
+        false, false, null);
     return verrechnungskonto;
   }
 
