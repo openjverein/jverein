@@ -16,6 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MittelverwendungControl;
 import de.jost_net.JVerein.gui.parts.QuickAccessPart;
@@ -23,7 +30,7 @@ import de.jost_net.JVerein.gui.parts.VonBisPart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.TabGroup;
 
 public class MittelverwendungListeView extends AbstractView
 {
@@ -40,8 +47,31 @@ public class MittelverwendungListeView extends AbstractView
     QuickAccessPart qpart = new QuickAccessPart(control, false);
     qpart.paint(this.getParent());
 
-    LabelGroup group = new LabelGroup(getParent(), "Liste", true);
-    group.addPart(control.getSaldoList());
+    final TabFolder folder = new TabFolder(getParent(), SWT.NONE);
+    folder.setLayoutData(new GridData(GridData.FILL_BOTH));
+    folder.addSelectionListener(new SelectionAdapter()
+    {
+
+      @Override
+      public void widgetSelected(SelectionEvent evt)
+      {
+        TabItem item = folder.getSelection()[0];
+        if (item.getText().startsWith("Mittelverwendungsreport (Zufluss"))
+        {
+          control.setSelectedTab(MittelverwendungControl.FLOW_REPORT);
+        }
+        else if (item.getText().startsWith("Mittelverwendungsreport (Saldo"))
+        {
+          control.setSelectedTab(MittelverwendungControl.SALDO_REPORT);
+        }
+      }
+    });
+    
+    // Die verschiedenen Tabs
+    TabGroup mittelverwendungFlow = new TabGroup(folder, "Mittelverwendungsreport (Zufluss basiert)", true, 1);
+    mittelverwendungFlow.addPart(control.getSaldoList(MittelverwendungControl.FLOW_REPORT));
+    TabGroup mittelverwendungSaldo = new TabGroup(folder, "Mittelverwendungsreport (Saldo basiert)", true, 1);
+    mittelverwendungSaldo.addPart(control.getSaldoList(MittelverwendungControl.SALDO_REPORT));
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

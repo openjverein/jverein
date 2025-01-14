@@ -45,11 +45,19 @@ import de.willuhn.util.ProgressMonitor;
 public class MittelverwendungControl extends SaldoControl
 {
 
-  private MittelverwendungList saldoList;
+  private MittelverwendungList[] saldoList = new MittelverwendungList[ANZAHL_TABS];
 
   final static String ExportPDF = "PDF";
 
   final static String ExportCSV = "CSV";
+
+  public final static int FLOW_REPORT = 0;
+
+  public final static int SALDO_REPORT = 1;
+
+  public final static int ANZAHL_TABS = 2;
+
+  private int selectedTab = 0;
 
   public MittelverwendungControl(AbstractView view)
   {
@@ -91,6 +99,18 @@ public class MittelverwendungControl extends SaldoControl
 
   public Part getSaldoList() throws ApplicationException
   {
+    for (int i = 0; i < ANZAHL_TABS; i++)
+    {
+      if (i != selectedTab)
+      {
+        getSaldoList(i);
+      }
+    }
+    return getSaldoList(selectedTab);
+  }
+
+  public Part getSaldoList(int tab) throws ApplicationException
+  {
     try
     {
       if (getDatumvon().getDate() != null)
@@ -101,23 +121,23 @@ public class MittelverwendungControl extends SaldoControl
             new JVDateFormatTTMMJJJJ().format(getDatumbis().getDate()));
       }
 
-      if (saldoList == null)
+      if (saldoList[tab] == null)
       {
-        saldoList = new MittelverwendungList(null,
-            datumvon.getDate(), datumbis.getDate());
+        saldoList[tab] = new MittelverwendungList(null, datumvon.getDate(),
+            datumbis.getDate(), tab);
       }
       else
       {
         settings.setAttribute("von",
             new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
 
-        saldoList.setDatumvon(datumvon.getDate());
-        saldoList.setDatumbis(datumbis.getDate());
-        ArrayList<MittelverwendungZeile> zeile = saldoList.getInfo();
-        saldoList.removeAll();
+        saldoList[tab].setDatumvon(datumvon.getDate());
+        saldoList[tab].setDatumbis(datumbis.getDate());
+        ArrayList<MittelverwendungZeile> zeile = saldoList[tab].getInfo();
+        saldoList[tab].removeAll();
         for (MittelverwendungZeile sz : zeile)
         {
-          saldoList.addItem(sz);
+          saldoList[tab].addItem(sz);
         }
       }
     }
@@ -126,14 +146,15 @@ public class MittelverwendungControl extends SaldoControl
       throw new ApplicationException(
           String.format("Fehler aufgetreten %s", e.getMessage()));
     }
-    return saldoList.getSaldoList();
+    return saldoList[tab].getSaldoList();
   }
 
   private void starteExport(String type) throws ApplicationException
   {
     try
     {
-      ArrayList<MittelverwendungZeile> zeilen = saldoList.getInfo();
+      ArrayList<MittelverwendungZeile> zeilen = saldoList[selectedTab]
+          .getInfo();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
@@ -160,7 +181,7 @@ public class MittelverwendungControl extends SaldoControl
       settings.setAttribute("lastdir", file.getParent());
 
       exportSaldo(zeilen, file, getDatumvon().getDate(),
-          getDatumbis().getDate(), type);
+          getDatumbis().getDate(), type, selectedTab);
     }
     catch (RemoteException e)
     {
@@ -171,7 +192,7 @@ public class MittelverwendungControl extends SaldoControl
 
   private void exportSaldo(final ArrayList<MittelverwendungZeile> zeile,
       final File file, final Date datumvon, final Date datumbis,
-      final String type)
+      final String type, final int tab)
   {
     BackgroundTask t = new BackgroundTask()
     {
@@ -181,9 +202,9 @@ public class MittelverwendungControl extends SaldoControl
         try
         {
           if (type.equals(ExportCSV))
-            new MittelverwendungExportCSV(zeile, file, datumvon, datumbis);
+            new MittelverwendungExportCSV(zeile, file, datumvon, datumbis, tab);
           else if (type.equals(ExportPDF))
-            new MittelverwendungExportPDF(zeile, file, datumvon, datumbis);
+            new MittelverwendungExportPDF(zeile, file, datumvon, datumbis, tab);
           GUI.getCurrentView().reload();
         }
         catch (ApplicationException ae)
@@ -206,6 +227,11 @@ public class MittelverwendungControl extends SaldoControl
       }
     };
     Application.getController().start(t);
+  }
+
+  public void setSelectedTab(int tab)
+  {
+    selectedTab = tab;
   }
 
 }

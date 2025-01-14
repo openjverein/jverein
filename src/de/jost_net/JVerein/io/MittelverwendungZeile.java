@@ -33,6 +33,8 @@ public class MittelverwendungZeile implements GenericObject
 
   private Double summe = null;
 
+  private String kommentar = "";
+
   public static final int UNDEFINED = 0;
 
   public static final int EINNAHME = 1;
@@ -41,16 +43,19 @@ public class MittelverwendungZeile implements GenericObject
 
   public static final int SUMME = 3;
 
+  public static final int LEERZEILE = 4;
+
   private int status = UNDEFINED;
 
   public MittelverwendungZeile(int status, Integer position,
-      String bezeichnung, Double betrag, Double summe)
+      String bezeichnung, Double betrag, Double summe, String kommentar)
   {
     this.position = position;
     this.status = status;
     this.bezeichnung = bezeichnung;
     this.betrag = betrag;
     this.summe = summe;
+    this.kommentar = kommentar;
   }
 
   public int getStatus()
@@ -76,6 +81,10 @@ public class MittelverwendungZeile implements GenericObject
     else if (arg0.equals("position"))
     {
       return position;
+    }
+    else if (arg0.equals("kommentar"))
+    {
+      return kommentar;
     }
     throw new RemoteException(
         String.format("Ungültige Spaltenbezeichung: %s", arg0));
