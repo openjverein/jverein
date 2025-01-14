@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -83,27 +84,27 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   }
 
   @Override
-  public Double getNettobetrag() throws RemoteException
+  public BigDecimal getNettobetrag() throws RemoteException
   {
     Double betrag = (Double) getAttribute("betrag");
     Double steuersatz = (Double) getAttribute("steuersatz");
     if (steuersatz == null || betrag == null)
     {
-      return betrag;
+      return new BigDecimal(betrag);
     }
-    return betrag / (1 + steuersatz / 100);
+    return new BigDecimal(betrag / (1 + steuersatz / 100));
   }
 
   @Override
-  public Double getSteuerbetrag() throws RemoteException
+  public BigDecimal getSteuerbetrag() throws RemoteException
   {
     Double betrag = (Double) getAttribute("betrag");
     Double steuersatz = (Double) getAttribute("steuersatz");
     if (steuersatz == null || betrag == null)
     {
-      return 0d;
+      return new BigDecimal(0);
     }
-    return betrag - betrag / (1 + steuersatz / 100);
+    return new BigDecimal(betrag - betrag / (1 + steuersatz / 100));
   }
 
   @Override
