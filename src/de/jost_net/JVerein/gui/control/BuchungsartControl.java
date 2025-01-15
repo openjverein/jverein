@@ -542,10 +542,11 @@ public class BuchungsartControl extends FilterControl
     if (isSuchStatusAktiv() && 
         getSuchStatus().getValue().toString().equalsIgnoreCase("Ohne Deaktiviert"))
       buchungsarten.addFilter("status != ?", new Object[] { StatusBuchungsart.INACTIVE });
-    if (isIntegerAuswAktiv() && getIntegerAusw().getValue() != null)
+    if (isSuchnameAktiv() && !getSuchname().getValue().equals(""))
     {
-      buchungsarten.addFilter("nummer = ?",
-          new Object[] { (Integer) getIntegerAusw().getValue() });
+      String text = "%" + ((String) getSuchname().getValue()).toUpperCase()
+          + "%";
+      buchungsarten.addFilter("nummer like ?", new Object[] { text });
     }
     if (isSuchtextAktiv() && !getSuchtext().getValue().equals(""))
     {
@@ -576,8 +577,7 @@ public class BuchungsartControl extends FilterControl
     }
     catch (RemoteException e)
     {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      //
     }
   }
 

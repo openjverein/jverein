@@ -40,7 +40,7 @@ public class BuchungsartListView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Nummer", control.getIntegerAusw());
+    left.addLabelPair("Nummer", control.getSuchname());
     left.addLabelPair("Bezeichnung", control.getSuchtext());
     left.addInput(control.getSuchBuchungsklasse());
 
