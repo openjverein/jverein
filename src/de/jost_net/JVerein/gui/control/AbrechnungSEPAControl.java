@@ -368,7 +368,8 @@ public class AbrechnungSEPAControl extends AbstractControl
     settings.setAttribute("rechnungstext",
         (String) rechnungstext.getValue());
     settings.setAttribute("rechnungsformular",
-        ((Formular) rechnungsformular.getValue()).getID());
+        rechnungsformular.getValue() == null ? null
+            : ((Formular) rechnungsformular.getValue()).getID());
     settings.setAttribute("sepaprint", (Boolean) sepaprint.getValue());
     Abrechnungsausgabe aa = (Abrechnungsausgabe) this.getAbbuchungsausgabe().getValue();
     settings.setAttribute("abrechnungsausgabe", aa.getKey());
