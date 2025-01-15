@@ -981,19 +981,25 @@ public class AbrechnungSEPA
     {
       return true;
     }
-    Date letzte_lastschrift = m.getLetzteLastschrift();
-    if (letzte_lastschrift != null
-        && letzte_lastschrift.before(sepagueltigkeit.getTime()))
-    {
-      monitor.log(Adressaufbereitung.getNameVorname(m)
-          + ": Letzte Lastschrift ist älter als 36 Monate.");
-      return false;
-    }
+    // Ohne Mandat keine Lastschrift
     if (m.getMandatDatum() == Einstellungen.NODATE)
     {
       monitor.log(Adressaufbereitung.getNameVorname(m)
           + ": Kein Mandat-Datum vorhanden.");
       return false;
+    }
+    // Bei Mandaten älter als 3 Jahre muss es eine Lastschrift
+    // innerhalb der letzten 3 Jahre geben
+    if (m.getMandatDatum().before(sepagueltigkeit.getTime()))
+    {
+      Date letzte_lastschrift = m.getLetzteLastschrift();
+      if (letzte_lastschrift == null
+          || letzte_lastschrift.before(sepagueltigkeit.getTime()))
+      {
+        monitor.log(Adressaufbereitung.getNameVorname(m)
+            + ": Mandat-Datum ist älter als 36 Monate und keine Lastschrift in den letzten 36 Monaten");
+        return false;
+      }
     }
     return true;
   }
