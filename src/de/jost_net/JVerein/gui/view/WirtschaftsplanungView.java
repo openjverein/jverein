@@ -18,7 +18,9 @@ import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
@@ -42,11 +44,11 @@ public class WirtschaftsplanungView extends AbstractView
 
     SimpleContainer group = new SimpleContainer(this.getParent(), true, 2);
 
-    LabelGroup links = new LabelGroup(group.getComposite(), "Einnahmen");
-    TablePart test = new TablePart(new ArrayList<>(), null);
-    links.addPart(test);
-    LabelGroup rechts = new LabelGroup(group.getComposite(), "Ausgaben");
+    LabelGroup einnahmen = new LabelGroup(group.getComposite(), "Einnahmen");
+    Part tree = control.getEinnahmen();
+    einnahmen.addPart(tree);
+    LabelGroup ausgaben = new LabelGroup(group.getComposite(), "Ausgaben");
     TablePart test1 = new TablePart(new ArrayList<>(), null);
-    rechts.addPart(test1);
+    ausgaben.addPart(test1);
   }
 }

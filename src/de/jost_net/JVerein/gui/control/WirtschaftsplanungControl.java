@@ -4,7 +4,9 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.OpenWirtschaftsplanungAction;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -12,6 +14,7 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.TreePart;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -24,9 +27,9 @@ public class WirtschaftsplanungControl extends AbstractControl
 
   private TablePart wirtschaftsplaene;
 
-  private TablePart einnahmen;
+  private TreePart einnahmen;
 
-  private TablePart ausgaben;
+  private TreePart ausgaben;
 
   /**
    * Erzeugt einen neuen AbstractControl der fuer die angegebene View.
@@ -45,12 +48,7 @@ public class WirtschaftsplanungControl extends AbstractControl
   {
     DBService service = Einstellungen.getDBService();
 
-    String sql = "SELECT wirtschaftsplan.id, wirtschaftsplan.datum_von, wirtschaftsplan.datum_bis, SUM(wirtschaftsplanitem.soll) " +
-        "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart " +
-        "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " +
-        "AND wirtschaftsplanitem.buchungsart = buchungsart.id " +
-        "AND buchungsart.art = ? " +
-        "GROUP BY wirtschaftsplan.id, wirtschaftsplan.datum_von, wirtschaftsplan.datum_bis";
+    String sql = "SELECT wirtschaftsplan.id, wirtschaftsplan.datum_von, wirtschaftsplan.datum_bis, SUM(wirtschaftsplanitem.soll) " + "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart " + "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " + "AND wirtschaftsplanitem.buchungsart = buchungsart.id " + "AND buchungsart.art = ? " + "GROUP BY wirtschaftsplan.id, wirtschaftsplan.datum_von, wirtschaftsplan.datum_bis";
 
     Map<Long, WirtschaftsplanungZeile> zeileMap = new HashMap<>();
 
@@ -131,7 +129,8 @@ public class WirtschaftsplanungControl extends AbstractControl
           return resultSet;
         });
 
-    wirtschaftsplaene = new TablePart(new ArrayList<>(zeileMap.values()), new OpenWirtschaftsplanungAction());
+    wirtschaftsplaene = new TablePart(new ArrayList<>(zeileMap.values()),
+        new OpenWirtschaftsplanungAction());
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
@@ -153,31 +152,111 @@ public class WirtschaftsplanungControl extends AbstractControl
 
   public WirtschaftsplanungZeile getWirtschaftsplanungZeile()
   {
-    if (getCurrentObject() instanceof WirtschaftsplanungZeile) {
+    if (getCurrentObject() instanceof WirtschaftsplanungZeile)
+    {
       return (WirtschaftsplanungZeile) getCurrentObject();
     }
     return null;
   }
 
-  public TablePart getEinnahmen() throws RemoteException
+  public Part getEinnahmen() throws RemoteException
   {
     WirtschaftsplanungZeile zeile = getWirtschaftsplanungZeile();
 
-    if (zeile == null) {
+    if (zeile == null)
+    {
       return null;
     }
 
-    if (einnahmen == null) {
-      einnahmen = new TablePart(null);
-    }
+    Map<Long, WirtschaftsplanungNode> nodes = new HashMap<>();
 
-    einnahmen.removeAll();
-
+    int art = 0;
     DBService service = Einstellungen.getDBService();
-    String sql = "SELECT buchungsart, betrag FROM wirtschaftsplanitem WHERE wirtschaftsplan = ?";
-    service.execute(sql, new Object[] {zeile.getID()}, null);
+    String sql = "SELECT wirtschaftsplanitem.buchungsklasse, sum(soll) " +
+        "FROM wirtschaftsplanitem, buchungsart " +
+        "WHERE wirtschaftsplan = ? AND wirtschaftsplanitem.buchungsart = buchungsart.id AND buchungsart.art = ? " +
+        "GROUP BY wirtschaftsplanitem.buchungsklasse";
 
-    //TODO
+    service.execute(sql, new Object[] { zeile.getID(), art }, resultSet -> {
+      while (resultSet.next())
+      {
+        DBIterator<Buchungsklasse> iterator = service.createList(
+            Buchungsklasse.class);
+        iterator.addFilter("id = ?", resultSet.getLong(1));
+        if (!iterator.hasNext())
+        {
+          continue;
+        }
+
+        Buchungsklasse buchungsklasse = iterator.next();
+        double soll = resultSet.getDouble(2);
+        nodes.put(resultSet.getLong(1),
+            new WirtschaftsplanungNode(buchungsklasse, art, zeile));
+        nodes.get(resultSet.getLong(1)).setSoll(soll);
+      }
+
+      return nodes;
+    });
+
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      sql = "SELECT buchung.buchungsklasse, sum(buchung.betrag) " +
+          "FROM buchung, buchungsart " +
+          "WHERE buchung.buchungsart = buchungsart.id " +
+          "AND buchung.datum >= ? AND buchung.datum <= ? " +
+          "AND buchungsart.art = ? " +
+          "GROUP BY buchung.buchungsklasse";
+
+    }
+    else
+    {
+      sql = "SELECT buchungsart.buchungsklasse, sum(buchung.betrag) " +
+          "FROM buchung, buchungsart " +
+          "WHERE buchung.buchungsart = buchungsart.id " +
+          "AND buchung.datum >= ? AND buchung.datum <= ? " +
+          "AND buchungsart.art = ? " +
+          "GROUP BY buchungsart.buchungsklasse";
+
+    }
+    service.execute(sql, new Object[] { zeile.getVon(), zeile.getBis(), art },
+        resultSet -> {
+          while (resultSet.next())
+          {
+            DBIterator<Buchungsklasse> iterator = service.createList(
+                Buchungsklasse.class);
+            Long key = resultSet.getLong(1);
+            iterator.addFilter("id = ?", key);
+            if (!iterator.hasNext())
+            {
+              continue;
+            }
+
+            Buchungsklasse buchungsklasse = iterator.next();
+            double ist = resultSet.getDouble(2);
+
+            if (nodes.containsKey(key))
+            {
+              nodes.get(key).setIst(ist);
+            }
+            else if (ist != 0)
+            {
+              nodes.put(key, new WirtschaftsplanungNode(buchungsklasse, art, zeile));
+              nodes.get(key).setIst(ist);
+            }
+          }
+
+          return nodes;
+        });
+
+    einnahmen = new TreePart(new ArrayList<>(nodes.values()), null);
+
+    CurrencyFormatter formatter = new CurrencyFormatter("",
+        Einstellungen.DECIMALFORMAT);
+    einnahmen.addColumn("Buchungsklasse", "buchungsklassebezeichnung");
+    einnahmen.addColumn("Buchungsart / Posten",
+        "buchungsartbezeichnung_posten");
+    einnahmen.addColumn("Soll", "soll", formatter);
+    einnahmen.addColumn("Ist", "ist", formatter);
 
     return einnahmen;
   }
