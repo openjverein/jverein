@@ -147,7 +147,7 @@ public class MitgliedLastschriftAction implements Action
           || letzte_lastschrift.before(sepagueltigkeit.getTime()))
       {
         if (!confirmDialog("Mandat abgelaufen",
-            "Mandat-Datum ist älter als 36 Monate und keine Lastschrift in den letzten 36 Monaten"))
+            "Das Mandat-Datum ist älter als 36 Monate und es erfolgte keine Lastschrift in den letzten 36 Monaten."))
         {
           return false;
         }
