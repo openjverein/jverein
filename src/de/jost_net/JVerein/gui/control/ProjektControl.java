@@ -77,6 +77,8 @@ public class ProjektControl extends AbstractControl
       return bezeichnung;
     }
     bezeichnung = new TextInput(getProjekt().getBezeichnung(), 50);
+    bezeichnung.setName("Bezeichnung");
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -94,8 +96,6 @@ public class ProjektControl extends AbstractControl
     }
     startDatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     startDatum.setName("Startdatum");
-    startDatum.setTitle("Startdatum");
-    startDatum.setText("Bitte Startdatum w?hlen");
     return startDatum;
   }
 
@@ -113,8 +113,6 @@ public class ProjektControl extends AbstractControl
     }
     endeDatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     endeDatum.setName("Endedatum");
-    endeDatum.setTitle("Endedatum");
-    endeDatum.setText("Bitte Endedatum w?hlen");
     return endeDatum;
   }
 
