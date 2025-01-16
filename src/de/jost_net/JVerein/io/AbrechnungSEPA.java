@@ -632,7 +632,7 @@ public class AbrechnungSEPA
         .createList(Zusatzbetrag.class);
     // etwas vorfiltern um die Ergebnise zu reduzieren
     list.addFilter("(intervall != 0 or ausfuehrung is null)");
-    list.addFilter("(endedatum is null or endedatum < ?)", param.stichtag);
+    list.addFilter("(endedatum is null or endedatum >= ?)", param.stichtag);
     while (list.hasNext())
     {
       if (interrupt.isInterrupted())
