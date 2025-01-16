@@ -374,10 +374,16 @@ public class AbrechnungslaufControl extends FilterControl
       abrechnungslaufList.addColumn("Austrittsdatum", "austrittsdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       abrechnungslaufList.addColumn("Zahlungsgrund", "zahlungsgrund");
-      abrechnungslaufList.addColumn("Zusatzbeträge", "zusatzbetraege",
-          new JaNeinFormatter());
-      abrechnungslaufList.addColumn("Kursteilnehmer", "kursteilnehmer",
-          new JaNeinFormatter());
+      if (Einstellungen.getEinstellung().getZusatzbetrag())
+      {
+        abrechnungslaufList.addColumn("Zusatzbeträge", "zusatzbetraege",
+            new JaNeinFormatter());
+      }
+      if (Einstellungen.getEinstellung().getKursteilnehmer())
+      {
+        abrechnungslaufList.addColumn("Kursteilnehmer", "kursteilnehmer",
+            new JaNeinFormatter());
+      }
       abrechnungslaufList.setContextMenu(new AbrechnungslaufMenu());
       abrechnungslaufList.setRememberColWidths(true);
       abrechnungslaufList.setRememberOrder(true);

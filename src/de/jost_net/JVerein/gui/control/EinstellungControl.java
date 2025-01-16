@@ -2096,7 +2096,7 @@ public class EinstellungControl extends AbstractControl
       e.setOrt((String) getOrt().getValue());
       e.setBic((String) getBic().getValue());
       String ib = (String) getIban().getValue();
-      if (ib == null)
+      if (ib == null || ib.isBlank())
         e.setIban(null);
       else
         e.setIban(ib.toUpperCase().replace(" ",""));
