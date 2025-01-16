@@ -1157,7 +1157,7 @@ public class FilterControl extends AbstractControl
     return suchbuchungsklasse != null;
   }
 
-  public SelectInput getSuchBuchungsarArt() throws RemoteException
+  public SelectInput getSuchBuchungsartArt() throws RemoteException
   {
     if (suchbuchungsartart != null)
     {

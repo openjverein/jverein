@@ -45,7 +45,7 @@ public class BuchungsartListView extends AbstractView
     left.addInput(control.getSuchBuchungsklasse());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getSuchBuchungsarArt());
+    right.addInput(control.getSuchBuchungsartArt());
     right.addLabelPair("Status", control.getSuchStatus());
 
     ButtonArea fbuttons = new ButtonArea();

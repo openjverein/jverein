@@ -555,9 +555,9 @@ public class BuchungsartControl extends FilterControl
       buchungsarten.addFilter("UPPER(bezeichnung) like ?",
           new Object[] { text });
     }
-    if (isSuchBuchungsartArtAktiv() && getSuchBuchungsarArt().getValue() != null)
+    if (isSuchBuchungsartArtAktiv() && getSuchBuchungsartArt().getValue() != null)
     {
-      ArtBuchungsart art = (ArtBuchungsart) getSuchBuchungsarArt().getValue();
+      ArtBuchungsart art = (ArtBuchungsart) getSuchBuchungsartArt().getValue();
       buchungsarten.addFilter("art = ?", new Object[] { art.getKey() });
     }
     if (isSuchBuchungsklasseAktiv() && getSuchBuchungsklasse().getValue() != null)
