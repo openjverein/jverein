@@ -58,7 +58,7 @@ import de.willuhn.util.ProgressMonitor;
 public class AbrechnungSEPAControl extends AbstractControl
 {
 
-  private static String CONFIRM_TITLE = "SEPA Check temporär deaktivieren";
+  private static String CONFIRM_TITLE = "SEPA-Check temporär deaktivieren";
 
   private static String CONFIRM_TEXT = "Bei einer SEPA-Lastschrift muß ein gültiges SEPA-Mandat vorliegen.\n"
       + "Wenn das Mandat älter als 3 Jahre ist müssen in den letzten 3 Jahren Lastschriften durchgeführt worden sein.\n"

@@ -62,9 +62,9 @@ import de.willuhn.util.ApplicationException;
 public class MitgliedImpl extends AbstractDBObject implements Mitglied
 {
 
-  private static String FEHLER_ZAHLUNGSWEG = ": Zahlungsweg ist nicht Basislastschrift.";
+  private static String FEHLER_ZAHLUNGSWEG = ": Der Zahlungsweg ist nicht Basislastschrift.";
 
-  private static String FEHLER_MANDAT = ": Kein Mandat-Datum vorhanden.";
+  private static String FEHLER_MANDAT = ": Es ist kein Mandat-Datum vorhanden.";
 
   private static String FEHLER_ALTER = ": Das Mandat-Datum ist älter als 36 Monate und es erfolgte keine Lastschrift in den letzten 36 Monaten.";
 
