@@ -438,7 +438,7 @@ public class AbrechnungSEPA
         betr = m.getIndividuellerBeitrag();
       }
     }
-    if ((betr == 0d) || !checkSEPA(mZahler, monitor))
+    if ((betr == 0d) || !checkSEPA(param, mZahler, monitor))
     {
       return zahler;
     }
@@ -557,7 +557,7 @@ public class AbrechnungSEPA
         }
 
         if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT
-            && !checkSEPA(mZahler, monitor))
+            && !checkSEPA(param,mZahler, monitor))
         {
           continue;
         }
@@ -969,33 +969,25 @@ public class AbrechnungSEPA
     return mitgliedname;
   }
 
-  private boolean checkSEPA(Mitglied m, ProgressMonitor monitor)
+  private boolean checkSEPA(AbrechnungSEPAParam param, Mitglied m, ProgressMonitor monitor)
       throws RemoteException
   {
+    // Wenn nicht Basislastschrift, dann kein Check nötig
     if (m.getZahlungsweg() == null
         || m.getZahlungsweg() != Zahlungsweg.BASISLASTSCHRIFT)
     {
       return true;
     }
-    // Ohne Mandat keine Lastschrift
-    if (m.getMandatDatum() == Einstellungen.NODATE)
+    // Check SEPA wenn nicht deaktiviert
+    if (!param.sepacheckdisable)
     {
-      monitor.log(Adressaufbereitung.getNameVorname(m)
-          + ": Kein Mandat-Datum vorhanden.");
-      return false;
-    }
-    // Bei Mandaten älter als 3 Jahre muss es eine Lastschrift
-    // innerhalb der letzten 3 Jahre geben
-    Calendar sepagueltigkeit = Calendar.getInstance();
-    sepagueltigkeit.add(Calendar.MONTH, -36);
-    if (m.getMandatDatum().before(sepagueltigkeit.getTime()))
-    {
-      Date letzte_lastschrift = m.getLetzteLastschrift();
-      if (letzte_lastschrift == null
-          || letzte_lastschrift.before(sepagueltigkeit.getTime()))
+      try
       {
-        monitor.log(Adressaufbereitung.getNameVorname(m)
-            + ": Das Mandat-Datum ist älter als 36 Monate und es erfolgte keine Lastschrift in den letzten 36 Monaten.");
+        return m.checkSEPA();
+      }
+      catch (ApplicationException ae)
+      {
+        monitor.log(ae.getLocalizedMessage());
         return false;
       }
     }

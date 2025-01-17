@@ -42,6 +42,7 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -56,6 +57,12 @@ import de.willuhn.util.ProgressMonitor;
 
 public class AbrechnungSEPAControl extends AbstractControl
 {
+
+  private static String CONFIRM_TITLE = "SEPA Check temporär deaktivieren";
+
+  private static String CONFIRM_TEXT = "Bei einer SEPA-Lastschrift muß ein gültiges SEPA-Mandat vorliegen.\n"
+      + "Wenn das Mandat älter als 3 Jahre ist müssen in den letzten 3 Jahren Lastschriften durchgeführt worden sein.\n"
+      + "Wählen Sie Ja nur wenn diese Bedingungen für alle MItglieder erfüllt sind.";
 
   private AbbuchungsmodusInput modus;
 
@@ -78,6 +85,8 @@ public class AbrechnungSEPAControl extends AbstractControl
   private CheckboxInput kompakteabbuchung;
 
   private CheckboxInput sepaprint;
+
+  private CheckboxInput sepacheck;
 
   private SelectInput ausgabe;
 
@@ -249,6 +258,52 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     sepaprint = new CheckboxInput(settings.getBoolean("sepaprint", false));
     return sepaprint;
+  }
+
+  public CheckboxInput getSEPACheck()
+  {
+    if (sepacheck != null)
+    {
+      return sepacheck;
+    }
+    sepacheck = new CheckboxInput(false);
+    sepacheck.addListener(new Listener()
+    {
+      @Override
+      public void handleEvent(Event event)
+      {
+        // Bei temporär deaktivieren den User fragen
+        if ((Boolean) sepacheck.getValue())
+        {
+          if (!confirmDialog(CONFIRM_TITLE,CONFIRM_TEXT))
+          {
+            sepacheck.setValue(false);
+          }
+        }
+      }
+    });
+    return sepacheck;
+  }
+  
+  public static boolean confirmDialog(String title, String text)
+  {
+    YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+    d.setTitle(title);
+    d.setText(text);
+    try
+    {
+      Boolean choice = (Boolean) d.open();
+      if (!choice.booleanValue())
+      {
+        return false;
+      }
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler bei Confirm Abfrage", e);
+      return false;
+    }
+    return true;
   }
 
   public SelectInput getAbbuchungsausgabe()
