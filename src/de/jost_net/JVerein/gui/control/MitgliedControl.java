@@ -1118,29 +1118,6 @@ public class MitgliedControl extends FilterControl
               famverb.setBeitragsgruppe(bg);
             }
           }
-          else if (bg != null
-              && bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-          {
-            boolean ist_neu = getMitglied().getID() == null;
-            // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
-            if (!ist_neu)
-            {
-              getZukuenftigeBeitraegeView().setVisible(true);
-            }
-            getMitglied().setZahlerID(null);
-            if (zahler != null)
-            {
-              if (zahler instanceof SelectNoScrollInput)
-              {
-                ((SelectNoScrollInput) zahler).setPreselected(null);
-              }
-              else if (zahler instanceof VollzahlerSearchInput)
-              {
-                ((VollzahlerSearchInput) zahler).setValue("Zum Suchen tippen");
-              }
-              zahler.setEnabled(false);
-            }
-          }
           else
           {
             getMitglied().setZahlerID(null);
