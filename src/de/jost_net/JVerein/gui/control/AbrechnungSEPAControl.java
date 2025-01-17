@@ -64,6 +64,8 @@ public class AbrechnungSEPAControl extends AbstractControl
       + "Wenn das Mandat älter als 3 Jahre ist müssen in den letzten 3 Jahren Lastschriften durchgeführt worden sein.\n"
       + "Wählen Sie Ja nur wenn diese Bedingungen für alle Mitglieder erfüllt sind.";
 
+  private static String CONFIRM_ERROR = "Fehler bei der Confirm Abfrage";
+
   private AbbuchungsmodusInput modus;
 
   private DateInput stichtag = null;
@@ -300,7 +302,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     catch (Exception e)
     {
-      Logger.error("Fehler bei Confirm Abfrage", e);
+      Logger.error(CONFIRM_ERROR, e);
       return false;
     }
     return true;

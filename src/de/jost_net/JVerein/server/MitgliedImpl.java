@@ -62,6 +62,12 @@ import de.willuhn.util.ApplicationException;
 public class MitgliedImpl extends AbstractDBObject implements Mitglied
 {
 
+  private static String FEHLER_ZAHLUNGSWEG = ": Zahlungsweg ist nicht Basislastschrift.";
+
+  private static String FEHLER_MANDAT = ": Kein Mandat-Datum vorhanden.";
+
+  private static String FEHLER_ALTER = ": Das Mandat-Datum ist älter als 36 Monate und es erfolgte keine Lastschrift in den letzten 36 Monaten.";
+
   private transient Map<String, String> variable;
 
   private static final long serialVersionUID = 1L;
@@ -2028,13 +2034,13 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
         || getZahlungsweg() != Zahlungsweg.BASISLASTSCHRIFT)
     {
       throw new ApplicationException(Adressaufbereitung.getNameVorname(this)
-          + ": Zahlungsweg ist nicht Basislastschrift.");
+          + FEHLER_ZAHLUNGSWEG);
     }
     // Ohne Mandat keine Lastschrift
     if (getMandatDatum() == Einstellungen.NODATE)
     {
       throw new ApplicationException(Adressaufbereitung.getNameVorname(this)
-          + ": Kein Mandat-Datum vorhanden.");
+          + FEHLER_MANDAT);
     }
     // Bei Mandaten älter als 3 Jahre muss es eine Lastschrift
     // innerhalb der letzten 3 Jahre geben
@@ -2047,7 +2053,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
           || letzte_lastschrift.before(sepagueltigkeit.getTime()))
       {
         throw new ApplicationException(Adressaufbereitung.getNameVorname(this)
-            + ": Das Mandat-Datum ist älter als 36 Monate und es erfolgte keine Lastschrift in den letzten 36 Monaten.");
+            + FEHLER_ALTER);
       }
     }
     return true;
