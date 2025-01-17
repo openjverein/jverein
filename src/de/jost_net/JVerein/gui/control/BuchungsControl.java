@@ -830,7 +830,7 @@ public class BuchungsControl extends AbstractControl
     suchbuchungsart.addListener(new FilterListener());
     if (suchbuchungsart instanceof SelectInput)
     {
-      suchbuchungsart.setPleaseChoose("Alle");
+      suchbuchungsart.setPleaseChoose(FilterControl.ALLE);
     }
     return suchbuchungsart;
   }
