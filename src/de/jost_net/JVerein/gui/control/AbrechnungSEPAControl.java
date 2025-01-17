@@ -62,7 +62,7 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   private static String CONFIRM_TEXT = "Bei einer SEPA-Lastschrift muß ein gültiges SEPA-Mandat vorliegen.\n"
       + "Wenn das Mandat älter als 3 Jahre ist müssen in den letzten 3 Jahren Lastschriften durchgeführt worden sein.\n"
-      + "Wählen Sie Ja nur wenn diese Bedingungen für alle MItglieder erfüllt sind.";
+      + "Wählen Sie Ja nur wenn diese Bedingungen für alle Mitglieder erfüllt sind.";
 
   private AbbuchungsmodusInput modus;
 
