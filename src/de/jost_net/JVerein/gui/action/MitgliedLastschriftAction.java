@@ -34,7 +34,7 @@ import de.willuhn.util.ApplicationException;
 
 public class MitgliedLastschriftAction implements Action
 {
-  private static String CONFIRM_TITLE = "SEPA Check Fehler";
+  private static String CONFIRM_TITLE = "SEPA-Check Fehler";
 
   @Override
   public void handleAction(Object context) throws ApplicationException
