@@ -31,7 +31,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
 
   private Buchungsart buchungsart;
 
-  private String posten;
+  private WirtschaftsplanItem wirtschaftsplanItem;
 
   private double soll = 0;
 
@@ -146,7 +146,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     ist = 0;
 
     DBService service = Einstellungen.getDBService();
-    String sql = "SELECT wirtschaftsplanitem.posten, wirtschaftsplanitem.soll " +
+    String sql = "SELECT wirtschaftsplanitem.id " +
         "FROM wirtschaftsplanitem, buchungsart " +
         "WHERE wirtschaftsplanitem.buchungsart = buchungsart.id " +
         "AND wirtschaftsplanitem.buchungsart = ? " +
@@ -157,19 +157,18 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     service.execute(sql, new Object[] { buchungsart.getID(), parent.getBuchungsklasse().getID(),
         art, zeile.getID() }, resultSet -> {
           while (resultSet.next()) {
-            children.add(new WirtschaftsplanungNode(this, resultSet.getString(1), resultSet.getDouble(2)));
+            children.add(new WirtschaftsplanungNode(this, service.createObject(WirtschaftsplanItem.class, resultSet.getString(1))));
           }
 
           return children;
         });
   }
 
-  public WirtschaftsplanungNode(WirtschaftsplanungNode parent, String posten, double soll)
-  {
+  public WirtschaftsplanungNode(WirtschaftsplanungNode parent, WirtschaftsplanItem wirtschaftsplanItem) throws RemoteException {
     type = Type.POSTEN;
     this.parent = parent;
-    this.posten = posten;
-    this.soll = soll;
+    this.wirtschaftsplanItem = wirtschaftsplanItem;
+    this.soll = wirtschaftsplanItem.getSoll();
     children = null;
   }
 
@@ -224,7 +223,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
           return buchungsart.getBezeichnung();
         }
         if (type == Type.POSTEN) {
-          return posten;
+          return wirtschaftsplanItem.getPosten();
         }
         return "";
       case "soll":
@@ -293,16 +292,6 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     this.buchungsart = buchungsart;
   }
 
-  public String getPosten()
-  {
-    return posten;
-  }
-
-  public void setPosten(String posten)
-  {
-    this.posten = posten;
-  }
-
   public double getSoll()
   {
     return soll;
@@ -321,5 +310,13 @@ public class WirtschaftsplanungNode implements GenericObjectNode
   public void setIst(double ist)
   {
     this.ist = ist;
+  }
+
+  public WirtschaftsplanItem getWirtschaftsplanItem() {
+    return wirtschaftsplanItem;
+  }
+
+  public void setWirtschaftsplanItem(WirtschaftsplanItem wirtschaftsplanItem) {
+    this.wirtschaftsplanItem = wirtschaftsplanItem;
   }
 }

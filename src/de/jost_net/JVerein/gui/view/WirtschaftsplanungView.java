@@ -45,10 +45,10 @@ public class WirtschaftsplanungView extends AbstractView
     SimpleContainer group = new SimpleContainer(this.getParent(), true, 2);
 
     LabelGroup einnahmen = new LabelGroup(group.getComposite(), "Einnahmen");
-    Part tree = control.getEinnahmen();
-    einnahmen.addPart(tree);
+    Part treeEinnahmen = control.getEinnahmen();
+    einnahmen.addPart(treeEinnahmen);
     LabelGroup ausgaben = new LabelGroup(group.getComposite(), "Ausgaben");
-    TablePart test1 = new TablePart(new ArrayList<>(), null);
-    ausgaben.addPart(test1);
+    Part treeAusgaben = control.getAusgaben();
+    ausgaben.addPart(treeAusgaben);
   }
 }
