@@ -721,29 +721,12 @@ public class FormularAufbereitung
     for (SollbuchungPosition sp : re.getMitgliedskonto()
         .getSollbuchungPositionList())
     {
-      Double betrag = sp.getNettobetrag();
-      if (betrag == null || betrag == 0)
-      {
-        betrag = sp.getBetrag();
-      }
-      if (sp.getBetrag() < 0)
-      {
-        invoice.addItem(new Item(
-            new Product(sp.getZweck(), "", "LS",
-                new BigDecimal(sp.getSteuersatz()).setScale(2,
-                    RoundingMode.HALF_DOWN)),
-            new BigDecimal(betrag * -1).setScale(2, RoundingMode.HALF_DOWN),
-            new BigDecimal(-1.0)));
-      }
-      else
-      {
-        invoice.addItem(new Item(new Product(sp.getZweck(), "",
-            "LS", // LS = pauschal
-            new BigDecimal(sp.getSteuersatz()).setScale(2,
-                RoundingMode.HALF_DOWN)),
-            new BigDecimal(betrag).setScale(2, RoundingMode.HALF_DOWN),
-            new BigDecimal(1.0)));
-      }
+      BigDecimal betrag = new BigDecimal(sp.getNettobetrag());
+      invoice.addItem(new Item(new Product(sp.getZweck(), "", "LS", // LS =
+                                                                    // pauschal
+          new BigDecimal(sp.getSteuersatz()).setScale(2, RoundingMode.HALF_UP)),
+          betrag.abs().setScale(4, RoundingMode.HALF_UP),
+          new BigDecimal(betrag.signum())));
     }
     ze.setTransaction(invoice);
     ze.export(f.getAbsolutePath());

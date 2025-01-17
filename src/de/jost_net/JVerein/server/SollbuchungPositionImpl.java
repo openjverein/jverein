@@ -103,7 +103,7 @@ public class SollbuchungPositionImpl extends AbstractDBObject
     {
       return 0d;
     }
-    return betrag - betrag / (1 + steuersatz / 100);
+    return betrag * steuersatz / (100 + steuersatz);
   }
 
   @Override
