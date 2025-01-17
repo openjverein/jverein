@@ -721,14 +721,18 @@ public class FormularAufbereitung
     for (SollbuchungPosition sp : re.getMitgliedskonto()
         .getSollbuchungPositionList())
     {
-      BigDecimal betrag = sp.getNettobetrag();
+      Double betrag = sp.getNettobetrag();
+      if (betrag == null || betrag == 0)
+      {
+        betrag = sp.getBetrag();
+      }
       if (sp.getBetrag() < 0)
       {
         invoice.addItem(new Item(
             new Product(sp.getZweck(), "", "LS",
                 new BigDecimal(sp.getSteuersatz()).setScale(2,
                     RoundingMode.HALF_DOWN)),
-            betrag.multiply(new BigDecimal(-1)),
+            new BigDecimal(betrag * -1).setScale(2, RoundingMode.HALF_DOWN),
             new BigDecimal(-1.0)));
       }
       else
@@ -737,7 +741,7 @@ public class FormularAufbereitung
             "LS", // LS = pauschal
             new BigDecimal(sp.getSteuersatz()).setScale(2,
                 RoundingMode.HALF_DOWN)),
-            betrag,
+            new BigDecimal(betrag).setScale(2, RoundingMode.HALF_DOWN),
             new BigDecimal(1.0)));
       }
     }

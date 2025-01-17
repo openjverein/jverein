@@ -69,10 +69,10 @@ public class RechnungMap
     {
       buchungDatum.add(sp.getDatum());
       zweck.add(sp.getZweck());
-      nettobetrag.add(sp.getNettobetrag().doubleValue());
+      nettobetrag.add(Double.valueOf(sp.getNettobetrag()));
       steuersatz.add(
           "(" + formatter.format(Double.valueOf(sp.getSteuersatz())) + ")");
-      steuerbetrag.add(sp.getSteuerbetrag().doubleValue());
+      steuerbetrag.add(Double.valueOf(sp.getSteuerbetrag()));
       betrag.add(sp.getBetrag());
       summe += sp.getBetrag();
     }
