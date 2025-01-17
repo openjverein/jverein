@@ -266,7 +266,7 @@ public class FilterControl extends AbstractControl
       suchadresstyp = new SelectInput(new ArrayList<>(), null);
     }
     suchadresstyp.setName("Mitgliedstyp");
-    suchadresstyp.setPleaseChoose("Bitte auswählen");
+    suchadresstyp.setPleaseChoose("Alle");
     suchadresstyp.addListener(new FilterListener());
     return suchadresstyp;
   }
@@ -318,7 +318,7 @@ public class FilterControl extends AbstractControl
       Logger.error("Fehler beim lesen der Einstellungen");
     }
     art.setName("Mitgliedsart");
-    art.setPleaseChoose("Bitte auswählen");
+    art.setPleaseChoose("Alle");
     art.addListener(new FilterListener());
     return art;
   }
@@ -548,7 +548,7 @@ public class FilterControl extends AbstractControl
     beitragsgruppeausw = new SelectInput(list != null ? PseudoIterator.asList(list) : null, bg);
     beitragsgruppeausw.setName("Beitragsgruppe");
     beitragsgruppeausw.setAttribute("bezeichnung");
-    beitragsgruppeausw.setPleaseChoose("Bitte auswählen");
+    beitragsgruppeausw.setPleaseChoose("Alle");
     beitragsgruppeausw.addListener(new FilterListener());
     return beitragsgruppeausw;
   }
@@ -584,7 +584,7 @@ public class FilterControl extends AbstractControl
     suchgeschlecht = new GeschlechtInput(
         settings.getString(settingsprefix + "geschlecht", ""));
     suchgeschlecht.setName("Geschlecht");
-    suchgeschlecht.setPleaseChoose("Bitte auswählen");
+    suchgeschlecht.setPleaseChoose("Alle");
     suchgeschlecht.addListener(new FilterListener());
     return suchgeschlecht;
   }
@@ -931,7 +931,7 @@ public class FilterControl extends AbstractControl
       //
     }
     suchlehrgangsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, letztesuche);
-    suchlehrgangsart.setPleaseChoose("Bitte auswählen");
+    suchlehrgangsart.setPleaseChoose("Alle");
     suchlehrgangsart.addListener(new FilterListener());
     suchlehrgangsart.setName("Lehrgangsart");
     return suchlehrgangsart;
@@ -1147,7 +1147,7 @@ public class FilterControl extends AbstractControl
         list != null ? PseudoIterator.asList(list) : null, bk);
     suchbuchungsklasse.setName("Buchungsklasse");
     suchbuchungsklasse.setAttribute("bezeichnung");
-    suchbuchungsklasse.setPleaseChoose("Bitte auswählen");
+    suchbuchungsklasse.setPleaseChoose("Alle");
     suchbuchungsklasse.addListener(new FilterListener());
     return suchbuchungsklasse;
   }
@@ -1178,7 +1178,7 @@ public class FilterControl extends AbstractControl
     }
     suchbuchungsartart = new SelectInput(ArtBuchungsart.getArray(), artb);
     suchbuchungsartart.setName("Art");
-    suchbuchungsartart.setPleaseChoose("Bitte auswählen");
+    suchbuchungsartart.setPleaseChoose("Alle");
     suchbuchungsartart.addListener(new FilterListener());
     return suchbuchungsartart;
   }
@@ -1474,7 +1474,7 @@ public class FilterControl extends AbstractControl
     if (art != null)
     {
       String tmp = (String) art.getValue();
-      if (tmp != null && !tmp.equals("Bitte auswählen"))
+      if (tmp != null)
       {
         settings.setAttribute(settingsprefix + "status.art", tmp);
       }
@@ -1539,7 +1539,7 @@ public class FilterControl extends AbstractControl
     if (suchgeschlecht != null)
     {
       String tmp = (String) suchgeschlecht.getValue();
-      if (tmp != null && !getSuchGeschlecht().getText().equals("Bitte auswählen"))
+      if (tmp != null)
       {
         settings.setAttribute(settingsprefix + "geschlecht", tmp);
       }
