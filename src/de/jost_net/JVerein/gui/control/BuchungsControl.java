@@ -788,6 +788,10 @@ public class BuchungsControl extends AbstractControl
     suchbuchungsart.setList(liste);
     suchbuchungsart.setValue(b);
     suchbuchungsart.addListener(new FilterListener());
+    if (suchbuchungsart instanceof SelectInput)
+    {
+      suchbuchungsart.setPleaseChoose(FilterControl.ALLE);
+    }
     return suchbuchungsart;
   }
 

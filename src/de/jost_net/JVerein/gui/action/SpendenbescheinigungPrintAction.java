@@ -273,6 +273,7 @@ public class SpendenbescheinigungPrintAction implements Action
             fa.printAnschreiben(spb, text);
           }
           fa.closeFormular();
+          fo.store();
         }
       }
       String erfolg = (spbArr.length > 1) ? "Die Spendenbescheinigungen wurden erstellt und unter " + path + " gespeichert."

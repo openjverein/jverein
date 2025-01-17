@@ -25,11 +25,10 @@ import de.jost_net.JVerein.gui.menu.ProjektMenu;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -38,10 +37,8 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class ProjektControl extends AbstractControl
+public class ProjektControl extends FilterControl
 {
-
-  private de.willuhn.jameica.system.Settings settings;
 
   private TablePart projektList;
 
@@ -77,6 +74,8 @@ public class ProjektControl extends AbstractControl
       return bezeichnung;
     }
     bezeichnung = new TextInput(getProjekt().getBezeichnung(), 50);
+    bezeichnung.setName("Bezeichnung");
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -94,8 +93,6 @@ public class ProjektControl extends AbstractControl
     }
     startDatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     startDatum.setName("Startdatum");
-    startDatum.setTitle("Startdatum");
-    startDatum.setText("Bitte Startdatum w?hlen");
     return startDatum;
   }
 
@@ -113,8 +110,6 @@ public class ProjektControl extends AbstractControl
     }
     endeDatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     endeDatum.setName("Endedatum");
-    endeDatum.setTitle("Endedatum");
-    endeDatum.setText("Bitte Endedatum w?hlen");
     return endeDatum;
   }
 
@@ -150,14 +145,16 @@ public class ProjektControl extends AbstractControl
 
   public Part getProjektList() throws RemoteException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Projekt> projekte = service.createList(Projekt.class);
-    projekte.setOrder("ORDER BY bezeichnung");
-
-    projektList = new TablePart(projekte, new ProjektAction());
+    if (projektList != null)
+    {
+      return projektList;
+    }
+    projektList = new TablePart(getProjekte(), new ProjektAction());
     projektList.addColumn("Bezeichnung", "bezeichnung");
-    projektList.addColumn("Startdatum", "startdatum");
-    projektList.addColumn("Endedatum", "endedatum");
+    projektList.addColumn("Startdatum", "startdatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    projektList.addColumn("Endedatum", "endedatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
     projektList.setContextMenu(new ProjektMenu());
     projektList.setRememberColWidths(true);
     projektList.setRememberOrder(true);
@@ -165,4 +162,63 @@ public class ProjektControl extends AbstractControl
     return projektList;
   }
 
+  public void TabRefresh() 
+  {
+    if (projektList == null)
+    {
+      return;
+    }
+    projektList.removeAll();
+    try
+    {
+      DBIterator<Projekt> projekte = getProjekte();
+      while (projekte.hasNext())
+      {
+        projektList.addItem(projekte.next());
+      }
+      projektList.sort();
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
+  }
+
+  private DBIterator<Projekt> getProjekte() throws RemoteException
+  {
+    DBIterator<Projekt> projekte = Einstellungen.getDBService()
+        .createList(Projekt.class);
+    
+    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
+    {
+      String tmpSuchtext = (String) getSuchtext().getValue();
+      if (tmpSuchtext.length() > 0)
+      {
+        projekte.addFilter("(lower(bezeichnung) like ?)",
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+      }
+    }
+    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
+    {
+      projekte.addFilter("startdatum >= ?",
+          new Object[] { (Date) getDatumvon().getValue() });
+    }
+    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
+    {
+      projekte.addFilter("startdatum <= ?",
+          new Object[] { (Date) getDatumbis().getValue() });
+    }
+    if (isEingabedatumvonAktiv() && getEingabedatumvon().getValue() != null)
+    {
+      projekte.addFilter("endedatum >= ?",
+          new Object[] { (Date) getEingabedatumvon().getValue() });
+    }
+    if (isEingabedatumbisAktiv() && getEingabedatumbis().getValue() != null)
+    {
+      projekte.addFilter("endedatum <= ?",
+          new Object[] { (Date) getEingabedatumbis().getValue() });
+    }
+    projekte.setOrder("ORDER BY bezeichnung");
+    return projekte;
+  }
 }
