@@ -6892,9 +6892,14 @@ public class JVereinUpdateProvider
   private void update0340(Connection conn) throws ApplicationException
   {
     Map<String, String> statements = new HashMap<String, String>();
-    String sql = alterColumn("einstellung", "name",
-        "VARCHAR(70) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci");
-    statements.put(driver, sql);
+    // Update fuer H2
+    statements.put(DBSupportH2Impl.class.getName(),
+        alterColumn("einstellung", "name", "VARCHAR(70)"));
+
+    // Update fuer MySQL
+    statements.put(DBSupportMySqlImpl.class.getName(), alterColumn(
+        "einstellung", "name",
+        "VARCHAR(70) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci"));
     execute(conn, statements, 340);
   }
 
