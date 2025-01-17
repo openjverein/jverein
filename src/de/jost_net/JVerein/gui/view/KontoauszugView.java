@@ -34,7 +34,7 @@ public class KontoauszugView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Kontoauszug");
+    GUI.getView().setTitle("Kontoauszüge");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
     control.init("kontoauszug.", null, null);

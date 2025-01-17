@@ -104,6 +104,7 @@ public class MitgliedSuchProfilControl extends AbstractControl
       Suchprofil sp = (Suchprofil) it.next();
       profillist.addItem(sp);
     }
+    profillist.sort();
   }
 
   private DBIterator<Suchprofil> getIterator() throws RemoteException

@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -26,12 +26,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
+import de.jost_net.JVerein.gui.action.MailVorschauAction;
+import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
 import de.jost_net.JVerein.gui.util.JameicaUtil;
 import de.jost_net.JVerein.rmi.MailAnhang;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.server.MitgliedImpl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -48,7 +55,7 @@ public class MailDetailView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("JVerein-Mail");
+    GUI.getView().setTitle("Mail");
 
     final MailControl control = new MailControl(this);
 
@@ -164,8 +171,27 @@ public class MailDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAIL, false, "question-circle.png");
-    buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
-        control, false, "view-refresh.png"));
+    buttons.addButton(
+        new Button("Mail-Vorlage", new MailVorlageZuweisenAction(), control,
+            false, "view-refresh.png"));
+    Mitglied m;
+    if (control.getEmpfaenger().getItems().isEmpty())
+    {
+      m = MitgliedImpl.getDummy();
+    }
+    else
+    {
+      MailEmpfaenger empfaenger = (MailEmpfaenger) control.getEmpfaenger()
+          .getItems().get(0);
+      m = empfaenger.getMitglied();
+    }
+    buttons.addButton(
+        new Button("Variablen anzeigen", new OpenInsertVariableDialogAction(),
+            new MitgliedMap().getMap(m, new AllgemeineMap().getMap(null)),
+            false, "bookmark.png"));
+    buttons.addButton(
+        new Button("Vorschau", new MailVorschauAction(control), m, false,
+            "edit-copy.png"));
     buttons.addButton(control.getMailSpeichernButton());
     buttons.addButton(control.getMailReSendButton());
     buttons.addButton(control.getMailSendButton());

@@ -1,12 +1,14 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.io.IOException;
+
 import de.jost_net.JVerein.io.FreiesFormularAusgabe;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class FreieFormulareControl extends DruckMailControl
 {
@@ -41,7 +43,8 @@ public class FreieFormulareControl extends DruckMailControl
     return button;
   }
 
-  private void generiereFreieFormulare(Object currentObject) throws IOException
+  private void generiereFreieFormulare(Object currentObject)
+      throws IOException, ApplicationException
   {
     saveDruckMailSettings();
     new FreiesFormularAusgabe(this);

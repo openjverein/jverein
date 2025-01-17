@@ -42,7 +42,7 @@ public class AuswertungNichtMitgliedView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Auswertung Nicht-Mitgliederdaten");
+    GUI.getView().setTitle("Auswertung Nicht-Mitglieder");
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
 

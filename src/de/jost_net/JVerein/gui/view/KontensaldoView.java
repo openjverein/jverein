@@ -31,7 +31,7 @@ public class KontensaldoView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Konten-Saldo");
+    GUI.getView().setTitle("Kontensaldo");
 
     final KontensaldoControl control = new KontensaldoControl(this);
 

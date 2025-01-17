@@ -32,6 +32,7 @@ import java.util.Properties;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -276,6 +277,10 @@ public class DefaultZusatzbetraegeImport implements Importer
                   anz, mitgliedIdString));
               fehlerInDaten = true;
             }
+            catch (SQLException e)
+            {
+              //
+            }
             try
             {
               String buchungsart = results.getString("Buchungsart");
@@ -314,6 +319,15 @@ public class DefaultZusatzbetraegeImport implements Importer
             catch (SQLException e)
             {
               //
+            }
+            try
+            {
+              Integer zahlungsweg = results.getInt("Zahlungsweg");
+              zus.setZahlungsweg(new Zahlungsweg(zahlungsweg));
+            }
+            catch (Exception e)
+            {
+              zus.setZahlungsweg(new Zahlungsweg(Zahlungsweg.STANDARD));
             }
             zusatzbetraegeList.add(zus);
           }

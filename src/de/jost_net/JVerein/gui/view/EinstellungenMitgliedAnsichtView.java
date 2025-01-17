@@ -33,7 +33,7 @@ public class EinstellungenMitgliedAnsichtView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen Mitglied Ansicht");
+    GUI.getView().setTitle("Einstellungen Mitglieder Ansicht");
 
     final EinstellungControl control = new EinstellungControl(this);
 
@@ -114,7 +114,7 @@ public class EinstellungenMitgliedAnsichtView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_ANSICHT, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

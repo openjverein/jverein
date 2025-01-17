@@ -10,26 +10,19 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.gui.action.MailAuswahlDeleteAction;
+import de.jost_net.JVerein.gui.action.MailVorschauAction;
+import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.MailControl;
-import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
-import de.jost_net.JVerein.gui.dialogs.MailVorschauDialog;
-import de.jost_net.JVerein.gui.dialogs.ShowVariablesDialog;
-import de.jost_net.JVerein.rmi.MailEmpfaenger;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 
 /**
  * Kontext-Menu zur MailEmpfänger-Auswahl.
@@ -39,60 +32,11 @@ public class MailAuswahlMenu extends ContextMenu
 
   public MailAuswahlMenu(MailControl control)
   {
-    final MailControl contr = control;
-    addItem(new CheckedSingleContextMenuItem("Variable", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        if (context instanceof MailEmpfaenger)
-        {
-          MailEmpfaenger m = (MailEmpfaenger) context;
-          try
-          {
-            new ShowVariablesDialog(contr.getVariables(m.getMitglied()));
-          }
-          catch (RemoteException e)
-          {
-            Logger.error("Fehler", e);
-            throw new ApplicationException(e);
-          }
-        }
-        else
-        {
-          Logger.error("ShowVariablesDiaglog: Ungültige Klasse: "
-              + context.getClass().getCanonicalName());
-        }
-
-      }
-
-    }, "bookmark.png"));
-    addItem(new CheckedSingleContextMenuItem("Vorschau", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        if (context != null && context instanceof MailEmpfaenger)
-        {
-          MailEmpfaenger m = (MailEmpfaenger) context;
-          new MailVorschauDialog(contr, m,
-              MailEmpfaengerAuswahlDialog.POSITION_CENTER);
-        }
-        else
-        {
-          String name = "";
-          if (context != null && context.getClass() != null)
-          {
-            name = context.getClass().getCanonicalName();
-          }
-          Logger.error("ShowVariablesDiaglog: Ungültige Klasse: " + name);
-        }
-
-      }
-
-    }, "edit-copy.png" /* "mail-message-new.png" */));
+    addItem(new CheckedSingleContextMenuItem("Variablen anzeigen",
+        new OpenInsertVariableDialogAction(), "bookmark.png"));
+    addItem(new CheckedSingleContextMenuItem("Vorschau",
+        new MailVorschauAction(control),
+        "edit-copy.png" /* "mail-message-new.png" */));
     addItem(new CheckedContextMenuItem("Entfernen",
         new MailAuswahlDeleteAction(control), "user-trash-full.png"));
   }

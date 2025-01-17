@@ -24,7 +24,7 @@ public class DokumentationUtil
   
   //private static final String ALLGEMEIN = "allgemein/";
   
-  private static final String FUNKTIONEN = "allgemeine-funktionen/";
+  private static final String FUNKTIONEN = "v2.9.0/";
   
   private static final String ADMIN = "administration/";
   
@@ -43,6 +43,8 @@ public class DokumentationUtil
   private static final String ADMMITGLIEDER = "mitglieder/";
   
   private static final String ADMERWEITERT = "erweitert/";
+  
+  private static final String ADMEINSTELLUNG = "einstellungen/";
   
   
   // Mitglieder
@@ -71,6 +73,8 @@ public class DokumentationUtil
 
   public static final String SPENDENBESCHEINIGUNG = PRE + FUNKTIONEN + MITGLIEDER 
       + "spendenbescheinigung";
+  
+  public static final String RECHNUNG = PRE + FUNKTIONEN + MITGLIEDER + "rechnung";
   
   public static final String SUCHPROFIL = PRE + FUNKTIONEN + MITGLIEDER + "content/suchprofil";
 
@@ -109,6 +113,8 @@ public class DokumentationUtil
   public static final String SPLITBUCHUNG = PRE + FUNKTIONEN + BUCHF + "splittbuchungen";
   
   public static final String ANLAGENLISTE = PRE + FUNKTIONEN + BUCHF + "anlagenverzeichnis";
+  
+  public static final String MITTELVERWENDUNG = PRE + FUNKTIONEN + BUCHF + "mittelverwendung";
 
 
   // Abrechnung
@@ -139,7 +145,7 @@ public class DokumentationUtil
   
 
   // Druck und Mail
-  public static final String RECHNUNG = PRE + FUNKTIONEN + DRUCKMAIL + "rechnungen";
+  public static final String RECHNUNG_MAIL = PRE + FUNKTIONEN + DRUCKMAIL + "rechnungen";
 
   public static final String MAHNUNG = PRE + FUNKTIONEN + DRUCKMAIL+ "mahnungen";
 
@@ -158,7 +164,27 @@ public class DokumentationUtil
   
   
   // Einstellungen
-  public static final String EINSTELLUNGEN = PRE + FUNKTIONEN + ADMIN + "einstellungen";
+  public static final String EINSTELLUNGEN_ABRECHNUNG = PRE + FUNKTIONEN + ADMIN + ADMEINSTELLUNG + "abrechnung";
+  
+  public static final String EINSTELLUNGEN_ALLGEMEIN = PRE + FUNKTIONEN + ADMIN + ADMEINSTELLUNG + "allgemein";
+  
+  public static final String EINSTELLUNGEN_ANSICHT = PRE + FUNKTIONEN + ADMIN + ADMEINSTELLUNG + "ansicht";
+  
+  public static final String EINSTELLUNGEN_ANZEIGE = PRE + FUNKTIONEN + ADMIN + ADMEINSTELLUNG + "anzeige";
+  
+  public static final String EINSTELLUNGEN_BUCHFUEHRUNG = PRE + FUNKTIONEN + ADMIN + ADMEINSTELLUNG + "buchfuehrung";
+  
+  public static final String EINSTELLUNGEN_DATEINAMEN = PRE + FUNKTIONEN + ADMIN + ADMEINSTELLUNG + "dateinamen";
+  
+  public static final String EINSTELLUNGEN_MAIL = PRE + FUNKTIONEN + ADMIN + ADMEINSTELLUNG + "mail";
+  
+  public static final String EINSTELLUNGEN_RECHNUNGEN = PRE + FUNKTIONEN + ADMIN + ADMEINSTELLUNG + "rechnungen";
+  
+  public static final String EINSTELLUNGEN_SPALTEN = PRE + FUNKTIONEN + ADMIN + ADMEINSTELLUNG + "spalten";
+  
+  public static final String EINSTELLUNGEN_SPENDENBESCHEINIGUNGEN = PRE + FUNKTIONEN + ADMIN + ADMEINSTELLUNG + "spendenbescheinigungen";
+  
+  public static final String EINSTELLUNGEN_STATISTIK = PRE + FUNKTIONEN + ADMIN + ADMEINSTELLUNG + "statistik";
   
   
   // Einstellungen Mitglieder

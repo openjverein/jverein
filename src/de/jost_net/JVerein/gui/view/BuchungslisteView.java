@@ -23,9 +23,11 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.gui.action.BuchungImportAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
+import de.jost_net.JVerein.gui.action.BuchungsuebernahmeAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -48,7 +50,7 @@ public class BuchungslisteView extends AbstractView
   {
     GUI.getView().setTitle("Buchungen");
     
-    final BuchungsControl control = new BuchungsControl(this, Kontenart.GELDKONTO);
+    final BuchungsControl control = new BuchungsControl(this, Kontenfilter.GELDKONTO);
 
     LabelGroup group = new LabelGroup(getParent(), "Konto");
     group.addLabelPair("Konto", control.getSuchKonto());
@@ -67,14 +69,16 @@ public class BuchungslisteView extends AbstractView
     left.addLabelPair("Projekt", control.getSuchProjekt());
     left.addLabelPair("Betrag", control.getSuchBetrag());
     left.addLabelPair("Mitglied zugeordnet?", control.getSuchMitgliedZugeordnet());
-    right.addLabelPair("Von Datum", control.getVondatum());
-    right.addLabelPair("Bis Datum", control.getBisdatum());
+    right.addLabelPair("Datum von", control.getVondatum());
+    right.addLabelPair("Datum bis", control.getBisdatum());
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
     right.addLabelPair("Mitglied Name", control.getMitglied());
     
     ButtonArea buttons1 = new ButtonArea();
-    buttons1.addButton(control.getZurueckButton());
-    buttons1.addButton(control.getVorButton());
+    ToolTipButton zurueck = control.getZurueckButton();
+    buttons1.addButton(zurueck);
+    ToolTipButton vor = control.getVorButton();
+    buttons1.addButton(vor);
     Button reset = new Button("Filter-Reset", new Action()
     {
       @Override
@@ -95,6 +99,8 @@ public class BuchungslisteView extends AbstractView
     }, null, true, "search.png");
     buttons1.addButton(suchen);
     labelgroup1.addButtonArea(buttons1);
+    zurueck.setToolTipText("Datumsbereich zurück");
+    vor.setToolTipText("Datumsbereich vowärts");
 
     // Zweiter Tab
     final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(
@@ -126,6 +132,8 @@ public class BuchungslisteView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
+    buttons.addButton("Hibiscus-Import", new BuchungsuebernahmeAction(), null, false,
+        "file-import.png");
     buttons.addButton("Import", new BuchungImportAction(), null, false,
         "file-import.png");
     buttons.addButton(control.getStartCSVAuswertungButton());

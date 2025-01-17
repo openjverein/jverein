@@ -28,11 +28,12 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.KontoControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.AfaMode;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -155,7 +156,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       konto.setNummer((String) getNummer().getValue());
       konto.setBezeichnung((String) getBezeichnung().getValue());
       konto.setEroeffnung(buchung.getDatum());
-      konto.setAnlagenkonto(true);
+      konto.setKontoArt(Kontoart.ANLAGE);
       konto.setHibiscusId(-1);
       konto.setAnlagenartId(getSelectedAnlagenartId());
       konto.setAnlagenklasseId(getSelectedAnlagenklasseId());
@@ -165,7 +166,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       konto.setNutzungsdauer((Integer)getNutzungsdauer().getValue());
       konto.setKommentar(buchung.getKommentar());
       konto.store();
-      BuchungsControl bcontrol = new BuchungsControl(null, Kontenart.ANLAGEKONTO);
+      BuchungsControl bcontrol = new BuchungsControl(null, Kontenfilter.ANLAGEKONTO);
       bcontrol.getSettings().setAttribute("anlagenkonto.kontoid", konto.getID());
     }
     catch (RemoteException e)
@@ -312,9 +313,9 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     }
     DBService service = Einstellungen.getDBService();
     String sql = "SELECT DISTINCT konto.id from konto "
-        + "WHERE (anlagenkonto = TRUE) ";
+        + "WHERE (kontoart = ?) ";
     boolean exist = (boolean) service.execute(sql,
-        new Object[] { }, new ResultSetExtractor()
+        new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
     {
       @Override
       public Object extract(ResultSet rs)

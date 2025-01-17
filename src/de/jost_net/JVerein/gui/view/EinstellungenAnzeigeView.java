@@ -67,6 +67,8 @@ public class EinstellungenAnzeigeView extends AbstractView
     left.addLabelPair("Juristische Personen erlaubt",
         control.getJuristischePersonen());
     left.addLabelPair("Mitgliedsfoto *", control.getMitgliedfoto());
+    left.addLabelPair("Mittelverwendung anzeigen" + "*",
+        control.getMittelverwendung());
 
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
     right.addLabelPair("Lesefelder anzeigen *", control.getUseLesefelder());
@@ -92,7 +94,7 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont.addSeparator();
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_ANZEIGE, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

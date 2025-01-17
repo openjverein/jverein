@@ -542,6 +542,7 @@ public class ArbeitseinsatzControl extends FilterControl
         {
           arbeitseinsatzueberpruefungList.addItem(az);
         }
+        arbeitseinsatzueberpruefungList.sort();
       }
     }
     catch (RemoteException e)
@@ -615,6 +616,7 @@ public class ArbeitseinsatzControl extends FilterControl
       {
         arbeitseinsatzList.addItem(arbeitseinsaetze.next());
       }
+      arbeitseinsatzList.sort();
     }
     catch (RemoteException e1)
     {

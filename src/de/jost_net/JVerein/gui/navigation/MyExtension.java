@@ -24,7 +24,6 @@ import com.schlevoigt.JVerein.gui.action.BuchungsTexteKorrigierenAction;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AboutAction;
-import de.jost_net.JVerein.gui.action.AbrechnungSEPAAction;
 import de.jost_net.JVerein.gui.action.AbrechnunslaufListAction;
 import de.jost_net.JVerein.gui.action.AbschreibungsListeAction;
 import de.jost_net.JVerein.gui.action.AdministrationEinstellungenAbrechnungAction;
@@ -41,6 +40,7 @@ import de.jost_net.JVerein.gui.action.AdministrationEinstellungenStatistikAction
 import de.jost_net.JVerein.gui.action.NichtMitgliedSucheAction;
 import de.jost_net.JVerein.gui.action.PreNotificationAction;
 import de.jost_net.JVerein.gui.action.MitgliedstypListAction;
+import de.jost_net.JVerein.gui.action.MittelverwendungListeAction;
 import de.jost_net.JVerein.gui.action.AnfangsbestandListAction;
 import de.jost_net.JVerein.gui.action.AnlagenlisteAction;
 import de.jost_net.JVerein.gui.action.ArbeitseinsaetzeListeAction;
@@ -55,7 +55,6 @@ import de.jost_net.JVerein.gui.action.BuchungsListeAction;
 import de.jost_net.JVerein.gui.action.BuchungsartListAction;
 import de.jost_net.JVerein.gui.action.BuchungsklasseListAction;
 import de.jost_net.JVerein.gui.action.BuchungsklasseSaldoAction;
-import de.jost_net.JVerein.gui.action.BuchungsuebernahmeAction;
 import de.jost_net.JVerein.gui.action.DbBereinigenAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.EigenschaftGruppeListeAction;
@@ -81,11 +80,12 @@ import de.jost_net.JVerein.gui.action.MailVorlagenAction;
 import de.jost_net.JVerein.gui.action.MitgliedMigrationAction;
 import de.jost_net.JVerein.gui.action.MitgliedSucheAction;
 import de.jost_net.JVerein.gui.action.SollbuchungListeAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoMahnungAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoRechnungAction;
+import de.jost_net.JVerein.gui.action.SollbuchungMahnungAction;
+import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
 import de.jost_net.JVerein.gui.action.ProjektListAction;
 import de.jost_net.JVerein.gui.action.ProjektSaldoAction;
 import de.jost_net.JVerein.gui.action.QIFBuchungsImportViewAction;
+import de.jost_net.JVerein.gui.action.RechnungListeAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungListeAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
 import de.jost_net.JVerein.gui.action.StatistikJahrgaengeAction;
@@ -93,6 +93,7 @@ import de.jost_net.JVerein.gui.action.StatistikMitgliedAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageListeAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeListeAction;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -118,10 +119,10 @@ public class MyExtension implements Extension
       try
       {
         DBService service = Einstellungen.getDBService();
-        String sql = "SELECT konto.anlagenkonto from konto "
-            + "WHERE (anlagenkonto = true) ";
+        String sql = "SELECT konto.id from konto "
+            + "WHERE (kontoart = ?) ";
         anlagenkonto = (boolean) service.execute(sql,
-            new Object[] { }, new ResultSetExtractor()
+            new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
         {
           @Override
           public Object extract(ResultSet rs)
@@ -168,6 +169,8 @@ public class MyExtension implements Extension
       
       mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new SollbuchungListeAction(), "calculator.png"));
+      mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
+          new RechnungListeAction(), "file-invoice.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
           new SpendenbescheinigungListeAction(), "file-invoice.png"));
       if (Einstellungen.getEinstellung().getZusatzbetrag())
@@ -177,7 +180,7 @@ public class MyExtension implements Extension
       }
       if (Einstellungen.getEinstellung().getWiedervorlage())
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Wiedervorlage",
+        mitglieder.addChild(new MyItem(mitglieder, "Wiedervorlagen",
             new WiedervorlageListeAction(), "office-calendar.png"));
       }
       if (Einstellungen.getEinstellung().getLehrgaenge())
@@ -198,8 +201,6 @@ public class MyExtension implements Extension
           new KontoListAction(), "list.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbestände",
           new AnfangsbestandListAction(), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Hibiscus-Buchungen",
-          new BuchungsuebernahmeAction(), "hibiscus-icon-64x64.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
           new BuchungsListeAction(), "euro-sign.png"));
       if (anlagenkonto)
@@ -213,6 +214,11 @@ public class MyExtension implements Extension
           new ProjektSaldoAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
           new KontensaldoAction(), "euro-sign.png"));
+      if (Einstellungen.getEinstellung().getMittelverwendung())
+      {
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendung",
+            new MittelverwendungListeAction(), "euro-sign.png"));
+      }
       if (anlagenkonto)
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenverzeichnis",
             new AnlagenlisteAction(), "euro-sign.png"));
@@ -222,9 +228,7 @@ public class MyExtension implements Extension
       
       NavigationItem abrechnung = null;
       abrechnung = new MyItem(abrechnung, "Abrechnung", null);
-      abrechnung.addChild(new MyItem(abrechnung, "Abrechnung",
-          new AbrechnungSEPAAction(), "calculator.png"));
-      abrechnung.addChild(new MyItem(abrechnung, "Abrechnungslauf",
+      abrechnung.addChild(new MyItem(abrechnung, "Abrechnungsläufe",
           new AbrechnunslaufListAction(), "calculator.png"));
       abrechnung.addChild(new MyItem(abrechnung, "Lastschriften",
           new LastschriftListAction(), "file-invoice.png"));
@@ -243,9 +247,9 @@ public class MyExtension implements Extension
         auswertung.addChild(new MyItem(auswertung, "Kursteilnehmer",
             new AuswertungKursteilnehmerAction(), "receipt.png"));
       }
-      auswertung.addChild(new MyItem(auswertung, "Statistik",
+      auswertung.addChild(new MyItem(auswertung, "Mitgliederstatistik",
           new StatistikMitgliedAction(), "chart-line.png"));
-      auswertung.addChild(new MyItem(auswertung, "Statistik Jahrgänge",
+      auswertung.addChild(new MyItem(auswertung, "Jahrgangsstatistik",
           new StatistikJahrgaengeAction(), "chart-line.png"));
       if (Einstellungen.getEinstellung().getArbeitseinsatz())
       {
@@ -257,9 +261,9 @@ public class MyExtension implements Extension
       NavigationItem mail = null;
       mail = new MyItem(mail, "Druck & Mail", null);
       mail.addChild(new MyItem(mail, "Rechnungen",
-          new MitgliedskontoRechnungAction(), "document-print.png"));
+          new SollbuchungRechnungAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Mahnungen",
-          new MitgliedskontoMahnungAction(), "document-print.png"));
+          new SollbuchungMahnungAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Kontoauszüge",
           new KontoauszugAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Freie Formulare",
@@ -324,7 +328,7 @@ public class MyExtension implements Extension
       einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Beitragsgruppen",
           new BeitragsgruppeSucheAction(), "clone.png"));
       einstellungenmitglieder
-          .addChild(new MyItem(einstellungenmitglieder, "Eigenschaften-Gruppen",
+          .addChild(new MyItem(einstellungenmitglieder, "Eigenschaftengruppen",
               new EigenschaftGruppeListeAction(), "document-properties.png"));
       einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Eigenschaften",
           new EigenschaftListeAction(), "document-properties.png"));
@@ -373,14 +377,14 @@ public class MyExtension implements Extension
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert, "Migration",
           new MitgliedMigrationAction(), "file-import.png"));
       einstellungenerweitert
-      .addChild(new MyItem(einstellungenerweitert, "QIF Datei-Import",
+      .addChild(new MyItem(einstellungenerweitert, "QIF-Datei-Import",
           new QIFBuchungsImportViewAction(), "file-import.png"));
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,
-          "Datenbank bereinigen", new DbBereinigenAction(), "placeholder-loading.png"));
+          "Datenbank-Bereinigung", new DbBereinigenAction(), "placeholder-loading.png"));
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,
-          "Diagnose-Backup erstellen", new BackupCreateAction(), "document-save.png"));
+          "Diagnose-Backup-Export", new BackupCreateAction(), "document-save.png"));
       einstellungenerweitert.addChild(
-          new MyItem(einstellungenerweitert, "Diagnose-Backup importieren",
+          new MyItem(einstellungenerweitert, "Diagnose-Backup-Import",
               new BackupRestoreAction(), "file-import.png"));
       administration.addChild(einstellungenerweitert);
       jverein.addChild(administration);

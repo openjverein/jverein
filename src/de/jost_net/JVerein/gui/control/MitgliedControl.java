@@ -82,6 +82,7 @@ import de.jost_net.JVerein.io.MitgliedAuswertungPDF;
 import de.jost_net.JVerein.io.MitgliederStatistik;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -174,7 +175,9 @@ public class MitgliedControl extends FilterControl
 
   private Input ort;
 
-  private Input staat;
+  private SelectNoScrollInput staat;
+  
+  private TextInput leitwegID;
 
   private DateInput geburtsdatum = null;
 
@@ -220,7 +223,7 @@ public class MitgliedControl extends FilterControl
 
   private TextInput ktoiort;
 
-  private TextInput ktoistaat;
+  private SelectNoScrollInput ktoistaat;
 
   private EmailInput ktoiemail;
 
@@ -515,15 +518,35 @@ public class MitgliedControl extends FilterControl
     return ort;
   }
 
-  public Input getStaat() throws RemoteException
+  public SelectNoScrollInput getStaat() throws RemoteException
   {
     if (staat != null)
     {
       return staat;
     }
-    staat = new TextInput(getMitglied().getStaat(), 50);
+    if (getMitglied().getStaat() != null
+        && getMitglied().getStaat().length() > 0
+        && Staat.getByKey(getMitglied().getStaatCode()) == null)
+    {
+      GUI.getStatusBar().setErrorText("Konnte Staat \""
+          + getMitglied().getStaat() + "\" nicht finden, bitte anpassen.");
+    }
+    staat = new SelectNoScrollInput(Staat.values(),
+        Staat.getByKey(getMitglied().getStaatCode()));
+    staat.setPleaseChoose("Nicht gesetzt");
     staat.setName("Staat");
     return staat;
+  }
+  
+  public TextInput getLeitwegID() throws RemoteException
+  {
+    if (leitwegID != null)
+    {
+      return leitwegID;
+    }
+    leitwegID = new TextInput(getMitglied().getLeitwegID());
+    leitwegID.setName("LeitwegID");
+    return leitwegID;
   }
 
   public DateInput getGeburtsdatum() throws RemoteException
@@ -965,13 +988,22 @@ public class MitgliedControl extends FilterControl
     return ktoiort;
   }
 
-  public TextInput getKtoiStaat() throws RemoteException
+  public SelectNoScrollInput getKtoiStaat() throws RemoteException
   {
     if (ktoistaat != null)
     {
       return ktoistaat;
     }
-    ktoistaat = new TextInput(getMitglied().getKtoiStaat(), 50);
+    if (getMitglied().getKtoiStaat() != null
+        && getMitglied().getKtoiStaat().length() > 0
+        && Staat.getByKey(getMitglied().getKtoiStaatCode()) == null)
+    {
+      GUI.getStatusBar().setErrorText("Konnte Kontoinhaber Staat \""
+          + getMitglied().getKtoiStaat() + "\" nicht finden, bitte anpassen.");
+    }
+    ktoistaat = new SelectNoScrollInput(Staat.values(),
+        Staat.getByKey(getMitglied().getKtoiStaatCode()));
+    ktoistaat.setPleaseChoose("Nicht gesetzt");
     ktoistaat.setName("Staat");
     return ktoistaat;
   }
@@ -1620,6 +1652,7 @@ public class MitgliedControl extends FilterControl
         m = getMitglied();
       familienangehoerige.addItem(m);
     }
+    familienangehoerige.sort();
   }
 
   public Part getFamilienangehoerigenTable() throws RemoteException
@@ -1672,9 +1705,9 @@ public class MitgliedControl extends FilterControl
 
     zusatzbetraegeList.addColumn("Startdatum", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    zusatzbetraegeList.addColumn("nächste Fälligkeit", "faelligkeit",
+    zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    zusatzbetraegeList.addColumn("letzte Ausführung", "ausfuehrung",
+    zusatzbetraegeList.addColumn("Letzte Ausführung", "ausfuehrung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Intervall", "intervalltext");
     zusatzbetraegeList.addColumn("Endedatum", "endedatum",
@@ -1682,6 +1715,13 @@ public class MitgliedControl extends FilterControl
     zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
     zusatzbetraegeList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter() {
+      @Override
+      public String format(Object o)
+      {
+        return new Zahlungsweg((Integer)o).getText();
+      }
+    });
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
       zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
@@ -2140,6 +2180,7 @@ public class MitgliedControl extends FilterControl
     {
       part.addItem(m);
     }
+    part.sort();
     return part;
   }
   
@@ -2315,6 +2356,10 @@ public class MitgliedControl extends FilterControl
 
         m.setGeschlecht((String) getGeschlecht().getValue());
       }
+      else
+      {
+        m.setLeitwegID((String) getLeitwegID().getValue());
+      }
       m.setKtoiAdressierungszusatz(
           (String) getKtoiAdressierungszusatz().getValue());
       m.setKtoiAnrede((String) getKtoiAnrede().getValue());
@@ -2324,7 +2369,8 @@ public class MitgliedControl extends FilterControl
       String persa = (String) getKtoiPersonenart().getValue();
       m.setKtoiPersonenart(persa.substring(0, 1));
       m.setKtoiPlz((String) getKtoiPlz().getValue());
-      m.setKtoiStaat((String) getKtoiStaat().getValue());
+      m.setKtoiStaat(getKtoiStaat().getValue() == null ? ""
+          : ((Staat) getKtoiStaat().getValue()).getKey());
       m.setKtoiStrasse((String) getKtoiStrasse().getValue());
       m.setKtoiTitel((String) getKtoiTitel().getValue());
       m.setKtoiVorname((String) getKtoiVorname().getValue());
@@ -2334,7 +2380,8 @@ public class MitgliedControl extends FilterControl
       m.setName((String) getName(false).getValue());
       m.setOrt((String) getOrt().getValue());
       m.setPlz((String) getPlz().getValue());
-      m.setStaat((String) getStaat().getValue());
+      m.setStaat(getStaat().getValue() == null ? ""
+          : ((Staat) getStaat().getValue()).getKey());
       m.setStrasse((String) getStrasse().getValue());
       m.setTelefondienstlich((String) getTelefondienstlich().getValue());
       m.setTelefonprivat((String) getTelefonprivat().getValue());
@@ -2929,6 +2976,7 @@ public class MitgliedControl extends FilterControl
       MitgliedNextBGruppe m = datenIterator.next();
       beitragsTabelle.addItem(m);
     }
+    beitragsTabelle.sort();
   }
   
   @Override

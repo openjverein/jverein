@@ -74,7 +74,7 @@ public class ProjektImpl extends AbstractDBObject implements Projekt
 
   private void plausi() throws RemoteException, ApplicationException
   {
-    if (getBezeichnung() == null)
+    if (getBezeichnung() == null || getBezeichnung().isEmpty())
     {
       throw new ApplicationException("Bitte Bezeichnung eingeben");
     }

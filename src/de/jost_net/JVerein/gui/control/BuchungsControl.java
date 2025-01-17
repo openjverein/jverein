@@ -51,23 +51,24 @@ import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SollbuchungAuswahlInput;
-import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.SplitbuchungListTablePart;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.io.BuchungAuswertungCSV;
 import de.jost_net.JVerein.io.BuchungAuswertungPDF;
 import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -79,6 +80,7 @@ import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Projekt;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
@@ -206,13 +208,13 @@ public class BuchungsControl extends AbstractControl
   
   protected String settingsprefix = "geldkonto.";
   
-  private Kontenart kontoart = Kontenart.ALLE;
+  private Kontenfilter kontenfilter = Kontenfilter.ALLE;
   
   private boolean geldkonto = true;
   
-  public enum Kontenart
+  public enum Kontenfilter
   {
-    GELDKONTO,
+    GELDKONTO,  // Beinhaltet Rückstellungen
     ANLAGEKONTO,
     ALLE
   }
@@ -224,13 +226,13 @@ public class BuchungsControl extends AbstractControl
     MONAT, TAG
   }
 
-  public BuchungsControl(AbstractView view, Kontenart kontoart)
+  public BuchungsControl(AbstractView view, Kontenfilter kontenfilter)
   {
     super(view);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
-    this.kontoart = kontoart;
-    if (kontoart == Kontenart.ANLAGEKONTO)
+    this.kontenfilter = kontenfilter;
+    if (kontenfilter == Kontenfilter.ANLAGEKONTO)
     {
       geldkonto = false;
       settingsprefix = "anlagenkonto.";
@@ -254,7 +256,7 @@ public class BuchungsControl extends AbstractControl
 
   public void fillBuchung(Buchung b) throws ApplicationException, RemoteException
   { 
-    b.setBuchungsart(getSelectedBuchungsArtId());
+    b.setBuchungsartId(getSelectedBuchungsArtId());
     b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
     b.setProjektID(getSelectedProjektId());
     b.setKonto(getSelectedKonto());
@@ -289,27 +291,42 @@ public class BuchungsControl extends AbstractControl
     {
       return dependent_buchungen;
     }
-
+    boolean isSteuerBuchung = false;
     // Falls noch nichts erzeugt wurde, neue Liste erzeugen und DependencyId setzen!
     dependent_buchungen = new ArrayList<Buchung>();
-    if (getBuchung().getDependencyId() == -1) {
+    if (getBuchung().getDependencyId() == -1)
+    {
       Buchung new_dependent_buchung = (Buchung) Einstellungen.getDBService()
-        .createObject(Buchung.class, null);
+          .createObject(Buchung.class, null);
       getBuchung().setDependencyId(SplitbuchungsContainer.getNewDependencyId());
       new_dependent_buchung.setDependencyId(getBuchung().getDependencyId());
       dependent_buchungen.add(new_dependent_buchung);
     }
     // Falls DependencyId vorhanden ist, alle anderen Elemente mit gleicher Id raussuchen
-    else {
+    // Ein Container wird nicht für die Steuerbuchungen generiert, sonst werden zugehörige
+    // Buchungen gelöscht
+    else
+    {
       int pos_b = SplitbuchungsContainer.get().indexOf(getBuchung());
-      for (Buchung b_tmp : SplitbuchungsContainer.get()) {
+      Double buchungBetrag = Math.abs(getBuchung().getBetrag());
+      for (Buchung b_tmp : SplitbuchungsContainer.get())
+      {
         if (b_tmp.getDependencyId() == getBuchung().getDependencyId() && 
-            SplitbuchungsContainer.get().indexOf(b_tmp) != pos_b) {
+            SplitbuchungsContainer.get().indexOf(b_tmp) != pos_b)
+        {
+          if (Math.abs(b_tmp.getBetrag()) > buchungBetrag)
+          {
+            // Das ist eine Steuerbuchung
+            isSteuerBuchung = true;
+            dependent_buchungen = new ArrayList<Buchung>();
+            break;
+          }
           dependent_buchungen.add(b_tmp);
         }
       }
     }
-    if (dependent_buchungen.size() == 0) {
+    if (dependent_buchungen.size() == 0 && !isSteuerBuchung)
+    {
       throw new RemoteException("Buchungen mit Id " + getBuchung().getDependencyId() + " konnten nicht gefunden werden!");
     }
     return dependent_buchungen;
@@ -350,7 +367,7 @@ public class BuchungsControl extends AbstractControl
     }
     String kontoid = getVorauswahlKontoId();
     konto = new KontoauswahlInput(getBuchung().getKonto())
-        .getKontoAuswahl(false, kontoid, false, true, kontoart);
+        .getKontoAuswahl(false, kontoid, false, true, kontenfilter);
     if (withFocus)
     {
       konto.focus();
@@ -672,7 +689,7 @@ public class BuchungsControl extends AbstractControl
     }
     String kontoid = settings.getString(settingsprefix + "suchkontoid", "");
     suchkonto = new KontoauswahlInput().getKontoAuswahl(true, kontoid, false,
-        true, kontoart);
+        true, kontenfilter);
     suchkonto.addListener(new FilterListener());
     return suchkonto;
   }
@@ -700,7 +717,7 @@ public class BuchungsControl extends AbstractControl
               b.setAuszugsnummer(master.getAuszugsnummer());
               b.setBetrag(ssub.getBetrag() * -1);
               b.setBlattnummer(master.getBlattnummer());
-              b.setBuchungsart(master.getBuchungsartId());
+              b.setBuchungsartId(master.getBuchungsartId());
               b.setBuchungsklasseId(master.getBuchungsklasseId());
               b.setDatum(su.getAusfuehrungsdatum());
               b.setKonto(master.getKonto());
@@ -966,7 +983,9 @@ public class BuchungsControl extends AbstractControl
       {
         b.plausi();
         Buchungsart b_art = b.getBuchungsart();
-        if (b_art.getSteuersatz() > 0) {
+        // Keine Steuer Buchungen erzeugen beim Speichern einer Haupt- bzw. Gegenbuchung
+        if (b.getSplitTyp() == SplitbuchungTyp.SPLIT && b_art.getSteuersatz() > 0)
+        {
           Buchung b_steuer = getDependentBuchungen().get(0);     
           fillBuchung(b_steuer);
 
@@ -986,7 +1005,8 @@ public class BuchungsControl extends AbstractControl
               break;
           }
           
-          b_steuer.setBuchungsart(Long.valueOf(b_art.getSteuerBuchungsart().getID()));
+          b_steuer.setBuchungsartId(Long.valueOf(b_art.getSteuerBuchungsart().getID()));
+          b_steuer.setBuchungsklasseId(b_art.getBuchungsklasseId());
           b_steuer.setBetrag(steuer.doubleValue());
           b_steuer.setZweck(b.getZweck() + zweck_postfix);          
           b_steuer.setSplitId(b.getSplitId());
@@ -995,10 +1015,12 @@ public class BuchungsControl extends AbstractControl
           SplitbuchungsContainer.add(b);
           SplitbuchungsContainer.add(b_steuer);
         }
-        else {
+        else
+        {
           // Falls vorher abhängige Buchungen erzeugt wurden, nun dies aber durch ändern der Buchungsart o.ä. aufgehoben wird, 
           // alle abhängigen Buchungen löschen und Abhängigkeit resetten
-          if (b.getDependencyId() != -1) {
+          if (b.getDependencyId() != -1 && getDependentBuchungen().size() > 0)
+          {
             for (Buchung b_tmp : getDependentBuchungen()) {
               b_tmp.setDependencyId(-1);
               b_tmp.setDelete(true);
@@ -1098,6 +1120,11 @@ public class BuchungsControl extends AbstractControl
     try
     {
       Konto konto = (Konto) getKonto(false).getValue();
+      if (konto == null)
+      {
+        throw new ApplicationException(
+            "Kein Konto Ausgewählt. Ggfs. erst unter Buchführung->Konten ein Konto anlegen.");
+      }
       settings.setAttribute(settingsprefix + "kontoid", konto.getID());
       return konto;
     }
@@ -1219,6 +1246,7 @@ public class BuchungsControl extends AbstractControl
     }
     settings.setAttribute(settingsprefix + "suchtext", (String) getSuchtext().getValue());
     settings.setAttribute(settingsprefix + "suchbetrag", (String) getSuchBetrag().getValue());
+    settings.setAttribute(settingsprefix + "mitglied", (String) getMitglied().getValue());
 
     query = new BuchungQuery(dv, db, k, b, p, (String) getSuchtext().getValue(),
         (String) getSuchBetrag().getValue(), m.getValue(),
@@ -1451,6 +1479,7 @@ public class BuchungsControl extends AbstractControl
     {
       splitbuchungsList.addItem(b);
     }
+    splitbuchungsList.sort();
   }
 
   private void starteAuswertung(boolean einzelbuchungen)
@@ -1785,6 +1814,13 @@ public class BuchungsControl extends AbstractControl
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
           return true;
         }
+        Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
+        if(spb != null)
+        {
+          GUI.getStatusBar().setErrorText(
+              "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
+          return true;
+        }
       }
     }
     catch (RemoteException e)
@@ -1813,6 +1849,13 @@ public class BuchungsControl extends AbstractControl
             GUI.getStatusBar().setErrorText(String.format(
                 "Buchung wurde bereits am %s von %s abgeschlossen.",
                 new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
+            return true;
+          }
+          Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
+          if(spb != null)
+          {
+            GUI.getStatusBar().setErrorText(
+                "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
             return true;
           }
         }
@@ -2180,9 +2223,9 @@ public class BuchungsControl extends AbstractControl
     return settingsprefix;
   }
 
-  public Button getZurueckButton()
+  public ToolTipButton getZurueckButton()
   {
-    return new Button("", new Action()
+    return new ToolTipButton("", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
@@ -2225,9 +2268,9 @@ public class BuchungsControl extends AbstractControl
     }, null, false, "go-previous.png");
   }
 
-  public Button getVorButton()
+  public ToolTipButton getVorButton()
   {
-    return new Button("", new Action()
+    return new ToolTipButton("", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException

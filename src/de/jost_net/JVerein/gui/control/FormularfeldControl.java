@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.itextpdf.text.pdf.BaseFont;
 
@@ -25,7 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.LastschriftVar;
 import de.jost_net.JVerein.Variable.MitgliedVar;
-import de.jost_net.JVerein.Variable.MitgliedskontoVar;
+import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Felddefinition;
@@ -40,7 +41,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-
 import de.willuhn.logging.Logger;
 
 public class FormularfeldControl extends FormularPartControl
@@ -196,6 +196,10 @@ public class FormularfeldControl extends FormularPartControl
       {
         namen.add(spv.getName());
       }
+      for (MitgliedVar mv : MitgliedVar.values())
+      {
+        namen.add(mv.getName());
+      }
     }
     if (formular.getArt() == FormularArt.SAMMELSPENDENBESCHEINIGUNG)
     {
@@ -206,6 +210,10 @@ public class FormularfeldControl extends FormularPartControl
       for (SpendenbescheinigungVar spv : SpendenbescheinigungVar.values())
       {
         namen.add(spv.getName());
+      }
+      for (MitgliedVar mv : MitgliedVar.values())
+      {
+        namen.add(mv.getName());
       }
     }
     if (formular.getArt() == FormularArt.FREIESFORMULAR)
@@ -241,7 +249,7 @@ public class FormularfeldControl extends FormularPartControl
       {
         namen.add(mv.getName());
       }
-      for (MitgliedskontoVar mkv : MitgliedskontoVar.values())
+      for (RechnungVar mkv : RechnungVar.values())
       {
         namen.add(mkv.getName());
       }
@@ -249,7 +257,9 @@ public class FormularfeldControl extends FormularPartControl
     }
     if (formular.getArt() == FormularArt.FREIESFORMULAR
         || formular.getArt() == FormularArt.RECHNUNG
-        || formular.getArt() == FormularArt.MAHNUNG)
+        || formular.getArt() == FormularArt.MAHNUNG
+        || formular.getArt() == FormularArt.SPENDENBESCHEINIGUNG
+        || formular.getArt() == FormularArt.SAMMELSPENDENBESCHEINIGUNG)
     {
       DBIterator<Lesefeld> itlesefelder = Einstellungen.getDBService()
           .createList(Lesefeld.class);
@@ -267,6 +277,7 @@ public class FormularfeldControl extends FormularPartControl
         namen.add(Einstellungen.ZUSATZFELD_PRE + zusatzfeld.getName());
       }
     }
+    Collections.sort(namen);
     name = new SelectInput(namen, getFormularfeld().getName());
     return name;
   }

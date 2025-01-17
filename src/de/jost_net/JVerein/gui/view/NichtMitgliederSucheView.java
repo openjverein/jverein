@@ -41,7 +41,7 @@ public class NichtMitgliederSucheView extends AbstractMitgliedSucheView
   @Override
   public String getTitle()
   {
-    return "Nicht-Mitglieder suchen";
+    return "Nicht-Mitglieder";
   }
 
   @Override

@@ -18,17 +18,18 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
 import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
 import de.jost_net.JVerein.gui.action.BuchungDuplizierenAction;
 import de.jost_net.JVerein.gui.action.BuchungGegenbuchungAction;
-import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
+import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
+import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -37,6 +38,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.logging.Logger;
 
 /**
@@ -64,23 +66,27 @@ public class BuchungMenu extends ContextMenu
         "edit-copy.png"));
     addItem(new AufloesenItem("Auflösen", new SplitbuchungBulkAufloesenAction(),
         "unlocked.png"));
+    addItem(new BuchungItem("Löschen", new BuchungDeleteAction(false),
+            "user-trash-full.png"));
+    addItem(ContextMenuItem.SEPARATOR);
     if (geldkonto)
     {
+      addItem(new MitgliedOeffnenItem("Mitglied anzeigen",
+              new MitgliedDetailAction(), "user-friends.png"));
       addItem(new SingleGegenBuchungItem("Neues Anlagenkonto", new AnlagenkontoNeuAction(),
           "document-new.png"));
     }
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(control), "view-refresh.png"));
-    if (geldkonto)
+    if (geldkonto) {
       addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
-        new BuchungSollbuchungZuordnungAction(control), "view-refresh.png"));
+              new BuchungSollbuchungZuordnungAction(control), "view-refresh.png"));
+    }
     addItem(new CheckedContextMenuItem("Projekt zuordnen",
         new BuchungProjektZuordnungAction(control), "view-refresh.png"));
     if (geldkonto)
       addItem(new CheckedContextMenuItem("Kontoauszug zuordnen",
         new BuchungKontoauszugZuordnungAction(control), "view-refresh.png"));
-    addItem(new BuchungItem("Löschen", new BuchungDeleteAction(false),
-        "user-trash-full.png"));
   }
 
   private static class SingleBuchungItem extends CheckedSingleContextMenuItem
@@ -245,6 +251,26 @@ public class BuchungMenu extends ContextMenu
       }
       catch (RemoteException e)
       {
+        Logger.error("Fehler", e);
+      }
+      return false;
+    }
+  }
+
+  private static class MitgliedOeffnenItem extends CheckedContextMenuItem
+  {
+    private MitgliedOeffnenItem(String text, Action action, String icon) { super(text, action, icon); }
+
+    @Override
+    public boolean isEnabledFor(Object o) {
+      try
+      {
+        if (o instanceof Buchung)
+        {
+          return ((Buchung) o).getMitgliedskonto() != null;
+        }
+      }
+      catch (RemoteException e) {
         Logger.error("Fehler", e);
       }
       return false;

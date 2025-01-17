@@ -33,7 +33,7 @@ public class SpendenbescheinigungMailView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Spendenbescheinigung");
+    GUI.getView().setTitle("Spendenbescheinigungen");
 
     final SpendenbescheinigungControl control = new SpendenbescheinigungControl(this);
     control.init("spenden." , null, null);
@@ -46,6 +46,7 @@ public class SpendenbescheinigungMailView extends AbstractView
       SimpleContainer left = new SimpleContainer(cl.getComposite());
       left.addInput(control.getSuchname());
       left.addInput(control.getMailauswahl());
+      left.addInput(control.getSuchSpendenart());
 
       SimpleContainer middle = new SimpleContainer(cl.getComposite());
       middle.addLabelPair("Bescheinigungsdatum von", control.getDatumvon());

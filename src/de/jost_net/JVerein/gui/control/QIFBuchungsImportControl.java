@@ -790,7 +790,7 @@ public class QIFBuchungsImportControl extends AbstractControl
       Buchung buchung = BuchungNoCheck.getNewInstanze();
       buchung.setArt(importPos.getBeleg());
       buchung.setBetrag(importPos.getBetrag().doubleValue());
-      buchung.setBuchungsart(importPos.getBuchungsartId());
+      buchung.setBuchungsartId(importPos.getBuchungsartId());
       buchung.setDatum(importPos.getDatum());
       buchung.setKommentar("Importiert von externen Programm");
       buchung.setKonto(konto);

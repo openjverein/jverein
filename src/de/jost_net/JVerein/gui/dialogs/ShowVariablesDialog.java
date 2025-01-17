@@ -10,7 +10,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import de.willuhn.jameica.gui.GUI;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.menu.ShowVariablesMenu;
@@ -46,6 +50,10 @@ public class ShowVariablesDialog extends AbstractDialog<Object>
 
   private Action doubleClickAction = null;
 
+  private final Clipboard clipboard;
+
+  private final String prependCopyText, appendCopyText;
+
   public ShowVariablesDialog(Map<String, Object> vars)
   {
     this(vars, true);
@@ -53,10 +61,19 @@ public class ShowVariablesDialog extends AbstractDialog<Object>
 
   public ShowVariablesDialog(Map<String, Object> vars, boolean open)
   {
+    this(vars, open, "", "");
+  }
+
+  public ShowVariablesDialog(Map<String, Object> vars, boolean open,
+      String prependCopyText, String appendCopyText)
+  {
     super(AbstractDialog.POSITION_CENTER);
     setTitle("Liste der Variablen");
     setSize(400, 400);
+    this.clipboard = new Clipboard(GUI.getDisplay());
     this.vars = vars;
+    this.prependCopyText = prependCopyText;
+    this.appendCopyText = appendCopyText;
     // default context menu
     contextMenu = new ShowVariablesMenu();
     if (open)
@@ -90,21 +107,34 @@ public class ShowVariablesDialog extends AbstractDialog<Object>
     tab.paint(parent);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("OK", new Action()
+    buttons.addButton("In Zwischenablage kopieren", new Action()
     {
 
       @Override
       public void handleAction(Object context)
       {
+        if (tab.getSelection() instanceof Var)
+        {
+          Var v = (Var) tab.getSelection();
+          String textData = (String) v.getAttribute("name");
+          if (textData.length() > 0)
+          {
+            TextTransfer textTransfer = TextTransfer.getInstance();
+            clipboard.setContents(
+                new Object[] { prependCopyText + textData + appendCopyText },
+                new Transfer[] { textTransfer });
+          }
+        }
+
         close();
       }
-    }, null, true, "ok.png");
+    }, null, true, "edit-copy.png");
     buttons.paint(parent);
   }
 
   /**
    * Setze ContextMenu für Tabelle.
-   * 
+   *
    * @param newContextMenu
    */
   public void setContextMenu(ContextMenu newContextMenu)
@@ -115,7 +145,7 @@ public class ShowVariablesDialog extends AbstractDialog<Object>
   /**
    * Setze Action, die ausgelöst wird, wenn Nutzer doppelt auf Eintrag in
    * Tabelle klickt.
-   * 
+   *
    * @param newDoubleClickAction
    */
   public void setDoubleClickAction(Action newDoubleClickAction)

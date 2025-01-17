@@ -19,7 +19,6 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import de.willuhn.datasource.rmi.DBObject;
 
@@ -87,30 +86,40 @@ public interface Spendenbescheinigung extends DBObject
   public void setMitgliedID(Integer mitglied) throws RemoteException;
 
   /**
-   * Liefert als Kennzeichen zurück, ob die Spendenbescheinigung eine
+   * Liefert als Kennzeichen zurÃ¼ck, ob die Spendenbescheinigung eine
    * Sammelbestaetigung ist. Dies ist der Fall, wenn die Liste der Buchungen
-   * mehr als eine Buchung enthält. Ist keine oder nur eine Buchung zugewiesen,
-   * liegt eine Einzelbestätigung vor.
+   * mehr als eine Buchung enthÃ¤lt. Ist keine oder nur eine Buchung zugewiesen,
+   * liegt eine EinzelbestÃ¤tigung vor.
    * 
-   * @return Flag, ob Sammelbestätigung
+   * @return Flag, ob SammelbestÃ¤tigung
    * @throws RemoteException
    */
   public boolean isSammelbestaetigung() throws RemoteException;
 
   /**
-   * Fügt der Liste der Buchungen eine Buchung hinzu. Der Gesamtbetrag der
-   * Spendenbescheinigung wird anhand der Einzelbeträge der Buchungen berechnet.
+   * Liefert als Kennzeichen zurÃ¼ck, ob die Spendenbescheinigung eine echte
+   * Geldspende ist. Dies ist der Fall, wenn es sich um eine Gelspende handelt
+   * bei der bei keiner Buchung das Flag Erstattungsverzicht gesetzt ist.
+   * 
+   * @return Flag, ob echte Geldspende
+   * @throws RemoteException
+   */
+  public boolean isEchteGeldspende() throws RemoteException;
+  
+  /**
+   * FÃ¼gt der Liste der Buchungen eine Buchung hinzu. Der Gesamtbetrag der
+   * Spendenbescheinigung wird anhand der EinzelbetrÃ¤ge der Buchungen berechnet.
    * Die Spendenart wird auf "GELDSPENDE" gesetzt.
    * 
    * @param buchung
-   *          Die Buchung zum Hinzufügen
+   *          Die Buchung zum HinzufÃ¼gen
    */
   public void addBuchung(Buchung buchung) throws RemoteException;
 
   /**
-   * Hängt eine Buchung an die Spendenbescheinigung, wenn es eine
-   * Einzelbestätigung werden soll. Sollten vorher schon Buchungen eingetragen
-   * worden sein, wird die Liste der Buchungen vorher gelöscht.
+   * HÃ¤ngt eine Buchung an die Spendenbescheinigung, wenn es eine
+   * EinzelbestÃ¤tigung werden soll. Sollten vorher schon Buchungen eingetragen
+   * worden sein, wird die Liste der Buchungen vorher gelÃ¶scht.
    * 
    * @param buchung
    *          Die Buchung, die der Spendenbescheinigung zugeordnet wird
@@ -118,10 +127,10 @@ public interface Spendenbescheinigung extends DBObject
   public void setBuchung(Buchung buchung) throws RemoteException;
 
   /**
-   * Liefert die Liste der Buchungen einer Spendenbescheinigung zurück. Falls
+   * Liefert die Liste der Buchungen einer Spendenbescheinigung zurÃ¼ck. Falls
    * die Liste noch nicht angelegt wurde, wird sie aus der Datenbank
    * nachgeladen. Sollten der Spendenbescheinigung noch keine Buchungen
-   * zugeordnet sein, wird eine leere Liste zurückgegeben.<br>
+   * zugeordnet sein, wird eine leere Liste zurÃ¼ckgegeben.<br>
    * Beim Laden der Buchungen wird der Gesamtbetrag berechnet
    * 
    * @return Liste der der Spendenbescheinigung zugeordneten Buchungen
@@ -140,9 +149,6 @@ public interface Spendenbescheinigung extends DBObject
   public Boolean getUnterlagenWertermittlung() throws RemoteException;
 
   public void setUnterlagenWertermittlung(Boolean unterlagenwertermittlung)
-      throws RemoteException;
-
-  public Map<String, Object> getMap(Map<String, Object> inma)
       throws RemoteException;
 
   /**
@@ -164,5 +170,7 @@ public interface Spendenbescheinigung extends DBObject
    * @throws RemoteException
    */
   public void setAutocreate(Boolean autocreate) throws RemoteException;
+
+  public Date getZeitraumBis() throws RemoteException;
 
 }

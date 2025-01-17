@@ -29,7 +29,7 @@ public class EigenschaftGruppeListeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Eigenschaften Gruppen");
+    GUI.getView().setTitle("Eigenschaftengruppen");
 
     EigenschaftGruppeControl control = new EigenschaftGruppeControl(this);
 

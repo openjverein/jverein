@@ -19,11 +19,11 @@ package de.jost_net.JVerein.gui.menu;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungEditAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungLoeschenAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungNeuAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoIstbuchungEditAction;
-import de.jost_net.JVerein.gui.action.MitgliedskontoIstbuchungLoesenAction;
+import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
+import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
+import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
+import de.jost_net.JVerein.gui.action.IstbuchungEditAction;
+import de.jost_net.JVerein.gui.action.IstbuchungLoesenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.keys.Spendenart;
@@ -47,16 +47,16 @@ public class MitgliedskontoMenu extends ContextMenu
   public MitgliedskontoMenu()
   {
     addItem(new MitgliedItem("Neue Sollbuchung",
-        new MitgliedskontoSollbuchungNeuAction(), "document-new.png"));
+        new SollbuchungNeuAction(), "document-new.png"));
     addItem(new SollItem("Sollbuchung bearbeiten",
-        new MitgliedskontoSollbuchungEditAction(), "text-x-generic.png"));
+        new SollbuchungEditAction(), "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
-        new MitgliedskontoSollbuchungLoeschenAction(), "user-trash-full.png"));
+        new SollbuchungLoeschenAction(), "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SollMitIstItem("Istbuchung bearbeiten",
-        new MitgliedskontoIstbuchungEditAction(), "text-x-generic.png"));
+        new IstbuchungEditAction(), "text-x-generic.png"));
     addItem(new SollMitIstItem("Istbuchung von Sollbuchung lösen",
-        new MitgliedskontoIstbuchungLoesenAction(), "unlocked.png"));
+        new IstbuchungLoesenAction(), "unlocked.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SpendenbescheinigungItem("Geldspendenbescheinigung",
         new SpendenbescheinigungAction(Spendenart.GELDSPENDE), "file-invoice.png"));

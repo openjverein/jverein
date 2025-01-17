@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.jost_net.JVerein.Variable.MitgliedVar;
-import de.jost_net.JVerein.Variable.MitgliedskontoVar;
+import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.JVereinDBService;
@@ -1026,7 +1026,8 @@ public class JVereinUpdateProvider
     sb.append(" rechnungfuerbarzahlung CHAR(5),");
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
-    sb.append(" )  ENGINE=InnoDB;\n");
+    sb.append(
+        " )  ENGINE=InnoDB CHARACTER SET latin1 COLLATE latin1_german1_ci ROW_FORMAT=DYNAMIC;\n");
     statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
 
     execute(conn, statements, 28);
@@ -3805,7 +3806,8 @@ public class JVereinUpdateProvider
 
     // Update fuer MySQL
     sb = new StringBuilder();
-    sb.append("ALTER TABLE einstellung ADD strasse char(30) after name;\n");
+    sb.append(
+        "ALTER TABLE einstellung ADD strasse char(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci after name;\n");
     statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
 
     execute(conn, statements, 172);
@@ -4360,16 +4362,16 @@ public class JVereinUpdateProvider
         + sql1 + MitgliedVar.KUENDIGUNG.getName() + sql2 + KUENDIGUNG + sql3 //
         + sql1 + MitgliedVar.BEITRAGSGRUPPE_BEZEICHNUNG.getName() + sql2
         + BEITRAGSGRUPPE + sql3 //
-        + sql1 + MitgliedskontoVar.ZAHLUNGSGRUND.getName() + sql2
+        + sql1 + RechnungVar.ZAHLUNGSGRUND.getName() + sql2
         + ZAHLUNGSGRUND + sql3//
-        + sql1 + MitgliedskontoVar.ZAHLUNGSGRUND1.getName() + sql2
+        + sql1 + RechnungVar.ZAHLUNGSGRUND1.getName() + sql2
         + ZAHLUNGSGRUND1 + sql3//
-        + sql1 + MitgliedskontoVar.ZAHLUNGSGRUND2.getName() + sql2
+        + sql1 + RechnungVar.ZAHLUNGSGRUND2.getName() + sql2
         + ZAHLUNGSGRUND2 + sql3//
-        + sql1 + MitgliedskontoVar.BUCHUNGSDATUM.getName() + sql2
+        + sql1 + RechnungVar.BUCHUNGSDATUM.getName() + sql2
         + BUCHUNGSDATUM + sql3//
         + sql1 + "tagesdatum" + sql2 + "Tagesdatum" + sql3//
-        + sql1 + MitgliedskontoVar.BETRAG.getName() + sql2 + BETRAG + sql3//
+        + sql1 + RechnungVar.BETRAG.getName() + sql2 + BETRAG + sql3//
     ;
     Map<String, String> statements = new HashMap<String, String>();
     // Update fuer H2
@@ -4688,7 +4690,7 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(),
         "ALTER TABLE einstellung ALTER COLUMN strasse VARCHAR(50);\n");
     statements.put(DBSupportMySqlImpl.class.getName(),
-        "ALTER TABLE einstellung MODIFY COLUMN strasse VARCHAR(50);\n");
+        "ALTER TABLE einstellung MODIFY COLUMN strasse VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;\n");
     execute(conn, statements, 218);
   }
 
@@ -5211,7 +5213,7 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append(
-        "ALTER TABLE einstellung ADD smtp_from_anzeigename varchar(50) after smtp_from_address;\n");
+        "ALTER TABLE einstellung ADD smtp_from_anzeigename varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci after smtp_from_address;\n");
     statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
 
     execute(conn, statements, 249);
@@ -6890,7 +6892,8 @@ public class JVereinUpdateProvider
   private void update0340(Connection conn) throws ApplicationException
   {
     Map<String, String> statements = new HashMap<String, String>();
-    String sql = alterColumn("einstellung", "name", "VARCHAR(70)");
+    String sql = alterColumn("einstellung", "name",
+        "VARCHAR(70) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci");
     statements.put(driver, sql);
     execute(conn, statements, 340);
   }

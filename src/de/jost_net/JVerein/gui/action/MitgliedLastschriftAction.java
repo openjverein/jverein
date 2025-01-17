@@ -122,7 +122,6 @@ public class MitgliedLastschriftAction implements Action
     if (m.getZahlungsweg() == null
         || m.getZahlungsweg() != Zahlungsweg.BASISLASTSCHRIFT)
     {
-
       abortDialog("Fehler", "Zahlungsweg ist nicht Basislastschrift");
       return false;
     }
@@ -136,22 +135,24 @@ public class MitgliedLastschriftAction implements Action
       }
     }
 
-    // pruefe Sepa Gueltigkeit: Datum der letzen Abbuchung
-    Date letzte_lastschrift = m.getLetzteLastschrift();
-    if (letzte_lastschrift != null)
+    // Pruefe Sepa Gueltigkeit:
+    // Bei Mandaten älter als 3 Jahre muss es eine Lastschrift
+    // innerhalb der letzten 3 Jahre geben
+    Calendar sepagueltigkeit = Calendar.getInstance();
+    sepagueltigkeit.add(Calendar.MONTH, -36);
+    if (m.getMandatDatum().before(sepagueltigkeit.getTime()))
     {
-      Calendar sepagueltigkeit = Calendar.getInstance();
-      sepagueltigkeit.add(Calendar.MONTH, -36);
-      if (letzte_lastschrift.before(sepagueltigkeit.getTime()))
+      Date letzte_lastschrift = m.getLetzteLastschrift();
+      if (letzte_lastschrift == null
+          || letzte_lastschrift.before(sepagueltigkeit.getTime()))
       {
-        if (!confirmDialog("Letzte Lastschrift",
-            "Letzte Lastschrift ist älter als 36 Monate"))
+        if (!confirmDialog("Mandat abgelaufen",
+            "Das Mandat-Datum ist älter als 36 Monate und es erfolgte keine Lastschrift in den letzten 36 Monaten."))
         {
           return false;
         }
-        }
+      }
     }
-
     return true;
   }
 

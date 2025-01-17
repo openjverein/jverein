@@ -42,15 +42,17 @@ public class EinstellungenAllgemeinView extends AbstractView
     cont.addLabelPair("Straße", control.getStrasse());
     cont.addLabelPair("PLZ", control.getPlz());
     cont.addLabelPair("Ort", control.getOrt());
-    TextInput bic = control.getBic(); // vor IBAN initialisieren, das IBAN eine
+    cont.addLabelPair("Staat", control.getStaat());
+    TextInput bic = control.getBic(); // vor IBAN initialisieren, da IBAN eine
                                       // Referenz auf bic benötigt!
     cont.addLabelPair("IBAN", control.getIban());
     cont.addLabelPair("BIC", bic);
     cont.addLabelPair("Gläubiger-ID", control.getGlaeubigerID());
+    cont.addLabelPair("USt-ID", control.getUstID());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_ALLGEMEIN, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

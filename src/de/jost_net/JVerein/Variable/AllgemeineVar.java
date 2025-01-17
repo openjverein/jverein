@@ -30,7 +30,17 @@ public enum AllgemeineVar
   TAGESDATUMJJJJ("tagesdatumjjjj"), //
   VORMONAT("vormonat"), //
   VORJAHR("vorjahr"), //
-  ZAEHLER("zaehler"); //
+  ZAEHLER("zaehler"), //
+  NAME("verein_name"), //
+  STRASSE("verein_strasse"), //
+  PLZ("verein_name"), //
+  ORT("verein_ort"), //
+  STAAT("verein_staat"), //
+  IBAN("verein_iban"), //
+  BIC("verein_bic"), //
+  GLAEUBIGER_ID("verein_glaeubiger_id"), //
+  UST_ID("verein_ust_id"), //
+  STEUER_NR("verein_steuer_nr"); //
 
   private String name;
 

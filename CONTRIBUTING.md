@@ -20,7 +20,9 @@ Das Handbuch ist im Repository https://github.com/openjverein/jverein-Book. Der 
 Für die OpenJVerein-Entwicklung werden benötigt
 
 - Eclipse/IntelliJ IDEA
-- Java 11+ (JDK)
+- Java 11 (JDK)
+
+Es wird Java 11 (keine höhere Version) benötigt, damit die Kompatibilität zu Jameica gewährleistet ist und keine APIs verwendet werden, die in späteren Java Versionen eingeführt wurden.
 
 # Build und Test
 Build und Test sind hier beschrieben: https://www.willuhn.de/wiki/doku.php?id=develop:eclipse

@@ -264,6 +264,7 @@ public class FormularControl extends FormularPartControl
     formularList.setContextMenu(new FormularMenu(this));
     formularList.setRememberOrder(true);
     formularList.removeFeature(FeatureSummary.class);
+    formularList.setMulti(true);
     return formularList;
   }
 
@@ -277,6 +278,7 @@ public class FormularControl extends FormularPartControl
     {
       formularList.addItem(formulare.next());
     }
+    formularList.sort();
   }
 
 }

@@ -25,7 +25,8 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenart;
+import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -39,7 +40,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 public class KontoList extends TablePart implements Part
 {
   public KontoList(Action action, boolean onlyHibiscus,
-      boolean nurAktuelleKonten, Kontenart art) throws RemoteException
+      boolean nurAktuelleKonten, Kontenfilter art) throws RemoteException
   {
     this(init(onlyHibiscus, nurAktuelleKonten, art), action);
   }
@@ -71,7 +72,7 @@ public class KontoList extends TablePart implements Part
    * @throws RemoteException
    */ 
   public synchronized void update(boolean onlyHibiscus,
-	      boolean nurAktuelleKonten, Kontenart art) throws RemoteException
+	      boolean nurAktuelleKonten, Kontenfilter art) throws RemoteException
   {
     super.removeAll();
     List<Konto> list = init(onlyHibiscus, nurAktuelleKonten, art);
@@ -89,7 +90,7 @@ public class KontoList extends TablePart implements Part
    */
   @SuppressWarnings("unchecked")
   private static List<Konto> init(boolean onlyHibiscus,
-      boolean nurAktuelleKonten, Kontenart art) throws RemoteException
+      boolean nurAktuelleKonten, Kontenfilter art) throws RemoteException
   {
     DBIterator<Konto> i = Einstellungen.getDBService().createList(Konto.class);
     if (onlyHibiscus)
@@ -103,10 +104,12 @@ public class KontoList extends TablePart implements Part
       year = year - Einstellungen.getEinstellung().getUnterdrueckungKonten();
       i.addFilter("(aufloesung is null or year(aufloesung) >= ?)", year);
     }
-    if (art == Kontenart.GELDKONTO)
-      i.addFilter("anlagenkonto = false");
-    if (art == Kontenart.ANLAGEKONTO)
-      i.addFilter("anlagenkonto = true");
+    if (art == Kontenfilter.GELDKONTO)
+      i.addFilter("kontoart != ?",
+          new Object[] { Kontoart.ANLAGE.getKey() });
+    if (art == Kontenfilter.ANLAGEKONTO)
+      i.addFilter("kontoart = ?",
+          new Object[] { Kontoart.ANLAGE.getKey() });
     i.setOrder("ORDER BY nummer, bezeichnung");
     return i != null ? PseudoIterator.asList(i) : null;
   }

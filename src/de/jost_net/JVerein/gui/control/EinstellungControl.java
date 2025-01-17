@@ -39,6 +39,7 @@ import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Einstellung;
@@ -309,7 +310,6 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput summenAnlagenkonto;
 
-
   private IntegerInput qrcodesize;
 
   private CheckboxInput qrcodeptext;
@@ -335,11 +335,17 @@ public class EinstellungControl extends AbstractControl
   private SelectInput afaort;
 
   private TextInput beitragaltersstufen;
+  
+  private CheckboxInput mittelverwendung;
 
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
    */
   private Wallet wallet = null;
+
+  private TextInput ustid;
+
+  private SelectInput staat;
 
   public EinstellungControl(AbstractView view)
   {
@@ -405,6 +411,27 @@ public class EinstellungControl extends AbstractControl
     }
     ort = new TextInput(Einstellungen.getEinstellung().getOrt(), 50);
     return ort;
+  }
+
+  public SelectInput getStaat() throws RemoteException
+  {
+    if (staat != null)
+    {
+      return staat;
+    }
+    staat = new SelectInput(Staat.values(),
+        Staat.getByKey(Einstellungen.getEinstellung().getStaat()));
+    return staat;
+  }
+
+  public Input getUstID() throws RemoteException
+  {
+    if (ustid != null)
+    {
+      return ustid;
+    }
+    ustid = new TextInput(Einstellungen.getEinstellung().getUStID(), 50);
+    return ustid;
   }
 
   public TextInput getFinanzamt() throws RemoteException
@@ -1332,7 +1359,6 @@ public class EinstellungControl extends AbstractControl
     sepaversion = new SelectInput(list, 
         Einstellungen.getEinstellung().getSepaVersion());
     sepaversion.setAttribute("file");
-    sepaversion.setPleaseChoose("Bitte auswählen");
     return sepaversion;
   }
   
@@ -1347,7 +1373,6 @@ public class EinstellungControl extends AbstractControl
     ct1sepaversion = new SelectInput(list, 
         Einstellungen.getEinstellung().getCt1SepaVersion());
     ct1sepaversion.setAttribute("file");
-    ct1sepaversion.setPleaseChoose("Bitte auswählen");
     return ct1sepaversion;
   }
 
@@ -1969,6 +1994,8 @@ public class EinstellungControl extends AbstractControl
       return unterschriftdrucken;
     }
     unterschriftdrucken = new CheckboxInput(Einstellungen.getEinstellung().getUnterschriftdrucken());
+    unterschriftdrucken.setName(" *Die maschinelle Erstellung von Zuwendungsbestätigungen muss "
+        + "vorab dem zuständigen Finanzamt angezeigt worden sein.");
     return unterschriftdrucken;
   }
 
@@ -2027,6 +2054,17 @@ public class EinstellungControl extends AbstractControl
     return afaort;
   }
 
+  public CheckboxInput getMittelverwendung() throws RemoteException
+  {
+    if (mittelverwendung != null)
+    {
+      return mittelverwendung;
+    }
+    mittelverwendung = new CheckboxInput(
+        Einstellungen.getEinstellung().getMittelverwendung());
+    return mittelverwendung;
+  }
+
   public void handleStoreAllgemein()
   {
     try
@@ -2044,6 +2082,8 @@ public class EinstellungControl extends AbstractControl
       else
         e.setIban(ib.toUpperCase().replace(" ",""));
       e.setGlaeubigerID((String) getGlaeubigerID().getValue());
+      e.setStaat(((Staat)getStaat().getValue()).getKey());
+      e.setUStID((String) getUstID().getValue());
       e.store();
       Einstellungen.setEinstellung(e);
 
@@ -2114,6 +2154,7 @@ public class EinstellungControl extends AbstractControl
         e.setAfaInJahresabschluss(false);
       else
         e.setAfaInJahresabschluss(true);
+      e.setMittelverwendung((Boolean) mittelverwendung.getValue());
 
       e.store();
       Einstellungen.setEinstellung(e);
