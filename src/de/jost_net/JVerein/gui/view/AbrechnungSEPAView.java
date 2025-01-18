@@ -57,6 +57,7 @@ public class AbrechnungSEPAView extends AbstractView
     group.addLabelPair("Kursteilnehmer", control.getKursteilnehmer());
     group.addLabelPair("Kompakte Abbuchung", control.getKompakteAbbuchung());
     group.addLabelPair("SEPA-Datei drucken", control.getSEPAPrint());
+    group.addLabelPair("SEPA-Check temporär deaktivieren", control.getSEPACheck());
 
     if (!Einstellungen.getEinstellung().getKursteilnehmer())
     {

@@ -231,4 +231,6 @@ public interface Mitglied extends DBObject, ILastschrift
 
   public void setLeitwegID(String leitwegid) throws RemoteException;
 
+  public boolean checkSEPA() throws RemoteException, ApplicationException;
+
 }

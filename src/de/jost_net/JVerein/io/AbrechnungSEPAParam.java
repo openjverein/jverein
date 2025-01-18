@@ -61,6 +61,8 @@ public class AbrechnungSEPAParam
 
   public final Boolean sepaprint;
 
+  public final Boolean sepacheckdisable;
+
   public final File sepafileRCUR;
 
   public final SepaVersion sepaVersion;
@@ -90,6 +92,7 @@ public class AbrechnungSEPAParam
     kursteilnehmer = (Boolean) ac.getKursteilnehmer().getValue();
     kompakteabbuchung = (Boolean) ac.getKompakteAbbuchung().getValue();
     sepaprint = (Boolean) ac.getSEPAPrint().getValue();
+    sepacheckdisable = (Boolean) ac.getSEPACheck().getValue();
     this.pdffileRCUR = pdffileRCUR;
     this.sepafileRCUR = sepafileRCUR;
     this.sepaVersion = sepaVersion;
