@@ -72,7 +72,7 @@ public class MitgliedDeleteAction implements Action
       d.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
       String text = "Wollen Sie diese" + (mitglieder.length > 1 ? "":"s") + " Mitglied" + mehrzahl + " wirklich löschen?"
           + "\nDies löscht auch alle Mitglied bezogenen Daten wie"
-          + "\nz.B. Sollbuchungen, Spendenbescheinigungen, Mails etc."
+          + "\nz.B. Sollbuchungen, Mails etc."
           + "\nDiese Daten können nicht wieder hergestellt werden!";
       d.setText(text);
 

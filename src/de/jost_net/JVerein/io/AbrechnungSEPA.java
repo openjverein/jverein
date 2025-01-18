@@ -248,7 +248,7 @@ public class AbrechnungSEPA
     // Gegenbuchung für das Mitgliedskonto schreiben
     if (!summemitgliedskonto.equals(BigDecimal.valueOf(0)))
     {
-      writeMitgliedskonto(null, param.faelligkeit, "Gegenbuchung",
+      writeMitgliedskonto(null, null, param.faelligkeit, "Gegenbuchung",
           summemitgliedskonto.doubleValue() * -1, abrl, true, getKonto(), null,
           null, null);
     }
@@ -455,7 +455,7 @@ public class AbrechnungSEPA
       Logger.error("Fehler bei der Aufbereitung der Variablen", e);
     }
 
-    writeMitgliedskonto(m, param.faelligkeit,
+    writeMitgliedskonto(m, mZahler, param.faelligkeit,
         primaer ? vzweck : bg.getBezeichnung(), betr, abrl,
         mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT, konto,
         bg.getBuchungsart(), bg.getBuchungsklasseId(),
@@ -634,9 +634,10 @@ public class AbrechnungSEPA
           monitor.log(z.getMitglied().getName() + " " + debString + " " + e);
           throw e;
         }
-        writeMitgliedskonto(m, param.faelligkeit, vzweck, z.getBetrag(), abrl,
-            zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT, konto,
-            z.getBuchungsart(), z.getBuchungsklasseId(), zahlungsweg);
+
+        writeMitgliedskonto(m, mZahler, param.faelligkeit, vzweck,
+            z.getBetrag(), abrl, zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT,
+            konto, z.getBuchungsart(), z.getBuchungsklasseId(), zahlungsweg);
         monitor
             .setStatusText(String.format("Zusatzbetrag von %s, %s abgerechnet",
                 m.getName(), m.getVorname()));
@@ -678,13 +679,15 @@ public class AbrechnungSEPA
         lastschrift.add(zahler);
         kt.setAbbudatum(param.faelligkeit);
         kt.store();
-        writeMitgliedskonto(kt, param.faelligkeit, kt.getVZweck1(),
+
+        writeMitgliedskonto(kt, null, param.faelligkeit, kt.getVZweck1(),
             zahler.getBetrag().doubleValue(), abrl, true, konto, null, null,
             null);
         monitor.setStatusText(String.format("Kursteilnehmer %s, %s abgerechnet",
             kt.getName(), kt.getVorname()));
         monitor.setPercentComplete(
             (int) ((double) count++ / (double) list.size() * 100d));
+
       }
       catch (Exception e)
       {
@@ -861,7 +864,7 @@ public class AbrechnungSEPA
     return abrl;
   }
 
-  private void writeMitgliedskonto(Object mitglied, Date datum, String zweck1,
+  private void writeMitgliedskonto(Object mitglied, Mitglied zahler, Date datum, String zweck1,
       double betrag, Abrechnungslauf abrl, boolean haben, Konto konto,
       Buchungsart buchungsart, Long buchungsklasseId, Integer zahlungsweg)
       throws ApplicationException, RemoteException
@@ -888,6 +891,7 @@ public class AbrechnungSEPA
       mk.setBetrag(betrag);
       mk.setDatum(datum);
       mk.setMitglied(mg);
+      mk.setZahler(zahler);
       mk.setZweck1(zweck1);
       double steuersatz = 0d;
       if (buchungsart != null)
@@ -928,6 +932,7 @@ public class AbrechnungSEPA
         buchung.setBuchungsartId(Long.valueOf(buchungsart.getID()));
       }
       buchung.setBuchungsklasseId(buchungsklasseId);
+      buchung.setVerzicht(false);
       buchung.store();
     }
   }

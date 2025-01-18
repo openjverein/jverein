@@ -66,6 +66,6 @@ public class SollbuchungEditAction implements Action
             "Fehler bei der Erzeugung einer neuen Sollbuchung", e);
       }
     }
-    GUI.startView(new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
+    GUI.startView(new SollbuchungDetailView(), mk);
   }
 }

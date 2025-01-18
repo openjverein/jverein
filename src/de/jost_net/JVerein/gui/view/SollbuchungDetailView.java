@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -30,22 +29,15 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 public class SollbuchungDetailView extends AbstractView
 {
 
-  private int typ;
-
-  public SollbuchungDetailView(int typ)
-  {
-    this.typ = typ;
-  }
-
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Buchung");
+    GUI.getView().setTitle("Sollbuchung");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
-    LabelGroup grBuchung = new LabelGroup(getParent(),
-        (typ == MitgliedskontoNode.SOLL ? "Soll" : "Ist") + "buchung");
+    LabelGroup grBuchung = new LabelGroup(getParent(), "Sollbuchung");
     grBuchung.addLabelPair("Mitglied", control.getMitglied());
+    grBuchung.addLabelPair("Zahler", control.getZahler());
     grBuchung.addLabelPair("Datum", control.getDatum());
     grBuchung.addLabelPair("Verwendungszweck 1", control.getZweck1());
     grBuchung.addLabelPair("Zahlungsweg", control.getZahlungsweg());
@@ -61,11 +53,10 @@ public class SollbuchungDetailView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
-    
+
     boolean hasRechnung = control.hasRechnung();
     Button save = new Button("Speichern", new Action()
     {
-
       @Override
       public void handleAction(Object context)
       {
@@ -74,8 +65,7 @@ public class SollbuchungDetailView extends AbstractView
     }, null, true, "document-save.png");
     save.setEnabled(!hasRechnung);
     buttons.addButton(save);
-    
-    
+
     buttons.paint(this.getParent());
   }
 }

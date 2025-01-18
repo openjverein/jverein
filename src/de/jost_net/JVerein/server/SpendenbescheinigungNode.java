@@ -93,7 +93,7 @@ public class SpendenbescheinigungNode implements GenericObjectNode
     String sql = "SELECT mitglied.id, sum(buchung.betrag) " + "FROM buchung "
         + "  JOIN buchungsart ON buchung.buchungsart = buchungsart.id "
         + "  JOIN mitgliedskonto ON buchung.mitgliedskonto = mitgliedskonto.id "
-        + "  JOIN mitglied ON mitgliedskonto.mitglied = mitglied.id "
+        + "  JOIN mitglied ON mitgliedskonto.zahler = mitglied.id "
         + "WHERE year(buchung.datum) = ? " + "  AND buchungsart.spende = true "
         + "  AND buchung.spendenbescheinigung IS NULL "
         + "  AND buchung.mitgliedskonto IS NOT NULL "
@@ -154,7 +154,7 @@ public class SpendenbescheinigungNode implements GenericObjectNode
         + "  JOIN buchungsart ON buchung.buchungsart = buchungsart.id "
         + "  JOIN mitgliedskonto ON buchung.mitgliedskonto = mitgliedskonto.id "
         + "WHERE year(buchung.datum) = ? " + "  AND buchungsart.spende = true "
-        + "  AND mitgliedskonto.mitglied = ? "
+        + "  AND mitgliedskonto.zahler = ? "
         + "  AND buchung.spendenbescheinigung IS NULL "
         + "  AND buchung.mitgliedskonto IS NOT NULL "
         + "ORDER BY buchung.datum";
