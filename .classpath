@@ -32,6 +32,6 @@
 	<classpathentry kind="lib" path="lib/xmpbox-3.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta.activation-api-2.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j-2.1.4.jar"/>
-	<classpathentry kind="lib" path="lib/mustang-2.15.2.jar"/>
+	<classpathentry kind="lib" path="lib/mustang-2.16.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

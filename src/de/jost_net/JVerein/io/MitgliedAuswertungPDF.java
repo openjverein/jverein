@@ -156,8 +156,7 @@ public class MitgliedAuswertungPDF implements IAuswertung
         params.put("Mail", control.getMailauswahl().getText());
       }
     }
-    if (control.isSuchGeschlechtAktiv() && control.getSuchGeschlecht().getText() != null
-        && !control.getSuchGeschlecht().getText().equals("Bitte auswählen"))
+    if (control.isSuchGeschlechtAktiv() && control.getSuchGeschlecht().getValue() != null)
     {
       params.put("Geschlecht", control.getSuchGeschlecht().getText());
     }
