@@ -46,7 +46,7 @@ public class MittelverwendungExportPDF
       FileOutputStream fos = new FileOutputStream(file);
       String subtitle = "Geschäftsjahr: " + new JVDateFormatTTMMJJJJ().format(datumvon)
           + " - " + new JVDateFormatTTMMJJJJ().format(datumbis);
-      Reporter reporter = new Reporter(fos, "Mittelverwendung", subtitle,
+      Reporter reporter = new Reporter(fos, "Mittelverwendungsrechnung", subtitle,
           zeile.size());
       makeHeader(reporter);
 
