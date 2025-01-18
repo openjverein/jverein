@@ -30,7 +30,7 @@ import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
-import de.jost_net.JVerein.gui.action.SyntaxImportAction;
+import de.jost_net.JVerein.gui.action.SyntaxExportAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
@@ -97,7 +97,7 @@ public class BuchungMenu extends ContextMenu
     {
       addItem(ContextMenuItem.SEPARATOR);
       addItem(new CheckedContextMenuItem("In SynTAX übernehmen",
-          new SyntaxImportAction(), "document-save.png"));
+          new SyntaxExportAction(), "document-save.png"));
     }
   }
 

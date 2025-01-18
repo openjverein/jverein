@@ -28,7 +28,7 @@ import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.util.ApplicationException;
 
-public class SyntaxImportAction implements Action
+public class SyntaxExportAction implements Action
 {
 
   @Override
@@ -88,7 +88,7 @@ public class SyntaxImportAction implements Action
       }
       catch (RemoteException e)
       {
-        throw new ApplicationException("Fehler beim lesen der Buchung.");
+        throw new ApplicationException("Fehler beim Lesen der Buchung.");
       }
       buchunglist.add(buchungMap);
     }
