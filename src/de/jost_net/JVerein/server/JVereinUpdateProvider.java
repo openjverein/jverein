@@ -1026,7 +1026,8 @@ public class JVereinUpdateProvider
     sb.append(" rechnungfuerbarzahlung CHAR(5),");
     sb.append(" UNIQUE (id),");
     sb.append(" PRIMARY KEY (id)");
-    sb.append(" )  ENGINE=InnoDB;\n");
+    sb.append(
+        " )  ENGINE=InnoDB CHARACTER SET latin1 COLLATE latin1_german1_ci ROW_FORMAT=DYNAMIC;\n");
     statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
 
     execute(conn, statements, 28);
@@ -3805,7 +3806,8 @@ public class JVereinUpdateProvider
 
     // Update fuer MySQL
     sb = new StringBuilder();
-    sb.append("ALTER TABLE einstellung ADD strasse char(30) after name;\n");
+    sb.append(
+        "ALTER TABLE einstellung ADD strasse char(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci after name;\n");
     statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
 
     execute(conn, statements, 172);
@@ -4688,7 +4690,7 @@ public class JVereinUpdateProvider
     statements.put(DBSupportH2Impl.class.getName(),
         "ALTER TABLE einstellung ALTER COLUMN strasse VARCHAR(50);\n");
     statements.put(DBSupportMySqlImpl.class.getName(),
-        "ALTER TABLE einstellung MODIFY COLUMN strasse VARCHAR(50);\n");
+        "ALTER TABLE einstellung MODIFY COLUMN strasse VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;\n");
     execute(conn, statements, 218);
   }
 
@@ -5211,7 +5213,7 @@ public class JVereinUpdateProvider
     // Update fuer MySQL
     sb = new StringBuilder();
     sb.append(
-        "ALTER TABLE einstellung ADD smtp_from_anzeigename varchar(50) after smtp_from_address;\n");
+        "ALTER TABLE einstellung ADD smtp_from_anzeigename varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci after smtp_from_address;\n");
     statements.put(DBSupportMySqlImpl.class.getName(), sb.toString());
 
     execute(conn, statements, 249);
@@ -6890,7 +6892,8 @@ public class JVereinUpdateProvider
   private void update0340(Connection conn) throws ApplicationException
   {
     Map<String, String> statements = new HashMap<String, String>();
-    String sql = alterColumn("einstellung", "name", "VARCHAR(70)");
+    String sql = alterColumn("einstellung", "name",
+        "VARCHAR(70) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci");
     statements.put(driver, sql);
     execute(conn, statements, 340);
   }

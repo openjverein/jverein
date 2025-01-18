@@ -120,6 +120,7 @@ public class FreiesFormularAction implements Action
       Map<String, Object> map = new MitgliedMap().getMap(mi, null);
       map = new AllgemeineMap().getMap(map);
       fa.writeForm(fo, map);
+      fo.store();
     }
     fa.showFormular();
 
