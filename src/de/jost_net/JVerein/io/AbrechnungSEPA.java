@@ -1294,12 +1294,13 @@ public class AbrechnungSEPA
       if (letzte_lastschrift == null
           || letzte_lastschrift.before(sepagueltigkeit.getTime()))
       {
-        monitor.log(Adressaufbereitung.getNameVorname(m)
-            + ": Das Mandat-Datum ist älter als 36 Monate und es erfolgte keine Lastschrift in den letzten 36 Monaten.");
-        return false;
+        String errortext = Adressaufbereitung.getNameVorname(m)
+            + ": Das Mandat-Datum ist älter als 36 Monate und es"
+            + " erfolgte keine Lastschrift in den letzten 36 Monaten.";
+        monitor.log(errortext);
+        throw new ApplicationException(errortext);
       }
     }
-    return true;
   }
 
 }
