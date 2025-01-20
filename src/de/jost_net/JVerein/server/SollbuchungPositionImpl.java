@@ -206,6 +206,14 @@ public class SollbuchungPositionImpl extends AbstractDBObject
     {
         return getBuchungsklasse();
     }
+    else if ("steuerbetrag".equals(fieldName))
+    {
+      return getSteuerbetrag();
+    }
+    else if ("nettobetrag".equals(fieldName))
+    {
+      return getNettobetrag();
+    }
     return super.getAttribute(fieldName);
   }
 }
