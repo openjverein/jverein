@@ -76,14 +76,6 @@ public class FormularfeldControl extends FormularPartControl
 
   public static final String TAGESDATUMJJJJ = "Tagesdatum JJJJ";
 
-  public static final String ZAHLUNGSGRUND = "Zahlungsgrund";
-
-  public static final String ZAHLUNGSGRUND1 = "Zahlungsgrund 1";
-
-  public static final String BUCHUNGSDATUM = "Buchungsdatum";
-
-  public static final String BETRAG = "Betrag";
-
   public static final String ZAHLUNGSWEG = "Zahlungsweg";
 
   public static final String ID = "ID";
@@ -251,7 +243,11 @@ public class FormularfeldControl extends FormularPartControl
       }
       for (RechnungVar mkv : RechnungVar.values())
       {
-        namen.add(mkv.getName());
+        if (!RechnungVar.class.getField(mkv.name())
+            .isAnnotationPresent(Deprecated.class))
+        {
+          namen.add(mkv.getName());
+        }
       }
 
     }

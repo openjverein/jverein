@@ -226,6 +226,13 @@ public class AbrechnungslaufControl extends FilterControl
     return bemerkung;
   }
 
+  final class StatData
+  {
+    Double summe;
+
+    Integer anzahl;
+  }
+
   public LabelInput getStatistikBuchungen() throws RemoteException
   {
     // Summe und Anzahl der Buchungen. Es gibt einen weiterer Datensatz
@@ -235,13 +242,6 @@ public class AbrechnungslaufControl extends FilterControl
     if (statistikbuchungen != null)
     {
       return statistikbuchungen;
-    }
-
-    final class StatData
-    {
-      Double summe;
-
-      Integer anzahl;
     }
 
     ResultSetExtractor rs = new ResultSetExtractor()
@@ -259,8 +259,8 @@ public class AbrechnungslaufControl extends FilterControl
       }
     };
 
-    String sql = "SELECT SUM(betrag), COUNT(id) " + "FROM buchung "
-        + "WHERE abrechnungslauf=? AND (name != 'JVerein' or zweck != 'Gegenbuchung')";
+    String sql = "SELECT SUM(betrag), COUNT(id) " + "FROM mitgliedskonto "
+        + "WHERE abrechnungslauf=?";
     StatData data = (StatData) Einstellungen.getDBService().execute(sql,
         new Object[] { getAbrechnungslaeufe().getID() }, rs);
 
@@ -269,7 +269,7 @@ public class AbrechnungslaufControl extends FilterControl
     String s = String.format("Anzahl: %s; Summe: %s", data.anzahl.toString(),
         cf.format(data.summe));
     statistikbuchungen = new LabelInput(s);
-    statistikbuchungen.setName("Buchungen");
+    statistikbuchungen.setName("Sollbuchungen");
 
     return statistikbuchungen;
   }
@@ -281,13 +281,6 @@ public class AbrechnungslaufControl extends FilterControl
     if (statistiklastschriften != null)
     {
       return statistiklastschriften;
-    }
-
-    final class StatData
-    {
-      Double summe;
-
-      Integer anzahl;
     }
 
     ResultSetExtractor rs = new ResultSetExtractor()

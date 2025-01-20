@@ -17,46 +17,47 @@
 package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Date;
 
 import de.willuhn.datasource.rmi.DBObject;
 
-public interface Mitgliedskonto extends DBObject
+public interface SollbuchungPosition extends DBObject
 {
-  public Abrechnungslauf getAbrechnungslauf() throws RemoteException;
 
-  public void setAbrechnungslauf(Abrechnungslauf abrechnungslauf)
-      throws RemoteException;
-
-  public Mitglied getMitglied() throws RemoteException;
+  public Double getBetrag() throws RemoteException;
   
-  public String getMitgliedId() throws RemoteException;
+  public void setBetrag(Double betrag) throws RemoteException;
+  
+  public Double getSteuersatz() throws RemoteException;
 
-  public void setMitglied(Mitglied mitglied) throws RemoteException;
+  public void setSteuersatz(Double satz) throws RemoteException;
+  
+  public Long getBuchungsartId() throws RemoteException;
 
+  public void setBuchungsartId(Long buchungsart) throws RemoteException;
+  
+  public Buchungsart getBuchungsart() throws RemoteException;
+  
+  public Buchungsklasse getBuchungsklasse() throws RemoteException;
+  
+  public Long getBuchungsklasseId() throws RemoteException;
+
+  public void setBuchungsklasseId(Long buchungsklasse) throws RemoteException;
+  
   public Date getDatum() throws RemoteException;
 
   public void setDatum(Date datum) throws RemoteException;
 
-  public String getZweck1() throws RemoteException;
+  public void setSollbuchung(String id) throws RemoteException;
+  
+  public Mitgliedskonto getSollbuchung() throws RemoteException;
 
-  public void setZweck1(String zweck1) throws RemoteException;
+  public void setZweck(String zweck) throws RemoteException;
 
-  public Integer getZahlungsweg() throws RemoteException;
+  public String getZweck() throws RemoteException;
 
-  public void setZahlungsweg(Integer zahlungsweg) throws RemoteException;
+  public Double getNettobetrag() throws RemoteException;
 
-  public void setBetrag(Double betrag) throws RemoteException;
+  public Double getSteuerbetrag() throws RemoteException;
 
-  public Double getBetrag() throws RemoteException;
-
-  public Double getIstSumme() throws RemoteException;
-
-  public Rechnung getRechnung() throws RemoteException;
-
-  public void setRechnung(Rechnung rechnung) throws RemoteException;
-
-  ArrayList<SollbuchungPosition> getSollbuchungPositionList()
-      throws RemoteException;
 }

@@ -202,7 +202,7 @@ public class Rechnungsausgabe
     if (formular == null)
       formular = re.getFormular();
     
-    if (re.getMitgliedskontoList().size() == 0)
+    if (re.getSollbuchungPositionList().size() == 0)
       return;
     
     Map<String, Object> map = new RechnungMap().getMap(re, null);

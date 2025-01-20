@@ -18,18 +18,39 @@ package de.jost_net.JVerein.Variable;
 
 public enum RechnungVar
 {
-  ZAHLUNGSGRUND("mitgliedskonto_zahlungsgrund"), //
+  @Deprecated
+  MK_ZAHLUNGSGRUND("mitgliedskonto_zahlungsgrund"), //
+  ZAHLUNGSGRUND("rechnung_zahlungsgrund"), //
+  @Deprecated
   ZAHLUNGSGRUND1("mitgliedskonto_zahlungsgrund1"), //
+  @Deprecated
   ZAHLUNGSGRUND2("mitgliedskonto_zahlungsgrund2"), //
-  BUCHUNGSDATUM("mitgliedskonto_buchungsdatum"), //
-  NETTOBETRAG("mitgliedskonto_nettobetrag"), //
-  STEUERSATZ("mitgliedskonto_steuersatz"), //
-  STEUERBETRAG("mitgliedskonto_steuerbetrag"), //
-  BETRAG("mitgliedskonto_betrag"), //
-  IST("mitgliedskonto_ist"), //
+  @Deprecated
+  MK_BUCHUNGSDATUM("mitgliedskonto_buchungsdatum"), //
+  BUCHUNGSDATUM("rechnung_buchungsdatum"), //
+  @Deprecated
+  MK_NETTOBETRAG("mitgliedskonto_nettobetrag"), //
+  NETTOBETRAG("rechnung_nettobetrag"), //
+  @Deprecated
+  MK_STEUERSATZ("mitgliedskonto_steuersatz"), //
+  STEUERSATZ("rechnung_steuersatz"), //
+  @Deprecated
+  MK_STEUERBETRAG("mitgliedskonto_steuerbetrag"), //
+  STEUERBETRAG("rechnung_steuerbetrag"), //
+  @Deprecated
+  MK_BETRAG("mitgliedskonto_betrag"), //
+  BETRAG("rechnung_betrag"), //
+  @Deprecated
+  MK_IST("mitgliedskonto_ist"), //
+  IST("rechnung_ist"), //
+  @Deprecated
   DIFFERENZ("mitgliedskonto_differenz"), //
-  STAND("mitgliedskonto_stand"), //
-  SUMME_OFFEN("mitgliedskonto_summe_offen"), //
+  @Deprecated
+  MK_STAND("mitgliedskonto_stand"), //
+  STAND("rechnung_stand"), //
+  @Deprecated
+  MK_SUMME_OFFEN("mitgliedskonto_summe_offen"), //
+  SUMME_OFFEN("rechnung_summe_offen"), //
   QRCODE_SUMME("qrcode_summe"), //
   QRCODE_INTRO("qrcode_intro"),
   DATUM("rechnung_datum"),

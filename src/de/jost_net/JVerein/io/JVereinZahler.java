@@ -16,6 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
+import java.util.Date;
+
+import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.OBanToo.SEPA.Basislastschrift.Zahler;
 
 public class JVereinZahler extends Zahler
@@ -24,6 +28,16 @@ public class JVereinZahler extends Zahler
   private String personId;
 
   private JVereinZahlerTyp personTyp;
+
+  private Zahlungsweg zahlungsweg;
+
+  private Long buchungsart;
+
+  private Long buchungsklasse;
+
+  private Date datum;
+
+  private Mitglied mitglied;
 
   public JVereinZahler()
   {
@@ -47,6 +61,56 @@ public class JVereinZahler extends Zahler
   public void setPersonTyp(JVereinZahlerTyp personTyp)
   {
     this.personTyp = personTyp;
+  }
+
+  public Zahlungsweg getZahlungsweg()
+  {
+    return zahlungsweg;
+  }
+
+  public void setZahlungsweg(Zahlungsweg zahlungsweg)
+  {
+    this.zahlungsweg = zahlungsweg;
+  }
+
+  public Long getBuchungsartId()
+  {
+    return buchungsart;
+  }
+
+  public void setBuchungsartId(Long buchungsart)
+  {
+    this.buchungsart = buchungsart;
+  }
+
+  public Long getBuchungsklasseId()
+  {
+    return buchungsklasse;
+  }
+
+  public void setBuchungsklasseId(Long buchungsklasse)
+  {
+    this.buchungsklasse = buchungsklasse;
+  }
+
+  public Date getDatum()
+  {
+    return datum;
+  }
+
+  public void setDatum(Date datum)
+  {
+    this.datum = datum;
+  }
+
+  public Mitglied getMitglied()
+  {
+    return mitglied;
+  }
+
+  public void setMitglied(Mitglied mitglied)
+  {
+    this.mitglied = mitglied;
   }
 
 }

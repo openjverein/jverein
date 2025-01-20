@@ -40,7 +40,9 @@ public class EinstellungenRechnungenView extends AbstractView
     cont.addLabelPair("Text Überweisung",
         control.getRechnungTextUeberweisung());
     cont.addLabelPair("Text Bar", control.getRechnungTextBar());
-    cont.addLabelPair("Zählerlänge", control.getZaehlerLaenge());
+    cont.addLabelPair("Länge Rechnungsnummer", control.getZaehlerLaenge());
+
+    cont.addHeadline("QR-Code");
     cont.addLabelPair("Kantenlänge QR-Code", control.getQRCodeSizeInMm());
     cont.addLabelPair("Verwendungszweck", control.getQRCodeVerwendungszweck());
     cont.addLabelPair("Verwendungszweck hinzufügen",

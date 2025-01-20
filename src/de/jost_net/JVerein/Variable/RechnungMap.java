@@ -25,12 +25,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 
@@ -42,6 +41,7 @@ public class RechnungMap
     //
   }
 
+  @SuppressWarnings("deprecation")
   public Map<String, Object> getMap(Rechnung re, Map<String, Object> inMap)
       throws RemoteException
   {
@@ -57,66 +57,69 @@ public class RechnungMap
 
     ArrayList<Date> buchungDatum = new ArrayList<>();
     ArrayList<String> zweck = new ArrayList<>();
-    ArrayList<String> zweck1 = new ArrayList<>();
     ArrayList<Double> nettobetrag = new ArrayList<>();
     ArrayList<String> steuersatz = new ArrayList<>();
     ArrayList<Double> steuerbetrag = new ArrayList<>();
     ArrayList<Double> betrag = new ArrayList<>();
-    ArrayList<Double> ist = new ArrayList<>();
-    ArrayList<Double> differenz = new ArrayList<>();
 
     DecimalFormat format = new DecimalFormat("0");
     CurrencyFormatter formatter = new CurrencyFormatter("%", format);
     double summe = 0;
-    double saldo = 0;
-    double suist = 0;
-    for (Mitgliedskonto mkto : re.getMitgliedskontoList())
+    for (SollbuchungPosition sp : re.getSollbuchungPositionList())
     {
-      buchungDatum.add(mkto.getDatum());
-      zweck.add(mkto.getZweck1());
-      zweck1.add(mkto.getZweck1());
-      nettobetrag.add(Double.valueOf(mkto.getNettobetrag()));
+      buchungDatum.add(sp.getDatum());
+      zweck.add(sp.getZweck());
+      nettobetrag.add(Double.valueOf(sp.getNettobetrag()));
       steuersatz.add(
-          "(" + formatter.format(Double.valueOf(mkto.getSteuersatz())) + ")");
-      steuerbetrag.add(Double.valueOf(mkto.getSteuerbetrag()));
-      betrag.add(Double.valueOf(mkto.getBetrag()));
-      ist.add(mkto.getIstSumme());
-      suist += mkto.getIstSumme();
-      differenz.add(mkto.getBetrag() - mkto.getIstSumme());
-      summe += mkto.getBetrag();
-      saldo += mkto.getBetrag() - mkto.getIstSumme();
+          "(" + formatter.format(Double.valueOf(sp.getSteuersatz())) + ")");
+      steuerbetrag.add(Double.valueOf(sp.getSteuerbetrag()));
+      betrag.add(sp.getBetrag());
+      summe += sp.getBetrag();
     }
     if (buchungDatum.size() > 1)
     {
       if (Einstellungen.getEinstellung().getOptiert())
       {
-        zweck1.add("Rechnungsbetrag inkl. USt.");
         zweck.add("Rechnungsbetrag inkl. USt.");
       }
       else
       {
-        zweck1.add("Summe");
         zweck.add("Summe");
       }
       betrag.add(summe);
-      differenz.add(saldo);
-      ist.add(suist);
     }
-    map.put(FormularfeldControl.BUCHUNGSDATUM, buchungDatum.toArray());
-    map.put(FormularfeldControl.ZAHLUNGSGRUND, zweck.toArray());
-    map.put(FormularfeldControl.ZAHLUNGSGRUND1, zweck1.toArray());
-    map.put(FormularfeldControl.BETRAG, betrag.toArray());
     map.put(RechnungVar.BUCHUNGSDATUM.getName(), buchungDatum.toArray());
+    map.put(RechnungVar.MK_BUCHUNGSDATUM.getName(), buchungDatum.toArray());
     map.put(RechnungVar.ZAHLUNGSGRUND.getName(), zweck.toArray());
-    map.put(RechnungVar.ZAHLUNGSGRUND1.getName(), zweck1.toArray());
+    map.put(RechnungVar.MK_ZAHLUNGSGRUND.getName(), zweck.toArray());
+    map.put(RechnungVar.ZAHLUNGSGRUND1.getName(), zweck.toArray());
+    map.put(RechnungVar.ZAHLUNGSGRUND2.getName(), "");
     map.put(RechnungVar.NETTOBETRAG.getName(), nettobetrag.toArray());
+    map.put(RechnungVar.MK_NETTOBETRAG.getName(), nettobetrag.toArray());
     map.put(RechnungVar.STEUERSATZ.getName(), steuersatz.toArray());
+    map.put(RechnungVar.MK_STEUERSATZ.getName(), steuersatz.toArray());
     map.put(RechnungVar.STEUERBETRAG.getName(), steuerbetrag.toArray());
+    map.put(RechnungVar.MK_STEUERBETRAG.getName(), steuerbetrag.toArray());
     map.put(RechnungVar.BETRAG.getName(), betrag.toArray());
-    map.put(RechnungVar.IST.getName(), ist.toArray());
-    map.put(RechnungVar.DIFFERENZ.getName(), differenz.toArray());
-    map.put(RechnungVar.STAND.getName(), Double.valueOf(-1 * saldo));
-    map.put(RechnungVar.SUMME_OFFEN.getName(), Double.valueOf(saldo));
+    map.put(RechnungVar.MK_BETRAG.getName(), betrag.toArray());
+
+    Double ist = 0d;
+    if (re.getMitgliedskonto() != null)
+    {
+      ist = re.getMitgliedskonto().getIstSumme();
+    }
+    map.put(RechnungVar.IST.getName(), ist);
+    map.put(RechnungVar.MK_SUMME_OFFEN.getName(), summe - ist);
+    map.put(RechnungVar.SUMME_OFFEN.getName(), summe - ist);
+    map.put(RechnungVar.MK_STAND.getName(), ist - summe);
+    map.put(RechnungVar.STAND.getName(), ist - summe);
+
+    // Deise Felder gibt es nicht mehr in der Form, damit bei alten
+    // Rechnungs-Formularen nicht der Variablennamen steht hier trotzdem
+    // hinzufügen
+    map.put(RechnungVar.DIFFERENZ.getName(), "");
+    map.put(RechnungVar.MK_IST.getName(), "");
+
     map.put(RechnungVar.QRCODE_INTRO.getName(),
         Einstellungen.getEinstellung().getQRCodeIntro());
 
@@ -150,7 +153,7 @@ public class RechnungMap
         Adressaufbereitung.getAdressfeld(re));
     
     String zahlungsweg = "";
-    switch (re.getMitglied().getZahlungsweg())
+    switch (re.getZahlungsweg().getKey())
     {
       case Zahlungsweg.BASISLASTSCHRIFT:
       {
@@ -183,31 +186,6 @@ public class RechnungMap
     }
     map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(), zahlungsweg);
 
-    return map;
-  }
-
-  public Map<String, Object> getMap(Mitgliedskonto mk, Map<String, Object> inma)
-      throws RemoteException
-  {
-    Map<String, Object> map = null;
-    if (inma == null)
-    {
-      map = new HashMap<>();
-    }
-    else
-    {
-      map = inma;
-    }
-
-    map.put(RechnungVar.BUCHUNGSDATUM.getName(), mk.getDatum());
-    map.put(RechnungVar.ZAHLUNGSGRUND.getName(), mk.getZweck1());
-    map.put(RechnungVar.ZAHLUNGSGRUND1.getName(), mk.getZweck1());
-    map.put(RechnungVar.NETTOBETRAG.getName(), mk.getNettobetrag());
-    map.put(RechnungVar.STEUERSATZ.getName(), mk.getSteuersatz());
-    map.put(RechnungVar.STEUERBETRAG.getName(), mk.getSteuerbetrag());
-    map.put(RechnungVar.BETRAG.getName(), mk.getBetrag());
-    map.put(RechnungVar.IST.getName(), mk.getIstSumme());
-    map.put(RechnungVar.DIFFERENZ.getName(), mk.getBetrag() - mk.getIstSumme());
     return map;
   }
 }

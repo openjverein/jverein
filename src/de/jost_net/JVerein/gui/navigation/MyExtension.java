@@ -37,10 +37,6 @@ import de.jost_net.JVerein.gui.action.AdministrationEinstellungenMitgliederSpalt
 import de.jost_net.JVerein.gui.action.AdministrationEinstellungenRechnungenAction;
 import de.jost_net.JVerein.gui.action.AdministrationEinstellungenSpendenbescheinigungenAction;
 import de.jost_net.JVerein.gui.action.AdministrationEinstellungenStatistikAction;
-import de.jost_net.JVerein.gui.action.NichtMitgliedSucheAction;
-import de.jost_net.JVerein.gui.action.PreNotificationAction;
-import de.jost_net.JVerein.gui.action.MitgliedstypListAction;
-import de.jost_net.JVerein.gui.action.MittelverwendungListeAction;
 import de.jost_net.JVerein.gui.action.AnfangsbestandListAction;
 import de.jost_net.JVerein.gui.action.AnlagenlisteAction;
 import de.jost_net.JVerein.gui.action.ArbeitseinsaetzeListeAction;
@@ -64,10 +60,10 @@ import de.jost_net.JVerein.gui.action.FelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.FormularListeAction;
 import de.jost_net.JVerein.gui.action.FreieFormulareAction;
 import de.jost_net.JVerein.gui.action.JahresabschlussListAction;
-import de.jost_net.JVerein.gui.action.KontensaldoAction;
 import de.jost_net.JVerein.gui.action.JubilaeenAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenExportAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenImportAction;
+import de.jost_net.JVerein.gui.action.KontensaldoAction;
 import de.jost_net.JVerein.gui.action.KontoListAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.KursteilnehmerSucheAction;
@@ -79,13 +75,17 @@ import de.jost_net.JVerein.gui.action.MailListeAction;
 import de.jost_net.JVerein.gui.action.MailVorlagenAction;
 import de.jost_net.JVerein.gui.action.MitgliedMigrationAction;
 import de.jost_net.JVerein.gui.action.MitgliedSucheAction;
-import de.jost_net.JVerein.gui.action.SollbuchungListeAction;
-import de.jost_net.JVerein.gui.action.SollbuchungMahnungAction;
-import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
+import de.jost_net.JVerein.gui.action.MitgliedstypListAction;
+import de.jost_net.JVerein.gui.action.MittelverwendungListeAction;
+import de.jost_net.JVerein.gui.action.NichtMitgliedSucheAction;
+import de.jost_net.JVerein.gui.action.PreNotificationAction;
 import de.jost_net.JVerein.gui.action.ProjektListAction;
 import de.jost_net.JVerein.gui.action.ProjektSaldoAction;
 import de.jost_net.JVerein.gui.action.QIFBuchungsImportViewAction;
 import de.jost_net.JVerein.gui.action.RechnungListeAction;
+import de.jost_net.JVerein.gui.action.SollbuchungListeAction;
+import de.jost_net.JVerein.gui.action.SollbuchungMahnungAction;
+import de.jost_net.JVerein.gui.action.SollbuchungRechnungMailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungListeAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
 import de.jost_net.JVerein.gui.action.StatistikJahrgaengeAction;
@@ -261,7 +261,7 @@ public class MyExtension implements Extension
       NavigationItem mail = null;
       mail = new MyItem(mail, "Druck & Mail", null);
       mail.addChild(new MyItem(mail, "Rechnungen",
-          new SollbuchungRechnungAction(), "document-print.png"));
+          new SollbuchungRechnungMailAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Mahnungen",
           new SollbuchungMahnungAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Kontoauszüge",

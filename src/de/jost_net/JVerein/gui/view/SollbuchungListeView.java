@@ -17,8 +17,8 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.SollbuchungExportAction;
 import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
+import de.jost_net.JVerein.gui.action.SollbuchungExportAction;
 import de.jost_net.JVerein.gui.action.SollbuchungExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
@@ -78,8 +78,9 @@ public class SollbuchungListeView extends AbstractView
     buttons.addButton(new Button("Export",
         new SollbuchungExportAction(EXPORT_TYP.MITGLIEDSKONTO), control, false,
         "document-save.png"));
-    buttons.addButton("Neu", new SollbuchungEditAction(), control, false,
-        "document-new.png");
+    // TODO das Bearbeiten der Sollbuchungen muss noch überarbeitet werden
+    // buttons.addButton("Neu", new SollbuchungEditAction(), control, false,
+    // "document-new.png");
     buttons.paint(this.getParent());
   }
 }

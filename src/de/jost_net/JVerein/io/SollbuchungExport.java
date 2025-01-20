@@ -76,10 +76,13 @@ public abstract class SollbuchungExport implements Exporter
       startMitglied(m);
       GenericIterator<Mitgliedskonto> sollbuchnungen = new SollbuchungQuery(
           control, false, m).get();
-      while (sollbuchnungen.hasNext())
+      if (sollbuchnungen != null)
       {
-        add(sollbuchnungen.next());
-        monitor.log("Vorbereitung: " + Adressaufbereitung.getNameVorname(m));
+        while (sollbuchnungen.hasNext())
+        {
+          add(sollbuchnungen.next());
+          monitor.log("Vorbereitung: " + Adressaufbereitung.getNameVorname(m));
+        }
       }
       endeMitglied();
     }

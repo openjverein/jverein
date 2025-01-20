@@ -346,6 +346,10 @@ public class SollbuchungQuery
           }
         });
 
+    if (ids.size() == 0)
+    {
+      return null;
+    }
     DBIterator<Mitgliedskonto> list = Einstellungen.getDBService()
         .createList(Mitgliedskonto.class);
     list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");

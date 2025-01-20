@@ -14,38 +14,39 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.action;
+package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
 
-import de.jost_net.JVerein.gui.view.RechnungView;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.util.ApplicationException;
 
-public class SollbuchungRechnungAction implements Action
+public class SollbuchungMap
 {
-  @Override
-  public void handleAction(Object context)
-      throws ApplicationException
+
+  public SollbuchungMap()
   {
-    if (context instanceof Mitgliedskonto)
+  }
+
+  public Map<String, Object> getMap(Mitgliedskonto mk, Map<String, Object> inma)
+      throws RemoteException
+  {
+    Map<String, Object> map = null;
+    if (inma == null)
     {
-      Mitgliedskonto mk = (Mitgliedskonto) context;
-      try
-      {
-        if (mk.getRechnung() == null)
-        {
-          throw new ApplicationException(
-              "Keine Rechnung zu ausgewählter Sollbuchung vorhanden!");
-        }
-        GUI.startView(RechnungView.class.getName(), mk.getRechnung());
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException("Fehler beim anzeigen der Rechnung!");
-      }
+      map = new HashMap<>();
     }
+    else
+    {
+      map = inma;
+    }
+    map.put(SollbuchungVar.BUCHUNGSDATUM.getName(), mk.getDatum());
+    map.put(SollbuchungVar.ZAHLUNGSGRUND.getName(), mk.getZweck1());
+    map.put(SollbuchungVar.BETRAG.getName(), mk.getBetrag());
+    map.put(SollbuchungVar.IST.getName(), mk.getIstSumme());
+    map.put(SollbuchungVar.DIFFERENZ.getName(),
+        mk.getBetrag() - mk.getIstSumme());
+    return map;
   }
 }

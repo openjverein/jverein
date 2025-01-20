@@ -38,9 +38,9 @@ import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.db.AbstractDBObject;
-import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
@@ -442,7 +442,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   public Long getAbrechnungslaufID() throws RemoteException
   {
-    return Long.parseLong(getAbrechnungslauf().getID());
+    return (Long) super.getAttribute("abrechnungslauf");
   }
 
   @Override
@@ -505,15 +505,14 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     {
       return null;
     }
-
-    Cache cache = Cache.get(Mitgliedskonto.class, true);
+    Cache cache = Cache.get(Mitgliedskonto.class, false);
     return (Mitgliedskonto) cache.get(o);
   }
 
   @Override
   public Long getMitgliedskontoID() throws RemoteException
   {
-    return Long.parseLong(getMitgliedskonto().getID());
+    return (Long) super.getAttribute("mitgliedskonto");
   }
 
   @Override
@@ -545,7 +544,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   public Long getProjektID() throws RemoteException
   {
-    return Long.parseLong(getProjekt().getID());
+    return (Long) super.getAttribute("project");
   }
 
   @Override
@@ -610,10 +609,6 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     else
     {
       map = inma;
-    }
-    if (this.getID() == null)
-    {
-      //
     }
     map.put(BuchungVar.ABRECHNUNGSLAUF.getName(),
         (this.getAbrechnungslauf() != null

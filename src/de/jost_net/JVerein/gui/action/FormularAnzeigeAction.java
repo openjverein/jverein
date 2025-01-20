@@ -99,11 +99,6 @@ public class FormularAnzeigeAction implements Action
       map.put(AllgemeineVar.ZAEHLER.getName(), formular.getZaehler());
       map.put(FormularfeldControl.EMPFAENGER,
           "Herr\nDr. Willi Wichtig\nTestgasse 1\n12345 Testenhausen");
-      map.put(FormularfeldControl.BUCHUNGSDATUM, new Date());
-      map.put(FormularfeldControl.ZAHLUNGSGRUND,
-          "Zahlungsgrund1 Zahlungsgrund2");
-      map.put(FormularfeldControl.ZAHLUNGSGRUND1, "Zahlungsgrund 1");
-      map.put(FormularfeldControl.BETRAG, Double.valueOf(1234.96 + 15.0));
       map.put("Betrag in Worten", GermanNumber.toString(1234 + 15));
       map.put(FormularfeldControl.ID, "444");
       map.put(FormularfeldControl.EXTERNEMITGLIEDSNUMMER, "9999");
@@ -262,7 +257,6 @@ public class FormularAnzeigeAction implements Action
       map.put(SpendenbescheinigungVar.UNTERLAGENWERTERMITTUNG.getName(),
           "Geeignete Unterlagen, die zur Wertermittlung gedient haben, z. B. Rechnung, Gutachten, liegen vor.");
 
-      map.put(FormularfeldControl.BUCHUNGSDATUM, new Date());
       // Mitgliedskonto
 
       ArrayList<Date> buda = new ArrayList<>();
@@ -320,13 +314,8 @@ public class FormularAnzeigeAction implements Action
       differenz.add(239.99d);
       ist.add(10d);
 
-      map.put(FormularfeldControl.BUCHUNGSDATUM, buda.toArray());
-      map.put(FormularfeldControl.ZAHLUNGSGRUND, zg.toArray());
-      map.put(FormularfeldControl.ZAHLUNGSGRUND1, zg1.toArray());
-      map.put(FormularfeldControl.BETRAG, betrag.toArray());
       map.put(RechnungVar.BUCHUNGSDATUM.getName(), buda.toArray());
       map.put(RechnungVar.ZAHLUNGSGRUND.getName(), zg.toArray());
-      map.put(RechnungVar.ZAHLUNGSGRUND1.getName(), zg1.toArray());
       map.put(RechnungVar.NETTOBETRAG.getName(), nettobetrag.toArray());
       map.put(RechnungVar.STEUERSATZ.getName(), steuersatz.toArray());
       map.put(RechnungVar.STEUERBETRAG.getName(), steuerbetrag.toArray());

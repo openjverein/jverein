@@ -160,16 +160,6 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   }
 
   @Override
-  protected Class<?> getForeignObject(String arg0)
-  {
-    if (arg0.equals("buchungsart"))
-    {
-      return Buchungsart.class;
-    }
-    return null;
-  }
-
-  @Override
   public String getBezeichnung() throws RemoteException
   {
     return (String) getAttribute("bezeichnung");
@@ -358,7 +348,20 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
-    return (Buchungsart) getAttribute("buchungsart");
+    Long l = (Long) super.getAttribute("buchungsart");
+    if (l == null)
+    {
+      return null; // Keine Buchungsart zugeordnet
+    }
+
+    Cache cache = Cache.get(Buchungsart.class, true);
+    return (Buchungsart) cache.get(l);
+  }
+
+  @Override
+  public Long getBuchungsartId() throws RemoteException
+  {
+    return (Long) super.getAttribute("buchungsart");
   }
 
   @Override
@@ -386,6 +389,10 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
     if (fieldName.equals("buchungsklasse"))
     {
       return getBuchungsklasse();
+    }
+    else if (fieldName.equals("buchungsart"))
+    {
+      return getBuchungsart();
     }
     return super.getAttribute(fieldName);
   }

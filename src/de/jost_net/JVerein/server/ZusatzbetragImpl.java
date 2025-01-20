@@ -283,6 +283,12 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   }
 
   @Override
+  public Long getBuchungsartId() throws RemoteException
+  {
+    return (Long) super.getAttribute("buchungsart");
+  }
+
+  @Override
   public Buchungsklasse getBuchungsklasse() throws RemoteException
   {
     Long l = (Long) super.getAttribute("buchungsklasse");
