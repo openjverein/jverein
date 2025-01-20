@@ -13,6 +13,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
@@ -20,6 +21,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
@@ -51,5 +53,11 @@ public class WirtschaftsplanungView extends AbstractView
     LabelGroup ausgaben = new LabelGroup(group.getComposite(), "Ausgaben");
     Part treeAusgaben = control.getAusgaben();
     ausgaben.addPart(treeAusgaben);
+
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton("Hilfe", new DokumentationAction(),
+            DokumentationUtil.WIRTSCHAFTSPLANUNG, false, "question-circle.png");
+    buttons.addButton("Speichern", null, null, false, "document-save.png");
+    buttons.paint(this.getParent());
   }
 }
