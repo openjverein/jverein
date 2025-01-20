@@ -9,8 +9,9 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.*;
-import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.AbstractControl;
+import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -24,13 +25,6 @@ import java.util.Map;
 
 public class WirtschaftsplanungControl extends AbstractControl
 {
-  private de.willuhn.jameica.system.Settings settings;
-
-  private TablePart wirtschaftsplaene;
-
-  private TreePart einnahmen;
-
-  private TreePart ausgaben;
 
   /**
    * Erzeugt einen neuen AbstractControl der fuer die angegebene View.
@@ -41,7 +35,7 @@ public class WirtschaftsplanungControl extends AbstractControl
   public WirtschaftsplanungControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    de.willuhn.jameica.system.Settings settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 
@@ -64,7 +58,7 @@ public class WirtschaftsplanungControl extends AbstractControl
         else
         {
           WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
-              resultSet.getLong(1), resultSet.getDate(2), resultSet.getDate(3));
+              resultSet.getString(1), resultSet.getDate(2), resultSet.getDate(3));
           zeile.setPlanEinnahme(resultSet.getDouble(4));
           zeileMap.put(resultSet.getLong(1), zeile);
         }
@@ -83,7 +77,7 @@ public class WirtschaftsplanungControl extends AbstractControl
         else
         {
           WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
-              resultSet.getLong(1), resultSet.getDate(2), resultSet.getDate(3));
+              resultSet.getString(1), resultSet.getDate(2), resultSet.getDate(3));
           zeile.setPlanAusgabe(resultSet.getDouble(4));
           zeileMap.put(resultSet.getLong(1), zeile);
         }
@@ -130,8 +124,8 @@ public class WirtschaftsplanungControl extends AbstractControl
           return resultSet;
         });
 
-    wirtschaftsplaene = new TablePart(new ArrayList<>(zeileMap.values()),
-        new OpenWirtschaftsplanungAction());
+    TablePart wirtschaftsplaene = new TablePart(new ArrayList<>(zeileMap.values()),
+            new OpenWirtschaftsplanungAction());
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
@@ -162,13 +156,11 @@ public class WirtschaftsplanungControl extends AbstractControl
 
   public Part getEinnahmen() throws RemoteException
   {
-    einnahmen = generateTree(0);
-    return einnahmen;
+    return generateTree(0);
   }
 
   public Part getAusgaben() throws RemoteException {
-    ausgaben = generateTree(1);
-    return ausgaben;
+    return generateTree(1);
   }
 
 
@@ -260,18 +252,21 @@ public class WirtschaftsplanungControl extends AbstractControl
             });
 
     TreePart treePart = new TreePart(new ArrayList<>(nodes.values()), context -> {
-      if (! (context instanceof WirtschaftsplanungNode)) {
+      if (! (context instanceof WirtschaftsplanungNode node)) {
         return;
       }
-
-      WirtschaftsplanungNode node = (WirtschaftsplanungNode) context;
 
       if (node.getType() != WirtschaftsplanungNode.Type.POSTEN) {
         return;
       }
 
-      WirtschaftsplanungPostenDialog dialog = new WirtschaftsplanungPostenDialog(node.getWirtschaftsplanItem());
-      node.setWirtschaftsplanItem(dialog.open());
+      try {
+        WirtschaftsplanungPostenDialog dialog = new WirtschaftsplanungPostenDialog(node.getWirtschaftsplanItem());
+        node.setWirtschaftsplanItem(dialog.open());
+      }
+      catch (Exception e) {
+        throw new ApplicationException(e);
+      }
     });
 
     CurrencyFormatter formatter = new CurrencyFormatter("",

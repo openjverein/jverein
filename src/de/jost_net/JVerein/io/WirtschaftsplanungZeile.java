@@ -1,5 +1,6 @@
 package de.jost_net.JVerein.io;
 
+import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.willuhn.datasource.GenericObject;
 
 import java.rmi.RemoteException;
@@ -8,7 +9,7 @@ import java.util.Objects;
 
 public class WirtschaftsplanungZeile implements GenericObject
 {
-  private final Long id;
+  private final String id;
 
   private Date von;
 
@@ -22,11 +23,21 @@ public class WirtschaftsplanungZeile implements GenericObject
 
   private Double istAusgabe;
 
-  public WirtschaftsplanungZeile(Long id, Date von, Date bis)
+  public WirtschaftsplanungZeile(String id, Date von, Date bis)
   {
     this.id = id;
     this.von = von;
     this.bis = bis;
+    this.planEinnahme = 0.;
+    this.planAusgabe = 0.;
+    this.istAusgabe = 0.;
+    this.istEinnahme = 0.;
+  }
+
+  public WirtschaftsplanungZeile(Wirtschaftsplan wirtschaftsplan) throws RemoteException {
+    this.id = wirtschaftsplan.getID();
+    this.von = wirtschaftsplan.getDatumVon();
+    this.bis = wirtschaftsplan.getDatumBis();
     this.planEinnahme = 0.;
     this.planAusgabe = 0.;
     this.istAusgabe = 0.;
@@ -77,36 +88,13 @@ public class WirtschaftsplanungZeile implements GenericObject
   @Override
   public String getID() throws RemoteException
   {
-    return id.toString();
+    return id;
   }
 
   @Override
   public String getPrimaryAttribute() throws RemoteException
   {
     return "id";
-  }
-
-  @Override
-  public boolean equals(GenericObject o)
-  {
-    if (this == o)
-      return true;
-    if (!(o instanceof WirtschaftsplanungZeile))
-      return false;
-    WirtschaftsplanungZeile zeile = (WirtschaftsplanungZeile) o;
-    return getId().equals(zeile.getId()) && getVon().equals(
-        zeile.getVon()) && getBis().equals(zeile.getBis());
-  }
-
-  @Override
-  public int hashCode()
-  {
-    return Objects.hash(getId(), getVon(), getBis());
-  }
-
-  public Long getId()
-  {
-    return id;
   }
 
   public Date getVon()
@@ -167,5 +155,18 @@ public class WirtschaftsplanungZeile implements GenericObject
   public void setIstAusgabe(Double istAusgabe)
   {
     this.istAusgabe = istAusgabe;
+  }
+
+  @Override
+  public boolean equals(GenericObject o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    WirtschaftsplanungZeile that = (WirtschaftsplanungZeile) o;
+    return Objects.equals(id, that.id) && Objects.equals(von, that.von) && Objects.equals(bis, that.bis);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, von, bis);
   }
 }

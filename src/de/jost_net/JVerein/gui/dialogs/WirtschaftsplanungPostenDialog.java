@@ -8,6 +8,7 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.util.ApplicationException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -40,8 +41,13 @@ public class WirtschaftsplanungPostenDialog extends AbstractDialog<Wirtschaftspl
 
         ButtonArea buttonArea = new ButtonArea();
         buttonArea.addButton("OK", context -> {
-            item.setPosten((String) postenInput.getValue());
-            item.setSoll((Double) sollInput.getValue());
+            try {
+                item.setPosten((String) postenInput.getValue());
+                item.setSoll((Double) sollInput.getValue());
+            }
+            catch (RemoteException e) {
+                throw new ApplicationException(e);
+            }
             close();
         }, null, false, "ok.png");
         buttonArea.addButton("Abbrechen", context -> {

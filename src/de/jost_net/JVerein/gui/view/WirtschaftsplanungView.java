@@ -16,16 +16,13 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
-
-import java.util.ArrayList;
 
 public class WirtschaftsplanungView extends AbstractView
 {
@@ -35,7 +32,11 @@ public class WirtschaftsplanungView extends AbstractView
     if (! (this.getCurrentObject() instanceof WirtschaftsplanungZeile)) {
       throw new ApplicationException("Fehler beim Anzeigen des Wirtschaftsplans!");
     }
-    GUI.getView().setTitle("Wirtschaftsplanung vom " + ((WirtschaftsplanungZeile) this.getCurrentObject()).getVon() + " bis " + ((WirtschaftsplanungZeile) this.getCurrentObject()).getBis());
+
+    GUI.getView().setTitle("Wirtschaftsplanung vom " +
+            new JVDateFormatTTMMJJJJ().format(((WirtschaftsplanungZeile) this.getCurrentObject()).getVon()) +
+            " bis " +
+            new JVDateFormatTTMMJJJJ().format(((WirtschaftsplanungZeile) this.getCurrentObject()).getBis()));
 
     final WirtschaftsplanungControl control = new WirtschaftsplanungControl(this);
 
