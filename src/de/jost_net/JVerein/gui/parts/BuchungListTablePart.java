@@ -22,6 +22,7 @@ import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
@@ -30,6 +31,8 @@ import de.willuhn.jameica.gui.parts.table.Feature.Context;
 
 public class BuchungListTablePart extends TablePart
 {
+
+  private Double saldo = null;
 
   public BuchungListTablePart(Action action)
   {
@@ -67,6 +70,12 @@ public class BuchungListTablePart extends TablePart
         summary += " / " + "Gesamtbetrag:" + " "
             + Einstellungen.DECIMALFORMAT.format(sumBetrag) + " "
             + Einstellungen.CURRENCY;
+        if (saldo != null)
+        {
+        summary += " / " + "Kontosaldo:" + " "
+            + Einstellungen.DECIMALFORMAT.format(saldo) + " "
+            + Einstellungen.CURRENCY;
+        }
       }
       catch (RemoteException re)
       {
@@ -77,4 +86,15 @@ public class BuchungListTablePart extends TablePart
     return ctx;
   }
 
+  public void updateSaldo(Konto konto) throws RemoteException
+  {
+    if (konto != null)
+    {
+      saldo = konto.getSaldo();
+    }
+    else
+    {
+      saldo = null;
+    }
+  }
 }

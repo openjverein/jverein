@@ -17,6 +17,8 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -28,6 +30,8 @@ import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -474,7 +478,28 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("afamode", afamode);
   }
-  
+
+  @Override
+  public Double getSaldo() throws RemoteException
+  {
+    ResultSetExtractor rsd = new ResultSetExtractor()
+    {
+      @Override
+      public Object extract(ResultSet rs) throws SQLException
+      {
+        if (!rs.next())
+        {
+          return Double.valueOf(0);
+        }
+        return Double.valueOf(rs.getDouble(1));
+      }
+    };
+    DBService service = Einstellungen.getDBService();
+    String sql = "SELECT sum(buchung.betrag) FROM buchung"
+        + " WHERE buchung.konto = ?";
+    return (Double) service.execute(sql, new Object[] { getID() }, rsd);
+  }
+
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {

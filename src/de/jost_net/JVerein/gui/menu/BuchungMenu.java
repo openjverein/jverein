@@ -66,7 +66,7 @@ public class BuchungMenu extends ContextMenu
         "edit-copy.png"));
     addItem(new AufloesenItem("Auflösen", new SplitbuchungBulkAufloesenAction(),
         "unlocked.png"));
-    addItem(new BuchungItem("Löschen", new BuchungDeleteAction(false),
+    addItem(new BuchungItem("Löschen", new BuchungDeleteAction(control, false),
             "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     if (geldkonto)

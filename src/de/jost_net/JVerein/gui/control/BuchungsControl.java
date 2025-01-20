@@ -130,7 +130,7 @@ public class BuchungsControl extends AbstractControl
 
   private de.willuhn.jameica.system.Settings settings;
 
-  private TablePart buchungsList;
+  private BuchungListTablePart buchungsList;
 
   /* Split-Buchnungen */
   private TablePart splitbuchungsList;
@@ -1196,7 +1196,7 @@ public class BuchungsControl extends AbstractControl
     }
   }
 
-  public Part getBuchungsList() throws RemoteException
+  public BuchungListTablePart getBuchungsList() throws RemoteException
   {
     // Werte speichern
     Date dv = (Date) getVondatum().getValue();
@@ -1346,9 +1346,11 @@ public class BuchungsControl extends AbstractControl
       buchungsList.addFeature(new FeatureSummary());
       Application.getMessagingFactory()
           .registerMessageConsumer(new BuchungMessageConsumer());
+      buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
     }
     else
     {
+      buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
       buchungsList.removeAll();
 
       for (Buchung bu : query.get())
@@ -2347,4 +2349,5 @@ public class BuchungsControl extends AbstractControl
       throw new ApplicationException("Von Datum ist nach Bis Datum!");
     }
   }
+
 }
