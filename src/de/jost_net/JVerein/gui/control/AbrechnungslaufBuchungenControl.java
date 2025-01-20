@@ -25,7 +25,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.io.AbrechnungslaufPDF;
@@ -154,7 +154,7 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
     DBIterator<Mitgliedskonto> it = getIterator((Integer) lauf.getValue());
     if (SollbuchungsList == null)
     {
-      SollbuchungsList = new TablePart(it, new MitgliedDetailAction());
+      SollbuchungsList = new TablePart(it, new SollbuchungEditAction());
       SollbuchungsList.addColumn("Fälligkeit", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
