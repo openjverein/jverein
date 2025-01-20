@@ -24,6 +24,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
@@ -494,10 +495,33 @@ public class KontoImpl extends AbstractDBObject implements Konto
         return Double.valueOf(rs.getDouble(1));
       }
     };
+    Double saldo = 0.0;
+    Date datum = null;
+    // Suchen ob Anfangsstand im Suchbereich enthalten ist
     DBService service = Einstellungen.getDBService();
-    String sql = "SELECT sum(buchung.betrag) FROM buchung"
-        + " WHERE buchung.konto = ?";
-    return (Double) service.execute(sql, new Object[] { getID() }, rsd);
+    DBIterator<Anfangsbestand> anf = service.createList(Anfangsbestand.class);
+    anf.addFilter("konto = ? ", new Object[] { getID() });
+    anf.setOrder("ORDER BY datum desc");
+    if (anf != null && anf.hasNext())
+    {
+      Anfangsbestand anfang = anf.next();
+      saldo = anfang.getBetrag();
+      datum = anfang.getDatum();
+    }
+    if (datum != null)
+    {
+      String sql = "SELECT sum(buchung.betrag) FROM buchung"
+          + " WHERE buchung.konto = ?" + " AND buchung.datum >= ?";
+      saldo += (Double) service.execute(sql, new Object[] { getID(), datum },
+          rsd);
+    }
+    else
+    {
+      String sql = "SELECT sum(buchung.betrag) FROM buchung"
+          + " WHERE buchung.konto = ?";
+      saldo += (Double) service.execute(sql, new Object[] { getID() }, rsd);
+    }
+    return saldo;
   }
 
   @Override
