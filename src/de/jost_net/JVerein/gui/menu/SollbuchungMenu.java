@@ -76,6 +76,10 @@ public class SollbuchungMenu extends ContextMenu
         DBIterator<Buchung> it;
         try
         {
+          if (mk.getRechnung() != null)
+          {
+            return false;
+          }
           it = Einstellungen.getDBService().createList(Buchung.class);
           it.addFilter("mitgliedskonto = ?", new Object[] { mk.getID() });
           if (it.size() == 0)
