@@ -17,19 +17,26 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Staat;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
 {
@@ -38,6 +45,7 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
    * 
    */
   private static final long serialVersionUID = -286067581211521888L;
+  private Double ist;
 
   public RechnungImpl() throws RemoteException
   {
@@ -232,6 +240,36 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
   }
 
   @Override
+  public Double getIstSumme() throws RemoteException
+  {
+    if (ist != null)
+    {
+      return ist;
+    }
+    DBService service = Einstellungen.getDBService();
+    String sql = "select sum(buchung.betrag) from buchung "
+        + "join mitgliedskonto on mitgliedskonto.id = buchung.mitgliedskonto "
+        + "where mitgliedskonto.rechnung = "
+        + this.getID();
+
+    ResultSetExtractor rs = new ResultSetExtractor()
+    {
+
+      @Override
+      public Object extract(ResultSet rs) throws SQLException
+      {
+        if (!rs.next())
+        {
+          return Double.valueOf(0.0d);
+        }
+        return Double.valueOf(rs.getDouble(1));
+      }
+    };
+    ist = Double.valueOf((Double) service.execute(sql, new Object[] {}, rs));
+    return ist;
+  }
+  
+  @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
     if ("id-int".equals(fieldName))
@@ -245,6 +283,14 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
         Logger.error("unable to parse id: " + getID());
         return getID();
       }
+    }
+    if ("ist".equals(fieldName))
+    {
+      return getIstSumme();
+    }
+    if ("differenz".equals(fieldName))
+    {
+      return getBetrag() - getIstSumme();
     }
     return super.getAttribute(fieldName);
   }
@@ -276,21 +322,89 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
     }
     return null;
   }
-
+  
   @Override
-  public ArrayList<Mitgliedskonto> getMitgliedskontoList()
-      throws RemoteException
+  public Mitgliedskonto getMitgliedskonto() throws RemoteException
   {
-    ArrayList<Mitgliedskonto> mks = new ArrayList<>();
     DBIterator<Mitgliedskonto> it = Einstellungen.getDBService()
         .createList(Mitgliedskonto.class);
-    it.addFilter("rechnung = ?", getID());
+    it.addFilter("mitgliedskonto.rechnung = ?", getID());
+    if (it.hasNext())
+    {
+      return it.next();
+    }
+    return null;
+  }
+
+  @Override
+  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException
+  {
+    ArrayList<SollbuchungPosition> sps = new ArrayList<>();
+    DBIterator<SollbuchungPosition> it = Einstellungen.getDBService()
+        .createList(SollbuchungPosition.class);
+    it.join("mitgliedskonto");
+    it.addFilter("mitgliedskonto.id = sollbuchungposition.sollbuchung");
+    it.addFilter("mitgliedskonto.rechnung = ?", getID());
     it.setOrder("ORDER BY datum");
     while (it.hasNext())
     {
-      mks.add((Mitgliedskonto) it.next());
+      sps.add((SollbuchungPosition) it.next());
     }
-    return mks;
+    return sps;
+  }
+
+  @Override
+  public void fill(Mitgliedskonto mk)
+      throws RemoteException, ApplicationException
+  {
+    Mitglied mitglied = mk.getMitglied();
+
+    if (mitglied == null)
+    {
+      throw new ApplicationException("Sollbuchung enthält kein Mitglied.");
+    }
+    setMitglied(Integer.parseInt(mitglied.getID()));
+
+    if (mitglied.getKtoiName() == null || mitglied.getKtoiName().length() == 0)
+    {
+      setPersonenart(mitglied.getPersonenart());
+      setAnrede(mitglied.getAnrede());
+      setTitel(mitglied.getTitel());
+      setName(mitglied.getName());
+      setVorname(mitglied.getVorname());
+      setStrasse(mitglied.getStrasse());
+      setAdressierungszusatz(mitglied.getAdressierungszusatz());
+      setPlz(mitglied.getPlz());
+      setOrt(mitglied.getOrt());
+      setStaat(mitglied.getStaat());
+      setGeschlecht(mitglied.getGeschlecht());
+    }
+    else
+    {
+      setPersonenart(mitglied.getKtoiPersonenart());
+      setAnrede(mitglied.getKtoiAnrede());
+      setTitel(mitglied.getKtoiTitel());
+      setName(mitglied.getKtoiName());
+      setVorname(mitglied.getKtoiVorname());
+      setStrasse(mitglied.getKtoiStrasse());
+      setAdressierungszusatz(mitglied.getKtoiAdressierungszusatz());
+      setPlz(mitglied.getKtoiPlz());
+      setOrt(mitglied.getKtoiOrt());
+      setStaat(mitglied.getKtoiStaat());
+      setGeschlecht(mitglied.getKtoiGeschlecht());
+    }
+    setDatum(new Date());
+    if (!mitglied.getMandatDatum().equals(Einstellungen.NODATE))
+    {
+      setMandatDatum(mitglied.getMandatDatum());
+    }
+    setLeitwegID(mitglied.getLeitwegID());
+    setMandatID(mitglied.getMandatID());
+    setBIC(mitglied.getBic());
+    setIBAN(mitglied.getIban());
+    setZahlungsweg(mk.getZahlungsweg());
+    setBetrag(mk.getBetrag());
   }
 
   @Override
@@ -341,6 +455,19 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
     setAttribute("iban", iban);
   }
 
+  @Override
+  public Zahlungsweg getZahlungsweg() throws RemoteException {
+    if(getAttribute("zahlungsweg") == null)
+    {
+      return null;
+    }
+    return new Zahlungsweg((Integer)getAttribute("zahlungsweg"));
+  }
+
+  @Override
+  public void setZahlungsweg(Integer zahlungsweg) throws RemoteException {
+    setAttribute("zahlungsweg", zahlungsweg);
+  }
 
   @Override
   public String getLeitwegID() throws RemoteException

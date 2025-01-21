@@ -24,6 +24,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Monat;
+import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.HBCI;
@@ -58,6 +59,14 @@ public class AbrechnungSEPAParam
   public final Boolean kursteilnehmer;
 
   public final Boolean kompakteabbuchung;
+  
+  public final boolean sollbuchungenzusammenfassen;
+  
+  public final boolean rechnung;
+  
+  public final Formular rechnungsformular;
+  
+  public final String rechnungstext;
 
   public final Boolean sepaprint;
 
@@ -89,6 +98,10 @@ public class AbrechnungSEPAParam
     zusatzbetraege = (Boolean) ac.getZusatzbetrag().getValue();
     kursteilnehmer = (Boolean) ac.getKursteilnehmer().getValue();
     kompakteabbuchung = (Boolean) ac.getKompakteAbbuchung().getValue();
+    sollbuchungenzusammenfassen = (Boolean) ac.getSollbuchungenZusammenfassen().getValue();
+    rechnung = (Boolean) ac.getRechnung().getValue(); 
+    rechnungsformular = (Formular) ac.getRechnungFormular().getValue(); 
+    rechnungstext = (String) ac.getRechnungstext().getValue();
     sepaprint = (Boolean) ac.getSEPAPrint().getValue();
     this.pdffileRCUR = pdffileRCUR;
     this.sepafileRCUR = sepafileRCUR;
