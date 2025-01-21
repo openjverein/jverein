@@ -1216,9 +1216,8 @@ public class AbrechnungSEPA
     }
     if (spArray != null && adress != null && adress instanceof Kursteilnehmer)
     {
-      Kursteilnehmer kt = (Kursteilnehmer) adress;
-      zweck = getVerwendungszweckName(kt, kt.getVZweck1());
-      summe = -kt.getBetrag();
+      zweck = spArray.get(0).getZweck();
+      summe = -((Kursteilnehmer) adress).getBetrag();
     }
 
     if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
