@@ -26,7 +26,6 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,12 +69,14 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.VarTools;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
@@ -634,9 +635,11 @@ public class FormularAufbereitung
   @SuppressWarnings("resource")
   public void addZUGFeRD(Rechnung re, boolean mahnung) throws IOException
   {
-    ArrayList<Mitgliedskonto> mklist = re.getMitgliedskontoList();
-    if (mklist.size() == 0)
+    Mitgliedskonto mk = re.getMitgliedskonto();
+    if (mk == null)
+    {
       return;
+    }
 
     String sourcePDF = f.getAbsolutePath();
     Einstellung e = Einstellungen.getEinstellung();
@@ -646,9 +649,9 @@ public class FormularAufbereitung
 
     Invoice invoice = new Invoice()
         // Fälligkeitsdatum
-        .setDueDate(mklist.get(mklist.size() - 1).getDatum())
+        .setDueDate(mk.getDatum())
         // Lieferdatum
-        .setDeliveryDate(mklist.get(mklist.size() - 1).getDatum())
+        .setDeliveryDate(mk.getDatum())
         // Rechnungsdatum
         .setIssueDate(re.getDatum())
         // Rechnungsnummer
@@ -663,9 +666,7 @@ public class FormularAufbereitung
     if (e.getUStID().length() > 0)
       sender.addVATID(e.getUStID());
 
-    // TODO Zahlungsweg aus Rechnung lesen sobald implementiert
-    if (re.getMandatDatum() != null
-        && !re.getMandatDatum().equals(Einstellungen.NODATE))
+    if (re.getZahlungsweg().getKey() == Zahlungsweg.BASISLASTSCHRIFT)
     {
       // Mandat
       sender.addDebitDetails(new DirectDebit(re.getIBAN(), re.getMandatID()));
@@ -682,13 +683,9 @@ public class FormularAufbereitung
 
     if (mahnung)
     {
-      double bezahlt = 0;
-      for (Mitgliedskonto mk : re.getMitgliedskontoList())
-      {
-        bezahlt += mk.getIstSumme();
-      }
       // Bereits gezahlt
-      invoice.setTotalPrepaidAmount(new BigDecimal(bezahlt));
+      invoice.setTotalPrepaidAmount(
+          new BigDecimal(re.getMitgliedskonto().getIstSumme()));
     }
 
     String id = re.getMitglied().getID();
@@ -720,32 +717,16 @@ public class FormularAufbereitung
       invoice.setReferenceNumber(re.getLeitwegID());
     }
 
-    // Sollbuchungen
-    for (Mitgliedskonto mk : re.getMitgliedskontoList())
+    // Sollbuchungspositionen
+    for (SollbuchungPosition sp : re.getMitgliedskonto()
+        .getSollbuchungPositionList())
     {
-      Double betrag = mk.getNettobetrag();
-      if (betrag == null || betrag == 0)
-      {
-        betrag = mk.getBetrag();
-      }
-      if (mk.getBetrag() < 0)
-      {
-        invoice.addItem(new Item(
-            new Product(mk.getZweck1(), "", "LS",
-                new BigDecimal(mk.getSteuersatz()).setScale(2,
-                    RoundingMode.HALF_DOWN)),
-            new BigDecimal(betrag * -1).setScale(2, RoundingMode.HALF_DOWN),
-            new BigDecimal(-1.0)));
-      }
-      else
-      {
-        invoice.addItem(new Item(new Product(mk.getZweck1(), "", "LS", // LS =
-                                                                       // pauschal
-            new BigDecimal(mk.getSteuersatz()).setScale(2,
-                RoundingMode.HALF_DOWN)),
-            new BigDecimal(betrag).setScale(2, RoundingMode.HALF_DOWN),
-            new BigDecimal(1.0)));
-      }
+      BigDecimal betrag = new BigDecimal(sp.getNettobetrag());
+      invoice.addItem(new Item(new Product(sp.getZweck(), "", "LS", // LS =
+                                                                    // pauschal
+          new BigDecimal(sp.getSteuersatz()).setScale(2, RoundingMode.HALF_UP)),
+          betrag.abs().setScale(4, RoundingMode.HALF_UP),
+          new BigDecimal(betrag.signum())));
     }
     ze.setTransaction(invoice);
     ze.export(f.getAbsolutePath());

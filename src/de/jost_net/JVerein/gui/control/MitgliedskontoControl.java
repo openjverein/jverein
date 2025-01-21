@@ -30,13 +30,8 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
-import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
-import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
-import de.jost_net.JVerein.gui.input.BuchungsartInput;
-import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
-import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.gui.view.BuchungView;
@@ -44,10 +39,9 @@ import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.io.Kontoauszug;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Buchungsart;
-import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -119,10 +113,6 @@ public class MitgliedskontoControl extends DruckMailControl
 
   private DecimalInput betrag;
 
-  private AbstractInput buchungsart;
-
-  private SelectInput buchungsklasse;
-
   private AbstractInput mitglied;
 
   private Mitgliedskonto mkto;
@@ -145,6 +135,8 @@ public class MitgliedskontoControl extends DruckMailControl
   private Action action;
 
   private boolean umwandeln;
+
+  private TablePart buchungList;
 
   public MitgliedskontoControl(AbstractView view)
   {
@@ -258,68 +250,6 @@ public class MitgliedskontoControl extends DruckMailControl
     return betrag;
   }
 
-  public Input getBuchungsart() throws RemoteException
-  {
-    if (buchungsart != null && !buchungsart.getControl().isDisposed())
-    {
-      return buchungsart;
-    }
-    buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getMitgliedskonto().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
-    buchungsart.addListener(new Listener()
-    {
-      @Override
-      public void handleEvent(Event event)
-      {
-        try
-        {
-          Buchungsart bua = (Buchungsart) buchungsart.getValue();
-          if (buchungsklasse != null && buchungsklasse.getValue() == null
-              && bua != null)
-            buchungsklasse.setValue(bua.getBuchungsklasse());
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-    });
-    return buchungsart;
-  }
-
-  public SelectInput getBuchungsklasse() throws RemoteException
-  {
-    if (buchungsklasse != null)
-    {
-      return buchungsklasse;
-    }
-    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(
-        buchungsklasse, getMitgliedskonto().getBuchungsklasse());
-    return buchungsklasse;
-  }
-
-  private Long getSelectedBuchungsKlasseId() throws ApplicationException
-  {
-    try
-    {
-      if (buchungsklasse == null)
-        return null;
-      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse()
-          .getValue();
-      if (null == buchungsKlasse)
-        return null;
-      Long id = Long.valueOf(buchungsKlasse.getID());
-      return id;
-    }
-    catch (RemoteException ex)
-    {
-      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
-      Logger.error(meldung, ex);
-      throw new ApplicationException(meldung, ex);
-    }
-  }
-
   public CheckboxInput getSpezialSuche2()
   {
     if (spezialsuche2 != null && !spezialsuche2.getControl().isDisposed())
@@ -397,25 +327,6 @@ public class MitgliedskontoControl extends DruckMailControl
       Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
       mkto.setZahlungsweg(zw.getKey());
       mkto.setZweck1((String) getZweck1().getValue());
-
-      double steuersatz = 0d;
-      mkto.setBuchungsklasseId(getSelectedBuchungsKlasseId());
-      mkto.setBuchungsart((Buchungsart) getBuchungsart().getValue());
-      if (getBuchungsart().getValue() != null)
-      {
-        Buchungsart bart = mkto.getBuchungsart();
-        steuersatz = bart.getSteuersatz();
-      }
-
-      // Update taxes and netto amount
-      mkto.setSteuersatz(steuersatz);
-      if (getBetrag().getValue() != null)
-      {
-        Double netto = ((Double) getBetrag().getValue()
-            / (1d + (steuersatz / 100d)));
-        mkto.setNettobetrag(netto);
-        mkto.setSteuerbetrag((Double) getBetrag().getValue() - netto);
-      }
 
       mkto.store();
       GUI.getStatusBar().setSuccessText("Sollbuchung gespeichert");
@@ -544,13 +455,6 @@ public class MitgliedskontoControl extends DruckMailControl
       mitgliedskontoList.addColumn("Zahlungseingang", "istsumme",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       mitgliedskontoList.addColumn("Rechnung", "rechnung");
-      mitgliedskontoList.addColumn("Buchungsart", "buchungsart",
-          new BuchungsartFormatter());
-      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-      {
-        mitgliedskontoList.addColumn("Buchungsklasse", "buchungsklasse",
-            new BuchungsklasseFormatter());
-      }
       mitgliedskontoList.setContextMenu(menu);
       mitgliedskontoList.setRememberColWidths(true);
       mitgliedskontoList.setRememberOrder(true);
@@ -560,9 +464,12 @@ public class MitgliedskontoControl extends DruckMailControl
     else
     {
       mitgliedskontoList.removeAll();
-      while (mitgliedskonten.hasNext())
+      if (mitgliedskonten != null)
       {
-        mitgliedskontoList.addItem(mitgliedskonten.next());
+        while (mitgliedskonten.hasNext())
+        {
+          mitgliedskontoList.addItem(mitgliedskonten.next());
+        }
       }
       mitgliedskontoList.sort();
     }
@@ -608,6 +515,42 @@ public class MitgliedskontoControl extends DruckMailControl
     mitgliedskontoList2.sort();
   }
 
+  public Part getBuchungenList() throws RemoteException
+  {
+    if (buchungList != null)
+    {
+      return buchungList;
+    }
+    DBIterator<SollbuchungPosition> sps = Einstellungen.getDBService()
+        .createList(SollbuchungPosition.class);
+    sps.addFilter( "sollbuchung = ?", getMitgliedskonto().getID());
+    
+    buchungList = new TablePart(sps, null);
+    buchungList.addColumn("Datum", "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    buchungList.addColumn("Zweck", "zweck");
+    buchungList.addColumn("Betrag", "betrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    if (Einstellungen.getEinstellung().getOptiert())
+    {
+      buchungList.addColumn("Nettobetrag", "nettobetrag",
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      buchungList.addColumn("Steuersatz", "steuersatz");
+      buchungList.addColumn("Steuerbetrag", "steuerbetrag",
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    }
+    buchungList.addColumn("Buchungsart", "buchungsart");
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      buchungList.addColumn("Buchungsklasse", "buchungsklasse");
+    }
+
+    buchungList.setRememberColWidths(true);
+    buchungList.setRememberOrder(true);
+    buchungList.addFeature(new FeatureSummary());
+    return buchungList;
+  }
+  
   private GenericIterator<Mitglied> getMitgliedIterator() throws RemoteException
   {
     DBIterator<Mitglied> mitglieder = Einstellungen.getDBService()
@@ -654,9 +597,12 @@ public class MitgliedskontoControl extends DruckMailControl
     GenericIterator mitgliedskonten = new SollbuchungQuery(this, umwandeln,
         null).get();
     mitgliedskontoList.removeAll();
-    while (mitgliedskonten.hasNext())
+    if (mitgliedskonten != null)
     {
-      mitgliedskontoList.addItem(mitgliedskonten.next());
+      while (mitgliedskonten.hasNext())
+      {
+        mitgliedskontoList.addItem(mitgliedskonten.next());
+      }
     }
     mitgliedskontoList.sort();
   }
