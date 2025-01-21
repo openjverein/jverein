@@ -1095,18 +1095,18 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   {
     setAttribute("foto", foto);
   }
-  
+
   @Override
   public Mitglied getZahler() throws RemoteException
   {
-  Object o = (Object) super.getAttribute("zahlerid");
+    Object o = (Object) super.getAttribute("zahlerid");
     if (o == null)
       return null;
 
-    if(o instanceof Mitglied)
-      return (Mitglied)o;
-   
-    Cache cache = Cache.get(Mitglied.class,true);
+    if (o instanceof Mitglied)
+      return (Mitglied) o;
+
+    Cache cache = Cache.get(Mitglied.class, true);
     return (Mitglied) cache.get(o);
   }
 
