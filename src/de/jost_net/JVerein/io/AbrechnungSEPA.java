@@ -309,7 +309,7 @@ public class AbrechnungSEPA
       {
         writeSollbuchung(Zahlungsweg.BASISLASTSCHRIFT, null, null,
             param.faelligkeit, abrl, konto, param,
-            summelastschriften.doubleValue());
+            -summelastschriften.doubleValue());
       }
 
       // Wenn keine Lastschriften vorhanden sind, wird kein File erzeugt.
@@ -1152,8 +1152,6 @@ public class AbrechnungSEPA
       }
       mk.setBetrag(summe);
 
-      // Rechnungen nur für (Nicht-)Mitglieder unterstützt
-      // (nicht für Kursteilnehmer)
       if (param.rechnung)
       {
         Formular form = param.rechnungsformular;
@@ -1217,7 +1215,7 @@ public class AbrechnungSEPA
     if (spArray != null && adress != null && adress instanceof Kursteilnehmer)
     {
       zweck = spArray.get(0).getZweck();
-      summe = -((Kursteilnehmer) adress).getBetrag();
+      summe = ((Kursteilnehmer) adress).getBetrag();
     }
 
     if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
