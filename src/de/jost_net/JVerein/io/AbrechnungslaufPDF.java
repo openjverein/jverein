@@ -55,10 +55,7 @@ public class AbrechnungslaufPDF
           BaseColor.LIGHT_GRAY);
       reporter.addHeaderColumn("Zweck", Element.ALIGN_CENTER, 190,
           BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Steuersatz", Element.ALIGN_CENTER, 60,
-          BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Steuerbetrag", Element.ALIGN_CENTER, 60,
-          BaseColor.LIGHT_GRAY);
+      
       reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 60,
           BaseColor.LIGHT_GRAY);
       reporter.addHeaderColumn("Eingang", Element.ALIGN_CENTER, 60,
@@ -76,8 +73,7 @@ public class AbrechnungslaufPDF
         reporter.addColumn(Adressaufbereitung.getNameVorname(mk.getMitglied()),
             Element.ALIGN_LEFT);
         reporter.addColumn(mk.getZweck1(), Element.ALIGN_LEFT);
-        reporter.addColumn(mk.getSteuersatz());
-        reporter.addColumn(mk.getSteuerbetrag());
+
         reporter.addColumn(mk.getBetrag());
         reporter.addColumn(mk.getIstSumme());
         reporter.addColumn(Zahlungsweg.get(mk.getZahlungsweg()),

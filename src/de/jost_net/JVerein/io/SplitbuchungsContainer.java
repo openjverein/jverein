@@ -20,14 +20,23 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Settings;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class SplitbuchungsContainer
@@ -35,12 +44,12 @@ public class SplitbuchungsContainer
   private static ArrayList<Buchung> splitbuchungen = null;
 
   private static int dependencyid = 0;
-  
+
   private static Buchung[] buchungen = null;
-  
+
   private static int anzahl = 0;
-  
-  private static String text = null; 
+
+  private static String text = null;
 
   public static void init(Buchung[] bl)
       throws RemoteException, ApplicationException
@@ -58,7 +67,7 @@ public class SplitbuchungsContainer
     }
     initiate(bl[0]);
   }
-  
+
   public static void init(Buchung b)
       throws RemoteException, ApplicationException
   {
@@ -67,13 +76,12 @@ public class SplitbuchungsContainer
     text = "Es wird eine Splitbuchung erzeugt.";
     initiate(b);
   }
-  
+
   public static void initiate(Buchung b)
       throws RemoteException, ApplicationException
   {
     splitbuchungen = new ArrayList<>();
     dependencyid = 0;
-
     // Wenn eine gesplittete Buchung aufgerufen wird, wird die Hauptbuchung
     // gelesen
     if (b.getSplitId() != null)
@@ -89,7 +97,6 @@ public class SplitbuchungsContainer
     DBIterator<Buchung> it = Einstellungen.getDBService()
         .createList(Buchung.class);
     it.addFilter("splitid = ?", b.getID());
-
     if (!it.hasNext())
     {
       // Wenn keine Buchung gefunden wurde, gibt es auch keine Gegenbuchung.
@@ -231,7 +238,7 @@ public class SplitbuchungsContainer
       throw ex;
     }
   }
-  
+
   public static void handleStore() throws RemoteException, ApplicationException
   {
     for (Buchung b : get())
@@ -274,14 +281,16 @@ public class SplitbuchungsContainer
     }
   }
 
-  public static int getNewDependencyId() {
+  public static int getNewDependencyId()
+  {
     return ++dependencyid;
   }
-  
-  public static String getText() {
+
+  public static String getText()
+  {
     return text;
   }
-  
+
   private static Buchung getGegenbuchung(Buchung b) throws RemoteException
   {
     Buchung buch = (Buchung) Einstellungen.getDBService()
@@ -295,7 +304,7 @@ public class SplitbuchungsContainer
     buch.setDatum(b.getDatum());
     buch.setKommentar(b.getKommentar());
     buch.setKonto(b.getKonto());
-    buch.setMitgliedskonto(b.getMitgliedskonto());
+    buch.setMitgliedskontoID(b.getMitgliedskontoID());
     buch.setName(b.getName());
     buch.setProjekt(b.getProjekt());
     buch.setSplitId(Long.valueOf(b.getID()));
@@ -304,11 +313,12 @@ public class SplitbuchungsContainer
     buch.setSplitTyp(SplitbuchungTyp.GEGEN);
     return buch;
   }
-  
-  private static Buchung getSplitbuchung(Buchung master, Buchung origin) throws RemoteException
+
+  private static Buchung getSplitbuchung(Buchung master, Buchung origin)
+      throws RemoteException
   {
-    Buchung buch = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
-        null);
+    Buchung buch = (Buchung) Einstellungen.getDBService()
+        .createObject(Buchung.class, null);
     buch.setAuszugsnummer(master.getAuszugsnummer());
     buch.setBetrag(origin.getBetrag());
     buch.setBlattnummer(master.getBlattnummer());
@@ -317,7 +327,7 @@ public class SplitbuchungsContainer
     buch.setDatum(master.getDatum());
     buch.setKommentar(origin.getKommentar());
     buch.setKonto(master.getKonto());
-    buch.setMitgliedskonto(master.getMitgliedskonto());
+    buch.setMitgliedskontoID(master.getMitgliedskontoID());
     buch.setName(master.getName());
     buch.setProjekt(master.getProjekt());
     buch.setSplitId(Long.valueOf(master.getID()));
@@ -327,8 +337,232 @@ public class SplitbuchungsContainer
     buch.setSplitTyp(SplitbuchungTyp.SPLIT);
     return buch;
   }
-  
-  public static int getAnzahl() 
+
+  /**
+   * Splittet eine Buchung anhand der in der Sollbuchung enthaltenen
+   * Sollbuchungspositionen.
+   * 
+   * @param Buchung
+   *          die zu splittende Buchung
+   * @param Mitgliedskonto
+   *          die Sollbuchung, die der Buchung zugewiesen werden soll
+   * @param immerSpliten
+   *          auch bei nur einer Sollbuchungsposition splitten
+   * @return Wenn die Beträge von Sollbuchung und Buchung verschieden sind, wird
+   *         die erzeugte Restbuchung zurückgegeben, sonst <code>null</code>.
+   */
+  public static Buchung autoSplit(Buchung buchung, Mitgliedskonto mk,
+      boolean immerSplitten)
+      throws NumberFormatException, RemoteException, ApplicationException
+  {
+    boolean splitten = false;
+    Buchung restBuchung = null;
+    if (mk == null)
+    {
+      buchung.setMitgliedskonto(null);
+      buchung.store();
+      return null;
+    }
+
+    HashMap<String, Double> splitMap = new HashMap<>();
+    HashMap<String, String> splitZweckMap = new HashMap<>();
+    ArrayList<SollbuchungPosition> spArray = mk.getSollbuchungPositionList();
+    try
+    {
+      for (SollbuchungPosition sp : spArray)
+      {
+        // Wenn eine Buchungsart fehlt können wir nicht automatisch splitten
+        if (sp.getBuchungsartId() == null)
+        {
+          throw new ApplicationException(
+              "Es haben nicht alle Sollbuchungspositionen eine Buchungsart.");
+        }
+        String key = sp.getBuchungsartId() + "-"
+            + (sp.getBuchungsklasseId() != null ? sp.getBuchungsklasseId()
+                : "");
+        Double betrag = splitMap.getOrDefault(key, 0d);
+        if (sp.getBetrag().doubleValue() == 0)
+        {
+          continue;
+        }
+
+        splitMap.put(key, betrag + sp.getBetrag().doubleValue());
+        String zweck = splitZweckMap.get(key);
+        if (zweck == null)
+        {
+          zweck = sp.getZweck() + " " + sp.getBetrag();
+        }
+        else
+        {
+          zweck = zweck + ", " + sp.getZweck() + " " + sp.getBetrag();
+        }
+        splitZweckMap.put(key, zweck);
+      }
+
+      if ((splitMap.size() > 1 && mk.getBetrag().equals(buchung.getBetrag()))
+          || immerSplitten)
+      {
+        splitten = true;
+      }
+      else if (splitMap.size() > 1)
+      {
+        YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+        dialog.setTitle("Buchung splitten");
+        dialog.setText(
+            "Der Betrag der Sollbuchung entspricht nicht dem der Buchung.\n"
+                + "Soll die Buchung trotzdem anhand der Sollbuchungspositionen\n"
+                + "gesplittet und eine Restbuchung erzeugt werden?");
+        if (!((Boolean) dialog.open()).booleanValue())
+        {
+          throw new OperationCanceledException();
+        }
+      }
+      if (splitten)
+      { 
+        boolean ersetzen = false;
+        if (buchung.getBuchungsartId() == null
+            && spArray.get(0).getBuchungsartId() != null)
+        {
+          buchung.setBuchungsartId(spArray.get(0).getBuchungsartId());
+        }
+        if (buchung.getBuchungsklasseId() == null
+            && spArray.get(0).getBuchungsklasseId() != null)
+        {
+          buchung.setBuchungsklasseId(spArray.get(0).getBuchungsklasseId());
+        }
+
+        if (buchung.getSplitTyp() == null)
+        {
+          buchung.setSplitTyp(SplitbuchungTyp.HAUPT);
+          buchung.setMitgliedskontoID(null);
+        }
+        // Haupt- und Gegen-Buchungen können nicht gesplittet werden.
+        else if (buchung.getSplitTyp() == SplitbuchungTyp.GEGEN
+            || buchung.getSplitTyp() == SplitbuchungTyp.HAUPT)
+        {
+          throw new ApplicationException(
+              "Splitten von Haupt und Gegenbuchung nicht möglich.");
+        }
+        else
+        {
+          // Spitbuchungen müssen durch die neuen Buchungen ersetzt werden
+          ersetzen = true;
+        }
+
+        SplitbuchungsContainer.init(buchung);
+
+        if (ersetzen)
+        {
+          for (Buchung b : splitbuchungen)
+          {
+            if (b.getID().equals(buchung.getID()))
+            {
+              if (b.getSpendenbescheinigung() != null)
+              {
+                Logger.error(
+                    "Splitbuchung ist einer Spendenbescheinigung zugeordnet, neu splitten nicht möglich.");
+                throw new ApplicationException(
+                    "Splitbuchung ist einer Spendenbescheinigung zugeordnet, neu splitten nicht möglich.");
+              }
+              b.setDelete(true);
+              break;
+            }
+          }
+        }
+      
+        boolean splitPositionZweck = new Settings(SplitbuchungsContainer.class)
+            .getBoolean("splitPositionZweck", true);
+        Iterator<Entry<String, Double>> iterator = splitMap.entrySet()
+            .iterator();
+        while (iterator.hasNext())
+        {
+          Entry<String, Double> entry = iterator.next();
+
+          Buchung splitBuchung = (Buchung) Einstellungen.getDBService()
+              .createObject(Buchung.class, null);
+          splitBuchung.setBetrag(entry.getValue());
+          splitBuchung.setDatum(buchung.getDatum());
+          splitBuchung.setKonto(buchung.getKonto());
+          splitBuchung.setName(buchung.getName());
+          if (splitPositionZweck)
+          {
+            splitBuchung.setZweck(splitZweckMap.get(entry.getKey()));
+          }
+          else
+          {
+            splitBuchung.setZweck(mk.getZweck1());
+          }
+          splitBuchung.setMitgliedskonto(mk);
+          String buchungsart = entry.getKey().substring(0,
+              entry.getKey().indexOf("-"));
+          splitBuchung.setBuchungsartId(Long.parseLong(buchungsart));
+          String buchungsklasse = entry.getKey()
+              .substring(entry.getKey().indexOf("-") + 1);
+          if (buchungsklasse.length() > 0)
+          {
+            splitBuchung.setBuchungsklasseId(Long.parseLong(buchungsklasse));
+          }
+          splitBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
+          splitBuchung.setSplitId(Long.parseLong(getMaster().getID()));
+
+          SplitbuchungsContainer.add(splitBuchung);
+        }
+        if (!mk.getBetrag().equals(buchung.getBetrag()))
+        {
+          restBuchung = (Buchung) Einstellungen.getDBService()
+              .createObject(Buchung.class, null);
+          restBuchung.setBetrag(buchung.getBetrag() - mk.getBetrag());
+          restBuchung.setDatum(buchung.getDatum());
+          restBuchung.setKonto(buchung.getKonto());
+          restBuchung.setName(buchung.getName());
+          restBuchung.setZweck(buchung.getZweck());
+          restBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
+          restBuchung.setSplitId(Long.parseLong(getMaster().getID()));
+          restBuchung.setBuchungsartId(buchung.getBuchungsartId());
+          restBuchung.setBuchungsklasseId(buchung.getBuchungsklasseId());
+
+          SplitbuchungsContainer.add(restBuchung);
+        }
+        SplitbuchungsContainer.store();
+      }
+    }
+    catch (OperationCanceledException oce)
+    {
+      splitten = false;
+    }
+    catch (Exception e)
+    {
+      if (immerSplitten)
+      {
+        throw new ApplicationException(e.getLocalizedMessage());
+      }
+      splitten = false;
+      if (splitbuchungen != null)
+      {
+        splitbuchungen.clear();
+      }
+      GUI.getStatusBar().setErrorText(
+          "Fehler beim Autosplit, ordne Buchung Sollbuchung ohne splitten zu.");
+    }
+    if (!splitten)
+    {
+      // Wenn kein automatisches Spliten möglich ist nur Buchungsart,
+      // Buchungsklasse und Sollbuchung zuweisen
+      if (spArray.get(0).getBuchungsartId() != null)
+      {
+        buchung.setBuchungsartId(spArray.get(0).getBuchungsartId());
+      }
+      if (spArray.get(0).getBuchungsklasseId() != null)
+      {
+        buchung.setBuchungsklasseId(spArray.get(0).getBuchungsklasseId());
+      }
+      buchung.setMitgliedskonto(mk);
+      buchung.store();
+    }
+    return restBuchung;
+  }
+
+  public static int getAnzahl()
   {
     return anzahl;
   }

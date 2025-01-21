@@ -17,17 +17,22 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -474,7 +479,51 @@ public class KontoImpl extends AbstractDBObject implements Konto
   {
     setAttribute("afamode", afamode);
   }
-  
+
+  @Override
+  public Double getSaldo() throws RemoteException
+  {
+    ResultSetExtractor rsd = new ResultSetExtractor()
+    {
+      @Override
+      public Object extract(ResultSet rs) throws SQLException
+      {
+        if (!rs.next())
+        {
+          return Double.valueOf(0);
+        }
+        return Double.valueOf(rs.getDouble(1));
+      }
+    };
+    Double saldo = 0.0;
+    Date datum = null;
+    // Suchen ob Anfangsstand im Suchbereich enthalten ist
+    DBService service = Einstellungen.getDBService();
+    DBIterator<Anfangsbestand> anf = service.createList(Anfangsbestand.class);
+    anf.addFilter("konto = ? ", new Object[] { getID() });
+    anf.setOrder("ORDER BY datum desc");
+    if (anf != null && anf.hasNext())
+    {
+      Anfangsbestand anfang = anf.next();
+      saldo = anfang.getBetrag();
+      datum = anfang.getDatum();
+    }
+    if (datum != null)
+    {
+      String sql = "SELECT sum(buchung.betrag) FROM buchung"
+          + " WHERE buchung.konto = ?" + " AND buchung.datum >= ?";
+      saldo += (Double) service.execute(sql, new Object[] { getID(), datum },
+          rsd);
+    }
+    else
+    {
+      String sql = "SELECT sum(buchung.betrag) FROM buchung"
+          + " WHERE buchung.konto = ?";
+      saldo += (Double) service.execute(sql, new Object[] { getID() }, rsd);
+    }
+    return saldo;
+  }
+
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {

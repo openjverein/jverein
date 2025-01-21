@@ -203,7 +203,14 @@ public class AbrechnungslaufDeleteAction implements Action
         Buchung bu = it.next();
         if (bu.getSpendenbescheinigung() != null)
           bu.getSpendenbescheinigung().delete();
-        bu.delete();
+        try {
+          bu.delete();
+        }
+        catch (RemoteException ignore)
+        {
+          // Ignorieren, da die Exception auftritt, wenn die Buchung bereits
+          // gelöscht wurde, z. B. bei Splitbuchungen.
+        }
       }
       DBIterator<Mitgliedskonto> mitgliedskontoIt = Einstellungen.getDBService()
           .createList(Mitgliedskonto.class);

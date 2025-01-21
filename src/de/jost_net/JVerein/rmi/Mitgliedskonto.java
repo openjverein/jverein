@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import de.willuhn.datasource.rmi.DBObject;
@@ -54,39 +55,16 @@ public interface Mitgliedskonto extends DBObject
 
   public void setZahlungsweg(Integer zahlungsweg) throws RemoteException;
 
-  public Double getNettobetrag() throws RemoteException;
-
-  public void setNettobetrag(Double nettobetrag) throws RemoteException;
-
-  public Double getSteuersatz() throws RemoteException;
-
-  public void setSteuersatz(Double steuersatz) throws RemoteException;
-
-  public Double getSteuerbetrag() throws RemoteException;
-
-  public void setSteuerbetrag(Double steuerbetrag) throws RemoteException;
-
   public void setBetrag(Double betrag) throws RemoteException;
 
   public Double getBetrag() throws RemoteException;
 
   public Double getIstSumme() throws RemoteException;
 
-  public Buchungsart getBuchungsart() throws RemoteException;
-
-  public void setBuchungsart(Buchungsart buchungsart) throws RemoteException;
-
-  public Long getBuchungsartId() throws RemoteException;
-
-  public void setBuchungsartId(Long buchungsartId) throws RemoteException;
-
-  public Buchungsklasse getBuchungsklasse() throws RemoteException;
-
-  public Long getBuchungsklasseId() throws RemoteException;
-
-  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
-
   public Rechnung getRechnung() throws RemoteException;
 
   public void setRechnung(Rechnung rechnung) throws RemoteException;
+
+  ArrayList<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException;
 }
