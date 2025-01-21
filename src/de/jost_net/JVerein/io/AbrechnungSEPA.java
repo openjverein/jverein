@@ -1128,7 +1128,7 @@ public class AbrechnungSEPA
     Mitgliedskonto mk = null;
     String zweck = null;
     Rechnung re = null;
-    if (spArray != null)
+    if (spArray != null && adress != null && adress instanceof Mitglied)
     {
       mk = (Mitgliedskonto) Einstellungen.getDBService()
           .createObject(Mitgliedskonto.class, null);
@@ -1136,10 +1136,7 @@ public class AbrechnungSEPA
       mk.setZahlungsweg(zahlungsweg);
 
       mk.setDatum(datum);
-      if (adress instanceof Mitglied)
-      {
-        mk.setMitglied((Mitglied) adress);
-      }
+      mk.setMitglied((Mitglied) adress);
       // Zweck wird später gefüllt, es muss aber schon was drin stehen damit
       // gespeichert werden kann
       mk.setZweck1(" ");
@@ -1157,7 +1154,7 @@ public class AbrechnungSEPA
 
       // Rechnungen nur für (Nicht-)Mitglieder unterstützt
       // (nicht für Kursteilnehmer)
-      if (param.rechnung && adress instanceof Mitglied)
+      if (param.rechnung)
       {
         Formular form = param.rechnungsformular;
         if (form == null)
@@ -1216,6 +1213,12 @@ public class AbrechnungSEPA
         mk.setZweck1(zweck);
       }
       mk.store();
+    }
+    if (spArray != null && adress != null && adress instanceof Kursteilnehmer)
+    {
+      Kursteilnehmer kt = (Kursteilnehmer) adress;
+      zweck = getVerwendungszweckName(kt, kt.getVZweck1());
+      summe = -kt.getBetrag();
     }
 
     if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
