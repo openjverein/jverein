@@ -107,6 +107,8 @@ public interface Konto extends DBObject
 
   public void setAfaMode(Integer afamode) throws RemoteException;
 
+  public Double getSaldo() throws RemoteException;
+
   public DBIterator<Konto> getKontenEinesJahres(Geschaeftsjahr gj)
       throws RemoteException;
   
