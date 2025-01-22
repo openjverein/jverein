@@ -26,6 +26,7 @@ import de.jost_net.JVerein.rmi.Rechnung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -97,6 +98,10 @@ public class RechnungNeuAction implements Action
         GUI.getStatusBar().setSuccessText(erstellt + " Rechnung(en) erstellt"
             + (skip > 0 ? ", " + skip + " vorhandene übersprungen." : "."));
       }
+    }
+    catch (OperationCanceledException ignore)
+    {
+
     }
     catch (Exception e)
     {
