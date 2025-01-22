@@ -76,7 +76,8 @@ public class SollbuchungPositionDeleteAction implements Action
       // Betrag in Sollbuchung neu berechnen
       Double betrag = 0.0;
       Mitgliedskonto sollb = position.getSollbuchung();
-      ArrayList<SollbuchungPosition> sollbpList =  sollb.getSollbuchungPositionList();
+      ArrayList<SollbuchungPosition> sollbpList = sollb
+          .getSollbuchungPositionList();
       for (SollbuchungPosition sollp : sollbpList)
       {
         betrag += sollp.getBetrag();

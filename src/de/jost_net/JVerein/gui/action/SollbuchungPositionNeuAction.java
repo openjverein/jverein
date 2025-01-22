@@ -46,8 +46,8 @@ public class SollbuchungPositionNeuAction implements Action
           throw new ApplicationException(
               "Vor dem Anlegen der Sollbuchungsposition muss die Sollbuchung gespeichert werden!");
         }
-        position = (SollbuchungPosition) Einstellungen.getDBService().createObject(
-            SollbuchungPosition.class, null);
+        position = (SollbuchungPosition) Einstellungen.getDBService()
+            .createObject(SollbuchungPosition.class, null);
         position.setSollbuchung(sollbuchung.getID());
       }
       catch (RemoteException e)

@@ -568,7 +568,7 @@ public class MitgliedskontoControl extends DruckMailControl
     buchungList.addFeature(new FeatureSummary());
     return buchungList;
   }
-  
+
   private GenericIterator<Mitglied> getMitgliedIterator() throws RemoteException
   {
     DBIterator<Mitglied> mitglieder = Einstellungen.getDBService()

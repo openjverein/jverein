@@ -46,10 +46,10 @@ public class MitgliedskontoMenu extends ContextMenu
    */
   public MitgliedskontoMenu()
   {
-    addItem(new MitgliedItem("Neue Sollbuchung",
-        new SollbuchungNeuAction(), "document-new.png"));
-    addItem(new SollItem("Sollbuchung bearbeiten",
-        new SollbuchungEditAction(), "text-x-generic.png"));
+    addItem(new MitgliedItem("Neue Sollbuchung", new SollbuchungNeuAction(),
+        "document-new.png"));
+    addItem(new SollItem("Sollbuchung bearbeiten", new SollbuchungEditAction(),
+        "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
         new SollbuchungLoeschenAction(), "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);

@@ -44,8 +44,8 @@ public class SollbuchungEditAction implements Action
       mkn = (MitgliedskontoNode) context;
       try
       {
-        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-            Mitgliedskonto.class, mkn.getID());
+        mk = (Mitgliedskonto) Einstellungen.getDBService()
+            .createObject(Mitgliedskonto.class, mkn.getID());
       }
       catch (RemoteException e)
       {
