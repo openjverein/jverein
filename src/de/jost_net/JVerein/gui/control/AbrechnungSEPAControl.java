@@ -627,6 +627,7 @@ public class AbrechnungSEPAControl extends AbstractControl
       }
       rechnungsformular.setEnabled((boolean) rechnung.getValue());
       rechnungstext.setEnabled((boolean) rechnung.getValue());
+      rechnungsdatum.setEnabled((boolean) rechnung.getValue());
     }
   }
 
