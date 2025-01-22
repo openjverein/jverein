@@ -27,7 +27,9 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class RechnungDialog extends AbstractDialog<Boolean>
@@ -41,6 +43,8 @@ public class RechnungDialog extends AbstractDialog<Boolean>
 
   private Date datum;
 
+  private LabelInput status = null;
+
   private boolean fortfahren = false;
 
   public RechnungDialog()
@@ -53,6 +57,16 @@ public class RechnungDialog extends AbstractDialog<Boolean>
   protected Boolean getData() throws Exception
   {
     return fortfahren;
+  }
+
+  private LabelInput getStatus()
+  {
+    if (status != null)
+    {
+      return status;
+    }
+    status = new LabelInput("");
+    return status;
   }
 
   public Formular getFormular()
@@ -72,6 +86,7 @@ public class RechnungDialog extends AbstractDialog<Boolean>
     group.addText(
         "Bitte Rechnungsdatum und zu verwendendes Formular auswählen.",
         true);
+    group.addInput(getStatus());
     formularInput = new FormularInput(FormularArt.RECHNUNG);
     group.addLabelPair("Formular", formularInput);
 
@@ -82,6 +97,14 @@ public class RechnungDialog extends AbstractDialog<Boolean>
     buttons.addButton("Rechnung(en) erstellen", context -> {
       if (formularInput.getValue() == null)
       {
+        status.setValue("Bitte Formular auswählen");
+        status.setColor(Color.ERROR);
+        return;
+      }
+      if (datumInput.getValue() == null)
+      {
+        status.setValue("Bitte Datum auswählen");
+        status.setColor(Color.ERROR);
         return;
       }
       formular = (Formular) formularInput.getValue();
