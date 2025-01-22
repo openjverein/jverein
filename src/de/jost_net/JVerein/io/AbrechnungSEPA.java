@@ -313,7 +313,7 @@ public class AbrechnungSEPA
       {
         writeSollbuchung(null, Zahlungsweg.BASISLASTSCHRIFT, null, null,
             param.faelligkeit, abrl, konto, param,
-            summelastschriften.doubleValue());
+            -summelastschriften.doubleValue());
       }
 
       // Wenn keine Lastschriften vorhanden sind, wird kein File erzeugt.
@@ -1133,7 +1133,7 @@ public class AbrechnungSEPA
     Mitgliedskonto mk = null;
     String zweck = null;
     Rechnung re = null;
-    if (spArray != null)
+    if (spArray != null && adress != null && adress instanceof Mitglied)
     {
       mk = (Mitgliedskonto) Einstellungen.getDBService()
           .createObject(Mitgliedskonto.class, null);
@@ -1141,10 +1141,7 @@ public class AbrechnungSEPA
       mk.setZahlungsweg(zahlungsweg);
       mk.setZahlerId(zahlerId);
       mk.setDatum(datum);
-      if (adress instanceof Mitglied)
-      {
-        mk.setMitglied((Mitglied) adress);
-      }
+      mk.setMitglied((Mitglied) adress);
       // Zweck wird später gefüllt, es muss aber schon was drin stehen damit
       // gespeichert werden kann
       mk.setZweck1(" ");
@@ -1160,9 +1157,7 @@ public class AbrechnungSEPA
       }
       mk.setBetrag(summe);
 
-      // Rechnungen nur für (Nicht-)Mitglieder unterstützt
-      // (nicht für Kursteilnehmer)
-      if (param.rechnung && adress instanceof Mitglied)
+      if (param.rechnung)
       {
         Formular form = param.rechnungsformular;
         if (form == null)
@@ -1221,6 +1216,11 @@ public class AbrechnungSEPA
         mk.setZweck1(zweck);
       }
       mk.store();
+    }
+    if (spArray != null && adress != null && adress instanceof Kursteilnehmer)
+    {
+      zweck = spArray.get(0).getZweck();
+      summe = ((Kursteilnehmer) adress).getBetrag();
     }
 
     if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
