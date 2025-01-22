@@ -19,44 +19,49 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
+import de.jost_net.JVerein.gui.view.SollbuchungPositionView;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SollbuchungEditAction implements Action
+public class SollbuchungPositionNeuAction implements Action
 {
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Mitgliedskonto mk = null;
-    MitgliedskontoNode mkn = null;
+    Mitgliedskonto sollbuchung = null;
+    SollbuchungPosition position = null;
 
-    if (context instanceof Mitgliedskonto)
+    if (context != null && (context instanceof Mitgliedskonto))
     {
-      mk = (Mitgliedskonto) context;
-    }
-    else if (context instanceof MitgliedskontoNode)
-    {
-      mkn = (MitgliedskontoNode) context;
+      sollbuchung = (Mitgliedskonto) context;
       try
       {
-        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-            Mitgliedskonto.class, mkn.getID());
+        if (sollbuchung.isNewObject())
+        {
+          throw new ApplicationException(
+              "Vor dem Anlegen der Sollbuchungsposition muss die Sollbuchung gespeichert werden!");
+        }
+        position = (SollbuchungPosition) Einstellungen.getDBService().createObject(
+            SollbuchungPosition.class, null);
+        position.setSollbuchung(sollbuchung.getID());
       }
       catch (RemoteException e)
       {
+        Logger.error("Fehler", e);
         throw new ApplicationException(
-            "Fehler beim Editieren einer Sollbuchung");
+            "Fehler bei der Erzeugung einer neuen Sollbuchungsposition", e);
       }
     }
     else
     {
       throw new ApplicationException("Keine Sollbuchung ausgewählt");
     }
-    GUI.startView(new SollbuchungDetailView(), mk);
+
+    GUI.startView(SollbuchungPositionView.class.getName(), position);
   }
 }

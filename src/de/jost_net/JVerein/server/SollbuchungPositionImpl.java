@@ -24,6 +24,8 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class SollbuchungPositionImpl extends AbstractDBObject
     implements SollbuchungPosition
@@ -34,6 +36,43 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   public SollbuchungPositionImpl() throws RemoteException
   {
     super();
+  }
+
+  @Override
+  protected void insertCheck() throws ApplicationException
+  {
+    try
+    {
+      plausi();
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+      throw new ApplicationException(
+          "Buchung kann nicht gespeichert werden. Siehe system log");
+    }
+  }
+
+  public void plausi() throws RemoteException, ApplicationException
+  {
+    if (getDatum() == null)
+    {
+      throw new ApplicationException("Bitte Datum eingeben");
+    }
+    if (getBetrag() == null)
+    {
+      throw new ApplicationException("Bitte Betrag eingeben");
+    }
+    if (getZweck() == null || getZweck().length() == 0)
+    {
+      throw new ApplicationException("Bitte Verwendungszweck eingeben");
+    }
+  }
+
+  @Override
+  protected void updateCheck() throws ApplicationException
+  {
+    insertCheck();
   }
 
   @Override

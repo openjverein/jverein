@@ -36,26 +36,39 @@ public class SollbuchungNeuAction implements Action
     MitgliedskontoNode mkn = null;
     Mitgliedskonto mk = null;
 
-    if (context == null || !(context instanceof MitgliedskontoNode))
+    if (context instanceof MitgliedskontoNode)
     {
-      throw new ApplicationException("Keine Sollbuchung ausgewählt");
+      mkn = (MitgliedskontoNode) context;
+      try
+      {
+        Mitglied m = (Mitglied) Einstellungen.getDBService()
+            .createObject(Mitglied.class, mkn.getID());
+        mk = (Mitgliedskonto) Einstellungen.getDBService()
+            .createObject(Mitgliedskonto.class, null);
+        mk.setZahlungsweg(m.getZahlungsweg());
+        mk.setMitglied(m);
+        mk.setBetrag(0.0);
+      }
+      catch (RemoteException e)
+      {
+        throw new ApplicationException(
+            "Fehler bei der Erzeugung einer Sollbuchung");
+      }
     }
-
-    mkn = (MitgliedskontoNode) context;
-    try
+    else
     {
-      Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
-          Mitglied.class, mkn.getID());
-      mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-          Mitgliedskonto.class, null);
-      mk.setZahlungsweg(m.getZahlungsweg());
-      mk.setMitglied(m);
+      try
+      {
+        mk = (Mitgliedskonto) Einstellungen.getDBService()
+            .createObject(Mitgliedskonto.class, null);
+        mk.setBetrag(0.0);
+      }
+      catch (Exception e)
+      {
+        throw new ApplicationException(
+            "Fehler bei der Erzeugung einer neuen Sollbuchung", e);
+      }
     }
-    catch (RemoteException e)
-    {
-      throw new ApplicationException(
-          "Fehler bei der Erzeugung einer Sollbuchung");
-    }
-    GUI.startView(new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
+    GUI.startView(new SollbuchungDetailView(), mk);
   }
 }
