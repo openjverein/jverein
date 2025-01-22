@@ -267,7 +267,7 @@ public class KontoControl extends AbstractControl
         k.setHibiscusId(Integer.parseInt(hkto.getID()));
       }
       k.setAnlagenartId(getSelectedAnlagenartId());
-      k.setAnlagenklasseId(getSelectedAnlagenklasseId());
+      k.setBuchungsklasseId(getSelectedBuchungsklasseId());
       k.setAfaartId(getSelectedAfaartId());
       k.setBetrag((Double) getBetrag().getValue());
       k.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
@@ -642,7 +642,7 @@ public class KontoControl extends AbstractControl
         .createList(Buchungsklasse.class);
     list.setOrder(getBuchungartSortOrder());
     buchungsklasse = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
-        getKonto().getAnlagenklasse());
+        getKonto().getBuchungsklasse());
     buchungsklasse.setAttribute(getBuchungartAttribute());
     buchungsklasse.setPleaseChoose("Bitte auswählen");
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
@@ -656,7 +656,7 @@ public class KontoControl extends AbstractControl
     return buchungsklasse;
   }
   
-  private Long getSelectedAnlagenklasseId() throws ApplicationException
+  private Long getSelectedBuchungsklasseId() throws ApplicationException
   {
     try
     {
@@ -668,7 +668,7 @@ public class KontoControl extends AbstractControl
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewählte Anlagenklasse kann nicht ermittelt werden";
+      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }

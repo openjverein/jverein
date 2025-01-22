@@ -124,7 +124,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
         {
           throw new ApplicationException("Bitte Afa Buchungsart eingeben");
         }
-        if (getAnlagenklasse() == null)
+        if (getBuchungsklasse() == null)
         {
           throw new ApplicationException("Bitte Anlagen Buchungsklasse eingeben");
         }
@@ -335,7 +335,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   }
   
   @Override
-  public Buchungsklasse getAnlagenklasse() throws RemoteException
+  public Buchungsklasse getBuchungsklasse() throws RemoteException
   {
     Long l = (Long) super.getAttribute("anlagenklasse");
     if (l == null)
@@ -348,13 +348,13 @@ public class KontoImpl extends AbstractDBObject implements Konto
   }
 
   @Override
-  public Long getAnlagenklasseId() throws RemoteException
+  public Long getBuchungsklasseId() throws RemoteException
   {
     return (Long) super.getAttribute("anlagenklasse");
   }
 
   @Override
-  public void setAnlagenklasseId(Long anlagenklasseId) throws RemoteException
+  public void setBuchungsklasseId(Long anlagenklasseId) throws RemoteException
   {
     setAttribute("anlagenklasse", anlagenklasseId);
   }
