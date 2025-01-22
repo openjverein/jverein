@@ -49,7 +49,7 @@ Für die Verwendung von IntelliJ folge diesen Schritten:
 
 ### Erster Start
 1. Führe die eben erstellte Configuration aus. Noch sind keine Plugins installiert, schließe daher Jameica wieder.
-2. Navigiere in den erstellten jameica.test Ordner und öffne die Datei cfg/de.willuhn.jameica.system.Config.properties in einem Text-Editor.
-3. Füge die Zeilen "jameica.plugin.dir.0=../../hibiscus-<version>-nightly.src/hibiscus" und "jameica.plugin.dir.1=../../jverein" in die Datei ein.
+2. Navigiere in den erstellten jameica.test Ordner und öffne die Datei `cfg/de.willuhn.jameica.system.Config.properties` in einem Text-Editor.
+3. Füge die Zeilen `jameica.plugin.dir.0=../../hibiscus-<version>-nightly.src/hibiscus` und `jameica.plugin.dir.1=../../jverein` in die Datei ein.
 4. Führe nun die Jameica-Configuration erneut aus und die Plugins werden jetzt geladen. Die Einrichtung ist abgeschlossen und du kannst anfangen an diesem Projekt mitzuwirken.
 5. Wenn du etwas am Code geändert hast und du deine Änderungen testen willst, musst du vor dem erneuten Ausführen der Run-Configuration einen Rebuild des Projekts durchführen.

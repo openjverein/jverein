@@ -256,13 +256,14 @@ public class KursteilnehmerControl extends FilterControl
     }
     if (getKursteilnehmer().getStaat() != null
         && getKursteilnehmer().getStaat().length() > 0
-        && Staat.getByKey(getKursteilnehmer().getStaat()) == null)
+        && Staat.getByKey(getKursteilnehmer().getStaatCode()) == null)
     {
       GUI.getStatusBar()
           .setErrorText("Konnte Staat \"" + getKursteilnehmer().getStaat()
               + "\" nicht finden, bitte anpassen.");
     }
-    staat = new SelectInput(Staat.values(), Staat.getByKey(getKursteilnehmer().getStaat()));
+    staat = new SelectInput(Staat.values(),
+        Staat.getByKey(getKursteilnehmer().getStaatCode()));
     staat.setPleaseChoose("Nicht gesetzt");
     staat.setName("Staat");
     return staat;
@@ -466,7 +467,8 @@ public class KursteilnehmerControl extends FilterControl
       k.setAdressierungszuatz((String) getAdressierungszusatz().getValue());
       k.setPlz((String) getPLZ().getValue());
       k.setOrt((String) getOrt().getValue());
-      k.setStaat(((Staat) getStaat().getValue()).getKey());
+      k.setStaat(getStaat().getValue() == null ? ""
+          : ((Staat) getStaat().getValue()).getKey());
       k.setEmail((String) getEmail().getValue());
       k.setVZweck1((String) getVZweck1().getValue());
       k.setMandatDatum((Date) getMandatDatum().getValue());

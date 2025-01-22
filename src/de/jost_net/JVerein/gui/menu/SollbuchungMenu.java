@@ -21,10 +21,10 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.SollbuchungMahnungAction;
-import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
+import de.jost_net.JVerein.gui.action.RechnungNeuAction;
 import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
+import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -53,11 +53,10 @@ public class SollbuchungMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
-    /*addItem(new CheckedContextMenuItem("Rechnung erstellen",
+    addItem(new MitRechnungItem("Rechnung anzeigen",
         new SollbuchungRechnungAction(), "file-invoice.png"));
-    addItem(new CheckedContextMenuItem("Mahnung erstellen",
-        new SollbuchungMahnungAction(), "file-invoice.png"));
-        */
+    addItem(new OhneRechnungItem("Rechnung(en) erstellen",
+        new RechnungNeuAction(), "file-invoice.png"));
   }
 
   private static class SollOhneIstItem extends CheckedContextMenuItem
@@ -77,12 +76,73 @@ public class SollbuchungMenu extends ContextMenu
         DBIterator<Buchung> it;
         try
         {
+          if (mk.getRechnung() != null)
+          {
+            return false;
+          }
           it = Einstellungen.getDBService().createList(Buchung.class);
           it.addFilter("mitgliedskonto = ?", new Object[] { mk.getID() });
           if (it.size() == 0)
           {
             return true;
           }
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return false;
+      }
+      return false;
+    }
+  }
+
+  private static class OhneRechnungItem extends CheckedContextMenuItem
+  {
+
+    private OhneRechnungItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof Mitgliedskonto)
+      {
+        Mitgliedskonto mk = (Mitgliedskonto) o;
+        try
+        {
+          return mk.getRechnung() == null;
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return false;
+      }
+      // Bei mehreren Sollbuchungen zeigen wir es immer mit an
+      return true;
+    }
+  }
+
+  private static class MitRechnungItem extends CheckedContextMenuItem
+  {
+
+    private MitRechnungItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof Mitgliedskonto)
+      {
+        Mitgliedskonto mk = (Mitgliedskonto) o;
+        try
+        {
+          return mk.getRechnung() != null;
         }
         catch (RemoteException e)
         {

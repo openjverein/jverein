@@ -25,8 +25,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
+import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.io.AbrechnungslaufPDF;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
@@ -153,28 +154,14 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
     DBIterator<Mitgliedskonto> it = getIterator((Integer) lauf.getValue());
     if (SollbuchungsList == null)
     {
-      SollbuchungsList = new TablePart(it, new MitgliedDetailAction());
+      SollbuchungsList = new TablePart(it, new SollbuchungEditAction());
       SollbuchungsList.addColumn("Fälligkeit", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
       SollbuchungsList.addColumn("Mitglied", "mitglied");
       SollbuchungsList.addColumn("Zweck", "zweck1");
-      if (Einstellungen.getEinstellung().getOptiert())
-      {
-        SollbuchungsList.addColumn("Nettobetrag", "nettobetrag",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-        SollbuchungsList.addColumn("Steuersatz", "steuersatz",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-        SollbuchungsList.addColumn("Steuerbetrag", "steuerbetrag",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-        SollbuchungsList.addColumn("Bruttobetrag", "betrag",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      }
-      else
-      {
-        SollbuchungsList.addColumn("Betrag", "betrag",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      }
+      SollbuchungsList.addColumn("Betrag", "betrag",
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       SollbuchungsList.addColumn("Eingang", "istsumme",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       SollbuchungsList.addColumn("Zahlungsweg", "zahlungsweg",
@@ -182,6 +169,7 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
       SollbuchungsList.setRememberColWidths(true);
       SollbuchungsList.setRememberOrder(true);
       SollbuchungsList.addFeature(new FeatureSummary());
+      SollbuchungsList.setContextMenu(new SollbuchungMenu());
     }
     else
     {
