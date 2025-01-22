@@ -70,6 +70,8 @@ public class AbrechnungSEPAParam
 
   public final Boolean sepaprint;
 
+  public final Boolean sepacheckdisable;
+
   public final File sepafileRCUR;
 
   public final SepaVersion sepaVersion;
@@ -103,6 +105,7 @@ public class AbrechnungSEPAParam
     rechnungsformular = (Formular) ac.getRechnungFormular().getValue(); 
     rechnungstext = (String) ac.getRechnungstext().getValue();
     sepaprint = (Boolean) ac.getSEPAPrint().getValue();
+    sepacheckdisable = (Boolean) ac.getSEPACheck().getValue();
     this.pdffileRCUR = pdffileRCUR;
     this.sepafileRCUR = sepafileRCUR;
     this.sepaVersion = sepaVersion;

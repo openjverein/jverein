@@ -546,7 +546,7 @@ public class AbrechnungSEPA
     {
       return null;
     }
-    checkSEPA(mZahler, monitor);
+    checkSEPA(param, mZahler, monitor);
 
     counter++;
 
@@ -663,7 +663,7 @@ public class AbrechnungSEPA
 
         if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
         {
-          checkSEPA(mZahler, monitor);
+          checkSEPA(param, mZahler, monitor);
         }
 
         counter++;
@@ -1262,35 +1262,25 @@ public class AbrechnungSEPA
     return k;
   }
 
-  private void checkSEPA(Mitglied m, ProgressMonitor monitor)
-      throws RemoteException, ApplicationException
+  private void checkSEPA(AbrechnungSEPAParam param, Mitglied m,
+      ProgressMonitor monitor) throws RemoteException, ApplicationException
   {
+    // Wenn nicht Basislastschrift, dann kein Check nötig
     if (m.getZahlungsweg() == null
         || m.getZahlungsweg() != Zahlungsweg.BASISLASTSCHRIFT)
     {
       return;
     }
-    // Ohne Mandat keine Lastschrift
-    if (m.getMandatDatum() == Einstellungen.NODATE)
+    // Check SEPA wenn nicht deaktiviert
+    if (!param.sepacheckdisable)
     {
-      monitor.log(Adressaufbereitung.getNameVorname(m)
-          + ": Kein Mandat-Datum vorhanden.");
-      throw new ApplicationException(Adressaufbereitung.getNameVorname(m)
-          + ": Kein Mandat-Datum vorhanden.");
-    }
-    // Bei Mandaten älter als 3 Jahre muss es eine Lastschrift
-    // innerhalb der letzten 3 Jahre geben
-    Calendar sepagueltigkeit = Calendar.getInstance();
-    sepagueltigkeit.add(Calendar.MONTH, -36);
-    if (m.getMandatDatum().before(sepagueltigkeit.getTime()))
-    {
-      Date letzte_lastschrift = m.getLetzteLastschrift();
-      if (letzte_lastschrift == null
-          || letzte_lastschrift.before(sepagueltigkeit.getTime()))
+      try
       {
-        String errortext = Adressaufbereitung.getNameVorname(m)
-            + ": Das Mandat-Datum ist älter als 36 Monate und es"
-            + " erfolgte keine Lastschrift in den letzten 36 Monaten.";
+        m.checkSEPA();
+      }
+      catch (ApplicationException ae)
+      {
+        String errortext = ae.getLocalizedMessage();
         monitor.log(errortext);
         throw new ApplicationException(errortext);
       }

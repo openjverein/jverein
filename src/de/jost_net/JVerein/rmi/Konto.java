@@ -19,6 +19,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -114,4 +115,7 @@ public interface Konto extends DBObject
   public DBIterator<Konto> getKontenVonBis(Date von, Date bis)
       throws RemoteException;
 
+  public Anlagenzweck getAnlagenzweck() throws RemoteException;
+
+  public void setAnlagenzweck(Anlagenzweck zweck) throws RemoteException;
 }
