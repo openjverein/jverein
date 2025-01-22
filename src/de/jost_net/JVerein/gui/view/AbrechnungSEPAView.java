@@ -70,7 +70,7 @@ public class AbrechnungSEPAView extends AbstractView
     rigth.addLabelPair("Kompakte Abbuchung(en)",
         control.getKompakteAbbuchung());
     rigth.addLabelPair("SEPA-Check temporär deaktivieren", control.getSEPACheck());
-    rigth.addLabelPair("Lastschrift-Datei drucken", control.getSEPAPrint());
+    rigth.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
     rigth.addLabelPair("Abbuchungsausgabe", control.getAbbuchungsausgabe());
     
     rigth.addHeadline("Rechnungen");
