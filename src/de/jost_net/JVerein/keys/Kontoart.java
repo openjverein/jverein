@@ -32,7 +32,7 @@ public enum Kontoart
   RUECKLAGE_INSTANDHALTUNG(104, "Instandhaltungsrücklage nach § 62 Abs. 1 Nr. 1 AO"),
   RUECKLAGE_WIEDERBESCHAFFUNG(105, "Wiederbeschaffungsrücklage nach § 62 Abs. 1 Nr. 2 AO"),
   RUECKLAGE_FREI(106, "Freie Rücklage nach § 62 Abs. 1 Nr. 3 AO"),
-  RUECKLAGE_ERWERB(107, "Rücklage nach § 62 Abs. 1 Nr. 4 AO"),
+  RUECKLAGE_ERWERB(107, "Rücklage für Gesellschaftsrechte nach § 62 Abs. 1 Nr. 4 AO"),
   VERMOEGEN(108, "Vermögen nach § 62 Abs. 3 und 4 AO"),
   RUECKLAGE_SONSTIG(109, "Sonstige Rücklage");
 
