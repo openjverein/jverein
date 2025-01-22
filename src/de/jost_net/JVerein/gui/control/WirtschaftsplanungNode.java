@@ -11,11 +11,8 @@ import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,8 +20,9 @@ import java.util.Map;
 
 public class WirtschaftsplanungNode implements GenericObjectNode
 {
-  public enum Type {BUCHUNGSKLASSE, BUCHUNGSART, POSTEN, UNBEKANNT}
 
+
+  public enum Type {BUCHUNGSKLASSE, BUCHUNGSART, POSTEN, UNBEKANNT;}
   Type type;
 
   private Buchungsklasse buchungsklasse;
@@ -33,12 +31,13 @@ public class WirtschaftsplanungNode implements GenericObjectNode
 
   private WirtschaftsplanItem wirtschaftsplanItem;
 
-  private double soll = 0;
+  private double soll;
 
   private double ist = 0;
 
   private WirtschaftsplanungNode parent;
 
+  @SuppressWarnings("FieldMayBeFinal")
   private List<WirtschaftsplanungNode> children;
 
   public WirtschaftsplanungNode(Buchungsklasse buchungsklasse, int art, WirtschaftsplanungZeile zeile)
@@ -172,13 +171,14 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     children = null;
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public GenericIterator getChildren() throws RemoteException
   {
     if (children != null)
     {
       return PseudoIterator
-          .fromArray(children.toArray(new GenericObject[children.size()]));
+          .fromArray(children.toArray(new GenericObject[0]));
     }
     return null;
   }
@@ -187,7 +187,19 @@ public class WirtschaftsplanungNode implements GenericObjectNode
   public boolean hasChild(GenericObjectNode genericObjectNode)
       throws RemoteException
   {
-    return false;
+    if (! (genericObjectNode instanceof WirtschaftsplanungNode)) {
+      return false;
+    }
+    return children.contains(genericObjectNode);
+  }
+
+  public void addChild(WirtschaftsplanungNode child) {
+    children.add(child);
+  }
+
+  public void removeChild(WirtschaftsplanungNode node)
+  {
+    children.remove(node);
   }
 
   @Override
@@ -196,12 +208,14 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     return parent;
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public GenericIterator getPossibleParents() throws RemoteException
   {
     return null;
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public GenericIterator getPath() throws RemoteException
   {

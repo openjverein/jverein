@@ -3,10 +3,13 @@ package de.jost_net.JVerein.gui.control;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.OpenWirtschaftsplanungAction;
 import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanungPostenDialog;
+import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -21,10 +24,16 @@ import de.willuhn.util.ApplicationException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class WirtschaftsplanungControl extends AbstractControl
 {
+  private TreePart einnahmen;
+
+  private TreePart ausgaben;
+
+  private WirtschaftsplanUebersichtPart uebersicht;
 
   /**
    * Erzeugt einen neuen AbstractControl der fuer die angegebene View.
@@ -154,13 +163,31 @@ public class WirtschaftsplanungControl extends AbstractControl
     return null;
   }
 
-  public Part getEinnahmen() throws RemoteException
+  public TreePart getEinnahmen() throws RemoteException
   {
-    return generateTree(0);
+    if (einnahmen == null)
+    {
+      einnahmen = generateTree(0);
+    }
+    else {
+      @SuppressWarnings("rawtypes") List items = einnahmen.getItems();
+      einnahmen.removeAll();
+      einnahmen.setList(items);
+    }
+    return einnahmen;
   }
 
-  public Part getAusgaben() throws RemoteException {
-    return generateTree(1);
+  public TreePart getAusgaben() throws RemoteException {
+    if (ausgaben == null)
+    {
+      ausgaben = generateTree(1);
+    }
+    else {
+      @SuppressWarnings("rawtypes") List items = ausgaben.getItems();
+      ausgaben.removeAll();
+      ausgaben.setList(items);
+    }
+    return ausgaben;
   }
 
 
@@ -252,9 +279,11 @@ public class WirtschaftsplanungControl extends AbstractControl
             });
 
     TreePart treePart = new TreePart(new ArrayList<>(nodes.values()), context -> {
-      if (! (context instanceof WirtschaftsplanungNode node)) {
+      if (! (context instanceof WirtschaftsplanungNode)) {
         return;
       }
+
+      WirtschaftsplanungNode node = (WirtschaftsplanungNode) context;
 
       if (node.getType() != WirtschaftsplanungNode.Type.POSTEN) {
         return;
@@ -262,7 +291,12 @@ public class WirtschaftsplanungControl extends AbstractControl
 
       try {
         WirtschaftsplanungPostenDialog dialog = new WirtschaftsplanungPostenDialog(node.getWirtschaftsplanItem());
-        node.setWirtschaftsplanItem(dialog.open());
+        WirtschaftsplanItem item = dialog.open();
+        node.setWirtschaftsplanItem(item);
+        node.setSoll(item.getSoll());
+
+        WirtschaftsplanungNode parent = (WirtschaftsplanungNode) node.getParent();
+        reloadSoll(parent, art);
       }
       catch (Exception e) {
         throw new ApplicationException(e);
@@ -278,5 +312,34 @@ public class WirtschaftsplanungControl extends AbstractControl
     treePart.addColumn("Ist", "ist", formatter);
 
     return treePart;
+  }
+
+  public void setUebersicht(WirtschaftsplanUebersichtPart uebersicht) {
+    this.uebersicht = uebersicht;
+  }
+
+  public void reloadSoll(WirtschaftsplanungNode parent, int art)
+      throws RemoteException, ApplicationException
+  {
+    while (parent != null) {
+      @SuppressWarnings("rawtypes") GenericIterator iterator = parent.getChildren();
+      double soll = 0;
+      while (iterator.hasNext()) {
+        WirtschaftsplanungNode child = (WirtschaftsplanungNode) iterator.next();
+        soll += child.getSoll();
+      }
+      parent.setSoll(soll);
+
+      parent = (WirtschaftsplanungNode) parent.getParent();
+    }
+
+    if (art == 0) {
+      getEinnahmen();
+    }
+    else {
+      getAusgaben();
+    }
+
+    uebersicht.updateSoll();
   }
 }

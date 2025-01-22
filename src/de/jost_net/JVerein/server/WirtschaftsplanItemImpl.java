@@ -64,21 +64,9 @@ public class WirtschaftsplanItemImpl extends AbstractDBObject
   }
 
   @Override
-  public Long getWirtschaftsplanId() throws RemoteException
-  {
-    return (Long) getAttribute("wirtschaftsplan");
-  }
-
-  @Override
   public Wirtschaftsplan getWirtschaftsplan() throws RemoteException
   {
-    Long l = (Long) getAttribute("wirtschaftsplan");
-    if (l == null)
-    {
-      return null;
-    }
-    Cache cache = Cache.get(Wirtschaftsplan.class, true);
-    return (Wirtschaftsplan) cache.get(l);
+    return (Wirtschaftsplan) getAttribute("wirtschaftsplan");
   }
 
   @Override
@@ -90,49 +78,25 @@ public class WirtschaftsplanItemImpl extends AbstractDBObject
   }
 
   @Override
-  public Long getBuchungsartId() throws RemoteException
-  {
-    return (Long) getAttribute("buchungsart");
-  }
-
-  @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
-    Long l = (Long) getAttribute("buchungsart");
-    if (l == null)
-    {
-      return null;
-    }
-    Cache cache = Cache.get(Buchungsart.class, true);
-    return (Buchungsart) cache.get(l);
+    return (Buchungsart) getAttribute("buchungsart");
   }
 
   @Override
-  public void setBuchungsartId(Long buchungsartId) throws RemoteException
+  public void setBuchungsartId(String buchungsartId) throws RemoteException
   {
     setAttribute("buchungsart", buchungsartId);
   }
 
   @Override
-  public Long getBuchungsklasseId() throws RemoteException
-  {
-    return (Long) getAttribute("buchungsklasse");
-  }
-
-  @Override
   public Buchungsklasse getBuchungsklasse() throws RemoteException
   {
-    Long l = (Long) getAttribute("buchungsklasse");
-    if (l == null)
-    {
-      return null;
-    }
-    Cache cache = Cache.get(Buchungsklasse.class, true);
-    return (Buchungsklasse) cache.get(l);
+    return (Buchungsklasse) getAttribute("buchungsklasse");
   }
 
   @Override
-  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException
+  public void setBuchungsklasseId(String buchungsklasseId) throws RemoteException
   {
     setAttribute("buchungsklasse", buchungsklasseId);
   }
