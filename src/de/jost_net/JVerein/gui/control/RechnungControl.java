@@ -20,15 +20,14 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
-
-import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.RechnungAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
@@ -39,11 +38,9 @@ import de.jost_net.JVerein.gui.menu.RechnungMenu;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
-import de.jost_net.JVerein.server.RechnungNode;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
@@ -57,25 +54,19 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.formatter.TreeFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
-import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 
 public class RechnungControl extends DruckMailControl
 {
 
   private TablePart rechnungList;
-
-  private TreePart rechnungTree;
 
   private Rechnung rechnung;
 
@@ -121,6 +112,8 @@ public class RechnungControl extends DruckMailControl
 
   private TextInput personenart;
 
+  private TextInput zahlungsweg;
+
   private TextInput leitwegID;
 
   public enum TYP
@@ -150,6 +143,11 @@ public class RechnungControl extends DruckMailControl
     rechnungList.addColumn("Mitglied", "mitglied");
     rechnungList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    rechnungList.addColumn("Ist", "ist",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    rechnungList.addColumn("Differenz", "differenz",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    rechnungList.addColumn("Zahlungsweg", "zahlungsweg", new ZahlungswegFormatter());
 
     rechnungList.setRememberColWidths(true);
     rechnungList.setContextMenu(new RechnungMenu());
@@ -157,33 +155,6 @@ public class RechnungControl extends DruckMailControl
     rechnungList.addFeature(new FeatureSummary());
     rechnungList.setMulti(true);
     return rechnungList;
-  }
-
-  public Part getRechnungTree() throws RemoteException
-  {
-    rechnungTree = new TreePart(new RechnungNode(this), null);
-    rechnungTree.setFormatter(new TreeFormatter()
-    {
-      @Override
-      public void format(TreeItem item)
-      {
-        RechnungNode rechnungnode = (RechnungNode) item.getData();
-        try
-        {
-          if (rechnungnode.getNodeType() == RechnungNode.ROOT)
-            item.setImage(SWTUtil.getImage("file-invoice.png"));
-          if (rechnungnode.getNodeType() == RechnungNode.MITGLIED)
-            item.setImage(SWTUtil.getImage("user.png"));
-          if (rechnungnode.getNodeType() == RechnungNode.BUCHUNG)
-            item.setImage(SWTUtil.getImage("euro-sign.png"));
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler beim TreeFormatter", e);
-        }
-      }
-    });
-    return rechnungTree;
   }
 
   public Button getStartRechnungButton(final Object currentObject)
@@ -198,7 +169,7 @@ public class RechnungControl extends DruckMailControl
         try
         {
           saveDruckMailSettings();
-          new Rechnungsausgabe(control,RechnungControl.TYP.RECHNUNG);
+          new Rechnungsausgabe(control, RechnungControl.TYP.RECHNUNG);
         }
         catch (Exception e)
         {
@@ -209,7 +180,7 @@ public class RechnungControl extends DruckMailControl
     }, null, true, "walking.png");
     return button;
   }
-  
+
   public Button getStartMahnungButton(final Object currentObject)
   {
     final RechnungControl control = this;
@@ -222,7 +193,7 @@ public class RechnungControl extends DruckMailControl
         try
         {
           saveDruckMailSettings();
-          new Rechnungsausgabe(control,RechnungControl.TYP.MAHNUNG);
+          new Rechnungsausgabe(control, RechnungControl.TYP.MAHNUNG);
         }
         catch (Exception e)
         {
@@ -249,11 +220,6 @@ public class RechnungControl extends DruckMailControl
         }
         rechnungList.sort();
       }
-      else if (rechnungTree != null)
-      {
-        rechnungTree.removeAll();
-        rechnungTree.setList(Arrays.asList(new RechnungNode(this)));
-      }
     }
     catch (RemoteException e1)
     {
@@ -278,12 +244,11 @@ public class RechnungControl extends DruckMailControl
           new Object[] { datumbis.getValue() });
     }
 
-    // Wenn Filtern nach Name, Mail oder "Ohne Abbucher" JOIN mitglied
+    // Wenn Filtern nach Name oder Mail JOIN mitglied
     if ((suchname != null && suchname.getValue() != null
         && !((String) suchname.getValue()).isEmpty())
         || (mailAuswahl != null
-            && (Integer) mailAuswahl.getValue() != MailAuswertungInput.ALLE)
-        || (ohneabbucher != null && (Boolean) ohneabbucher.getValue()))
+            && (Integer) mailAuswahl.getValue() != MailAuswertungInput.ALLE))
     {
       rechnungenIt.join("mitglied");
       rechnungenIt.addFilter("mitglied.id = rechnung.mitglied");
@@ -294,8 +259,8 @@ public class RechnungControl extends DruckMailControl
     {
       rechnungenIt.addFilter(
           "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?))",
-          new Object[] { ((String) suchname.getValue()).toLowerCase() + "%",
-              ((String) suchname.getValue()).toLowerCase() + "%" });
+          new Object[] { "%" + ((String) suchname.getValue()).toLowerCase() + "%",
+              "%" + ((String) suchname.getValue()).toLowerCase() + "%" });
     }
 
     if (mailAuswahl != null
@@ -311,7 +276,7 @@ public class RechnungControl extends DruckMailControl
 
     if (ohneabbucher != null && (Boolean) ohneabbucher.getValue())
     {
-      rechnungenIt.addFilter("mitglied.zahlungsweg <> ?",
+      rechnungenIt.addFilter("rechnung.zahlungsweg <> ?",
           Zahlungsweg.BASISLASTSCHRIFT);
     }
 
@@ -325,11 +290,12 @@ public class RechnungControl extends DruckMailControl
       if (getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
       {
         sql += "having sum(buchung.betrag) < mitgliedskonto.betrag or "
-            + "sum(buchung.betrag) is null and mitgliedskonto.betrag > 0 ";
+            + "(sum(buchung.betrag) is null and mitgliedskonto.betrag > 0) ";
       }
       else
       {
-        sql += "having sum(buchung.betrag) > mitgliedskonto.betrag ";
+        sql += "having sum(buchung.betrag) > mitgliedskonto.betrag or "
+            + "(sum(buchung.betrag) is null and mitgliedskonto.betrag < 0) ";
       }
 
       @SuppressWarnings("unchecked")
@@ -348,99 +314,13 @@ public class RechnungControl extends DruckMailControl
               return list;
             }
           });
-      if(diffIds.size() == 0)
+      if (diffIds.size() == 0)
         return PseudoIterator.fromArray(new GenericObject[] {});
-      rechnungenIt.addFilter("rechnung.id in (" + String.join(",", diffIds) + ")");
+      rechnungenIt
+          .addFilter("rechnung.id in (" + String.join(",", diffIds) + ")");
     }
-    
+
     return rechnungenIt;
-  }
-
-  public Button getRechnungErstellenButton()
-  {
-    Button b = new Button("Erstellen", new Action()
-    {
-
-      @SuppressWarnings("rawtypes")
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          List items = rechnungTree.getItems();
-
-          if (items == null)
-            return;
-
-          RechnungNode ren = (RechnungNode) items.get(0);
-          // Loop über die Mitglieder
-          GenericIterator it1 = ren.getChildren();
-
-          Formular form = (Formular) getFormular(FormularArt.RECHNUNG).getValue();
-          if(form == null)
-          {
-            throw new ApplicationException(
-                "Kein Formular ausgewählt");
-          }
-          while (it1.hasNext())
-          {
-            RechnungNode sp1 = (RechnungNode) it1.next();
-            Mitglied mitglied = sp1.getMitglied();
-            Rechnung rechnung = (Rechnung) Einstellungen.getDBService()
-                .createObject(Rechnung.class, null);
-            rechnung.setMitglied(Integer.parseInt(mitglied.getID()));
-            rechnung.setFormular(form);
-            rechnung.setDatum(new Date());
-            rechnung.setGeschlecht(mitglied.getGeschlecht());
-            rechnung.setAnrede(mitglied.getAnrede());
-            rechnung.setTitel(mitglied.getTitel());
-            rechnung.setName(mitglied.getName());
-            rechnung.setVorname(mitglied.getVorname());
-            rechnung.setStrasse(mitglied.getStrasse());
-            rechnung.setAdressierungszusatz(mitglied.getAdressierungszusatz());
-            rechnung.setPlz(mitglied.getPlz());
-            rechnung.setOrt(mitglied.getOrt());
-            rechnung.setStaat(mitglied.getStaatCode());
-            rechnung.setLeitwegID(mitglied.getLeitwegID());
-            rechnung.setPersonenart(mitglied.getPersonenart());
-            if(!mitglied.getMandatDatum().equals(Einstellungen.NODATE))
-              rechnung.setMandatDatum(mitglied.getMandatDatum());
-            rechnung.setMandatID(mitglied.getMandatID());
-            rechnung.setBIC(mitglied.getBic());
-            rechnung.setIBAN(mitglied.getIban());
-
-            double betrag = 0;
-            GenericIterator it2 = sp1.getChildren();
-            while (it2.hasNext())
-            {
-              RechnungNode re = (RechnungNode) it2.next();
-              betrag += re.getBuchung().getBetrag();
-            }
-            rechnung.setBetrag(betrag);
-            rechnung.store();
-
-            // Loop über die Buchungen eines Mitglieds
-            GenericIterator it3 = sp1.getChildren();
-            while (it3.hasNext())
-            {
-              RechnungNode re = (RechnungNode) it3.next();
-              Mitgliedskonto b = (Mitgliedskonto) re.getBuchung();
-              b.setRechnung(rechnung);
-              b.store();
-            }
-            rechnungTree.removeAll();
-            GUI.getStatusBar().setSuccessText("Rechnung(en) erstellt");
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler bei der erstellen der Rechnungen");
-        }
-      }
-    }, null, false, "document-save.png");
-    return b;
   }
 
   @Override
@@ -448,7 +328,7 @@ public class RechnungControl extends DruckMailControl
   {
     Rechnung[] rechnungen = null;
     String text = "";
-    
+
     if (selection instanceof Rechnung)
     {
       rechnungen = new Rechnung[] { (Rechnung) selection };
@@ -461,21 +341,19 @@ public class RechnungControl extends DruckMailControl
     {
       return "";
     }
-    
+
     try
     {
       if (rechnungen != null)
       {
-        text = "Es wurden " + rechnungen.length + 
-            " Rechnungen ausgewählt"
+        text = "Es wurden " + rechnungen.length + " Rechnungen ausgewählt"
             + "\nFolgende Mitglieder haben keine Mailadresse:";
-        for (Rechnung re: rechnungen)
+        for (Rechnung re : rechnungen)
         {
           Mitglied m = re.getMitglied();
-          if (m != null && ( m.getEmail() == null || m.getEmail().isEmpty()))
+          if (m != null && (m.getEmail() == null || m.getEmail().isEmpty()))
           {
-            text = text + "\n - " + m.getName()
-            + ", " + m.getVorname();
+            text = text + "\n - " + m.getName() + ", " + m.getVorname();
           }
         }
       }
@@ -486,7 +364,7 @@ public class RechnungControl extends DruckMailControl
     }
     return text;
   }
-  
+
   private Rechnung getRechnung()
   {
     if (rechnung != null)
@@ -497,7 +375,6 @@ public class RechnungControl extends DruckMailControl
     return rechnung;
   }
 
-  
   public DateInput getRechnungsdatum() throws RemoteException
   {
     if (rechnungsDatum != null)
@@ -506,7 +383,7 @@ public class RechnungControl extends DruckMailControl
     }
 
     Date d = getRechnung().getDatum();
-    if (d.equals( Einstellungen.NODATE ))
+    if (d.equals(Einstellungen.NODATE))
     {
       d = null;
     }
@@ -523,12 +400,13 @@ public class RechnungControl extends DruckMailControl
       return mitglied;
     }
 
-    mitglied = new TextInput(getRechnung().getMitglied().getName()+", "+getRechnung().getMitglied().getVorname());
+    mitglied = new TextInput(getRechnung().getMitglied().getName() + ", "
+        + getRechnung().getMitglied().getVorname());
     mitglied.setName("Mitglied");
     mitglied.disable();
     return mitglied;
   }
-  
+
   public FormularInput getRechnungFormular() throws RemoteException
   {
     if (rechnungFormular != null)
@@ -536,7 +414,8 @@ public class RechnungControl extends DruckMailControl
       return rechnungFormular;
     }
 
-    rechnungFormular = new FormularInput(FormularArt.RECHNUNG, getRechnung().getFormular().getID());
+    rechnungFormular = new FormularInput(FormularArt.RECHNUNG,
+        getRechnung().getFormular().getID());
     rechnungFormular.setName("Formular");
     rechnungFormular.disable();
     return rechnungFormular;
@@ -552,10 +431,11 @@ public class RechnungControl extends DruckMailControl
     nummer = new TextInput(StringTool.lpad(getRechnung().getID(),
         Einstellungen.getEinstellung().getZaehlerLaenge(), "0"));
     nummer.setName("Rechnungsnummer");
-    nummer.disable();;
+    nummer.disable();
+    ;
     return nummer;
   }
-  
+
   public DecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)
@@ -563,9 +443,10 @@ public class RechnungControl extends DruckMailControl
       return betrag;
     }
 
-    betrag = new DecimalInput(getRechnung().getBetrag(),Einstellungen.DECIMALFORMAT);
+    betrag = new DecimalInput(getRechnung().getBetrag(),
+        Einstellungen.DECIMALFORMAT);
     betrag.setName("Betrag");
-    betrag.disable();;
+    betrag.disable();
     return betrag;
   }
 
@@ -698,7 +579,7 @@ public class RechnungControl extends DruckMailControl
     geschlecht.disable();
     return geschlecht;
   }
-  
+
   public TextInput getPersonenart() throws RemoteException
   {
     if (personenart != null)
@@ -706,27 +587,30 @@ public class RechnungControl extends DruckMailControl
       return personenart;
     }
 
-    personenart = new TextInput(getRechnung().getPersonenart().equalsIgnoreCase("n")?PersonenartInput.NATUERLICHE_PERSON:PersonenartInput.JURISTISCHE_PERSON);
+    personenart = new TextInput(
+        getRechnung().getPersonenart().equalsIgnoreCase("n")
+            ? PersonenartInput.NATUERLICHE_PERSON
+            : PersonenartInput.JURISTISCHE_PERSON);
     personenart.setName("Personenart");
     personenart.disable();
     return personenart;
   }
-  
+
   public DateInput getMandatdatum() throws RemoteException
   {
     if (mandatdatum != null)
     {
       return mandatdatum;
     }
-    
+
     Date d = getRechnung().getMandatDatum();
-    
-    mandatdatum = new DateInput(d,new JVDateFormatTTMMJJJJ());
+
+    mandatdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     mandatdatum.setName("Mandatdatum");
     mandatdatum.disable();
     return mandatdatum;
   }
-  
+
   public TextInput getMandatid() throws RemoteException
   {
     if (mandatid != null)
@@ -739,7 +623,7 @@ public class RechnungControl extends DruckMailControl
     mandatid.disable();
     return mandatid;
   }
-  
+
   public BICInput getBic() throws RemoteException
   {
     if (bic != null)
@@ -752,7 +636,7 @@ public class RechnungControl extends DruckMailControl
     bic.disable();
     return bic;
   }
-  
+
   public IBANInput getIban() throws RemoteException
   {
     if (iban != null)
@@ -760,12 +644,13 @@ public class RechnungControl extends DruckMailControl
       return iban;
     }
 
-    iban = new IBANInput(HBCIProperties.formatIban(getRechnung().getIBAN()), getBic());
+    iban = new IBANInput(HBCIProperties.formatIban(getRechnung().getIBAN()),
+        getBic());
     iban.setName("IBAN");
     iban.disable();
     return iban;
   }
-  
+
   public TextInput getLeitwegID() throws RemoteException
   {
     if (leitwegID != null)
@@ -777,30 +662,51 @@ public class RechnungControl extends DruckMailControl
     leitwegID.disable();
     return leitwegID;
   }
-  
+
   public Part getBuchungenList() throws RemoteException
   {
     if (buchungList != null)
     {
       return buchungList;
     }
-    DBIterator<Mitgliedskonto> mks = Einstellungen.getDBService().createList(Mitgliedskonto.class);
-    mks.addFilter("rechnung = ?",getRechnung().getID());
+    DBIterator<SollbuchungPosition> sps = Einstellungen.getDBService()
+        .createList(SollbuchungPosition.class);
+    sps.join("mitgliedskonto");
+    sps.addFilter("mitgliedskonto.id = sollbuchungposition.sollbuchung");
+    sps.addFilter("mitgliedskonto.rechnung = ?", getRechnung().getID());
+    sps.setOrder("order by sollbuchungposition.datum");
     
-    buchungList = new TablePart(mks, null);
+    buchungList = new TablePart(sps, null);
     buchungList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    buchungList.addColumn("Abrechnungslauf", "abrechnungslauf");
-    buchungList.addColumn("Name", "mitglied");
-    buchungList.addColumn("Zweck", "zweck1");
+    buchungList.addColumn("Zweck", "zweck");
     buchungList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    buchungList.addColumn("Zahlungseingang", "istsumme",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    buchungList.addColumn("Steuersatz", "steuersatz");
+    buchungList.addColumn("Buchungsart", "buchungsart",
+        new BuchungsartFormatter());
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      buchungList.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
+    }
 
     buchungList.setRememberColWidths(true);
     buchungList.setRememberOrder(true);
     buchungList.addFeature(new FeatureSummary());
     return buchungList;
+  }
+  
+  public TextInput getZahlungsweg() throws RemoteException
+  {
+    if (zahlungsweg != null)
+    {
+      return zahlungsweg;
+    }
+
+    zahlungsweg = new TextInput(getRechnung().getZahlungsweg().getText());
+    zahlungsweg.setName("Zahlungsweg");
+    zahlungsweg.disable();
+    return zahlungsweg;
   }
 }

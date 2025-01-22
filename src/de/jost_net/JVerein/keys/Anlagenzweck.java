@@ -20,7 +20,7 @@ public enum Anlagenzweck
 {
   // Verwendungszweck der Anlage
 
-  NUTZUNGSGEBUNDEN(1, "Nutzungsgebunde Anlage"), // Anlage im Ideellen
+  NUTZUNGSGEBUNDEN(1, "Nutzungsgebundene Anlage"), // Anlage im ideellen
                                                   // Bereich oder Zweckbetrieb
   ZWECKFREMD_EINGESETZT(2, "Zweckfremde Anlage"); // Anlage in der
                                                   // Vermögensverwaltung oder im

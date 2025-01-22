@@ -35,10 +35,19 @@ public class Update0456 extends AbstractDDLUpdate
           COLTYPE.BIGINT, 20, null, false, false)));
 
       // Standard Verrechnungskonto setzen wie es auch bisher bestimmt wurde
-      execute("UPDATE einstellung SET verrechnungskonto =  "
-          + " (SELECT konto.id from konto"
-          + "  JOIN einstellung ON einstellung.iban LIKE CONCAT('%', konto.nummer)"
-          + "  ORDER by length(konto.nummer) DESC  LIMIT 1)");
+      if (getDriver().equals(DRIVER.MYSQL))
+      {
+        execute("UPDATE einstellung INNER JOIN konto ON einstellung.iban LIKE "
+            + "CONCAT('%', konto.nummer) SET verrechnungskonto = konto.id "
+            + "WHERE konto.id IS NULL;");
+      }
+      else
+      {
+        execute("UPDATE einstellung SET verrechnungskonto =  "
+            + " (SELECT konto.id from konto"
+            + "  JOIN einstellung ON einstellung.iban LIKE CONCAT('%', konto.nummer)"
+            + "  ORDER by length(konto.nummer) DESC  LIMIT 1)");
+      }
     }
   }
 }
