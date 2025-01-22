@@ -673,6 +673,14 @@ public class MittelverwendungList extends TablePart
       Integer position, String bezeichnung, Double einnahme, Double ausgabe,
       String kommentar) throws RemoteException
   {
+    if (einnahme != null && einnahme == -0.0)
+    {
+      einnahme = 0.0;
+    }
+    if (ausgabe != null && ausgabe == -0.0)
+    {
+      ausgabe = 0.0;
+    }
     switch (status)
     {
       case MittelverwendungZeile.EINNAHME:
