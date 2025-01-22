@@ -57,7 +57,7 @@ public class FreiesFormularAusgabe
     {
       case DRUCK:
         file = getDateiAuswahl("pdf", formular.getBezeichnung());
-        formularaufbereitung = new FormularAufbereitung(file, false);
+        formularaufbereitung = new FormularAufbereitung(file, false, false);
         break;
       case MAIL:
         file = getDateiAuswahl("zip", formular.getBezeichnung());
@@ -96,7 +96,7 @@ public class FreiesFormularAusgabe
             continue;
           }
           File f = File.createTempFile(getDateiname(m), ".pdf");
-          formularaufbereitung = new FormularAufbereitung(f, false);
+          formularaufbereitung = new FormularAufbereitung(f, false, false);
           aufbereitenFormular(m, formularaufbereitung, formular);
           formularaufbereitung.closeFormular();
           zos.putNextEntry(new ZipEntry(getDateiname(m) + ".pdf"));

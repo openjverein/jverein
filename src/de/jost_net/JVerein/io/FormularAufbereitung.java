@@ -123,7 +123,8 @@ public class FormularAufbereitung
    *          Die Datei, in die geschrieben werden soll
    * @throws RemoteException
    */
-  public FormularAufbereitung(final File f, boolean pdfa) throws RemoteException
+  public FormularAufbereitung(final File f, boolean pdfa, boolean encrypt)
+      throws RemoteException
   {
     this.f = f;
     try
@@ -150,10 +151,13 @@ public class FormularAufbereitung
       else
       {
         writer = PdfWriter.getInstance(doc, fos);
-        writer.setEncryption(null, null,
-            PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS,
-            PdfWriter.ENCRYPTION_AES_256);
-        doc.open();
+        if (encrypt)
+        {
+          writer.setEncryption(null, null,
+              PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS,
+              PdfWriter.ENCRYPTION_AES_256);
+          doc.open();
+        }
       }
     }
     catch (IOException e)

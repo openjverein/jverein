@@ -378,7 +378,7 @@ public class PreNotificationControl extends DruckMailControl
         .createObject(Formular.class, form.getID());
     if (!einzelnePdfs)
     {
-      fa = new FormularAufbereitung(file, false);
+      fa = new FormularAufbereitung(file, false, false);
     }
     
     int dateinummer = 0;
@@ -405,7 +405,7 @@ public class PreNotificationControl extends DruckMailControl
         sb.append(postfix);
 
         final File fx = new File(sb.toString());
-        fa = new FormularAufbereitung(fx, false);
+        fa = new FormularAufbereitung(fx, false, false);
       }
 
       aufbereitenFormular(ls, fo);
