@@ -61,13 +61,13 @@ import de.willuhn.util.ProgressMonitor;
 public class AbrechnungSEPAControl extends AbstractControl
 {
 
-  private static String CONFIRM_TITLE = "SEPA-Check temporär deaktivieren";
+  private static String CONFIRM_TITEL = "SEPA-Check temporär deaktivieren";
 
   private static String CONFIRM_TEXT = "Bei einer SEPA-Lastschrift muß ein gültiges SEPA-Mandat vorliegen.\n"
-      + "Wenn das Mandat älter als 3 Jahre ist müssen in den letzten 3 Jahren Lastschriften durchgeführt worden sein.\n"
-      + "Wählen Sie Ja nur wenn diese Bedingungen für alle Mitglieder erfüllt sind.";
+      + "Wenn das Mandat älter als 3 Jahre ist, müssen in den letzten 3 Jahren Lastschriften durchgeführt worden sein.\n"
+      + "Wählen Sie \"Ja\" nur, wenn diese Bedingungen für alle Mitglieder erfüllt sind.";
 
-  private static String CONFIRM_ERROR = "Fehler bei der Confirm Abfrage";
+  private static String CONFIRM_FEHLER = "Fehler beim Setzen der Checkbox";
 
   private AbbuchungsmodusInput modus;
 
@@ -337,7 +337,7 @@ public class AbrechnungSEPAControl extends AbstractControl
         // Bei temporär deaktivieren den User fragen
         if ((Boolean) sepacheck.getValue())
         {
-          if (!confirmDialog(CONFIRM_TITLE,CONFIRM_TEXT))
+          if (!confirmDialog(CONFIRM_TITEL, CONFIRM_TEXT))
           {
             sepacheck.setValue(false);
           }
@@ -346,7 +346,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     });
     return sepacheck;
   }
-  
+
   public static boolean confirmDialog(String title, String text)
   {
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
@@ -362,7 +362,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     catch (Exception e)
     {
-      Logger.error(CONFIRM_ERROR, e);
+      Logger.error(CONFIRM_FEHLER, e);
       return false;
     }
     return true;

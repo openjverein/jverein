@@ -66,7 +66,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
 
   private static String FEHLER_MANDAT = ": Es ist kein Mandat-Datum vorhanden.";
 
-  private static String FEHLER_ALTER = ": Das Mandat-Datum ist älter als 36 Monate und es erfolgte keine Lastschrift in den letzten 36 Monaten.";
+  private static String FEHLER_ALTER = ": Das Mandat-Datum ist älter als 36 Monate und es sind in JVerein keine Lastschriften für die letzten 3 Jahre vorhanden.";
 
   private transient Map<String, String> variable;
 
