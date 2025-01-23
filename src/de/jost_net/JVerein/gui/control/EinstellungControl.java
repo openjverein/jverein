@@ -855,8 +855,8 @@ public class EinstellungControl extends AbstractControl
     }
     splitpositionzweck = new CheckboxInput(
         Einstellungen.getEinstellung().getSplitPositionZweck());
-    splitpositionzweck.setName("Bei automatischem Splitten "
-        + "Verwendungszweck aus Sollbuchungspotition übernehmen");
+    splitpositionzweck.setName("Bei automatischem Splitten den "
+        + "Verwendungszweck aus den Sollbuchungspositionen übernehmen");
     return splitpositionzweck;
   }
 
