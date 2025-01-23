@@ -64,6 +64,8 @@ public class Reporter
 
   private Document rpt;
 
+  private PdfWriter writer;
+
   private PdfPTable table;
 
   private HyphenationAuto hyph;
@@ -114,7 +116,7 @@ public class Reporter
     rpt = new Document();
     rpt.setMargins(linkerRand, rechterRand, obererRand, untererRand);
     hyph = new HyphenationAuto("de", "DE", 2, 2);
-    PdfWriter.getInstance(rpt, out);
+    writer = PdfWriter.getInstance(rpt, out);
     AbstractPlugin plugin = Application.getPluginLoader()
         .getPlugin(JVereinPlugin.class);
     rpt.addAuthor(plugin.getManifest().getName() + " - Version "
@@ -128,16 +130,7 @@ public class Reporter
       int maxRecords, float linkerRand, float rechterRand, float obererRand,
       float untererRand) throws DocumentException
   {
-    this.out = out;
-    rpt = new Document();
-    hyph = new HyphenationAuto("de", "DE", 2, 2);
-    PdfWriter writer = PdfWriter.getInstance(rpt, out);
-    rpt.setMargins(linkerRand, rechterRand, obererRand, untererRand);
-    AbstractPlugin plugin = Application.getPluginLoader()
-        .getPlugin(JVereinPlugin.class);
-    rpt.addAuthor(plugin.getManifest().getName() + " - Version "
-        + plugin.getManifest().getVersion());
-    rpt.addTitle(subtitle);
+    this(out, linkerRand, rechterRand, obererRand, untererRand);
 
     String fuss = title + " | " + subtitle + " | " + "erstellt am "
         + new JVDateFormatTTMMJJJJ().format(new Date()) + "     " + "Seite: ";
@@ -157,8 +150,6 @@ public class Reporter
       psubTitle.setAlignment(Element.ALIGN_CENTER);
       rpt.add(psubTitle);
     }
-    headers = new ArrayList<>();
-    widths = new ArrayList<>();
   }
 
   /**
