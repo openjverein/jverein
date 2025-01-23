@@ -352,6 +352,8 @@ public class EinstellungControl extends AbstractControl
 
   private DialogInput verrechnungskonto;
 
+  private CheckboxInput splitpositionzweck;
+
   public EinstellungControl(AbstractView view)
   {
     super(view);
@@ -845,6 +847,19 @@ public class EinstellungControl extends AbstractControl
     return optiert;
   }
   
+  public CheckboxInput getSplitPositionZweck() throws RemoteException
+  {
+    if (splitpositionzweck != null)
+    {
+      return splitpositionzweck;
+    }
+    splitpositionzweck = new CheckboxInput(
+        Einstellungen.getEinstellung().getSplitPositionZweck());
+    splitpositionzweck.setName("Bei automatischem Splitten "
+        + "Verwendungszweck aus Sollbuchungspotition übernehmen");
+    return splitpositionzweck;
+  }
+
   public CheckboxInput getFreieBuchungsklasse() throws RemoteException 
   {
     if (freiebuchungsklasse != null) 
@@ -2351,6 +2366,7 @@ public class EinstellungControl extends AbstractControl
       e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());
       e.setOptiert((Boolean) getOptiert().getValue());
       e.setBuchungsklasseInBuchung((Boolean) getFreieBuchungsklasse().getValue());
+      e.setSplitPositionZweck((Boolean) getSplitPositionZweck().getValue());
       e.store();
       Einstellungen.setEinstellung(e);
 
