@@ -130,7 +130,9 @@ public class AbrechnungSEPAControl extends AbstractControl
     {
       return modus;
     }
-    modus = new AbbuchungsmodusInput(Abrechnungsmodi.KEINBEITRAG);
+    Integer mod = settings.getInt("modus", Abrechnungsmodi.KEINBEITRAG);
+
+    modus = new AbbuchungsmodusInput(mod);
     modus.addListener(new Listener()
     {
       @Override
@@ -189,6 +191,17 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.faelligkeit.setTitle("Fälligkeit SEPA-Lastschrift");
     this.faelligkeit.setText(
         "Bitte Fälligkeitsdatum der SEPA-Lastschrift wählen");
+    faelligkeit.addListener(event -> {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      if (faelligkeit.getValue() != null && getStichtag() != null
+          && getStichtag().getValue() == null)
+      {
+        getStichtag().setValue(faelligkeit.getValue());
+      }
+    });
     return faelligkeit;
   }
 
@@ -425,6 +438,8 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   private void doAbrechnung() throws ApplicationException, RemoteException
   {
+    settings.setAttribute("modus",
+        (Integer) modus.getValue());
     settings.setAttribute("zahlungsgrund", (String) zahlungsgrund.getValue());
     if (zusatzbetrag != null)
     {
