@@ -188,9 +188,9 @@ public class AbrechnungSEPAControl extends AbstractControl
         1 + Einstellungen.getEinstellung().getSEPADatumOffset());
     this.faelligkeit = new DateInput(cal.getTime(),
         new JVDateFormatTTMMJJJJ());
-    this.faelligkeit.setTitle("Fälligkeit SEPA-Lastschrift");
+    this.faelligkeit.setTitle("Fälligkeit");
     this.faelligkeit.setText(
-        "Bitte Fälligkeitsdatum der SEPA-Lastschrift wählen");
+        "Bitte Fälligkeitsdatum wählen");
     faelligkeit.addListener(event -> {
       if (event.type != SWT.Selection && event.type != SWT.FocusOut)
       {
