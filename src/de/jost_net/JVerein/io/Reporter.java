@@ -132,24 +132,27 @@ public class Reporter
   {
     this(out, linkerRand, rechterRand, obererRand, untererRand);
 
-    String fuss = title + " | " + subtitle + " | " + "erstellt am "
-        + new JVDateFormatTTMMJJJJ().format(new Date()) + "     " + "Seite: ";
-    HeaderFooter hf = new HeaderFooter();
-    hf.setFooter(fuss);
-    writer.setPageEvent(hf);
-
-    rpt.open();
-
-    if (title.length() > 0)
+    StringBuilder fuss = new StringBuilder();
+    if (title != null && title.length() > 0)
     {
       Paragraph pTitle = new Paragraph(title, getFreeSansBold(13));
       pTitle.setAlignment(Element.ALIGN_CENTER);
       rpt.add(pTitle);
-
+      fuss.append(title + " | ");
+    }
+    if (subtitle != null && subtitle.length() > 0)
+    {
+      rpt.addTitle(subtitle);
       Paragraph psubTitle = new Paragraph(subtitle, getFreeSansBold(10));
       psubTitle.setAlignment(Element.ALIGN_CENTER);
       rpt.add(psubTitle);
+      fuss.append(subtitle + " | ");
     }
+    fuss.append("erstellt am " + new JVDateFormatTTMMJJJJ().format(new Date())
+        + "     Seite: ");
+    HeaderFooter hf = new HeaderFooter();
+    hf.setFooter(fuss.toString());
+    writer.setPageEvent(hf);
   }
 
   /**
