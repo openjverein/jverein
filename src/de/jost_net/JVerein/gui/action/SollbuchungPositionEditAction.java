@@ -16,47 +16,29 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.gui.view.SollbuchungPositionView;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class SollbuchungEditAction implements Action
+public class SollbuchungPositionEditAction implements Action
 {
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Mitgliedskonto mk = null;
-    MitgliedskontoNode mkn = null;
+    SollbuchungPosition position = null;
 
-    if (context instanceof Mitgliedskonto)
+    if (context != null && (context instanceof SollbuchungPosition))
     {
-      mk = (Mitgliedskonto) context;
-    }
-    else if (context instanceof MitgliedskontoNode)
-    {
-      mkn = (MitgliedskontoNode) context;
-      try
-      {
-        mk = (Mitgliedskonto) Einstellungen.getDBService()
-            .createObject(Mitgliedskonto.class, mkn.getID());
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException(
-            "Fehler beim Editieren einer Sollbuchung");
-      }
+      position = (SollbuchungPosition) context;
     }
     else
     {
-      throw new ApplicationException("Keine Sollbuchung ausgewählt");
+      throw new ApplicationException("Keine Sollbuchungsposition ausgewählt");
     }
-    GUI.startView(new SollbuchungDetailView(), mk);
+
+    GUI.startView(SollbuchungPositionView.class.getName(), position);
   }
 }
