@@ -72,7 +72,7 @@ public class Rechnungsausgabe
     {
       case DRUCK:
         file = getDateiAuswahl("pdf");
-        formularaufbereitung = new FormularAufbereitung(file, true);
+        formularaufbereitung = new FormularAufbereitung(file, true, false);
         break;
       case MAIL:
         file = getDateiAuswahl("zip");
@@ -132,7 +132,7 @@ public class Rechnungsausgabe
           break;
         case MAIL:
           File f = File.createTempFile(getDateiname(re), ".pdf");
-          formularaufbereitung = new FormularAufbereitung(f, true);
+          formularaufbereitung = new FormularAufbereitung(f, true, false);
           aufbereitenFormular(re, formularaufbereitung, formular);
           formularaufbereitung.closeFormular();
           formularaufbereitung.addZUGFeRD(re, typ == TYP.MAHNUNG);
@@ -202,7 +202,7 @@ public class Rechnungsausgabe
     if (formular == null)
       formular = re.getFormular();
     
-    if (re.getMitgliedskontoList().size() == 0)
+    if (re.getSollbuchungPositionList().size() == 0)
       return;
     
     Map<String, Object> map = new RechnungMap().getMap(re, null);

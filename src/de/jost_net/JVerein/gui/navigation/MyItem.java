@@ -46,6 +46,10 @@ public class MyItem implements NavigationItem
 
   private String icon;
 
+  private static int maxId = 0;
+
+  private int id;
+
   public MyItem(NavigationItem item, String navitext, Action action)
   {
     this(item, navitext, action, null);
@@ -54,6 +58,7 @@ public class MyItem implements NavigationItem
   public MyItem(NavigationItem item, String navitext, Action action,
       String icon)
   {
+    this.id = maxId++;
     this.parent = item;
     this.action = action;
     this.navitext = navitext;
@@ -239,7 +244,7 @@ public class MyItem implements NavigationItem
   @Override
   public String getID()
   {
-    return getClass().getName() + "." + getName();
+    return getClass().getName() + "." + id + "." + getName();
   }
 
   /**

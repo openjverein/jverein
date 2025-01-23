@@ -19,24 +19,25 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
-import de.jost_net.JVerein.rmi.Buchungsart;
-import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoImpl extends AbstractDBObject implements
-    Mitgliedskonto
+public class MitgliedskontoImpl extends AbstractDBObject
+    implements Mitgliedskonto
 {
 
   private static final long serialVersionUID = -1234L;
@@ -75,7 +76,7 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
     catch (ObjectNotFoundException e)
     {
       // Alles ok, es gibt keine Rechnung
-      // Das passiert wenn sie kurz vorher gelöscht wurde aber 
+      // Das passiert wenn sie kurz vorher gelöscht wurde aber
       // die ID noch im Cache gespeichert ist
     }
     catch (RemoteException e)
@@ -124,20 +125,24 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   @Override
   protected Class<?> getForeignObject(String arg0)
   {
+    if (arg0.equals("rechnung"))
+    {
+      return Rechnung.class;
+    }
     return null;
   }
 
   @Override
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException
   {
-	Object o = (Object) super.getAttribute("abrechnungslauf");
+    Object o = (Object) super.getAttribute("abrechnungslauf");
     if (o == null)
       return null;
-    
-    if(o instanceof Abrechnungslauf)
-      return (Abrechnungslauf)o;
-   
-    Cache cache = Cache.get(Abrechnungslauf.class,true);
+
+    if (o instanceof Abrechnungslauf)
+      return (Abrechnungslauf) o;
+
+    Cache cache = Cache.get(Abrechnungslauf.class, true);
     return (Abrechnungslauf) cache.get(o);
   }
 
@@ -147,104 +152,36 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   {
     setAttribute("abrechnungslauf", Integer.valueOf(abrechnungslauf.getID()));
   }
-  
+
   @Override
   public Rechnung getRechnung() throws RemoteException
   {
-    Object o = (Object) super.getAttribute("rechnung");
-    if (o == null)
-      return null;
-    
-    if(o instanceof Rechnung)
-      return (Rechnung)o;
-   
-    Cache cache = Cache.get(Rechnung.class,true);
-    return (Rechnung) cache.get(o);
+    return (Rechnung) getAttribute("rechnung");
   }
 
   @Override
-  public void setRechnung(Rechnung rechnung)
-      throws RemoteException
+  public void setRechnung(Rechnung rechnung) throws RemoteException
   {
-    if(rechnung != null)
+    if (rechnung != null)
       setAttribute("rechnung", Long.valueOf(rechnung.getID()));
     else
       setAttribute("rechnung", null);
-  }
-  
-  @Override
-  public Buchungsart getBuchungsart() throws RemoteException
-  {
-    Long l = (Long) super.getAttribute("buchungsart");
-    if (l == null)
-    {
-      return null; // Keine Buchungsart zugeordnet
-    }
-
-    Cache cache = Cache.get(Buchungsart.class, true);
-    return (Buchungsart) cache.get(l);
-  }
-
-  @Override
-  public void setBuchungsart(Buchungsart buchungsart) throws RemoteException
-  {
-    if (buchungsart != null)
-      setAttribute("buchungsart", Long.valueOf(buchungsart.getID()));
-    else
-      setAttribute("buchungsart", null);
-  }
-  
-  @Override
-  public Long getBuchungsartId() throws RemoteException
-  {
-    return (Long) super.getAttribute("buchungsart");
-  }
-  
-  @Override
-  public void setBuchungsartId(Long buchungsartId) throws RemoteException
-  {
-    setAttribute("buchungsart", buchungsartId);
-  }
-  
-  @Override
-  public Buchungsklasse getBuchungsklasse() throws RemoteException
-  {
-    Long l = (Long) super.getAttribute("buchungsklasse");
-    if (l == null)
-    {
-      return null; // Keine Buchungsklasse zugeordnet
-    }
-
-    Cache cache = Cache.get(Buchungsklasse.class, true);
-    return (Buchungsklasse) cache.get(l);
-  }
-
-  @Override
-  public Long getBuchungsklasseId() throws RemoteException
-  {
-    return (Long) super.getAttribute("buchungsklasse");
-  }
-  
-  @Override
-  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException
-  {
-    setAttribute("buchungsklasse", buchungsklasseId);
   }
 
   @Override
   public Mitglied getMitglied() throws RemoteException
   {
-	Object o = (Object) super.getAttribute("mitglied");
+    Object o = (Object) super.getAttribute("mitglied");
     if (o == null)
       return null;
 
-    if(o instanceof Mitglied)
-      return (Mitglied)o;
-   
-    Cache cache = Cache.get(Mitglied.class,true);
+    if (o instanceof Mitglied)
+      return (Mitglied) o;
+
+    Cache cache = Cache.get(Mitglied.class, true);
     return (Mitglied) cache.get(o);
   }
-  
+
   public String getMitgliedId() throws RemoteException
   {
     return String.valueOf(super.getAttribute("mitglied"));
@@ -290,57 +227,6 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
   public void setZahlungsweg(Integer zahlungsweg) throws RemoteException
   {
     setAttribute("zahlungsweg", zahlungsweg);
-  }
-
-  @Override
-  public Double getNettobetrag() throws RemoteException
-  {
-    Double d = (Double) getAttribute("nettobetrag");
-    if (d == null)
-    {
-      return 0.0d;
-    }
-    return d;
-  }
-
-  @Override
-  public void setNettobetrag(Double d) throws RemoteException
-  {
-    setAttribute("nettobetrag", d);
-  }
-
-  @Override
-  public Double getSteuersatz() throws RemoteException
-  {
-    Double d = (Double) getAttribute("steuersatz");
-    if (d == null)
-    {
-      return 0.0d;
-    }
-    return d;
-  }
-
-  @Override
-  public void setSteuersatz(Double d) throws RemoteException
-  {
-    setAttribute("steuersatz", d);
-  }
-
-  @Override
-  public Double getSteuerbetrag() throws RemoteException
-  {
-    Double d = (Double) getAttribute("steuerbetrag");
-    if (d == null)
-    {
-      return 0.0d;
-    }
-    return d;
-  }
-
-  @Override
-  public void setSteuerbetrag(Double d) throws RemoteException
-  {
-    setAttribute("steuerbetrag", d);
   }
 
   @Override
@@ -410,14 +296,22 @@ public class MitgliedskontoImpl extends AbstractDBObject implements
     {
       return getAbrechnungslauf();
     }
-    if (fieldName.equals("buchungsklasse"))
-    {
-      return getBuchungsklasse();
-    }
-    if (fieldName.equals("buchungsart"))
-    {
-      return getBuchungsart();
-    }
     return super.getAttribute(fieldName);
+  }
+
+  @Override
+  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException
+  {
+    ArrayList<SollbuchungPosition> sps = new ArrayList<>();
+    DBIterator<SollbuchungPosition> it = Einstellungen.getDBService()
+        .createList(SollbuchungPosition.class);
+    it.addFilter("sollbuchungposition.sollbuchung = ?", getID());
+    it.setOrder("ORDER BY datum");
+    while (it.hasNext())
+    {
+      sps.add((SollbuchungPosition) it.next());
+    }
+    return sps;
   }
 }

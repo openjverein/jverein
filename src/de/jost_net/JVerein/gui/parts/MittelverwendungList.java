@@ -21,12 +21,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.MittelverwendungZeile;
+import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.willuhn.datasource.rmi.DBService;
@@ -107,26 +107,6 @@ public class MittelverwendungList extends TablePart
     String bezeichnung = "";
     Integer pos = 1;
 
-    ResultSetExtractor rsbk = new ResultSetExtractor()
-    {
-      @Override
-      public HashMap<Integer, String> extract(ResultSet rs) throws SQLException
-      {
-        HashMap<Integer, String> map = new HashMap<>();
-        while (rs.next())
-        {
-          map.put(Integer.valueOf(rs.getInt(1)), rs.getString(3));
-        }
-        return map;
-      }
-    };
-
-    // Ids der Buchunsklassen
-    sql = "SELECT buchungsklasse.* FROM buchungsklasse" + " ORDER BY nummer";
-    @SuppressWarnings("unchecked")
-    HashMap<Integer, String> bkMap = (HashMap<Integer, String>) service
-        .execute(sql, new Object[] {}, rsbk);
-
     ResultSetExtractor rsd = new ResultSetExtractor()
     {
       @Override
@@ -140,186 +120,126 @@ public class MittelverwendungList extends TablePart
       }
     };
 
-    bezeichnung = "Vorhandene Mittel zum Ende des letzten GJ";
+    // Schritt 1: Berechnung des Verwendungsrückstand(+)/-überhang(-)
+    // am Ende des letzten GJ
+    // Vorhandene Geldmittel zum Ende des letzten GJ sind zu verwenden
     sql = "SELECT SUM(anfangsbestand.betrag) FROM anfangsbestand, konto"
         + " WHERE anfangsbestand.datum = ?"
         + " AND anfangsbestand.konto = konto.id " + " AND konto.kontoart = ? ";
-    Double pos1 = (Double) service.execute(sql,
+    Double vorhandeneMittel = (Double) service.execute(sql,
         new Object[] { datumvon, Kontoart.GELD.getKey() }, rsd);
-    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung, pos1,
-        null);
 
-    bezeichnung = "Nicht der zeitnahen Mittelverwendung unterliegende Mittel zum Ende des letzten GJ";
+    // Vorhandene zweckfremde Anlagen sind zu verwenden
     sql = "SELECT SUM(anfangsbestand.betrag) FROM anfangsbestand, konto"
         + " WHERE anfangsbestand.datum = ?"
-        + " AND anfangsbestand.konto = konto.id "
-        + " AND (konto.kontoart = ? OR konto.kontoart = ? OR konto.kontoart = ?)";
-    Double pos2 = (Double) service.execute(sql,
-        new Object[] { datumvon, Kontoart.RUECKLAGE.getKey(),
-            Kontoart.VERMOEGEN.getKey(),
-            Kontoart.SONSTIGE_RUECKLAGEN.getKey() },
+        + " AND anfangsbestand.konto = konto.id " + " AND konto.kontoart = ? "
+        + " AND konto.zweck = ?";
+    vorhandeneMittel += (Double) service.execute(sql, new Object[] { datumvon,
+        Kontoart.ANLAGE.getKey(), Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey() },
         rsd);
+
+    // Nicht der zeitnahen Mittelverwendung unterliegende Mittel (Rücklagen)
+    // zum Ende des letzten GJ können abgezogen werden
+    sql = "SELECT SUM(anfangsbestand.betrag) FROM anfangsbestand, konto"
+        + " WHERE anfangsbestand.datum = ?"
+        + " AND anfangsbestand.konto = konto.id" + " AND konto.kontoart >= ?"
+        + " AND konto.kontoart <= ?";
+    vorhandeneMittel -= (Double) service.execute(sql,
+        new Object[] { datumvon, Kontoart.RUECKLAGE_ZWECK_GEBUNDEN.getKey(),
+            Kontoart.RUECKLAGE_SONSTIG.getKey() },
+        rsd);
+
+    bezeichnung = "Verwendungsrückstand(+)/-überhang(-) am Ende des letzten GJ";
+    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
+        vorhandeneMittel, null);
+
+    // Schritt 2: Mittel Zufluss
+    // Summe aller Zuflüsse bei Geldkonten und Anlagen (=Sachspenden)
+    sql = getSummenKontenSql();
+    Double zufuehrung = (Double) service.execute(sql,
+        new Object[] { datumvon, datumbis, Kontoart.GELD.getKey(),
+            Kontoart.ANLAGE.getKey(), ArtBuchungsart.EINNAHME },
+        rsd);
+    // Summe Zuflüsse durch Umbuchung
+    // Auszahlung aus Verbindlichkeiten z.B. Darlehen,
+    // Rückbuchung von zweckgebundenen Anlagen
+    sql = getSummenUmbuchungSql() + " AND buchung.betrag < 0";
+    zufuehrung -= (Double) service.execute(sql,
+        new Object[] { datumvon, datumbis, Kontoart.VERBINDLICHKEITEN.getKey(),
+            Kontoart.ANLAGE.getKey(), Anlagenzweck.NUTZUNGSGEBUNDEN.getKey(),
+            ArtBuchungsart.UMBUCHUNG },
+        rsd);
+
+    bezeichnung = "Insgesamt im GJ zugeflossene Mittel";
+    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
+        zufuehrung, null);
+    bezeichnung = "          Zu verwendende Mittel im GJ und nächstem GJ";
+    addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
+        zufuehrung, vorhandeneMittel);
+
+    // Schritt 3: Mittel Abfluss
+    // Summe aller Abflüsse bei Geldkonten
+    sql = getSummenKontoSql();
+    Double verwendung = (Double) service.execute(sql, new Object[] { datumvon,
+        datumbis, Kontoart.GELD.getKey(), ArtBuchungsart.AUSGABE }, rsd);
+    // Summe aller Abflüsse bei nicht nutzungsgebundenen Anlagen
+    sql = getSummenKontoZweckSql();
+    verwendung += (Double) service.execute(sql,
+        new Object[] { datumvon, datumbis, Kontoart.ANLAGE.getKey(),
+            Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey(),
+            ArtBuchungsart.AUSGABE },
+        rsd);
+    // Summe der Abflüsse bei Umbuchung
+    // Tilgung Verbindlichkeiten z.B. Darlehen,
+    // Erwerb zweckgebundener Anlagen
+    sql = getSummenUmbuchungSql() + " AND buchung.betrag > 0";
+    verwendung -= (Double) service.execute(sql,
+        new Object[] { datumvon, datumbis, Kontoart.VERBINDLICHKEITEN.getKey(),
+            Kontoart.ANLAGE.getKey(), Anlagenzweck.NUTZUNGSGEBUNDEN.getKey(),
+            ArtBuchungsart.UMBUCHUNG },
+        rsd);
+
+    bezeichnung = "Im GJ verwendete Mittel";
     addZeile(zeilen, MittelverwendungZeile.AUSGABE, pos++, bezeichnung, null,
-        pos2);
+        verwendung);
 
-    bezeichnung = "          Verwendungsüberhang/Rückstand Ende des letzten GJ";
-    addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung, pos1,
-        -pos2);
-
-    Double zufuehrung = 0d;
-    Double verwendung = 0d;
-    // Mittel Zufluss und Abfluss für alle Buchungsklassen
-    for (Integer bkId : bkMap.keySet())
+    // Rücklagen
+    Double summeZuRuecklagen = 0.0;
+    Double summeEntRuecklagen = 0.0;
+    sql = getSummenRuecklagenSql();
+    for (int i = Kontoart.RUECKLAGE_ZWECK_GEBUNDEN
+        .getKey(); i <= Kontoart.RUECKLAGE_SONSTIG.getKey(); i++)
     {
-      // Mittel Zufluss
-      // Summe der Buchungen bei Einnahmen
-      sql = getSummenBuchungSql();
-      Double zuf = (Double) service.execute(sql, new Object[] { datumvon,
-          datumbis, Kontoart.GELD.getKey(), bkId, ArtBuchungsart.EINNAHME },
-          rsd);
-      // Summe der positiven Buchungen bei Umbuchung
-      sql = getSummenUmbuchungSql() + " AND buchung.betrag < 0";
-      Double um = (Double) service.execute(sql,
-          new Object[] { datumvon, datumbis,
-              Kontoart.VERBINDLICHKEITEN.getKey(), Kontoart.ANLAGE.getKey(),
-              bkId, ArtBuchungsart.UMBUCHUNG },
-          rsd);
-      zuf -= um;
-      zufuehrung += zuf;
-
-      // Mittel Abfluss
-      // Summe der Buchungen bei Ausgaben
-      sql = getSummenBuchungSql();
-      Double verw = (Double) service.execute(sql, new Object[] { datumvon,
-          datumbis, Kontoart.GELD.getKey(), bkId, ArtBuchungsart.AUSGABE },
-          rsd);
-      // Summe der negativen Buchungen bei Umbuchung
-      sql = getSummenUmbuchungSql() + " AND buchung.betrag > 0";
-      Double um2 = (Double) service.execute(sql,
-          new Object[] { datumvon, datumbis,
-              Kontoart.VERBINDLICHKEITEN.getKey(), Kontoart.ANLAGE.getKey(),
-              bkId, ArtBuchungsart.UMBUCHUNG },
-          rsd);
-      verw -= um2;
-      verwendung += verw;
-
-      if (zuf != 0d || verw != 0d
+      Double zuRuecklagen = (Double) service.execute(sql,
+          new Object[] { datumvon, datumbis, i, ArtBuchungsart.EINNAHME }, rsd);
+      summeZuRuecklagen += zuRuecklagen;
+      if (Math.abs(zuRuecklagen) > 0.005
           || !Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
       {
-        bezeichnung = "Mittel Zufluss aus " + bkMap.get(bkId);
-        addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-            zuf, null);
-        bezeichnung = "Verwendete Mittel aus " + bkMap.get(bkId);
+        bezeichnung = "Zuführung " + Kontoart.getByKey(i).getText();
         addZeile(zeilen, MittelverwendungZeile.AUSGABE, pos++, bezeichnung,
-            null, verw);
-        bezeichnung = "          Überschuss/Verlust aus " + bkMap.get(bkId);
-        addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung, zuf,
-            verw);
+            null, -zuRuecklagen);
+      }
+      Double entRuecklagen = (Double) service.execute(sql,
+          new Object[] { datumvon, datumbis, i, ArtBuchungsart.AUSGABE }, rsd);
+      summeEntRuecklagen += entRuecklagen;
+      if (Math.abs(entRuecklagen) > 0.005
+          || !Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
+      {
+        bezeichnung = "Entnahme " + Kontoart.getByKey(i).getText();
+        addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
+            -entRuecklagen, null);
       }
     }
 
-    // Summen über alle Sphären
-    bezeichnung = "Mittel Zufluss aus allen Sphären";
-    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-        zufuehrung, 0d);
-    bezeichnung = "Verwendete Mittel aus allen Sphären";
-    addZeile(zeilen, MittelverwendungZeile.AUSGABE, pos++, bezeichnung, 0d,
-        verwendung);
-    bezeichnung = "          Überschuss/Verlust aus allen Sphären";
+    bezeichnung = "          Verwendungsrückstand(+)/-überhang(-) zum Ende des GJ";
     addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
-        zufuehrung, verwendung);
-
-    // Rücklagen nach § 62 Abs. 1 AO
-    sql = getSummenRuecklagenSql();
-    Double zuRuecklagen = (Double) service.execute(sql, new Object[] { datumvon,
-        datumbis, Kontoart.RUECKLAGE.getKey(), ArtBuchungsart.EINNAHME }, rsd);
-
-    sql = getSummenRuecklagenSql();
-    Double entRuecklagen = (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, Kontoart.RUECKLAGE.getKey(),
-            ArtBuchungsart.AUSGABE },
-        rsd);
-
-    if (zuRuecklagen != 0d || entRuecklagen != 0d
-        || !Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
-    {
-      bezeichnung = "Zuführung zu Rücklagen nach § 62 Abs. 1 AO";
-      addZeile(zeilen, MittelverwendungZeile.AUSGABE, pos++, bezeichnung, null,
-          zuRuecklagen);
-      bezeichnung = "Entnahme aus Rücklagen nach § 62 Abs. 1 AO";
-      addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-          entRuecklagen, null);
-      bezeichnung = "          Summe der Buchungen zu Rücklagen nach § 62 Abs. 1 AO";
-      addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
-          entRuecklagen, zuRuecklagen);
-    }
-
-    // Vermögen nach § 62 Abs. 3 und 4 AO
-    sql = getSummenRuecklagenSql();
-    Double zuVermoegen = (Double) service.execute(sql, new Object[] { datumvon,
-        datumbis, Kontoart.VERMOEGEN.getKey(), ArtBuchungsart.EINNAHME }, rsd);
-
-    sql = getSummenRuecklagenSql();
-    Double entVermoegen = (Double) service.execute(sql, new Object[] { datumvon,
-        datumbis, Kontoart.VERMOEGEN.getKey(), ArtBuchungsart.AUSGABE }, rsd);
-
-    if (zuVermoegen != 0d || entVermoegen != 0d
-        || !Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
-    {
-      bezeichnung = "Zuführung zum Vermögen nach § 62 Abs. 3 und 4 AO";
-      addZeile(zeilen, MittelverwendungZeile.AUSGABE, pos++, bezeichnung, null,
-          zuVermoegen);
-      bezeichnung = "Entnahme aus Vermögen nach § 62 Abs. 3 und 4 AO";
-      addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-          entVermoegen, null);
-      bezeichnung = "          Summe der Buchungen zum Vermögen nach § 62 Abs. 3 und 4 AO";
-      addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
-          entVermoegen, zuVermoegen);
-    }
-
-    // Sonstige Rücklagen
-    sql = getSummenRuecklagenSql();
-    Double zuSonstig = (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis,
-            Kontoart.SONSTIGE_RUECKLAGEN.getKey(), ArtBuchungsart.EINNAHME },
-        rsd);
-
-    sql = getSummenRuecklagenSql();
-    Double entSonstig = (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis,
-            Kontoart.SONSTIGE_RUECKLAGEN.getKey(), ArtBuchungsart.AUSGABE },
-        rsd);
-
-    if (zuSonstig != 0d || entSonstig != 0d
-        || !Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
-    {
-      bezeichnung = "Zuführung zu sonstigen Rücklagen";
-      addZeile(zeilen, MittelverwendungZeile.AUSGABE, pos++, bezeichnung, null,
-          zuSonstig);
-      bezeichnung = "Entnahme aus sonstigen Rücklagen";
-      addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-          entSonstig, null);
-      bezeichnung = "          Summe der Buchungen aus sonstigen Rücklagen";
-      addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
-          entSonstig, zuSonstig);
-    }
-
-    bezeichnung = "Vorhandene Mittel zum Ende des aktuellen GJ";
-    Double einnahmen = pos1 + zufuehrung + verwendung;
-    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-        einnahmen, null);
-    bezeichnung = "Nicht der zeitnahen Mittelverwendung unterliegende Mittel zum Ende aktuellen GJ";
-    Double ausgaben = pos2 + zuRuecklagen + entRuecklagen + zuVermoegen
-        + entVermoegen + zuSonstig + entSonstig;
-    addZeile(zeilen, MittelverwendungZeile.AUSGABE, pos++, bezeichnung, null,
-        ausgaben);
-    bezeichnung = "          Verwendungsüberhang/Rückstand zum Ende des aktuellen GJ";
-    addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
-        einnahmen, -ausgaben);
+        zufuehrung + vorhandeneMittel + verwendung - summeZuRuecklagen,
+        -summeEntRuecklagen);
 
     // Leerzeile am Ende wegen Scrollbar
-    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED,
-        null, null, null, null));
+    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED, null,
+        null, null, null));
     return zeilen;
   }
 
@@ -345,54 +265,50 @@ public class MittelverwendungList extends TablePart
     super.paint(parent);
   }
 
-  private String getSummenBuchungSql() throws RemoteException
+  private String getSummenKontoSql() throws RemoteException
   {
-    String sql = "";
-    if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-    {
-      sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
-          + " WHERE datum >= ? AND datum <= ?"
-          + " AND buchung.konto = konto.id" + " AND konto.kontoart = ?"
-          + " AND buchung.buchungsart = buchungsart.id"
-          + " AND buchungsart.buchungsklasse = ? " + "AND buchungsart.art = ?";
-    }
-    else
-    {
-      sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
-          + " WHERE datum >= ? AND datum <= ?"
-          + " AND buchung.konto = konto.id" + " AND konto.kontoart = ?"
-          + " AND buchung.buchungsart = buchungsart.id"
-          + " AND buchung.buchungsklasse = ? " + "AND buchungsart.art = ?";
-    }
+    String sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
+        + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
+        + " AND konto.kontoart = ?"
+        + " AND buchung.buchungsart = buchungsart.id"
+        + " AND buchungsart.art = ?";
+    return sql;
+  }
+
+  private String getSummenKontenSql() throws RemoteException
+  {
+    String sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
+        + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
+        + " AND (konto.kontoart = ? OR konto.kontoart = ?)"
+        + " AND buchung.buchungsart = buchungsart.id"
+        + " AND buchungsart.art = ?";
+    return sql;
+  }
+
+  private String getSummenKontoZweckSql() throws RemoteException
+  {
+    String sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
+        + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
+        + " AND konto.kontoart = ? AND konto.zweck = ?"
+        + " AND buchung.buchungsart = buchungsart.id"
+        + " AND buchungsart.art = ?";
     return sql;
   }
 
   private String getSummenUmbuchungSql() throws RemoteException
   {
-    String sql = "";
-    if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-    {
-      sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
-          + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
-          + " AND (konto.kontoart = ? OR konto.kontoart = ?)"
-          + " AND buchung.buchungsart = buchungsart.id"
-          + " AND buchungsart.buchungsklasse = ?" + " AND buchungsart.art = ?";
-    }
-    else
-    {
-      sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
-          + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
-          + " AND (konto.kontoart = ? OR konto.kontoart = ?)"
-          + " AND buchung.buchungsart = buchungsart.id"
-          + " AND buchung.buchungsklasse = ?" + " AND buchungsart.art = ?";
-    }
+    String sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
+        + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
+        + " AND (konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?))"
+        + " AND buchung.buchungsart = buchungsart.id"
+        + " AND buchungsart.art = ?";
     return sql;
   }
 
   private String getSummenRuecklagenSql()
   {
     return "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
-        + " WHERE datum >= ? AND datum <= ?  " + "AND buchung.konto = konto.id"
+        + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
         + " AND konto.kontoart = ?"
         + " AND buchung.buchungsart = buchungsart.id"
         + " AND buchungsart.art = ?";
@@ -402,6 +318,14 @@ public class MittelverwendungList extends TablePart
       Integer position, String bezeichnung, Double einnahme, Double ausgabe)
       throws RemoteException
   {
+    if (einnahme != null && einnahme == -0.0)
+    {
+      einnahme = 0.0;
+    }
+    if (ausgabe != null && ausgabe == -0.0)
+    {
+      ausgabe = 0.0;
+    }
     switch (status)
     {
       case MittelverwendungZeile.EINNAHME:

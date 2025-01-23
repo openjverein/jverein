@@ -19,25 +19,22 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
-import java.util.Calendar;
-import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.SimpleDialog;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.hbci.Settings;
 import de.willuhn.jameica.hbci.rmi.SepaLastSequenceType;
 import de.willuhn.jameica.hbci.rmi.SepaLastschrift;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class MitgliedLastschriftAction implements Action
 {
+  private static String CONFIRM_TITLE = "SEPA-Check Fehler";
 
   @Override
   public void handleAction(Object context) throws ApplicationException
@@ -60,7 +57,7 @@ public class MitgliedLastschriftAction implements Action
         mZ = (Mitglied) Einstellungen.getDBService().createObject(
             Mitglied.class, m.getZahlerID() + "");
 
-        if (!confirmDialog("Familienangehöriger",
+        if (!AbrechnungSEPAControl.confirmDialog("Familienangehöriger",
             "Dieses Mitglied ist ein Familienangehöriger.\n\n"
                 + "Als Konto wird das Konto des Zahlers belastet:\n"
                 + "Zahler: " + mZ.getName() + "," + mZ.getVorname() + "\n"
@@ -117,78 +114,19 @@ public class MitgliedLastschriftAction implements Action
 
   private boolean checkSEPA(Mitglied m) throws RemoteException
   {
-
-    // pruefe Zahlungsweg
-    if (m.getZahlungsweg() == null
-        || m.getZahlungsweg() != Zahlungsweg.BASISLASTSCHRIFT)
+    try
     {
-
-      abortDialog("Fehler", "Zahlungsweg ist nicht Basislastschrift");
-      return false;
+      return m.checkSEPA();
     }
-
-    // pruefe Mandatsdatum
-    if (m.getMandatDatum() == Einstellungen.NODATE)
+    catch (ApplicationException ae)
     {
-      if (!confirmDialog("Mandat-Datum fehlt", "Kein Mandat-Datum vorhanden"))
+      if (!AbrechnungSEPAControl.confirmDialog(CONFIRM_TITLE,
+          ae.getLocalizedMessage() + "\nWeiter?"))
       {
         return false;
       }
     }
-
-    // pruefe Sepa Gueltigkeit: Datum der letzen Abbuchung
-    Date letzte_lastschrift = m.getLetzteLastschrift();
-    if (letzte_lastschrift != null)
-    {
-      Calendar sepagueltigkeit = Calendar.getInstance();
-      sepagueltigkeit.add(Calendar.MONTH, -36);
-      if (letzte_lastschrift.before(sepagueltigkeit.getTime()))
-      {
-        if (!confirmDialog("Letzte Lastschrift",
-            "Letzte Lastschrift ist älter als 36 Monate"))
-        {
-          return false;
-        }
-        }
-    }
-
     return true;
-  }
-
-  private boolean confirmDialog(String title, String text)
-  {
-    YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle(title);
-    d.setText(text + "\nWeiter?");
-    try
-    {
-      Boolean choice = (Boolean) d.open();
-      if (!choice.booleanValue())
-      {
-        return false;
-      }
-    }
-    catch (Exception e)
-    {
-      Logger.error("Fehler bei Erstellen einer manuellen SEPA-Lastschrift", e);
-      return false;
-    }
-    return true;
-  }
-
-  private void abortDialog(String title, String text)
-  {
-    SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
-    d.setTitle(title);
-    d.setText(text);
-    try
-    {
-      d.open();
-    }
-    catch (Exception e)
-    {
-      Logger.error("Fehler bei Erstellen einer manuellen SEPA-Lastschrift", e);
-    }
   }
 
 }

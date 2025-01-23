@@ -62,6 +62,12 @@ import de.willuhn.util.ApplicationException;
 public class MitgliedImpl extends AbstractDBObject implements Mitglied
 {
 
+  private static String FEHLER_ZAHLUNGSWEG = ": Der Zahlungsweg ist nicht Basislastschrift.";
+
+  private static String FEHLER_MANDAT = ": Es ist kein Mandat-Datum vorhanden.";
+
+  private static String FEHLER_ALTER = ": Das Mandat-Datum ist älter als 36 Monate und es sind in JVerein keine Lastschriften für die letzten 3 Jahre vorhanden.";
+
   private transient Map<String, String> variable;
 
   private static final long serialVersionUID = 1L;
@@ -2020,6 +2026,37 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
         return null;
       }
     }
+  }
+
+  public boolean checkSEPA() throws RemoteException, ApplicationException
+  {
+    if (getZahlungsweg() == null
+        || getZahlungsweg() != Zahlungsweg.BASISLASTSCHRIFT)
+    {
+      throw new ApplicationException(Adressaufbereitung.getNameVorname(this)
+          + FEHLER_ZAHLUNGSWEG);
+    }
+    // Ohne Mandat keine Lastschrift
+    if (getMandatDatum() == Einstellungen.NODATE)
+    {
+      throw new ApplicationException(Adressaufbereitung.getNameVorname(this)
+          + FEHLER_MANDAT);
+    }
+    // Bei Mandaten älter als 3 Jahre muss es eine Lastschrift
+    // innerhalb der letzten 3 Jahre geben
+    Calendar sepagueltigkeit = Calendar.getInstance();
+    sepagueltigkeit.add(Calendar.MONTH, -36);
+    if (getMandatDatum().before(sepagueltigkeit.getTime()))
+    {
+      Date letzte_lastschrift = getLetzteLastschrift();
+      if (letzte_lastschrift == null
+          || letzte_lastschrift.before(sepagueltigkeit.getTime()))
+      {
+        throw new ApplicationException(Adressaufbereitung.getNameVorname(this)
+            + FEHLER_ALTER);
+      }
+    }
+    return true;
   }
 
 }

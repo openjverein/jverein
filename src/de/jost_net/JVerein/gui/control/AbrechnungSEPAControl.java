@@ -30,18 +30,22 @@ import org.kapott.hbci.sepa.SepaVersion;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
+import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.Bankarbeitstage;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
+import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Monat;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -56,6 +60,14 @@ import de.willuhn.util.ProgressMonitor;
 
 public class AbrechnungSEPAControl extends AbstractControl
 {
+
+  private static String CONFIRM_TITEL = "SEPA-Check temporär deaktivieren";
+
+  private static String CONFIRM_TEXT = "Bei einer SEPA-Lastschrift muß ein gültiges SEPA-Mandat vorliegen.\n"
+      + "Wenn das Mandat älter als 3 Jahre ist, müssen in den letzten 3 Jahren Lastschriften durchgeführt worden sein.\n"
+      + "Wählen Sie \"Ja\" nur, wenn diese Bedingungen für alle Mitglieder erfüllt sind.";
+
+  private static String CONFIRM_FEHLER = "Fehler beim Setzen der Checkbox";
 
   private AbbuchungsmodusInput modus;
 
@@ -79,9 +91,19 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   private CheckboxInput sepaprint;
 
+  private CheckboxInput sepacheck;
+
   private SelectInput ausgabe;
 
   private Settings settings = null;
+
+  private CheckboxInput sollbuchungenzusammenfassen;
+
+  private CheckboxInput rechnung;
+
+  private FormularInput rechnungsformular;
+
+  private TextInput rechnungstext;
 
   public AbrechnungSEPAControl(AbstractView view)
   {
@@ -147,7 +169,6 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.stichtag = new DateInput(null, new JVDateFormatTTMMJJJJ());
     this.stichtag.setTitle("Stichtag für die Abrechnung");
     this.stichtag.setText("Bitte Stichtag für die Abrechnung wählen");
-    this.stichtag.setComment("*)");
     return stichtag;
   }
 
@@ -238,9 +259,59 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     kompakteabbuchung = new CheckboxInput(
         settings.getBoolean("kompakteabbuchung", false));
+    kompakteabbuchung.addListener(new KompaktListener());
     return kompakteabbuchung;
   }
+  
+  public CheckboxInput getSollbuchungenZusammenfassen()
+  {
+    if (sollbuchungenzusammenfassen != null)
+    {
+      return sollbuchungenzusammenfassen;
+    }
+    sollbuchungenzusammenfassen = new CheckboxInput(
+        settings.getBoolean("sollbuchungenzusammenfassen", false));
+    sollbuchungenzusammenfassen.addListener(new ZusammenfassenListener());
+    return sollbuchungenzusammenfassen;
+  }
 
+
+  public CheckboxInput getRechnung()
+  {
+    if (rechnung != null)
+    {
+      return rechnung;
+    }
+    rechnung = new CheckboxInput(
+        settings.getBoolean("rechnung", false));
+    rechnung.addListener(new RechnungListener());
+    return rechnung;
+  }
+  
+  public FormularInput getRechnungFormular() throws RemoteException
+  {
+    if (rechnungsformular != null)
+    {
+      return rechnungsformular;
+    }
+    rechnungsformular = new FormularInput(
+        FormularArt.RECHNUNG, settings.getString("rechnungsformular", ""));
+    rechnungsformular.setEnabled(settings.getBoolean("rechnung", false));
+    return rechnungsformular;
+  }
+
+  public TextInput getRechnungstext()
+  {
+    if (rechnungstext != null)
+    {
+      return rechnungstext;
+    }
+    rechnungstext = new TextInput(
+        settings.getString("rechnungstext", "RE$rechnung_nummer"));
+    rechnungstext.setEnabled(settings.getBoolean("rechnung", false));
+    return rechnungstext;
+  }
+  
   public CheckboxInput getSEPAPrint()
   {
     if (sepaprint != null)
@@ -249,6 +320,52 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     sepaprint = new CheckboxInput(settings.getBoolean("sepaprint", false));
     return sepaprint;
+  }
+
+  public CheckboxInput getSEPACheck()
+  {
+    if (sepacheck != null)
+    {
+      return sepacheck;
+    }
+    sepacheck = new CheckboxInput(false);
+    sepacheck.addListener(new Listener()
+    {
+      @Override
+      public void handleEvent(Event event)
+      {
+        // Bei temporär deaktivieren den User fragen
+        if ((Boolean) sepacheck.getValue())
+        {
+          if (!confirmDialog(CONFIRM_TITEL, CONFIRM_TEXT))
+          {
+            sepacheck.setValue(false);
+          }
+        }
+      }
+    });
+    return sepacheck;
+  }
+
+  public static boolean confirmDialog(String title, String text)
+  {
+    YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+    d.setTitle(title);
+    d.setText(text);
+    try
+    {
+      Boolean choice = (Boolean) d.open();
+      if (!choice.booleanValue())
+      {
+        return false;
+      }
+    }
+    catch (Exception e)
+    {
+      Logger.error(CONFIRM_FEHLER, e);
+      return false;
+    }
+    return true;
   }
 
   public SelectInput getAbbuchungsausgabe()
@@ -301,6 +418,15 @@ public class AbrechnungSEPAControl extends AbstractControl
         (Boolean) kursteilnehmer.getValue());
     settings.setAttribute("kompakteabbuchung",
         (Boolean) kompakteabbuchung.getValue());
+    settings.setAttribute("sollbuchungenzusammenfassen",
+        (Boolean) sollbuchungenzusammenfassen.getValue());
+    settings.setAttribute("rechnung",
+        (Boolean) rechnung.getValue());
+    settings.setAttribute("rechnungstext",
+        (String) rechnungstext.getValue());
+    settings.setAttribute("rechnungsformular",
+        rechnungsformular.getValue() == null ? null
+            : ((Formular) rechnungsformular.getValue()).getID());
     settings.setAttribute("sepaprint", (Boolean) sepaprint.getValue());
     Abrechnungsausgabe aa = (Abrechnungsausgabe) this.getAbbuchungsausgabe().getValue();
     settings.setAttribute("abrechnungsausgabe", aa.getKey());
@@ -408,6 +534,8 @@ public class AbrechnungSEPAControl extends AbstractControl
       }
       BackgroundTask t = new BackgroundTask()
       {
+        private boolean interrupt = false;
+
         @Override
         public void run(ProgressMonitor monitor) throws ApplicationException
         {
@@ -415,7 +543,7 @@ public class AbrechnungSEPAControl extends AbstractControl
           {
 
             DBTransaction.starten();            
-            new AbrechnungSEPA(abupar, monitor);
+            new AbrechnungSEPA(abupar, monitor, this);
             DBTransaction.commit();
 
             monitor.setPercentComplete(100);
@@ -456,16 +584,77 @@ public class AbrechnungSEPAControl extends AbstractControl
         @Override
         public void interrupt()
         {
-          //
+          interrupt = true;
         }
 
         @Override
         public boolean isInterrupted()
         {
-          return false;
+          return interrupt;
         }
       };
       Application.getController().start(t);
+    }
+  }
+
+  public class RechnungListener implements Listener
+  {
+
+    RechnungListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      rechnungsformular.setEnabled((boolean) rechnung.getValue());
+      rechnungstext.setEnabled((boolean) rechnung.getValue());
+    }
+  }
+
+  public class ZusammenfassenListener implements Listener
+  {
+
+    ZusammenfassenListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      if ((boolean) sollbuchungenzusammenfassen.getValue())
+      {
+        kompakteabbuchung.setValue(true);
+      }
+    }
+  }
+
+  public class KompaktListener implements Listener
+  {
+
+    KompaktListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      if (!(boolean) kompakteabbuchung.getValue())
+      {
+        sollbuchungenzusammenfassen.setValue(false);
+      }
     }
   }
 }

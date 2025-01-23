@@ -19,8 +19,8 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
@@ -193,7 +193,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
       {
         Object o = mitgliedskontolist.getSelection();
 
-        if (o instanceof Mitgliedskonto)
+        if (o instanceof Mitgliedskonto || o instanceof Mitgliedskonto[])
         {
           choosen = o;
           abort = false;

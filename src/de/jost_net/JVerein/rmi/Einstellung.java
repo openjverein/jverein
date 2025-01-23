@@ -18,6 +18,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.io.IBankverbindung;
@@ -627,4 +628,8 @@ public interface Einstellung extends DBObject, IBankverbindung
   public Boolean getMittelverwendung() throws RemoteException;
 
   public void setMittelverwendung(Boolean mittelverwendung) throws RemoteException;
+
+  public Long getVerrechnungskontoId() throws RemoteException;
+
+  public void setVerrechnungskontoId(Long konto) throws RemoteException;
 }
