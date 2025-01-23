@@ -251,7 +251,10 @@ public class SpendenbescheinigungPrintAction implements Action
           map = new AllgemeineMap().getMap(map);
           if(spb.getMitglied() != null)
             map = new MitgliedMap().getMap(spb.getMitglied(), map);
-          FormularAufbereitung fa = new FormularAufbereitung(file, false);
+          boolean encrypt = Einstellungen.getEinstellung()
+              .getUnterschriftdrucken();
+          FormularAufbereitung fa = new FormularAufbereitung(file, false,
+              encrypt);
           fa.writeForm(fo, map);
           if (adressblatt != Adressblatt.OHNE_ADRESSBLATT)
           {

@@ -16,31 +16,22 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
-public enum Kontoart
+public enum Anlagenzweck
 {
-  // LIMIT ist keine Kontoart sondern dient zur Abgrenzung.
-  // Ids unter dem Limit werden regulär im Buchungsklassensaldo und Kontensaldo
-  // berücksichtigt.
-  // Ids über dem Limit werden in beiden Salden ignoriert.
-  GELD(1, "Geldkonto"),
-  ANLAGE(2, "Anlagenkonto"),
-  VERBINDLICHKEITEN(3, "Verbindlichkeitskonto"),
-  LIMIT(100, "-- Limit --"),
-  RUECKLAGE_ZWECK_GEBUNDEN(101, "Zweckgebundene Rücklage nach § 62 Abs. 1 Nr. 1 AO"),
-  RUECKLAGE_BETRIEBSMITTEL(102, "Betriebsmittelrücklage nach § 62 Abs. 1 Nr. 1 AO"),
-  RUECKLAGE_INVESTITION(103, "Investitionsrücklage nach § 62 Abs. 1 Nr. 1 AO"),
-  RUECKLAGE_INSTANDHALTUNG(104, "Instandhaltungsrücklage nach § 62 Abs. 1 Nr. 1 AO"),
-  RUECKLAGE_WIEDERBESCHAFFUNG(105, "Wiederbeschaffungsrücklage nach § 62 Abs. 1 Nr. 2 AO"),
-  RUECKLAGE_FREI(106, "Freie Rücklage nach § 62 Abs. 1 Nr. 3 AO"),
-  RUECKLAGE_ERWERB(107, "Rücklage für Gesellschaftsrechte nach § 62 Abs. 1 Nr. 4 AO"),
-  VERMOEGEN(108, "Vermögen nach § 62 Abs. 3 und 4 AO"),
-  RUECKLAGE_SONSTIG(109, "Sonstige Rücklage");
+  // Verwendungszweck der Anlage
+
+  NUTZUNGSGEBUNDEN(1, "Nutzungsgebundene Anlage"), // Anlage im ideellen
+                                                  // Bereich oder Zweckbetrieb
+  ZWECKFREMD_EINGESETZT(2, "Zweckfremde Anlage"); // Anlage in der
+                                                  // Vermögensverwaltung oder im
+                                                  // wirtschaftlichen
+                                                  // Geschäftsbetrieb
 
   private final String text;
 
   private final int key;
   
-  Kontoart(int key, String text)
+  Anlagenzweck(int key, String text)
   {
     this.key = key;
     this.text = text;
@@ -56,9 +47,9 @@ public enum Kontoart
     return text;
   }
 
-  public static Kontoart getByKey(int key)
+  public static Anlagenzweck getByKey(int key)
   {
-    for (Kontoart art : Kontoart.values())
+    for (Anlagenzweck art : Anlagenzweck.values())
     {
       if (art.getKey() == key)
       {

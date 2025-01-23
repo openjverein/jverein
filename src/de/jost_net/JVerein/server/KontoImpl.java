@@ -23,6 +23,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.AfaMode;
+import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -530,5 +531,26 @@ public class KontoImpl extends AbstractDBObject implements Konto
     if ("buchungsart".equals(fieldName))
       return getBuchungsart();
     return super.getAttribute(fieldName);
+  }
+  
+  @Override
+  public Anlagenzweck getAnlagenzweck() throws RemoteException
+  {
+    Integer tmp = (Integer) super.getAttribute("zweck");
+    if (tmp == null)
+    {
+      return Anlagenzweck.NUTZUNGSGEBUNDEN;
+    }
+    else
+    {
+      return Anlagenzweck.getByKey((int) super.getAttribute("zweck"));
+    }
+  }
+
+  @Override
+  public void setAnlagenzweck(Anlagenzweck zweck)
+      throws RemoteException
+  {
+    setAttribute("zweck", zweck.getKey());
   }
 }

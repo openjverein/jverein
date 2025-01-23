@@ -325,7 +325,7 @@ public class FormularAnzeigeAction implements Action
       map.put(RechnungVar.SUMME_OFFEN.getName(), 700);
       map.put(RechnungVar.QRCODE_INTRO.getName(),
           Einstellungen.getEinstellung().getQRCodeIntro());
-      FormularAufbereitung fab = new FormularAufbereitung(file, false);
+      FormularAufbereitung fab = new FormularAufbereitung(file, false, false);
       fab.writeForm(formular, map);
       fab.showFormular();
     }
