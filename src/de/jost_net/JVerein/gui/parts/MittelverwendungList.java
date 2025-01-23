@@ -217,7 +217,7 @@ public class MittelverwendungList extends TablePart
     // Rückbuchung von zweckgebundenen Anlagen
     sql = getSummenUmbuchungSql() + " AND buchung.betrag < 0";
     zufuehrung -= (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, Kontoart.VERBINDLICHKEITEN.getKey(),
+        new Object[] { datumvon, datumbis, Kontoart.SCHULDEN.getKey(),
             Kontoart.ANLAGE.getKey(), Anlagenzweck.NUTZUNGSGEBUNDEN.getKey(),
             ArtBuchungsart.UMBUCHUNG },
         rsd);
@@ -246,7 +246,7 @@ public class MittelverwendungList extends TablePart
     // Erwerb zweckgebundener Anlagen
     sql = getSummenUmbuchungSql() + " AND buchung.betrag > 0";
     verwendung -= (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, Kontoart.VERBINDLICHKEITEN.getKey(),
+        new Object[] { datumvon, datumbis, Kontoart.SCHULDEN.getKey(),
             Kontoart.ANLAGE.getKey(), Anlagenzweck.NUTZUNGSGEBUNDEN.getKey(),
             ArtBuchungsart.UMBUCHUNG },
         rsd);
@@ -391,7 +391,7 @@ public class MittelverwendungList extends TablePart
     sql = "SELECT id, bezeichnung, kommentar FROM konto WHERE konto.kontoart = ?";
     @SuppressWarnings("unchecked")
     HashMap<Long, String[]> map2 = (HashMap<Long, String[]>) service.execute(
-        sql, new Object[] { Kontoart.VERBINDLICHKEITEN.getKey() }, rsmapa);
+        sql, new Object[] { Kontoart.SCHULDEN.getKey() }, rsmapa);
     for (Long kontoId : map2.keySet())
     {
       sql = getAnfangsbestandKontoSql();
