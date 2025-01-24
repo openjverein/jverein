@@ -20,6 +20,8 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import org.kapott.hbci.sepa.SepaVersion;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
@@ -34,7 +36,6 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import org.kapott.hbci.sepa.SepaVersion;
 
 public class AbrechnungSEPAParam
 {
@@ -67,6 +68,8 @@ public class AbrechnungSEPAParam
   public final Formular rechnungsformular;
   
   public final String rechnungstext;
+
+  public final Date rechnungsdatum;
 
   public final Boolean sepaprint;
 
@@ -104,6 +107,7 @@ public class AbrechnungSEPAParam
     rechnung = (Boolean) ac.getRechnung().getValue(); 
     rechnungsformular = (Formular) ac.getRechnungFormular().getValue(); 
     rechnungstext = (String) ac.getRechnungstext().getValue();
+    rechnungsdatum = (Date) ac.getRechnungsdatum().getValue();
     sepaprint = (Boolean) ac.getSEPAPrint().getValue();
     sepacheckdisable = (Boolean) ac.getSEPACheck().getValue();
     this.pdffileRCUR = pdffileRCUR;

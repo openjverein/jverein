@@ -16,14 +16,17 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.util.Date;
+
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.dialogs.FormularAuswahlDialog;
+import de.jost_net.JVerein.gui.dialogs.RechnungDialog;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -53,9 +56,14 @@ public class RechnungNeuAction implements Action
 
     try
     {
-      FormularAuswahlDialog dialog = new FormularAuswahlDialog();
-      Formular formular = dialog.open();
-      if (formular == null)
+      RechnungDialog dialog = new RechnungDialog();
+      if (!dialog.open())
+      {
+        return;
+      }
+      Formular formular = dialog.getFormular();
+      Date rechnungsdatum = dialog.getDatum();
+      if (formular == null || rechnungsdatum == null)
       {
         return;
       }
@@ -72,6 +80,7 @@ public class RechnungNeuAction implements Action
             .createObject(Rechnung.class, null);
 
         rechnung.setFormular(formular);
+        rechnung.setDatum(rechnungsdatum);
         rechnung.fill(mk);
         rechnung.store();
 
@@ -89,6 +98,10 @@ public class RechnungNeuAction implements Action
         GUI.getStatusBar().setSuccessText(erstellt + " Rechnung(en) erstellt"
             + (skip > 0 ? ", " + skip + " vorhandene übersprungen." : "."));
       }
+    }
+    catch (OperationCanceledException ignore)
+    {
+
     }
     catch (Exception e)
     {
