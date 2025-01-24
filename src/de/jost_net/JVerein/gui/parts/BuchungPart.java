@@ -78,8 +78,6 @@ public class BuchungPart implements Part
     if (!control.getBuchung().getSpeicherung())
       date.setEnabled(false);
     grKontoauszug.addLabelPair("Art", control.getArt());
-    grKontoauszug.addLabelPair("Sollbuchung", control.getMitgliedskonto());
-    grKontoauszug.addLabelPair("Kommentar", control.getKommentar());
 
     SimpleContainer grBuchungsinfos = new SimpleContainer(cols1.getComposite());
 
@@ -92,6 +90,8 @@ public class BuchungPart implements Part
     grBuchungsinfos.addLabelPair("Projekt", control.getProjekt());
     grBuchungsinfos.addLabelPair("Auszugsnummer", control.getAuszugsnummer());
     grBuchungsinfos.addLabelPair("Blattnummer", control.getBlattnummer());
+    grBuchungsinfos.addLabelPair("Sollbuchung", control.getMitgliedskonto());
+    grBuchungsinfos.addLabelPair("Kommentar", control.getKommentar());
 
     SimpleContainer grSpendeninfos = grBuchungsinfos;
     grSpendeninfos.addHeadline("Spendendetails");

@@ -216,7 +216,41 @@ public class BuchungsControl extends AbstractControl
     ALLE
   }
 
+  public enum SplitFilter
+  {
+    ALLE(0, "Alle"), SPLIT(1, "Nur Splitbuchungen"), HAUPT(2,
+        "Nur Hauptbuchungen");
+
+    private String text;
+
+    private int key;
+
+    SplitFilter(int k, String t)
+    {
+      text = t;
+      key = k;
+    }
+
+    public String getText()
+    {
+      return text;
+    }
+
+    public int getKey()
+    {
+      return key;
+    }
+
+    @Override
+    public String toString()
+    {
+      return getText();
+    }
+  }
+
   private Calendar calendar = Calendar.getInstance();
+
+  private SelectInput suchsplitbuchung;
   
   private enum RANGE
   {
@@ -751,6 +785,20 @@ public class BuchungsControl extends AbstractControl
     return suchprojekt;
   }
 
+  public SelectInput getSuchSplibuchung()
+  {
+    if (suchsplitbuchung != null)
+    {
+      return suchsplitbuchung;
+    }
+    int split = settings.getInt(settingsprefix + "split",
+        SplitFilter.ALLE.getKey());
+    suchsplitbuchung = new SelectInput(SplitFilter.values(), split);
+    suchsplitbuchung.addListener(new FilterListener());
+
+    return suchsplitbuchung;
+  }
+
   public SelectInput getSuchBuchungsart() throws RemoteException
   {
     if (suchbuchungsart != null)
@@ -1164,10 +1212,13 @@ public class BuchungsControl extends AbstractControl
     settings.setAttribute(settingsprefix + "suchtext", (String) getSuchtext().getValue());
     settings.setAttribute(settingsprefix + "suchbetrag", (String) getSuchBetrag().getValue());
     settings.setAttribute(settingsprefix + "mitglied", (String) getMitglied().getValue());
+    settings.setAttribute(settingsprefix + "split",
+        (int) ((SplitFilter) getSuchSplibuchung().getValue()).getKey());
 
     query = new BuchungQuery(dv, db, k, b, p, (String) getSuchtext().getValue(),
         (String) getSuchBetrag().getValue(), m.getValue(),
-        (String) getMitglied().getValue(), geldkonto);
+        (String) getMitglied().getValue(), geldkonto,
+        (SplitFilter) getSuchSplibuchung().getValue());
 
     if (buchungsList == null)
     {
@@ -1251,6 +1302,7 @@ public class BuchungsControl extends AbstractControl
           new MitgliedskontoFormatter(), false, Column.ALIGN_AUTO,
           Column.SORT_BY_DISPLAY));
       buchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
+      buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
       buchungsList.setMulti(true);
       buchungsList.setContextMenu(new BuchungMenu(this));
       buchungsList.setRememberColWidths(true);
@@ -1712,13 +1764,6 @@ public class BuchungsControl extends AbstractControl
     this.changeKontoListener.add(listener);
   }
 
-  public String getTitleBuchungsView() throws RemoteException
-  {
-    if (getBuchung().getSpeicherung())
-      return "Buchung";
-    return "Splitbuchung";
-  }
-
   public boolean isBuchungAbgeschlossen() throws ApplicationException
   {
     try
@@ -2106,6 +2151,7 @@ public class BuchungsControl extends AbstractControl
       suchbuchungsart.setValue(null);
       suchprojekt.setValue(null);
       suchbetrag.setValue("");
+      suchsplitbuchung.setValue(SplitFilter.ALLE);
       hasmitglied.setValue(hasmitglied.getList().get(2));
       Calendar calendar = Calendar.getInstance();
       Integer year = calendar.get(Calendar.YEAR);
