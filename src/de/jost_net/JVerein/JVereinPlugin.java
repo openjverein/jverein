@@ -25,6 +25,7 @@ import de.jost_net.JVerein.server.JVereinDBServiceImpl;
 import de.jost_net.JVerein.util.HelpConsumer;
 import de.jost_net.JVerein.util.MemoryAnalyzer;
 import de.willuhn.jameica.gui.extension.ExtensionRegistry;
+import de.willuhn.jameica.messaging.BootMessage;
 import de.willuhn.jameica.messaging.LookupService;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.plugin.AbstractPlugin;
@@ -150,6 +151,15 @@ public class JVereinPlugin extends AbstractPlugin
         service.update(oldVersion, getManifest().getVersion());
       }
     });
+    BootMessage msg = new BootMessage("Neue JVerein Version");
+    msg.setTitle(
+        "Es wurde eine neue JVerein Version installiert."
+            + " Alle Änderungen sind über fogende Seite zu finden:");
+    msg.setIcon("gtk-info.png");
+    msg.setComment("Änderungen.....");
+    msg.setUrl("https://openjverein.gitbook.io/doku/versionen/v2.9.0/notes");
+    Application.getMessagingFactory().getMessagingQueue("jameica.boot")
+        .queueMessage(msg);
   }
 
   /**
