@@ -154,7 +154,7 @@ public class JVereinPlugin extends AbstractPlugin
     BootMessage msg = new BootMessage("Neue JVerein Version");
     msg.setTitle(
         "Es wurde eine neue JVerein Version installiert."
-            + " Alle Änderungen sind über fogende Seite zu finden:");
+            + " Alle Änderungen sind auf folgender Seite zu finden:");
     msg.setIcon("gtk-info.png");
     msg.setComment("Änderungen.....");
     msg.setUrl("https://openjverein.gitbook.io/doku/versionen/v2.9.0/notes");
