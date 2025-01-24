@@ -39,4 +39,9 @@ public interface Jahresabschluss extends DBObject
 
   public String getName() throws RemoteException;
 
+  public void setVerwendungsrueckstand(Double rueckstand)
+      throws RemoteException;
+
+  public Double getVerwendungsrueckstand() throws RemoteException;
+
 }

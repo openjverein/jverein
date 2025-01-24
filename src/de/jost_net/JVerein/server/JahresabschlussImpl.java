@@ -188,4 +188,17 @@ public class JahresabschlussImpl extends AbstractDBObject
     }
     return super.getAttribute(fieldName);
   }
+
+  @Override
+  public Double getVerwendungsrueckstand() throws RemoteException
+  {
+    return (Double) getAttribute("verwendungsrueckstand");
+  }
+
+  @Override
+  public void setVerwendungsrueckstand(Double rueckstand) throws RemoteException
+  {
+    setAttribute("verwendungsrueckstand", rueckstand);
+  }
+
 }
