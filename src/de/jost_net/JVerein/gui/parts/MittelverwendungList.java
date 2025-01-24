@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -50,6 +51,12 @@ public class MittelverwendungList extends TablePart
 
   private Date datumbis = null;
 
+  private int aktuellesGJ;
+
+  private int letztesGJ;
+
+  private int vorletztesGJ;
+
   private int tab = 0;
 
   private static double LIMIT = 0.005;
@@ -63,6 +70,11 @@ public class MittelverwendungList extends TablePart
     this.datumvon = datumvon;
     this.datumbis = datumbis;
     this.tab = tab;
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(datumvon);
+    aktuellesGJ = cal.get(Calendar.YEAR);
+    letztesGJ = aktuellesGJ - 1;
+    vorletztesGJ = aktuellesGJ - 2;
   }
 
   public Part getSaldoList() throws ApplicationException
@@ -201,7 +213,8 @@ public class MittelverwendungList extends TablePart
             Kontoart.RUECKLAGE_SONSTIG.getKey() },
         rsd);
 
-    bezeichnung = "Verwendungsrückstand(+)/-überhang(-) am Ende des letzten GJ";
+    bezeichnung = "Verwendungsrückstand(+)/-überhang(-) am Ende des letzten GJ "
+        + letztesGJ;
     addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
         vorhandeneMittel, null, NULL);
 
@@ -284,7 +297,8 @@ public class MittelverwendungList extends TablePart
       }
     }
 
-    bezeichnung = "          Verwendungsrückstand(+)/-überhang(-) zum Ende des GJ";
+    bezeichnung = "          Verwendungsrückstand(+)/-überhang(-) zum Ende des GJ "
+        + aktuellesGJ;
     addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
         zufuehrung + vorhandeneMittel + verwendung - summeZuRuecklagen,
         -summeEntRuecklagen, NULL);
