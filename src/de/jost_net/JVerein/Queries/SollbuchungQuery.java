@@ -322,13 +322,13 @@ public class SollbuchungQuery
 
     if (DIFFERENZ.FEHLBETRAG == diff)
     {
-      sql.append(" (HAVING SUM(buchung.betrag) < mitgliedskonto.betrag OR "
-          + "(SUM(buchung.betrag) IS NULL AND mitgliedskonto.betrag > 0))");
+      sql.append(" HAVING SUM(buchung.betrag) < mitgliedskonto.betrag OR "
+          + "(SUM(buchung.betrag) IS NULL AND mitgliedskonto.betrag > 0)");
     }
     if (DIFFERENZ.UEBERZAHLUNG == diff)
     {
-      sql.append(" (HAVING SUM(buchung.betrag) > mitgliedskonto.betrag OR"
-          + "(SUM(buchung.betrag) IS NULL AND mitgliedskonto.betrag < 0))");
+      sql.append(" HAVING SUM(buchung.betrag) > mitgliedskonto.betrag OR"
+          + "(SUM(buchung.betrag) IS NULL AND mitgliedskonto.betrag < 0)");
     }
 
     List<Long> ids = (List<Long>) service.execute(sql.toString(), param.toArray(),
