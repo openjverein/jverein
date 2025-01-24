@@ -19,6 +19,7 @@ package de.jost_net.JVerein;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.navigation.MyExtension;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.UmsatzMessageConsumer;
 import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.server.JVereinDBServiceImpl;
@@ -157,7 +158,7 @@ public class JVereinPlugin extends AbstractPlugin
             + " Alle Änderungen sind auf folgender Seite zu finden:");
     msg.setIcon("gtk-info.png");
     msg.setComment("Änderungen.....");
-    msg.setUrl("https://openjverein.gitbook.io/doku/versionen/v2.9.0/notes");
+    msg.setUrl(DokumentationUtil.CHANGELOG);
     Application.getMessagingFactory().getMessagingQueue("jameica.boot")
         .queueMessage(msg);
   }

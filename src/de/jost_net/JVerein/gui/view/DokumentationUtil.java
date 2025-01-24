@@ -223,4 +223,7 @@ public class DokumentationUtil
   public static final String MITGRATION = PRE + FUNKTIONEN + ADMIN + ADMERWEITERT + "migration";
   
   public static final String QIFIMPORT = PRE + FUNKTIONEN + ADMIN + ADMERWEITERT + "qif-import";
+
+  // Changelog bei Update
+  public static final String CHANGELOG = PRE + FUNKTIONEN + "notes";
 }
