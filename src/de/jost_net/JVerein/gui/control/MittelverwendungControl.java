@@ -111,40 +111,23 @@ public class MittelverwendungControl extends SaldoControl
 
   public Part getSaldoList(int tab) throws ApplicationException
   {
-    try
+    if (getDatumvon().getDate() != null)
     {
-      if (getDatumvon().getDate() != null)
-      {
-        settings.setAttribute("von",
-            new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
-        settings.setAttribute("bis",
-            new JVDateFormatTTMMJJJJ().format(getDatumbis().getDate()));
-      }
-
-      if (saldoList[tab] == null)
-      {
-        saldoList[tab] = new MittelverwendungList(null, datumvon.getDate(),
-            datumbis.getDate(), tab);
-      }
-      else
-      {
-        settings.setAttribute("von",
-            new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
-
-        saldoList[tab].setDatumvon(datumvon.getDate());
-        saldoList[tab].setDatumbis(datumbis.getDate());
-        ArrayList<MittelverwendungZeile> zeile = saldoList[tab].getInfo();
-        saldoList[tab].removeAll();
-        for (MittelverwendungZeile sz : zeile)
-        {
-          saldoList[tab].addItem(sz);
-        }
-      }
+      settings.setAttribute("von",
+          new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
+      settings.setAttribute("bis",
+          new JVDateFormatTTMMJJJJ().format(getDatumbis().getDate()));
     }
-    catch (RemoteException e)
+
+    if (saldoList[tab] == null)
     {
-      throw new ApplicationException(
-          String.format("Fehler aufgetreten %s", e.getMessage()));
+      saldoList[tab] = new MittelverwendungList(null, datumvon.getDate(),
+          datumbis.getDate(), tab);
+    }
+    else
+    {
+      saldoList[tab].setDatumvon(datumvon.getDate());
+      saldoList[tab].setDatumbis(datumbis.getDate());
     }
     return saldoList[tab].getSaldoList();
   }

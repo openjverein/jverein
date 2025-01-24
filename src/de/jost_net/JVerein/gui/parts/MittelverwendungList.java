@@ -104,6 +104,7 @@ public class MittelverwendungList extends TablePart
             Column.ALIGN_LEFT);
         saldoList.addColumn("Kommentar", "kommentar");
         saldoList.setRememberColWidths(true);
+        saldoList.setRememberOrder(true);
         saldoList.removeFeature(FeatureSummary.class);
       }
       else
