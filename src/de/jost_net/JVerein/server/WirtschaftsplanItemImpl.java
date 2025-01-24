@@ -70,7 +70,7 @@ public class WirtschaftsplanItemImpl extends AbstractDBObject
   }
 
   @Override
-  public void setWirtschaftsplanId(Long wirtschaftsplanId)
+  public void setWirtschaftsplanId(String wirtschaftsplanId)
       throws RemoteException
   {
     setAttribute("wirtschaftsplan", wirtschaftsplanId);

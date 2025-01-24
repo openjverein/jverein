@@ -37,7 +37,7 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     SimpleContainer einnahmen = new SimpleContainer(columns.getComposite());
 
-    DateInput von = new DateInput(control.getWirtschaftsplanungZeile().getVon(), new JVDateFormatTTMMJJJJ());
+    DateInput von = new DateInput(control.getWirtschaftsplanungZeile().getWirtschaftsplan().getDatumVon(), new JVDateFormatTTMMJJJJ());
     von.disable();
     einnahmen.addLabelPair("Von", von);
     sollEinnahme = new DecimalInput(control.getWirtschaftsplanungZeile().getPlanEinnahme(), Einstellungen.DECIMALFORMAT);
@@ -49,7 +49,7 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     SimpleContainer ausgaben = new SimpleContainer(columns.getComposite());
 
-    DateInput bis = new DateInput(control.getWirtschaftsplanungZeile().getBis(), new JVDateFormatTTMMJJJJ());
+    DateInput bis = new DateInput(control.getWirtschaftsplanungZeile().getWirtschaftsplan().getDatumBis(), new JVDateFormatTTMMJJJJ());
     bis.disable();
     ausgaben.addLabelPair("Bis", bis);
     sollAusgaben = new DecimalInput(control.getWirtschaftsplanungZeile().getPlanAusgabe(), Einstellungen.DECIMALFORMAT);

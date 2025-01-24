@@ -9,6 +9,7 @@ import de.jost_net.JVerein.gui.menu.WirtschaftsplanungMenu;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
@@ -34,9 +35,9 @@ public class WirtschaftsplanungView extends AbstractView
     }
 
     GUI.getView().setTitle("Wirtschaftsplanung vom " +
-            new JVDateFormatTTMMJJJJ().format(((WirtschaftsplanungZeile) this.getCurrentObject()).getVon()) +
+            new JVDateFormatTTMMJJJJ().format(((WirtschaftsplanungZeile) this.getCurrentObject()).getWirtschaftsplan().getDatumVon()) +
             " bis " +
-            new JVDateFormatTTMMJJJJ().format(((WirtschaftsplanungZeile) this.getCurrentObject()).getBis()));
+            new JVDateFormatTTMMJJJJ().format(((WirtschaftsplanungZeile) this.getCurrentObject()).getWirtschaftsplan().getDatumBis()));
 
     final WirtschaftsplanungControl control = new WirtschaftsplanungControl(this);
 
@@ -95,7 +96,7 @@ public class WirtschaftsplanungView extends AbstractView
             DokumentationUtil.WIRTSCHAFTSPLANUNG, false, "question-circle.png");
     buttons.addButton("CSV", null, null, false, "xsd.png");
     buttons.addButton("PDF", null, null, false, "file-pdf.png");
-    buttons.addButton("Speichern", null, null, false, "document-save.png");
+    buttons.addButton("Speichern", context -> control.handleStore(), null, false, "document-save.png");
     buttons.paint(this.getParent());
   }
 

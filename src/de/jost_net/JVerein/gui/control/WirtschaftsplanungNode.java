@@ -22,7 +22,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
 {
 
 
-  public enum Type {BUCHUNGSKLASSE, BUCHUNGSART, POSTEN, UNBEKANNT;}
+  public enum Type {BUCHUNGSKLASSE, BUCHUNGSART, POSTEN, UNBEKANNT}
   Type type;
 
   private Buchungsklasse buchungsklasse;
@@ -101,7 +101,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
 
     }
 
-    service.execute(sql, new Object[] { zeile.getVon(), zeile.getBis(), art, buchungsklasse.getID() },
+    service.execute(sql, new Object[] { zeile.getWirtschaftsplan().getDatumVon(), zeile.getWirtschaftsplan().getDatumBis(), art, buchungsklasse.getID() },
         resultSet -> {
           while (resultSet.next())
           {
@@ -332,5 +332,15 @@ public class WirtschaftsplanungNode implements GenericObjectNode
 
   public void setWirtschaftsplanItem(WirtschaftsplanItem wirtschaftsplanItem) {
     this.wirtschaftsplanItem = wirtschaftsplanItem;
+  }
+
+  public boolean hasLeaf()
+  {
+    if (type == Type.POSTEN)
+    {
+      return true;
+    }
+
+    return children.stream().anyMatch(WirtschaftsplanungNode::hasLeaf);
   }
 }

@@ -7,6 +7,7 @@ import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
@@ -14,11 +15,13 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.TreePart;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 import java.rmi.RemoteException;
@@ -44,7 +47,8 @@ public class WirtschaftsplanungControl extends AbstractControl
   public WirtschaftsplanungControl(AbstractView view)
   {
     super(view);
-    de.willuhn.jameica.system.Settings settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    de.willuhn.jameica.system.Settings settings = new de.willuhn.jameica.system.Settings(
+        this.getClass());
     settings.setStoreWhenRead(true);
   }
 
@@ -52,7 +56,7 @@ public class WirtschaftsplanungControl extends AbstractControl
   {
     DBService service = Einstellungen.getDBService();
 
-    String sql = "SELECT wirtschaftsplan.id, wirtschaftsplan.datum_von, wirtschaftsplan.datum_bis, SUM(wirtschaftsplanitem.soll) " + "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart " + "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " + "AND wirtschaftsplanitem.buchungsart = buchungsart.id " + "AND buchungsart.art = ? " + "GROUP BY wirtschaftsplan.id, wirtschaftsplan.datum_von, wirtschaftsplan.datum_bis";
+    String sql = "SELECT wirtschaftsplan.id, SUM(wirtschaftsplanitem.soll) " + "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart " + "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " + "AND wirtschaftsplanitem.buchungsart = buchungsart.id " + "AND buchungsart.art = ? " + "GROUP BY wirtschaftsplan.id";
 
     Map<Long, WirtschaftsplanungZeile> zeileMap = new HashMap<>();
 
@@ -62,13 +66,14 @@ public class WirtschaftsplanungControl extends AbstractControl
         if (zeileMap.containsKey(resultSet.getLong(1)))
         {
           zeileMap.get(resultSet.getLong(1))
-              .setPlanEinnahme(resultSet.getDouble(4));
+              .setPlanEinnahme(resultSet.getDouble(2));
         }
         else
         {
           WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
-              resultSet.getString(1), resultSet.getDate(2), resultSet.getDate(3));
-          zeile.setPlanEinnahme(resultSet.getDouble(4));
+              service.createObject(Wirtschaftsplan.class,
+                  resultSet.getString(1)));
+          zeile.setPlanEinnahme(resultSet.getDouble(2));
           zeileMap.put(resultSet.getLong(1), zeile);
         }
       }
@@ -81,29 +86,21 @@ public class WirtschaftsplanungControl extends AbstractControl
         if (zeileMap.containsKey(resultSet.getLong(1)))
         {
           zeileMap.get(resultSet.getLong(1))
-              .setPlanAusgabe(resultSet.getDouble(4));
+              .setPlanAusgabe(resultSet.getDouble(2));
         }
         else
         {
           WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
-              resultSet.getString(1), resultSet.getDate(2), resultSet.getDate(3));
-          zeile.setPlanAusgabe(resultSet.getDouble(4));
+              service.createObject(Wirtschaftsplan.class,
+                  resultSet.getString(1)));
+          zeile.setPlanAusgabe(resultSet.getDouble(2));
           zeileMap.put(resultSet.getLong(1), zeile);
         }
       }
       return resultSet;
     });
 
-    sql = "SELECT wirtschaftsplan.id, SUM(buchung.betrag) AS ist " +
-        "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart, buchung, konto " +
-        "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " +
-        "AND buchung.buchungsart = buchungsart.id " +
-        "AND buchung.konto = konto.id " +
-        "AND buchung.datum >= wirtschaftsplan.datum_von " +
-        "AND buchung.datum <= wirtschaftsplan.datum_bis " +
-        "AND buchungsart.art = ? " +
-        "AND konto.kontoart < ? " +
-        "GROUP BY wirtschaftsplan.id";
+    sql = "SELECT wirtschaftsplan.id, SUM(buchung.betrag) AS ist " + "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart, buchung, konto " + "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " + "AND buchung.buchungsart = buchungsart.id " + "AND buchung.konto = konto.id " + "AND buchung.datum >= wirtschaftsplan.datum_von " + "AND buchung.datum <= wirtschaftsplan.datum_bis " + "AND buchungsart.art = ? " + "AND konto.kontoart < ? " + "GROUP BY wirtschaftsplan.id";
 
     service.execute(sql, new Object[] { 0, Kontoart.LIMIT.getKey() },
         resultSet -> {
@@ -133,8 +130,8 @@ public class WirtschaftsplanungControl extends AbstractControl
           return resultSet;
         });
 
-    TablePart wirtschaftsplaene = new TablePart(new ArrayList<>(zeileMap.values()),
-            new OpenWirtschaftsplanungAction());
+    TablePart wirtschaftsplaene = new TablePart(
+        new ArrayList<>(zeileMap.values()), new OpenWirtschaftsplanungAction());
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
@@ -169,7 +166,8 @@ public class WirtschaftsplanungControl extends AbstractControl
     {
       einnahmen = generateTree(0);
     }
-    else {
+    else
+    {
       @SuppressWarnings("rawtypes") List items = einnahmen.getItems();
       einnahmen.removeAll();
       einnahmen.setList(items);
@@ -177,12 +175,14 @@ public class WirtschaftsplanungControl extends AbstractControl
     return einnahmen;
   }
 
-  public TreePart getAusgaben() throws RemoteException {
+  public TreePart getAusgaben() throws RemoteException
+  {
     if (ausgaben == null)
     {
       ausgaben = generateTree(1);
     }
-    else {
+    else
+    {
       @SuppressWarnings("rawtypes") List items = ausgaben.getItems();
       ausgaben.removeAll();
       ausgaben.setList(items);
@@ -190,8 +190,8 @@ public class WirtschaftsplanungControl extends AbstractControl
     return ausgaben;
   }
 
-
-  private TreePart generateTree(int art) throws RemoteException {
+  private TreePart generateTree(int art) throws RemoteException
+  {
     WirtschaftsplanungZeile zeile = getWirtschaftsplanungZeile();
 
     if (zeile == null)
@@ -202,16 +202,13 @@ public class WirtschaftsplanungControl extends AbstractControl
     Map<Long, WirtschaftsplanungNode> nodes = new HashMap<>();
 
     DBService service = Einstellungen.getDBService();
-    String sql = "SELECT wirtschaftsplanitem.buchungsklasse, sum(soll) " +
-            "FROM wirtschaftsplanitem, buchungsart " +
-            "WHERE wirtschaftsplan = ? AND wirtschaftsplanitem.buchungsart = buchungsart.id AND buchungsart.art = ? " +
-            "GROUP BY wirtschaftsplanitem.buchungsklasse";
+    String sql = "SELECT wirtschaftsplanitem.buchungsklasse, sum(soll) " + "FROM wirtschaftsplanitem, buchungsart " + "WHERE wirtschaftsplan = ? AND wirtschaftsplanitem.buchungsart = buchungsart.id AND buchungsart.art = ? " + "GROUP BY wirtschaftsplanitem.buchungsklasse";
 
     service.execute(sql, new Object[] { zeile.getID(), art }, resultSet -> {
       while (resultSet.next())
       {
         DBIterator<Buchungsklasse> iterator = service.createList(
-                Buchungsklasse.class);
+            Buchungsklasse.class);
         iterator.addFilter("id = ?", resultSet.getLong(1));
         if (!iterator.hasNext())
         {
@@ -221,7 +218,7 @@ public class WirtschaftsplanungControl extends AbstractControl
         Buchungsklasse buchungsklasse = iterator.next();
         double soll = resultSet.getDouble(2);
         nodes.put(resultSet.getLong(1),
-                new WirtschaftsplanungNode(buchungsklasse, art, zeile));
+            new WirtschaftsplanungNode(buchungsklasse, art, zeile));
         nodes.get(resultSet.getLong(1)).setSoll(soll);
       }
 
@@ -230,101 +227,101 @@ public class WirtschaftsplanungControl extends AbstractControl
 
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
-      sql = "SELECT buchung.buchungsklasse, sum(buchung.betrag) " +
-              "FROM buchung, buchungsart " +
-              "WHERE buchung.buchungsart = buchungsart.id " +
-              "AND buchung.datum >= ? AND buchung.datum <= ? " +
-              "AND buchungsart.art = ? " +
-              "GROUP BY buchung.buchungsklasse";
+      sql = "SELECT buchung.buchungsklasse, sum(buchung.betrag) " + "FROM buchung, buchungsart " + "WHERE buchung.buchungsart = buchungsart.id " + "AND buchung.datum >= ? AND buchung.datum <= ? " + "AND buchungsart.art = ? " + "GROUP BY buchung.buchungsklasse";
 
     }
     else
     {
-      sql = "SELECT buchungsart.buchungsklasse, sum(buchung.betrag) " +
-              "FROM buchung, buchungsart " +
-              "WHERE buchung.buchungsart = buchungsart.id " +
-              "AND buchung.datum >= ? AND buchung.datum <= ? " +
-              "AND buchungsart.art = ? " +
-              "GROUP BY buchungsart.buchungsklasse";
+      sql = "SELECT buchungsart.buchungsklasse, sum(buchung.betrag) " + "FROM buchung, buchungsart " + "WHERE buchung.buchungsart = buchungsart.id " + "AND buchung.datum >= ? AND buchung.datum <= ? " + "AND buchungsart.art = ? " + "GROUP BY buchungsart.buchungsklasse";
 
     }
-    service.execute(sql, new Object[] { zeile.getVon(), zeile.getBis(), art },
-            resultSet -> {
-              while (resultSet.next())
-              {
-                DBIterator<Buchungsklasse> iterator = service.createList(
-                        Buchungsklasse.class);
-                Long key = resultSet.getLong(1);
-                iterator.addFilter("id = ?", key);
-                if (!iterator.hasNext())
-                {
-                  continue;
-                }
+    service.execute(sql,
+        new Object[] { zeile.getWirtschaftsplan().getDatumVon(),
+            zeile.getWirtschaftsplan().getDatumBis(), art }, resultSet -> {
+          while (resultSet.next())
+          {
+            DBIterator<Buchungsklasse> iterator = service.createList(
+                Buchungsklasse.class);
+            Long key = resultSet.getLong(1);
+            iterator.addFilter("id = ?", key);
+            if (!iterator.hasNext())
+            {
+              continue;
+            }
 
-                Buchungsklasse buchungsklasse = iterator.next();
-                double ist = resultSet.getDouble(2);
+            Buchungsklasse buchungsklasse = iterator.next();
+            double ist = resultSet.getDouble(2);
 
-                if (nodes.containsKey(key))
-                {
-                  nodes.get(key).setIst(ist);
-                }
-                else if (ist != 0)
-                {
-                  nodes.put(key, new WirtschaftsplanungNode(buchungsklasse, art, zeile));
-                  nodes.get(key).setIst(ist);
-                }
-              }
+            if (nodes.containsKey(key))
+            {
+              nodes.get(key).setIst(ist);
+            }
+            else if (ist != 0)
+            {
+              nodes.put(key,
+                  new WirtschaftsplanungNode(buchungsklasse, art, zeile));
+              nodes.get(key).setIst(ist);
+            }
+          }
 
-              return nodes;
-            });
+          return nodes;
+        });
 
-    TreePart treePart = new TreePart(new ArrayList<>(nodes.values()), context -> {
-      if (! (context instanceof WirtschaftsplanungNode)) {
-        return;
-      }
+    TreePart treePart = new TreePart(new ArrayList<>(nodes.values()),
+        context -> {
+          if (!(context instanceof WirtschaftsplanungNode))
+          {
+            return;
+          }
 
-      WirtschaftsplanungNode node = (WirtschaftsplanungNode) context;
+          WirtschaftsplanungNode node = (WirtschaftsplanungNode) context;
 
-      if (node.getType() != WirtschaftsplanungNode.Type.POSTEN) {
-        return;
-      }
+          if (node.getType() != WirtschaftsplanungNode.Type.POSTEN)
+          {
+            return;
+          }
 
-      try {
-        WirtschaftsplanungPostenDialog dialog = new WirtschaftsplanungPostenDialog(node.getWirtschaftsplanItem());
-        WirtschaftsplanItem item = dialog.open();
-        node.setWirtschaftsplanItem(item);
-        node.setSoll(item.getSoll());
+          try
+          {
+            WirtschaftsplanungPostenDialog dialog = new WirtschaftsplanungPostenDialog(
+                node.getWirtschaftsplanItem());
+            WirtschaftsplanItem item = dialog.open();
+            node.setWirtschaftsplanItem(item);
+            node.setSoll(item.getSoll());
 
-        WirtschaftsplanungNode parent = (WirtschaftsplanungNode) node.getParent();
-        reloadSoll(parent, art);
-      }
-      catch (Exception e) {
-        throw new ApplicationException(e);
-      }
-    });
+            WirtschaftsplanungNode parent = (WirtschaftsplanungNode) node.getParent();
+            reloadSoll(parent, art);
+          }
+          catch (Exception e)
+          {
+            throw new ApplicationException(e);
+          }
+        });
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
-            Einstellungen.DECIMALFORMAT);
+        Einstellungen.DECIMALFORMAT);
     treePart.addColumn("Buchungsklasse", "buchungsklassebezeichnung");
-    treePart.addColumn("Buchungsart / Posten",
-            "buchungsartbezeichnung_posten");
+    treePart.addColumn("Buchungsart / Posten", "buchungsartbezeichnung_posten");
     treePart.addColumn("Soll", "soll", formatter);
     treePart.addColumn("Ist", "ist", formatter);
 
     return treePart;
   }
 
-  public void setUebersicht(WirtschaftsplanUebersichtPart uebersicht) {
+  public void setUebersicht(WirtschaftsplanUebersichtPart uebersicht)
+  {
     this.uebersicht = uebersicht;
   }
 
   public void reloadSoll(WirtschaftsplanungNode parent, int art)
       throws RemoteException, ApplicationException
   {
-    while (parent != null) {
+    while (parent != null)
+    {
       @SuppressWarnings("rawtypes") GenericIterator iterator = parent.getChildren();
       double soll = 0;
-      while (iterator.hasNext()) {
+      while (iterator.hasNext())
+      {
         WirtschaftsplanungNode child = (WirtschaftsplanungNode) iterator.next();
         soll += child.getSoll();
       }
@@ -333,13 +330,103 @@ public class WirtschaftsplanungControl extends AbstractControl
       parent = (WirtschaftsplanungNode) parent.getParent();
     }
 
-    if (art == 0) {
+    if (art == 0)
+    {
       getEinnahmen();
     }
-    else {
+    else
+    {
       getAusgaben();
     }
 
     uebersicht.updateSoll();
+  }
+
+  public void handleStore()
+  {
+    try
+    {
+      @SuppressWarnings("unchecked") List<WirtschaftsplanungNode> rootNodesEinnahmen = (List<WirtschaftsplanungNode>) einnahmen.getItems();
+      @SuppressWarnings("unchecked") List<WirtschaftsplanungNode> rootNodesAusgaben = (List<WirtschaftsplanungNode>) ausgaben.getItems();
+
+      DBService service = Einstellungen.getDBService();
+      Wirtschaftsplan wirtschaftsplan = getWirtschaftsplanungZeile().getWirtschaftsplan();
+
+      if (wirtschaftsplan.isNewObject() && rootNodesEinnahmen.stream()
+          .noneMatch(
+              WirtschaftsplanungNode::hasLeaf) && rootNodesAusgaben.stream()
+          .noneMatch(WirtschaftsplanungNode::hasLeaf))
+      {
+        throw new ApplicationException(
+            "Neuer Wirtschaftsplan enthält keine Planung!");
+      }
+
+      wirtschaftsplan.store();
+
+      if (!wirtschaftsplan.isNewObject())
+      {
+        DBIterator<WirtschaftsplanItem> iterator = service.createList(
+            WirtschaftsplanItem.class);
+        iterator.addFilter("wirtschaftsplan = ?", wirtschaftsplan.getID());
+        while (iterator.hasNext())
+        {
+          iterator.next().delete();
+        }
+      }
+
+      for (WirtschaftsplanungNode rootNode : rootNodesEinnahmen)
+      {
+        iterateOverNodes(rootNode.getChildren(), wirtschaftsplan.getID());
+      }
+      for (WirtschaftsplanungNode rootNode : rootNodesAusgaben)
+      {
+        iterateOverNodes(rootNode.getChildren(), wirtschaftsplan.getID());
+      }
+
+      //Lösche Wirtschaftsplan falls keine Planung hinterlegt ist
+      DBIterator<WirtschaftsplanItem> iterator = service.createList(
+          WirtschaftsplanItem.class);
+      iterator.addFilter("wirtschaftsplan = ?", wirtschaftsplan.getID());
+      if (!iterator.hasNext())
+      {
+        wirtschaftsplan.delete();
+      }
+
+      GUI.getStatusBar().setSuccessText("Wirtschaftsplan gespeichert");
+    }
+    catch (ApplicationException e)
+    {
+      GUI.getStatusBar().setErrorText(e.getMessage());
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler beim Speichern des Wirtschaftsplans";
+      Logger.error(fehler, e);
+      GUI.getStatusBar().setErrorText(fehler);
+    }
+  }
+
+  @SuppressWarnings("rawtypes")
+  private void iterateOverNodes(GenericIterator iterator, String id)
+      throws RemoteException, ApplicationException
+  {
+    while (iterator.hasNext())
+    {
+      WirtschaftsplanungNode currentNode = (WirtschaftsplanungNode) iterator.next();
+      if (currentNode.getType().equals(WirtschaftsplanungNode.Type.POSTEN))
+      {
+        WirtschaftsplanItem item = currentNode.getWirtschaftsplanItem();
+        item.setWirtschaftsplanId(id);
+        WirtschaftsplanungNode parent = (WirtschaftsplanungNode) currentNode.getParent();
+        item.setBuchungsartId(parent.getBuchungsart().getID());
+        WirtschaftsplanungNode root = (WirtschaftsplanungNode) parent.getParent();
+        item.setBuchungsklasseId(root.getBuchungsklasse().getID());
+        item.store();
+      }
+      else
+      {
+        iterateOverNodes(currentNode.getChildren(), id);
+      }
+    }
   }
 }

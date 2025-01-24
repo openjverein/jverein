@@ -9,11 +9,7 @@ import java.util.Objects;
 
 public class WirtschaftsplanungZeile implements GenericObject
 {
-  private final String id;
-
-  private Date von;
-
-  private Date bis;
+  private Wirtschaftsplan wirtschaftsplan;
 
   private Double planEinnahme;
 
@@ -23,21 +19,8 @@ public class WirtschaftsplanungZeile implements GenericObject
 
   private Double istAusgabe;
 
-  public WirtschaftsplanungZeile(String id, Date von, Date bis)
-  {
-    this.id = id;
-    this.von = von;
-    this.bis = bis;
-    this.planEinnahme = 0.;
-    this.planAusgabe = 0.;
-    this.istAusgabe = 0.;
-    this.istEinnahme = 0.;
-  }
-
   public WirtschaftsplanungZeile(Wirtschaftsplan wirtschaftsplan) throws RemoteException {
-    this.id = wirtschaftsplan.getID();
-    this.von = wirtschaftsplan.getDatumVon();
-    this.bis = wirtschaftsplan.getDatumBis();
+    this.wirtschaftsplan = wirtschaftsplan;
     this.planEinnahme = 0.;
     this.planAusgabe = 0.;
     this.istAusgabe = 0.;
@@ -53,11 +36,11 @@ public class WirtschaftsplanungZeile implements GenericObject
     switch (s)
     {
       case "id":
-        return id;
+        return wirtschaftsplan.getID();
       case "datum_von":
-        return von;
+        return wirtschaftsplan.getDatumVon();
       case "datum_bis":
-        return bis;
+        return wirtschaftsplan.getDatumBis();
       case "planEinnahme":
         return planEinnahme;
       case "planAusgabe":
@@ -88,33 +71,13 @@ public class WirtschaftsplanungZeile implements GenericObject
   @Override
   public String getID() throws RemoteException
   {
-    return id;
+    return wirtschaftsplan.getID();
   }
 
   @Override
   public String getPrimaryAttribute() throws RemoteException
   {
     return "id";
-  }
-
-  public Date getVon()
-  {
-    return von;
-  }
-
-  public void setVon(Date von)
-  {
-    this.von = von;
-  }
-
-  public Date getBis()
-  {
-    return bis;
-  }
-
-  public void setBis(Date bis)
-  {
-    this.bis = bis;
   }
 
   public Double getPlanEinnahme()
@@ -135,6 +98,16 @@ public class WirtschaftsplanungZeile implements GenericObject
   public void setPlanAusgabe(Double planAusgabe)
   {
     this.planAusgabe = planAusgabe;
+  }
+
+  public void setWirtschaftsplan(Wirtschaftsplan wirtschaftsplan)
+  {
+    this.wirtschaftsplan = wirtschaftsplan;
+  }
+
+  public Wirtschaftsplan getWirtschaftsplan()
+  {
+    return wirtschaftsplan;
   }
 
   public Double getIstEinnahme()
@@ -162,11 +135,17 @@ public class WirtschaftsplanungZeile implements GenericObject
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     WirtschaftsplanungZeile that = (WirtschaftsplanungZeile) o;
-    return Objects.equals(id, that.id) && Objects.equals(von, that.von) && Objects.equals(bis, that.bis);
+    try
+    {
+      return wirtschaftsplan.equals(that.getWirtschaftsplan());
+    }
+    catch (RemoteException e) {
+      return false;
+    }
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, von, bis);
+    return Objects.hash(wirtschaftsplan);
   }
 }

@@ -23,7 +23,7 @@ public interface WirtschaftsplanItem extends DBObject
 
   Wirtschaftsplan getWirtschaftsplan() throws RemoteException;
 
-  void setWirtschaftsplanId(Long wirtschaftsplanId) throws RemoteException;
+  void setWirtschaftsplanId(String wirtschaftsplanId) throws RemoteException;
 
   Buchungsart getBuchungsart() throws RemoteException;
 

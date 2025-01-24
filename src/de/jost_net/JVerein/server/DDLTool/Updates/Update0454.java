@@ -37,7 +37,7 @@ public class Update0454 extends AbstractDDLUpdate
         new Column("wirtschaftsplanung", COLTYPE.BOOLEAN, 0, null, false, false)));
 
     Table wirtschaftsplan = new Table("wirtschaftsplan");
-    Column id = new Column("id", COLTYPE.BIGINT, 4, null, true, false);
+    Column id = new Column("id", COLTYPE.BIGINT, 4, null, false, true);
     wirtschaftsplan.add(id);
     wirtschaftsplan.setPrimaryKey(id);
     wirtschaftsplan.add(
@@ -48,7 +48,7 @@ public class Update0454 extends AbstractDDLUpdate
     execute(createTable(wirtschaftsplan));
 
     Table wirtschaftsplanItem = new Table("wirtschaftsplanitem");
-    Column itemId = new Column("id", COLTYPE.BIGINT, 4, null, true, false);
+    Column itemId = new Column("id", COLTYPE.BIGINT, 4, null, false, true);
     wirtschaftsplanItem.add(itemId);
     wirtschaftsplanItem.setPrimaryKey(itemId);
     Column wirtschaftsplanCol = new Column("wirtschaftsplan", COLTYPE.BIGINT, 4,
