@@ -34,6 +34,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -286,6 +287,8 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
           DBIterator<Buchung> buchungen = Einstellungen.getDBService().createList(Buchung.class);
           buchungen.addFilter("datum >= ?", dateFromInput);
           buchungen.addFilter("datum <= ?", dateUntilInput);
+          buchungen.addFilter("splittyp != ?", SplitbuchungTyp.HAUPT);
+          buchungen.addFilter("splittyp != ?", SplitbuchungTyp.GEGEN);
           buchungen.addFilter("mitgliedskonto is null");
           buchungen.setOrder("ORDER BY datum");
 
@@ -304,7 +307,10 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
                     uniqueNames.get(bookingPurpose), "Vorname und Nachname")
                 || assginMemberAccountToBooking(assignedBooking,
                     usedMemberAccount, dateFromInput, dateUntilInput, buchung,
-                    uniqueZweck.get(buchung.getZweck()), "Verwendungszweck"))
+                    uniqueNames.get(buchung.getName()), "Vorname und Nachname")
+                || assginMemberAccountToBooking(assignedBooking,
+                    usedMemberAccount, dateFromInput, dateUntilInput, buchung,
+                    uniqueZweck.get(bookingPurpose), "Verwendungszweck"))
             {
               continue;
             }

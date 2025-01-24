@@ -33,6 +33,13 @@ public interface Rechnung extends DBObject, IAdresse
 
   public void setFormular(Formular formular) throws RemoteException;
 
+  /**
+   * Füllt alle Daten aus der Sollbuchung in die Rechnung. Das Datum und das
+   * Formular müssen selbst hinzugefügt werden
+   * 
+   * @param mk
+   *          die Sollbuchung aus der eine Rechnung erstellt werden soll
+   */
   public void fill(Mitgliedskonto mk)
       throws RemoteException, ApplicationException;
 

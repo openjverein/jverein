@@ -632,4 +632,8 @@ public interface Einstellung extends DBObject, IBankverbindung
   public Long getVerrechnungskontoId() throws RemoteException;
 
   public void setVerrechnungskontoId(Long konto) throws RemoteException;
+
+  public boolean getSplitPositionZweck() throws RemoteException;
+
+  public void setSplitPositionZweck(boolean split) throws RemoteException;;
 }

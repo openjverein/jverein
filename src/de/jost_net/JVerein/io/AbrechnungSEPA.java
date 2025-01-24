@@ -108,47 +108,18 @@ public class AbrechnungSEPA
       BackgroundTask backgroundTask) throws Exception
   {
     interrupt = backgroundTask;
-    if (Einstellungen.getEinstellung().getName() == null
-        || Einstellungen.getEinstellung().getName().length() == 0
-        || Einstellungen.getEinstellung().getIban() == null
-        || Einstellungen.getEinstellung().getIban().length() == 0)
-    {
-      throw new ApplicationException(
-          "Name des Vereins oder Bankverbindung fehlt. Bitte unter Administration|Einstellungen erfassen.");
-    }
-
-    if (Einstellungen.getEinstellung().getGlaeubigerID() == null
-        || Einstellungen.getEinstellung().getGlaeubigerID().length() == 0)
-    {
-      throw new ApplicationException(
-          "Gläubiger-ID fehlt. Gfls. unter https://extranet.bundesbank.de/scp/ oder"
-              + " http://www.oenb.at/idakilz/cid?lang=de beantragen und unter"
-              + " Administration|Einstellungen|Allgemein eintragen.\n"
-              + "Zu Testzwecken kann DE98ZZZ09999999999 eingesetzt werden.");
-    }
 
     Abrechnungslauf abrl = getAbrechnungslauf(param);
-
-    Basislastschrift lastschrift = new Basislastschrift();
-    // Vorbereitung: Allgemeine Informationen einstellen
-    lastschrift.setBIC(Einstellungen.getEinstellung().getBic());
-    lastschrift
-        .setGlaeubigerID(Einstellungen.getEinstellung().getGlaeubigerID());
-    lastschrift.setIBAN(Einstellungen.getEinstellung().getIban());
-    lastschrift.setKomprimiert(param.kompakteabbuchung);
-    lastschrift
-        .setName(Zeichen.convert(Einstellungen.getEinstellung().getName()));
-    lastschrift.setMessageID(abrl.getID() + "-RCUR");
 
     Konto konto = getKonto();
     ArrayList<JVereinZahler> zahlerarray = new ArrayList<>();
 
-    // Mitglieder Abrechnen und zahlerMap füllen
+    // Mitglieder abrechnen und zahlerMap füllen
     abrechnenMitglieder(param, monitor);
 
     if (param.zusatzbetraege)
     {
-      // Zusatzbetraege Abrechnen und zahlerMap füllen
+      // Zusatzbetraege abrechnen und zahlerMap füllen
       abbuchenZusatzbetraege(param, abrl, monitor);
     }
 
@@ -293,6 +264,46 @@ public class AbrechnungSEPA
     if (zahlerarray.size() > 0)
     {
       monitor.setStatusText("Lastschriften erstellen");
+
+      if (Einstellungen.getEinstellung().getName() == null
+          || Einstellungen.getEinstellung().getName().length() == 0
+          || Einstellungen.getEinstellung().getIban() == null
+          || Einstellungen.getEinstellung().getIban().length() == 0
+          || Einstellungen.getEinstellung().getBic() == null
+          || Einstellungen.getEinstellung().getBic().length() == 0)
+      {
+        throw new ApplicationException(
+            "Name des Vereins oder Bankverbindung fehlt. Bitte unter "
+                + "Administration|Einstellungen|Allgemein erfassen.");
+      }
+
+      if (Einstellungen.getEinstellung().getGlaeubigerID() == null
+          || Einstellungen.getEinstellung().getGlaeubigerID().length() == 0)
+      {
+        throw new ApplicationException(
+            "Gläubiger-ID fehlt. Gfls. unter https://extranet.bundesbank.de/scp/ oder"
+                + " http://www.oenb.at/idakilz/cid?lang=de beantragen und unter"
+                + " Administration|Einstellungen|Allgemein eintragen.\n"
+                + "Zu Testzwecken kann DE98ZZZ09999999999 eingesetzt werden.");
+      }
+
+      if (param.faelligkeit.before(new Date()))
+      {
+        throw new ApplicationException(
+            "Fälligkeit muss bei Lastschriften in der Zukunft liegen");
+      }
+
+      Basislastschrift lastschrift = new Basislastschrift();
+      // Vorbereitung: Allgemeine Informationen einstellen
+      lastschrift.setBIC(Einstellungen.getEinstellung().getBic());
+      lastschrift
+          .setGlaeubigerID(Einstellungen.getEinstellung().getGlaeubigerID());
+      lastschrift.setIBAN(Einstellungen.getEinstellung().getIban());
+      lastschrift.setKomprimiert(param.kompakteabbuchung);
+      lastschrift
+          .setName(Zeichen.convert(Einstellungen.getEinstellung().getName()));
+      lastschrift.setMessageID(abrl.getID() + "-RCUR");
+
       count = 0;
       BigDecimal summelastschriften = BigDecimal.valueOf(0);
       for (JVereinZahler zahler : zahlerarray)
@@ -312,7 +323,6 @@ public class AbrechnungSEPA
             -summelastschriften.doubleValue());
       }
 
-      // Wenn keine Lastschriften vorhanden sind, wird kein File erzeugt.
       if (param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
       {
         writeSepaFile(param, lastschrift, zahlerarray);
@@ -1164,6 +1174,7 @@ public class AbrechnungSEPA
             .createObject(Rechnung.class, null);
 
         re.setFormular(form);
+        re.setDatum(param.rechnungsdatum);
         re.fill(mk);
         re.store();
         mk.setRechnung(re);

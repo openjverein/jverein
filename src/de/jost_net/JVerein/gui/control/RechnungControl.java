@@ -682,7 +682,14 @@ public class RechnungControl extends DruckMailControl
     buchungList.addColumn("Zweck", "zweck");
     buchungList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    buchungList.addColumn("Steuersatz", "steuersatz");
+    if (Einstellungen.getEinstellung().getOptiert())
+    {
+      buchungList.addColumn("Nettobetrag", "nettobetrag",
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      buchungList.addColumn("Steuersatz", "steuersatz");
+      buchungList.addColumn("Steuerbetrag", "steuerbetrag",
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    }
     buchungList.addColumn("Buchungsart", "buchungsart",
         new BuchungsartFormatter());
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())

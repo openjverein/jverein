@@ -30,9 +30,13 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
+import de.jost_net.JVerein.gui.action.SollbuchungPositionEditAction;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
+import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.gui.view.BuchungView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
@@ -247,6 +251,7 @@ public class MitgliedskontoControl extends DruckMailControl
       b = getMitgliedskonto().getBetrag();
     }
     betrag = new DecimalInput(b, Einstellungen.DECIMALFORMAT);
+    betrag.setEnabled(false);
     return betrag;
   }
 
@@ -371,7 +376,7 @@ public class MitgliedskontoControl extends DruckMailControl
                     .getDBService()
                     .createObject(Mitgliedskonto.class, mkn.getID());
                 GUI.startView(
-                    new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
+                    new SollbuchungDetailView(), mk);
               }
             }
             catch (RemoteException e)
@@ -515,7 +520,7 @@ public class MitgliedskontoControl extends DruckMailControl
     mitgliedskontoList2.sort();
   }
 
-  public Part getBuchungenList() throws RemoteException
+  public Part getBuchungenList(boolean hasRechnung) throws RemoteException
   {
     if (buchungList != null)
     {
@@ -523,9 +528,16 @@ public class MitgliedskontoControl extends DruckMailControl
     }
     DBIterator<SollbuchungPosition> sps = Einstellungen.getDBService()
         .createList(SollbuchungPosition.class);
-    sps.addFilter( "sollbuchung = ?", getMitgliedskonto().getID());
-    
-    buchungList = new TablePart(sps, null);
+    sps.addFilter("sollbuchung = ?", getMitgliedskonto().getID());
+
+    if (hasRechnung)
+    {
+      buchungList = new TablePart(sps, null);
+    }
+    else
+    {
+      buchungList = new TablePart(sps, new SollbuchungPositionEditAction());
+    }
     buchungList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     buchungList.addColumn("Zweck", "zweck");
@@ -539,18 +551,24 @@ public class MitgliedskontoControl extends DruckMailControl
       buchungList.addColumn("Steuerbetrag", "steuerbetrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     }
-    buchungList.addColumn("Buchungsart", "buchungsart");
+    buchungList.addColumn("Buchungsart", "buchungsart",
+        new BuchungsartFormatter());
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
-      buchungList.addColumn("Buchungsklasse", "buchungsklasse");
+      buchungList.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
     }
 
     buchungList.setRememberColWidths(true);
+    if (!hasRechnung)
+    {
+      buchungList.setContextMenu(new SollbuchungPositionMenu());
+    }
     buchungList.setRememberOrder(true);
     buchungList.addFeature(new FeatureSummary());
     return buchungList;
   }
-  
+
   private GenericIterator<Mitglied> getMitgliedIterator() throws RemoteException
   {
     DBIterator<Mitglied> mitglieder = Einstellungen.getDBService()

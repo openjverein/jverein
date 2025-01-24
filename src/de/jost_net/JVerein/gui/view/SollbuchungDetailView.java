@@ -16,9 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -29,21 +34,13 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 public class SollbuchungDetailView extends AbstractView
 {
 
-  private int typ;
-
-  public SollbuchungDetailView(int typ)
-  {
-    this.typ = typ;
-  }
-
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Buchung");
+    GUI.getView().setTitle("Sollbuchung");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
-    LabelGroup grBuchung = new LabelGroup(getParent(),
-        (typ == MitgliedskontoNode.SOLL ? "Soll" : "Ist") + "buchung");
+    LabelGroup grBuchung = new LabelGroup(getParent(), "Sollbuchung");
     grBuchung.addLabelPair("Mitglied", control.getMitglied());
     grBuchung.addLabelPair("Datum", control.getDatum());
     grBuchung.addLabelPair("Verwendungszweck", control.getZweck1());
@@ -51,15 +48,30 @@ public class SollbuchungDetailView extends AbstractView
     control.getBetrag().setMandatory(true);
     grBuchung.addLabelPair("Betrag", control.getBetrag());
 
-    LabelGroup cont = new LabelGroup(getParent(), "Sollbuchungspositionen", true);
-    cont.addPart(control.getBuchungenList());
+    boolean hasRechnung = control.hasRechnung();
     
+    LabelGroup cont = new LabelGroup(getParent(), "Sollbuchungspositionen", true);
+    
+    ButtonArea buttons1 = new ButtonArea();
+    Button neu = new Button("Neu", new SollbuchungPositionNeuAction(),
+        getCurrentObject(), false, "document-new.png");
+    neu.setEnabled(!hasRechnung);
+    buttons1.addButton(neu);
+
+    // Diese Zeilen werden gebraucht um die Buttons rechts zu plazieren
+    GridLayout layout = new GridLayout();
+    Composite comp = new Composite(cont.getComposite(), SWT.NONE);
+    comp.setLayout(layout);
+    comp.setLayoutData(new GridData(GridData.END));
+
+    buttons1.paint(cont.getComposite());
+    cont.addPart(control.getBuchungenList(hasRechnung));
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
     
-    boolean hasRechnung = control.hasRechnung();
     Button save = new Button("Speichern", new Action()
     {
 
