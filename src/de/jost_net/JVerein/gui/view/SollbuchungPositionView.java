@@ -16,51 +16,47 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.EinstellungControl;
+import de.jost_net.JVerein.gui.control.SollbuchungPositionControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.ScrolledContainer;
+import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class EinstellungenBuchfuehrungView extends AbstractView
+public class SollbuchungPositionView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen Buchführung");
+    GUI.getView().setTitle("Sollbuchungsposition");
 
-    final EinstellungControl control = new EinstellungControl(this);
+    final SollbuchungPositionControl control = new SollbuchungPositionControl(
+        this);
 
-    ScrolledContainer cont = new ScrolledContainer(getParent());
-
-    cont.addLabelPair("Beginn Geschäftsjahr (TT.MM.)",
-        control.getBeginnGeschaeftsjahr());
-    cont.addLabelPair("Intervall für aktive Konten (Jahre)",
-        control.getUnterdrueckungKonten());
-    cont.addLabelPair("Buchungsarten die seit x Monaten nicht benutzt werden unterdrücken",
-        control.getUnterdrueckungLaenge());
-    cont.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
-    cont.addInput(control.getAutoBuchunguebernahme());
-    cont.addInput(control.getAutomatischeBuchungskorrekturHibiscus());
-    cont.addInput(control.getUnterdrueckungOhneBuchung());
-    cont.addInput(control.getKontonummerInBuchungsliste());
-    cont.addInput(control.getOptiert());
-    cont.addInput(control.getFreieBuchungsklasse());
-    cont.addInput(control.getSplitPositionZweck());
+    LabelGroup group = new LabelGroup(getParent(), "Sollbuchungsposition");
+    group.addLabelPair("Datum", control.getDatum());
+    group.addLabelPair("Zweck", control.getZweck());
+    group.addLabelPair("Betrag", control.getBetrag());
+    group.addLabelPair("Buchungsart", control.getBuchungsart());
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    {
+      group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
+    }
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_BUCHFUEHRUNG, false, "question-circle.png");
+        DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
+        "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 
       @Override
       public void handleAction(Object context)
       {
-        control.handleStoreBuchfuehrung();
+        control.handleStore();
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());

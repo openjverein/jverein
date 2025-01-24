@@ -16,7 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -43,15 +49,30 @@ public class SollbuchungDetailView extends AbstractView
     control.getBetrag().setMandatory(true);
     grBuchung.addLabelPair("Betrag", control.getBetrag());
 
-    LabelGroup cont = new LabelGroup(getParent(), "Sollbuchungspositionen", true);
-    cont.addPart(control.getBuchungenList());
+    boolean hasRechnung = control.hasRechnung();
     
+    LabelGroup cont = new LabelGroup(getParent(), "Sollbuchungspositionen", true);
+    
+    ButtonArea buttons1 = new ButtonArea();
+    Button neu = new Button("Neu", new SollbuchungPositionNeuAction(),
+        getCurrentObject(), false, "document-new.png");
+    neu.setEnabled(!hasRechnung);
+    buttons1.addButton(neu);
+
+    // Diese Zeilen werden gebraucht um die Buttons rechts zu plazieren
+    GridLayout layout = new GridLayout();
+    Composite comp = new Composite(cont.getComposite(), SWT.NONE);
+    comp.setLayout(layout);
+    comp.setLayoutData(new GridData(GridData.END));
+
+    buttons1.paint(cont.getComposite());
+    cont.addPart(control.getBuchungenList(hasRechnung));
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
 
-    boolean hasRechnung = control.hasRechnung();
     Button save = new Button("Speichern", new Action()
     {
       @Override

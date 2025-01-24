@@ -17,6 +17,8 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.util.Date;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -24,26 +26,57 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class FormularAuswahlDialog extends AbstractDialog<Formular>
+public class RechnungDialog extends AbstractDialog<Boolean>
 {
 
-  private FormularInput formular;
+  private FormularInput formularInput;
 
-  private Formular data;
+  private DateInput datumInput;
 
-  public FormularAuswahlDialog()
+  private Formular formular;
+
+  private Date datum;
+
+  private LabelInput status = null;
+
+  private boolean fortfahren = false;
+
+  public RechnungDialog()
   {
     super(SWT.CENTER);
-    setTitle("Formular auswählen");
+    setTitle("Rechnung(en) erstellen");
   }
 
   @Override
-  protected Formular getData() throws Exception
+  protected Boolean getData() throws Exception
   {
-    return data;
+    return fortfahren;
+  }
+
+  private LabelInput getStatus()
+  {
+    if (status != null)
+    {
+      return status;
+    }
+    status = new LabelInput("");
+    return status;
+  }
+
+  public Formular getFormular()
+  {
+    return formular;
+  }
+
+  public Date getDatum()
+  {
+    return datum;
   }
 
   @Override
@@ -51,19 +84,32 @@ public class FormularAuswahlDialog extends AbstractDialog<Formular>
   {
     LabelGroup group = new LabelGroup(parent, "");
     group.addText(
-        "Bitte Formular, das für die\n"
-            + "Rechnung(en) verwendet werden soll, auswählen.",
+        "Bitte Rechnungsdatum und zu verwendendes Formular auswählen.",
         true);
-    formular = new FormularInput(FormularArt.RECHNUNG);
-    group.addLabelPair("Formular", formular);
+    group.addInput(getStatus());
+    formularInput = new FormularInput(FormularArt.RECHNUNG);
+    group.addLabelPair("Formular", formularInput);
+
+    datumInput = new DateInput(new Date());
+    group.addLabelPair("Datum", datumInput);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Rechnung(en) erstellen", context -> {
-      if (formular.getValue() == null)
+      if (formularInput.getValue() == null)
       {
+        status.setValue("Bitte Formular auswählen");
+        status.setColor(Color.ERROR);
         return;
       }
-      data = (Formular) formular.getValue();
+      if (datumInput.getValue() == null)
+      {
+        status.setValue("Bitte Datum auswählen");
+        status.setColor(Color.ERROR);
+        return;
+      }
+      formular = (Formular) formularInput.getValue();
+      datum = (Date) datumInput.getValue();
+      fortfahren = true;
       close();
     }, null, false, "ok.png");
     buttons.addButton("Abbrechen", context -> close(), null, false,

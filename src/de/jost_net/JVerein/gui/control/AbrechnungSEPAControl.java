@@ -105,6 +105,8 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   private TextInput rechnungstext;
 
+  private DateInput rechnungsdatum;
+
   public AbrechnungSEPAControl(AbstractView view)
   {
     super(view);
@@ -128,7 +130,9 @@ public class AbrechnungSEPAControl extends AbstractControl
     {
       return modus;
     }
-    modus = new AbbuchungsmodusInput(Abrechnungsmodi.KEINBEITRAG);
+    Integer mod = settings.getInt("modus", Abrechnungsmodi.KEINBEITRAG);
+
+    modus = new AbbuchungsmodusInput(mod);
     modus.addListener(new Listener()
     {
       @Override
@@ -184,9 +188,20 @@ public class AbrechnungSEPAControl extends AbstractControl
         1 + Einstellungen.getEinstellung().getSEPADatumOffset());
     this.faelligkeit = new DateInput(cal.getTime(),
         new JVDateFormatTTMMJJJJ());
-    this.faelligkeit.setTitle("Fälligkeit SEPA-Lastschrift");
+    this.faelligkeit.setTitle("Fälligkeit");
     this.faelligkeit.setText(
-        "Bitte Fälligkeitsdatum der SEPA-Lastschrift wählen");
+        "Bitte Fälligkeitsdatum wählen");
+    faelligkeit.addListener(event -> {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      if (faelligkeit.getValue() != null && getStichtag() != null
+          && getStichtag().getValue() == null)
+      {
+        getStichtag().setValue(faelligkeit.getValue());
+      }
+    });
     return faelligkeit;
   }
 
@@ -312,6 +327,17 @@ public class AbrechnungSEPAControl extends AbstractControl
     return rechnungstext;
   }
   
+  public DateInput getRechnungsdatum()
+  {
+    if (rechnungsdatum != null)
+    {
+      return rechnungsdatum;
+    }
+    rechnungsdatum = new DateInput(new Date());
+    rechnungsdatum.setEnabled(settings.getBoolean("rechnung", false));
+    return rechnungsdatum;
+  }
+
   public CheckboxInput getSEPAPrint()
   {
     if (sepaprint != null)
@@ -412,10 +438,19 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   private void doAbrechnung() throws ApplicationException, RemoteException
   {
+    settings.setAttribute("modus",
+        (Integer) modus.getValue());
     settings.setAttribute("zahlungsgrund", (String) zahlungsgrund.getValue());
-    settings.setAttribute("zusatzbetraege", (Boolean) zusatzbetrag.getValue());
-    settings.setAttribute("kursteilnehmer",
-        (Boolean) kursteilnehmer.getValue());
+    if (zusatzbetrag != null)
+    {
+      settings.setAttribute("zusatzbetraege",
+          (Boolean) zusatzbetrag.getValue());
+    }
+    if (kursteilnehmer != null)
+    {
+      settings.setAttribute("kursteilnehmer",
+          (Boolean) kursteilnehmer.getValue());
+    }
     settings.setAttribute("kompakteabbuchung",
         (Boolean) kompakteabbuchung.getValue());
     settings.setAttribute("sollbuchungenzusammenfassen",
@@ -443,12 +478,6 @@ public class AbrechnungSEPAControl extends AbstractControl
     if (faelligkeit.getValue() == null)
     {
       throw new ApplicationException("Fälligkeitsdatum fehlt");
-    }
-    Date f = (Date) faelligkeit.getValue();
-    if (f.before(new Date()))
-    {
-      throw new ApplicationException(
-          "Fälligkeit muss in der Zukunft liegen");
     }
     Date vondatum = null;
     if (stichtag.getValue() == null)
@@ -613,6 +642,7 @@ public class AbrechnungSEPAControl extends AbstractControl
       }
       rechnungsformular.setEnabled((boolean) rechnung.getValue());
       rechnungstext.setEnabled((boolean) rechnung.getValue());
+      rechnungsdatum.setEnabled((boolean) rechnung.getValue());
     }
   }
 

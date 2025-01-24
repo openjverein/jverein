@@ -19,56 +19,49 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
-import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.gui.view.SollbuchungPositionView;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SollbuchungNeuAction implements Action
+public class SollbuchungPositionNeuAction implements Action
 {
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    MitgliedskontoNode mkn = null;
-    Mitgliedskonto mk = null;
+    Mitgliedskonto sollbuchung = null;
+    SollbuchungPosition position = null;
 
-    if (context instanceof MitgliedskontoNode)
+    if (context != null && (context instanceof Mitgliedskonto))
     {
-      mkn = (MitgliedskontoNode) context;
+      sollbuchung = (Mitgliedskonto) context;
       try
       {
-        Mitglied m = (Mitglied) Einstellungen.getDBService()
-            .createObject(Mitglied.class, mkn.getID());
-        mk = (Mitgliedskonto) Einstellungen.getDBService()
-            .createObject(Mitgliedskonto.class, null);
-        mk.setZahlungsweg(m.getZahlungsweg());
-        mk.setMitglied(m);
-        mk.setBetrag(0.0);
+        if (sollbuchung.isNewObject())
+        {
+          throw new ApplicationException(
+              "Vor dem Anlegen der Sollbuchungsposition muss die Sollbuchung gespeichert werden!");
+        }
+        position = (SollbuchungPosition) Einstellungen.getDBService()
+            .createObject(SollbuchungPosition.class, null);
+        position.setSollbuchung(sollbuchung.getID());
       }
       catch (RemoteException e)
       {
+        Logger.error("Fehler", e);
         throw new ApplicationException(
-            "Fehler bei der Erzeugung einer Sollbuchung");
+            "Fehler bei der Erzeugung einer neuen Sollbuchungsposition", e);
       }
     }
     else
     {
-      try
-      {
-        mk = (Mitgliedskonto) Einstellungen.getDBService()
-            .createObject(Mitgliedskonto.class, null);
-        mk.setBetrag(0.0);
-      }
-      catch (Exception e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung einer neuen Sollbuchung", e);
-      }
+      throw new ApplicationException("Keine Sollbuchung ausgewählt");
     }
-    GUI.startView(new SollbuchungDetailView(), mk);
+
+    GUI.startView(SollbuchungPositionView.class.getName(), position);
   }
 }
