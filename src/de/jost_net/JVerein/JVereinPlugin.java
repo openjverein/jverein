@@ -152,12 +152,11 @@ public class JVereinPlugin extends AbstractPlugin
         service.update(oldVersion, getManifest().getVersion());
       }
     });
-    BootMessage msg = new BootMessage("Neue JVerein Version");
-    msg.setTitle(
-        "Es wurde eine neue JVerein Version installiert."
+    BootMessage msg = new BootMessage(
+        "Es wurde eine neue JVerein-Version installiert."
             + " Alle Änderungen sind auf folgender Seite zu finden:");
+    msg.setTitle("Neue JVerein-Version");
     msg.setIcon("gtk-info.png");
-    msg.setComment("Änderungen.....");
     msg.setUrl(DokumentationUtil.CHANGELOG);
     Application.getMessagingFactory().getMessagingQueue("jameica.boot")
         .queueMessage(msg);
