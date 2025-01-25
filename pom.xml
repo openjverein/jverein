@@ -1,0 +1,124 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.openjverein</groupId>
+    <artifactId>jverein</artifactId>
+    <version>2.8.24-SNAPSHOT</version>
+
+    <properties>
+        <jameica.version>V_2_10_4_BUILD_487</jameica.version>
+        <jameica.url>https://github.com/willuhn/jameica/archive/refs/tags/</jameica.url>
+        <hibiscus.version>V_2_10_23_BUILD_387</hibiscus.version>
+        <hibiscus.url>https://github.com/willuhn/hibiscus/archive/refs/tags/</hibiscus.url>
+    </properties>
+
+    <dependencies>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>11</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>compile-jameica</id>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <target>
+                                <!-- Download jameica -->
+                                <get src="${jameica.url}${jameica.version}.zip"
+                                     dest="${project.build.directory}/jameica-${jameica.version}.zip"
+                                     skipexisting="true"/>
+
+                                <!-- Unpack into folder jamaica -->
+                                <unzip src="${project.build.directory}/jameica-${jameica.version}.zip"
+                                       dest="${project.basedir}"/>
+                                <move file="${project.basedir}/jameica-${jameica.version}"
+                                      tofile="${project.basedir}/jameica"/>
+
+                                <!-- Run build -->
+                                <ant dir="${project.basedir}/jameica" antfile="build/build.xml" target="jar"/>
+
+                                <!-- Copy jameica.jar to jameica-lib.jar, because that's how hibiscus expects it -->
+                                <copy todir="${project.basedir}/jameica/releases" flatten="true">
+                                    <fileset dir="${project.basedir}/jameica/releases">
+                                        <include name="**/jameica.jar"/>
+                                    </fileset>
+                                </copy>
+                                <move file="${project.basedir}/jameica/releases/jameica.jar"
+                                      tofile="${project.basedir}/jameica/releases/jameica-lib.jar"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>compile-hibiscus</id>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <target>
+                                <get src="${hibiscus.url}${hibiscus.version}.zip"
+                                     dest="${project.build.directory}/hibiscus-${hibiscus.version}.zip"
+                                     skipexisting="true"/>
+                                <unzip src="${project.build.directory}/hibiscus-${hibiscus.version}.zip"
+                                       dest="${project.basedir}"/>
+                                <move file="${project.basedir}/hibiscus-${hibiscus.version}"
+                                      tofile="${project.basedir}/hibiscus"/>
+                                <ant dir="${project.basedir}/hibiscus" antfile="build/build.xml" target="jar">
+                                    <property name="define.jameica.dir">${project.basedir}/jameica</property>
+                                </ant>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.basedir}/jameica</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>${project.basedir}/hibiscus</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>
