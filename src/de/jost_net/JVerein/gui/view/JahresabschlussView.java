@@ -51,8 +51,10 @@ public class JahresabschlussView extends AbstractView
     group.addLabelPair("Bis", control.getBis());
     group.addLabelPair("Datum", control.getDatum());
     group.addLabelPair("Name", control.getName());
-    group.addLabelPair("Verwendungsrückstand Vorjahr",
+    group.addLabelPair("Rest Verwendungsrückstand Vorjahr",
         control.getVerwendungsrueckstand());
+    group.addLabelPair("Zwanghafte Weitergabe von Mittel",
+        control.getZwanghafteWeitergabe());
     group.addLabelPair("Anfangsbestände Folgejahr",
         control.getAnfangsbestaende());
     if (Einstellungen.getEinstellung().getAfaInJahresabschluss())

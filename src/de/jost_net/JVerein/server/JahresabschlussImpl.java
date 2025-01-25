@@ -201,4 +201,16 @@ public class JahresabschlussImpl extends AbstractDBObject
     setAttribute("verwendungsrueckstand", rueckstand);
   }
 
+  @Override
+  public Double getZwanghafteWeitergabe() throws RemoteException
+  {
+    return (Double) getAttribute("zwanghafteweitergabe");
+  }
+
+  @Override
+  public void setZwanghafteWeitergabe(Double weitergabe) throws RemoteException
+  {
+    setAttribute("zwanghafteweitergabe", weitergabe);
+  }
+
 }

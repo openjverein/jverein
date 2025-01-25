@@ -77,6 +77,8 @@ public class JahresabschlussControl extends AbstractControl
 
   private DecimalInput verwendungsrueckstand;
 
+  private DecimalInput zwanghafteweitergabe;
+
   public JahresabschlussControl(AbstractView view)
   {
     super(view);
@@ -238,6 +240,27 @@ public class JahresabschlussControl extends AbstractControl
       verwendungsrueckstand.setEnabled(false);
     }
     return verwendungsrueckstand;
+  }
+
+  public DecimalInput getZwanghafteWeitergabe() throws RemoteException
+  {
+    if (zwanghafteweitergabe != null)
+    {
+      return zwanghafteweitergabe;
+    }
+
+    if (getJahresabschluss().getZwanghafteWeitergabe() == null)
+    {
+      zwanghafteweitergabe = new DecimalInput(Einstellungen.DECIMALFORMAT);
+    }
+    else
+    {
+      zwanghafteweitergabe = new DecimalInput(
+          getJahresabschluss().getZwanghafteWeitergabe(),
+          Einstellungen.DECIMALFORMAT);
+      zwanghafteweitergabe.setEnabled(false);
+    }
+    return zwanghafteweitergabe;
   }
 
   /**

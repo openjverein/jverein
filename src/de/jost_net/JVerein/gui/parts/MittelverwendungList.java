@@ -32,6 +32,8 @@ import de.jost_net.JVerein.io.MittelverwendungZeile;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.rmi.Jahresabschluss;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
@@ -57,6 +59,8 @@ public class MittelverwendungList extends TablePart
 
   private int vorletztesGJ;
 
+  private Date endeLetztesGJ;
+
   private int tab = 0;
 
   private static double LIMIT = 0.005;
@@ -70,11 +74,18 @@ public class MittelverwendungList extends TablePart
     this.datumvon = datumvon;
     this.datumbis = datumbis;
     this.tab = tab;
+    updateDatum();
+  }
+
+  private void updateDatum()
+  {
     Calendar cal = Calendar.getInstance();
     cal.setTime(datumvon);
     aktuellesGJ = cal.get(Calendar.YEAR);
     letztesGJ = aktuellesGJ - 1;
     vorletztesGJ = aktuellesGJ - 2;
+    cal.add(Calendar.DAY_OF_MONTH, -1);
+    endeLetztesGJ = cal.getTime();
   }
 
   public Part getSaldoList() throws ApplicationException
@@ -219,6 +230,21 @@ public class MittelverwendungList extends TablePart
     addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
         vorhandeneMittel, null, NULL);
 
+    // Der in dem Rückstand enthaltene Rückstand aus dem vorletzten Jahr
+    Double rueckstandVorVorjahr = null;
+    DBIterator<Jahresabschluss> jahresabschluesse = service
+        .createList(Jahresabschluss.class);
+    jahresabschluesse.addFilter("bis = ?", endeLetztesGJ);
+    if (jahresabschluesse != null && jahresabschluesse.hasNext())
+    {
+      rueckstandVorVorjahr = jahresabschluesse.next()
+          .getVerwendungsrueckstand();
+    }
+    bezeichnung = "          - Darin enthaltener Verwendungsrückstand aus dem vorletzten GJ "
+        + vorletztesGJ;
+    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
+        rueckstandVorVorjahr, null, NULL);
+
     // Schritt 2: Mittel Zufluss
     // Summe aller Zuflüsse bei Geldkonten und Anlagen (=Sachspenden)
     sql = getSummenKontenSql();
@@ -236,10 +262,10 @@ public class MittelverwendungList extends TablePart
             ArtBuchungsart.UMBUCHUNG },
         rsd);
 
-    bezeichnung = "Insgesamt im GJ zugeflossene Mittel";
+    bezeichnung = "Insgesamt im aktuellen GJ zugeflossene Mittel";
     addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
         zufuehrung, null, NULL);
-    bezeichnung = "          Zu verwendende Mittel im GJ und nächstem GJ";
+    bezeichnung = "          Zu verwendende Mittel im aktuellen GJ und nächstem GJ";
     addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
         zufuehrung, vorhandeneMittel, NULL);
 
@@ -298,11 +324,39 @@ public class MittelverwendungList extends TablePart
       }
     }
 
-    bezeichnung = "          Verwendungsrückstand(+)/-überhang(-) zum Ende des GJ "
+    bezeichnung = "          Verwendungsrückstand(+)/-überhang(-) zum Ende des aktuellen GJ "
         + aktuellesGJ;
     addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
         zufuehrung + vorhandeneMittel + verwendung - summeZuRuecklagen,
         -summeEntRuecklagen, NULL);
+
+    // Berechnung der Mittelverwendung
+    Double ausgaben = summeEntRuecklagen - verwendung; // verwendung ist
+                                                          // negativ
+    Double zwanghafteVerwendung = null;
+    Double rueckstandVorVorjahrNeu = null; // Rest aus Rückstand Vorjahr
+    // Der Rückstand aus dem vorletzten Jahr muss ganz aufgebraucht werden,
+    // ansonsten unterliegt der Restbetrag der zwanghaften satzungsgemäßen
+    // Weitergabe von Mitteln
+    if (rueckstandVorVorjahr != null && rueckstandVorVorjahr > ausgaben)
+    {
+      zwanghafteVerwendung = rueckstandVorVorjahr - ausgaben;
+      rueckstandVorVorjahrNeu = vorhandeneMittel - rueckstandVorVorjahr;
+    }
+    else
+    {
+      rueckstandVorVorjahrNeu = Math.max(vorhandeneMittel - ausgaben, 0);
+    }
+    bezeichnung = "          - Darin enthaltener Verwendungsrückstand aus dem letzten GJ "
+        + letztesGJ;
+    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
+        rueckstandVorVorjahrNeu, null, NULL);
+    if (zwanghafteVerwendung != null)
+    {
+      bezeichnung = "          - Darin enthaltene zwanghafte satzungsgemäße Weitergabe von Mitteln";
+      addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
+          zwanghafteVerwendung, null, NULL);
+    }
 
     // Leerzeile am Ende wegen Scrollbar
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED, null,
@@ -571,6 +625,7 @@ public class MittelverwendungList extends TablePart
   public void setDatumvon(Date datumvon)
   {
     this.datumvon = datumvon;
+    updateDatum();
   }
 
   public void setDatumbis(Date datumbis)

@@ -30,8 +30,14 @@ public class Update0462 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
+
     {
       execute(addColumn("jahresabschluss", new Column("verwendungsrueckstand",
+          COLTYPE.DOUBLE, 10, null, false, false)));
+    }
+
+    {
+      execute(addColumn("jahresabschluss", new Column("zwanghafteweitergabe",
           COLTYPE.DOUBLE, 10, null, false, false)));
     }
   }
