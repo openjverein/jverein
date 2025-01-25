@@ -110,13 +110,21 @@ public class Reporter
   }
 
   public Reporter(OutputStream out, float linkerRand, float rechterRand,
-      float obererRand, float untererRand) throws DocumentException
+      float obererRand, float untererRand, boolean encrypt)
+      throws DocumentException
   {
     this.out = out;
     rpt = new Document();
     rpt.setMargins(linkerRand, rechterRand, obererRand, untererRand);
     hyph = new HyphenationAuto("de", "DE", 2, 2);
     writer = PdfWriter.getInstance(rpt, out);
+    if (encrypt)
+    {
+      writer.setEncryption(null, null,
+          PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS
+              | PdfWriter.ALLOW_COPY | PdfWriter.ALLOW_FILL_IN,
+          PdfWriter.ENCRYPTION_AES_256 | PdfWriter.DO_NOT_ENCRYPT_METADATA);
+    }
     AbstractPlugin plugin = Application.getPluginLoader()
         .getPlugin(JVereinPlugin.class);
     rpt.addAuthor(plugin.getManifest().getName() + " - Version "
@@ -130,7 +138,7 @@ public class Reporter
       int maxRecords, float linkerRand, float rechterRand, float obererRand,
       float untererRand) throws DocumentException
   {
-    this(out, linkerRand, rechterRand, obererRand, untererRand);
+    this(out, linkerRand, rechterRand, obererRand, untererRand, false);
 
     StringBuilder fuss = new StringBuilder();
     if (title != null && title.length() > 0)
