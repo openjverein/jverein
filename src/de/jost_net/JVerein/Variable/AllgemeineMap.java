@@ -95,6 +95,11 @@ public class AllgemeineMap
         Einstellungen.getEinstellung().getPlz());
     map.put(AllgemeineVar.ORT.getName(),
         Einstellungen.getEinstellung().getOrt());
+    map.put(AllgemeineVar.ABSENDER.getName(),
+        Einstellungen.getEinstellung().getName() + ", "
+            + Einstellungen.getEinstellung().getStrasse() + ", "
+            + Einstellungen.getEinstellung().getPlz() + " "
+            + Einstellungen.getEinstellung().getOrt());
     map.put(AllgemeineVar.STAAT.getName(),
         Staat.getByKey(Einstellungen.getEinstellung().getStaat()).getText());
     map.put(AllgemeineVar.IBAN.getName(),
