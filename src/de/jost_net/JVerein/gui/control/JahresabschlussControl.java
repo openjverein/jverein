@@ -109,9 +109,9 @@ public class JahresabschlussControl extends AbstractControl
     }
     if (Einstellungen.getEinstellung().getMittelverwendung())
     {
-      MittelverwendungList list = new MittelverwendungList(null,
-          (Date) getVon().getValue(), (Date) getBis().getValue(), 0);
-      list.getFlowReport();
+      MittelverwendungList list = new MittelverwendungList(
+          (Date) getVon().getValue(), (Date) getBis().getValue());
+      list.getInfo();
       jahresabschluss.setVerwendungsrueckstand(list.getRueckstandVorjahrNeu());
       jahresabschluss
           .setZwanghafteWeitergabe(list.getZwanghafteWeitergabeNeu());

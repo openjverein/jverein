@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.parts.MittelverwendungList;
+import de.jost_net.JVerein.gui.parts.MittelverwendungSaldoList;
 import de.jost_net.JVerein.io.MittelverwendungExportCSV;
 import de.jost_net.JVerein.io.MittelverwendungExportPDF;
 import de.jost_net.JVerein.io.MittelverwendungZeile;
@@ -45,7 +46,9 @@ import de.willuhn.util.ProgressMonitor;
 public class MittelverwendungControl extends SaldoControl
 {
 
-  private MittelverwendungList[] saldoList = new MittelverwendungList[ANZAHL_TABS];
+  private MittelverwendungList zuflussList;
+
+  private MittelverwendungSaldoList saldoList;
 
   final static String ExportPDF = "PDF";
 
@@ -55,9 +58,7 @@ public class MittelverwendungControl extends SaldoControl
 
   public final static int SALDO_REPORT = 1;
 
-  public final static int ANZAHL_TABS = 2;
-
-  private int selectedTab = 0;
+  private int selectedTab = FLOW_REPORT;
 
   public MittelverwendungControl(AbstractView view)
   {
@@ -99,17 +100,41 @@ public class MittelverwendungControl extends SaldoControl
 
   public Part getSaldoList() throws ApplicationException
   {
-    for (int i = 0; i < ANZAHL_TABS; i++)
+    if (selectedTab == FLOW_REPORT)
     {
-      if (i != selectedTab)
-      {
-        getSaldoList(i);
-      }
+      getSaldoTable();
+      return getFlowTable();
     }
-    return getSaldoList(selectedTab);
+    else
+    {
+      getFlowTable();
+      return getSaldoTable();
+    }
   }
 
-  public Part getSaldoList(int tab) throws ApplicationException
+  public Part getSaldoTable() throws ApplicationException
+  {
+    if (getDatumvon().getDate() != null)
+    {
+      settings.setAttribute("von",
+          new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
+      settings.setAttribute("bis",
+          new JVDateFormatTTMMJJJJ().format(getDatumbis().getDate()));
+    }
+    if (saldoList == null)
+    {
+      saldoList = new MittelverwendungSaldoList(datumvon.getDate(),
+          datumbis.getDate());
+    }
+    else
+    {
+      saldoList.setDatumvon(datumvon.getDate());
+      saldoList.setDatumbis(datumbis.getDate());
+    }
+    return saldoList.getSaldoList();
+  }
+
+  public Part getFlowTable() throws ApplicationException
   {
     if (getDatumvon().getDate() != null)
     {
@@ -119,25 +144,32 @@ public class MittelverwendungControl extends SaldoControl
           new JVDateFormatTTMMJJJJ().format(getDatumbis().getDate()));
     }
 
-    if (saldoList[tab] == null)
+    if (zuflussList == null)
     {
-      saldoList[tab] = new MittelverwendungList(null, datumvon.getDate(),
-          datumbis.getDate(), tab);
+      zuflussList = new MittelverwendungList(datumvon.getDate(),
+          datumbis.getDate());
     }
     else
     {
-      saldoList[tab].setDatumvon(datumvon.getDate());
-      saldoList[tab].setDatumbis(datumbis.getDate());
+      zuflussList.setDatumvon(datumvon.getDate());
+      zuflussList.setDatumbis(datumbis.getDate());
     }
-    return saldoList[tab].getSaldoList();
+    return zuflussList.getFlowList();
   }
 
   private void starteExport(String type) throws ApplicationException
   {
     try
     {
-      ArrayList<MittelverwendungZeile> zeilen = saldoList[selectedTab]
-          .getInfo();
+      ArrayList<MittelverwendungZeile> zeilen;
+      if (selectedTab == FLOW_REPORT)
+      {
+        zeilen = zuflussList.getInfo();
+      }
+      else
+      {
+        zeilen = saldoList.getInfo();
+      }
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
@@ -163,7 +195,8 @@ public class MittelverwendungControl extends SaldoControl
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
 
-      exportSaldo(zeilen, file, getDatumvon().getDate(),
+      exportSaldo(zeilen, file,
+          getDatumvon().getDate(),
           getDatumbis().getDate(), type, selectedTab);
     }
     catch (RemoteException e)
