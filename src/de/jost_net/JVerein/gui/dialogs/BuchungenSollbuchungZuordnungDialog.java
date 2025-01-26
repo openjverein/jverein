@@ -287,8 +287,10 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
           DBIterator<Buchung> buchungen = Einstellungen.getDBService().createList(Buchung.class);
           buchungen.addFilter("datum >= ?", dateFromInput);
           buchungen.addFilter("datum <= ?", dateUntilInput);
-          buchungen.addFilter("splittyp != ?", SplitbuchungTyp.HAUPT);
-          buchungen.addFilter("splittyp != ?", SplitbuchungTyp.GEGEN);
+          buchungen.addFilter("(splittyp != ? or splittyp is null)",
+              SplitbuchungTyp.HAUPT);
+          buchungen.addFilter("(splittyp != ? or splittyp is null)",
+              SplitbuchungTyp.GEGEN);
           buchungen.addFilter("mitgliedskonto is null");
           buchungen.setOrder("ORDER BY datum");
 
