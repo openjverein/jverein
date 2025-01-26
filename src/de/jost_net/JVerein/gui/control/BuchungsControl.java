@@ -246,6 +246,18 @@ public class BuchungsControl extends AbstractControl
     {
       return getText();
     }
+
+    public static SplitFilter getByKey(int key)
+    {
+      for (SplitFilter split : SplitFilter.values())
+      {
+        if (split.getKey() == key)
+        {
+          return split;
+        }
+      }
+      return null;
+    }
   }
 
   private Calendar calendar = Calendar.getInstance();
@@ -793,7 +805,8 @@ public class BuchungsControl extends AbstractControl
     }
     int split = settings.getInt(settingsprefix + "split",
         SplitFilter.ALLE.getKey());
-    suchsplitbuchung = new SelectInput(SplitFilter.values(), split);
+    suchsplitbuchung = new SelectInput(SplitFilter.values(),
+        SplitFilter.getByKey(split));
     suchsplitbuchung.addListener(new FilterListener());
 
     return suchsplitbuchung;
