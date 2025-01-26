@@ -122,7 +122,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
         }
         if (getAfaart() == null)
         {
-          throw new ApplicationException("Bitte Afa Buchungsart eingeben");
+          throw new ApplicationException("Bitte AfA Buchungsart eingeben");
         }
         if (getBuchungsklasse() == null)
         {

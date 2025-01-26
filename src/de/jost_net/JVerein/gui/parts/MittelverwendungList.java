@@ -20,113 +20,24 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.MittelverwendungZeile;
-import de.jost_net.JVerein.keys.Anlagenzweck;
-import de.jost_net.JVerein.keys.ArtBuchungsart;
-import de.jost_net.JVerein.keys.Kontoart;
-import de.jost_net.JVerein.rmi.Jahresabschluss;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
-import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
-import de.willuhn.util.ApplicationException;
 
 public class MittelverwendungList
 {
 
-  private TablePart flowList;
+  protected Date datumvon = null;
 
-  private Date datumvon = null;
+  protected Date datumbis = null;
 
-  private Date datumbis = null;
+  protected static double LIMIT = 0.005;
 
-  private int aktuellesGJ;
+  protected static String BLANK = " ";
 
-  private int letztesGJ;
-
-  private int vorletztesGJ;
-
-  private Date endeLetztesGJ;
-
-  private Double zwanghafteWeitergabeNeu;
-
-  private Double rueckstandVorjahrNeu;
-
-  private static double LIMIT = 0.005;
-
-  private static String NULL = " ";
-
-  public MittelverwendungList(Date datumvon, Date datumbis)
-  {
-    this.datumvon = datumvon;
-    this.datumbis = datumbis;
-    updateDatum();
-  }
-
-  private void updateDatum()
-  {
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(datumvon);
-    aktuellesGJ = cal.get(Calendar.YEAR);
-    letztesGJ = aktuellesGJ - 1;
-    vorletztesGJ = aktuellesGJ - 2;
-    cal.add(Calendar.DAY_OF_MONTH, -1);
-    endeLetztesGJ = cal.getTime();
-  }
-
-  public Part getFlowList() throws ApplicationException
-  {
-    ArrayList<MittelverwendungZeile> zeilen = null;
-    try
-    {
-      zeilen = getInfo();
-
-      if (flowList == null)
-      {
-        flowList = new TablePart(zeilen, null)
-        {
-          @Override
-          protected void orderBy(int index)
-          {
-            return;
-          }
-        };
-        flowList.addColumn("Nr", "position");
-        flowList.addColumn("Mittel", "bezeichnung");
-        flowList.addColumn("Betrag", "betrag",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-            Column.ALIGN_RIGHT);
-        flowList.addColumn("Summe", "summe",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-            Column.ALIGN_LEFT);
-        flowList.setRememberColWidths(true);
-        flowList.setRememberOrder(true);
-        flowList.removeFeature(FeatureSummary.class);
-      }
-      else
-      {
-        flowList.removeAll();
-        for (MittelverwendungZeile sz : zeilen)
-        {
-          flowList.addItem(sz);
-        }
-      }
-    }
-    catch (RemoteException e)
-    {
-      throw new ApplicationException("Fehler aufgetreten" + e.getMessage());
-    }
-    return flowList;
-  }
+  protected static String BLANKS = "          ";
 
   ResultSetExtractor rsd = new ResultSetExtractor()
   {
@@ -170,196 +81,9 @@ public class MittelverwendungList
     }
   };
 
-  public ArrayList<MittelverwendungZeile> getInfo() throws RemoteException
-  {
-    DBService service = Einstellungen.getDBService();
-    String sql;
-    ArrayList<MittelverwendungZeile> zeilen = new ArrayList<>();
-    String bezeichnung = "";
-    Integer pos = 1;
-
-    // Schritt 1: Berechnung des Verwendungsrückstand(+)/-überhang(-)
-    // am Ende des letzten GJ
-    // Vorhandene Geldmittel zum Ende des letzten GJ sind zu verwenden
-    sql = "SELECT SUM(anfangsbestand.betrag) FROM anfangsbestand, konto"
-        + " WHERE anfangsbestand.datum = ?"
-        + " AND anfangsbestand.konto = konto.id " + " AND konto.kontoart = ? ";
-    Double vorhandeneMittel = (Double) service.execute(sql,
-        new Object[] { datumvon, Kontoart.GELD.getKey() }, rsd);
-
-    // Vorhandene zweckfremde Anlagen sind zu verwenden
-    sql = "SELECT SUM(anfangsbestand.betrag) FROM anfangsbestand, konto"
-        + " WHERE anfangsbestand.datum = ?"
-        + " AND anfangsbestand.konto = konto.id " + " AND konto.kontoart = ? "
-        + " AND konto.zweck = ?";
-    vorhandeneMittel += (Double) service.execute(sql, new Object[] { datumvon,
-        Kontoart.ANLAGE.getKey(), Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey() },
-        rsd);
-
-    // Nicht der zeitnahen Mittelverwendung unterliegende Mittel (Rücklagen)
-    // zum Ende des letzten GJ können abgezogen werden
-    sql = "SELECT SUM(anfangsbestand.betrag) FROM anfangsbestand, konto"
-        + " WHERE anfangsbestand.datum = ?"
-        + " AND anfangsbestand.konto = konto.id" + " AND konto.kontoart >= ?"
-        + " AND konto.kontoart <= ?";
-    vorhandeneMittel -= (Double) service.execute(sql,
-        new Object[] { datumvon, Kontoart.RUECKLAGE_ZWECK_GEBUNDEN.getKey(),
-            Kontoart.RUECKLAGE_SONSTIG.getKey() },
-        rsd);
-
-    bezeichnung = "Verwendungsrückstand(+)/-überhang(-) am Ende des letzten GJ "
-        + letztesGJ;
-    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-        vorhandeneMittel, null, NULL);
-
-    // Der in dem Rückstand enthaltene Rückstand aus dem vorletzten Jahr
-    Double rueckstandVorVorjahr = null;
-    Double zwanghafteWeitergabeVorjahr = null;
-    DBIterator<Jahresabschluss> jahresabschluesse = service
-        .createList(Jahresabschluss.class);
-    jahresabschluesse.addFilter("bis = ?", endeLetztesGJ);
-    if (jahresabschluesse != null && jahresabschluesse.hasNext())
-    {
-      Jahresabschluss abschluss = jahresabschluesse.next();
-      rueckstandVorVorjahr = abschluss.getVerwendungsrueckstand();
-      zwanghafteWeitergabeVorjahr = abschluss.getZwanghafteWeitergabe();
-    }
-    bezeichnung = "          - Darin enthaltener Rest des Verwendungsrückstand aus dem vorletzten GJ "
-        + vorletztesGJ;
-    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-        rueckstandVorVorjahr, null, NULL);
-    bezeichnung = "          - Darin enthaltene zwanghafte satzungsgemäße Weitergabe von Mitteln aus dem letzten GJ "
-        + letztesGJ;
-    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-        zwanghafteWeitergabeVorjahr, null, NULL);
-
-    // Schritt 2: Mittel Zufluss
-    // Summe aller Zuflüsse bei Geldkonten und Anlagen (=Sachspenden)
-    sql = getSummenKontenSql();
-    Double zufuehrung = (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, Kontoart.GELD.getKey(),
-            Kontoart.ANLAGE.getKey(), ArtBuchungsart.EINNAHME },
-        rsd);
-    // Summe Zuflüsse durch Umbuchung
-    // Auszahlung aus Verbindlichkeiten z.B. Darlehen,
-    // Rückbuchung von zweckgebundenen Anlagen
-    sql = getSummenUmbuchungSql() + " AND buchung.betrag < 0";
-    zufuehrung -= (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, Kontoart.SCHULDEN.getKey(),
-            Kontoart.ANLAGE.getKey(), Anlagenzweck.NUTZUNGSGEBUNDEN.getKey(),
-            ArtBuchungsart.UMBUCHUNG },
-        rsd);
-
-    bezeichnung = "Insgesamt im aktuellen GJ zugeflossene Mittel";
-    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-        zufuehrung, null, NULL);
-    bezeichnung = "          Zu verwendende Mittel im aktuellen GJ und nächstem GJ";
-    addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
-        zufuehrung, vorhandeneMittel, NULL);
-
-    // Schritt 3: Mittel Abfluss
-    // Summe aller Abflüsse bei Geldkonten
-    sql = getSummenKontoSql();
-    Double verwendung = (Double) service.execute(sql, new Object[] { datumvon,
-        datumbis, Kontoart.GELD.getKey(), ArtBuchungsart.AUSGABE }, rsd);
-    // Summe aller Abflüsse bei nicht nutzungsgebundenen Anlagen
-    sql = getSummenKontoZweckSql();
-    verwendung += (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, Kontoart.ANLAGE.getKey(),
-            Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey(),
-            ArtBuchungsart.AUSGABE },
-        rsd);
-    // Summe der Abflüsse bei Umbuchung
-    // Tilgung Verbindlichkeiten z.B. Darlehen,
-    // Erwerb zweckgebundener Anlagen
-    sql = getSummenUmbuchungSql() + " AND buchung.betrag > 0";
-    verwendung -= (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, Kontoart.SCHULDEN.getKey(),
-            Kontoart.ANLAGE.getKey(), Anlagenzweck.NUTZUNGSGEBUNDEN.getKey(),
-            ArtBuchungsart.UMBUCHUNG },
-        rsd);
-
-    bezeichnung = "Im GJ verwendete Mittel";
-    addZeile(zeilen, MittelverwendungZeile.AUSGABE, pos++, bezeichnung, null,
-        verwendung, NULL);
-
-    // Rücklagen
-    Double summeZuRuecklagen = 0.0;
-    Double summeEntRuecklagen = 0.0;
-    sql = getSummenRuecklagenSql();
-    for (int i = Kontoart.RUECKLAGE_ZWECK_GEBUNDEN
-        .getKey(); i <= Kontoart.RUECKLAGE_SONSTIG.getKey(); i++)
-    {
-      Double zuRuecklagen = (Double) service.execute(sql,
-          new Object[] { datumvon, datumbis, i, ArtBuchungsart.EINNAHME }, rsd);
-      summeZuRuecklagen += zuRuecklagen;
-      if (Math.abs(zuRuecklagen) > LIMIT
-          || !Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
-      {
-        bezeichnung = "Zuführung " + Kontoart.getByKey(i).getText();
-        addZeile(zeilen, MittelverwendungZeile.AUSGABE, pos++, bezeichnung,
-            null, -zuRuecklagen, NULL);
-      }
-      Double entRuecklagen = (Double) service.execute(sql,
-          new Object[] { datumvon, datumbis, i, ArtBuchungsart.AUSGABE }, rsd);
-      summeEntRuecklagen += entRuecklagen;
-      if (Math.abs(entRuecklagen) > LIMIT
-          || !Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
-      {
-        bezeichnung = "Entnahme " + Kontoart.getByKey(i).getText();
-        addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-            -entRuecklagen, null, NULL);
-      }
-    }
-
-    bezeichnung = "          Verwendungsrückstand(+)/-überhang(-) zum Ende des aktuellen GJ "
-        + aktuellesGJ;
-    addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
-        zufuehrung + vorhandeneMittel + verwendung - summeZuRuecklagen,
-        -summeEntRuecklagen, NULL);
-
-    // Berechnung der Mittelverwendung
-    rueckstandVorVorjahr = (rueckstandVorVorjahr == null) ? 0.0
-        : rueckstandVorVorjahr;
-    zwanghafteWeitergabeVorjahr = (zwanghafteWeitergabeVorjahr == null) ? 0.0
-        : zwanghafteWeitergabeVorjahr;
-    Double ausgaben = summeEntRuecklagen - verwendung;
-    Double rueckstandVorjahr = vorhandeneMittel - rueckstandVorVorjahr
-        - zwanghafteWeitergabeVorjahr;
-    zwanghafteWeitergabeNeu = 0.0;
-    rueckstandVorjahrNeu = 0.0; // Rest aus Rückstand Vorjahr
-    // Der Rückstand aus dem vorletzten Jahr muss ganz aufgebraucht werden,
-    // ansonsten unterliegt der Restbetrag der zwanghaften satzungsgemäßen
-    // Weitergabe von Mitteln
-
-    if (rueckstandVorVorjahr > ausgaben)
-    {
-      zwanghafteWeitergabeNeu = rueckstandVorVorjahr - ausgaben;
-      rueckstandVorjahrNeu = rueckstandVorjahr;
-    }
-    else
-    {
-      rueckstandVorjahrNeu = Math
-          .max(vorhandeneMittel - ausgaben - zwanghafteWeitergabeVorjahr, 0);
-    }
-    bezeichnung = "          - Darin enthaltener Verwendungsrückstand aus dem letzten GJ "
-        + letztesGJ;
-    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-        rueckstandVorjahrNeu, null, NULL);
-    bezeichnung = "          - Darin enthaltene zwanghafte satzungsgemäße Weitergabe von Mitteln";
-    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-        zwanghafteWeitergabeNeu, null, NULL);
-
-    // Leerzeile am Ende wegen Scrollbar
-    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED, null,
-        null, null, null, NULL));
-    return zeilen;
-  }
-
   public void setDatumvon(Date datumvon)
   {
     this.datumvon = datumvon;
-    updateDatum();
   }
 
   public void setDatumbis(Date datumbis)
@@ -367,56 +91,7 @@ public class MittelverwendungList
     this.datumbis = datumbis;
   }
 
-  private String getSummenKontoSql() throws RemoteException
-  {
-    String sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
-        + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
-        + " AND konto.kontoart = ?"
-        + " AND buchung.buchungsart = buchungsart.id"
-        + " AND buchungsart.art = ?";
-    return sql;
-  }
-
-  private String getSummenKontenSql() throws RemoteException
-  {
-    String sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
-        + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
-        + " AND (konto.kontoart = ? OR konto.kontoart = ?)"
-        + " AND buchung.buchungsart = buchungsart.id"
-        + " AND buchungsart.art = ?";
-    return sql;
-  }
-
-  private String getSummenKontoZweckSql() throws RemoteException
-  {
-    String sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
-        + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
-        + " AND konto.kontoart = ? AND konto.zweck = ?"
-        + " AND buchung.buchungsart = buchungsart.id"
-        + " AND buchungsart.art = ?";
-    return sql;
-  }
-
-  private String getSummenUmbuchungSql() throws RemoteException
-  {
-    String sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
-        + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
-        + " AND (konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?))"
-        + " AND buchung.buchungsart = buchungsart.id"
-        + " AND buchungsart.art = ?";
-    return sql;
-  }
-
-  private String getSummenRuecklagenSql()
-  {
-    return "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
-        + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
-        + " AND konto.kontoart = ?"
-        + " AND buchung.buchungsart = buchungsart.id"
-        + " AND buchungsart.art = ?";
-  }
-
-  private void addZeile(ArrayList<MittelverwendungZeile> zeilen, int status,
+  protected void addZeile(ArrayList<MittelverwendungZeile> zeilen, int status,
       Integer position, String bezeichnung, Double einnahme, Double ausgabe,
       String kommentar) throws RemoteException
   {
@@ -442,16 +117,11 @@ public class MittelverwendungList
         zeilen.add(new MittelverwendungZeile(status, position, bezeichnung,
             null, einnahme + ausgabe, kommentar));
         break;
+      case MittelverwendungZeile.ART:
+        zeilen.add(new MittelverwendungZeile(status, position, null, null,
+            einnahme + ausgabe, kommentar, bezeichnung));
+        break;
     }
   }
 
-  public Double getZwanghafteWeitergabeNeu()
-  {
-    return zwanghafteWeitergabeNeu;
-  }
-
-  public Double getRueckstandVorjahrNeu()
-  {
-    return rueckstandVorjahrNeu;
-  }
 }

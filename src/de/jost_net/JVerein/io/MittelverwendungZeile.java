@@ -27,6 +27,8 @@ public class MittelverwendungZeile implements GenericObject
 {
   private Integer position;
 
+  private String art = "";
+
   private String bezeichnung = "";
 
   private Double betrag = null;
@@ -45,6 +47,8 @@ public class MittelverwendungZeile implements GenericObject
 
   public static final int LEERZEILE = 4;
 
+  public static final int ART = 5;
+
   private int status = UNDEFINED;
 
   public MittelverwendungZeile(int status, Integer position,
@@ -52,6 +56,18 @@ public class MittelverwendungZeile implements GenericObject
   {
     this.position = position;
     this.status = status;
+    this.bezeichnung = bezeichnung;
+    this.betrag = betrag;
+    this.summe = summe;
+    this.kommentar = kommentar;
+  }
+
+  public MittelverwendungZeile(int status, Integer position, String bezeichnung,
+      Double betrag, Double summe, String kommentar, String art)
+  {
+    this.position = position;
+    this.status = status;
+    this.art = art;
     this.bezeichnung = bezeichnung;
     this.betrag = betrag;
     this.summe = summe;
@@ -66,7 +82,11 @@ public class MittelverwendungZeile implements GenericObject
   @Override
   public Object getAttribute(String arg0) throws RemoteException
   {
-    if (arg0.equals("bezeichnung"))
+    if (arg0.equals("art"))
+    {
+      return art;
+    }
+    else if (arg0.equals("bezeichnung"))
     {
       return bezeichnung;
     }

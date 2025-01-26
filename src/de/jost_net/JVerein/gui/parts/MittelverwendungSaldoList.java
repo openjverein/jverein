@@ -17,8 +17,6 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,7 +26,6 @@ import de.jost_net.JVerein.io.MittelverwendungZeile;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
@@ -36,22 +33,10 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
 
-public class MittelverwendungSaldoList
+public class MittelverwendungSaldoList extends MittelverwendungList
 {
 
   private TablePart saldoList;
-
-  private Date datumvon = null;
-
-  private Date datumbis = null;
-
-  private Double zwanghafteWeitergabeNeu;
-
-  private Double rueckstandVorjahrNeu;
-
-  private static double LIMIT = 0.005;
-
-  private static String NULL = " ";
 
   public MittelverwendungSaldoList(Date datumvon, Date datumbis)
   {
@@ -76,8 +61,8 @@ public class MittelverwendungSaldoList
             return;
           }
         };
-        saldoList.addColumn("Nr", "position");
-        saldoList.addColumn("Mittel", "bezeichnung");
+        saldoList.addColumn("Art", "art");
+        saldoList.addColumn("Konto", "bezeichnung");
         saldoList.addColumn("Betrag", "betrag",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
@@ -105,60 +90,16 @@ public class MittelverwendungSaldoList
     return saldoList;
   }
 
-  ResultSetExtractor rsd = new ResultSetExtractor()
-  {
-    @Override
-    public Object extract(ResultSet rs) throws SQLException
-    {
-      if (!rs.next())
-      {
-        return Double.valueOf(0);
-      }
-      return Double.valueOf(rs.getDouble(1));
-    }
-  };
-
-  ResultSetExtractor rsmap = new ResultSetExtractor()
-  {
-    @Override
-    public Object extract(ResultSet rs) throws SQLException
-    {
-      HashMap<Long, String> map = new HashMap<>();
-      while (rs.next())
-      {
-        map.put(rs.getLong(1), rs.getString(2));
-      }
-      return map;
-    }
-  };
-
-  ResultSetExtractor rsmapa = new ResultSetExtractor()
-  {
-    @Override
-    public Object extract(ResultSet rs) throws SQLException
-    {
-      HashMap<Long, String[]> map = new HashMap<>();
-      while (rs.next())
-      {
-        map.put(rs.getLong(1),
-            new String[] { rs.getString(2), rs.getString(3) });
-      }
-      return map;
-    }
-  };
-
-  public ArrayList<MittelverwendungZeile> getInfo()
-      throws RemoteException
+  public ArrayList<MittelverwendungZeile> getInfo() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     String sql;
     ArrayList<MittelverwendungZeile> zeilen = new ArrayList<>();
-    Integer pos = 1;
     Double summeVermoegen = 0.0;
     String bezeichnung = "";
     // Anlagevermögen
-    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED, pos++,
-        "Anlagenvermögen", null, null, NULL));
+    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null,
+        null, null, null, BLANK, "Anlagenvermögen"));
     if (Einstellungen.getEinstellung().getSummenAnlagenkonto())
     {
       sql = getAnfangsbestandKontoartSql();
@@ -167,10 +108,17 @@ public class MittelverwendungSaldoList
       sql = getSummenBetragKontoartSql();
       anlagenStand += (Double) service.execute(sql,
           new Object[] { datumvon, datumbis, Kontoart.ANLAGE.getKey() }, rsd);
-      bezeichnung = "          Summe Anlagenkonten";
-      addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
-          anlagenStand, 0.0, NULL);
-      summeVermoegen += anlagenStand;
+      if (Math.abs(anlagenStand) > LIMIT)
+      {
+        bezeichnung = "Summe Anlagenvermögen";
+        addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung,
+            anlagenStand, 0.0, BLANK);
+        summeVermoegen += anlagenStand;
+      }
+      else
+      {
+        zeilen.remove(zeilen.size() - 1);
+      }
     }
     else
     {
@@ -193,20 +141,27 @@ public class MittelverwendungSaldoList
           {
             kommentar = kommentar.split("\n")[0];
           }
-          addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++,
+          addZeile(zeilen, MittelverwendungZeile.EINNAHME, null,
               map0.get(kontoId)[0], kontoStand, null, kommentar);
           summeVermoegen += kontoStand;
         }
       }
-      bezeichnung = "          Summe Anlagenkonten";
-      addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
-          summeVermoegen, 0.0, NULL);
+      if (Math.abs(summeVermoegen) > LIMIT)
+      {
+        bezeichnung = "Summe Anlagenvermögen";
+        addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung,
+            summeVermoegen, 0.0, BLANK);
+      }
+      else
+      {
+        zeilen.remove(zeilen.size() - 1);
+      }
     }
 
     // Geldkonten
     Double summeGeld = 0.0;
-    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED, pos++,
-        "Geldvermögen", null, null, NULL));
+    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
+        null, null, BLANK, "Geldvermögen"));
     sql = "SELECT id, bezeichnung, kommentar FROM konto WHERE konto.kontoart = ?";
     @SuppressWarnings("unchecked")
     HashMap<Long, String[]> map1 = (HashMap<Long, String[]>) service
@@ -226,24 +181,31 @@ public class MittelverwendungSaldoList
         {
           kommentar = kommentar.split("\n")[0];
         }
-        addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++,
+        addZeile(zeilen, MittelverwendungZeile.EINNAHME, null,
             map1.get(kontoId)[0], kontoStand, null, kommentar);
         summeGeld += kontoStand;
       }
     }
-    bezeichnung = "          Summe Geldkonten";
-    addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung, summeGeld,
-        0.0, NULL);
-    summeVermoegen += summeGeld;
+    if (Math.abs(summeGeld) > LIMIT)
+    {
+      bezeichnung = "Summe Geldvermögen";
+      addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung,
+          summeGeld, 0.0, BLANK);
+      summeVermoegen += summeGeld;
+    }
+    else
+    {
+      zeilen.remove(zeilen.size() - 1);
+    }
 
-    // Verbindlichkeitskonten
+    // Fremdkapital
     Double summeSchulden = 0.0;
-    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED, pos++,
-        "Darlehen, Kredite etc.", null, null, NULL));
+    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
+        null, null, BLANK, "Fremdkapital"));
     sql = "SELECT id, bezeichnung, kommentar FROM konto WHERE konto.kontoart = ?";
     @SuppressWarnings("unchecked")
-    HashMap<Long, String[]> map2 = (HashMap<Long, String[]>) service.execute(
-        sql, new Object[] { Kontoart.SCHULDEN.getKey() }, rsmapa);
+    HashMap<Long, String[]> map2 = (HashMap<Long, String[]>) service
+        .execute(sql, new Object[] { Kontoart.SCHULDEN.getKey() }, rsmapa);
     for (Long kontoId : map2.keySet())
     {
       sql = getAnfangsbestandKontoSql();
@@ -259,47 +221,63 @@ public class MittelverwendungSaldoList
         {
           kommentar = kommentar.split("\n")[0];
         }
-        addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++,
+        addZeile(zeilen, MittelverwendungZeile.EINNAHME, null,
             map2.get(kontoId)[0], kontoStand, null, kommentar);
         summeSchulden += kontoStand;
       }
     }
-    bezeichnung = "          Summe Darlehen, Kredite etc.";
-    addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
-        summeSchulden, 0.0, NULL);
-    summeVermoegen += summeSchulden;
-    bezeichnung = "          Gesamtvermögen";
-    addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
-        summeVermoegen, 0.0, NULL);
+    if (Math.abs(summeSchulden) > LIMIT)
+    {
+      bezeichnung = "Summe Fremdkapital";
+      addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung,
+          summeSchulden, 0.0, BLANK);
+      summeVermoegen += summeSchulden;
+    }
+    else
+    {
+      zeilen.remove(zeilen.size() - 1);
+    }
+
+
+    bezeichnung = "Gesamtvermögen";
+    addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung,
+        summeVermoegen, 0.0, BLANK);
     // Leerzeile
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.LEERZEILE, null,
-        null, null, null, NULL));
+        null, null, null, BLANK));
 
     // Mittelverwendung
-    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED, pos++,
-        "Mittelverwendung", null, null, NULL));
+    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
+        null, null, BLANK, "Mittelverwendung"));
     // Nutzungsgebundenes Anlagevermögen
     sql = getAnfangsbestandKontoartZweckSql();
-    Double anlagenStand = (Double) service.execute(sql, new Object[] { datumvon,
-        Kontoart.ANLAGE.getKey(), Anlagenzweck.NUTZUNGSGEBUNDEN.getKey(), datumvon },
+    Double anlagenStand = (Double) service.execute(sql,
+        new Object[] { datumvon, Kontoart.ANLAGE.getKey(),
+            Anlagenzweck.NUTZUNGSGEBUNDEN.getKey(), datumvon },
         rsd);
     sql = getSummenBetragKontoartZweckSql();
     anlagenStand += (Double) service.execute(sql,
         new Object[] { datumvon, datumbis, Kontoart.ANLAGE.getKey(),
             Anlagenzweck.NUTZUNGSGEBUNDEN.getKey() },
         rsd);
-    bezeichnung = "          Nutzungsgebundenes Anlagenvermögen";
-    addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung, 0.0,
-        -anlagenStand, NULL);
-    summeVermoegen -= anlagenStand;
-    // Verbindlichkeitskonten
-    bezeichnung = "          Summe Darlehen, Kredite etc.";
-    addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung, 0.0,
-        -summeSchulden, NULL);
-    summeVermoegen -= summeSchulden;
+    if (Math.abs(anlagenStand) > LIMIT)
+    {
+      bezeichnung = "Nutzungsgebundenes Anlagenvermögen";
+      addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
+          -anlagenStand, BLANK);
+      summeVermoegen -= anlagenStand;
+    }
+    // Fremdkapital
+    if (Math.abs(summeSchulden) > LIMIT)
+    {
+      bezeichnung = "Fremdkapital";
+      addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
+          -summeSchulden, BLANK);
+      summeVermoegen -= summeSchulden;
+    }
     // Rücklagen, Vermögen nicht zugeordnet
-    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED, pos++,
-        "Nicht zugeordnete Rücklagen", null, null, NULL));
+    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
+        null, null, BLANK, "Nicht zugeordnete Rücklagen"));
     Double summeRuecklagen = 0.0;
     sql = "SELECT id, bezeichnung, kommentar FROM konto"
         + " WHERE konto.kontoart >= ?" + " AND konto.kontoart <= ?"
@@ -323,16 +301,16 @@ public class MittelverwendungSaldoList
         {
           kommentar = kommentar.split("\n")[0];
         }
-        addZeile(zeilen, MittelverwendungZeile.AUSGABE, pos++,
+        addZeile(zeilen, MittelverwendungZeile.AUSGABE, null,
             map3.get(kontoId)[0], null, -ruecklagen, kommentar);
         summeRuecklagen += ruecklagen;
       }
     }
     if (Math.abs(summeRuecklagen) > LIMIT)
     {
-      bezeichnung = "          Summe nicht zugeordneter Rücklagen";
-      addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung, 0.0,
-          -summeRuecklagen, NULL);
+      bezeichnung = "Summe nicht zugeordneter Rücklagen";
+      addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
+          -summeRuecklagen, BLANK);
       summeVermoegen -= summeRuecklagen;
     }
     else
@@ -348,8 +326,8 @@ public class MittelverwendungSaldoList
         .execute(sql, new Object[] {}, rsmap);
     for (Long buchungsklasseId : buchungsklassen.keySet())
     {
-      zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED,
-          pos++, buchungsklassen.get(buchungsklasseId), null, null, NULL));
+      zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null,
+          null, null, null, BLANK, buchungsklassen.get(buchungsklasseId)));
       summeRuecklagen = 0.0;
       sql = "SELECT id, bezeichnung, kommentar FROM konto"
           + " WHERE konto.kontoart >= ?" + " AND konto.kontoart <= ?"
@@ -375,17 +353,17 @@ public class MittelverwendungSaldoList
           {
             kommentar = kommentar.split("\n")[0];
           }
-          addZeile(zeilen, MittelverwendungZeile.AUSGABE, pos++,
+          addZeile(zeilen, MittelverwendungZeile.AUSGABE, null,
               map4.get(kontoId)[0], null, -ruecklagen, kommentar);
           summeRuecklagen += ruecklagen;
         }
       }
       if (Math.abs(summeRuecklagen) > LIMIT)
       {
-        bezeichnung = "          Summe Rücklagen/Vermögen "
+        bezeichnung = "Summe Rücklagen/Vermögen "
             + buchungsklassen.get(buchungsklasseId);
-        addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung, 0.0,
-            -summeRuecklagen, NULL);
+        addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
+            -summeRuecklagen, BLANK);
         summeVermoegen -= summeRuecklagen;
       }
       else
@@ -395,24 +373,14 @@ public class MittelverwendungSaldoList
     }
     // Leerzeile
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.LEERZEILE, null,
-        null, null, null, NULL));
+        null, null, null, BLANK));
     bezeichnung = "Verwendungsrückstand(+)/-überhang(-) zum Ende des GJ";
-    addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung, 0.0,
-        summeVermoegen, NULL);
+    addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
+        summeVermoegen, BLANK);
     // Leerzeile undefined - nicht drucken in PDF und CSV
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED, null,
-        null, null, null, NULL));
+        null, null, null, BLANK));
     return zeilen;
-  }
-
-  public void setDatumvon(Date datumvon)
-  {
-    this.datumvon = datumvon;
-  }
-
-  public void setDatumbis(Date datumbis)
-  {
-    this.datumbis = datumbis;
   }
 
   private String getAnfangsbestandKontoartSql() throws RemoteException
@@ -460,42 +428,4 @@ public class MittelverwendungSaldoList
         + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = ?";
   }
 
-  private void addZeile(ArrayList<MittelverwendungZeile> zeilen, int status,
-      Integer position, String bezeichnung, Double einnahme, Double ausgabe,
-      String kommentar) throws RemoteException
-  {
-    if (einnahme != null && einnahme == -0.0)
-    {
-      einnahme = 0.0;
-    }
-    if (ausgabe != null && ausgabe == -0.0)
-    {
-      ausgabe = 0.0;
-    }
-    switch (status)
-    {
-      case MittelverwendungZeile.EINNAHME:
-        zeilen.add(new MittelverwendungZeile(status, position, bezeichnung,
-            einnahme, null, kommentar));
-        break;
-      case MittelverwendungZeile.AUSGABE:
-        zeilen.add(new MittelverwendungZeile(status, position, bezeichnung,
-            ausgabe, null, kommentar));
-        break;
-      case MittelverwendungZeile.SUMME:
-        zeilen.add(new MittelverwendungZeile(status, position, bezeichnung,
-            null, einnahme + ausgabe, kommentar));
-        break;
-    }
-  }
-
-  public Double getZwanghafteWeitergabeNeu()
-  {
-    return zwanghafteWeitergabeNeu;
-  }
-
-  public Double getRueckstandVorjahrNeu()
-  {
-    return rueckstandVorjahrNeu;
-  }
 }

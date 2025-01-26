@@ -25,7 +25,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.parts.MittelverwendungList;
+import de.jost_net.JVerein.gui.parts.MittelverwendungFlowList;
 import de.jost_net.JVerein.gui.parts.MittelverwendungSaldoList;
 import de.jost_net.JVerein.io.MittelverwendungExportCSV;
 import de.jost_net.JVerein.io.MittelverwendungExportPDF;
@@ -46,7 +46,7 @@ import de.willuhn.util.ProgressMonitor;
 public class MittelverwendungControl extends SaldoControl
 {
 
-  private MittelverwendungList zuflussList;
+  private MittelverwendungFlowList zuflussList;
 
   private MittelverwendungSaldoList saldoList;
 
@@ -146,7 +146,7 @@ public class MittelverwendungControl extends SaldoControl
 
     if (zuflussList == null)
     {
-      zuflussList = new MittelverwendungList(datumvon.getDate(),
+      zuflussList = new MittelverwendungFlowList(datumvon.getDate(),
           datumbis.getDate());
     }
     else

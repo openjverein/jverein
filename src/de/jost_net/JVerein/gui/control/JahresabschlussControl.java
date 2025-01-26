@@ -26,7 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.JahresabschlussDetailAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
 import de.jost_net.JVerein.gui.parts.KontensaldoList;
-import de.jost_net.JVerein.gui.parts.MittelverwendungList;
+import de.jost_net.JVerein.gui.parts.MittelverwendungFlowList;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.io.SaldoZeile;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -109,7 +109,7 @@ public class JahresabschlussControl extends AbstractControl
     }
     if (Einstellungen.getEinstellung().getMittelverwendung())
     {
-      MittelverwendungList list = new MittelverwendungList(
+      MittelverwendungFlowList list = new MittelverwendungFlowList(
           (Date) getVon().getValue(), (Date) getBis().getValue());
       list.getInfo();
       jahresabschluss.setVerwendungsrueckstand(list.getRueckstandVorjahrNeu());
@@ -262,7 +262,8 @@ public class JahresabschlussControl extends AbstractControl
           getJahresabschluss().getVerwendungsrueckstand(),
           Einstellungen.DECIMALFORMAT);
     }
-    verwendungsrueckstand.setEnabled(updateMittelverwendung);
+    verwendungsrueckstand.setEnabled(
+        updateMittelverwendung && !getJahresabschluss().isNewObject());
     return verwendungsrueckstand;
   }
 
@@ -284,7 +285,8 @@ public class JahresabschlussControl extends AbstractControl
           getJahresabschluss().getZwanghafteWeitergabe(),
           Einstellungen.DECIMALFORMAT);
     }
-    zwanghafteweitergabe.setEnabled(updateMittelverwendung);
+    zwanghafteweitergabe.setEnabled(
+        updateMittelverwendung && !getJahresabschluss().isNewObject());
     return zwanghafteweitergabe;
   }
 
