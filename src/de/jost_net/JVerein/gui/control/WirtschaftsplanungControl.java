@@ -1,5 +1,6 @@
 package de.jost_net.JVerein.gui.control;
 
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.OpenWirtschaftsplanungAction;
 import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanungPostenDialog;
@@ -361,6 +362,8 @@ public class WirtschaftsplanungControl extends AbstractControl
             "Neuer Wirtschaftsplan enthält keine Planung!");
       }
 
+      DBTransaction.starten();
+
       wirtschaftsplan.store();
 
       if (!wirtschaftsplan.isNewObject())
@@ -392,14 +395,20 @@ public class WirtschaftsplanungControl extends AbstractControl
         wirtschaftsplan.delete();
       }
 
+      DBTransaction.commit();
+
       GUI.getStatusBar().setSuccessText("Wirtschaftsplan gespeichert");
     }
     catch (ApplicationException e)
     {
+      DBTransaction.rollback();
+
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
+      DBTransaction.rollback();
+
       String fehler = "Fehler beim Speichern des Wirtschaftsplans";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
