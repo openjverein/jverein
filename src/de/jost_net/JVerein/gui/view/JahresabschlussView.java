@@ -22,6 +22,7 @@ import de.jost_net.JVerein.gui.control.JahresabschlussControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.InfoPanel;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -51,10 +52,13 @@ public class JahresabschlussView extends AbstractView
     group.addLabelPair("Bis", control.getBis());
     group.addLabelPair("Datum", control.getDatum());
     group.addLabelPair("Name", control.getName());
-    group.addLabelPair("Rest Verwendungsrückstand Vorjahr",
-        control.getVerwendungsrueckstand());
-    group.addLabelPair("Zwanghafte Weitergabe von Mittel",
-        control.getZwanghafteWeitergabe());
+    if (Einstellungen.getEinstellung().getMittelverwendung())
+    {
+      group.addLabelPair("Rest Verwendungsrückstand Vorjahr",
+          control.getVerwendungsrueckstand());
+      group.addLabelPair("Zwanghafte satzungsgemäße Weitergabe von Mitteln",
+          control.getZwanghafteWeitergabe());
+    }
     group.addLabelPair("Anfangsbestände Folgejahr",
         control.getAnfangsbestaende());
     if (Einstellungen.getEinstellung().getAfaInJahresabschluss())
@@ -64,7 +68,7 @@ public class JahresabschlussView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.JAHRESABSCHLUSS, false, "question-circle.png");
-    buttons.addButton("Speichern", new Action()
+    Button save = new Button("Speichern", new Action()
     {
 
       @Override
@@ -73,6 +77,8 @@ public class JahresabschlussView extends AbstractView
         control.handleStore();
       }
     }, null, true, "document-save.png");
+    save.setEnabled(control.isSaveEnabled());
+    buttons.addButton(save);
     buttons.paint(this.getParent());
   }
 }

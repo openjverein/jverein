@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.JahresabschlussDetailAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
 import de.jost_net.JVerein.gui.parts.KontensaldoList;
+import de.jost_net.JVerein.gui.parts.MittelverwendungList;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.io.SaldoZeile;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -79,6 +80,10 @@ public class JahresabschlussControl extends AbstractControl
 
   private DecimalInput zwanghafteweitergabe;
 
+  private boolean isSaveEnabled = false;
+
+  private boolean updateMittelverwendung = false;
+
   public JahresabschlussControl(AbstractView view)
   {
     super(view);
@@ -87,12 +92,30 @@ public class JahresabschlussControl extends AbstractControl
   }
 
   public Jahresabschluss getJahresabschluss()
+      throws RemoteException, ParseException
   {
     if (jahresabschluss != null)
     {
       return jahresabschluss;
     }
     jahresabschluss = (Jahresabschluss) getCurrentObject();
+    updateMittelverwendung = (Einstellungen.getEinstellung()
+        .getMittelverwendung()
+        && (jahresabschluss.getVerwendungsrueckstand() == null
+            || jahresabschluss.getZwanghafteWeitergabe() == null));
+    if (jahresabschluss.isNewObject() || updateMittelverwendung)
+    {
+      isSaveEnabled = true;
+    }
+    if (Einstellungen.getEinstellung().getMittelverwendung())
+    {
+      MittelverwendungList list = new MittelverwendungList(null,
+          (Date) getVon().getValue(), (Date) getBis().getValue(), 0);
+      list.getFlowReport();
+      jahresabschluss.setVerwendungsrueckstand(list.getRueckstandVorjahrNeu());
+      jahresabschluss
+          .setZwanghafteWeitergabe(list.getZwanghafteWeitergabeNeu());
+    }
     return jahresabschluss;
   }
 
@@ -149,7 +172,7 @@ public class JahresabschlussControl extends AbstractControl
     return bis;
   }
 
-  public DateInput getDatum() throws RemoteException
+  public DateInput getDatum() throws RemoteException, ParseException
   {
     if (datum != null)
     {
@@ -165,7 +188,7 @@ public class JahresabschlussControl extends AbstractControl
     return datum;
   }
 
-  public TextInput getName() throws RemoteException
+  public TextInput getName() throws RemoteException, ParseException
   {
     if (name != null)
     {
@@ -221,7 +244,8 @@ public class JahresabschlussControl extends AbstractControl
     return jahresabschlusssaldoList;
   }
 
-  public DecimalInput getVerwendungsrueckstand() throws RemoteException
+  public DecimalInput getVerwendungsrueckstand()
+      throws RemoteException, ParseException
   {
     if (verwendungsrueckstand != null)
     {
@@ -237,12 +261,13 @@ public class JahresabschlussControl extends AbstractControl
       verwendungsrueckstand = new DecimalInput(
           getJahresabschluss().getVerwendungsrueckstand(),
           Einstellungen.DECIMALFORMAT);
-      verwendungsrueckstand.setEnabled(false);
     }
+    verwendungsrueckstand.setEnabled(updateMittelverwendung);
     return verwendungsrueckstand;
   }
 
-  public DecimalInput getZwanghafteWeitergabe() throws RemoteException
+  public DecimalInput getZwanghafteWeitergabe()
+      throws RemoteException, ParseException
   {
     if (zwanghafteweitergabe != null)
     {
@@ -258,9 +283,14 @@ public class JahresabschlussControl extends AbstractControl
       zwanghafteweitergabe = new DecimalInput(
           getJahresabschluss().getZwanghafteWeitergabe(),
           Einstellungen.DECIMALFORMAT);
-      zwanghafteweitergabe.setEnabled(false);
     }
+    zwanghafteweitergabe.setEnabled(updateMittelverwendung);
     return zwanghafteweitergabe;
+  }
+
+  public boolean isSaveEnabled()
+  {
+    return isSaveEnabled;
   }
 
   /**
@@ -308,6 +338,8 @@ public class JahresabschlussControl extends AbstractControl
       {
         ja.setVerwendungsrueckstand(
             (Double) getVerwendungsrueckstand().getValue());
+        ja.setZwanghafteWeitergabe(
+            (Double) getZwanghafteWeitergabe().getValue());
         ja.store();
       }
       GUI.getStatusBar().setSuccessText("Jahresabschluss gespeichert");

@@ -61,6 +61,10 @@ public class MittelverwendungList extends TablePart
 
   private Date endeLetztesGJ;
 
+  private Double zwanghafteWeitergabeNeu;
+
+  private Double rueckstandVorjahrNeu;
+
   private int tab = 0;
 
   private static double LIMIT = 0.005;
@@ -232,18 +236,24 @@ public class MittelverwendungList extends TablePart
 
     // Der in dem Rückstand enthaltene Rückstand aus dem vorletzten Jahr
     Double rueckstandVorVorjahr = null;
+    Double zwanghafteWeitergabeVorjahr = null;
     DBIterator<Jahresabschluss> jahresabschluesse = service
         .createList(Jahresabschluss.class);
     jahresabschluesse.addFilter("bis = ?", endeLetztesGJ);
     if (jahresabschluesse != null && jahresabschluesse.hasNext())
     {
-      rueckstandVorVorjahr = jahresabschluesse.next()
-          .getVerwendungsrueckstand();
+      Jahresabschluss abschluss = jahresabschluesse.next();
+      rueckstandVorVorjahr = abschluss.getVerwendungsrueckstand();
+      zwanghafteWeitergabeVorjahr = abschluss.getZwanghafteWeitergabe();
     }
-    bezeichnung = "          - Darin enthaltener Verwendungsrückstand aus dem vorletzten GJ "
+    bezeichnung = "          - Darin enthaltener Rest des Verwendungsrückstand aus dem vorletzten GJ "
         + vorletztesGJ;
     addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
         rueckstandVorVorjahr, null, NULL);
+    bezeichnung = "          - Darin enthaltene zwanghafte satzungsgemäße Weitergabe von Mitteln aus dem letzten GJ "
+        + letztesGJ;
+    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
+        zwanghafteWeitergabeVorjahr, null, NULL);
 
     // Schritt 2: Mittel Zufluss
     // Summe aller Zuflüsse bei Geldkonten und Anlagen (=Sachspenden)
@@ -331,32 +341,36 @@ public class MittelverwendungList extends TablePart
         -summeEntRuecklagen, NULL);
 
     // Berechnung der Mittelverwendung
-    Double ausgaben = summeEntRuecklagen - verwendung; // verwendung ist
-                                                          // negativ
-    Double zwanghafteVerwendung = null;
-    Double rueckstandVorVorjahrNeu = null; // Rest aus Rückstand Vorjahr
+    rueckstandVorVorjahr = (rueckstandVorVorjahr == null) ? 0.0
+        : rueckstandVorVorjahr;
+    zwanghafteWeitergabeVorjahr = (zwanghafteWeitergabeVorjahr == null) ? 0.0
+        : zwanghafteWeitergabeVorjahr;
+    Double ausgaben = summeEntRuecklagen - verwendung;
+    Double rueckstandVorjahr = vorhandeneMittel - rueckstandVorVorjahr
+        - zwanghafteWeitergabeVorjahr;
+    zwanghafteWeitergabeNeu = 0.0;
+    rueckstandVorjahrNeu = 0.0; // Rest aus Rückstand Vorjahr
     // Der Rückstand aus dem vorletzten Jahr muss ganz aufgebraucht werden,
     // ansonsten unterliegt der Restbetrag der zwanghaften satzungsgemäßen
     // Weitergabe von Mitteln
-    if (rueckstandVorVorjahr != null && rueckstandVorVorjahr > ausgaben)
+
+    if (rueckstandVorVorjahr > ausgaben)
     {
-      zwanghafteVerwendung = rueckstandVorVorjahr - ausgaben;
-      rueckstandVorVorjahrNeu = vorhandeneMittel - rueckstandVorVorjahr;
+      zwanghafteWeitergabeNeu = rueckstandVorVorjahr - ausgaben;
+      rueckstandVorjahrNeu = rueckstandVorjahr;
     }
     else
     {
-      rueckstandVorVorjahrNeu = Math.max(vorhandeneMittel - ausgaben, 0);
+      rueckstandVorjahrNeu = Math
+          .max(vorhandeneMittel - ausgaben - zwanghafteWeitergabeVorjahr, 0);
     }
     bezeichnung = "          - Darin enthaltener Verwendungsrückstand aus dem letzten GJ "
         + letztesGJ;
     addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-        rueckstandVorVorjahrNeu, null, NULL);
-    if (zwanghafteVerwendung != null)
-    {
-      bezeichnung = "          - Darin enthaltene zwanghafte satzungsgemäße Weitergabe von Mitteln";
-      addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
-          zwanghafteVerwendung, null, NULL);
-    }
+        rueckstandVorjahrNeu, null, NULL);
+    bezeichnung = "          - Darin enthaltene zwanghafte satzungsgemäße Weitergabe von Mitteln";
+    addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
+        zwanghafteWeitergabeNeu, null, NULL);
 
     // Leerzeile am Ende wegen Scrollbar
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED, null,
@@ -768,4 +782,13 @@ public class MittelverwendungList extends TablePart
     }
   }
 
+  public Double getZwanghafteWeitergabeNeu()
+  {
+    return zwanghafteWeitergabeNeu;
+  }
+
+  public Double getRueckstandVorjahrNeu()
+  {
+    return rueckstandVorjahrNeu;
+  }
 }
