@@ -157,8 +157,8 @@ public class FormularAufbereitung
               PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS
                   | PdfWriter.ALLOW_COPY | PdfWriter.ALLOW_FILL_IN,
               PdfWriter.ENCRYPTION_AES_256 | PdfWriter.DO_NOT_ENCRYPT_METADATA);
-          doc.open();
-        }
+	}
+        doc.open();
       }
     }
     catch (IOException e)
