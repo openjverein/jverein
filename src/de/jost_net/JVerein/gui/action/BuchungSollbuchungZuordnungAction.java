@@ -99,6 +99,15 @@ public class BuchungSollbuchungZuordnungAction implements Action
           mk.setBetrag(betrag);
           mk.setDatum(b[0].getDatum());
           mk.setMitglied(m);
+          Long zahlerId = m.getZahlerID();
+          if (zahlerId != null)
+          {
+            mk.setZahlerId(zahlerId);
+          }
+          else
+          {
+            mk.setZahler(m);
+          }
           mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
           mk.setZweck1(b[0].getZweck());
           mk.store();

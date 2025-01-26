@@ -42,6 +42,7 @@ public class SollbuchungDetailView extends AbstractView
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
     LabelGroup grBuchung = new LabelGroup(getParent(), "Sollbuchung");
     grBuchung.addLabelPair("Mitglied", control.getMitglied());
+    grBuchung.addLabelPair("Zahler", control.getZahler());
     grBuchung.addLabelPair("Datum", control.getDatum());
     grBuchung.addLabelPair("Verwendungszweck", control.getZweck1());
     grBuchung.addLabelPair("Zahlungsweg", control.getZahlungsweg());
@@ -71,10 +72,9 @@ public class SollbuchungDetailView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
-    
+
     Button save = new Button("Speichern", new Action()
     {
-
       @Override
       public void handleAction(Object context)
       {
@@ -83,8 +83,7 @@ public class SollbuchungDetailView extends AbstractView
     }, null, true, "document-save.png");
     save.setEnabled(!hasRechnung);
     buttons.addButton(save);
-    
-    
+
     buttons.paint(this.getParent());
   }
 }

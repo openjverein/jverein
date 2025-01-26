@@ -30,10 +30,18 @@ public interface Mitgliedskonto extends DBObject
       throws RemoteException;
 
   public Mitglied getMitglied() throws RemoteException;
-  
+
   public String getMitgliedId() throws RemoteException;
 
   public void setMitglied(Mitglied mitglied) throws RemoteException;
+
+  public Mitglied getZahler() throws RemoteException;
+
+  public void setZahler(Mitglied zahler) throws RemoteException;
+
+  public Long getZahlerId() throws RemoteException;
+
+  public void setZahlerId(Long zahlerId) throws RemoteException;
 
   public Date getDatum() throws RemoteException;
 

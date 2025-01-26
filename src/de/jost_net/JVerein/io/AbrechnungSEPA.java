@@ -171,7 +171,7 @@ public class AbrechnungSEPA
           ArrayList<SollbuchungPosition> spArray = new ArrayList<>();
           spArray.add(getSollbuchungPosition(zahler));
 
-          verwendungszwecke.add(writeSollbuchung(
+          verwendungszwecke.add(writeSollbuchung(Long.parseLong(zahler.getPersonId()),
               zahler.getZahlungsweg().getKey(), zahler.getMitglied(), spArray,
               param.faelligkeit, abrl, konto, param, null));
 
@@ -193,10 +193,12 @@ public class AbrechnungSEPA
         // Pro Zahlungsweg und Mitglied eine Sollbuchung
         HashMap<String, ArrayList<SollbuchungPosition>> spMap = new HashMap<>();
         HashMap<String, Mitglied> mitgliedMap = new HashMap<>();
+        HashMap<String, String> zahlerIdMap = new HashMap<>();
         for (JVereinZahler zahler : zahlerList)
         {
           mitgliedMap.put(zahler.getMitglied().getID(), zahler.getMitglied());
-
+          zahlerIdMap.put(zahler.getMitglied().getID(), zahler.getPersonId());
+          
           String key = zahler.getZahlungsweg().getKey()
               + zahler.getMitglied().getID();
           ArrayList<SollbuchungPosition> spArray = spMap.getOrDefault(key,
@@ -211,10 +213,12 @@ public class AbrechnungSEPA
         {
           // Zahlungsweg und Mitglied holen wir aus derm Key
           // (ZahlungswegID MitgliedID)
-          verwendungszwecke.add(writeSollbuchung(
-              Integer.parseInt(entry.getKey().substring(0, 1)),
-              mitgliedMap.get(entry.getKey().substring(1)), entry.getValue(),
-              param.faelligkeit, abrl, konto, param, null));
+          String mapKey = entry.getKey().substring(1);
+          verwendungszwecke
+              .add(writeSollbuchung(Long.parseLong(zahlerIdMap.get(mapKey)),
+                  Integer.parseInt(entry.getKey().substring(0, 1)),
+                  mitgliedMap.get(mapKey), entry.getValue(), param.faelligkeit,
+                  abrl, konto, param, null));
         }
       }
 
@@ -318,7 +322,7 @@ public class AbrechnungSEPA
       // Gegenbuchung für die Sollbuchungen schreiben
       if (!summelastschriften.equals(BigDecimal.valueOf(0)))
       {
-        writeSollbuchung(Zahlungsweg.BASISLASTSCHRIFT, null, null,
+        writeSollbuchung(null, Zahlungsweg.BASISLASTSCHRIFT, null, null,
             param.faelligkeit, abrl, konto, param,
             -summelastschriften.doubleValue());
       }
@@ -825,7 +829,7 @@ public class AbrechnungSEPA
 
         ArrayList<SollbuchungPosition> spArray = new ArrayList<>();
         spArray.add(getSollbuchungPosition(zahler));
-        String zweck = writeSollbuchung(Zahlungsweg.BASISLASTSCHRIFT, kt,
+        String zweck = writeSollbuchung(null, Zahlungsweg.BASISLASTSCHRIFT, kt,
             spArray, param.faelligkeit, abrl, konto, param, null);
         zahler.setVerwendungszweck(zweck);
         zahlerarray.add(zahler);
@@ -834,6 +838,7 @@ public class AbrechnungSEPA
             kt.getName(), kt.getVorname()));
         monitor.setPercentComplete(
             (int) ((double) count++ / (double) list.size() * 100d));
+
       }
       catch (Exception e)
       {
@@ -1130,7 +1135,7 @@ public class AbrechnungSEPA
    * Schreibt die Sollbuchung inkl. Sollbuchungspositionen. Bei Lastschrift
    * werden Istbuchungen erstellt. Ggfs. wird auch die Rechnung erstellt.
    */
-  private String writeSollbuchung(int zahlungsweg, IAdresse adress,
+  private String writeSollbuchung(Long zahlerId, int zahlungsweg, IAdresse adress,
       ArrayList<SollbuchungPosition> spArray, Date datum, Abrechnungslauf abrl,
       Konto konto, AbrechnungSEPAParam param, Double summe)
       throws ApplicationException, RemoteException, SEPAException
@@ -1144,7 +1149,7 @@ public class AbrechnungSEPA
           .createObject(Mitgliedskonto.class, null);
       mk.setAbrechnungslauf(abrl);
       mk.setZahlungsweg(zahlungsweg);
-
+      mk.setZahlerId(zahlerId);
       mk.setDatum(datum);
       mk.setMitglied((Mitglied) adress);
       // Zweck wird später gefüllt, es muss aber schon was drin stehen damit
