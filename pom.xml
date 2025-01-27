@@ -250,9 +250,13 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
+                            <formats>
+                                <format>zip</format>
+                            </formats>
                             <descriptors>
                                 <descriptor>src/main/assembly/jameica.xml</descriptor>
                             </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
                 </executions>
