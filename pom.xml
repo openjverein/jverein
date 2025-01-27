@@ -252,8 +252,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <doCheck>true</doCheck>
-                    <doUpdate>true</doUpdate>
+                    <timestampFormat>yyyyMMdd</timestampFormat>
                 </configuration>
             </plugin>
             <plugin>
@@ -262,9 +261,6 @@
                 <version>3.4.2</version>
                 <configuration>
                     <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
                         <manifestEntries>
                             <Built-By>${user.name}</Built-By>
                             <Built-Date>${timestamp}</Built-Date>
