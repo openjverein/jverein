@@ -21,7 +21,7 @@
 
     <dependencies>
         <!-- dependencies from jameica and hibiscus, need to be installed by calling
-               mvn clean initialize -f prepare-pom.xml
+               mvn clean initialize -f setup-build.xml
          -->
         <dependency>
             <groupId>de.willuhn</groupId>
