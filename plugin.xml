@@ -4,7 +4,7 @@
         name="jverein" version="2.9.0" class="de.jost_net.JVerein.JVereinPlugin">
 
   <description>OpenSource-Vereinsverwaltung</description>
-  <url>https://openjverein.github.io/jameica-repository/[PLUGIN_ZIP]</url>
+  <url>https://openjverein.github.io/jameica-repository/${project.build.finalName}.zip</url>
   <homepage>https://openjverein.github.io/</homepage>
   <license>GPL - https://www.gnu.org/copyleft/gpl.html</license>
   <icon>jverein-icon-64x64.png</icon>
