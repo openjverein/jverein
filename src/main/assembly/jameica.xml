@@ -14,6 +14,11 @@
     <files>
         <file>
             <source>plugin.xml</source>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>${project.build.directory}/${project.build.finalName}.jar</source>
+            <destName>${project.artifactId}.jar</destName>
         </file>
     </files>
 </assembly>
