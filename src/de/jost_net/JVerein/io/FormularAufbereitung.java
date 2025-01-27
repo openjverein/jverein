@@ -156,8 +156,8 @@ public class FormularAufbereitung
           writer.setEncryption(null, null,
               PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS,
               PdfWriter.ENCRYPTION_AES_256);
-          doc.open();
         }
+        doc.open();
       }
     }
     catch (IOException e)
