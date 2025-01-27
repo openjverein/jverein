@@ -60,14 +60,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>jonelo.NumericalChameleon</groupId>
-            <artifactId>nc</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>net.sourceforge</groupId>
             <artifactId>obantoo-bin</artifactId>
             <version>2.1.12</version>
+            <scope>provided</scope>
         </dependency>
         <!-- Standard maven dependencies -->
         <dependency>
@@ -150,7 +146,11 @@
             <artifactId>library</artifactId>
             <version>2.16.0</version>
         </dependency>
-        <!-- nc.jar -->
+        <dependency>
+            <groupId>jonelo.NumericalChameleon</groupId>
+            <artifactId>nc</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
@@ -170,6 +170,7 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.sf.supercsv</groupId>
