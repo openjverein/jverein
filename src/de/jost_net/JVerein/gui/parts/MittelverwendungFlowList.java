@@ -182,13 +182,18 @@ public class MittelverwendungFlowList extends MittelverwendungList
 
     // Schritt 2: Mittel Zufluss
     // Summe aller Zuflüsse bei Geldkonten und Anlagen (=Sachspenden)
-    sql = getSummenKontenSql();
-    Double zufuehrung = (Double) service.execute(sql,
-        new Object[] { datumvon, datumbis, Kontoart.GELD.getKey(),
-            Kontoart.ANLAGE.getKey(), ArtBuchungsart.EINNAHME },
+    sql = getSummenKontoSql();
+    Double zufuehrung = (Double) service.execute(sql, new Object[] { datumvon,
+        datumbis, Kontoart.GELD.getKey(), ArtBuchungsart.EINNAHME }, rsd);
+    // Summe aller Abflüsse bei nicht nutzungsgebundenen Anlagen
+    sql = getSummenKontoZweckSql();
+    zufuehrung += (Double) service.execute(sql,
+        new Object[] { datumvon, datumbis, Kontoart.ANLAGE.getKey(),
+            Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey(),
+            ArtBuchungsart.EINNAHME },
         rsd);
     // Summe Zuflüsse durch Umbuchung
-    // Auszahlung aus Verbindlichkeiten z.B. Darlehen,
+    // Auszahlung aus Fremdkapital z.B. Darlehen,
     // Rückbuchung von zweckgebundenen Anlagen
     sql = getSummenUmbuchungSql() + " AND buchung.betrag < 0";
     zufuehrung -= (Double) service.execute(sql,
@@ -330,16 +335,6 @@ public class MittelverwendungFlowList extends MittelverwendungList
     String sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
         + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
         + " AND konto.kontoart = ?"
-        + " AND buchung.buchungsart = buchungsart.id"
-        + " AND buchungsart.art = ?";
-    return sql;
-  }
-
-  private String getSummenKontenSql() throws RemoteException
-  {
-    String sql = "SELECT sum(buchung.betrag) FROM buchung, konto, buchungsart"
-        + " WHERE datum >= ? AND datum <= ?" + " AND buchung.konto = konto.id"
-        + " AND (konto.kontoart = ? OR konto.kontoart = ?)"
         + " AND buchung.buchungsart = buchungsart.id"
         + " AND buchungsart.art = ?";
     return sql;

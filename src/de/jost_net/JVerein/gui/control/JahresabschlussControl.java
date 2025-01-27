@@ -305,10 +305,22 @@ public class JahresabschlussControl extends AbstractControl
       Jahresabschluss ja = getJahresabschluss();
       if (ja.isNewObject())
       {
+        if (afaberechnung != null && (Boolean) getAfaberechnung().getValue())
+        {
+          new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
+        }
         ja.setVon((Date) getVon().getValue());
         ja.setBis((Date) getBis().getValue());
         ja.setDatum((Date) getDatum().getValue());
         ja.setName((String) getName().getValue());
+        if (Einstellungen.getEinstellung().getMittelverwendung())
+        {
+          MittelverwendungFlowList list = new MittelverwendungFlowList(
+              ja.getVon(), ja.getBis());
+          list.getInfo();
+          ja.setVerwendungsrueckstand(list.getRueckstandVorjahrNeu());
+          ja.setZwanghafteWeitergabe(list.getZwanghafteWeitergabeNeu());
+        }
         ja.store();
         if ((Boolean) getAnfangsbestaende().getValue())
         {
@@ -330,10 +342,6 @@ public class JahresabschlussControl extends AbstractControl
               anf.store();
             }
           }
-        }
-        if (afaberechnung != null && (Boolean) getAfaberechnung().getValue())
-        {
-          new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
         }
       }
       else
