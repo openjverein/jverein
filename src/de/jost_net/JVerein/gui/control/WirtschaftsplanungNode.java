@@ -22,9 +22,10 @@ public class WirtschaftsplanungNode implements GenericObjectNode
 {
 
 
-  public enum Type {BUCHUNGSKLASSE, BUCHUNGSART, POSTEN, UNBEKANNT}
-  Type type;
 
+
+    public enum Type {BUCHUNGSKLASSE, BUCHUNGSART, POSTEN, UNBEKANNT;}
+  Type type;
   private Buchungsklasse buchungsklasse;
 
   private Buchungsart buchungsart;
@@ -342,5 +343,17 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     }
 
     return children.stream().anyMatch(WirtschaftsplanungNode::hasLeaf);
+  }
+
+  public int anzahlLeafs() {
+    if (type == Type.POSTEN) {
+      return 1;
+    }
+
+    if (children.isEmpty()) {
+      return 0;
+    }
+
+    return children.stream().mapToInt(WirtschaftsplanungNode::anzahlLeafs).sum();
   }
 }

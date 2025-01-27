@@ -6,6 +6,7 @@ import de.jost_net.JVerein.gui.action.OpenWirtschaftsplanungAction;
 import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanungPostenDialog;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.io.WirtschaftsplanungCSV;
+import de.jost_net.JVerein.io.WirtschaftsplanungPDF;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -510,6 +511,7 @@ public class WirtschaftsplanungControl extends AbstractControl
             new WirtschaftsplanungCSV(einnahmenList, ausgabenList, file);
             break;
           case AUSWERTUNG_PDF:
+            new WirtschaftsplanungPDF(einnahmenList, ausgabenList, file, getWirtschaftsplanungZeile().getWirtschaftsplan());
             break;
           default:
             GUI.getStatusBar().setErrorText("Unable to create Report. Unknown format!");
