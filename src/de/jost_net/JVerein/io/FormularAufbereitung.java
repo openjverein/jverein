@@ -155,7 +155,7 @@ public class FormularAufbereitung
         {
           writer.setEncryption(null, null,
               PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS
-                  | PdfWriter.ALLOW_COPY | PdfWriter.ALLOW_FILL_IN,
+                  | PdfWriter.ALLOW_COPY,
               PdfWriter.ENCRYPTION_AES_256 | PdfWriter.DO_NOT_ENCRYPT_METADATA);
         }
         doc.open();
