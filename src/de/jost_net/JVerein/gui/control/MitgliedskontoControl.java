@@ -118,6 +118,8 @@ public class MitgliedskontoControl extends DruckMailControl
   private DecimalInput betrag;
 
   private AbstractInput mitglied;
+  
+  private AbstractInput zahler;
 
   private Mitgliedskonto mkto;
 
@@ -327,6 +329,7 @@ public class MitgliedskontoControl extends DruckMailControl
       if (mkto.getRechnung() != null)
         throw new ApplicationException(
             "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
+      mkto.setZahlerId(getSelectedZahlerId());
       mkto.setBetrag((Double) getBetrag().getValue());
       mkto.setDatum((Date) getDatum().getValue());
       Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
@@ -431,7 +434,7 @@ public class MitgliedskontoControl extends DruckMailControl
   }
 
   public TablePart getMitgliedskontoList(Action action, ContextMenu menu,
-      boolean umwandeln) throws RemoteException
+      boolean umwandeln) throws RemoteException, ApplicationException
   {
     this.action = action;
     this.umwandeln = umwandeln;
@@ -446,7 +449,8 @@ public class MitgliedskontoControl extends DruckMailControl
       mitgliedskontoList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       mitgliedskontoList.addColumn("Abrechnungslauf", "abrechnungslauf");
-      mitgliedskontoList.addColumn("Name", "mitglied");
+      mitgliedskontoList.addColumn("Mitglied", "mitglied");
+      mitgliedskontoList.addColumn("Zahler", "zahler");
       mitgliedskontoList.addColumn("Zweck", "zweck1");
       mitgliedskontoList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
@@ -609,7 +613,7 @@ public class MitgliedskontoControl extends DruckMailControl
     return mitglieder;
   }
 
-  public void refreshMitgliedkonto1() throws RemoteException
+  public void refreshMitgliedkonto1() throws RemoteException, ApplicationException
   {
     @SuppressWarnings("rawtypes")
     GenericIterator mitgliedskonten = new SollbuchungQuery(this, umwandeln,
@@ -662,6 +666,10 @@ public class MitgliedskontoControl extends DruckMailControl
       {
         Logger.error("Fehler", e);
       }
+      catch (ApplicationException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
+      }
     }
   }
 
@@ -675,6 +683,10 @@ public class MitgliedskontoControl extends DruckMailControl
     catch (RemoteException e)
     {
       Logger.error("Fehler", e);
+    }
+    catch (ApplicationException e)
+    {
+      GUI.getStatusBar().setErrorText(e.getLocalizedMessage());;
     }
   }
 
@@ -842,6 +854,42 @@ public class MitgliedskontoControl extends DruckMailControl
     mitglied.setMandatory(true);
     return mitglied;
   }
+  
+  public Input getZahler() throws RemoteException
+  {
+    if (zahler != null)
+    {
+      return zahler;
+    }
+    zahler = new MitgliedInput().getMitgliedInput(zahler,
+        getMitgliedskonto().getZahler(),
+        Einstellungen.getEinstellung().getMitgliedAuswahl());
+    zahler.setMandatory(true);
+    return zahler;
+  }
+
+  private Long getSelectedZahlerId() throws ApplicationException
+  {
+    try
+    {
+      if (zahler == null)
+      {
+        return null;
+      }
+      Mitglied derZahler = (Mitglied) getZahler().getValue();
+      if (null == derZahler)
+      {
+        return null;
+      }
+      return Long.valueOf(derZahler.getID());
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählter Zahler kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
 
   public class MitgliedListener implements Listener
   {
@@ -859,8 +907,23 @@ public class MitgliedskontoControl extends DruckMailControl
         ArrayList<Zahlungsweg> list = (ArrayList<Zahlungsweg>) getZahlungsweg()
             .getList();
         list.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
-        if (((Mitglied) getMitglied().getValue()).getZahlerID() != null)
+        Mitglied m = (Mitglied) getMitglied().getValue();
+        Mitglied z = (Mitglied) getZahler().getValue();
+        if (m.getZahlerID() != null)
+        {
           list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+          if (z == null)
+          {
+            getZahler().setValue(m.getZahler());
+          }
+        }
+        else
+        {
+          if (z == null)
+          {
+            getZahler().setValue(getMitglied().getValue());
+          }
+        }
         getZahlungsweg().setList(list);
       }
       catch (RemoteException e)

@@ -219,6 +219,10 @@ public class JahresabschlussControl extends AbstractControl
       ja.setDatum((Date) getDatum().getValue());
       ja.setName((String) getName().getValue());
       ja.store();
+      if (afaberechnung != null && (Boolean) getAfaberechnung().getValue())
+      {
+        new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
+      }
       if ((Boolean) getAnfangsbestaende().getValue())
       {
         KontensaldoList jsl = new KontensaldoList(null,
@@ -239,10 +243,6 @@ public class JahresabschlussControl extends AbstractControl
             anf.store();
           }
         }
-      }
-      if (afaberechnung != null && (Boolean) getAfaberechnung().getValue())
-      {
-        new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
       }
       GUI.getStatusBar().setSuccessText("Jahresabschluss gespeichert");
     }

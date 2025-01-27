@@ -35,7 +35,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.system.OperationCanceledException;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -416,6 +415,7 @@ public class SplitbuchungsContainer
         {
           throw new OperationCanceledException();
         }
+        splitten = true;
       }
       if (splitten)
       { 
@@ -470,8 +470,8 @@ public class SplitbuchungsContainer
           }
         }
       
-        boolean splitPositionZweck = new Settings(SplitbuchungsContainer.class)
-            .getBoolean("splitPositionZweck", true);
+        boolean splitPositionZweck = Einstellungen.getEinstellung()
+            .getSplitPositionZweck();
         Iterator<Entry<String, Double>> iterator = splitMap.entrySet()
             .iterator();
         while (iterator.hasNext())
@@ -490,7 +490,7 @@ public class SplitbuchungsContainer
           }
           else
           {
-            splitBuchung.setZweck(mk.getZweck1());
+            splitBuchung.setZweck(buchung.getZweck());
           }
           splitBuchung.setMitgliedskonto(mk);
           String buchungsart = entry.getKey().substring(0,

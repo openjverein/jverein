@@ -47,14 +47,15 @@ public class SollbuchungListeView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getSuchname());
+    left.addLabelPair("Zahler", control.getSuchname());
+    left.addLabelPair("Mitglied", control.getSuchtext());
     left.addInput(control.getDifferenz());
     left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
-    right.addInput(control.getMailauswahl());
+    right.addLabelPair("Zahler Mail", control.getMailauswahl());
 
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),

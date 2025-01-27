@@ -394,7 +394,6 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
       setStaat(mitglied.getKtoiStaat());
       setGeschlecht(mitglied.getKtoiGeschlecht());
     }
-    setDatum(new Date());
     if (!mitglied.getMandatDatum().equals(Einstellungen.NODATE))
     {
       setMandatDatum(mitglied.getMandatDatum());
