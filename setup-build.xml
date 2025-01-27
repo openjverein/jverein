@@ -14,6 +14,7 @@
         <jameica.version>V_2_10_4_BUILD_487</jameica.version>
         <hibiscus.url>https://github.com/willuhn/hibiscus/archive/refs/tags/</hibiscus.url>
         <hibiscus.version>V_2_10_23_BUILD_387</hibiscus.version>
+        <swt.arch>win64</swt.arch>
         <maven.resources.skip>true</maven.resources.skip>
         <maven.main.skip>true</maven.main.skip>
         <maven.test.skip>true</maven.test.skip>
@@ -66,14 +67,21 @@
                         <phase>initialize</phase>
                         <configuration>
                             <target name="compile-hibiscus">
+                                <!-- Download hibiscus -->
                                 <get src="${hibiscus.url}${hibiscus.version}.zip"
                                      dest="${project.build.directory}/hibiscus-${hibiscus.version}.zip"
                                      skipexisting="true"/>
+
+                                <!-- Unpack into folder hibiscus -->
                                 <unzip src="${project.build.directory}/hibiscus-${hibiscus.version}.zip"
                                        dest="${project.basedir}"/>
                                 <move file="${project.basedir}/hibiscus-${hibiscus.version}"
                                       tofile="${project.basedir}/hibiscus"/>
+
+                                <!-- Run build -->
                                 <ant dir="${project.basedir}/hibiscus" antfile="build/build.xml" target="jar"/>
+
+                                <!-- Copy hibiscus.jar to hibiscus-lib.jar -->
                                 <copy todir="${project.basedir}/hibiscus/releases" flatten="true">
                                     <fileset dir="${project.basedir}/hibiscus/releases">
                                         <include name="**/hibiscus.jar"/>
@@ -185,7 +193,7 @@
                             <goal>install-file</goal>
                         </goals>
                         <configuration>
-                            <file>${project.basedir}/jameica/lib/swt/win64/swt.jar</file>
+                            <file>${project.basedir}/jameica/lib/swt/${swt.arch}/swt.jar</file>
                             <groupId>de.willuhn</groupId>
                             <artifactId>swt</artifactId>
                             <packaging>jar</packaging>
