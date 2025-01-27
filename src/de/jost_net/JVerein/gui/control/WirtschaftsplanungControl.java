@@ -5,11 +5,13 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.OpenWirtschaftsplanungAction;
 import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanungPostenDialog;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
+import de.jost_net.JVerein.io.WirtschaftsplanungCSV;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
+import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -22,9 +24,16 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.TreePart;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +47,10 @@ public class WirtschaftsplanungControl extends AbstractControl
   private TreePart ausgaben;
 
   private WirtschaftsplanUebersichtPart uebersicht;
+
+  public final static String AUSWERTUNG_PDF = "PDF";
+
+  public final static String AUSWERTUNG_CSV = "CSV";
 
   /**
    * Erzeugt einen neuen AbstractControl der fuer die angegebene View.
@@ -386,7 +399,7 @@ public class WirtschaftsplanungControl extends AbstractControl
         iterateOverNodes(rootNode.getChildren(), wirtschaftsplan.getID());
       }
 
-      //Lösche Wirtschaftsplan falls keine Planung hinterlegt ist
+      //Lösche Wirtschaftsplan, falls keine Planung hinterlegt ist
       DBIterator<WirtschaftsplanItem> iterator = service.createList(
           WirtschaftsplanItem.class);
       iterator.addFilter("wirtschaftsplan = ?", wirtschaftsplan.getID());
@@ -437,5 +450,86 @@ public class WirtschaftsplanungControl extends AbstractControl
         iterateOverNodes(currentNode.getChildren(), id);
       }
     }
+  }
+
+  public void starteAuswertung(String type) throws ApplicationException
+  {
+    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+    fd.setText("Ausgabedatei wählen.");
+    //
+    Settings settings = new Settings(this.getClass());
+    //
+    String path = settings.getString("lastdir",
+        System.getProperty("user.home"));
+    if (path != null && path.length() > 0)
+    {
+      fd.setFilterPath(path);
+    }
+
+    try
+    {
+      fd.setFileName(new Dateiname("wirtschaftsplan", "",
+          Einstellungen.getEinstellung().getDateinamenmuster(), type).get());
+    }
+    catch (RemoteException e) {
+      throw new ApplicationException(String.format("Fehler beim Erstellen der Datei: %s", e.getMessage()));
+    }
+
+    final String s = fd.open();
+
+    if (s == null || s.length() == 0)
+    {
+      return;
+    }
+
+    final File file = new File(s);
+    settings.setAttribute("lastdir", file.getParent());
+
+    List<WirtschaftsplanungNode> einnahmenList;
+    List<WirtschaftsplanungNode> ausgabenList;
+
+    try
+    {
+      //noinspection unchecked
+      einnahmenList = (List<WirtschaftsplanungNode>) einnahmen.getItems();
+      //noinspection unchecked
+      ausgabenList = (List<WirtschaftsplanungNode>) ausgaben.getItems();
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(String.format("Fehler beim Erstellen der Reports: %s", e.getMessage()));
+    }
+
+    BackgroundTask task = new BackgroundTask()
+    {
+      @Override
+      public void run(ProgressMonitor monitor) throws ApplicationException
+      {
+        switch (type) {
+          case AUSWERTUNG_CSV:
+            new WirtschaftsplanungCSV(einnahmenList, ausgabenList, file);
+            break;
+          case AUSWERTUNG_PDF:
+            break;
+          default:
+            GUI.getStatusBar().setErrorText("Unable to create Report. Unknown format!");
+            return;
+        }
+        GUI.getCurrentView().reload();
+      }
+
+      @Override
+      public void interrupt()
+      {
+
+      }
+
+      @Override
+      public boolean isInterrupted()
+      {
+        return false;
+      }
+    };
+    Application.getController().start(task);
   }
 }

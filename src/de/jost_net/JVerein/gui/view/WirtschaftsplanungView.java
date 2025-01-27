@@ -71,6 +71,7 @@ public class WirtschaftsplanungView extends AbstractView
     einnahmen.addButtonArea(buttonsEinnahmen);
     LabelGroup ausgaben = new LabelGroup(group.getComposite(), "Ausgaben");
     TreePart treeAusgaben = control.getAusgaben();
+    treeAusgaben.setContextMenu(new WirtschaftsplanungMenu(1, control));
     ausgaben.addPart(treeAusgaben);
     ButtonArea buttonsAusgaben = new ButtonArea();
     buttonsAusgaben.addButton("Buchungsklasse hinzufügen", context -> {
@@ -94,8 +95,8 @@ public class WirtschaftsplanungView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
             DokumentationUtil.WIRTSCHAFTSPLANUNG, false, "question-circle.png");
-    buttons.addButton("CSV", null, null, false, "xsd.png");
-    buttons.addButton("PDF", null, null, false, "file-pdf.png");
+    buttons.addButton("CSV", context -> control.starteAuswertung(WirtschaftsplanungControl.AUSWERTUNG_CSV), null, false, "xsd.png");
+    buttons.addButton("PDF", context -> control.starteAuswertung(WirtschaftsplanungControl.AUSWERTUNG_PDF), null, false, "file-pdf.png");
     buttons.addButton("Speichern", context -> control.handleStore(), null, false, "document-save.png");
     buttons.paint(this.getParent());
   }
