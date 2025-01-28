@@ -18,7 +18,7 @@ jobs:
         path: ~/.m2/repository
         key: cache-${{ hashFiles('setup-build.xml') }}-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
-          cache-${{ hashFiles('setup-build.xml') }}
+          cache-${{ hashFiles('setup-build.xml') }}-
 
     - name: Setup
       uses: ./jverein/.github/actions/build-dependencies
