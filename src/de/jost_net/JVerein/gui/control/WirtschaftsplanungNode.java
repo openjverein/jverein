@@ -1,3 +1,19 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * <p>
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *  the GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
+ * see <http://www.gnu.org/licenses/>.
+ * <p>
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -21,11 +37,11 @@ import java.util.Map;
 public class WirtschaftsplanungNode implements GenericObjectNode
 {
 
+  public enum Type
+  {BUCHUNGSKLASSE, BUCHUNGSART, POSTEN, UNBEKANNT}
 
-
-
-    public enum Type {BUCHUNGSKLASSE, BUCHUNGSART, POSTEN, UNBEKANNT;}
   Type type;
+
   private Buchungsklasse buchungsklasse;
 
   private Buchungsart buchungsart;
@@ -41,8 +57,8 @@ public class WirtschaftsplanungNode implements GenericObjectNode
   @SuppressWarnings("FieldMayBeFinal")
   private List<WirtschaftsplanungNode> children;
 
-  public WirtschaftsplanungNode(Buchungsklasse buchungsklasse, int art, WirtschaftsplanungZeile zeile)
-      throws RemoteException
+  public WirtschaftsplanungNode(Buchungsklasse buchungsklasse, int art,
+      WirtschaftsplanungZeile zeile) throws RemoteException
   {
     type = Type.BUCHUNGSKLASSE;
     this.soll = 0;
@@ -51,17 +67,13 @@ public class WirtschaftsplanungNode implements GenericObjectNode
 
     Map<Long, WirtschaftsplanungNode> nodes = new HashMap<>();
     DBService service = Einstellungen.getDBService();
-    String sql = "SELECT wirtschaftsplanitem.buchungsart, sum(wirtschaftsplanitem.soll)" +
-        "FROM wirtschaftsplanitem, buchungsart " +
-        "WHERE wirtschaftsplanitem.buchungsart = buchungsart.id " +
-        "AND buchungsart.art = ? " +
-        "AND wirtschaftsplanitem.buchungsklasse = ? " +
-        "AND wirtschaftsplanitem.wirtschaftsplan = ? " +
-        "GROUP BY wirtschaftsplanitem.buchungsart";
+    String sql = "SELECT wirtschaftsplanitem.buchungsart, sum(wirtschaftsplanitem.soll)" + "FROM wirtschaftsplanitem, buchungsart " + "WHERE wirtschaftsplanitem.buchungsart = buchungsart.id " + "AND buchungsart.art = ? " + "AND wirtschaftsplanitem.buchungsklasse = ? " + "AND wirtschaftsplanitem.wirtschaftsplan = ? " + "GROUP BY wirtschaftsplanitem.buchungsart";
 
-    service.execute(sql, new Object[] { art, buchungsklasse.getID(), zeile.getID() },
+    service.execute(sql,
+        new Object[] { art, buchungsklasse.getID(), zeile.getID() },
         resultSet -> {
-          while (resultSet.next()) {
+          while (resultSet.next())
+          {
             DBIterator<Buchungsart> iterator = service.createList(
                 Buchungsart.class);
             iterator.addFilter("id = ?", resultSet.getLong(1));
@@ -82,28 +94,18 @@ public class WirtschaftsplanungNode implements GenericObjectNode
 
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
-      sql = "SELECT buchung.buchungsart, sum(buchung.betrag) " +
-          "FROM buchung, buchungsart " +
-          "WHERE buchung.buchungsart = buchungsart.id " +
-          "AND buchung.datum >= ? AND buchung.datum <= ? " +
-          "AND buchungsart.art = ? " +
-          "AND buchung.buchungsklasse = ? " +
-          "GROUP BY buchung.buchungsart";
+      sql = "SELECT buchung.buchungsart, sum(buchung.betrag) " + "FROM buchung, buchungsart " + "WHERE buchung.buchungsart = buchungsart.id " + "AND buchung.datum >= ? AND buchung.datum <= ? " + "AND buchungsart.art = ? " + "AND buchung.buchungsklasse = ? " + "GROUP BY buchung.buchungsart";
     }
     else
     {
-      sql = "SELECT buchung.buchungsart, sum(buchung.betrag) " +
-          "FROM buchung, buchungsart " +
-          "WHERE buchung.buchungsart = buchungsart.id " +
-          "AND buchung.datum >= ? AND buchung.datum <= ? " +
-          "AND buchungsart.art = ? " +
-          "AND buchungsart.buchungsklasse = ? " +
-          "GROUP BY buchung.buchungsart";
+      sql = "SELECT buchung.buchungsart, sum(buchung.betrag) " + "FROM buchung, buchungsart " + "WHERE buchung.buchungsart = buchungsart.id " + "AND buchung.datum >= ? AND buchung.datum <= ? " + "AND buchungsart.art = ? " + "AND buchungsart.buchungsklasse = ? " + "GROUP BY buchung.buchungsart";
 
     }
 
-    service.execute(sql, new Object[] { zeile.getWirtschaftsplan().getDatumVon(), zeile.getWirtschaftsplan().getDatumBis(), art, buchungsklasse.getID() },
-        resultSet -> {
+    service.execute(sql,
+        new Object[] { zeile.getWirtschaftsplan().getDatumVon(),
+            zeile.getWirtschaftsplan().getDatumBis(), art,
+            buchungsklasse.getID() }, resultSet -> {
           while (resultSet.next())
           {
             DBIterator<Buchungsart> iterator = service.createList(
@@ -124,7 +126,8 @@ public class WirtschaftsplanungNode implements GenericObjectNode
             }
             else if (ist != 0)
             {
-              nodes.put(key, new WirtschaftsplanungNode(this, buchungsart, art, zeile));
+              nodes.put(key,
+                  new WirtschaftsplanungNode(this, buchungsart, art, zeile));
               nodes.get(key).setIst(ist);
             }
           }
@@ -135,7 +138,8 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     children = new ArrayList<>(nodes.values());
   }
 
-  public WirtschaftsplanungNode(WirtschaftsplanungNode parent, Buchungsart buchungsart, int art, WirtschaftsplanungZeile zeile)
+  public WirtschaftsplanungNode(WirtschaftsplanungNode parent,
+      Buchungsart buchungsart, int art, WirtschaftsplanungZeile zeile)
       throws RemoteException
   {
     type = Type.BUCHUNGSART;
@@ -146,25 +150,25 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     ist = 0;
 
     DBService service = Einstellungen.getDBService();
-    String sql = "SELECT wirtschaftsplanitem.id " +
-        "FROM wirtschaftsplanitem, buchungsart " +
-        "WHERE wirtschaftsplanitem.buchungsart = buchungsart.id " +
-        "AND wirtschaftsplanitem.buchungsart = ? " +
-        "AND wirtschaftsplanitem.buchungsklasse = ? " +
-        "AND buchungsart.art = ? " +
-        "AND wirtschaftsplanitem.wirtschaftsplan = ?";
+    String sql = "SELECT wirtschaftsplanitem.id " + "FROM wirtschaftsplanitem, buchungsart " + "WHERE wirtschaftsplanitem.buchungsart = buchungsart.id " + "AND wirtschaftsplanitem.buchungsart = ? " + "AND wirtschaftsplanitem.buchungsklasse = ? " + "AND buchungsart.art = ? " + "AND wirtschaftsplanitem.wirtschaftsplan = ?";
 
-    service.execute(sql, new Object[] { buchungsart.getID(), parent.getBuchungsklasse().getID(),
-        art, zeile.getID() }, resultSet -> {
-          while (resultSet.next()) {
-            children.add(new WirtschaftsplanungNode(this, service.createObject(WirtschaftsplanItem.class, resultSet.getString(1))));
+    service.execute(sql,
+        new Object[] { buchungsart.getID(), parent.getBuchungsklasse().getID(),
+            art, zeile.getID() }, resultSet -> {
+          while (resultSet.next())
+          {
+            children.add(new WirtschaftsplanungNode(this,
+                service.createObject(WirtschaftsplanItem.class,
+                    resultSet.getString(1))));
           }
 
           return children;
         });
   }
 
-  public WirtschaftsplanungNode(WirtschaftsplanungNode parent, WirtschaftsplanItem wirtschaftsplanItem) throws RemoteException {
+  public WirtschaftsplanungNode(WirtschaftsplanungNode parent,
+      WirtschaftsplanItem wirtschaftsplanItem) throws RemoteException
+  {
     type = Type.POSTEN;
     this.parent = parent;
     this.wirtschaftsplanItem = wirtschaftsplanItem;
@@ -178,8 +182,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
   {
     if (children != null)
     {
-      return PseudoIterator
-          .fromArray(children.toArray(new GenericObject[0]));
+      return PseudoIterator.fromArray(children.toArray(new GenericObject[0]));
     }
     return null;
   }
@@ -188,13 +191,15 @@ public class WirtschaftsplanungNode implements GenericObjectNode
   public boolean hasChild(GenericObjectNode genericObjectNode)
       throws RemoteException
   {
-    if (! (genericObjectNode instanceof WirtschaftsplanungNode)) {
+    if (!(genericObjectNode instanceof WirtschaftsplanungNode))
+    {
       return false;
     }
     return children.contains(genericObjectNode);
   }
 
-  public void addChild(WirtschaftsplanungNode child) {
+  public void addChild(WirtschaftsplanungNode child)
+  {
     children.add(child);
   }
 
@@ -226,7 +231,8 @@ public class WirtschaftsplanungNode implements GenericObjectNode
   @Override
   public Object getAttribute(String s) throws RemoteException
   {
-    switch (s) {
+    switch (s)
+    {
       case "buchungsklassebezeichnung":
         if (type == Type.BUCHUNGSKLASSE)
         {
@@ -234,17 +240,20 @@ public class WirtschaftsplanungNode implements GenericObjectNode
         }
         return "";
       case "buchungsartbezeichnung_posten":
-        if (type == Type.BUCHUNGSART) {
+        if (type == Type.BUCHUNGSART)
+        {
           return buchungsart.getBezeichnung();
         }
-        if (type == Type.POSTEN) {
+        if (type == Type.POSTEN)
+        {
           return wirtschaftsplanItem.getPosten();
         }
         return "";
       case "soll":
         return soll;
       case "ist":
-        if (type == Type.POSTEN) {
+        if (type == Type.POSTEN)
+        {
           return "";
         }
         return ist;
@@ -256,7 +265,8 @@ public class WirtschaftsplanungNode implements GenericObjectNode
   @Override
   public String[] getAttributeNames() throws RemoteException
   {
-    return new String[] {"buchungsklassebezeichnung", "buchungsartbezeichnung_posten", "soll", "ist"};
+    return new String[] { "buchungsklassebezeichnung",
+        "buchungsartbezeichnung_posten", "soll", "ist" };
   }
 
   @Override
@@ -327,11 +337,13 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     this.ist = ist;
   }
 
-  public WirtschaftsplanItem getWirtschaftsplanItem() {
+  public WirtschaftsplanItem getWirtschaftsplanItem()
+  {
     return wirtschaftsplanItem;
   }
 
-  public void setWirtschaftsplanItem(WirtschaftsplanItem wirtschaftsplanItem) {
+  public void setWirtschaftsplanItem(WirtschaftsplanItem wirtschaftsplanItem)
+  {
     this.wirtschaftsplanItem = wirtschaftsplanItem;
   }
 
@@ -345,15 +357,19 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     return children.stream().anyMatch(WirtschaftsplanungNode::hasLeaf);
   }
 
-  public int anzahlLeafs() {
-    if (type == Type.POSTEN) {
+  public int anzahlLeafs()
+  {
+    if (type == Type.POSTEN)
+    {
       return 1;
     }
 
-    if (children.isEmpty()) {
+    if (children.isEmpty())
+    {
       return 0;
     }
 
-    return children.stream().mapToInt(WirtschaftsplanungNode::anzahlLeafs).sum();
+    return children.stream().mapToInt(WirtschaftsplanungNode::anzahlLeafs)
+        .sum();
   }
 }

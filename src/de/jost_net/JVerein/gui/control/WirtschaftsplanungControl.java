@@ -1,3 +1,19 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * <p>
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *  the GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
+ * see <http://www.gnu.org/licenses/>.
+ * <p>
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
 import de.jost_net.JVerein.DBTools.DBTransaction;
@@ -438,7 +454,8 @@ public class WirtschaftsplanungControl extends AbstractControl
       WirtschaftsplanungNode currentNode = (WirtschaftsplanungNode) iterator.next();
       if (currentNode.getType().equals(WirtschaftsplanungNode.Type.POSTEN))
       {
-        WirtschaftsplanItem item = Einstellungen.getDBService().createObject(WirtschaftsplanItem.class, null);
+        WirtschaftsplanItem item = Einstellungen.getDBService()
+            .createObject(WirtschaftsplanItem.class, null);
         WirtschaftsplanItem oldItem = currentNode.getWirtschaftsplanItem();
         item.setPosten(oldItem.getPosten());
         item.setSoll(oldItem.getSoll());
@@ -475,8 +492,10 @@ public class WirtschaftsplanungControl extends AbstractControl
       fd.setFileName(new Dateiname("wirtschaftsplan", "",
           Einstellungen.getEinstellung().getDateinamenmuster(), type).get());
     }
-    catch (RemoteException e) {
-      throw new ApplicationException(String.format("Fehler beim Erstellen der Datei: %s", e.getMessage()));
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(
+          String.format("Fehler beim Erstellen der Datei: %s", e.getMessage()));
     }
 
     final String s = fd.open();
@@ -501,7 +520,9 @@ public class WirtschaftsplanungControl extends AbstractControl
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException(String.format("Fehler beim Erstellen der Reports: %s", e.getMessage()));
+      throw new ApplicationException(
+          String.format("Fehler beim Erstellen der Reports: %s",
+              e.getMessage()));
     }
 
     BackgroundTask task = new BackgroundTask()
@@ -509,15 +530,18 @@ public class WirtschaftsplanungControl extends AbstractControl
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
-        switch (type) {
+        switch (type)
+        {
           case AUSWERTUNG_CSV:
             new WirtschaftsplanungCSV(einnahmenList, ausgabenList, file);
             break;
           case AUSWERTUNG_PDF:
-            new WirtschaftsplanungPDF(einnahmenList, ausgabenList, file, getWirtschaftsplanungZeile().getWirtschaftsplan());
+            new WirtschaftsplanungPDF(einnahmenList, ausgabenList, file,
+                getWirtschaftsplanungZeile().getWirtschaftsplan());
             break;
           default:
-            GUI.getStatusBar().setErrorText("Unable to create Report. Unknown format!");
+            GUI.getStatusBar()
+                .setErrorText("Unable to create Report. Unknown format!");
             return;
         }
         GUI.getCurrentView().reload();

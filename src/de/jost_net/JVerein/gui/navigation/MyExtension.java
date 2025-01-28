@@ -16,14 +16,77 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.navigation;
 
-import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.schlevoigt.JVerein.gui.action.BuchungsTexteKorrigierenAction;
-
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.*;
+import de.jost_net.JVerein.gui.action.AboutAction;
+import de.jost_net.JVerein.gui.action.AbrechnunslaufListAction;
+import de.jost_net.JVerein.gui.action.AbschreibungsListeAction;
+import de.jost_net.JVerein.gui.action.AdministrationEinstellungenAbrechnungAction;
+import de.jost_net.JVerein.gui.action.AdministrationEinstellungenAllgemeinAction;
+import de.jost_net.JVerein.gui.action.AdministrationEinstellungenAnzeigeAction;
+import de.jost_net.JVerein.gui.action.AdministrationEinstellungenBuchfuehrungAction;
+import de.jost_net.JVerein.gui.action.AdministrationEinstellungenDateinamenAction;
+import de.jost_net.JVerein.gui.action.AdministrationEinstellungenMailAction;
+import de.jost_net.JVerein.gui.action.AdministrationEinstellungenMitgliedAnsichtAction;
+import de.jost_net.JVerein.gui.action.AdministrationEinstellungenMitgliederSpaltenAction;
+import de.jost_net.JVerein.gui.action.AdministrationEinstellungenRechnungenAction;
+import de.jost_net.JVerein.gui.action.AdministrationEinstellungenSpendenbescheinigungenAction;
+import de.jost_net.JVerein.gui.action.AdministrationEinstellungenStatistikAction;
+import de.jost_net.JVerein.gui.action.AnfangsbestandListAction;
+import de.jost_net.JVerein.gui.action.AnlagenlisteAction;
+import de.jost_net.JVerein.gui.action.ArbeitseinsaetzeListeAction;
+import de.jost_net.JVerein.gui.action.ArbeitseinsatzUeberpruefungAction;
+import de.jost_net.JVerein.gui.action.AuswertungAdressenAction;
+import de.jost_net.JVerein.gui.action.AuswertungKursteilnehmerAction;
+import de.jost_net.JVerein.gui.action.AuswertungMitgliedAction;
+import de.jost_net.JVerein.gui.action.BackupCreateAction;
+import de.jost_net.JVerein.gui.action.BackupRestoreAction;
+import de.jost_net.JVerein.gui.action.BeitragsgruppeSucheAction;
+import de.jost_net.JVerein.gui.action.BuchungsListeAction;
+import de.jost_net.JVerein.gui.action.BuchungsartListAction;
+import de.jost_net.JVerein.gui.action.BuchungsklasseListAction;
+import de.jost_net.JVerein.gui.action.BuchungsklasseSaldoAction;
+import de.jost_net.JVerein.gui.action.DbBereinigenAction;
+import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.EigenschaftGruppeListeAction;
+import de.jost_net.JVerein.gui.action.EigenschaftListeAction;
+import de.jost_net.JVerein.gui.action.FamilienbeitragAction;
+import de.jost_net.JVerein.gui.action.FelddefinitionenAction;
+import de.jost_net.JVerein.gui.action.FormularListeAction;
+import de.jost_net.JVerein.gui.action.FreieFormulareAction;
+import de.jost_net.JVerein.gui.action.JahresabschlussListAction;
+import de.jost_net.JVerein.gui.action.JubilaeenAction;
+import de.jost_net.JVerein.gui.action.KontenrahmenExportAction;
+import de.jost_net.JVerein.gui.action.KontenrahmenImportAction;
+import de.jost_net.JVerein.gui.action.KontensaldoAction;
+import de.jost_net.JVerein.gui.action.KontoListAction;
+import de.jost_net.JVerein.gui.action.KontoauszugAction;
+import de.jost_net.JVerein.gui.action.KursteilnehmerSucheAction;
+import de.jost_net.JVerein.gui.action.LastschriftListAction;
+import de.jost_net.JVerein.gui.action.LehrgaengeListeAction;
+import de.jost_net.JVerein.gui.action.LehrgangsartListeAction;
+import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
+import de.jost_net.JVerein.gui.action.MailListeAction;
+import de.jost_net.JVerein.gui.action.MailVorlagenAction;
+import de.jost_net.JVerein.gui.action.MitgliedMigrationAction;
+import de.jost_net.JVerein.gui.action.MitgliedSucheAction;
+import de.jost_net.JVerein.gui.action.MitgliedstypListAction;
+import de.jost_net.JVerein.gui.action.NichtMitgliedSucheAction;
+import de.jost_net.JVerein.gui.action.PreNotificationAction;
+import de.jost_net.JVerein.gui.action.ProjektListAction;
+import de.jost_net.JVerein.gui.action.ProjektSaldoAction;
+import de.jost_net.JVerein.gui.action.QIFBuchungsImportViewAction;
+import de.jost_net.JVerein.gui.action.RechnungListeAction;
+import de.jost_net.JVerein.gui.action.SollbuchungListeAction;
+import de.jost_net.JVerein.gui.action.SollbuchungMahnungAction;
+import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungListeAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
+import de.jost_net.JVerein.gui.action.StatistikJahrgaengeAction;
+import de.jost_net.JVerein.gui.action.StatistikMitgliedAction;
+import de.jost_net.JVerein.gui.action.WiedervorlageListeAction;
+import de.jost_net.JVerein.gui.action.WirtschaftsplanungListAction;
+import de.jost_net.JVerein.gui.action.ZusatzbetraegeListeAction;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -34,6 +97,10 @@ import de.willuhn.jameica.gui.NavigationItem;
 import de.willuhn.jameica.gui.extension.Extendable;
 import de.willuhn.jameica.gui.extension.Extension;
 import de.willuhn.logging.Logger;
+
+import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class MyExtension implements Extension
 {
@@ -152,9 +219,10 @@ public class MyExtension implements Extension
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
           new JahresabschlussListAction(), "euro-sign.png"));
       jverein.addChild(buchfuehrung);
-      if (Einstellungen.getEinstellung().getWirtschaftsplanung()) {
+      if (Einstellungen.getEinstellung().getWirtschaftsplanung())
+      {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Wirtschaftsplanung",
-                new WirtschaftsplanungListAction(), "euro-sign.png"));
+            new WirtschaftsplanungListAction(), "euro-sign.png"));
       }
       
       NavigationItem abrechnung = null;

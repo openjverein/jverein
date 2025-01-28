@@ -1,3 +1,19 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * <p>
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *  the GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
+ * see <http://www.gnu.org/licenses/>.
+ * <p>
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
 package de.jost_net.JVerein.io;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -23,61 +39,64 @@ import java.util.Map;
 
 public class WirtschaftsplanungCSV
 {
-  private static CellProcessor[] getProcessors() {
+  private static CellProcessor[] getProcessors()
+  {
 
-    return new CellProcessor[] {
-        new NotNull(), //Buchungsklasse
+    return new CellProcessor[] { new NotNull(), //Buchungsklasse
         new NotNull(), //Buchungsart
         new NotNull(), //Posten
-        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), //Einnahmen
-        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)) //Ausgaben
+        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)),
+        //Einnahmen
+        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT))
+        //Ausgaben
     };
   }
 
-  public WirtschaftsplanungCSV(List<WirtschaftsplanungNode> einnahmenList, List<WirtschaftsplanungNode> ausgabenList, final File file)
+  @SuppressWarnings("ThrowFromFinallyBlock")
+  public WirtschaftsplanungCSV(List<WirtschaftsplanungNode> einnahmenList,
+      List<WirtschaftsplanungNode> ausgabenList, final File file)
       throws ApplicationException
   {
     ICsvMapWriter writer = null;
 
     try
     {
-      writer = new CsvMapWriter(new FileWriter(file), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+      writer = new CsvMapWriter(new FileWriter(file),
+          CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
 
-      String[] header = { "Buchungsklasse", "Buchungsart", "Posten", "Einnahmen", "Ausgaben" };
+      String[] header = { "Buchungsklasse", "Buchungsart", "Posten",
+          "Einnahmen", "Ausgaben" };
       writer.writeHeader(header);
 
       ICsvMapWriter finalWriter = writer;
-      einnahmenList.forEach(
-          einnahme -> {
-            try
-            {
-              iterateOverNodes(einnahme.getChildren(), finalWriter, header,
-                  true);
-            }
-            catch (IOException e)
-            {
-              throw new RuntimeException(e);
-            }
-          });
-      ausgabenList.forEach(
-          ausgabe -> {
-            try
-            {
-              iterateOverNodes(ausgabe.getChildren(), finalWriter, header,
-                  false);
-            }
-            catch (IOException e)
-            {
-              throw new RuntimeException(e);
-            }
-          });
+      einnahmenList.forEach(einnahme -> {
+        try
+        {
+          iterateOverNodes(einnahme.getChildren(), finalWriter, header, true);
+        }
+        catch (IOException e)
+        {
+          throw new RuntimeException(e);
+        }
+      });
+      ausgabenList.forEach(ausgabe -> {
+        try
+        {
+          iterateOverNodes(ausgabe.getChildren(), finalWriter, header, false);
+        }
+        catch (IOException e)
+        {
+          throw new RuntimeException(e);
+        }
+      });
 
       GUI.getStatusBar().setSuccessText("Auswertung fertig");
       writer.close();
 
       FileViewer.show(file);
     }
-    catch (Exception e) {
+    catch (Exception e)
+    {
       Logger.error("Error while creating report", e);
       throw new ApplicationException("Fehler", e);
     }
@@ -98,13 +117,17 @@ public class WirtschaftsplanungCSV
     }
   }
 
-  private void iterateOverNodes(@SuppressWarnings("rawtypes") GenericIterator iterator, ICsvMapWriter writer, String[] header, boolean einnahme)
+  private void iterateOverNodes(
+      @SuppressWarnings("rawtypes") GenericIterator iterator,
+      ICsvMapWriter writer, String[] header, boolean einnahme)
       throws IOException
   {
-    while (iterator.hasNext()) {
+    while (iterator.hasNext())
+    {
       WirtschaftsplanungNode currentNode = (WirtschaftsplanungNode) iterator.next();
 
-      if (currentNode.getType().equals(WirtschaftsplanungNode.Type.POSTEN)) {
+      if (currentNode.getType().equals(WirtschaftsplanungNode.Type.POSTEN))
+      {
         Map<String, Object> csvzeile = new HashMap<>();
 
         WirtschaftsplanungNode parent = (WirtschaftsplanungNode) currentNode.getParent();
@@ -112,18 +135,24 @@ public class WirtschaftsplanungCSV
 
         csvzeile.put(header[0], root.getBuchungsklasse().getBezeichnung());
         csvzeile.put(header[1], parent.getBuchungsart().getBezeichnung());
-        csvzeile.put(header[2], currentNode.getWirtschaftsplanItem().getPosten());
+        csvzeile.put(header[2],
+            currentNode.getWirtschaftsplanItem().getPosten());
 
-        if (einnahme) {
-          csvzeile.put(header[3], currentNode.getWirtschaftsplanItem().getSoll());
+        if (einnahme)
+        {
+          csvzeile.put(header[3],
+              currentNode.getWirtschaftsplanItem().getSoll());
         }
-        else {
-          csvzeile.put(header[4], currentNode.getWirtschaftsplanItem().getSoll());
+        else
+        {
+          csvzeile.put(header[4],
+              currentNode.getWirtschaftsplanItem().getSoll());
         }
 
         writer.write(csvzeile, header, getProcessors());
       }
-      else {
+      else
+      {
         iterateOverNodes(currentNode.getChildren(), writer, header, einnahme);
       }
     }

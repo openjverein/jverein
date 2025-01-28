@@ -24,7 +24,6 @@ public enum Kontoart
   // Ids über dem Limit werden in diesen Salden ignoriert.
   GELD(1, "Geldkonto"),
   ANLAGE(2, "Anlagenkonto"),
-  TRANSFER(3, "Transferkonto"),
   LIMIT(100, "-- Limit --"),
   RUECKLAGE(101, "Rücklagenkonto");
 

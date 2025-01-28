@@ -1,3 +1,19 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * <p>
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *  the GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
+ * see <http://www.gnu.org/licenses/>.
+ * <p>
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -24,7 +40,8 @@ public class WirtschaftsplanUebersichtPart implements Part
 
   private DecimalInput sollAusgaben;
 
-  public WirtschaftsplanUebersichtPart (WirtschaftsplanungControl control) {
+  public WirtschaftsplanUebersichtPart(WirtschaftsplanungControl control)
+  {
     this.control = control;
   }
 
@@ -37,25 +54,37 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     SimpleContainer einnahmen = new SimpleContainer(columns.getComposite());
 
-    DateInput von = new DateInput(control.getWirtschaftsplanungZeile().getWirtschaftsplan().getDatumVon(), new JVDateFormatTTMMJJJJ());
+    DateInput von = new DateInput(
+        control.getWirtschaftsplanungZeile().getWirtschaftsplan().getDatumVon(),
+        new JVDateFormatTTMMJJJJ());
     von.disable();
     einnahmen.addLabelPair("Von", von);
-    sollEinnahme = new DecimalInput(control.getWirtschaftsplanungZeile().getPlanEinnahme(), Einstellungen.DECIMALFORMAT);
+    sollEinnahme = new DecimalInput(
+        control.getWirtschaftsplanungZeile().getPlanEinnahme(),
+        Einstellungen.DECIMALFORMAT);
     sollEinnahme.disable();
     einnahmen.addLabelPair("Einnahmen Soll", sollEinnahme);
-    DecimalInput istEinnahme = new DecimalInput(control.getWirtschaftsplanungZeile().getIstEinnahme(), Einstellungen.DECIMALFORMAT);
+    DecimalInput istEinnahme = new DecimalInput(
+        control.getWirtschaftsplanungZeile().getIstEinnahme(),
+        Einstellungen.DECIMALFORMAT);
     istEinnahme.disable();
     einnahmen.addLabelPair("Einnahmen Ist", istEinnahme);
 
     SimpleContainer ausgaben = new SimpleContainer(columns.getComposite());
 
-    DateInput bis = new DateInput(control.getWirtschaftsplanungZeile().getWirtschaftsplan().getDatumBis(), new JVDateFormatTTMMJJJJ());
+    DateInput bis = new DateInput(
+        control.getWirtschaftsplanungZeile().getWirtschaftsplan().getDatumBis(),
+        new JVDateFormatTTMMJJJJ());
     bis.disable();
     ausgaben.addLabelPair("Bis", bis);
-    sollAusgaben = new DecimalInput(control.getWirtschaftsplanungZeile().getPlanAusgabe(), Einstellungen.DECIMALFORMAT);
+    sollAusgaben = new DecimalInput(
+        control.getWirtschaftsplanungZeile().getPlanAusgabe(),
+        Einstellungen.DECIMALFORMAT);
     sollAusgaben.disable();
     ausgaben.addLabelPair("Ausgaben Soll", sollAusgaben);
-    DecimalInput istAusgaben = new DecimalInput(control.getWirtschaftsplanungZeile().getIstAusgabe(), Einstellungen.DECIMALFORMAT);
+    DecimalInput istAusgaben = new DecimalInput(
+        control.getWirtschaftsplanungZeile().getIstAusgabe(),
+        Einstellungen.DECIMALFORMAT);
     istAusgaben.disable();
     ausgaben.addLabelPair("Ausgaben Ist", istAusgaben);
   }
@@ -63,7 +92,8 @@ public class WirtschaftsplanUebersichtPart implements Part
   @SuppressWarnings("unchecked")
   public void updateSoll() throws ApplicationException
   {
-    if (sollEinnahme == null || sollAusgaben == null) {
+    if (sollEinnahme == null || sollAusgaben == null)
+    {
       return;
     }
 
@@ -72,20 +102,22 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     try
     {
-      einnahmen = (List<WirtschaftsplanungNode>) control.getEinnahmen().getItems();
-      ausgaben = (List<WirtschaftsplanungNode>) control.getAusgaben().getItems();
+      einnahmen = (List<WirtschaftsplanungNode>) control.getEinnahmen()
+          .getItems();
+      ausgaben = (List<WirtschaftsplanungNode>) control.getAusgaben()
+          .getItems();
     }
-    catch (RemoteException e) {
-      throw new ApplicationException("Fehler beim aktualisieren der Übersicht!");
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(
+          "Fehler beim aktualisieren der Übersicht!");
     }
 
     double sollEinnahmen = einnahmen.stream()
-        .mapToDouble(WirtschaftsplanungNode::getSoll)
-        .sum();
+        .mapToDouble(WirtschaftsplanungNode::getSoll).sum();
 
     double sollAusgaben = ausgaben.stream()
-        .mapToDouble(WirtschaftsplanungNode::getSoll)
-        .sum();
+        .mapToDouble(WirtschaftsplanungNode::getSoll).sum();
 
     this.sollEinnahme.setValue(sollEinnahmen);
     this.sollAusgaben.setValue(sollAusgaben);

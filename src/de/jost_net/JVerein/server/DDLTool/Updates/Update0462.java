@@ -23,9 +23,9 @@ import de.willuhn.util.ProgressMonitor;
 import java.sql.Connection;
 
 @SuppressWarnings("unused")
-public class Update0454 extends AbstractDDLUpdate
+public class Update0462 extends AbstractDDLUpdate
 {
-  public Update0454(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0462(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -34,7 +34,8 @@ public class Update0454 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute(addColumn("einstellung",
-        new Column("wirtschaftsplanung", COLTYPE.BOOLEAN, 0, null, false, false)));
+        new Column("wirtschaftsplanung", COLTYPE.BOOLEAN, 0, null, false,
+            false)));
 
     Table wirtschaftsplan = new Table("wirtschaftsplan");
     Column id = new Column("id", COLTYPE.BIGINT, 4, null, false, true);
