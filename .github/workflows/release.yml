@@ -53,5 +53,5 @@ jobs:
         tag_name: ${{ steps.openjverein.outputs.selected_version }}
         prerelease: false
         name: Release ${{ steps.openjverein.outputs.selected_version }}
-        files: /target/jverein-*.zip
+        files: ./target/jverein-*.zip
         generate_release_notes: true
