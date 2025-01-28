@@ -16,8 +16,14 @@ jobs:
     steps:
     - name: Checkout openjverein
       uses: actions/checkout@v4
+
+    - name: Restore cache
+      uses: actions/cache/restore@v4
       with:
-        path: jverein
+        path: ~/.m2/repository
+        key: cache-${{ hashFiles('setup-build.xml') }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          cache-${{ hashFiles('setup-build.xml') }}
 
     - name: Setup
       uses: ./jverein/.github/actions/build-dependencies
@@ -25,31 +31,18 @@ jobs:
     - name: Build openjverein plugin
       id: openjverein
       run: |
-        ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml nightly)
-        echo ${ant_output}
-
-        ssa="SELECTED_VERSION="
-        ssb=".zip"
-        text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
-        tmp_version=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-
-        ssa="SELECTED_FILENAME="
-        text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
-        tmp_filename=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-
-        ssa="SELECTED_PATH="
-        text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
-        tmp_path=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-
+        mvn --batch-mode --file pom.xml clean package
+        tmp_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
         echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
-        echo "selected_filename=${tmp_filename}" >> $GITHUB_OUTPUT
-        echo "selected_path=${tmp_path}" >> $GITHUB_OUTPUT
-
+        tmp_filename=$(basename "./target/jverein-*.zip")
         builddatetime=$(date +'%Y-%m-%d %H:%M')
         echo "### Version: ${tmp_version} | filename: ${tmp_filename} | build datetime: ${builddatetime}" >> $GITHUB_STEP_SUMMARY
+
+    - name: Save cache
+      uses: actions/cache/save@v4
+      with:
+        path: ~/.m2/repository
+        key: cache-${{ hashFiles('setup-build.xml') }}-${{ hashFiles('**/pom.xml') }}
 
     # Update tag
     - name: Tag repo
@@ -65,5 +58,5 @@ jobs:
         tag_name: ${{ steps.openjverein.outputs.selected_version }}
         prerelease: true
         name: Release ${{ steps.openjverein.outputs.selected_version }}
-        files: ./jverein/${{ steps.openjverein.outputs.selected_path }}
+        files: ./target/jverein-*.zip
         generate_release_notes: false
