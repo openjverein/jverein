@@ -25,10 +25,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Restore cache
-        uses: actions/cache/restore
+        uses: actions/cache/restore@v4
         with:
           path: ~/.m2/repository
-          key: cache-{{ hashFiles('**/pom.xml', 'setup-build.xml') }}
+          key: cache-{{ hashFiles('setup-build.xml') }}-{{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            cache-{{ hashFiles('setup-build.xml') }}-
+            cache-
 
 
       - name: Build openjverein plugin
