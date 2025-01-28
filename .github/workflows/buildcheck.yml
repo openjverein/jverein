@@ -27,5 +27,12 @@ jobs:
     - name: Setup
       uses: ./jverein/.github/actions/build-dependencies
 
-    - name: Build openjverein plugin
-      run: ant -noinput -buildfile jverein/build/build.xml compile
+      - name: Build openjverein plugin
+        run: mvn --batch-mode --file pom.xml clean package
+
+      - name: Save cache
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.m2/repository
+          key: cache-{{ hashFiles('setup-build.xml') }}-{{ hashFiles('**/pom.xml') }}
