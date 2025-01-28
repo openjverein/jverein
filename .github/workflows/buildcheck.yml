@@ -34,7 +34,7 @@ jobs:
             cache-
 
       - name: Build openjverein plugin
-        run: mvn --batch --file pom.xml clean package
+        run: mvn --batch-mode --file pom.xml clean package
 
       - name: Save cache
         if: steps.cache.outputs.cache-hit != 'true'
