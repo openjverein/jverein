@@ -97,20 +97,22 @@ public class MittelverwendungSaldoList extends MittelverwendungList
     ArrayList<MittelverwendungZeile> zeilen = new ArrayList<>();
     Double summeVermoegen = 0.0;
     String bezeichnung = "";
+    boolean nichtUnterdruecken = !Einstellungen.getEinstellung()
+        .getUnterdrueckungOhneBuchung();
     // Anlagevermögen
-    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null,
-        null, null, null, BLANK, "Anlagenvermögen"));
+    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
+        null, null, BLANK, "Anlagevermögen"));
     if (Einstellungen.getEinstellung().getSummenAnlagenkonto())
     {
       sql = getAnfangsbestandKontoartSql();
-      Double anlagenStand = (Double) service.execute(sql,
-          new Object[] { datumvon, Kontoart.ANLAGE.getKey(), datumvon }, rsd);
+      Double anlagenStand = (Double) service.execute(sql, new Object[] {
+          datumvon, Kontoart.ANLAGE.getKey(), datumvon, datumbis }, rsd);
       sql = getSummenBetragKontoartSql();
       anlagenStand += (Double) service.execute(sql,
           new Object[] { datumvon, datumbis, Kontoart.ANLAGE.getKey() }, rsd);
-      if (Math.abs(anlagenStand) > LIMIT)
+      if (Math.abs(anlagenStand) > LIMIT || nichtUnterdruecken)
       {
-        bezeichnung = "Summe Anlagenvermögen";
+        bezeichnung = "Summe Anlagevermögen";
         addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung,
             anlagenStand, 0.0, BLANK);
         summeVermoegen += anlagenStand;
@@ -122,19 +124,20 @@ public class MittelverwendungSaldoList extends MittelverwendungList
     }
     else
     {
-      sql = "SELECT id, bezeichnung, kommentar FROM konto WHERE konto.kontoart = ?";
+      sql = getAktiveKontenMapSql();
       @SuppressWarnings("unchecked")
-      HashMap<Long, String[]> map0 = (HashMap<Long, String[]>) service
-          .execute(sql, new Object[] { Kontoart.ANLAGE.getKey() }, rsmapa);
+      HashMap<Long, String[]> map0 = (HashMap<Long, String[]>) service.execute(
+          sql, new Object[] { Kontoart.ANLAGE.getKey(), datumvon, datumbis },
+          rsmapa);
       for (Long kontoId : map0.keySet())
       {
         sql = getAnfangsbestandKontoSql();
         Double kontoStand = (Double) service.execute(sql,
-            new Object[] { datumvon, kontoId, datumvon }, rsd);
+            new Object[] { datumvon, kontoId }, rsd);
         sql = getSummenBetragKontoSql();
         kontoStand += (Double) service.execute(sql,
             new Object[] { datumvon, datumbis, kontoId }, rsd);
-        if (Math.abs(kontoStand) > LIMIT)
+        if (Math.abs(kontoStand) > LIMIT || nichtUnterdruecken)
         {
           String kommentar = map0.get(kontoId)[1];
           if (kommentar != null && !kommentar.isEmpty())
@@ -146,9 +149,9 @@ public class MittelverwendungSaldoList extends MittelverwendungList
           summeVermoegen += kontoStand;
         }
       }
-      if (Math.abs(summeVermoegen) > LIMIT)
+      if (Math.abs(summeVermoegen) > LIMIT || nichtUnterdruecken)
       {
-        bezeichnung = "Summe Anlagenvermögen";
+        bezeichnung = "Summe Anlagevermögen";
         addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung,
             summeVermoegen, 0.0, BLANK);
       }
@@ -162,19 +165,20 @@ public class MittelverwendungSaldoList extends MittelverwendungList
     Double summeGeld = 0.0;
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
         null, null, BLANK, "Geldvermögen"));
-    sql = "SELECT id, bezeichnung, kommentar FROM konto WHERE konto.kontoart = ?";
+    sql = getAktiveKontenMapSql();
     @SuppressWarnings("unchecked")
-    HashMap<Long, String[]> map1 = (HashMap<Long, String[]>) service
-        .execute(sql, new Object[] { Kontoart.GELD.getKey() }, rsmapa);
+    HashMap<Long, String[]> map1 = (HashMap<Long, String[]>) service.execute(
+        sql, new Object[] { Kontoart.GELD.getKey(), datumvon, datumbis },
+        rsmapa);
     for (Long kontoId : map1.keySet())
     {
       sql = getAnfangsbestandKontoSql();
       Double kontoStand = (Double) service.execute(sql,
-          new Object[] { datumvon, kontoId, datumvon }, rsd);
+          new Object[] { datumvon, kontoId }, rsd);
       sql = getSummenBetragKontoSql();
       kontoStand += (Double) service.execute(sql,
           new Object[] { datumvon, datumbis, kontoId }, rsd);
-      if (Math.abs(kontoStand) > LIMIT)
+      if (Math.abs(kontoStand) > LIMIT || nichtUnterdruecken)
       {
         String kommentar = map1.get(kontoId)[1];
         if (kommentar != null && !kommentar.isEmpty())
@@ -186,11 +190,11 @@ public class MittelverwendungSaldoList extends MittelverwendungList
         summeGeld += kontoStand;
       }
     }
-    if (Math.abs(summeGeld) > LIMIT)
+    if (Math.abs(summeGeld) > LIMIT || nichtUnterdruecken)
     {
       bezeichnung = "Summe Geldvermögen";
-      addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung,
-          summeGeld, 0.0, BLANK);
+      addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, summeGeld,
+          0.0, BLANK);
       summeVermoegen += summeGeld;
     }
     else
@@ -202,19 +206,20 @@ public class MittelverwendungSaldoList extends MittelverwendungList
     Double summeSchulden = 0.0;
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
         null, null, BLANK, "Fremdkapital"));
-    sql = "SELECT id, bezeichnung, kommentar FROM konto WHERE konto.kontoart = ?";
+    sql = getAktiveKontenMapSql();
     @SuppressWarnings("unchecked")
-    HashMap<Long, String[]> map2 = (HashMap<Long, String[]>) service
-        .execute(sql, new Object[] { Kontoart.SCHULDEN.getKey() }, rsmapa);
+    HashMap<Long, String[]> map2 = (HashMap<Long, String[]>) service.execute(
+        sql, new Object[] { Kontoart.SCHULDEN.getKey(), datumvon, datumbis },
+        rsmapa);
     for (Long kontoId : map2.keySet())
     {
       sql = getAnfangsbestandKontoSql();
       Double kontoStand = (Double) service.execute(sql,
-          new Object[] { datumvon, kontoId, datumvon }, rsd);
+          new Object[] { datumvon, kontoId }, rsd);
       sql = getSummenBetragKontoSql();
       kontoStand += (Double) service.execute(sql,
           new Object[] { datumvon, datumbis, kontoId }, rsd);
-      if (Math.abs(kontoStand) > LIMIT)
+      if (Math.abs(kontoStand) > LIMIT || nichtUnterdruecken)
       {
         String kommentar = map2.get(kontoId)[1];
         if (kommentar != null && !kommentar.isEmpty())
@@ -226,7 +231,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
         summeSchulden += kontoStand;
       }
     }
-    if (Math.abs(summeSchulden) > LIMIT)
+    if (Math.abs(summeSchulden) > LIMIT || nichtUnterdruecken)
     {
       bezeichnung = "Summe Fremdkapital";
       addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung,
@@ -237,7 +242,6 @@ public class MittelverwendungSaldoList extends MittelverwendungList
     {
       zeilen.remove(zeilen.size() - 1);
     }
-
 
     bezeichnung = "Gesamtvermögen";
     addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung,
@@ -251,24 +255,25 @@ public class MittelverwendungSaldoList extends MittelverwendungList
         null, null, BLANK, "Mittelverwendung"));
     // Nutzungsgebundenes Anlagevermögen
     sql = getAnfangsbestandKontoartZweckSql();
-    Double anlagenStand = (Double) service.execute(sql,
-        new Object[] { datumvon, Kontoart.ANLAGE.getKey(),
-            Anlagenzweck.NUTZUNGSGEBUNDEN.getKey(), datumvon },
-        rsd);
+    Double anlagenStand = (Double) service
+        .execute(sql,
+            new Object[] { datumvon, Kontoart.ANLAGE.getKey(),
+                Anlagenzweck.NUTZUNGSGEBUNDEN.getKey(), datumvon, datumbis },
+            rsd);
     sql = getSummenBetragKontoartZweckSql();
     anlagenStand += (Double) service.execute(sql,
         new Object[] { datumvon, datumbis, Kontoart.ANLAGE.getKey(),
             Anlagenzweck.NUTZUNGSGEBUNDEN.getKey() },
         rsd);
-    if (Math.abs(anlagenStand) > LIMIT)
+    if (Math.abs(anlagenStand) > LIMIT || nichtUnterdruecken)
     {
-      bezeichnung = "Nutzungsgebundenes Anlagenvermögen";
+      bezeichnung = "Nutzungsgebundenes Anlagevermögen";
       addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
           -anlagenStand, BLANK);
       summeVermoegen -= anlagenStand;
     }
     // Fremdkapital
-    if (Math.abs(summeSchulden) > LIMIT)
+    if (Math.abs(summeSchulden) > LIMIT || nichtUnterdruecken)
     {
       bezeichnung = "Fremdkapital";
       addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
@@ -279,22 +284,22 @@ public class MittelverwendungSaldoList extends MittelverwendungList
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
         null, null, BLANK, "Nicht zugeordnete Rücklagen"));
     Double summeRuecklagen = 0.0;
-    sql = "SELECT id, bezeichnung, kommentar FROM konto"
-        + " WHERE konto.kontoart >= ?" + " AND konto.kontoart <= ?"
-        + " AND konto.anlagenklasse IS NULL";
+    sql = getAktiveKontenRangeMapSql() + " AND konto.anlagenklasse IS NULL";
     @SuppressWarnings("unchecked")
     HashMap<Long, String[]> map3 = (HashMap<Long, String[]>) service
-        .execute(sql, new Object[] { Kontoart.RUECKLAGE_ZWECK_GEBUNDEN.getKey(),
-            Kontoart.RUECKLAGE_SONSTIG.getKey() }, rsmapa);
+        .execute(sql,
+            new Object[] { Kontoart.RUECKLAGE_ZWECK_GEBUNDEN.getKey(),
+                Kontoart.RUECKLAGE_SONSTIG.getKey(), datumvon, datumbis },
+            rsmapa);
     for (Long kontoId : map3.keySet())
     {
       sql = getAnfangsbestandKontoSql();
       Double ruecklagen = (Double) service.execute(sql,
-          new Object[] { datumvon, kontoId, datumvon }, rsd);
+          new Object[] { datumvon, kontoId }, rsd);
       sql = getSummenBetragKontoSql();
       ruecklagen += (Double) service.execute(sql,
           new Object[] { datumvon, datumbis, kontoId }, rsd);
-      if (Math.abs(ruecklagen) > LIMIT)
+      if (Math.abs(ruecklagen) > LIMIT || nichtUnterdruecken)
       {
         String kommentar = map3.get(kontoId)[1];
         if (kommentar != null && !kommentar.isEmpty())
@@ -306,7 +311,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
         summeRuecklagen += ruecklagen;
       }
     }
-    if (Math.abs(summeRuecklagen) > LIMIT)
+    if (Math.abs(summeRuecklagen) > LIMIT || nichtUnterdruecken)
     {
       bezeichnung = "Summe nicht zugeordneter Rücklagen";
       addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
@@ -329,24 +334,23 @@ public class MittelverwendungSaldoList extends MittelverwendungList
       zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null,
           null, null, null, BLANK, buchungsklassen.get(buchungsklasseId)));
       summeRuecklagen = 0.0;
-      sql = "SELECT id, bezeichnung, kommentar FROM konto"
-          + " WHERE konto.kontoart >= ?" + " AND konto.kontoart <= ?"
-          + " AND konto.anlagenklasse = ?";
+      sql = getAktiveKontenRangeMapSql() + " AND konto.anlagenklasse = ?";
       @SuppressWarnings("unchecked")
-      HashMap<Long, String[]> map4 = (HashMap<Long, String[]>) service
-          .execute(sql,
-              new Object[] { Kontoart.RUECKLAGE_ZWECK_GEBUNDEN.getKey(),
-                  Kontoart.RUECKLAGE_SONSTIG.getKey(), buchungsklasseId },
-              rsmapa);
+      HashMap<Long, String[]> map4 = (HashMap<Long, String[]>) service.execute(
+          sql,
+          new Object[] { Kontoart.RUECKLAGE_ZWECK_GEBUNDEN.getKey(),
+              Kontoart.RUECKLAGE_SONSTIG.getKey(), datumvon, datumbis,
+              buchungsklasseId },
+          rsmapa);
       for (Long kontoId : map4.keySet())
       {
         sql = getAnfangsbestandKontoSql();
         Double ruecklagen = (Double) service.execute(sql,
-            new Object[] { datumvon, kontoId, datumvon }, rsd);
+            new Object[] { datumvon, kontoId }, rsd);
         sql = getSummenBetragKontoSql();
         ruecklagen += (Double) service.execute(sql,
             new Object[] { datumvon, datumbis, kontoId }, rsd);
-        if (Math.abs(ruecklagen) > LIMIT)
+        if (Math.abs(ruecklagen) > LIMIT || nichtUnterdruecken)
         {
           String kommentar = map4.get(kontoId)[1];
           if (kommentar != null && !kommentar.isEmpty())
@@ -358,7 +362,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
           summeRuecklagen += ruecklagen;
         }
       }
-      if (Math.abs(summeRuecklagen) > LIMIT)
+      if (Math.abs(summeRuecklagen) > LIMIT || nichtUnterdruecken)
       {
         bezeichnung = "Summe Rücklagen/Vermögen "
             + buchungsklassen.get(buchungsklasseId);
@@ -383,12 +387,30 @@ public class MittelverwendungSaldoList extends MittelverwendungList
     return zeilen;
   }
 
+  // Parameter Kontoart, datumvon, datumbis
+  private String getAktiveKontenMapSql() throws RemoteException
+  {
+    return "SELECT id, bezeichnung, kommentar FROM konto WHERE konto.kontoart = ?"
+        + " AND (konto.aufloesung IS NULL OR konto.aufloesung >= ?)"
+        + " AND (konto.eroeffnung IS NULL OR konto.eroeffnung <= ?)";
+  }
+
+  // Parameter Kontoart von, Kontoart bis, datumvon, datumbis
+  private String getAktiveKontenRangeMapSql() throws RemoteException
+  {
+    return "SELECT id, bezeichnung, kommentar FROM konto WHERE konto.kontoart >= ?"
+        + " AND konto.kontoart <= ?"
+        + " AND (konto.aufloesung IS NULL OR konto.aufloesung >= ?)"
+        + " AND (konto.eroeffnung IS NULL OR konto.eroeffnung <= ?)";
+  }
+
   private String getAnfangsbestandKontoartSql() throws RemoteException
   {
     return "SELECT SUM(anfangsbestand.betrag) FROM anfangsbestand, konto"
         + " WHERE anfangsbestand.datum = ?"
         + " AND anfangsbestand.konto = konto.id " + " AND konto.kontoart = ? "
-        + " AND (konto.aufloesung IS NULL OR konto.aufloesung >= ?)";
+        + " AND (konto.aufloesung IS NULL OR konto.aufloesung >= ?)"
+        + " AND (konto.eroeffnung IS NULL OR konto.eroeffnung <= ?)";
   }
 
   private String getAnfangsbestandKontoartZweckSql() throws RemoteException
@@ -397,7 +419,8 @@ public class MittelverwendungSaldoList extends MittelverwendungList
         + " WHERE anfangsbestand.datum = ?"
         + " AND anfangsbestand.konto = konto.id " + " AND konto.kontoart = ? "
         + " AND konto.zweck = ?"
-        + " AND (konto.aufloesung IS NULL OR konto.aufloesung >= ?)";
+        + " AND (konto.aufloesung IS NULL OR konto.aufloesung >= ?)"
+        + " AND (konto.eroeffnung IS NULL OR konto.eroeffnung <= ?)";
   }
 
   private String getSummenBetragKontoartSql() throws RemoteException
@@ -418,8 +441,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
   {
     return "SELECT SUM(anfangsbestand.betrag) FROM anfangsbestand, konto"
         + " WHERE anfangsbestand.datum = ?" + " AND anfangsbestand.konto = ?"
-        + " AND anfangsbestand.konto = konto.id "
-        + " AND (konto.aufloesung IS NULL OR konto.aufloesung >= ?)";
+        + " AND anfangsbestand.konto = konto.id ";
   }
 
   private String getSummenBetragKontoSql() throws RemoteException

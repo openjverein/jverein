@@ -47,7 +47,7 @@ public class JahresabschlussView extends AbstractView
       info.paint(getParent());
     }
     
-    LabelGroup group = new LabelGroup(getParent(), "Jahresabschluss");
+    LabelGroup group = new LabelGroup(getParent(), "Jahresabschluss", true);
     group.addLabelPair("Von", control.getVon());
     group.addLabelPair("Bis", control.getBis());
     group.addLabelPair("Datum", control.getDatum());
