@@ -23,6 +23,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,6 +32,15 @@ import java.util.Map;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.mustangproject.BankDetails;
+import org.mustangproject.Contact;
+import org.mustangproject.DirectDebit;
+import org.mustangproject.Invoice;
+import org.mustangproject.Item;
+import org.mustangproject.Product;
+import org.mustangproject.TradeParty;
+import org.mustangproject.ZUGFeRD.IZUGFeRDExporter;
+import org.mustangproject.ZUGFeRD.ZUGFeRDExporterFromPDFA;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -42,6 +53,10 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ICC_Profile;
+import com.itextpdf.text.pdf.PdfAConformanceException;
+import com.itextpdf.text.pdf.PdfAConformanceLevel;
+import com.itextpdf.text.pdf.PdfAWriter;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
@@ -54,10 +69,14 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.VarTools;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
@@ -104,7 +123,8 @@ public class FormularAufbereitung
    *          Die Datei, in die geschrieben werden soll
    * @throws RemoteException
    */
-  public FormularAufbereitung(final File f) throws RemoteException
+  public FormularAufbereitung(final File f, boolean pdfa, boolean encrypt)
+      throws RemoteException
   {
     this.f = f;
     try
@@ -112,17 +132,43 @@ public class FormularAufbereitung
       doc = new Document();
       fos = new FileOutputStream(f);
 
-      writer = PdfWriter.getInstance(doc, fos);
-      writer.setEncryption(null, null, 
-          PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS, PdfWriter.ENCRYPTION_AES_256);
-      doc.open();
+      if (pdfa)
+      {
+        writer = PdfAWriter.getInstance(doc, fos,
+            PdfAConformanceLevel.PDF_A_3B);
 
+        writer.createXmpMetadata();
+        doc.open();
+
+        ICC_Profile icc = ICC_Profile
+            .getInstance(Class.forName("org.mustangproject.Invoice")
+                .getClassLoader().getResourceAsStream("sRGB.icc"));
+        writer.setOutputIntents("Custom", "", "http://www.color.org",
+            "sRGB IEC61966-2.1", icc);
+
+        writer.setCompressionLevel(9);
+      }
+      else
+      {
+        writer = PdfWriter.getInstance(doc, fos);
+        if (encrypt)
+        {
+          writer.setEncryption(null, null,
+              PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS,
+              PdfWriter.ENCRYPTION_AES_256);
+        }
+        doc.open();
+      }
     }
     catch (IOException e)
     {
       throw new RemoteException("Fehler", e);
     }
     catch (DocumentException e)
+    {
+      throw new RemoteException("Fehler", e);
+    }
+    catch (ClassNotFoundException e)
     {
       throw new RemoteException("Fehler", e);
     }
@@ -353,7 +399,7 @@ public class FormularAufbereitung
    * 
    * @throws IOException
    */
-  public void closeFormular() throws IOException
+  public void closeFormular() throws IOException, PdfAConformanceException
   {
     doc.close();
     writer.close();
@@ -589,5 +635,106 @@ public class FormularAufbereitung
       throw new RemoteException("Fehler", e);
     }
   }
-  
+
+  @SuppressWarnings("resource")
+  public void addZUGFeRD(Rechnung re, boolean mahnung) throws IOException
+  {
+    Mitgliedskonto mk = re.getMitgliedskonto();
+    if (mk == null)
+    {
+      return;
+    }
+
+    String sourcePDF = f.getAbsolutePath();
+    Einstellung e = Einstellungen.getEinstellung();
+    IZUGFeRDExporter ze = new ZUGFeRDExporterFromPDFA().ignorePDFAErrors()
+        .load(sourcePDF).setProducer("JVerein")
+        .setCreator(System.getProperty("user.name"));
+
+    Invoice invoice = new Invoice()
+        // Fälligkeitsdatum
+        .setDueDate(mk.getDatum())
+        // Lieferdatum
+        .setDeliveryDate(mk.getDatum())
+        // Rechnungsdatum
+        .setIssueDate(re.getDatum())
+        // Rechnungsnummer
+        .setNumber(re.getID());
+
+    // Rechnungssteller
+    TradeParty sender = new TradeParty(e.getName(),
+        StringTool.toNotNullString(e.getStrasse()),
+        StringTool.toNotNullString(e.getPlz()),
+        StringTool.toNotNullString(e.getOrt()), e.getStaat())
+            .addTaxID(e.getSteuernummer());
+    if (e.getUStID().length() > 0)
+      sender.addVATID(e.getUStID());
+
+    if (re.getZahlungsweg().getKey() == Zahlungsweg.BASISLASTSCHRIFT)
+    {
+      // Mandat
+      sender.addDebitDetails(new DirectDebit(re.getIBAN(), re.getMandatID()));
+      // Gläubiger identifikationsnummer
+      invoice.setCreditorReferenceID(e.getGlaeubigerID());
+    }
+    else
+    {
+      sender.addBankDetails(
+          new BankDetails(StringTool.toNotNullString(e.getIban()),
+              StringTool.toNotNullString(e.getBic())));
+    }
+    invoice.setSender(sender);
+
+    if (mahnung)
+    {
+      // Bereits gezahlt
+      invoice.setTotalPrepaidAmount(
+          new BigDecimal(re.getMitgliedskonto().getIstSumme()));
+    }
+
+    String id = re.getMitglied().getID();
+    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+      id = re.getMitglied().getExterneMitgliedsnummer();
+
+    // Rechnungsempfänger
+    invoice.setRecipient(new TradeParty(
+        StringTool.toNotNullString(re.getVorname()) + " "
+            + StringTool.toNotNullString(re.getName()),
+        StringTool.toNotNullString(re.getStrasse()),
+        StringTool.toNotNullString(re.getPlz()),
+        StringTool.toNotNullString(re.getOrt()),
+        re.getStaatCode() == null || re.getStaatCode().length() == 0
+            ? e.getStaat()
+            : re.getStaatCode())
+                .setID(id)
+                .setContact(new Contact(
+                    StringTool.toNotNullString(re.getVorname()) + " "
+                        + StringTool.toNotNullString(re.getName()),
+                    re.getMitglied().getTelefonprivat(),
+                    re.getMitglied().getEmail()))
+                .setAdditionalAddress(
+                    StringTool.toNotNullString(re.getAdressierungszusatz())));
+
+    // LeitwegID
+    if (re.getLeitwegID() != null && re.getLeitwegID().length() > 0)
+    {
+      invoice.setReferenceNumber(re.getLeitwegID());
+    }
+
+    // Sollbuchungspositionen
+    for (SollbuchungPosition sp : re.getMitgliedskonto()
+        .getSollbuchungPositionList())
+    {
+      BigDecimal betrag = new BigDecimal(sp.getNettobetrag());
+      invoice.addItem(new Item(new Product(sp.getZweck(), "", "LS", // LS =
+                                                                    // pauschal
+          new BigDecimal(sp.getSteuersatz()).setScale(2, RoundingMode.HALF_UP)),
+          betrag.abs().setScale(4, RoundingMode.HALF_UP),
+          new BigDecimal(betrag.signum())));
+    }
+    ze.setTransaction(invoice);
+    ze.export(f.getAbsolutePath());
+    ze.close();
+  }
+
 }

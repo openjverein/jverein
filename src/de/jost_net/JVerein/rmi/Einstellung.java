@@ -18,6 +18,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.io.IBankverbindung;
@@ -620,4 +621,23 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public void setBeitragAltersstufen(String altersstufen) throws RemoteException;
 
+  public void setUStID(String ustid) throws RemoteException;
+
+  public String getUStID() throws RemoteException;
+
+  public void setStaat(String land) throws RemoteException;
+
+  public String getStaat() throws RemoteException;
+
+  public Boolean getMittelverwendung() throws RemoteException;
+
+  public void setMittelverwendung(Boolean mittelverwendung) throws RemoteException;
+
+  public Long getVerrechnungskontoId() throws RemoteException;
+
+  public void setVerrechnungskontoId(Long konto) throws RemoteException;
+
+  public boolean getSplitPositionZweck() throws RemoteException;
+
+  public void setSplitPositionZweck(boolean split) throws RemoteException;;
 }

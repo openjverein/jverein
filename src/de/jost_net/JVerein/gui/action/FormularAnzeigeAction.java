@@ -32,6 +32,7 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
+import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.FormularAufbereitung;
@@ -99,11 +100,6 @@ public class FormularAnzeigeAction implements Action
       map.put(AllgemeineVar.ZAEHLER.getName(), formular.getZaehler());
       map.put(FormularfeldControl.EMPFAENGER,
           "Herr\nDr. Willi Wichtig\nTestgasse 1\n12345 Testenhausen");
-      map.put(FormularfeldControl.BUCHUNGSDATUM, new Date());
-      map.put(FormularfeldControl.ZAHLUNGSGRUND,
-          "Zahlungsgrund1 Zahlungsgrund2");
-      map.put(FormularfeldControl.ZAHLUNGSGRUND1, "Zahlungsgrund 1");
-      map.put(FormularfeldControl.BETRAG, Double.valueOf(1234.96 + 15.0));
       map.put("Betrag in Worten", GermanNumber.toString(1234 + 15));
       map.put(FormularfeldControl.ID, "444");
       map.put(FormularfeldControl.EXTERNEMITGLIEDSNUMMER, "9999");
@@ -262,7 +258,6 @@ public class FormularAnzeigeAction implements Action
       map.put(SpendenbescheinigungVar.UNTERLAGENWERTERMITTUNG.getName(),
           "Geeignete Unterlagen, die zur Wertermittlung gedient haben, z. B. Rechnung, Gutachten, liegen vor.");
 
-      map.put(FormularfeldControl.BUCHUNGSDATUM, new Date());
       // Mitgliedskonto
 
       ArrayList<Date> buda = new ArrayList<>();
@@ -320,13 +315,31 @@ public class FormularAnzeigeAction implements Action
       differenz.add(239.99d);
       ist.add(10d);
 
-      map.put(FormularfeldControl.BUCHUNGSDATUM, buda.toArray());
-      map.put(FormularfeldControl.ZAHLUNGSGRUND, zg.toArray());
-      map.put(FormularfeldControl.ZAHLUNGSGRUND1, zg1.toArray());
-      map.put(FormularfeldControl.BETRAG, betrag.toArray());
+      map.put(RechnungVar.STAND.getName(), -39.99d);
+      map.put(RechnungVar.QRCODE_SUMME.getName(), "");
+      map.put(RechnungVar.DATUM.getName(), new Date());
+      map.put(RechnungVar.ANREDE.getName(), "Herrn");
+      map.put(RechnungVar.TITEL.getName(), "Dr.");
+      map.put(RechnungVar.NAME.getName(), "Wichtig");
+      map.put(RechnungVar.VORNAME.getName(), "Willi");
+      map.put(RechnungVar.STRASSE.getName(), "Testgasse 1");
+      map.put(RechnungVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhaus");
+      map.put(RechnungVar.PLZ.getName(), "12345");
+      map.put(RechnungVar.ORT.getName(), "Testenhausen");
+      map.put(RechnungVar.STAAT.getName(), "DEUTSCHLAND");
+      map.put(RechnungVar.GESCHLECHT.getName(), GeschlechtInput.MAENNLICH);
+      map.put(RechnungVar.ANREDE_DU.getName(), "");
+      map.put(RechnungVar.ANREDE_FOERMLICH.getName(), "");
+      map.put(RechnungVar.PERSONENART.getName(), "");
+      map.put(RechnungVar.MANDATID.getName(), "105");
+      map.put(RechnungVar.MANDATDATUM.getName(), new Date());
+      map.put(RechnungVar.BIC.getName(), "NORSDE51XXX");
+      map.put(RechnungVar.IBAN.getName(), "DE27100777770209299700");
+      map.put(RechnungVar.IBANMASKIERT.getName(),
+          VarTools.maskieren("DE27100777770209299700"));
+
       map.put(RechnungVar.BUCHUNGSDATUM.getName(), buda.toArray());
       map.put(RechnungVar.ZAHLUNGSGRUND.getName(), zg.toArray());
-      map.put(RechnungVar.ZAHLUNGSGRUND1.getName(), zg1.toArray());
       map.put(RechnungVar.NETTOBETRAG.getName(), nettobetrag.toArray());
       map.put(RechnungVar.STEUERSATZ.getName(), steuersatz.toArray());
       map.put(RechnungVar.STEUERBETRAG.getName(), steuerbetrag.toArray());
@@ -336,7 +349,12 @@ public class FormularAnzeigeAction implements Action
       map.put(RechnungVar.SUMME_OFFEN.getName(), 700);
       map.put(RechnungVar.QRCODE_INTRO.getName(),
           Einstellungen.getEinstellung().getQRCodeIntro());
-      FormularAufbereitung fab = new FormularAufbereitung(file);
+      map.put(RechnungVar.EMPFAENGER.getName(),
+          "Herr\nDr. Willi Wichtig\nTestgasse 1\n12345 Testenhausen");
+      map.put(RechnungVar.NUMMER.getName(), "0001");
+      map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(),
+          Einstellungen.getEinstellung().getRechnungTextUeberweisung());
+      FormularAufbereitung fab = new FormularAufbereitung(file, false, false);
       fab.writeForm(formular, map);
       fab.showFormular();
     }

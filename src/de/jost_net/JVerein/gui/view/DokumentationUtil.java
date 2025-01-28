@@ -24,7 +24,7 @@ public class DokumentationUtil
   
   //private static final String ALLGEMEIN = "allgemein/";
   
-  private static final String FUNKTIONEN = "v2.9.0/";
+  private static final String FUNKTIONEN = "v3.0.x/";
   
   private static final String ADMIN = "administration/";
   
@@ -113,6 +113,8 @@ public class DokumentationUtil
   public static final String SPLITBUCHUNG = PRE + FUNKTIONEN + BUCHF + "splittbuchungen";
   
   public static final String ANLAGENLISTE = PRE + FUNKTIONEN + BUCHF + "anlagenverzeichnis";
+  
+  public static final String MITTELVERWENDUNG = PRE + FUNKTIONEN + BUCHF + "mittelverwendung";
 
   public static final String WIRTSCHAFTSPLANUNG = PRE + FUNKTIONEN + BUCHF + "wirtschaftsplanung";
 

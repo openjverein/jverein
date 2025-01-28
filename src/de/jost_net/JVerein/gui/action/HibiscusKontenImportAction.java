@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.KontoControl;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.hbci.gui.dialogs.KontoAuswahlDialog;
@@ -76,6 +77,7 @@ public class HibiscusKontenImportAction implements Action
       jvereinkonto.setNummer(k.getKontonummer());
       jvereinkonto.setBezeichnung(k.getBezeichnung());
       jvereinkonto.setHibiscusId(Integer.valueOf(k.getID()));
+      jvereinkonto.setKontoArt(Kontoart.GELD);
       jvereinkonto.store();
       control.refreshTable();
       GUI.getStatusBar().setSuccessText(

@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import com.itextpdf.text.pdf.BaseFont;
 
@@ -40,7 +41,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-
 import de.willuhn.logging.Logger;
 
 public class FormularfeldControl extends FormularPartControl
@@ -75,14 +75,6 @@ public class FormularfeldControl extends FormularPartControl
   public static final String TAGESDATUMMM = "Tagesdatum MM";
 
   public static final String TAGESDATUMJJJJ = "Tagesdatum JJJJ";
-
-  public static final String ZAHLUNGSGRUND = "Zahlungsgrund";
-
-  public static final String ZAHLUNGSGRUND1 = "Zahlungsgrund 1";
-
-  public static final String BUCHUNGSDATUM = "Buchungsdatum";
-
-  public static final String BETRAG = "Betrag";
 
   public static final String ZAHLUNGSWEG = "Zahlungsweg";
 
@@ -251,7 +243,11 @@ public class FormularfeldControl extends FormularPartControl
       }
       for (RechnungVar mkv : RechnungVar.values())
       {
-        namen.add(mkv.getName());
+        if (!RechnungVar.class.getField(mkv.name())
+            .isAnnotationPresent(Deprecated.class))
+        {
+          namen.add(mkv.getName());
+        }
       }
 
     }
@@ -277,6 +273,7 @@ public class FormularfeldControl extends FormularPartControl
         namen.add(Einstellungen.ZUSATZFELD_PRE + zusatzfeld.getName());
       }
     }
+    Collections.sort(namen);
     name = new SelectInput(namen, getFormularfeld().getName());
     return name;
   }

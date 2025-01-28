@@ -29,6 +29,7 @@ import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatJJJJMMTT;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.util.ApplicationException;
 
 public class FreiesFormularAusgabe
 {
@@ -40,7 +41,8 @@ public class FreiesFormularAusgabe
 
   ZipOutputStream zos = null;
 
-  public FreiesFormularAusgabe(FreieFormulareControl control) throws IOException
+  public FreiesFormularAusgabe(FreieFormulareControl control)
+      throws IOException, ApplicationException
   {
     this.control = control;
     Formular formular = (Formular) control
@@ -55,7 +57,7 @@ public class FreiesFormularAusgabe
     {
       case DRUCK:
         file = getDateiAuswahl("pdf", formular.getBezeichnung());
-        formularaufbereitung = new FormularAufbereitung(file);
+        formularaufbereitung = new FormularAufbereitung(file, false, false);
         break;
       case MAIL:
         file = getDateiAuswahl("zip", formular.getBezeichnung());
@@ -79,7 +81,7 @@ public class FreiesFormularAusgabe
   }
 
   public void aufbereitung(Formular formular, ArrayList<Mitglied> mitglieder)
-      throws IOException
+      throws IOException, ApplicationException
   {
     for (Mitglied m : mitglieder)
     {
@@ -94,7 +96,7 @@ public class FreiesFormularAusgabe
             continue;
           }
           File f = File.createTempFile(getDateiname(m), ".pdf");
-          formularaufbereitung = new FormularAufbereitung(f);
+          formularaufbereitung = new FormularAufbereitung(f, false, false);
           aufbereitenFormular(m, formularaufbereitung, formular);
           formularaufbereitung.closeFormular();
           zos.putNextEntry(new ZipEntry(getDateiname(m) + ".pdf"));
@@ -154,11 +156,12 @@ public class FreiesFormularAusgabe
   }
 
   void aufbereitenFormular(Mitglied m, FormularAufbereitung fa, Formular fo)
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
     Map<String, Object> map = new MitgliedMap().getMap(m, null);
     map = new AllgemeineMap().getMap(map);
     fa.writeForm(fo, map);
+    fo.store();
   }
 
   String getDateiname(Mitglied m) throws RemoteException

@@ -16,9 +16,16 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.rmi.RemoteException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TreeSet;
+
+import org.apache.velocity.app.Velocity;
+
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.MailDetailAction;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailAuswahlMenu;
@@ -49,15 +56,6 @@ import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
-import org.apache.velocity.app.Velocity;
-
-import java.rmi.RemoteException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-import java.util.TreeSet;
 
 public class MailControl extends FilterControl
 {

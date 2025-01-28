@@ -37,6 +37,7 @@ public class Update0453 extends AbstractDDLUpdate
     execute("update konto set kontoart = 1 where anlagenkonto IS FALSE");
     execute("update konto set kontoart = 2 where anlagenkonto IS TRUE");
     
-    execute(dropColumn("konto", "anlagenkonto"));
+    // Das kann man später machen, so kann man auch wieder in der SW zurück gehen
+    // execute(dropColumn("konto", "anlagenkonto"));
   }
 }

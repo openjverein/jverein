@@ -34,6 +34,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -69,6 +70,8 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
   private static final String SETTINGS_NAME_MITGLIEDSNUMMER = SETTINGS_PREFIX + "MITGLIEDSNUMMER";
   private static final String SETTINGS_NAME_VORNAME_NAME = SETTINGS_PREFIX + "VORNAME_NAME";
 
+  private static final String SETTINGS_ZWECK = SETTINGS_PREFIX + "ZWECK";
+
   private static final int WINDOW_WIDTH = 620;
 
   private DateInput     dateFrom = null;
@@ -76,6 +79,8 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
   private CheckboxInput useIban = null;
   private CheckboxInput useMemberNumber = null;
   private CheckboxInput useName = null;
+
+  private CheckboxInput useZweck;
 
   private Settings settings = null;
 
@@ -102,6 +107,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
     useIban = new CheckboxInput(settings.getBoolean(SETTINGS_NAME_IBAN, true));
     useMemberNumber = new CheckboxInput(settings.getBoolean(SETTINGS_NAME_MITGLIEDSNUMMER, false));
     useName = new CheckboxInput(settings.getBoolean(SETTINGS_NAME_VORNAME_NAME, false));
+    useZweck = new CheckboxInput(settings.getBoolean(SETTINGS_ZWECK, false));
   }
 
   private DateInput createDateInput(Date date, boolean isStart)
@@ -128,6 +134,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
     group.addLabelPair("Nach eindeutiger IBAN", useIban);
     group.addLabelPair("Nach " + (Einstellungen.getEinstellung().getExterneMitgliedsnummer().booleanValue() ? "Ext. Mitgliedsnummer" : "Mitgliedsnummer"), useMemberNumber);
     group.addLabelPair("Nach eindeutigen Vorname und Nachname", useName);
+    group.addLabelPair("Nach eindeutigem Verwendungszweck", useZweck);
     ButtonArea buttons = new ButtonArea();
 
     Button button = new Button("Zuordnungen suchen", new Action()
@@ -167,10 +174,12 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
     final boolean useIbanInput = Boolean.TRUE.equals(this.useIban.getValue());
     final boolean useMemberNumberInput = Boolean.TRUE.equals(this.useMemberNumber.getValue());
     final boolean useNameInput = Boolean.TRUE.equals(this.useName.getValue());
+    final boolean useZweckInput = Boolean.TRUE.equals(this.useZweck.getValue());
 
     settings.setAttribute(SETTINGS_NAME_IBAN, useIbanInput);
     settings.setAttribute(SETTINGS_NAME_MITGLIEDSNUMMER, useMemberNumberInput);
     settings.setAttribute(SETTINGS_NAME_VORNAME_NAME, useNameInput);
+    settings.setAttribute(SETTINGS_ZWECK, useZweckInput);
 
     BackgroundTask t = new BackgroundTask()
     {
@@ -182,7 +191,8 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
         {
           boolean externeMitgliedsnummer = Boolean.TRUE.equals(Einstellungen.getEinstellung().getExterneMitgliedsnummer());
 
-          if(!useIbanInput && !useMemberNumberInput && !useNameInput)
+          if (!useIbanInput && !useMemberNumberInput && !useNameInput
+              && !useZweckInput)
           {
             GUI.getStatusBar().setErrorText("Es wurde keine Zuordnungsart angegeben.");
             return;
@@ -208,6 +218,8 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
 
           Map<String, String> uniqueNames = new HashMap<>();
           Set<String> duplicateNames = new HashSet<>();
+
+          Map<String, String> uniqueZweck = new HashMap<>();
 
           if(useIbanInput || useMemberNumberInput || useNameInput)
           {
@@ -240,11 +252,33 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
               }
             }
           }
+          if (useZweckInput)
+          {
+            ResultSetExtractor rs = new ResultSetExtractor()
+            {
+              @Override
+              public Object extract(ResultSet rs) throws SQLException, RemoteException
+              {
+                while (rs.next())
+                {
+                  // 1 = MitgliedID, 2 = Zweck1
+                  uniqueZweck.put(rs.getString(2), rs.getString(1));
+                }
+                return new Object();
+              }
+            };
+
+            Einstellungen.getDBService().execute(
+                "SELECT mitglied,zweck1 FROM mitgliedskonto WHERE mitglied IS NOT NULL "
+                    + "GROUP BY zweck1 HAVING COUNT(zweck1) = 1",
+                new Object[] {}, rs);
+          }
           duplicateIbans.clear();
           duplicateIds.clear();
           duplicateNames.clear();
 
-          if(uniqueIbans.isEmpty() && uniqueIds.isEmpty() && uniqueNames.isEmpty())
+          if (uniqueIbans.isEmpty() && uniqueIds.isEmpty()
+              && uniqueNames.isEmpty() && uniqueZweck.isEmpty())
           {
             GUI.getStatusBar().setErrorText("Es wurden keine eindeutigen Mitglieder zum Zuordnen in den gewählten Zeitraum gefunden.");
             return;
@@ -253,6 +287,10 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
           DBIterator<Buchung> buchungen = Einstellungen.getDBService().createList(Buchung.class);
           buchungen.addFilter("datum >= ?", dateFromInput);
           buchungen.addFilter("datum <= ?", dateUntilInput);
+          buchungen.addFilter("(splittyp != ? or splittyp is null)",
+              SplitbuchungTyp.HAUPT);
+          buchungen.addFilter("(splittyp != ? or splittyp is null)",
+              SplitbuchungTyp.GEGEN);
           buchungen.addFilter("mitgliedskonto is null");
           buchungen.setOrder("ORDER BY datum");
 
@@ -266,7 +304,15 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
             String bookingPurpose = getBookingPurpose(buchung);
             if(assginMemberAccountToBooking(assignedBooking,  usedMemberAccount, dateFromInput, dateUntilInput, buchung, uniqueIbans.get(buchung.getIban()), "IBAN") ||
                 assginMemberAccountToBooking(assignedBooking, usedMemberAccount, dateFromInput, dateUntilInput, buchung, uniqueIds.get(bookingPurpose), externeMitgliedsnummer ? "Ext. Mitgliedsnummer" : "Mitgliedsnummer") ||
-                assginMemberAccountToBooking(assignedBooking, usedMemberAccount, dateFromInput, dateUntilInput, buchung, uniqueNames.get(bookingPurpose), "Vorname und Nachname")) 
+                assginMemberAccountToBooking(assignedBooking, usedMemberAccount,
+                    dateFromInput, dateUntilInput, buchung,
+                    uniqueNames.get(bookingPurpose), "Vorname und Nachname")
+                || assginMemberAccountToBooking(assignedBooking,
+                    usedMemberAccount, dateFromInput, dateUntilInput, buchung,
+                    uniqueNames.get(buchung.getName()), "Vorname und Nachname")
+                || assginMemberAccountToBooking(assignedBooking,
+                    usedMemberAccount, dateFromInput, dateUntilInput, buchung,
+                    uniqueZweck.get(bookingPurpose), "Verwendungszweck"))
             {
               continue;
             }

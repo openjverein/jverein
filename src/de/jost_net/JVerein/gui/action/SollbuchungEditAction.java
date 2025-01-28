@@ -32,16 +32,20 @@ public class SollbuchungEditAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    MitgliedskontoNode mkn = null;
     Mitgliedskonto mk = null;
+    MitgliedskontoNode mkn = null;
 
-    if (context != null && (context instanceof MitgliedskontoNode))
+    if (context instanceof Mitgliedskonto)
+    {
+      mk = (Mitgliedskonto) context;
+    }
+    else if (context instanceof MitgliedskontoNode)
     {
       mkn = (MitgliedskontoNode) context;
       try
       {
-        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-            Mitgliedskonto.class, mkn.getID());
+        mk = (Mitgliedskonto) Einstellungen.getDBService()
+            .createObject(Mitgliedskonto.class, mkn.getID());
       }
       catch (RemoteException e)
       {
@@ -49,23 +53,10 @@ public class SollbuchungEditAction implements Action
             "Fehler beim Editieren einer Sollbuchung");
       }
     }
-    else if (context != null && (context instanceof Mitgliedskonto))
-    {
-      mk = (Mitgliedskonto) context;
-    }
     else
     {
-      try
-      {
-        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-            Mitgliedskonto.class, null);
-      }
-      catch (Exception e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung einer neuen Sollbuchung", e);
-      }
+      throw new ApplicationException("Keine Sollbuchung ausgewählt");
     }
-    GUI.startView(new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
+    GUI.startView(new SollbuchungDetailView(), mk);
   }
 }

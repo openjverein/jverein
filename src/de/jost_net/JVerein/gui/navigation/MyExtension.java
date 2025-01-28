@@ -16,6 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.navigation;
 
+import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import com.schlevoigt.JVerein.gui.action.BuchungsTexteKorrigierenAction;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AboutAction;
@@ -73,13 +77,14 @@ import de.jost_net.JVerein.gui.action.MitgliedSucheAction;
 import de.jost_net.JVerein.gui.action.MitgliedstypListAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedSucheAction;
 import de.jost_net.JVerein.gui.action.PreNotificationAction;
+import de.jost_net.JVerein.gui.action.MittelverwendungListeAction;
 import de.jost_net.JVerein.gui.action.ProjektListAction;
 import de.jost_net.JVerein.gui.action.ProjektSaldoAction;
 import de.jost_net.JVerein.gui.action.QIFBuchungsImportViewAction;
 import de.jost_net.JVerein.gui.action.RechnungListeAction;
 import de.jost_net.JVerein.gui.action.SollbuchungListeAction;
 import de.jost_net.JVerein.gui.action.SollbuchungMahnungAction;
-import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
+import de.jost_net.JVerein.gui.action.SollbuchungRechnungMailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungListeAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
 import de.jost_net.JVerein.gui.action.StatistikJahrgaengeAction;
@@ -97,10 +102,6 @@ import de.willuhn.jameica.gui.NavigationItem;
 import de.willuhn.jameica.gui.extension.Extendable;
 import de.willuhn.jameica.gui.extension.Extension;
 import de.willuhn.logging.Logger;
-
-import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class MyExtension implements Extension
 {
@@ -213,6 +214,11 @@ public class MyExtension implements Extension
           new ProjektSaldoAction(), "euro-sign.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
           new KontensaldoAction(), "euro-sign.png"));
+      if (Einstellungen.getEinstellung().getMittelverwendung())
+      {
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendung",
+            new MittelverwendungListeAction(), "euro-sign.png"));
+      }
       if (anlagenkonto)
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenverzeichnis",
             new AnlagenlisteAction(), "euro-sign.png"));
@@ -224,7 +230,7 @@ public class MyExtension implements Extension
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Wirtschaftsplanung",
             new WirtschaftsplanungListAction(), "euro-sign.png"));
       }
-      
+
       NavigationItem abrechnung = null;
       abrechnung = new MyItem(abrechnung, "Abrechnung", null);
       abrechnung.addChild(new MyItem(abrechnung, "Abrechnungsläufe",
@@ -260,7 +266,7 @@ public class MyExtension implements Extension
       NavigationItem mail = null;
       mail = new MyItem(mail, "Druck & Mail", null);
       mail.addChild(new MyItem(mail, "Rechnungen",
-          new SollbuchungRechnungAction(), "document-print.png"));
+          new SollbuchungRechnungMailAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Mahnungen",
           new SollbuchungMahnungAction(), "document-print.png"));
       mail.addChild(new MyItem(mail, "Kontoauszüge",

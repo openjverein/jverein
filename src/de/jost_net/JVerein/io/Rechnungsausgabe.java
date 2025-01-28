@@ -72,7 +72,7 @@ public class Rechnungsausgabe
     {
       case DRUCK:
         file = getDateiAuswahl("pdf");
-        formularaufbereitung = new FormularAufbereitung(file);
+        formularaufbereitung = new FormularAufbereitung(file, true, false);
         break;
       case MAIL:
         file = getDateiAuswahl("zip");
@@ -131,13 +131,12 @@ public class Rechnungsausgabe
           aufbereitenFormular(re, formularaufbereitung, formular);
           break;
         case MAIL:
-          File f = File.createTempFile(getDateiname(re),
-              ".pdf");
-          formularaufbereitung = new FormularAufbereitung(f);
+          File f = File.createTempFile(getDateiname(re), ".pdf");
+          formularaufbereitung = new FormularAufbereitung(f, true, false);
           aufbereitenFormular(re, formularaufbereitung, formular);
           formularaufbereitung.closeFormular();
-          zos.putNextEntry(
-              new ZipEntry(getDateiname(re) + ".pdf"));
+          formularaufbereitung.addZUGFeRD(re, typ == TYP.MAHNUNG);
+          zos.putNextEntry(new ZipEntry(getDateiname(re) + ".pdf"));
           FileInputStream in = new FileInputStream(f);
           // buffer size
           byte[] b = new byte[1024];
@@ -154,6 +153,12 @@ public class Rechnungsausgabe
     {
       case DRUCK:
         formularaufbereitung.showFormular();
+        if (rechnungen.size() == 1)
+        {
+          rechnungen.begin();
+          formularaufbereitung.addZUGFeRD(rechnungen.next(),
+              typ == TYP.MAHNUNG);
+        }
         break;
       case MAIL:
         zos.close();
@@ -197,7 +202,7 @@ public class Rechnungsausgabe
     if (formular == null)
       formular = re.getFormular();
     
-    if (re.getMitgliedskontoList().size() == 0)
+    if (re.getSollbuchungPositionList().size() == 0)
       return;
     
     Map<String, Object> map = new RechnungMap().getMap(re, null);

@@ -45,4 +45,6 @@ public interface IAdresse
   public String getStaat() throws RemoteException;
 
   public String getGeschlecht() throws RemoteException;
+
+  public String getStaatCode() throws RemoteException;
 }

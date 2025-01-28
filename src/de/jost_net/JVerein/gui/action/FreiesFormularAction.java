@@ -112,7 +112,7 @@ public class FreiesFormularAction implements Action
     final File file = new File(s);
     settings.setAttribute("lastdir", file.getParent());
 
-    FormularAufbereitung fa = new FormularAufbereitung(file);
+    FormularAufbereitung fa = new FormularAufbereitung(file, false, false);
     for (Mitglied mi : m)
     {
       Formular fo = (Formular) Einstellungen.getDBService().createObject(
@@ -120,6 +120,7 @@ public class FreiesFormularAction implements Action
       Map<String, Object> map = new MitgliedMap().getMap(mi, null);
       map = new AllgemeineMap().getMap(map);
       fa.writeForm(fo, map);
+      fo.store();
     }
     fa.showFormular();
 

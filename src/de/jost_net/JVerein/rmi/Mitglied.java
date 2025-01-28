@@ -175,6 +175,8 @@ public interface Mitglied extends DBObject, ILastschrift
   public void setIndividuellerBeitrag(Double individuellerbeitrag)
       throws RemoteException;
 
+  public Mitglied getZahler() throws RemoteException;
+
   public Long getZahlerID() throws RemoteException;
 
   public void setZahlerID(Long id) throws RemoteException;
@@ -224,5 +226,13 @@ public interface Mitglied extends DBObject, ILastschrift
   public void addVariable(String name, String wert) throws RemoteException;
 
   public Map<String, String> getVariablen() throws RemoteException;
+
+  public String getKtoiStaatCode() throws RemoteException;
+
+  public String getLeitwegID() throws RemoteException;
+
+  public void setLeitwegID(String leitwegid) throws RemoteException;
+
+  public boolean checkSEPA() throws RemoteException, ApplicationException;
 
 }

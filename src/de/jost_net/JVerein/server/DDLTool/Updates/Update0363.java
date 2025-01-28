@@ -33,8 +33,17 @@ public class Update0363 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    // Liquibase id=99
-    execute(addColumn("einstellung",
-        new Column("mailsignatur", COLTYPE.VARCHAR, 1000, null, false, false)));
+
+    if (getDriver().equals(DRIVER.MYSQL))
+    {
+      execute("ALTER TABLE einstellung ADD mailsignatur VARCHAR(1000) "
+          + "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;");
+    }
+    else
+    {
+      // Liquibase id=99
+      execute(addColumn("einstellung", new Column("mailsignatur",
+          COLTYPE.VARCHAR, 1000, null, false, false)));
+    }
   }
 }

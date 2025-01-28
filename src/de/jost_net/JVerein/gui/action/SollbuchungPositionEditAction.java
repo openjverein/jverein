@@ -16,18 +16,29 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.RechnungAutoNeuView;
+import de.jost_net.JVerein.gui.view.SollbuchungPositionView;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class RechnungAutoNeuAction implements Action
+public class SollbuchungPositionEditAction implements Action
 {
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    GUI.startView(RechnungAutoNeuView.class.getName(), null);
-  }
+    SollbuchungPosition position = null;
 
+    if (context != null && (context instanceof SollbuchungPosition))
+    {
+      position = (SollbuchungPosition) context;
+    }
+    else
+    {
+      throw new ApplicationException("Keine Sollbuchungsposition ausgewählt");
+    }
+
+    GUI.startView(SollbuchungPositionView.class.getName(), position);
+  }
 }

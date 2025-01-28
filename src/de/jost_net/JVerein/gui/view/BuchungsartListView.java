@@ -16,18 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.gui.action.BuchungsartAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsartControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.util.ApplicationException;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class BuchungsartListView extends AbstractView
 {
@@ -40,37 +37,30 @@ public class BuchungsartListView extends AbstractView
     final BuchungsartControl control = new BuchungsartControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addLabelPair("Suche", control.getSuchtext());
-    group.addLabelPair("Status", control.getSuchStatus());
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
-    ButtonArea buttons1 = new ButtonArea();
-    Button button = new Button("Suchen", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          control.getBuchungsartList();
-        }
-        catch (RemoteException e)
-        {
-          // TODO Auto-generated catch block
-          GUI.getStatusBar().setErrorText(e.getMessage());
-        }
-      }
-    }, null, true, "search.png");
-    buttons1.addButton(button);
-    group.addButtonArea(buttons1);
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addLabelPair("Nummer", control.getSuchname());
+    left.addLabelPair("Bezeichnung", control.getSuchtext());
+    left.addInput(control.getSuchBuchungsklasse());
 
-    LabelGroup group2 = new LabelGroup(getParent(), "Liste", true);
-    group2.addPart(control.getBuchungsartList());
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getSuchBuchungsartArt());
+    right.addLabelPair("Status", control.getSuchStatus());
+
+    ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSuchenButton());
+    group.addButtonArea(fbuttons);
+
+    control.getBuchungsartList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGSART, false, "question-circle.png");
     buttons.addButton(control.getPDFAusgabeButton());
-    buttons.addButton("Neu", new BuchungsartAction(), null, false, "document-new.png");
+    buttons.addButton("Neu", new BuchungsartAction(), null, false,
+        "document-new.png");
     buttons.paint(this.getParent());
   }
 }

@@ -24,7 +24,9 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class AbrechnungSEPAView extends AbstractView
 {
@@ -37,35 +39,51 @@ public class AbrechnungSEPAView extends AbstractView
     final AbrechnungSEPAControl control = new AbrechnungSEPAControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Parameter");
-    group.addLabelPair("Modus", control.getAbbuchungsmodus());
-    group.addLabelPair("Fälligkeit SEPA", control.getFaelligkeit());
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    SimpleContainer rigth = new SimpleContainer(cl.getComposite());
+
+    left.addLabelPair("Modus", control.getAbbuchungsmodus());
+    left.addLabelPair("Fälligkeit", control.getFaelligkeit());
     if (Einstellungen.getEinstellung()
         .getBeitragsmodel() == Beitragsmodel.FLEXIBEL)
     {
-      group.addLabelPair("Abrechnungsmonat", control.getAbrechnungsmonat());
+      left.addLabelPair("Abrechnungsmonat", control.getAbrechnungsmonat());
     }
-    group.addLabelPair("Stichtag", control.getStichtag());
-    group.addLabelPair("Von Eintrittsdatum", control.getVondatum());
-    group.addLabelPair("Bis Austrittsdatum", control.getBisdatum());
-    group.addLabelPair("Zahlungsgrund für Beiträge",
+    left.addLabelPair("Stichtag¹", control.getStichtag());
+    left.addLabelPair("Von Eintrittsdatum", control.getVondatum());
+    left.addLabelPair("Bis Austrittsdatum", control.getBisdatum());
+    left.addLabelPair("Zahlungsgrund für Beiträge",
         control.getZahlungsgrund());
-    group.addLabelPair("Zusatzbeträge", control.getZusatzbetrag());
-    if (!Einstellungen.getEinstellung().getZusatzbetrag())
+    if (Einstellungen.getEinstellung().getZusatzbetrag())
     {
-      control.getZusatzbetrag().setEnabled(false);
+      left.addLabelPair("Zusatzbeträge", control.getZusatzbetrag());
     }
-    group.addLabelPair("Kursteilnehmer", control.getKursteilnehmer());
-    group.addLabelPair("Kompakte Abbuchung", control.getKompakteAbbuchung());
-    group.addLabelPair("SEPA-Datei drucken", control.getSEPAPrint());
+    if (Einstellungen.getEinstellung().getKursteilnehmer())
+    {
+      left.addLabelPair("Kursteilnehmer", control.getKursteilnehmer());
+    }
+    left.addLabelPair("Sollbuchung(en) zusammenfassen",
+        control.getSollbuchungenZusammenfassen());
 
-    if (!Einstellungen.getEinstellung().getKursteilnehmer())
-    {
-      control.getKursteilnehmer().setEnabled(false);
-    }
-    group.addLabelPair("Abbuchungsausgabe", control.getAbbuchungsausgabe());
+    rigth.addHeadline("Lastschriften");
+    rigth.addLabelPair("Kompakte Abbuchung(en)",
+        control.getKompakteAbbuchung());
+    rigth.addLabelPair("SEPA-Check temporär deaktivieren", control.getSEPACheck());
+    rigth.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
+    rigth.addLabelPair("Abbuchungsausgabe", control.getAbbuchungsausgabe());
+    
+    rigth.addHeadline("Rechnungen");
+    rigth.addLabelPair("Rechnung(en) erstellen²", control.getRechnung());
+    rigth.addLabelPair("Rechnung Formular", control.getRechnungFormular());
+    rigth.addLabelPair("Rechnung Text", control.getRechnungstext());
+    rigth.addLabelPair("Rechnung Datum", control.getRechnungsdatum());
+
     group.addSeparator();
     group.addText(
-        "*) für die Berechnung, ob ein Mitglied bereits eingetreten oder ausgetreten ist. ",
+        "¹) Für die Berechnung, ob ein Mitglied bereits eingetreten oder ausgetreten ist. "
+            + "Und für Berechnung ob Zusatzbeträge fällig sind.\n"
+            + "²) Es wird für jede (zusammengefasste) Sollbuchung eine separate Rechnung erstellt.",
         true);
 
     ButtonArea buttons = new ButtonArea();

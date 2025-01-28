@@ -16,12 +16,21 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -50,16 +59,14 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 public class MitgliedImpl extends AbstractDBObject implements Mitglied
 {
+
+  private static String FEHLER_ZAHLUNGSWEG = ": Der Zahlungsweg ist nicht Basislastschrift.";
+
+  private static String FEHLER_MANDAT = ": Es ist kein Mandat-Datum vorhanden.";
+
+  private static String FEHLER_ALTER = ": Das Mandat-Datum ist älter als 36 Monate und es sind in JVerein keine Lastschriften für die letzten 3 Jahre vorhanden.";
 
   private transient Map<String, String> variable;
 
@@ -537,24 +544,32 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public String getStaat() throws RemoteException
   {
-    if (getAttribute("staat") != null)
-    {
-      return (String) getAttribute("staat");
-    }
-    else
-    {
-      return "";
-    }
+    return Staat.getStaat(getStaatCode());
+  }
+
+  @Override
+  public String getStaatCode() throws RemoteException
+  {
+    String code = (String) getAttribute("staat");
+    return Staat.getStaatCode(code);
   }
 
   @Override
   public void setStaat(String staat) throws RemoteException
   {
-    if (staat != null)
-    {
-      staat = staat.toUpperCase();
-    }
     setAttribute("staat", staat);
+  }
+
+  @Override
+  public String getLeitwegID() throws RemoteException
+  {
+    return (String) getAttribute("leitwegid");
+  }
+
+  @Override
+  public void setLeitwegID(String leitwegid) throws RemoteException
+  {
+    setAttribute("leitwegid", leitwegid);
   }
 
   @Override
@@ -831,7 +846,14 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public String getKtoiStaat() throws RemoteException
   {
-    return (String) getAttribute("ktoistaat");
+    return Staat.getStaat(getKtoiStaatCode());
+  }
+
+  @Override
+  public String getKtoiStaatCode() throws RemoteException
+  {
+    String code = (String) getAttribute("ktoistaat");
+    return Staat.getStaatCode(code);
   }
 
   @Override
@@ -1078,6 +1100,20 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   public void setFoto(Mitgliedfoto foto) throws RemoteException
   {
     setAttribute("foto", foto);
+  }
+
+  @Override
+  public Mitglied getZahler() throws RemoteException
+  {
+    Object o = (Object) super.getAttribute("zahlerid");
+    if (o == null)
+      return null;
+
+    if (o instanceof Mitglied)
+      return (Mitglied) o;
+
+    Cache cache = Cache.get(Mitglied.class, true);
+    return (Mitglied) cache.get(o);
   }
 
   @Override
@@ -2004,6 +2040,37 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
         return null;
       }
     }
+  }
+
+  public boolean checkSEPA() throws RemoteException, ApplicationException
+  {
+    if (getZahlungsweg() == null
+        || getZahlungsweg() != Zahlungsweg.BASISLASTSCHRIFT)
+    {
+      throw new ApplicationException(Adressaufbereitung.getNameVorname(this)
+          + FEHLER_ZAHLUNGSWEG);
+    }
+    // Ohne Mandat keine Lastschrift
+    if (getMandatDatum() == Einstellungen.NODATE)
+    {
+      throw new ApplicationException(Adressaufbereitung.getNameVorname(this)
+          + FEHLER_MANDAT);
+    }
+    // Bei Mandaten älter als 3 Jahre muss es eine Lastschrift
+    // innerhalb der letzten 3 Jahre geben
+    Calendar sepagueltigkeit = Calendar.getInstance();
+    sepagueltigkeit.add(Calendar.MONTH, -36);
+    if (getMandatDatum().before(sepagueltigkeit.getTime()))
+    {
+      Date letzte_lastschrift = getLetzteLastschrift();
+      if (letzte_lastschrift == null
+          || letzte_lastschrift.before(sepagueltigkeit.getTime()))
+      {
+        throw new ApplicationException(Adressaufbereitung.getNameVorname(this)
+            + FEHLER_ALTER);
+      }
+    }
+    return true;
   }
 
 }

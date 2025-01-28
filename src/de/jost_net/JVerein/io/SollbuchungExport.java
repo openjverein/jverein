@@ -34,6 +34,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public abstract class SollbuchungExport implements Exporter
@@ -53,7 +54,7 @@ public abstract class SollbuchungExport implements Exporter
 
   @Override
   public void doExport(final Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor) throws DocumentException, IOException
+      ProgressMonitor monitor) throws DocumentException, IOException, ApplicationException
   {
     this.file = file;
     this.control.getSuchname().setValue(objects[0]);
@@ -76,10 +77,13 @@ public abstract class SollbuchungExport implements Exporter
       startMitglied(m);
       GenericIterator<Mitgliedskonto> sollbuchnungen = new SollbuchungQuery(
           control, false, m).get();
-      while (sollbuchnungen.hasNext())
+      if (sollbuchnungen != null)
       {
-        add(sollbuchnungen.next());
-        monitor.log("Vorbereitung: " + Adressaufbereitung.getNameVorname(m));
+        while (sollbuchnungen.hasNext())
+        {
+          add(sollbuchnungen.next());
+          monitor.log("Vorbereitung: " + Adressaufbereitung.getNameVorname(m));
+        }
       }
       endeMitglied();
     }

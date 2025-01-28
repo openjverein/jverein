@@ -26,11 +26,11 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungView;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.util.SpbAdressaufbereitung;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
@@ -70,7 +70,7 @@ public class SpendenbescheinigungAction implements Action
         if (context != null && (context instanceof Mitglied))
         {
           Mitglied m = (Mitglied) context;
-          adressaufbereitung(m, spb);
+          SpbAdressaufbereitung.adressaufbereitung(m, spb);
           if (spendenart == Spendenart.GELDSPENDE)
           {
             handleMitglied(m);
@@ -79,12 +79,8 @@ public class SpendenbescheinigungAction implements Action
         else if (context != null && (context instanceof MitgliedskontoNode))
         {
           MitgliedskontoNode mkn = (MitgliedskontoNode) context;
-          if (mkn.getMitglied() != null)
-          {
-            // Mitglied aus Mitgliedskonto lesen
-            Mitglied m = mkn.getMitglied();
-            adressaufbereitung(m, spb);
-          }
+
+          // Istbuchung in Mitgliedskonto ausgewählt
           if (mkn.getType() == MitgliedskontoNode.IST)
           {
             // Buchung eintragen
@@ -98,13 +94,29 @@ public class SpendenbescheinigungAction implements Action
                 throw new ApplicationException(
                     "Die Buchung ist bereits auf einer Spendenbescheinigung eingetragen!");
               }
+              if (b.getMitgliedskonto() != null)
+              {
+                // Zahler aus Sollbuchung lesen
+                Mitglied zahler = b.getMitgliedskonto().getZahler();
+                if (zahler != null)
+                {
+                  SpbAdressaufbereitung.adressaufbereitung(zahler, spb);
+                }
+              }
               spb.setBuchung(b);
               spb.setSpendedatum(b.getDatum());
               spb.setAutocreate(Boolean.TRUE);
             }
           }
+          // Mitglied in Mitgliedskonto ausgewählt
           else if (mkn.getType() == MitgliedskontoNode.MITGLIED)
           {
+            if (mkn.getMitglied() != null)
+            {
+              // Mitglied aus Mitgliedskonto lesen
+              Mitglied m = mkn.getMitglied();
+              SpbAdressaufbereitung.adressaufbereitung(m, spb);
+            }
             if (spendenart == Spendenart.GELDSPENDE)
             {
               handleMitglied(spb.getMitglied());
@@ -139,46 +151,6 @@ public class SpendenbescheinigungAction implements Action
     }
   }
 
-  private void adressaufbereitung(Mitglied m, Spendenbescheinigung spb)
-      throws RemoteException
-  {
-    ArrayList<String> adresse = new ArrayList<>();
-    spb.setMitglied(m);
-    if (m.getAnrede() != null && m.getAnrede().length() > 0)
-    {
-      adresse.add(m.getAnrede());
-    }
-    adresse.add(Adressaufbereitung.getVornameName(m));
-    if (m.getAdressierungszusatz() != null
-        && m.getAdressierungszusatz().length() > 0)
-    {
-      adresse.add(m.getAdressierungszusatz());
-    }
-    adresse.add(m.getStrasse());
-    adresse.add(m.getPlz() + " " + m.getOrt());
-    if (m.getStaat() != null && m.getStaat().length() > 0)
-    {
-      adresse.add(m.getStaat());
-    }
-    switch (adresse.size())
-    {
-      case 7:
-        spb.setZeile7(adresse.get(6));
-      case 6:
-        spb.setZeile6(adresse.get(5));
-      case 5:
-        spb.setZeile5(adresse.get(4));
-      case 4:
-        spb.setZeile4(adresse.get(3));
-      case 3:
-        spb.setZeile3(adresse.get(2));
-      case 2:
-        spb.setZeile2(adresse.get(1));
-      case 1:
-        spb.setZeile1(adresse.get(0));
-    }
-  }
-  
   private void handleMitglied(Mitglied mg) throws RemoteException, ApplicationException
   {
     /* Ermitteln der Buchungen zu der neuen Spendenbescheinigung */
@@ -203,7 +175,7 @@ public class SpendenbescheinigungAction implements Action
         + "  JOIN buchungsart ON buchung.buchungsart = buchungsart.id "
         + "  JOIN mitgliedskonto ON buchung.mitgliedskonto = mitgliedskonto.id "
         + "WHERE buchungsart.spende = true "
-        + "  AND mitgliedskonto.mitglied = ? "
+        + "  AND mitgliedskonto.zahler = ? "
         + "  AND buchung.spendenbescheinigung IS NULL "
         + "  AND buchung.mitgliedskonto IS NOT NULL "
         + "ORDER BY buchung.datum";
@@ -240,4 +212,5 @@ public class SpendenbescheinigungAction implements Action
               + "Siehe Einstellungen->Spendenbescheinigungen.", minbetrag));
     }
   }
+
 }

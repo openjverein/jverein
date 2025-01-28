@@ -65,6 +65,7 @@ import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class PreNotificationControl extends DruckMailControl
@@ -251,7 +252,7 @@ public class PreNotificationControl extends DruckMailControl
   }
 
   private void generierePDF(Object currentObject, boolean mitMail,
-      String pdfMode) throws IOException
+      String pdfMode) throws IOException, ApplicationException
   {
     ArrayList<Lastschrift> lastschriften = new ArrayList<>();
     if (currentObject instanceof Abrechnungslauf)
@@ -377,7 +378,7 @@ public class PreNotificationControl extends DruckMailControl
         .createObject(Formular.class, form.getID());
     if (!einzelnePdfs)
     {
-      fa = new FormularAufbereitung(file);
+      fa = new FormularAufbereitung(file, false, false);
     }
     
     int dateinummer = 0;
@@ -404,7 +405,7 @@ public class PreNotificationControl extends DruckMailControl
         sb.append(postfix);
 
         final File fx = new File(sb.toString());
-        fa = new FormularAufbereitung(fx);
+        fa = new FormularAufbereitung(fx, false, false);
       }
 
       aufbereitenFormular(ls, fo);
@@ -599,11 +600,12 @@ public class PreNotificationControl extends DruckMailControl
   }
 
   private void aufbereitenFormular(Lastschrift ls, Formular fo)
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
     Map<String, Object> map = new LastschriftMap().getMap(ls, null);
     map = new AllgemeineMap().getMap(map);
     fa.writeForm(fo, map);
+    fo.store();
   }
 
   private void sendeMail(final ArrayList<Lastschrift> lastschriften, final String betr,

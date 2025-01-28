@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Messaging.BuchungMessage;
+import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
@@ -38,9 +39,12 @@ public class BuchungDeleteAction implements Action
 {
   private boolean splitbuchung;
 
-  public BuchungDeleteAction(boolean splitbuchung)
+  private BuchungsControl control;
+
+  public BuchungDeleteAction(BuchungsControl control, boolean splitbuchung)
   {
     this.splitbuchung = splitbuchung;
+    this.control = control;
   }
 
   @Override
@@ -149,6 +153,7 @@ public class BuchungDeleteAction implements Action
             bu.getSpendenbescheinigung().delete();
           bu.delete();
           count++;
+          control.getBuchungsList();
         }
         else if (splitbuchung)
         {

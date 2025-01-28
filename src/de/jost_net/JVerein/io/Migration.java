@@ -33,6 +33,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -750,7 +751,11 @@ public class Migration
         getResultFrom(results, InternalColumns.KTOIADRESSIERUNGSZUSATZ));
     m.setKtoiPlz(getResultFrom(results, InternalColumns.KTOIPLZ));
     m.setKtoiOrt(getResultFrom(results, InternalColumns.KTOIORT));
-    m.setKtoiStaat(getResultFrom(results, InternalColumns.KTOISTAAT));
+    String staat = getResultFrom(results, InternalColumns.KTOISTAAT);
+    if (staat != null && staat.length() != 0)
+    {
+      m.setStaat(getStaat(staat));
+    }
     m.setKtoiEmail(getResultFrom(results, InternalColumns.KTOIEMAIL));
     Integer bg = beitragsGruppen
         .get(getResultFrom(results, InternalColumns.BEITRAGSART));
@@ -861,8 +866,11 @@ public class Migration
 
     m.setHandy(getResultFrom(results, InternalColumns.TELEMOBIL));
     m.setAdressierungszusatz(getResultFrom(results, InternalColumns.ADRZUSATZ));
-    m.setStaat(getResultFrom(results, InternalColumns.STAAT)); // Default was
-                                                               // null warum?
+    staat = getResultFrom(results, InternalColumns.STAAT);
+    if (staat != null && staat.length() != 0)
+    {
+      m.setStaat(getStaat(staat));
+    }
 
     String zahlungsrhythmus = getResultFrom(results, InternalColumns.ZAHLRYTHM);
     if (zahlungsrhythmus.length() > 0)
@@ -1175,4 +1183,19 @@ public class Migration
     }
   }
 
+  String getStaat(String staat) throws ApplicationException
+  {
+    if (Staat.getByKey(staat.toUpperCase()) != null)
+    {
+      return staat.toUpperCase();
+    }
+    else if (Staat.getByText(staat.toUpperCase()) != null)
+    {
+      return Staat.getByText(staat.toUpperCase()).getKey();
+    }
+    else
+    {
+      throw new ApplicationException("Staat nicht erkannt: " + staat);
+    }
+  }
 }

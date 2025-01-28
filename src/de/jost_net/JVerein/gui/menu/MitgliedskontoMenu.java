@@ -19,11 +19,11 @@ package de.jost_net.JVerein.gui.menu;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.IstbuchungEditAction;
+import de.jost_net.JVerein.gui.action.IstbuchungLoesenAction;
 import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
-import de.jost_net.JVerein.gui.action.IstbuchungEditAction;
-import de.jost_net.JVerein.gui.action.IstbuchungLoesenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.keys.Spendenart;
@@ -46,10 +46,10 @@ public class MitgliedskontoMenu extends ContextMenu
    */
   public MitgliedskontoMenu()
   {
-    addItem(new MitgliedItem("Neue Sollbuchung",
-        new SollbuchungNeuAction(), "document-new.png"));
-    addItem(new SollItem("Sollbuchung bearbeiten",
-        new SollbuchungEditAction(), "text-x-generic.png"));
+    addItem(new MitgliedItem("Neue Sollbuchung", new SollbuchungNeuAction(),
+        "document-new.png"));
+    addItem(new SollItem("Sollbuchung bearbeiten", new SollbuchungEditAction(),
+        "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
         new SollbuchungLoeschenAction(), "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);

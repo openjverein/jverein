@@ -277,6 +277,10 @@ public class DefaultZusatzbetraegeImport implements Importer
                   anz, mitgliedIdString));
               fehlerInDaten = true;
             }
+            catch (SQLException e)
+            {
+              //
+            }
             try
             {
               String buchungsart = results.getString("Buchungsart");

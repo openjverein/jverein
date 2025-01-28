@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import de.jost_net.JVerein.io.IAdresse;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.util.ApplicationException;
 
 public interface Rechnung extends DBObject, IAdresse
 {
@@ -31,6 +33,16 @@ public interface Rechnung extends DBObject, IAdresse
 
   public void setFormular(Formular formular) throws RemoteException;
 
+  /**
+   * Füllt alle Daten aus der Sollbuchung in die Rechnung. Das Datum und das
+   * Formular müssen selbst hinzugefügt werden
+   * 
+   * @param mk
+   *          die Sollbuchung aus der eine Rechnung erstellt werden soll
+   */
+  public void fill(Mitgliedskonto mk)
+      throws RemoteException, ApplicationException;
+
   double getBetrag() throws RemoteException;
 
   void setBetrag(double betrag) throws RemoteException;
@@ -38,8 +50,6 @@ public interface Rechnung extends DBObject, IAdresse
   public void setDatum(Date date) throws RemoteException;
   
   public Date getDatum() throws RemoteException;
-
-  public ArrayList<Mitgliedskonto> getMitgliedskontoList() throws RemoteException;
 
   public Formular getFormular() throws RemoteException;
 
@@ -111,4 +121,19 @@ public interface Rechnung extends DBObject, IAdresse
   public String getIBAN() throws RemoteException;
   
   public void setIBAN(String iban) throws RemoteException;
+  
+  public Double getIstSumme() throws RemoteException;
+  
+  public Zahlungsweg getZahlungsweg() throws RemoteException;
+
+  public void setZahlungsweg(Integer zahlungsweg) throws RemoteException;
+
+  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException;
+
+  public Mitgliedskonto getMitgliedskonto() throws RemoteException;
+
+  public String getLeitwegID() throws RemoteException;
+
+  public void setLeitwegID(String leitwegid) throws RemoteException;
 }

@@ -51,11 +51,10 @@ import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
-import de.jost_net.JVerein.gui.input.SollbuchungAuswahlInput;
-import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
@@ -67,17 +66,15 @@ import de.jost_net.JVerein.io.BuchungAuswertungPDF;
 import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
-import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -130,7 +127,7 @@ public class BuchungsControl extends AbstractControl
 
   private de.willuhn.jameica.system.Settings settings;
 
-  private TablePart buchungsList;
+  private BuchungListTablePart buchungsList;
 
   /* Split-Buchnungen */
   private TablePart splitbuchungsList;
@@ -156,7 +153,7 @@ public class BuchungsControl extends AbstractControl
 
   private Input art;
 
-  private DialogInput mitgliedskonto;
+  private TextInput mitgliedskonto;
 
   private TextAreaInput kommentar;
 
@@ -281,7 +278,6 @@ public class BuchungsControl extends AbstractControl
     b.setDatum((Date) getDatum().getValue());
     b.setArt((String) getArt().getValue());
     b.setVerzicht((Boolean) getVerzicht().getValue());
-    b.setMitgliedskonto(getSelectedMitgliedsKonto(b));
     b.setKommentar((String) getKommentar().getValue());
   }
 
@@ -529,58 +525,22 @@ public class BuchungsControl extends AbstractControl
     return verzicht;
   }
 
-  public DialogInput getMitgliedskonto() throws RemoteException
+  public TextInput getMitgliedskonto() throws RemoteException
   {
-    mitgliedskonto = new SollbuchungAuswahlInput(getBuchung())
-        .getMitgliedskontoAuswahl();
-    mitgliedskonto.addListener(new Listener()
-    {
 
-      @Override
-      public void handleEvent(Event event)
-      {
-        try
-        {
-          String name = (String) getName().getValue();
-          String zweck1 = (String) getZweck().getValue();
-          if (mitgliedskonto.getValue() != null && name.length() == 0
-              && zweck1.length() == 0)
-          {
-            if (mitgliedskonto.getValue() instanceof Mitgliedskonto)
-            {
-              Mitgliedskonto mk = (Mitgliedskonto) mitgliedskonto.getValue();
-              getName().setValue(
-                  Adressaufbereitung.getNameVorname(mk.getMitglied()));
-              getBetrag().setValue(mk.getBetrag());
-              getZweck().setValue(mk.getZweck1());
-              getDatum().setValue(mk.getDatum());
-            }
-            if (mitgliedskonto.getValue() instanceof Mitglied)
-            {
-              Mitglied m2 = (Mitglied) mitgliedskonto.getValue();
-              getName().setValue(Adressaufbereitung.getNameVorname(m2));
-              getDatum().setValue(new Date());
-            }
-          }
-          if (mitgliedskonto.getValue() instanceof Mitgliedskonto)
-          {
-            Mitgliedskonto mk = (Mitgliedskonto) mitgliedskonto.getValue();
-            if (getBuchungsart().getValue() == null)
-            {
-              getBuchungsart().setValue(mk.getBuchungsart());
-            }
-            if (isBuchungsklasseActive() && getBuchungsklasse().getValue() == null)
-            {
-              getBuchungsklasse().setValue(mk.getBuchungsklasse());
-            }
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-    });
+    if (mitgliedskonto != null && !mitgliedskonto.getControl().isDisposed())
+    {
+      return mitgliedskonto;
+    }
+
+    Mitgliedskonto mk = getBuchung().getMitgliedskonto();
+    mitgliedskonto = new TextInput(
+        mk != null
+            ? Adressaufbereitung.getNameVorname(mk.getMitglied()) + ", "
+                + new JVDateFormatTTMMJJJJ().format(mk.getDatum()) + ", "
+                + Einstellungen.DECIMALFORMAT.format(mk.getBetrag())
+            : "");
+    mitgliedskonto.disable();
     return mitgliedskonto;
   }
 
@@ -828,6 +788,10 @@ public class BuchungsControl extends AbstractControl
     suchbuchungsart.setList(liste);
     suchbuchungsart.setValue(b);
     suchbuchungsart.addListener(new FilterListener());
+    if (suchbuchungsart instanceof SelectInput)
+    {
+      suchbuchungsart.setPleaseChoose(FilterControl.ALLE);
+    }
     return suchbuchungsart;
   }
 
@@ -1005,10 +969,11 @@ public class BuchungsControl extends AbstractControl
               break;
           }
           
+          b_steuer.setMitgliedskontoID(b.getMitgliedskontoID());
           b_steuer.setBuchungsartId(Long.valueOf(b_art.getSteuerBuchungsart().getID()));
           b_steuer.setBuchungsklasseId(b_art.getBuchungsklasseId());
           b_steuer.setBetrag(steuer.doubleValue());
-          b_steuer.setZweck(b.getZweck() + zweck_postfix);          
+          b_steuer.setZweck(b.getZweck() + zweck_postfix);
           b_steuer.setSplitId(b.getSplitId());
           b_steuer.setSplitTyp(SplitbuchungTyp.SPLIT);
           
@@ -1043,54 +1008,6 @@ public class BuchungsControl extends AbstractControl
     }
   }
 
-  private Mitgliedskonto getSelectedMitgliedsKonto(Buchung b)
-      throws ApplicationException
-  {
-    try
-    {
-      Object auswahl = mitgliedskonto.getValue();
-      if (null == auswahl)
-      {
-        if (mitgliedskonto.getText().length() == 0 )
-        {
-          // Konto wird gelöscht da "Entfernen" ausgewählt
-          return null;
-        }
-        else
-        {
-          // Dialog wurde ohne Auswahl geschlossen aber nicht mit "Entfernen"
-          return b.getMitgliedskonto();
-        }
-      }
-
-      if (auswahl instanceof Mitgliedskonto)
-        return (Mitgliedskonto) auswahl;
-
-      if (auswahl instanceof Mitglied)
-      {
-        Mitglied mitglied = (Mitglied) auswahl;
-        Mitgliedskonto mk = (Mitgliedskonto) Einstellungen.getDBService()
-            .createObject(Mitgliedskonto.class, null);
-        mk.setBetrag(b.getBetrag());
-        mk.setDatum(b.getDatum());
-        mk.setMitglied(mitglied);
-        mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
-        mk.setZweck1(b.getZweck());
-        mk.store();
-        mitgliedskonto.setValue(mk);
-
-        return mk;
-      }
-      return null;
-    }
-    catch (RemoteException ex)
-    {
-      final String meldung = "Fehler beim Buchen des Mitgliedskontos.";
-      Logger.error(meldung, ex);
-      throw new ApplicationException(meldung, ex);
-    }
-  }
-
   private Integer getBlattnummerWert() throws ApplicationException
   {
     Integer intBlatt = (Integer) getBlattnummer().getValue();
@@ -1120,6 +1037,11 @@ public class BuchungsControl extends AbstractControl
     try
     {
       Konto konto = (Konto) getKonto(false).getValue();
+      if (konto == null)
+      {
+        throw new ApplicationException(
+            "Kein Konto Ausgewählt. Ggfs. erst unter Buchführung->Konten ein Konto anlegen.");
+      }
       settings.setAttribute(settingsprefix + "kontoid", konto.getID());
       return konto;
     }
@@ -1187,7 +1109,7 @@ public class BuchungsControl extends AbstractControl
     }
   }
 
-  public Part getBuchungsList() throws RemoteException
+  public BuchungListTablePart getBuchungsList() throws RemoteException
   {
     // Werte speichern
     Date dv = (Date) getVondatum().getValue();
@@ -1337,9 +1259,11 @@ public class BuchungsControl extends AbstractControl
       buchungsList.addFeature(new FeatureSummary());
       Application.getMessagingFactory()
           .registerMessageConsumer(new BuchungMessageConsumer());
+      buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
     }
     else
     {
+      buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
       buchungsList.removeAll();
 
       for (Buchung bu : query.get())
@@ -2338,4 +2262,5 @@ public class BuchungsControl extends AbstractControl
       throw new ApplicationException("Von Datum ist nach Bis Datum!");
     }
   }
+
 }

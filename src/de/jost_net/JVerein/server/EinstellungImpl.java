@@ -22,22 +22,21 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import de.jost_net.JVerein.util.Datum;
-import de.jost_net.JVerein.util.VonBis;
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
-
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.io.JubilaeenParser;
+import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.Beitragsmodel;
-import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.util.Datum;
+import de.jost_net.JVerein.util.VonBis;
+import de.jost_net.OBanToo.SEPA.IBAN;
+import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -435,7 +434,8 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
 
   @Override
-  public Konto getHibiscusKonto() throws RemoteException
+  public Konto getHibiscusKonto()
+      throws RemoteException
   {
     try
     {
@@ -2163,5 +2163,75 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   public void setBeitragAltersstufen(String altersstufen) throws RemoteException
   {
     setAttribute("beitragaltersstufen", altersstufen);
+  }
+  
+  @Override
+  public String getStaat() throws RemoteException
+  {
+    String staat = (String) getAttribute("staat");
+    if (staat == null || staat.length() == 0)
+    {
+      return "DE";
+    }
+    return staat;
+  }
+
+  @Override
+  public void setStaat(String staat) throws RemoteException
+  {
+    setAttribute("staat", staat);
+  }
+
+  @Override
+  public String getUStID() throws RemoteException
+  {
+    String ustid = (String) getAttribute("ustid");
+    if (ustid == null)
+    {
+      return "";
+    }
+    return ustid;
+  }
+
+  @Override
+  public void setUStID(String ustid) throws RemoteException
+  {
+    setAttribute("ustid", ustid);
+  }
+
+  public Boolean getMittelverwendung() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("mittelverwendung"));
+  }
+
+  @Override
+  public void setMittelverwendung(Boolean mittelverwendung)
+      throws RemoteException
+  {
+    setAttribute("mittelverwendung", mittelverwendung);
+  }
+
+  @Override
+  public Long getVerrechnungskontoId() throws RemoteException
+  {
+    return (Long) getAttribute("verrechnungskonto");
+  }
+
+  @Override
+  public void setVerrechnungskontoId(Long konto) throws RemoteException
+  {
+    setAttribute("verrechnungskonto", konto);
+  }
+
+  @Override
+  public boolean getSplitPositionZweck() throws RemoteException
+  {
+    return (Boolean) getAttribute("splitpositionzweck");
+  }
+
+  @Override
+  public void setSplitPositionZweck(boolean split) throws RemoteException
+  {
+    setAttribute("splitpositionzweck", split);
   }
 }

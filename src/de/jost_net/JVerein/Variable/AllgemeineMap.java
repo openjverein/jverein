@@ -16,11 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
+import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.util.JVDateFormatJJJJ;
 import de.jost_net.JVerein.util.JVDateFormatMM;
 import de.jost_net.JVerein.util.JVDateFormatMMJJJJ;
@@ -46,6 +49,7 @@ public class AllgemeineMap
   }
 
   public Map<String, Object> getMap(Map<String, Object> inma)
+      throws RemoteException
   {
     Map<String, Object> map = null;
     if (inma == null)
@@ -81,6 +85,33 @@ public class AllgemeineMap
     calendar.add(Calendar.YEAR, -1);
     map.put(AllgemeineVar.VORJAHR.getName(), jjjj.format(calendar.getTime()));
 
+    map.put(AllgemeineVar.AKTUELLERMONAT.getName(), mmjjjj.format(new Date()));
+
+    map.put(AllgemeineVar.NAME.getName(),
+        Einstellungen.getEinstellung().getName());
+    map.put(AllgemeineVar.STRASSE.getName(),
+        Einstellungen.getEinstellung().getStrasse());
+    map.put(AllgemeineVar.PLZ.getName(),
+        Einstellungen.getEinstellung().getPlz());
+    map.put(AllgemeineVar.ORT.getName(),
+        Einstellungen.getEinstellung().getOrt());
+    map.put(AllgemeineVar.ABSENDER.getName(),
+        Einstellungen.getEinstellung().getName() + ", "
+            + Einstellungen.getEinstellung().getStrasse() + ", "
+            + Einstellungen.getEinstellung().getPlz() + " "
+            + Einstellungen.getEinstellung().getOrt());
+    map.put(AllgemeineVar.STAAT.getName(),
+        Staat.getByKey(Einstellungen.getEinstellung().getStaat()).getText());
+    map.put(AllgemeineVar.IBAN.getName(),
+        Einstellungen.getEinstellung().getIban());
+    map.put(AllgemeineVar.BIC.getName(),
+        Einstellungen.getEinstellung().getBic());
+    map.put(AllgemeineVar.GLAEUBIGER_ID.getName(),
+        Einstellungen.getEinstellung().getGlaeubigerID());
+    map.put(AllgemeineVar.UST_ID.getName(),
+        Einstellungen.getEinstellung().getUStID());
+    map.put(AllgemeineVar.STEUER_NR.getName(),
+        Einstellungen.getEinstellung().getSteuernummer());
     return map;
   }
 }
