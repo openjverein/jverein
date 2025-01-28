@@ -438,7 +438,10 @@ public class WirtschaftsplanungControl extends AbstractControl
       WirtschaftsplanungNode currentNode = (WirtschaftsplanungNode) iterator.next();
       if (currentNode.getType().equals(WirtschaftsplanungNode.Type.POSTEN))
       {
-        WirtschaftsplanItem item = currentNode.getWirtschaftsplanItem();
+        WirtschaftsplanItem item = Einstellungen.getDBService().createObject(WirtschaftsplanItem.class, null);
+        WirtschaftsplanItem oldItem = currentNode.getWirtschaftsplanItem();
+        item.setPosten(oldItem.getPosten());
+        item.setSoll(oldItem.getSoll());
         item.setWirtschaftsplanId(id);
         WirtschaftsplanungNode parent = (WirtschaftsplanungNode) currentNode.getParent();
         item.setBuchungsartId(parent.getBuchungsart().getID());

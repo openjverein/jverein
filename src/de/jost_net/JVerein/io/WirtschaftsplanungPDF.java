@@ -52,6 +52,10 @@ public class WirtschaftsplanungPDF {
             einnahmenList.forEach(einnahme -> {
 
                 try {
+                    if (!einnahme.hasLeaf())
+                    {
+                        return;
+                    }
                     reporter.addColumn(einnahme.getBuchungsklasse().getBezeichnung(),
                             Element.ALIGN_LEFT, new BaseColor(220, 220, 220), 2);
                     reporter.addColumn(sollSummen.get(einnahme));
@@ -63,10 +67,14 @@ public class WirtschaftsplanungPDF {
                 }
             });
 
-            reporter.addColumn("Ausgaben", Element.ALIGN_CENTER, new BaseColor(220, 220, 220), 3);
+            reporter.addColumn("Ausgaben", Element.ALIGN_CENTER, new BaseColor(220, 220, 220), 4);
 
             ausgabenList.forEach(ausgabe -> {
                 try {
+                    if (!ausgabe.hasLeaf())
+                    {
+                        return;
+                    }
                     reporter.addColumn(ausgabe.getBuchungsklasse().getBezeichnung(),
                             Element.ALIGN_LEFT, new BaseColor(220, 220, 220), 2);
                     reporter.addColumn("", Element.ALIGN_CENTER);
@@ -86,10 +94,11 @@ public class WirtschaftsplanungPDF {
             reporter.addHeaderColumn("Einnahmen Soll", Element.ALIGN_CENTER, 40, BaseColor.LIGHT_GRAY);
             reporter.addHeaderColumn("Ausgaben Soll", Element.ALIGN_CENTER, 40, BaseColor.LIGHT_GRAY);
             reporter.addHeaderColumn("Saldo", Element.ALIGN_CENTER, 40, BaseColor.LIGHT_GRAY);
+            reporter.createHeader();
 
             reporter.addColumn(sollEinnahmenGesamt);
             reporter.addColumn(sollAusgabenGesamt);
-            reporter.addColumn(sollEinnahmenGesamt - sollAusgabenGesamt);
+            reporter.addColumn(sollEinnahmenGesamt + sollAusgabenGesamt);
 
             reporter.closeTable();
             reporter.close();
@@ -142,14 +151,19 @@ public class WirtschaftsplanungPDF {
             WirtschaftsplanungNode currentNode = (WirtschaftsplanungNode) iterator.next();
 
             switch (currentNode.getType()) {
-                case BUCHUNGSART -> {
+                case BUCHUNGSART:
+                    if (!currentNode.hasLeaf())
+                    {
+                        continue;
+                    }
                     reporter.addColumn(currentNode.getBuchungsart().getBezeichnung(), Element.ALIGN_LEFT);
                     reporter.addColumn("", Element.ALIGN_CENTER);
-                }
-                case POSTEN -> {
+
+                    break;
+                case POSTEN:
                     reporter.addColumn("", Element.ALIGN_CENTER);
                     reporter.addColumn(currentNode.getWirtschaftsplanItem().getPosten(), Element.ALIGN_LEFT);
-                }
+                    break;
             }
             if (einnahme) {
                 reporter.addColumn(sollSummen.get(currentNode));
@@ -158,6 +172,10 @@ public class WirtschaftsplanungPDF {
             else {
                 reporter.addColumn("", Element.ALIGN_CENTER);
                 reporter.addColumn(sollSummen.get(currentNode));
+            }
+            if (!currentNode.getType().equals(WirtschaftsplanungNode.Type.POSTEN))
+            {
+                iterateOverNodes(currentNode.getChildren(), reporter, einnahme);
             }
         }
     }
