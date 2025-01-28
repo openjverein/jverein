@@ -19,19 +19,21 @@ jobs:
   build-check:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout openjverein
-      uses: actions/checkout@v4
-      with:
-        path: jverein
+      - name: Checkout openjverein
+        uses: actions/checkout@v4
 
-    - name: Setup
-      uses: ./jverein/.github/actions/build-dependencies
+      - name: Restore cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.m2/repository
+          key: cache-{{ hashFiles('setup-build.xml') }}-{{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            cache-{{ hashFiles('setup-build.xml') }}
 
       - name: Build openjverein plugin
         run: mvn --batch-mode --file pom.xml clean package
 
       - name: Save cache
-        if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: ~/.m2/repository
