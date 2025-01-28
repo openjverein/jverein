@@ -33,6 +33,12 @@ jobs:
             cache-{{ hashFiles('setup-build.xml') }}-
             cache-
 
-
       - name: Build openjverein plugin
         run: mvn --batch --file pom.xml clean package
+
+      - name: Save cache
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.m2/repository
+          key: cache-{{ hashFiles('setup-build.xml') }}-{{ hashFiles('**/pom.xml') }}
