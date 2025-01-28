@@ -34,7 +34,7 @@ jobs:
 
       - name: Save cache
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@4
+        uses: actions/cache/save@v4
         with:
           path: ~/.m2/repository
           key: cache-{{ hashFiles('setup-build.xml') }}-{{ hashFiles('**/pom.xml') }}
