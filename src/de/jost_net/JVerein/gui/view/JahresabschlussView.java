@@ -50,31 +50,36 @@ public class JahresabschlussView extends AbstractView
     }
     
     LabelGroup group = new LabelGroup(getParent(), "Jahresabschluss", true);
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    ColumnLayout cl;
+    if (Einstellungen.getEinstellung().getMittelverwendung())
+    {
+      cl = new ColumnLayout(group.getComposite(), 3);
+    }
+    else
+    {
+      cl = new ColumnLayout(group.getComposite(), 2);
+    }
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addLabelPair("Von", control.getVon());
     left.addLabelPair("Bis", control.getBis());
 
-    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    middle.addLabelPair("Datum", control.getDatum());
+    middle.addLabelPair("Name", control.getName());
+
+
     if (Einstellungen.getEinstellung().getMittelverwendung())
     {
-      left.addLabelPair("Datum", control.getDatum());
-      right.addLabelPair("Name", control.getName());
-      right.addLabelPair("Rest Verwendungsrückstand Vorjahr",
+      SimpleContainer right = new SimpleContainer(cl.getComposite());
+      right.addLabelPair("Rest Verwendungsrückstand \naus dem Vorjahr",
           control.getVerwendungsrueckstand());
-      right.addLabelPair("Zwanghafte satzungsgemäße Weitergabe von Mitteln",
+      right.addLabelPair("Zwanghafte satzungsgemäße\nWeitergabe von Mitteln",
           control.getZwanghafteWeitergabe());
     }
-    else
-    {
-      right.addLabelPair("Datum", control.getDatum());
-      right.addLabelPair("Name", control.getName());
-    }
-    left.addLabelPair("Anfangsbestände Folgejahr",
-        control.getAnfangsbestaende());
+    left.addLabelPair("", control.getAnfangsbestaende());
     if (Einstellungen.getEinstellung().getAfaInJahresabschluss())
-      right.addLabelPair("Erzeuge Abschreibungen", control.getAfaberechnung());
+      middle.addLabelPair("", control.getAfaberechnung());
     group.addPart(control.getJahresabschlussSaldo());
 
     ButtonArea buttons = new ButtonArea();

@@ -219,6 +219,7 @@ public class JahresabschlussControl extends AbstractControl
       return anfangsbestaende;
     }
     anfangsbestaende = new CheckboxInput(true);
+    anfangsbestaende.setName("Anfangsbestände Folgejahr");
     return anfangsbestaende;
   }
   
@@ -229,6 +230,7 @@ public class JahresabschlussControl extends AbstractControl
       return afaberechnung;
     }
     afaberechnung = new CheckboxInput(true);
+    afaberechnung.setName("Erzeuge Abschreibungen");
     return afaberechnung;
   }
 
