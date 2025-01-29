@@ -49,7 +49,7 @@ public class JahresabschlussView extends AbstractView
       info.paint(getParent());
     }
     
-    LabelGroup group = new LabelGroup(getParent(), "Jahresabschluss", true);
+    LabelGroup group = new LabelGroup(getParent(), "Jahresabschluss");
     ColumnLayout cl;
     if (Einstellungen.getEinstellung().getMittelverwendung())
     {
@@ -68,7 +68,6 @@ public class JahresabschlussView extends AbstractView
     middle.addLabelPair("Datum", control.getDatum());
     middle.addLabelPair("Name", control.getName());
 
-
     if (Einstellungen.getEinstellung().getMittelverwendung())
     {
       SimpleContainer right = new SimpleContainer(cl.getComposite());
@@ -80,7 +79,8 @@ public class JahresabschlussView extends AbstractView
     left.addLabelPair("", control.getAnfangsbestaende());
     if (Einstellungen.getEinstellung().getAfaInJahresabschluss())
       middle.addLabelPair("", control.getAfaberechnung());
-    group.addPart(control.getJahresabschlussSaldo());
+
+    control.getJahresabschlussSaldo().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
