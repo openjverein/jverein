@@ -18,10 +18,10 @@ package de.jost_net.JVerein.keys;
 
 public enum Kontoart
 {
-  // LIMIT ist keine Kontoart sondern dient zur Abgrenzung.
-  // Ids unter dem Limit werden regulär im Buchungsklassensaldo und Kontensaldo
+  // LIMIT ist keine Kontoart, sondern dient zur Abgrenzung.
+  // Ids unter dem Limit werden regulär im Buchungsklassensaldo, Kontensaldo und der Wirtschaftsplanung
   // berücksichtigt.
-  // Ids über dem Limit werden in beiden Salden ignoriert.
+  // Ids über dem Limit werden in diesen Salden ignoriert.
   GELD(1, "Geldkonto"),
   ANLAGE(2, "Anlagenkonto"),
   VERBINDLICHKEITEN(3, "Verbindlichkeitskonto"),
