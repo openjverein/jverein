@@ -21,6 +21,7 @@ jobs:
         path: jverein
 
     - name: Restore cache
+      id: restore-cache
       uses: actions/cache/restore@v4
       with:
         path: ~/.m2/repository
@@ -43,6 +44,7 @@ jobs:
 
     - name: Save cache
       uses: actions/cache/save@v4
+      if: steps.restore-cache.outputs.cache-hit != 'true'
       with:
         path: ~/.m2/repository
         key: cache-${{ hashFiles('setup-build.xml') }}-${{ hashFiles('**/pom.xml') }}
