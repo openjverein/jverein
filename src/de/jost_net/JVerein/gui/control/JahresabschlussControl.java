@@ -41,6 +41,7 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -48,6 +49,7 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
@@ -80,9 +82,15 @@ public class JahresabschlussControl extends AbstractControl
 
   private DecimalInput zwanghafteweitergabe;
 
+  private Button zurueck;
+
   private boolean isSaveEnabled = false;
 
   private boolean updateMittelverwendung = false;
+
+  private boolean ersterAbschluss = false;
+
+  private boolean mittelverwendungStart = false;
 
   public JahresabschlussControl(AbstractView view)
   {
@@ -147,6 +155,7 @@ public class JahresabschlussControl extends AbstractControl
       cal.add(Calendar.DAY_OF_MONTH, 1);
       return cal.getTime();
     }
+    ersterAbschluss = true;
     DBIterator<Buchung> itbu = Einstellungen.getDBService()
         .createList(Buchung.class);
     itbu.setOrder("ORDER BY datum");
@@ -290,6 +299,50 @@ public class JahresabschlussControl extends AbstractControl
     return zwanghafteweitergabe;
   }
 
+  public Button getZurueck()
+  {
+    if (zurueck != null)
+    {
+      return zurueck;
+    }
+    else
+    {
+      zurueck = new Button("", new Action()
+      {
+        @Override
+        public void handleAction(Object context) throws ApplicationException
+        {
+          if (ersterAbschluss)
+          {
+            Calendar cal = Calendar.getInstance();
+            try
+            {
+              mittelverwendungStart = true;
+              cal.setTime((Date) getVon().getValue());
+              cal.add(Calendar.DAY_OF_MONTH, -1);
+              getBis().setValue(cal.getTime());
+              cal.add(Calendar.DAY_OF_MONTH, 1);
+              cal.add(Calendar.YEAR, -1);
+              getVon().setValue(cal.getTime());
+              zurueck.setEnabled(false);
+              verwendungsrueckstand.setValue(null);
+              verwendungsrueckstand.setEnabled(true);
+              zwanghafteweitergabe.setValue(null);
+              zwanghafteweitergabe.setEnabled(true);
+            }
+            catch (RemoteException | ParseException e)
+            {
+              throw new ApplicationException(e.getMessage());
+            }
+          }
+
+        }
+      }, null, false, "go-previous.png");
+    }
+    zurueck.setEnabled(ersterAbschluss);
+    return zurueck;
+  }
+
   public boolean isSaveEnabled()
   {
     return isSaveEnabled;
@@ -303,7 +356,19 @@ public class JahresabschlussControl extends AbstractControl
     try
     {
       Jahresabschluss ja = getJahresabschluss();
-      if (ja.isNewObject())
+      if (mittelverwendungStart)
+      {
+        ja.setVon((Date) getVon().getValue());
+        ja.setBis((Date) getBis().getValue());
+        ja.setDatum((Date) getDatum().getValue());
+        ja.setName((String) getName().getValue());
+        ja.setVerwendungsrueckstand(
+            (Double) getVerwendungsrueckstand().getValue());
+        ja.setZwanghafteWeitergabe(
+            (Double) getZwanghafteWeitergabe().getValue());
+        ja.store();
+      }
+      else if (ja.isNewObject())
       {
         ja.setVon((Date) getVon().getValue());
         ja.setBis((Date) getBis().getValue());

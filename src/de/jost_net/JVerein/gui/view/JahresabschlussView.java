@@ -68,6 +68,10 @@ public class JahresabschlussView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.JAHRESABSCHLUSS, false, "question-circle.png");
+    if (Einstellungen.getEinstellung().getMittelverwendung())
+    {
+      buttons.addButton(control.getZurueck());
+    }
     Button save = new Button("Speichern", new Action()
     {
 
