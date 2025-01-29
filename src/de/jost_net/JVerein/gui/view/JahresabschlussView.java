@@ -25,7 +25,9 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.InfoPanel;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class JahresabschlussView extends AbstractView
 {
@@ -48,21 +50,31 @@ public class JahresabschlussView extends AbstractView
     }
     
     LabelGroup group = new LabelGroup(getParent(), "Jahresabschluss", true);
-    group.addLabelPair("Von", control.getVon());
-    group.addLabelPair("Bis", control.getBis());
-    group.addLabelPair("Datum", control.getDatum());
-    group.addLabelPair("Name", control.getName());
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addLabelPair("Von", control.getVon());
+    left.addLabelPair("Bis", control.getBis());
+
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
     if (Einstellungen.getEinstellung().getMittelverwendung())
     {
-      group.addLabelPair("Rest Verwendungsrückstand Vorjahr",
+      left.addLabelPair("Datum", control.getDatum());
+      right.addLabelPair("Name", control.getName());
+      right.addLabelPair("Rest Verwendungsrückstand Vorjahr",
           control.getVerwendungsrueckstand());
-      group.addLabelPair("Zwanghafte satzungsgemäße Weitergabe von Mitteln",
+      right.addLabelPair("Zwanghafte satzungsgemäße Weitergabe von Mitteln",
           control.getZwanghafteWeitergabe());
     }
-    group.addLabelPair("Anfangsbestände Folgejahr",
+    else
+    {
+      right.addLabelPair("Datum", control.getDatum());
+      right.addLabelPair("Name", control.getName());
+    }
+    left.addLabelPair("Anfangsbestände Folgejahr",
         control.getAnfangsbestaende());
     if (Einstellungen.getEinstellung().getAfaInJahresabschluss())
-      group.addLabelPair("Erzeuge Abschreibungen", control.getAfaberechnung());
+      right.addLabelPair("Erzeuge Abschreibungen", control.getAfaberechnung());
     group.addPart(control.getJahresabschlussSaldo());
 
     ButtonArea buttons = new ButtonArea();
