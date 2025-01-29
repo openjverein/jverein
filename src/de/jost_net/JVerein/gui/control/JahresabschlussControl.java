@@ -115,7 +115,8 @@ public class JahresabschlussControl extends AbstractControl
     {
       isSaveEnabled = true;
     }
-    if (Einstellungen.getEinstellung().getMittelverwendung())
+    if (Einstellungen.getEinstellung().getMittelverwendung()
+        && jahresabschluss.isNewObject())
     {
       MittelverwendungFlowList list = new MittelverwendungFlowList(
           (Date) getVon().getValue(), (Date) getBis().getValue());
