@@ -16,15 +16,22 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.BeitragsgruppeSucheView;
+import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 
-public class BeitragsgruppeSucheAction implements Action
+public class StartViewAction implements Action
 {
+  private Class<? extends AbstractView> viewClass;
+
+  public StartViewAction(Class<? extends AbstractView> viewClass)
+  {
+    this.viewClass = viewClass;
+  }
+
   @Override
   public void handleAction(Object context)
   {
-    GUI.startView(BeitragsgruppeSucheView.class.getName(), null);
+    GUI.startView(viewClass, null);
   }
 }
