@@ -147,9 +147,9 @@
             <version>2.16.0</version>
         </dependency>
         <dependency>
-            <groupId>jonelo.NumericalChameleon</groupId>
+            <groupId>net.numericalchameleon</groupId>
             <artifactId>nc</artifactId>
-            <version>1.0.0</version>
+            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
