@@ -2,7 +2,6 @@ name: Reusable build steps
 
 on:
   workflow_call:
-  workflow_dispatch:
 
 jobs:
   setup-java-and-cache:
@@ -19,18 +18,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Restore cache
-        id: cache
+        id: restore-cache
         uses: actions/cache/restore@v4
         with:
           path: ~/.m2/repository
           key: cache-${{ hashFiles('setup-build.xml') }}
 
       - name: Run setup-build.xml
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.restore-cache.outputs.cache-hit != 'true'
         run: mvn --batch-mode --file setup-build.xml clean initialize
 
       - name: Save cache
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.restore-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: ~/.m2/repository
