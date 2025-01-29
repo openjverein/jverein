@@ -14,6 +14,7 @@
         <jameica.version>V_2_10_4_BUILD_487</jameica.version>
         <hibiscus.url>https://github.com/willuhn/hibiscus/archive/refs/tags/</hibiscus.url>
         <hibiscus.version>V_2_10_23_BUILD_387</hibiscus.version>
+        <nc.url>https://prdownloads.sourceforge.net/numchameleon/nc-3.0.0.zip?download</nc.url>
         <swt.arch>win64</swt.arch>
         <maven.resources.skip>true</maven.resources.skip>
         <maven.main.skip>true</maven.main.skip>
@@ -89,6 +90,24 @@
                                 </copy>
                                 <move file="${project.basedir}/hibiscus/releases/hibiscus.jar"
                                       tofile="${project.basedir}/hibiscus/releases/hibiscus-lib.jar"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>get-numerical-chameleon</id>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <target>
+                                <get src="${nc.url}"
+                                     dest="${project.build.directory}/nc.zip"
+                                     skipexisting="true" />
+                                <unzip src="${project.build.directory}/nc.zip" dest="${project.build.directory}">
+                                    <patternset includes="numericalchameleon-3.0.0/bin/nc.jar"/>
+                                    <mapper type="flatten"/>
+                                </unzip>
                             </target>
                         </configuration>
                         <goals>
@@ -173,20 +192,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>install-nc-jar</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <file>${project.basedir}/lib/nc.jar</file>
-                            <groupId>jonelo.NumericalChameleon</groupId>
-                            <artifactId>nc</artifactId>
-                            <version>1.0.0</version>
-                            <packaging>jar</packaging>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>install-swt</id>
                         <phase>initialize</phase>
                         <goals>
@@ -212,6 +217,20 @@
                             <artifactId>hbci4j-core</artifactId>
                             <packaging>jar</packaging>
                             <version>3.1.85</version>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-nc</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.build.directory}/nc.jar</file>
+                            <groupId>net.numericalchameleon</groupId>
+                            <artifactId>nc</artifactId>
+                            <version>3.0.0</version>
+                            <packaging>jar</packaging>
                         </configuration>
                     </execution>
                 </executions>
