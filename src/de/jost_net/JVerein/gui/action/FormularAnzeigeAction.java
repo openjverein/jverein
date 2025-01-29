@@ -50,7 +50,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import jonelo.NumericalChameleon.SpokenNumbers.GermanNumber;
+import net.numericalchameleon.util.spokennumbers.GermanNumber;
 
 public class FormularAnzeigeAction implements Action
 {
