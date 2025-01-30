@@ -17,13 +17,13 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -37,10 +37,10 @@ public class SollbuchungPositionListPart extends TablePart
     super(action);
   }
 
-  public SollbuchungPositionListPart(DBIterator<SollbuchungPosition> sps,
+  public SollbuchungPositionListPart(List<SollbuchungPosition> list,
       Action action) throws RemoteException
   {
-    super(sps, action);
+    super(list, action);
 
     addColumn("Datum", "datum", new DateFormatter(new JVDateFormatTTMMJJJJ()));
     addColumn("Zweck", "zweck");

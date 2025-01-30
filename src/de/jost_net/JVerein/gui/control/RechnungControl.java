@@ -39,7 +39,6 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
-import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
@@ -668,14 +667,8 @@ public class RechnungControl extends DruckMailControl
     {
       return buchungList;
     }
-    DBIterator<SollbuchungPosition> sps = Einstellungen.getDBService()
-        .createList(SollbuchungPosition.class);
-    sps.join("mitgliedskonto");
-    sps.addFilter("mitgliedskonto.id = sollbuchungposition.sollbuchung");
-    sps.addFilter("mitgliedskonto.rechnung = ?", getRechnung().getID());
-    sps.setOrder("order by sollbuchungposition.datum");
-    
-    buchungList = new SollbuchungPositionListPart(sps, null);
+    buchungList = new SollbuchungPositionListPart(
+        getRechnung().getSollbuchungPositionList(), null);
     return buchungList;
   }
   

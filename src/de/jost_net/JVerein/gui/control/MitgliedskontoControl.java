@@ -530,17 +530,16 @@ public class MitgliedskontoControl extends DruckMailControl
     {
       return buchungList;
     }
-    DBIterator<SollbuchungPosition> sps = Einstellungen.getDBService()
-        .createList(SollbuchungPosition.class);
-    sps.addFilter("sollbuchung = ?", getMitgliedskonto().getID());
+    ArrayList<SollbuchungPosition> list = getMitgliedskonto()
+        .getSollbuchungPositionList();
 
     if (hasRechnung)
     {
-      buchungList = new SollbuchungPositionListPart(sps, null);
+      buchungList = new SollbuchungPositionListPart(list, null);
     }
     else
     {
-      buchungList = new SollbuchungPositionListPart(sps,
+      buchungList = new SollbuchungPositionListPart(list,
           new SollbuchungPositionEditAction());
     }
 
