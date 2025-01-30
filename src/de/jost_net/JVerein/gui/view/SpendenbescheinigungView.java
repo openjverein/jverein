@@ -64,11 +64,11 @@ public class SpendenbescheinigungView extends AbstractView
     left.addLabelPair("Zeile 6", control.getZeile6());
     left.addLabelPair("Zeile 7", control.getZeile7());
 
-    left.addHeadline("Datum");
-    left.addLabelPair("Spende", control.getSpendedatum());
-    left.addLabelPair("Bescheinigung", control.getBescheinigungsdatum());
-
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
+
+    right.addHeadline("Datum");
+    right.addLabelPair("Spende", control.getSpendedatum());
+    right.addLabelPair("Bescheinigung", control.getBescheinigungsdatum());
 
     right.addHeadline("Betrag");
     right.addLabelPair("Betrag", control.getBetrag());
@@ -92,7 +92,7 @@ public class SpendenbescheinigungView extends AbstractView
       // Buchnungen nur für Geldspenden
       LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),
           "Buchungen");
-      grBuchungen.addPart(control.getBuchungsList());
+      grBuchungen.addPart(control.getBuchungListPart());
     }
 
     ButtonArea buttons = new ButtonArea();
