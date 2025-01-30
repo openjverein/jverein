@@ -341,12 +341,10 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   @Override
   public boolean isOffen(Date datum) throws RemoteException
   {
-    if (!getMitglied().isAngemeldet(datum))
+    if (!getMitglied().isAngemeldet(datum)
+        && !Einstellungen.getEinstellung().getZusatzbetragAusgetretene())
     {
-      if (!Einstellungen.getEinstellung().getZusatzbetragAusgetretene())
-      {
-        return false;
-      }
+      return false;
     }
     // Einmalige Ausführung
     if (getIntervall().intValue() == IntervallZusatzzahlung.KEIN)
@@ -368,38 +366,26 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   @Override
   public boolean isAktiv(Date datum) throws RemoteException
   {
-    if (!getMitglied().isAngemeldet(datum))
+    if (!getMitglied().isAngemeldet(datum)
+        && !Einstellungen.getEinstellung().getZusatzbetragAusgetretene())
     {
-      if (!Einstellungen.getEinstellung().getZusatzbetragAusgetretene())
-      {
-        return false;
-      }
+      return false;
     }
     // Einmalige Ausführung
     if (getIntervall().intValue() == IntervallZusatzzahlung.KEIN)
     {
       // Ist das Ausführungsdatum gesetzt?
-      if (getAusfuehrung() == null)
+      if (getAusfuehrung() != null)
       {
-        if (getFaelligkeit().getTime() <= datum.getTime())
-        {
-          return true;
-        }
-        else
-        {
-          return false;
-        }
-      }
-      else
-      {
-        // ja: nicht mehr ausführen
         return false;
       }
+      return (getFaelligkeit().getTime() <= datum.getTime());
     }
 
     // Wenn das Endedatum gesetzt ist und das Ausführungsdatum liegt hinter
     // dem Endedatum: nicht mehr ausführen
-    if ((getEndedatum() != null && datum.getTime() >= getEndedatum().getTime())
+    if ((getEndedatum() != null
+        && getFaelligkeit().getTime() >= getEndedatum().getTime())
         || getFaelligkeit().getTime() > datum.getTime())
     {
       return false;
