@@ -289,7 +289,7 @@ public class MittelverwendungFlowList extends MittelverwendungList
         : rueckstandVorVorjahr;
     zwanghafteWeitergabeVorjahr = (zwanghafteWeitergabeVorjahr == null) ? 0.0
         : zwanghafteWeitergabeVorjahr;
-    Double ausgaben = summeEntRuecklagen - verwendung;
+    Double ausgaben = Math.max(summeEntRuecklagen - verwendung, 0);
     Double rueckstandVorjahr = vorhandeneMittel - rueckstandVorVorjahr
         - zwanghafteWeitergabeVorjahr;
     zwanghafteWeitergabeNeu = 0.0;
