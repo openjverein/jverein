@@ -24,19 +24,12 @@ import com.schlevoigt.JVerein.gui.action.BuchungsTexteKorrigierenAction;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AboutAction;
-import de.jost_net.JVerein.gui.action.AuswertungAdressenAction;
-import de.jost_net.JVerein.gui.action.AuswertungKursteilnehmerAction;
-import de.jost_net.JVerein.gui.action.AuswertungMitgliedAction;
 import de.jost_net.JVerein.gui.action.BackupCreateAction;
 import de.jost_net.JVerein.gui.action.BackupRestoreAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenExportAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenImportAction;
-import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
-import de.jost_net.JVerein.gui.action.PreNotificationAction;
-import de.jost_net.JVerein.gui.action.SollbuchungMahnungAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufListView;
 import de.jost_net.JVerein.gui.view.AnfangsbestandListView;
@@ -44,6 +37,9 @@ import de.jost_net.JVerein.gui.view.AnlagenbuchungenListeView;
 import de.jost_net.JVerein.gui.view.AnlagenlisteView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzListeView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzUeberpruefungView;
+import de.jost_net.JVerein.gui.view.AuswertungKursteilnehmerView;
+import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
+import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeSucheView;
 import de.jost_net.JVerein.gui.view.BuchungsartListView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseListView;
@@ -71,10 +67,12 @@ import de.jost_net.JVerein.gui.view.JahresabschlussListView;
 import de.jost_net.JVerein.gui.view.JubilaeenView;
 import de.jost_net.JVerein.gui.view.KontensaldoView;
 import de.jost_net.JVerein.gui.view.KontoListView;
+import de.jost_net.JVerein.gui.view.KontoauszugView;
 import de.jost_net.JVerein.gui.view.KursteilnehmerSucheView;
 import de.jost_net.JVerein.gui.view.LastschriftListeView;
 import de.jost_net.JVerein.gui.view.LehrgaengeListeView;
 import de.jost_net.JVerein.gui.view.LehrgangsartListeView;
+import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.MailUebersichtView;
 import de.jost_net.JVerein.gui.view.MailVorlagenUebersichtView;
 import de.jost_net.JVerein.gui.view.MigrationView;
@@ -82,6 +80,7 @@ import de.jost_net.JVerein.gui.view.MitgliederSucheView;
 import de.jost_net.JVerein.gui.view.MitgliedstypenListView;
 import de.jost_net.JVerein.gui.view.MittelverwendungListeView;
 import de.jost_net.JVerein.gui.view.NichtMitgliederSucheView;
+import de.jost_net.JVerein.gui.view.PreNotificationView;
 import de.jost_net.JVerein.gui.view.ProjektListView;
 import de.jost_net.JVerein.gui.view.ProjektSaldoView;
 import de.jost_net.JVerein.gui.view.QIFBuchungsImportView;
@@ -89,6 +88,7 @@ import de.jost_net.JVerein.gui.view.RechnungListeView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
 import de.jost_net.JVerein.gui.view.SollbuchungListeView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungListeView;
+import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.jost_net.JVerein.gui.view.StatistikMitgliedView;
 import de.jost_net.JVerein.gui.view.WiedervorlagelisteView;
@@ -248,15 +248,17 @@ public class MyExtension implements Extension
       NavigationItem auswertung = null;
       auswertung = new MyItem(auswertung, "Auswertungen", null);
       auswertung.addChild(new MyItem(auswertung, "Mitglieder",
-          new AuswertungMitgliedAction(), "receipt.png"));
+          new StartViewAction(AuswertungMitgliedView.class), "receipt.png"));
       auswertung.addChild(new MyItem(auswertung, "Nicht-Mitglieder",
-          new AuswertungAdressenAction(), "receipt.png"));
+          new StartViewAction(AuswertungNichtMitgliedView.class),
+          "receipt.png"));
       auswertung.addChild(new MyItem(auswertung, "Jubiläen",
           new StartViewAction(JubilaeenView.class), "receipt.png"));
       if (Einstellungen.getEinstellung().getKursteilnehmer())
       {
         auswertung.addChild(new MyItem(auswertung, "Kursteilnehmer",
-            new AuswertungKursteilnehmerAction(), "receipt.png"));
+            new StartViewAction(AuswertungKursteilnehmerView.class),
+            "receipt.png"));
       }
       auswertung.addChild(new MyItem(auswertung, "Mitgliederstatistik",
           new StartViewAction(StatistikMitgliedView.class), "chart-line.png"));
@@ -276,15 +278,17 @@ public class MyExtension implements Extension
       mail.addChild(new MyItem(mail, "Rechnungen",
           new StartViewAction(RechnungMailView.class), "document-print.png"));
       mail.addChild(new MyItem(mail, "Mahnungen",
-          new SollbuchungMahnungAction(), "document-print.png"));
+          new StartViewAction(MahnungMailView.class), "document-print.png"));
       mail.addChild(new MyItem(mail, "Kontoauszüge",
-          new KontoauszugAction(), "document-print.png"));
+          new StartViewAction(KontoauszugView.class), "document-print.png"));
       mail.addChild(new MyItem(mail, "Freie Formulare",
           new StartViewAction(FreieFormulareView.class), "document-print.png"));
       mail.addChild(new MyItem(mail, "Pre-Notification",
-          new PreNotificationAction(), "document-print.png"));
+          new StartViewAction(PreNotificationView.class),
+          "document-print.png"));
       mail.addChild(new MyItem(mail, "Spendenbescheinigungen",
-          new SpendenbescheinigungSendAction(), "document-print.png"));
+          new StartViewAction(SpendenbescheinigungMailView.class),
+          "document-print.png"));
       mail.addChild(
           new MyItem(mail, "Mails",
               new StartViewAction(MailUebersichtView.class),
