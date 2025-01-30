@@ -14,30 +14,29 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.menu;
+package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.action.BuchungsklasseDeleteAction;
-import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.view.BuchungsklasseView;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
-import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
-import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.util.ApplicationException;
 
-/**
- * Kontext-Menu zu den Buchungsklassen.
- */
-public class BuchungsklasseMenu extends ContextMenu
+public class EditAction implements Action
 {
+  private Class<? extends AbstractView> viewClass;
 
-  /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Buchungsklassen.
-   */
-  public BuchungsklasseMenu()
+  public EditAction(Class<? extends AbstractView> viewClass)
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(BuchungsklasseView.class),
-        "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new BuchungsklasseDeleteAction(), "user-trash-full.png"));
+    this.viewClass = viewClass;
+  }
+
+  @Override
+  public void handleAction(Object context) throws ApplicationException
+  {
+    if (context == null)
+    {
+      throw new ApplicationException("Kein Object ausgewählt");
+    }
+    GUI.startView(viewClass, context);
   }
 }

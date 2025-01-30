@@ -19,36 +19,39 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.BuchungsklasseView;
-import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsklasseAction implements Action
+public class NewAction implements Action
 {
+  private Class<? extends AbstractView> viewClass;
+
+  private Class<? extends DBObject> objectClass;
+
+  public NewAction(Class<? extends AbstractView> viewClass,
+      Class<? extends DBObject> objectClass)
+  {
+    this.viewClass = viewClass;
+    this.objectClass = objectClass;
+  }
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Buchungsklasse b = null;
-
-    if (context != null && (context instanceof Buchungsklasse))
+    try
     {
-      b = (Buchungsklasse) context;
+      DBObject object = Einstellungen.getDBService().createObject(objectClass,
+          null);
+      GUI.startView(viewClass, object);
     }
-    else
+    catch (RemoteException e)
     {
-      try
-      {
-        b = (Buchungsklasse) Einstellungen.getDBService().createObject(
-            Buchungsklasse.class, null);
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung einer neuen Buchungsklasse", e);
-      }
+      throw new ApplicationException(
+          "Fehler bei der Erzeugung eines neuen " + objectClass.getSimpleName(),
+          e);
     }
-    GUI.startView(BuchungsklasseView.class.getName(), b);
   }
 }
