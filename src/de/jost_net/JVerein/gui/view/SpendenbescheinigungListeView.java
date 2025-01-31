@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAutoNeuAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.Spendenart;
@@ -87,7 +87,7 @@ public class SpendenbescheinigungListeView extends AbstractView
     buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(Spendenart.SACHSPENDE), null,
         false, "document-new.png");
     buttons.addButton("Neu (automatisch)",
-        new SpendenbescheinigungAutoNeuAction(), null, false,
+        new StartViewAction(SpendenbescheinigungAutoNeuView.class), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

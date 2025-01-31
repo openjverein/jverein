@@ -68,7 +68,7 @@ public class RechnungView extends AbstractView
     rigth.addInput(control.getZahlungsweg());
     
     LabelGroup cont = new LabelGroup(getParent(), "Rechnungspositionen", true);
-    cont.addPart(control.getBuchungenList());
+    cont.addPart(control.getSollbuchungPositionListPart());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

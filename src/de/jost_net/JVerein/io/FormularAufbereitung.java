@@ -154,8 +154,9 @@ public class FormularAufbereitung
         if (encrypt)
         {
           writer.setEncryption(null, null,
-              PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS,
-              PdfWriter.ENCRYPTION_AES_256);
+              PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS
+                  | PdfWriter.ALLOW_COPY,
+              PdfWriter.ENCRYPTION_AES_256 | PdfWriter.DO_NOT_ENCRYPT_METADATA);
         }
         doc.open();
       }
