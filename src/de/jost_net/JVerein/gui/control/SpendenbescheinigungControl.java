@@ -43,19 +43,16 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
-import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
-import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
-import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
-import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
+import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.MailSender;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportCSV;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportPDF;
+import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -64,7 +61,6 @@ import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.SuchSpendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
-import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
@@ -137,14 +133,12 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   private CheckboxInput unterlagenwertermittlung;
 
-  private TablePart buchungsList;
-
   private Spendenbescheinigung spendenbescheinigung;
   
   private boolean and = false;
 
   private String sql = "";
-  
+
   private boolean editable = false;
 
   final static String ExportPDF = "PDF";
@@ -452,81 +446,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return unterlagenwertermittlung;
   }
 
-  public Part getBuchungsList() throws RemoteException
+  public Part getBuchungListPart() throws RemoteException
   {
-    Spendenbescheinigung spb = getSpendenbescheinigung();
-    if (buchungsList == null)
-    {
-
-      buchungsList = new BuchungListTablePart(spb.getBuchungen(), null);
-      buchungsList.addColumn("Nr", "id-int");
-      buchungsList.addColumn("Konto", "konto", new Formatter()
-      {
-
-        @Override
-        public String format(Object o)
-        {
-          Konto k = (Konto) o;
-          if (k != null)
-          {
-            try
-            {
-              return k.getBezeichnung();
-            }
-            catch (RemoteException e)
-            {
-              Logger.error("Fehler", e);
-            }
-          }
-          return "";
-        }
-      });
-      buchungsList.addColumn("Datum", "datum",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      buchungsList.addColumn("Auszug", "auszugsnummer");
-      buchungsList.addColumn("Blatt", "blattnummer");
-      buchungsList.addColumn("Name", "name");
-      buchungsList.addColumn("Verwendungszweck", "zweck", new Formatter()
-      {
-
-        @Override
-        public String format(Object value)
-        {
-          if (value == null)
-          {
-            return null;
-          }
-          String s = value.toString();
-          s = s.replaceAll("\r\n", " ");
-          s = s.replaceAll("\r", " ");
-          s = s.replaceAll("\n", " ");
-          return s;
-        }
-      });
-      buchungsList.addColumn("Buchungsart", "buchungsart",
-          new BuchungsartFormatter());
-      buchungsList.addColumn("Betrag", "betrag",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      buchungsList.addColumn("Mitglied", "mitgliedskonto",
-          new MitgliedskontoFormatter());
-      buchungsList.addColumn("Ersatz für Aufwendungen", "verzicht", new JaNeinFormatter());
-      buchungsList.setMulti(true);
-      // buchungsList.setContextMenu(new BuchungMenu(this));
-      buchungsList.setRememberColWidths(true);
-      buchungsList.setRememberOrder(true);
-      buchungsList.setRememberState(true);
-      buchungsList.addFeature(new FeatureSummary());
-    }
-    else
-    {
-      buchungsList.removeAll();
-      for (Buchung bu : spb.getBuchungen())
-      {
-        buchungsList.addItem(bu);
-      }
-      buchungsList.sort();
-    }
-    return buchungsList;
+    return new BuchungListPart(getSpendenbescheinigung().getBuchungen(), null);
   }
 
   /**

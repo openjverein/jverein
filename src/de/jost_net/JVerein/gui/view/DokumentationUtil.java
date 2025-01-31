@@ -24,7 +24,7 @@ public class DokumentationUtil
   
   //private static final String ALLGEMEIN = "allgemein/";
   
-  private static final String FUNKTIONEN = "v2.9.0/";
+  private static final String FUNKTIONEN = "v3.0.x/";
   
   private static final String ADMIN = "administration/";
   
@@ -223,4 +223,7 @@ public class DokumentationUtil
   public static final String MITGRATION = PRE + FUNKTIONEN + ADMIN + ADMERWEITERT + "migration";
   
   public static final String QIFIMPORT = PRE + FUNKTIONEN + ADMIN + ADMERWEITERT + "qif-import";
+
+  // Changelog bei Update
+  public static final String CHANGELOG = PRE + FUNKTIONEN + "notes";
 }

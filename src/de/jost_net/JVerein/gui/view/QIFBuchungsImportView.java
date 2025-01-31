@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.QIFBuchungsartAction;
 import de.jost_net.JVerein.gui.action.QIFDateiEinlesenAction;
-import de.jost_net.JVerein.gui.action.QIFMitgliederAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.QIFBuchungsImportControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -86,7 +86,8 @@ public class QIFBuchungsImportView extends AbstractView
         null, false, "list-remove.png");
     buttons.addButton("Buchungsarten zuordnen", new QIFBuchungsartAction(),
         null, false, "zuordnung.png");
-    buttons.addButton("Mitglieder zuordnen", new QIFMitgliederAction(), null,
+    buttons.addButton("Mitglieder zuordnen",
+        new StartViewAction(QIFMitgliederZuordnenView.class), null,
         false, "contact-new.png");
     buttons.addButton("Buchungen übernehmen", control.getPIFPosBuchenAction(),
         null, false, "document-new.png");
