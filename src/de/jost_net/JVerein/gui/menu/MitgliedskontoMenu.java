@@ -52,6 +52,10 @@ public class MitgliedskontoMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
         new SollbuchungLoeschenAction(), "user-trash-full.png"));
+    addItem(new MitRechnungItem("Rechnung anzeigen",
+        new SollbuchungRechnungAction(), "file-invoice.png"));
+    addItem(new OhneRechnungItem("Rechnung(en) erstellen",
+        new RechnungNeuAction(), "file-invoice.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SollMitIstItem("Istbuchung bearbeiten",
         new IstbuchungEditAction(), "text-x-generic.png"));
@@ -62,10 +66,6 @@ public class MitgliedskontoMenu extends ContextMenu
         new SpendenbescheinigungAction(Spendenart.GELDSPENDE), "file-invoice.png"));
     addItem(new MitgliedItem("Sachspendenbescheinigung",
         new SpendenbescheinigungAction(Spendenart.SACHSPENDE), "file-invoice.png"));
-    addItem(new MitRechnungItem("Rechnung anzeigen",
-        new SollbuchungRechnungAction(), "file-invoice.png"));
-    addItem(new OhneRechnungItem("Rechnung(en) erstellen",
-        new RechnungNeuAction(), "file-invoice.png"));
   }
 
   private static class MitgliedItem extends CheckedContextMenuItem
