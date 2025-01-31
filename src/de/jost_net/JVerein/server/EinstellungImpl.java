@@ -2209,4 +2209,16 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("verrechnungskonto", konto);
   }
+
+  @Override
+  public boolean getSplitPositionZweck() throws RemoteException
+  {
+    return (Boolean) getAttribute("splitpositionzweck");
+  }
+
+  @Override
+  public void setSplitPositionZweck(boolean split) throws RemoteException
+  {
+    setAttribute("splitpositionzweck", split);
+  }
 }

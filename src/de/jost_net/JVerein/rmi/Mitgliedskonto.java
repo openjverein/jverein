@@ -19,6 +19,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.willuhn.datasource.rmi.DBObject;
 
@@ -30,10 +31,18 @@ public interface Mitgliedskonto extends DBObject
       throws RemoteException;
 
   public Mitglied getMitglied() throws RemoteException;
-  
+
   public String getMitgliedId() throws RemoteException;
 
   public void setMitglied(Mitglied mitglied) throws RemoteException;
+
+  public Mitglied getZahler() throws RemoteException;
+
+  public void setZahler(Mitglied zahler) throws RemoteException;
+
+  public Long getZahlerId() throws RemoteException;
+
+  public void setZahlerId(Long zahlerId) throws RemoteException;
 
   public Date getDatum() throws RemoteException;
 
@@ -59,4 +68,7 @@ public interface Mitgliedskonto extends DBObject
 
   ArrayList<SollbuchungPosition> getSollbuchungPositionList()
       throws RemoteException;
+
+  public List<Buchung> getBuchungList() throws RemoteException;
+
 }

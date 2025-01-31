@@ -23,9 +23,10 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.WiedervorlageListeAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.parts.WiedervorlageList;
+import de.jost_net.JVerein.gui.view.WiedervorlagelisteView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -205,7 +206,7 @@ public class WiedervorlageControl extends FilterControl
   public Part getWiedervorlageList() throws RemoteException
   {
     wiedervorlageList = new WiedervorlageList(
-        new WiedervorlageListeAction(), this);
+        new StartViewAction(WiedervorlagelisteView.class), this);
     return wiedervorlageList.getWiedervorlageList();
   }
   

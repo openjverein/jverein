@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
 import de.jost_net.JVerein.keys.Spendenart;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -39,6 +40,12 @@ public class SpendenbescheinigungView extends AbstractView
     final SpendenbescheinigungControl control = new SpendenbescheinigungControl(
         this);
 
+    Spendenbescheinigung spb = control.getSpendenbescheinigung();
+    if (spb.isNewObject())
+    {
+      control.setEditable();
+    }
+    
     ScrolledContainer scrolled = new ScrolledContainer(getParent());
 
     ColumnLayout cols1 = new ColumnLayout(scrolled.getComposite(), 2);
@@ -48,6 +55,7 @@ public class SpendenbescheinigungView extends AbstractView
     left.addLabelPair("Spendenart", control.getSpendenart());
 
     left.addHeadline("Spender");
+    left.addLabelPair("Spender", control.getMitglied());
     left.addLabelPair("Zeile 1", control.getZeile1(true));
     left.addLabelPair("Zeile 2", control.getZeile2());
     left.addLabelPair("Zeile 3", control.getZeile3());
@@ -56,11 +64,11 @@ public class SpendenbescheinigungView extends AbstractView
     left.addLabelPair("Zeile 6", control.getZeile6());
     left.addLabelPair("Zeile 7", control.getZeile7());
 
-    left.addHeadline("Datum");
-    left.addLabelPair("Spende", control.getSpendedatum());
-    left.addLabelPair("Bescheinigung", control.getBescheinigungsdatum());
-
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
+
+    right.addHeadline("Datum");
+    right.addLabelPair("Spende", control.getSpendedatum());
+    right.addLabelPair("Bescheinigung", control.getBescheinigungsdatum());
 
     right.addHeadline("Betrag");
     right.addLabelPair("Betrag", control.getBetrag());
@@ -79,22 +87,12 @@ public class SpendenbescheinigungView extends AbstractView
     right.addLabelPair("Unterlagen Wertermittlung",
         control.getUnterlagenWertermittlung());
 
-    /*
-     * Betrag kann bei Geldspenden nicht geändert werden
-     */
     if (control.getSpendenbescheinigung().getSpendenart() == Spendenart.GELDSPENDE)
     {
-      control.getSpendenart().setEnabled(false);
-      control.getBetrag().setEnabled(false);
       // Buchnungen nur für Geldspenden
       LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),
           "Buchungen");
-      grBuchungen.addPart(control.getBuchungsList());
-    }
-    else
-    {
-      control.getSpendenart().setEnabled(false);
-      control.getBetrag().setEnabled(true);
+      grBuchungen.addPart(control.getBuchungListPart());
     }
 
     ButtonArea buttons = new ButtonArea();

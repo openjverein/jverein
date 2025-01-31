@@ -107,7 +107,7 @@ public class Kontoauszug
         {
           return;
         }
-        rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40);
+        rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40, false);
         for (Mitglied mg : mitglieder)
         {
           if (generiereMitglied(mg, control))
@@ -137,7 +137,7 @@ public class Kontoauszug
             continue;
           }
           File f = File.createTempFile(getDateiname(mg), ".pdf");
-          rpt = new Reporter(new FileOutputStream(f), 40, 20, 20, 40);
+          rpt = new Reporter(new FileOutputStream(f), 40, 20, 20, 40, false);
           if (generiereMitglied(mg, control) == false)
           {
             continue;

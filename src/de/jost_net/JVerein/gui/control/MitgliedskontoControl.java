@@ -31,13 +31,13 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionEditAction;
-import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
-import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
+import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
+import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.BuchungView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.io.Kontoauszug;
@@ -118,6 +118,8 @@ public class MitgliedskontoControl extends DruckMailControl
   private DecimalInput betrag;
 
   private AbstractInput mitglied;
+  
+  private AbstractInput zahler;
 
   private Mitgliedskonto mkto;
 
@@ -209,7 +211,7 @@ public class MitgliedskontoControl extends DruckMailControl
       z = getMitgliedskonto().getZweck1();
     }
     zweck1 = new TextAreaInput(z, 500);
-    zweck1.setHeight(50);
+    zweck1.setHeight(30);
     zweck1.setMandatory(true);
     return zweck1;
   }
@@ -327,6 +329,7 @@ public class MitgliedskontoControl extends DruckMailControl
       if (mkto.getRechnung() != null)
         throw new ApplicationException(
             "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
+      mkto.setZahlerId(getSelectedZahlerId());
       mkto.setBetrag((Double) getBetrag().getValue());
       mkto.setDatum((Date) getDatum().getValue());
       Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
@@ -431,7 +434,7 @@ public class MitgliedskontoControl extends DruckMailControl
   }
 
   public TablePart getMitgliedskontoList(Action action, ContextMenu menu,
-      boolean umwandeln) throws RemoteException
+      boolean umwandeln) throws RemoteException, ApplicationException
   {
     this.action = action;
     this.umwandeln = umwandeln;
@@ -446,7 +449,8 @@ public class MitgliedskontoControl extends DruckMailControl
       mitgliedskontoList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       mitgliedskontoList.addColumn("Abrechnungslauf", "abrechnungslauf");
-      mitgliedskontoList.addColumn("Name", "mitglied");
+      mitgliedskontoList.addColumn("Mitglied", "mitglied");
+      mitgliedskontoList.addColumn("Zahler", "zahler");
       mitgliedskontoList.addColumn("Zweck", "zweck1");
       mitgliedskontoList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
@@ -520,43 +524,23 @@ public class MitgliedskontoControl extends DruckMailControl
     mitgliedskontoList2.sort();
   }
 
-  public Part getBuchungenList(boolean hasRechnung) throws RemoteException
+  public Part getSollbuchungPositionListPart(boolean hasRechnung) throws RemoteException
   {
     if (buchungList != null)
     {
       return buchungList;
     }
-    DBIterator<SollbuchungPosition> sps = Einstellungen.getDBService()
-        .createList(SollbuchungPosition.class);
-    sps.addFilter("sollbuchung = ?", getMitgliedskonto().getID());
+    ArrayList<SollbuchungPosition> list = getMitgliedskonto()
+        .getSollbuchungPositionList();
 
     if (hasRechnung)
     {
-      buchungList = new TablePart(sps, null);
+      buchungList = new SollbuchungPositionListPart(list, null);
     }
     else
     {
-      buchungList = new TablePart(sps, new SollbuchungPositionEditAction());
-    }
-    buchungList.addColumn("Datum", "datum",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    buchungList.addColumn("Zweck", "zweck");
-    buchungList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    if (Einstellungen.getEinstellung().getOptiert())
-    {
-      buchungList.addColumn("Nettobetrag", "nettobetrag",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      buchungList.addColumn("Steuersatz", "steuersatz");
-      buchungList.addColumn("Steuerbetrag", "steuerbetrag",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    }
-    buchungList.addColumn("Buchungsart", "buchungsart",
-        new BuchungsartFormatter());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-    {
-      buchungList.addColumn("Buchungsklasse", "buchungsklasse",
-          new BuchungsklasseFormatter());
+      buchungList = new SollbuchungPositionListPart(list,
+          new SollbuchungPositionEditAction());
     }
 
     buchungList.setRememberColWidths(true);
@@ -564,9 +548,12 @@ public class MitgliedskontoControl extends DruckMailControl
     {
       buchungList.setContextMenu(new SollbuchungPositionMenu());
     }
-    buchungList.setRememberOrder(true);
-    buchungList.addFeature(new FeatureSummary());
     return buchungList;
+  }
+
+  public Part getBuchungListPart() throws RemoteException
+  {
+    return new BuchungListPart(getMitgliedskonto().getBuchungList(), null);
   }
 
   private GenericIterator<Mitglied> getMitgliedIterator() throws RemoteException
@@ -609,7 +596,7 @@ public class MitgliedskontoControl extends DruckMailControl
     return mitglieder;
   }
 
-  public void refreshMitgliedkonto1() throws RemoteException
+  public void refreshMitgliedkonto1() throws RemoteException, ApplicationException
   {
     @SuppressWarnings("rawtypes")
     GenericIterator mitgliedskonten = new SollbuchungQuery(this, umwandeln,
@@ -662,6 +649,10 @@ public class MitgliedskontoControl extends DruckMailControl
       {
         Logger.error("Fehler", e);
       }
+      catch (ApplicationException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
+      }
     }
   }
 
@@ -675,6 +666,10 @@ public class MitgliedskontoControl extends DruckMailControl
     catch (RemoteException e)
     {
       Logger.error("Fehler", e);
+    }
+    catch (ApplicationException e)
+    {
+      GUI.getStatusBar().setErrorText(e.getLocalizedMessage());;
     }
   }
 
@@ -842,6 +837,42 @@ public class MitgliedskontoControl extends DruckMailControl
     mitglied.setMandatory(true);
     return mitglied;
   }
+  
+  public Input getZahler() throws RemoteException
+  {
+    if (zahler != null)
+    {
+      return zahler;
+    }
+    zahler = new MitgliedInput().getMitgliedInput(zahler,
+        getMitgliedskonto().getZahler(),
+        Einstellungen.getEinstellung().getMitgliedAuswahl());
+    zahler.setMandatory(true);
+    return zahler;
+  }
+
+  private Long getSelectedZahlerId() throws ApplicationException
+  {
+    try
+    {
+      if (zahler == null)
+      {
+        return null;
+      }
+      Mitglied derZahler = (Mitglied) getZahler().getValue();
+      if (null == derZahler)
+      {
+        return null;
+      }
+      return Long.valueOf(derZahler.getID());
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählter Zahler kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
 
   public class MitgliedListener implements Listener
   {
@@ -859,8 +890,23 @@ public class MitgliedskontoControl extends DruckMailControl
         ArrayList<Zahlungsweg> list = (ArrayList<Zahlungsweg>) getZahlungsweg()
             .getList();
         list.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
-        if (((Mitglied) getMitglied().getValue()).getZahlerID() != null)
+        Mitglied m = (Mitglied) getMitglied().getValue();
+        Mitglied z = (Mitglied) getZahler().getValue();
+        if (m.getZahlerID() != null)
+        {
           list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+          if (z == null)
+          {
+            getZahler().setValue(m.getZahler());
+          }
+        }
+        else
+        {
+          if (z == null)
+          {
+            getZahler().setValue(getMitglied().getValue());
+          }
+        }
         getZahlungsweg().setList(list);
       }
       catch (RemoteException e)

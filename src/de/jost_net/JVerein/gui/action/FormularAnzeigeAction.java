@@ -32,6 +32,7 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
+import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.FormularAufbereitung;
@@ -314,6 +315,29 @@ public class FormularAnzeigeAction implements Action
       differenz.add(239.99d);
       ist.add(10d);
 
+      map.put(RechnungVar.STAND.getName(), -39.99d);
+      map.put(RechnungVar.QRCODE_SUMME.getName(), "");
+      map.put(RechnungVar.DATUM.getName(), new Date());
+      map.put(RechnungVar.ANREDE.getName(), "Herrn");
+      map.put(RechnungVar.TITEL.getName(), "Dr.");
+      map.put(RechnungVar.NAME.getName(), "Wichtig");
+      map.put(RechnungVar.VORNAME.getName(), "Willi");
+      map.put(RechnungVar.STRASSE.getName(), "Testgasse 1");
+      map.put(RechnungVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhaus");
+      map.put(RechnungVar.PLZ.getName(), "12345");
+      map.put(RechnungVar.ORT.getName(), "Testenhausen");
+      map.put(RechnungVar.STAAT.getName(), "DEUTSCHLAND");
+      map.put(RechnungVar.GESCHLECHT.getName(), GeschlechtInput.MAENNLICH);
+      map.put(RechnungVar.ANREDE_DU.getName(), "");
+      map.put(RechnungVar.ANREDE_FOERMLICH.getName(), "");
+      map.put(RechnungVar.PERSONENART.getName(), "");
+      map.put(RechnungVar.MANDATID.getName(), "105");
+      map.put(RechnungVar.MANDATDATUM.getName(), new Date());
+      map.put(RechnungVar.BIC.getName(), "NORSDE51XXX");
+      map.put(RechnungVar.IBAN.getName(), "DE27100777770209299700");
+      map.put(RechnungVar.IBANMASKIERT.getName(),
+          VarTools.maskieren("DE27100777770209299700"));
+
       map.put(RechnungVar.BUCHUNGSDATUM.getName(), buda.toArray());
       map.put(RechnungVar.ZAHLUNGSGRUND.getName(), zg.toArray());
       map.put(RechnungVar.NETTOBETRAG.getName(), nettobetrag.toArray());
@@ -325,6 +349,11 @@ public class FormularAnzeigeAction implements Action
       map.put(RechnungVar.SUMME_OFFEN.getName(), 700);
       map.put(RechnungVar.QRCODE_INTRO.getName(),
           Einstellungen.getEinstellung().getQRCodeIntro());
+      map.put(RechnungVar.EMPFAENGER.getName(),
+          "Herr\nDr. Willi Wichtig\nTestgasse 1\n12345 Testenhausen");
+      map.put(RechnungVar.NUMMER.getName(), "0001");
+      map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(),
+          Einstellungen.getEinstellung().getRechnungTextUeberweisung());
       FormularAufbereitung fab = new FormularAufbereitung(file, false, false);
       fab.writeForm(formular, map);
       fab.showFormular();

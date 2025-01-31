@@ -25,8 +25,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.AdministrationEinstellungenAllgemeinAction;
-import de.jost_net.JVerein.gui.action.BeitragsgruppeSucheAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
+import de.jost_net.JVerein.gui.view.BeitragsgruppeSucheView;
+import de.jost_net.JVerein.gui.view.EinstellungenAllgemeinView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.boxes.AbstractBox;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -133,8 +134,9 @@ public class FirstStart extends AbstractBox
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Einstellungen",
-        new AdministrationEinstellungenAllgemeinAction(), null);
-    buttons.addButton("Beitragsgruppen", new BeitragsgruppeSucheAction(), null);
+        new StartViewAction(EinstellungenAllgemeinView.class), null);
+    buttons.addButton("Beitragsgruppen",
+        new StartViewAction(BeitragsgruppeSucheView.class), null);
     buttons.paint(parent);
   }
 

@@ -21,9 +21,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -92,6 +94,10 @@ public class MitgliedskontoImpl extends AbstractDBObject
   {
     try
     {
+      if (getZahler() == null)
+      {
+        throw new ApplicationException("Zahler fehlt");
+      }
       if (getDatum() == null)
       {
         throw new ApplicationException("Datum fehlt");
@@ -194,6 +200,48 @@ public class MitgliedskontoImpl extends AbstractDBObject
   }
 
   @Override
+  public Mitglied getZahler() throws RemoteException
+  {
+    Object o = (Object) super.getAttribute("zahler");
+    if (o == null)
+    {
+      return null;
+    }
+
+    if (o instanceof Mitglied)
+    {
+      return (Mitglied) o;
+    }
+
+    Cache cache = Cache.get(Mitglied.class, true);
+    return (Mitglied) cache.get(o);
+  }
+
+  @Override
+  public void setZahler(Mitglied zahler) throws RemoteException
+  {
+    if (zahler != null)
+    {
+      setAttribute("zahler", Long.valueOf(zahler.getID()));
+    }
+    else
+    {
+      setAttribute("zahler", null);
+    }
+  }
+
+  public Long getZahlerId() throws RemoteException
+  {
+    return (Long) super.getAttribute("zahler");
+  }
+
+  @Override
+  public void setZahlerId(Long zahlerId) throws RemoteException
+  {
+    setAttribute("zahler", zahlerId);
+  }
+
+  @Override
   public Date getDatum() throws RemoteException
   {
     return (Date) getAttribute("datum");
@@ -292,6 +340,10 @@ public class MitgliedskontoImpl extends AbstractDBObject
     {
       return getMitglied();
     }
+    if (fieldName.equals("zahler"))
+    {
+      return getZahler();
+    }
     if (fieldName.equals("abrechnungslauf"))
     {
       return getAbrechnungslauf();
@@ -313,5 +365,21 @@ public class MitgliedskontoImpl extends AbstractDBObject
       sps.add((SollbuchungPosition) it.next());
     }
     return sps;
+  }
+
+  @Override
+  public List<Buchung> getBuchungList() throws RemoteException
+  {
+    ArrayList<Buchung> buchungen = new ArrayList<>();
+    DBIterator<Buchung> it = Einstellungen.getDBService()
+        .createList(Buchung.class);
+    it.addFilter("mitgliedskonto = ?", getID());
+    it.setOrder("ORDER BY datum asc");
+    while (it.hasNext())
+    {
+      Buchung bu = it.next();
+      buchungen.add(bu);
+    }
+    return buchungen;
   }
 }
