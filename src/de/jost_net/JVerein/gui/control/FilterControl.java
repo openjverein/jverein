@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.StringTokenizer;
@@ -41,6 +42,7 @@ import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SuchSpendenart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Adresstyp;
@@ -162,6 +164,8 @@ public class FilterControl extends AbstractControl
   protected SelectInput suchbuchungsklasse = null;
 
   protected SelectInput suchbuchungsartart = null;
+
+  protected SelectInput suchkontoart = null;
 
   private Calendar calendar = Calendar.getInstance();
 
@@ -1102,13 +1106,13 @@ public class FilterControl extends AbstractControl
     return suchspendenart != null;
   }
 
-  public SelectInput getSuchStatus() throws RemoteException
+  public SelectInput getSuchStatus(String suchstring) throws RemoteException
   {
     if (suchstatus != null)
     {
       return suchstatus;
     }
-    suchstatus = new SelectInput(new String[] { ALLE, "Ohne Deaktiviert" },
+    suchstatus = new SelectInput(new String[] { ALLE, suchstring },
         settings.getString(settingsprefix + "suchstatus", ALLE));
     suchstatus.addListener(new FilterListener());
     suchstatus.setName("Status");
@@ -1188,6 +1192,36 @@ public class FilterControl extends AbstractControl
   public boolean isSuchBuchungsartArtAktiv()
   {
     return suchbuchungsartart != null;
+  }
+
+  public SelectInput getSuchKontoart() throws RemoteException
+  {
+    if (suchkontoart != null)
+    {
+      return suchkontoart;
+    }
+    ArrayList<Kontoart> values = new ArrayList<Kontoart>(
+        Arrays.asList(Kontoart.values()));
+    values.remove(Kontoart.LIMIT);
+    String key = settings.getString(settingsprefix + "suchkontoart.key", null);
+    if (key != null && !key.isEmpty())
+    {
+      Kontoart defaultwert = Kontoart.getByKey(Integer.parseInt(key));
+      suchkontoart = new SelectInput(values, defaultwert);
+    }
+    else
+    {
+      suchkontoart = new SelectInput(values, null);
+    }
+    suchkontoart.setName("Kontoart");
+    suchkontoart.setPleaseChoose(ALLE);
+    suchkontoart.addListener(new FilterListener());
+    return suchkontoart;
+  }
+
+  public boolean isSuchKontoartAktiv()
+  {
+    return suchkontoart != null;
   }
 
   /**
@@ -1316,6 +1350,8 @@ public class FilterControl extends AbstractControl
           suchbuchungsklasse.setValue(null);
         if (suchbuchungsartart != null)
           suchbuchungsartart.setValue(null);
+        if (suchkontoart != null)
+          suchkontoart.setValue(null);
         refresh();
       }
     }, null, false, "eraser.png");
@@ -1748,6 +1784,19 @@ public class FilterControl extends AbstractControl
       else
       {
         settings.setAttribute(settingsprefix + "suchbuchungsartart", "");
+      }
+    }
+
+    if (suchkontoart != null)
+    {
+      Kontoart ka = (Kontoart) suchkontoart.getValue();
+      if (ka != null)
+      {
+        settings.setAttribute(settingsprefix + "suchkontoart.key", ka.getKey());
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "suchkontoart.key", "");
       }
     }
   }
