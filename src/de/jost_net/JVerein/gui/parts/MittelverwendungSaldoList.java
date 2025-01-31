@@ -96,6 +96,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
     String sql;
     ArrayList<MittelverwendungZeile> zeilen = new ArrayList<>();
     Double summeVermoegen = 0.0;
+    Double summeFreieMittel = 0.0;
     String bezeichnung = "";
     boolean nichtUnterdruecken = !Einstellungen.getEinstellung()
         .getUnterdrueckungOhneBuchung();
@@ -252,8 +253,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
 
     // Mittelverwendung
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
-        null, null, BLANK, "Mittelverwendung"));
-    boolean mittel = false;
+        null, null, BLANK, "Der zeitnahen Verwendung entzogene Mittel"));
     // Nutzungsgebundenes Anlagevermögen
     sql = getAnfangsbestandKontoartZweckSql();
     Double anlagenStand = (Double) service
@@ -270,18 +270,16 @@ public class MittelverwendungSaldoList extends MittelverwendungList
     {
       bezeichnung = "Nutzungsgebundenes Anlagevermögen";
       addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
-          -anlagenStand, BLANK);
-      summeVermoegen -= anlagenStand;
-      mittel = true;
+          anlagenStand, BLANK);
+      summeFreieMittel = anlagenStand;
     }
     // Fremdkapital
     if (Math.abs(summeSchulden) > LIMIT || nichtUnterdruecken)
     {
       bezeichnung = "Fremdkapital";
       addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
-          -summeSchulden, BLANK);
-      summeVermoegen -= summeSchulden;
-      mittel = true;
+          summeSchulden, BLANK);
+      summeFreieMittel += summeSchulden;
     }
     // Rücklagen, Vermögen nicht zugeordnet
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
@@ -310,7 +308,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
           kommentar = kommentar.split("\n")[0];
         }
         addZeile(zeilen, MittelverwendungZeile.AUSGABE, null,
-            map3.get(kontoId)[0], null, -ruecklagen, kommentar);
+            map3.get(kontoId)[0], null, ruecklagen, kommentar);
         summeRuecklagen += ruecklagen;
       }
     }
@@ -318,9 +316,8 @@ public class MittelverwendungSaldoList extends MittelverwendungList
     {
       bezeichnung = "Summe nicht zugeordneter Rücklagen";
       addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
-          -summeRuecklagen, BLANK);
-      summeVermoegen -= summeRuecklagen;
-      mittel = true;
+          summeRuecklagen, BLANK);
+      summeFreieMittel += summeRuecklagen;
     }
     else
     {
@@ -362,7 +359,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
             kommentar = kommentar.split("\n")[0];
           }
           addZeile(zeilen, MittelverwendungZeile.AUSGABE, null,
-              map4.get(kontoId)[0], null, -ruecklagen, kommentar);
+              map4.get(kontoId)[0], null, ruecklagen, kommentar);
           summeRuecklagen += ruecklagen;
         }
       }
@@ -371,9 +368,8 @@ public class MittelverwendungSaldoList extends MittelverwendungList
         bezeichnung = "Summe Rücklagen/Vermögen "
             + buchungsklassen.get(buchungsklasseId);
         addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
-            -summeRuecklagen, BLANK);
-        summeVermoegen -= summeRuecklagen;
-        mittel = true;
+            summeRuecklagen, BLANK);
+        summeFreieMittel += summeRuecklagen;
       }
       else
       {
@@ -381,8 +377,14 @@ public class MittelverwendungSaldoList extends MittelverwendungList
       }
     }
 
-    // Keine verwendeten Mittel, Mittelzeile löschen
-    if (!mittel)
+    // Keine entzogenen Mittel, Mittelzeile löschen
+    if (Math.abs(summeFreieMittel) > LIMIT || nichtUnterdruecken)
+    {
+      bezeichnung = "Summe der zeitnahen Verwendung entzogene Mittel";
+      addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
+          summeFreieMittel, BLANK);
+    }
+    else
     {
       zeilen.remove(zeilen.size() - 1);
     }
@@ -391,7 +393,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
         null, null, null, BLANK));
     bezeichnung = "Verwendungsrückstand(+)/-überhang(-) zum Ende des GJ";
     addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
-        summeVermoegen, BLANK);
+        summeVermoegen - summeFreieMittel, BLANK);
     // Leerzeile undefined - nicht drucken in PDF und CSV
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED, null,
         null, null, null, BLANK));
