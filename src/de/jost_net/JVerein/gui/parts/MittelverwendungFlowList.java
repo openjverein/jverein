@@ -217,11 +217,11 @@ public class MittelverwendungFlowList extends MittelverwendungList
     // Schritt 3: Mittel Abfluss
     // Summe aller Abflüsse bei Geldkonten
     sql = getSummenKontoSql();
-    Double verwendung = (Double) service.execute(sql, new Object[] { datumvon,
+    Double verwendung = -(Double) service.execute(sql, new Object[] { datumvon,
         datumbis, Kontoart.GELD.getKey(), ArtBuchungsart.AUSGABE }, rsd);
     // Summe aller Abflüsse bei nicht nutzungsgebundenen Anlagen
     sql = getSummenKontoZweckSql();
-    verwendung += (Double) service.execute(sql,
+    verwendung -= (Double) service.execute(sql,
         new Object[] { datumvon, datumbis, Kontoart.ANLAGE.getKey(),
             Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey(),
             ArtBuchungsart.AUSGABE },
@@ -230,7 +230,7 @@ public class MittelverwendungFlowList extends MittelverwendungList
     // Tilgung Verbindlichkeiten z.B. Darlehen,
     // Erwerb zweckgebundener Anlagen
     sql = getSummenUmbuchungSql() + " AND buchung.betrag > 0";
-    verwendung -= (Double) service.execute(sql,
+    verwendung += (Double) service.execute(sql,
         new Object[] { datumvon, datumbis, Kontoart.SCHULDEN.getKey(),
             Kontoart.ANLAGE.getKey(), Anlagenzweck.NUTZUNGSGEBUNDEN.getKey(),
             ArtBuchungsart.UMBUCHUNG },
@@ -255,9 +255,9 @@ public class MittelverwendungFlowList extends MittelverwendungList
       {
         bezeichnung = "Zuführung " + Kontoart.getByKey(i).getText();
         addZeile(zeilen, MittelverwendungZeile.AUSGABE, pos++, bezeichnung,
-            null, -zuRuecklagen, BLANK);
+            null, zuRuecklagen, BLANK);
       }
-      Double entRuecklagen = (Double) service.execute(sql,
+      Double entRuecklagen = -(Double) service.execute(sql,
           new Object[] { datumvon, datumbis, i, ArtBuchungsart.AUSGABE }, rsd);
       summeEntRuecklagen += entRuecklagen;
       if (Math.abs(entRuecklagen) > LIMIT
@@ -272,7 +272,7 @@ public class MittelverwendungFlowList extends MittelverwendungList
     bezeichnung = BLANKS
         + "Insgesamt im aktuellen GJ verwendete Mittel";
     addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
-        verwendung - summeZuRuecklagen, -summeEntRuecklagen, BLANK);
+        verwendung + summeZuRuecklagen, -summeEntRuecklagen, BLANK);
 
     // Leerzeile
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.LEERZEILE, null,
@@ -281,15 +281,15 @@ public class MittelverwendungFlowList extends MittelverwendungList
     bezeichnung = "Verwendungsrückstand(+)/-überhang(-) zum Ende des aktuellen GJ "
         + aktuellesGJ;
     addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
-        zufuehrung + vorhandeneMittel + verwendung - summeZuRuecklagen,
-        -summeEntRuecklagen, BLANK);
+        zufuehrung + vorhandeneMittel - verwendung - summeZuRuecklagen,
+        summeEntRuecklagen, BLANK);
 
     // Berechnung der Mittelverwendung
     rueckstandVorVorjahr = (rueckstandVorVorjahr == null) ? 0.0
         : rueckstandVorVorjahr;
     zwanghafteWeitergabeVorjahr = (zwanghafteWeitergabeVorjahr == null) ? 0.0
         : zwanghafteWeitergabeVorjahr;
-    Double ausgaben = Math.max(summeEntRuecklagen - verwendung, 0);
+    Double ausgaben = Math.max(verwendung - summeEntRuecklagen, 0);
     Double rueckstandVorjahr = vorhandeneMittel - rueckstandVorVorjahr
         - zwanghafteWeitergabeVorjahr;
     zwanghafteWeitergabeNeu = 0.0;

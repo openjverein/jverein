@@ -253,6 +253,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
     // Mittelverwendung
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
         null, null, BLANK, "Mittelverwendung"));
+    boolean mittel = false;
     // Nutzungsgebundenes Anlagevermögen
     sql = getAnfangsbestandKontoartZweckSql();
     Double anlagenStand = (Double) service
@@ -271,6 +272,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
       addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
           -anlagenStand, BLANK);
       summeVermoegen -= anlagenStand;
+      mittel = true;
     }
     // Fremdkapital
     if (Math.abs(summeSchulden) > LIMIT || nichtUnterdruecken)
@@ -279,6 +281,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
       addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
           -summeSchulden, BLANK);
       summeVermoegen -= summeSchulden;
+      mittel = true;
     }
     // Rücklagen, Vermögen nicht zugeordnet
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
@@ -317,6 +320,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
       addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
           -summeRuecklagen, BLANK);
       summeVermoegen -= summeRuecklagen;
+      mittel = true;
     }
     else
     {
@@ -369,11 +373,18 @@ public class MittelverwendungSaldoList extends MittelverwendungList
         addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
             -summeRuecklagen, BLANK);
         summeVermoegen -= summeRuecklagen;
+        mittel = true;
       }
       else
       {
         zeilen.remove(zeilen.size() - 1);
       }
+    }
+
+    // Keine verwendeten Mittel, Mittelzeile löschen
+    if (!mittel)
+    {
+      zeilen.remove(zeilen.size() - 1);
     }
     // Leerzeile
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.LEERZEILE, null,
