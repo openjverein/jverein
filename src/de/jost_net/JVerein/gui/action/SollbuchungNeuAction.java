@@ -45,14 +45,16 @@ public class SollbuchungNeuAction implements Action
       mk = (Mitgliedskonto) Einstellungen.getDBService()
           .createObject(Mitgliedskonto.class, null);
       mk.setBetrag(0.0);
-      if (m != null && m.getID() == null)
-      {
-        throw new ApplicationException(
-            "Neues Mitglied bitte erst speichern. Dann können Zusatzbeträge aufgenommen werden.");
-      }
       if (m != null)
       {
+        if (m.getID() == null)
+        {
+          throw new ApplicationException(
+              "Neues Mitglied bitte erst speichern. Dann können Zusatzbeträge aufgenommen werden.");
+        }
         mk.setMitglied(m);
+        mk.setZahlungsweg(m.getZahlungsweg());
+        mk.setZahler(m);
       }
     }
     catch (Exception e)
