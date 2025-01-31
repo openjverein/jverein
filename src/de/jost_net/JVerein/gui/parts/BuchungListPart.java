@@ -23,6 +23,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
+import de.jost_net.JVerein.gui.menu.BuchungPartMenu;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -30,10 +31,9 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 
-public class BuchungListPart extends TablePart
+public class BuchungListPart extends BuchungListTablePart
 {
   public BuchungListPart(Action action)
   {
@@ -92,6 +92,7 @@ public class BuchungListPart extends TablePart
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     addColumn("Mitglied", "mitgliedskonto", new MitgliedskontoFormatter());
     addColumn("Ersatz für Aufwendungen", "verzicht", new JaNeinFormatter());
+    setContextMenu(new BuchungPartMenu());
     setRememberColWidths(true);
     setRememberOrder(true);
     setRememberState(true);
