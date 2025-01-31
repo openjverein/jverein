@@ -20,10 +20,10 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
+import de.jost_net.JVerein.gui.parts.BuchungPart;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
-import de.jost_net.JVerein.gui.parts.BuchungPart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -45,7 +45,6 @@ public class BuchungView extends AbstractView
         art = Kontenfilter.ANLAGEKONTO;
     }
     final BuchungsControl control = new BuchungsControl(this, art);
-    GUI.getView().setTitle(control.getTitleBuchungsView());
 
     final boolean buchungabgeschlossen = control.isBuchungAbgeschlossen();
 

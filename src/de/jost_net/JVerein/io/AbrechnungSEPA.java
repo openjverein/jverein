@@ -762,7 +762,7 @@ public class AbrechnungSEPA
             za.setZusatzbetrag(z);
             za.setLetzteAusfuehrung(z.getAusfuehrung());
             za.store();
-            z.setAusfuehrung(Datum.getHeute());
+            z.setAusfuehrung(param.stichtag);
             z.store();
           }
         }
