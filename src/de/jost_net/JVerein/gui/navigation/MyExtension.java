@@ -205,35 +205,48 @@ public class MyExtension implements Extension
 
       NavigationItem buchfuehrung = null;
       buchfuehrung = new MyItem(buchfuehrung, "Buchführung", null);
+      // Konten
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Konten",
-          new StartViewAction(KontoListView.class), "list.png"));
+          new StartViewAction(KontoListView.class), "system-file-manager.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbestände",
-          new StartViewAction(AnfangsbestandListView.class), "euro-sign.png"));
+          new StartViewAction(AnfangsbestandListView.class),
+          "system-file-manager.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
+          new StartViewAction(KontensaldoView.class),
+          "system-file-manager.png"));
+      // Buchungen
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
-          new StartViewAction(BuchungslisteView.class), "euro-sign.png"));
+          new StartViewAction(BuchungslisteView.class),
+          "emblem-documents.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
+          new BuchungsTexteKorrigierenAction(), "emblem-documents.png"));
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",
+          new StartViewAction(BuchungsklasseSaldoView.class),
+          "emblem-documents.png"));
+      // Projekte
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
+          new StartViewAction(ProjektSaldoView.class), "screwdriver.png"));
+      // Anlagen
       if (anlagenkonto)
+      {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenbuchungen",
             new StartViewAction(AnlagenbuchungenListeView.class),
-            "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
-          new BuchungsTexteKorrigierenAction(), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",
-          new StartViewAction(BuchungsklasseSaldoView.class), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
-          new StartViewAction(ProjektSaldoView.class), "euro-sign.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
-          new StartViewAction(KontensaldoView.class), "euro-sign.png"));
+            "office-chart-area.png"));
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenverzeichnis",
+            new StartViewAction(AnlagenlisteView.class),
+            "office-chart-area.png"));
+      }
+      // Mittelverwendung
       if (Einstellungen.getEinstellung().getMittelverwendung())
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendung",
             new StartViewAction(MittelverwendungListeView.class),
-            "euro-sign.png"));
+            "gnome-session-switch.png"));
       }
-      if (anlagenkonto)
-        buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenverzeichnis",
-            new StartViewAction(AnlagenlisteView.class), "euro-sign.png"));
+      // Jahresabschluss
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
-          new StartViewAction(JahresabschlussListView.class), "euro-sign.png"));
+          new StartViewAction(JahresabschlussListView.class),
+          "office-calendar.png"));
       jverein.addChild(buchfuehrung);
       
       NavigationItem abrechnung = null;
