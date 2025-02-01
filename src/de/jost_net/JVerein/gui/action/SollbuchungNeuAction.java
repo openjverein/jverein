@@ -54,7 +54,7 @@ public class SollbuchungNeuAction implements Action
         }
         mk.setMitglied(m);
         mk.setZahlungsweg(m.getZahlungsweg());
-        mk.setZahler(m);
+        mk.setZahler(m.getZahler());
       }
     }
     catch (Exception e)
