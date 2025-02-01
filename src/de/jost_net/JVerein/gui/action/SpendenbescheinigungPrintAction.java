@@ -220,14 +220,14 @@ public class SpendenbescheinigungPrintAction implements Action
           if (spb.getMitglied() != null)
           {
             fileName = new Dateiname(spb.getMitglied(),
-                spb.getBescheinigungsdatum(), "Spendenbescheinigung",
+                spb.getSpendedatum(), "Spendenbescheinigung",
                 Einstellungen.getEinstellung().getDateinamenmusterSpende(),
                 "pdf").get();
           }
           else
           {
             fileName = new Dateiname(spb.getZeile1(), spb.getZeile2(),
-                spb.getBescheinigungsdatum(), "Spendenbescheinigung",
+                spb.getSpendedatum(), "Spendenbescheinigung",
                 Einstellungen.getEinstellung().getDateinamenmusterSpende(),
                 "pdf").get();
           }
