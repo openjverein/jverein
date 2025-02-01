@@ -377,17 +377,10 @@ public class MittelverwendungSaldoList extends MittelverwendungList
       }
     }
 
-    // Keine entzogenen Mittel, Mittelzeile löschen
-    if (Math.abs(summeFreieMittel) > LIMIT || nichtUnterdruecken)
-    {
-      bezeichnung = "Summe der zeitnahen Verwendung entzogene Mittel";
-      addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
-          summeFreieMittel, BLANK);
-    }
-    else
-    {
-      zeilen.remove(zeilen.size() - 1);
-    }
+    bezeichnung = "Summe der zeitnahen Verwendung entzogene Mittel";
+    addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
+        summeFreieMittel, BLANK);
+
     // Leerzeile
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.LEERZEILE, null,
         null, null, null, BLANK));
