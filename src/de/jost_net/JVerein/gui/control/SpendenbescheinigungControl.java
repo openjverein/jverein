@@ -1102,7 +1102,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
               new SpendenbescheinigungExportCSV(file, spbList);
               break;
             case ExportPDF:
-              new SpendenbescheinigungExportPDF(file, spbList);
+              new SpendenbescheinigungExportPDF(file, spbList, 4);
               break;
           }
           GUI.getCurrentView().reload();
