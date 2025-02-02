@@ -57,23 +57,21 @@ public class AnlagenbuchungenListeView extends AbstractView
     folder.setBackground(Color.BACKGROUND.getSWTColor());
 
     // Erster Tab
-    TabGroup tabAllgemein = new TabGroup(folder, "Suche Buchungen", true, 3);
+    TabGroup tabAllgemein = new TabGroup(folder, "Suche Buchungen", true, 1);
     LabelGroup labelgroup1 = new LabelGroup(tabAllgemein.getComposite(), "Filter");
-    ColumnLayout cl = new ColumnLayout(labelgroup1.getComposite(), 3);
+    ColumnLayout cl = new ColumnLayout(labelgroup1.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    SimpleContainer center = new SimpleContainer(cl.getComposite());
     SimpleContainer right = new SimpleContainer(cl.getComposite());
 
     left.addLabelPair("Konto", control.getSuchKonto());
     left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
     left.addLabelPair("Projekt", control.getSuchProjekt());
-
-    center.addLabelPair("Splitbuchung", control.getSuchSplibuchung());
-    center.addLabelPair("Betrag", control.getSuchBetrag());
+    left.addLabelPair("Splitbuchung", control.getSuchSplibuchung());
 
     right.addLabelPair("Datum von", control.getVondatum());
     right.addLabelPair("Datum bis", control.getBisdatum());
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
+    right.addLabelPair("Betrag", control.getSuchBetrag());
     
     ButtonArea buttons1 = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton();
@@ -106,7 +104,7 @@ public class AnlagenbuchungenListeView extends AbstractView
     // Zweiter Tab
     final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(
         this, control);
-    TabGroup tabKonto = new TabGroup(folder, "Konto Kenndaten", true, 4);
+    TabGroup tabKonto = new TabGroup(folder, "Konto Kenndaten", true, 1);
     LabelGroup labelgroup2 = new LabelGroup(tabKonto.getComposite(), "");
     ColumnLayout c2 = new ColumnLayout(labelgroup2.getComposite(), 2);
     SimpleContainer left2 = new SimpleContainer(c2.getComposite());
