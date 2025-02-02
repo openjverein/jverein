@@ -247,7 +247,7 @@ public class BuchungQuery
 
     if (ungeprueft)
     {
-      it.addFilter("geprueft = 0");
+      it.addFilter("geprueft = 0 or geprueft is null");
     }
 
     if (betrag != null && betrag.length() > 0)
