@@ -16,39 +16,31 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.BuchungsklasseView;
-import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsklasseAction implements Action
+public class EditAction implements Action
 {
+  private Class<? extends AbstractView> viewClass;
+
+  public EditAction(Class<? extends AbstractView> viewClass)
+  {
+    this.viewClass = viewClass;
+  }
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Buchungsklasse b = null;
-
-    if (context != null && (context instanceof Buchungsklasse))
+    if (context == null)
     {
-      b = (Buchungsklasse) context;
+      throw new ApplicationException("Kein Object ausgewählt");
     }
-    else
+    if (context instanceof Object[])
     {
-      try
-      {
-        b = (Buchungsklasse) Einstellungen.getDBService().createObject(
-            Buchungsklasse.class, null);
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung einer neuen Buchungsklasse", e);
-      }
+      throw new ApplicationException("Mehrere Objecte ausgewählt");
     }
-    GUI.startView(BuchungsklasseView.class.getName(), b);
+    GUI.startView(viewClass, context);
   }
 }
