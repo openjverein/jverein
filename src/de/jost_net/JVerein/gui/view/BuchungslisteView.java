@@ -73,7 +73,7 @@ public class BuchungslisteView extends AbstractView
     center.addLabelPair("Betrag", control.getSuchBetrag());
     center.addLabelPair("Datum von", control.getVondatum());
     center.addLabelPair("Datum bis", control.getBisdatum());
-
+    center.addLabelPair("Nur ungeprüfte", control.getUngeprueft());
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
     right.addLabelPair("Mitglied zugeordnet?",
         control.getSuchMitgliedZugeordnet());
