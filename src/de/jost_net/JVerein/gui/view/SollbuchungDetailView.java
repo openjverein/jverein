@@ -29,7 +29,10 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.ScrolledContainer;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class SollbuchungDetailView extends AbstractView
 {
@@ -40,18 +43,26 @@ public class SollbuchungDetailView extends AbstractView
     GUI.getView().setTitle("Sollbuchung");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
-    LabelGroup grBuchung = new LabelGroup(getParent(), "Sollbuchung");
-    grBuchung.addLabelPair("Mitglied", control.getMitglied());
-    grBuchung.addLabelPair("Zahler", control.getZahler());
-    grBuchung.addLabelPair("Datum", control.getDatum());
-    grBuchung.addLabelPair("Verwendungszweck", control.getZweck1());
-    grBuchung.addLabelPair("Zahlungsweg", control.getZahlungsweg());
+
+    ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
+    LabelGroup group = new LabelGroup(scrolled.getComposite(), "Sollbuchung");
+    ColumnLayout cols = new ColumnLayout(group.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cols.getComposite());
+    left.addLabelPair("Mitglied", control.getMitglied());
+    left.addLabelPair("Datum", control.getDatum());
+    left.addLabelPair("Zahlungsweg", control.getZahlungsweg());
+
+    SimpleContainer right = new SimpleContainer(cols.getComposite());
+    right.addLabelPair("Zahler", control.getZahler());
+    right.addLabelPair("Verwendungszweck", control.getZweck1());
     control.getBetrag().setMandatory(true);
-    grBuchung.addLabelPair("Betrag", control.getBetrag());
+    right.addLabelPair("Betrag", control.getBetrag());
 
     boolean hasRechnung = control.hasRechnung();
-    
-    LabelGroup cont = new LabelGroup(getParent(), "Sollbuchungspositionen", true);
+
+    LabelGroup cont = new LabelGroup(scrolled.getComposite(),
+        "Sollbuchungspositionen");
     
     ButtonArea buttons1 = new ButtonArea();
     Button neu = new Button("Neu", new SollbuchungPositionNeuAction(),
@@ -66,7 +77,11 @@ public class SollbuchungDetailView extends AbstractView
     comp.setLayoutData(new GridData(GridData.END));
 
     buttons1.paint(cont.getComposite());
-    cont.addPart(control.getBuchungenList(hasRechnung));
+    cont.addPart(control.getSollbuchungPositionListPart(hasRechnung));
+
+    LabelGroup buch = new LabelGroup(scrolled.getComposite(),
+        "Zugeordnete Buchungen");
+    buch.addPart(control.getBuchungListPart());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

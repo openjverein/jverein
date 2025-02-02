@@ -32,34 +32,50 @@ public class SpendenbescheinigungExportPDF
 {
 
   public SpendenbescheinigungExportPDF(final File file,
-      final ArrayList<Spendenbescheinigung> spbList)
+      final ArrayList<Spendenbescheinigung> spbList, int columns)
           throws ApplicationException
   {
+    int breite = Math.min(columns, 7);
+    int breiteZeile = 10;
+    int breiteZeile1 = breite - 1;
+    int breiteDatum = breite + 1;
+    int breiteBetrag = breite;
+
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
       Reporter reporter = new Reporter(fos, "Spendenbescheinigungen", "",
           spbList.size());
-      reporter.addHeaderColumn("Bescheinigungsdatum", Element.ALIGN_LEFT, 10,
+      reporter.addHeaderColumn("Bescheinigungsdatum", Element.ALIGN_LEFT,
+          breiteDatum,
           BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Spendedatum", Element.ALIGN_LEFT, 10,
+      reporter.addHeaderColumn("Spendedatum", Element.ALIGN_LEFT, breiteDatum,
           BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Betrag", Element.ALIGN_RIGHT, 10,
+      reporter.addHeaderColumn("Betrag", Element.ALIGN_RIGHT, breiteBetrag,
           BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Zeile 1", Element.ALIGN_LEFT, 10,
+      reporter.addHeaderColumn("Zeile 1", Element.ALIGN_LEFT, breiteZeile1,
           BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Zeile 2", Element.ALIGN_LEFT, 10,
+      reporter.addHeaderColumn("Zeile 2", Element.ALIGN_LEFT, breiteZeile,
           BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Zeile 3", Element.ALIGN_LEFT, 10,
+      reporter.addHeaderColumn("Zeile 3", Element.ALIGN_LEFT, breiteZeile,
           BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Zeile 4", Element.ALIGN_LEFT, 10,
+      reporter.addHeaderColumn("Zeile 4", Element.ALIGN_LEFT, breiteZeile,
           BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Zeile 5", Element.ALIGN_LEFT, 10,
-          BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Zeile 5", Element.ALIGN_LEFT, 10,
-          BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Zeile 7", Element.ALIGN_LEFT, 10,
-          BaseColor.LIGHT_GRAY);
+      if (columns > 4)
+      {
+        reporter.addHeaderColumn("Zeile 5", Element.ALIGN_LEFT, breiteZeile,
+            BaseColor.LIGHT_GRAY);
+      }
+      if (columns > 5)
+      {
+        reporter.addHeaderColumn("Zeile 6", Element.ALIGN_LEFT, breiteZeile,
+            BaseColor.LIGHT_GRAY);
+      }
+      if (columns > 6)
+      {
+        reporter.addHeaderColumn("Zeile 7", Element.ALIGN_LEFT, breiteZeile,
+            BaseColor.LIGHT_GRAY);
+      }
       reporter.createHeader();
       for (Spendenbescheinigung spb : spbList)
       {
@@ -70,9 +86,18 @@ public class SpendenbescheinigungExportPDF
         reporter.addColumn(spb.getZeile2(), Element.ALIGN_LEFT);
         reporter.addColumn(spb.getZeile3(), Element.ALIGN_LEFT);
         reporter.addColumn(spb.getZeile4(), Element.ALIGN_LEFT);
-        reporter.addColumn(spb.getZeile5(), Element.ALIGN_LEFT);
-        reporter.addColumn(spb.getZeile6(), Element.ALIGN_LEFT);
-        reporter.addColumn(spb.getZeile7(), Element.ALIGN_LEFT);
+        if (columns > 4)
+        {
+          reporter.addColumn(spb.getZeile5(), Element.ALIGN_LEFT);
+        }
+        if (columns > 5)
+        {
+          reporter.addColumn(spb.getZeile6(), Element.ALIGN_LEFT);
+        }
+        if (columns > 6)
+        {
+          reporter.addColumn(spb.getZeile7(), Element.ALIGN_LEFT);
+        }
       }
       reporter.closeTable();
       reporter.close();

@@ -258,14 +258,15 @@ public class ZusatzbetragControl extends AbstractControl
       zusatzbetraegeList = new TablePart(zusatzbetraege,
           new ZusatzbetraegeAction(null));
       zusatzbetraegeList.addColumn("Name", "mitglied");
-      zusatzbetraegeList.addColumn("Startdatum", "startdatum",
+      zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("Letzte Ausführung", "ausfuehrung",
+      zusatzbetraegeList.addColumn("Letzte abgerechnete Fälligkeit",
+          "ausfuehrung",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetraegeList.addColumn("Intervall", "intervalltext");
-      zusatzbetraegeList.addColumn("Endedatum", "endedatum",
+      zusatzbetraegeList.addColumn("Nicht mehr ausführen ab", "endedatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
       zusatzbetraegeList.addColumn("Betrag", "betrag",
@@ -423,11 +424,13 @@ public class ZusatzbetragControl extends AbstractControl
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Nächste Fälligkeit", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Letzte Ausführung", Element.ALIGN_LEFT, 30,
+          reporter.addHeaderColumn("Letzte abgerechnete Fälligkeit",
+              Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Intervall", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Endedatum", Element.ALIGN_LEFT, 30,
+          reporter.addHeaderColumn("Nicht mehr ausführen ab",
+              Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Buchungstext", Element.ALIGN_LEFT, 50,
               BaseColor.LIGHT_GRAY);

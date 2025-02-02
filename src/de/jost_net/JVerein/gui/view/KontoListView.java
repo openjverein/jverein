@@ -23,6 +23,9 @@ import de.jost_net.JVerein.gui.control.KontoControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
+import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class KontoListView extends AbstractView
 {
@@ -33,6 +36,22 @@ public class KontoListView extends AbstractView
     GUI.getView().setTitle("Konten");
 
     KontoControl control = new KontoControl(this);
+
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addLabelPair("Nummer", control.getSuchtext());
+    left.addLabelPair("Bezeichnung", control.getSuchname());
+
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addLabelPair("Status", control.getSuchStatus("Nur aktive Konten"));
+    right.addInput(control.getSuchKontoart());
+
+    ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSuchenButton());
+    group.addButtonArea(fbuttons);
 
     control.getKontenList().paint(this.getParent());
 

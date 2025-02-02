@@ -22,7 +22,10 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class EinstellungenMailView extends AbstractView
 {
@@ -34,36 +37,42 @@ public class EinstellungenMailView extends AbstractView
 
     final EinstellungControl control = new EinstellungControl(this);
 
-    ScrolledContainer cont = new ScrolledContainer(getParent());
+    ScrolledContainer scrolled = new ScrolledContainer(getParent());
 
-    cont.addLabelPair("Server", control.getSmtpServer());
-    cont.addLabelPair("Port", control.getSmtpPort());
-    cont.addLabelPair("Benutzer", control.getSmtpAuthUser());
-    cont.addLabelPair("Passwort", control.getSmtpAuthPwd());
-    cont.addLabelPair("Absenderadresse", control.getSmtpFromAddress());
-    cont.addLabelPair("Anzeigename", control.getSmtpFromAnzeigename());
-    cont.addLabelPair("SSL verwenden", control.getSmtpSsl());
-    cont.addLabelPair("StartTLS verwenden", control.getSmtpStarttls());
-    cont.addLabelPair("Pause zwischen Mailversand in Millisek.",
+    ColumnLayout cols1 = new ColumnLayout(scrolled.getComposite(), 2);
+    SimpleContainer left = new SimpleContainer(cols1.getComposite());
+
+    left.addHeadline("Server Einstellungen");
+    left.addLabelPair("Server", control.getSmtpServer());
+    left.addLabelPair("Port", control.getSmtpPort());
+    left.addLabelPair("Benutzer", control.getSmtpAuthUser());
+    left.addLabelPair("Passwort", control.getSmtpAuthPwd());
+    left.addLabelPair("Absenderadresse", control.getSmtpFromAddress());
+    left.addLabelPair("Anzeigename", control.getSmtpFromAnzeigename());
+    left.addLabelPair("SSL verwenden", control.getSmtpSsl());
+    left.addLabelPair("StartTLS verwenden", control.getSmtpStarttls());
+    left.addLabelPair("Pause zwischen Mailversand in Millisek.",
         control.getMailVerzoegerung());
-    cont.addLabelPair("Immer Cc an Adresse", control.getAlwaysCcTo());
-    cont.addLabelPair("Immer Bcc an Adresse", control.getAlwaysBccTo());
+    left.addLabelPair("Immer Cc an Adresse", control.getAlwaysCcTo());
+    left.addLabelPair("Immer Bcc an Adresse", control.getAlwaysBccTo());
 
-    cont.addSeparator();
-    cont.addText("IMAP 'Gesendete'-Ordner", false);
-    cont.addLabelPair("Kopie in 'Gesendete'-Ordner IMAP ablegen",
+    SimpleContainer right = new SimpleContainer(cols1.getComposite());
+    right.addHeadline("IMAP 'Gesendete'-Ordner");
+    right.addLabelPair("Kopie in 'Gesendete'-Ordner IMAP ablegen",
         control.getCopyToImapFolder());
-    cont.addLabelPair("IMAP Server", control.getImapHost());
-    cont.addLabelPair("IMAP Port", control.getImapPort());
-    cont.addLabelPair("IMAP Benutzer", control.getImapAuthUser());
-    cont.addLabelPair("IMAP Passwort", control.getImapAuthPwd());
-    cont.addLabelPair("IMAP SSL verwenden", control.getImap_ssl());
-    cont.addLabelPair("IMAP StartTLS verwenden", control.getImap_starttls());
-    cont.addLabelPair("IMAP 'Gesendete'-Ordername",
+    right.addLabelPair("IMAP Server", control.getImapHost());
+    right.addLabelPair("IMAP Port", control.getImapPort());
+    right.addLabelPair("IMAP Benutzer", control.getImapAuthUser());
+    right.addLabelPair("IMAP Passwort", control.getImapAuthPwd());
+    right.addLabelPair("IMAP SSL verwenden", control.getImap_ssl());
+    right.addLabelPair("IMAP StartTLS verwenden", control.getImap_starttls());
+    right.addLabelPair("IMAP 'Gesendete'-Ordername",
         control.getImapSentFolder());
-    cont.addSeparator();
-    cont.addLabelPair("Signatur", control.getMailSignatur());
-    cont.addLabelPair("Bei Mail Versand von Formularen Anhang in DB speichern", control.getAnhangSpeichern());
+
+    LabelGroup einstellung = new LabelGroup(scrolled.getComposite(),
+        "Einstellungen");
+    einstellung.addLabelPair("Signatur", control.getMailSignatur());
+    einstellung.addLabelPair("Anhang", control.getAnhangSpeichern());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

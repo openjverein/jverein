@@ -21,9 +21,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -363,5 +365,21 @@ public class MitgliedskontoImpl extends AbstractDBObject
       sps.add((SollbuchungPosition) it.next());
     }
     return sps;
+  }
+
+  @Override
+  public List<Buchung> getBuchungList() throws RemoteException
+  {
+    ArrayList<Buchung> buchungen = new ArrayList<>();
+    DBIterator<Buchung> it = Einstellungen.getDBService()
+        .createList(Buchung.class);
+    it.addFilter("mitgliedskonto = ?", getID());
+    it.setOrder("ORDER BY datum asc");
+    while (it.hasNext())
+    {
+      Buchung bu = it.next();
+      buchungen.add(bu);
+    }
+    return buchungen;
   }
 }

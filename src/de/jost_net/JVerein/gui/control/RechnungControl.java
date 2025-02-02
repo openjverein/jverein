@@ -25,8 +25,6 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.RechnungAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
-import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
-import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
@@ -35,12 +33,14 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
+import de.jost_net.JVerein.gui.view.MahnungMailView;
+import de.jost_net.JVerein.gui.view.RechnungMailView;
+import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
-import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
@@ -62,6 +62,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class RechnungControl extends DruckMailControl
 {
@@ -663,44 +664,14 @@ public class RechnungControl extends DruckMailControl
     return leitwegID;
   }
 
-  public Part getBuchungenList() throws RemoteException
+  public Part getSollbuchungPositionListPart() throws RemoteException
   {
     if (buchungList != null)
     {
       return buchungList;
     }
-    DBIterator<SollbuchungPosition> sps = Einstellungen.getDBService()
-        .createList(SollbuchungPosition.class);
-    sps.join("mitgliedskonto");
-    sps.addFilter("mitgliedskonto.id = sollbuchungposition.sollbuchung");
-    sps.addFilter("mitgliedskonto.rechnung = ?", getRechnung().getID());
-    sps.setOrder("order by sollbuchungposition.datum");
-    
-    buchungList = new TablePart(sps, null);
-    buchungList.addColumn("Datum", "datum",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    buchungList.addColumn("Zweck", "zweck");
-    buchungList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    if (Einstellungen.getEinstellung().getOptiert())
-    {
-      buchungList.addColumn("Nettobetrag", "nettobetrag",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      buchungList.addColumn("Steuersatz", "steuersatz");
-      buchungList.addColumn("Steuerbetrag", "steuerbetrag",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    }
-    buchungList.addColumn("Buchungsart", "buchungsart",
-        new BuchungsartFormatter());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-    {
-      buchungList.addColumn("Buchungsklasse", "buchungsklasse",
-          new BuchungsklasseFormatter());
-    }
-
-    buchungList.setRememberColWidths(true);
-    buchungList.setRememberOrder(true);
-    buchungList.addFeature(new FeatureSummary());
+    buchungList = new SollbuchungPositionListPart(
+        getRechnung().getSollbuchungPositionList(), null);
     return buchungList;
   }
   
@@ -715,5 +686,37 @@ public class RechnungControl extends DruckMailControl
     zahlungsweg.setName("Zahlungsweg");
     zahlungsweg.disable();
     return zahlungsweg;
+  }
+
+  public Button getRechnungDruckUndMailButton()
+  {
+
+    Button b = new Button("Druck und Mail", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Rechnung re = getRechnung();
+        GUI.startView(RechnungMailView.class, new Rechnung[] { (Rechnung) re });
+      }
+    }, getRechnung(), false, "document-print.png");
+    return b;
+  }
+
+  public Button getMahnungDruckUndMailButton()
+  {
+
+    Button b = new Button("Mahnung Druck und Mail", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Rechnung re = getRechnung();
+        GUI.startView(MahnungMailView.class, new Rechnung[] { (Rechnung) re });
+      }
+    }, getRechnung(), false, "document-print.png");
+    return b;
   }
 }

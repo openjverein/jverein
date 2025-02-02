@@ -25,9 +25,9 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
-import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -88,10 +88,10 @@ public class ZusatzbetragPart implements Part
     {
       group.addLabelPair("Mitglied", getMitglied());
     }
-    group.addLabelPair("Startdatum", getStartdatum(true));
+    group.addLabelPair("Erste Fälligkeit ", getStartdatum(true));
     group.addLabelPair("Nächste Fälligkeit", getFaelligkeit());
     group.addLabelPair("Intervall", getIntervall());
-    group.addLabelPair("Endedatum", getEndedatum());
+    group.addLabelPair("Nicht mehr ausführen ab", getEndedatum());
     group.addLabelPair("Buchungstext", getBuchungstext());
     group.addLabelPair("Betrag", getBetrag());
     group.addLabelPair("Buchungsart", getBuchungsart());

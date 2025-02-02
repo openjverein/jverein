@@ -540,7 +540,8 @@ public class BuchungsartControl extends FilterControl
         .createList(Buchungsart.class);
 
     if (isSuchStatusAktiv() && 
-        getSuchStatus().getValue().toString().equalsIgnoreCase("Ohne Deaktiviert"))
+        getSuchStatus(null).getValue().toString()
+            .equalsIgnoreCase("Ohne Deaktiviert"))
       buchungsarten.addFilter("status != ?", new Object[] { StatusBuchungsart.INACTIVE });
     if (isSuchnameAktiv() && !getSuchname().getValue().equals(""))
     {
