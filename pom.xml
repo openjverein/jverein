@@ -17,6 +17,7 @@
         <hibiscus.version>V_2_10_23_BUILD_387</hibiscus.version>
         <!-- See https://github.com/willuhn/jameica/commit/2e6c93dbb3f7ec6314494d8f8cc2ed6958cdd865 -->
         <swt.version>4.27</swt.version>
+        <unpack-plugin-for-test.skip>false</unpack-plugin-for-test.skip>
     </properties>
 
     <dependencies>
@@ -324,6 +325,27 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>unpack-plugin-for-test</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${unpack-plugin-for-test.skip}</skip>
+                            <target>
+                                <unzip src="${project.build.directory}/${project.build.finalName}.zip"
+                                       dest="${project.build.directory}"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -333,4 +355,19 @@
         <tag>master</tag>
         <url>https://github.com/openjverein/jverein</url>
     </scm>
+
+    <profiles>
+        <profile>
+            <id>github</id>
+            <activation>
+                <property>
+                    <name>env.GITHUB_ACTION</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <unpack-plugin-for-test.skip>true</unpack-plugin-for-test.skip>
+            </properties>
+        </profile>
+    </profiles>
 </project>
