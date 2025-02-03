@@ -80,15 +80,19 @@ public class JahresabschlussView extends AbstractView
     if (Einstellungen.getEinstellung().getAfaInJahresabschluss())
       middle.addLabelPair("", control.getAfaberechnung());
 
+    if (Einstellungen.getEinstellung().getMittelverwendung())
+    {
+      ButtonArea abuttons = new ButtonArea();
+      abuttons.addButton(control.getZurueck());
+      group.addButtonArea(abuttons);
+    }
+
     control.getJahresabschlussSaldo().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.JAHRESABSCHLUSS, false, "question-circle.png");
-    if (Einstellungen.getEinstellung().getMittelverwendung())
-    {
-      buttons.addButton(control.getZurueck());
-    }
+
     Button save = new Button("Speichern", new Action()
     {
 

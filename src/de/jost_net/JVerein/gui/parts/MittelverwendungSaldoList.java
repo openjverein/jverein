@@ -100,6 +100,9 @@ public class MittelverwendungSaldoList extends MittelverwendungList
     String bezeichnung = "";
     boolean nichtUnterdruecken = !Einstellungen.getEinstellung()
         .getUnterdrueckungOhneBuchung();
+    // Überschrift
+    zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
+        null, null, BLANK, "Liste an Vermögen:"));
     // Anlagevermögen
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
         null, null, BLANK, "Anlagevermögen"));
@@ -253,7 +256,8 @@ public class MittelverwendungSaldoList extends MittelverwendungList
 
     // Mittelverwendung
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.ART, null, null,
-        null, null, BLANK, "Der zeitnahen Verwendung entzogene Mittel"));
+        null, null, BLANK,
+        "Liste der zeitnahen Verwendung entzogenen Mittel:"));
     // Nutzungsgebundenes Anlagevermögen
     sql = getAnfangsbestandKontoartZweckSql();
     Double anlagenStand = (Double) service
@@ -377,7 +381,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
       }
     }
 
-    bezeichnung = "Summe der zeitnahen Verwendung entzogene Mittel";
+    bezeichnung = "Summe der zeitnahen Verwendung entzogenen Mittel";
     addZeile(zeilen, MittelverwendungZeile.ART, null, bezeichnung, 0.0,
         summeFreieMittel, BLANK);
 

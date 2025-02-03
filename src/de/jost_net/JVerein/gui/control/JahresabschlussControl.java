@@ -213,24 +213,27 @@ public class JahresabschlussControl extends AbstractControl
   }
 
   public CheckboxInput getAnfangsbestaende()
+      throws RemoteException, ParseException
   {
     if (anfangsbestaende != null)
     {
       return anfangsbestaende;
     }
-    anfangsbestaende = new CheckboxInput(true);
+    anfangsbestaende = new CheckboxInput(getJahresabschluss().isNewObject());
     anfangsbestaende.setName("Anfangsbestände Folgejahr");
+    anfangsbestaende.setEnabled(getJahresabschluss().isNewObject());
     return anfangsbestaende;
   }
   
-  public CheckboxInput getAfaberechnung()
+  public CheckboxInput getAfaberechnung() throws RemoteException, ParseException
   {
     if (afaberechnung != null)
     {
       return afaberechnung;
     }
-    afaberechnung = new CheckboxInput(true);
+    afaberechnung = new CheckboxInput(getJahresabschluss().isNewObject());
     afaberechnung.setName("Erzeuge Abschreibungen");
+    afaberechnung.setEnabled(getJahresabschluss().isNewObject());
     return afaberechnung;
   }
 
@@ -332,6 +335,10 @@ public class JahresabschlussControl extends AbstractControl
               verwendungsrueckstand.setEnabled(true);
               zwanghafteweitergabe.setValue(null);
               zwanghafteweitergabe.setEnabled(true);
+              anfangsbestaende.setValue(false);
+              anfangsbestaende.setEnabled(false);
+              afaberechnung.setValue(false);
+              afaberechnung.setEnabled(false);
             }
             catch (RemoteException | ParseException e)
             {

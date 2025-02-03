@@ -95,6 +95,16 @@ public class MittelverwendungList
       Integer position, String bezeichnung, Double einnahme, Double ausgabe,
       String kommentar) throws RemoteException
   {
+    Double summe = 0.0;
+    if (status == MittelverwendungZeile.ART
+        || status == MittelverwendungZeile.SUMME)
+    {
+      summe = einnahme + ausgabe;
+      if (summe == -0.0)
+      {
+        summe = 0.0;
+      }
+    }
     if (einnahme != null && einnahme == -0.0)
     {
       einnahme = 0.0;
@@ -115,11 +125,11 @@ public class MittelverwendungList
         break;
       case MittelverwendungZeile.SUMME:
         zeilen.add(new MittelverwendungZeile(status, position, bezeichnung,
-            null, einnahme + ausgabe, kommentar));
+            null, summe, kommentar));
         break;
       case MittelverwendungZeile.ART:
         zeilen.add(new MittelverwendungZeile(status, position, null, null,
-            einnahme + ausgabe, kommentar, bezeichnung));
+            summe, kommentar, bezeichnung));
         break;
     }
   }
