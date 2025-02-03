@@ -626,7 +626,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     DBIterator<Spendenbescheinigung> list = Einstellungen.getDBService()
         .createList(Spendenbescheinigung.class);
     list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
-    list.setOrder(" ORDER BY bescheinigungsdatum desc ");
+    list.setOrder(" ORDER BY bescheinigungsdatum desc, spendedatum desc ");
     ArrayList<Spendenbescheinigung> spendenbescheinigungen = list != null
         ? (ArrayList<Spendenbescheinigung>) PseudoIterator.asList(list)
         : null;
@@ -1102,7 +1102,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
               new SpendenbescheinigungExportCSV(file, spbList);
               break;
             case ExportPDF:
-              new SpendenbescheinigungExportPDF(file, spbList);
+              new SpendenbescheinigungExportPDF(file, spbList, 4);
               break;
           }
           GUI.getCurrentView().reload();

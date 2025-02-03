@@ -45,6 +45,7 @@ import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.MailDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedNextBGruppeBearbeitenAction;
+import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -2169,6 +2170,13 @@ public class MitgliedControl extends FilterControl
   {
     return new Button("Neuer Zusatzbetrag",
         new ZusatzbetraegeAction(getMitglied()), null, false, "document-new.png");
+  }
+
+  public Button getSollbuchungNeu()
+  {
+    return new Button("Neue Sollbuchung",
+        new SollbuchungNeuAction(getMitglied()), null, false,
+        "document-new.png");
   }
 
   public Button getWiedervorlageNeu()
