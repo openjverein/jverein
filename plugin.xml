@@ -37,6 +37,10 @@
       class="de.jost_net.JVerein.server.JVereinDBServiceImpl" />
   </services>
 
+  <messaging>
+    <consumer queue="hibiscus.umsatz.markchecked" class="de.jost_net.JVerein.Messaging.HibscusUmsatzMessageConsumer" />
+  </messaging>
+  
   <requires jameica="2.8+">
     <import plugin="hibiscus" version="2.8.7+"/>
   </requires>

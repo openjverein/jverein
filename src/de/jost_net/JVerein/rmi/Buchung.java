@@ -168,4 +168,8 @@ public interface Buchung extends DBObject
   
   public void store(boolean check) throws RemoteException, ApplicationException;
 
+  public Boolean getGeprueft() throws RemoteException;
+
+  public void setGeprueft(Boolean geprueft) throws RemoteException;
+
 }

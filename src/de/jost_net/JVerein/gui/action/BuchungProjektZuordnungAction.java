@@ -17,7 +17,6 @@
 
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.ProjektAuswahlDialog;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Projekt;
@@ -33,12 +32,6 @@ import de.willuhn.util.ApplicationException;
  */
 public class BuchungProjektZuordnungAction implements Action
 {
-  private BuchungsControl control;
-
-  public BuchungProjektZuordnungAction(BuchungsControl control)
-  {
-    this.control = control;
-  }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
@@ -97,7 +90,6 @@ public class BuchungProjektZuordnungAction implements Action
             }
           }
         }
-        control.getBuchungsList();
         String protecttext = "";
         if (open == null)
         {

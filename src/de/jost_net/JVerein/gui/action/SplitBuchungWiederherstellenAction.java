@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
@@ -30,11 +29,11 @@ import de.willuhn.util.ApplicationException;
 /**
  * Loeschen einer Buchung.
  */
-public class SplitBuchungDeleteAction implements Action
+public class SplitBuchungWiederherstellenAction implements Action
 {
   private BuchungsControl control;
 
-  public SplitBuchungDeleteAction(BuchungsControl control)
+  public SplitBuchungWiederherstellenAction(BuchungsControl control)
   {
     this.control = control;
   }
@@ -49,38 +48,25 @@ public class SplitBuchungDeleteAction implements Action
     try
     {
       Buchung bu = (Buchung) context;
-      if (((Buchung) context).isNewObject())
+      if (bu.getDependencyId() == -1)
       {
-        if (bu.getDependencyId() == -1)
-        {
-          SplitbuchungsContainer.get().remove(bu);
-        }
-        else
-        {
-          ArrayList<Buchung> container = SplitbuchungsContainer.get();
-          Buchung[] splitbuchungen = new Buchung[container.size()];
-          splitbuchungen = container.toArray(splitbuchungen);
-          int size = splitbuchungen.length;
-          int dependencyId = bu.getDependencyId();
-          for (int i = 0; i < size; i++)
-          {
-            if (splitbuchungen[i].getDependencyId() == dependencyId)
-            {
-              container.remove(splitbuchungen[i]);
-            }
-          }
-        }
+        bu.setDelete(false);
       }
       else
       {
-        BuchungDeleteAction action = new BuchungDeleteAction(true);
-        action.handleAction(context);
+        for (Buchung buchung_tmp : SplitbuchungsContainer.get())
+        {
+          if (buchung_tmp.getDependencyId() == bu.getDependencyId())
+          {
+            buchung_tmp.setDelete(false);
+          }
+        }
       }
       control.refreshSplitbuchungen();
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Buchung.";
+      String fehler = "Fehler beim Wiederherstellen der Buchung.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

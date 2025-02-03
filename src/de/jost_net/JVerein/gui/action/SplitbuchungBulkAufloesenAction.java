@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Messaging.BuchungMessage;
+import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
@@ -33,16 +33,18 @@ import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class SplitbuchungBulkAufloesenAction implements Action
 {
-  private ArrayList<Long> geloescht = new ArrayList<>();
-  private ArrayList<Long> schongeprueft = new ArrayList<>();
-  private Long splitid;
-  
+  private BuchungsControl control;
+
+  public SplitbuchungBulkAufloesenAction(BuchungsControl control)
+  {
+    this.control = control;
+  }
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
@@ -53,6 +55,10 @@ public class SplitbuchungBulkAufloesenAction implements Action
     }
     try
     {
+      ArrayList<Long> geloescht = new ArrayList<>();
+      ArrayList<Long> schongeprueft = new ArrayList<>();
+      Long splitid;
+
       Buchung[] b = null;
       if (context instanceof Buchung)
       {
@@ -63,15 +69,7 @@ public class SplitbuchungBulkAufloesenAction implements Action
       {
         b = (Buchung[]) context;
       }
-      if (b == null)
-      {
-        return;
-      }
-      if (b.length == 0)
-      {
-        return;
-      }
-      if (b[0].isNewObject())
+      if (b == null || b.length == 0 || b[0].isNewObject())
       {
         return;
       }
@@ -172,6 +170,8 @@ public class SplitbuchungBulkAufloesenAction implements Action
           geloescht.add(splitid);
         }
       }
+      control.refreshBuchungsList();
+
       int count = geloescht.size();
       if (count > 0)
       {
@@ -188,10 +188,6 @@ public class SplitbuchungBulkAufloesenAction implements Action
       String fehler = "Fehler beim Auflösen einer Splituchung.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
-    }
-    finally
-    {
-      Application.getMessagingFactory().sendMessage(new BuchungMessage(null));
     }
   }
 }

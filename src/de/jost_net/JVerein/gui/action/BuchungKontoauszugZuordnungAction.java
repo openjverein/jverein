@@ -17,7 +17,6 @@
 
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.KontoauszugZuordnungDialog;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
@@ -31,14 +30,6 @@ import de.willuhn.jameica.system.OperationCanceledException;
  */
 public class BuchungKontoauszugZuordnungAction implements Action
 {
-
-  private BuchungsControl control;
-
-  public BuchungKontoauszugZuordnungAction(BuchungsControl control)
-  {
-    this.control = control;
-  }
-
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
@@ -98,7 +89,6 @@ public class BuchungKontoauszugZuordnungAction implements Action
             buchung.store();
           }
         }
-        control.getBuchungsList();
         String protecttext = "";
         if (counter > 0)
         {
