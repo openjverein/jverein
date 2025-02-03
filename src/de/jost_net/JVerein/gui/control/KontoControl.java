@@ -101,7 +101,7 @@ public class KontoControl extends FilterControl
 
   private AbstractInput anlagenart;
 
-  private SelectInput anlagenklasse;
+  private SelectInput buchungsklasse;
 
   private AbstractInput afaart;
 
@@ -264,7 +264,7 @@ public class KontoControl extends FilterControl
         k.setHibiscusId(Integer.parseInt(hkto.getID()));
       }
       k.setAnlagenartId(getSelectedAnlagenartId());
-      k.setAnlagenklasseId(getSelectedAnlagenklasseId());
+      k.setBuchungsklasseId(getSelectedBuchungsklasseId());
       k.setAfaartId(getSelectedAfaartId());
       k.setBetrag((Double) getBetrag().getValue());
       k.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
@@ -677,37 +677,35 @@ public class KontoControl extends FilterControl
     }
   }
   
-  public Input getAnlagenklasse() throws RemoteException
+  public Input getBuchungsklasse() throws RemoteException
   {
-    if (anlagenklasse != null)
+    if (buchungsklasse != null)
     {
-      return anlagenklasse;
+      return buchungsklasse;
     }
     DBIterator<Buchungsklasse> list = Einstellungen.getDBService()
         .createList(Buchungsklasse.class);
     list.setOrder(getBuchungartSortOrder());
-    anlagenklasse = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
-        getKonto().getAnlagenklasse());
-    anlagenklasse.setAttribute(getBuchungartAttribute());
-    anlagenklasse.setPleaseChoose("Bitte auswählen");
+    buchungsklasse = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
+        getKonto().getBuchungsklasse());
+    buchungsklasse.setAttribute(getBuchungartAttribute());
+    buchungsklasse.setPleaseChoose("Bitte auswählen");
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
     {
-      anlagenklasse.setMandatory(true);
+      buchungsklasse.setMandatory(true);
     }
     else
     {
-      anlagenklasse.setMandatory(false);
-      anlagenklasse.setValue(null);
-      anlagenklasse.disable();
+      buchungsklasse.setMandatory(false);
     }
-    return anlagenklasse;
+    return buchungsklasse;
   }
   
-  private Long getSelectedAnlagenklasseId() throws ApplicationException
+  private Long getSelectedBuchungsklasseId() throws ApplicationException
   {
     try
     {
-      Buchungsklasse buchungsKlasse = (Buchungsklasse) getAnlagenklasse().getValue();
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
       if (null == buchungsKlasse)
         return null;
       Long id = Long.valueOf(buchungsKlasse.getID());
@@ -715,7 +713,7 @@ public class KontoControl extends FilterControl
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewählte Anlagenklasse kann nicht ermittelt werden";
+      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -1029,8 +1027,8 @@ public class KontoControl extends FilterControl
         Buchungsart ba = (Buchungsart) getAnlagenart().getValue();
         if (ba != null)
         {
-          if (getAnlagenklasse().getValue() == null)
-            getAnlagenklasse().setValue(ba.getBuchungsklasse());
+          if (getBuchungsklasse().getValue() == null)
+            getBuchungsklasse().setValue(ba.getBuchungsklasse());
         }
       }
       catch (Exception e)
@@ -1046,8 +1044,7 @@ public class KontoControl extends FilterControl
     {
       if (getKontoArt().getValue() == Kontoart.ANLAGE)
       {
-        getAnlagenklasse().enable();
-        getAnlagenklasse().setMandatory(true);
+        getBuchungsklasse().setMandatory(true);
         getAnlagenart().enable();
         getAnlagenart().setMandatory(true);
         getAfaart().enable();
@@ -1072,9 +1069,7 @@ public class KontoControl extends FilterControl
       }
       else
       {
-        getAnlagenklasse().setMandatory(false);
-        getAnlagenklasse().setValue(null);
-        getAnlagenklasse().disable();
+        getBuchungsklasse().setMandatory(false);
         getAnlagenart().setMandatory(false);
         getAnlagenart().setValue(null);
         getAnlagenart().disable();

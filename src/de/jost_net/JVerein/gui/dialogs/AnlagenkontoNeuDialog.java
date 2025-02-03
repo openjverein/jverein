@@ -67,7 +67,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
   
   private AbstractInput anlagenart;
   
-  private SelectInput anlagenklasse;
+  private SelectInput buchungsklasse;
   
   private AbstractInput afaart;
   
@@ -99,7 +99,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     LabelGroup group = new LabelGroup(parent, "");
     group.addLabelPair("Nummer", getNummer());
     group.addLabelPair("Bezeichnung", getBezeichnung());
-    group.addLabelPair("Anlagen Buchungsklasse", getAnlagenklasse());
+    group.addLabelPair("Anlagen Buchungsklasse", getBuchungsklasse());
     group.addLabelPair("Anlagen Buchungsart", getAnlagenart());
     group.addLabelPair("AfA Buchungsart", getAfaart());
     group.addLabelPair("Nutzungsdauer", getNutzungsdauer());
@@ -159,7 +159,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       konto.setKontoArt(Kontoart.ANLAGE);
       konto.setHibiscusId(-1);
       konto.setAnlagenartId(getSelectedAnlagenartId());
-      konto.setAnlagenklasseId(getSelectedAnlagenklasseId());
+      konto.setBuchungsklasseId(getSelectedBuchungsklasseId());
       konto.setAfaartId(getSelectedAfaartId());
       konto.setAfaRestwert(Einstellungen.getEinstellung().getAfaRestwert());
       konto.setAfaMode(AfaMode.AUTO);
@@ -230,11 +230,11 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     }
   }
   
-  public Input getAnlagenklasse() throws RemoteException
+  public Input getBuchungsklasse() throws RemoteException
   {
-    if (anlagenklasse != null)
+    if (buchungsklasse != null)
     {
-      return anlagenklasse;
+      return buchungsklasse;
     }
     DBIterator<Buchungsklasse> list = Einstellungen.getDBService()
         .createList(Buchungsklasse.class);
@@ -244,24 +244,24 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
         bk = buchung.getBuchungsart().getBuchungsklasse();
     if (bk != null)
     {
-      anlagenklasse = new SelectInput(list != null ? 
+      buchungsklasse = new SelectInput(list != null ? 
           PseudoIterator.asList(list) : null, bk);
     }
     else
     {
-      anlagenklasse = new SelectInput(list != null ? 
+      buchungsklasse = new SelectInput(list != null ? 
           PseudoIterator.asList(list) : null, null);
     }
-    anlagenklasse.setAttribute(control.getBuchungartAttribute());
-    anlagenklasse.setPleaseChoose("Bitte auswählen");
-    return anlagenklasse;
+    buchungsklasse.setAttribute(control.getBuchungartAttribute());
+    buchungsklasse.setPleaseChoose("Bitte auswählen");
+    return buchungsklasse;
   }
   
-  private Long getSelectedAnlagenklasseId() throws ApplicationException
+  private Long getSelectedBuchungsklasseId() throws ApplicationException
   {
     try
     {
-      Buchungsklasse buchungsKlasse = (Buchungsklasse) getAnlagenklasse().getValue();
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
       if (null == buchungsKlasse)
         return null;
       Long id = Long.valueOf(buchungsKlasse.getID());
@@ -269,7 +269,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewählte Anlagenklasse kann nicht ermittelt werden";
+      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -365,8 +365,8 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
         Buchungsart ba = (Buchungsart) getAnlagenart().getValue();
         if (ba != null)
         {
-          if (getAnlagenklasse().getValue() == null)
-            getAnlagenklasse().setValue(ba.getBuchungsklasse());
+          if (getBuchungsklasse().getValue() == null)
+            getBuchungsklasse().setValue(ba.getBuchungsklasse());
         }
       }
       catch (Exception e)

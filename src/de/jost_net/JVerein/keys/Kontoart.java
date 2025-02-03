@@ -24,7 +24,7 @@ public enum Kontoart
   // Ids über dem Limit werden in beiden Salden ignoriert.
   GELD(1, "Geldkonto"),
   ANLAGE(2, "Anlagenkonto"),
-  VERBINDLICHKEITEN(3, "Verbindlichkeitskonto"),
+  SCHULDEN(3, "Fremdkapital"),
   LIMIT(100, "-- Limit --"),
   RUECKLAGE_ZWECK_GEBUNDEN(101, "Zweckgebundene Rücklage nach § 62 Abs. 1 Nr. 1 AO"),
   RUECKLAGE_BETRIEBSMITTEL(102, "Betriebsmittelrücklage nach § 62 Abs. 1 Nr. 1 AO"),

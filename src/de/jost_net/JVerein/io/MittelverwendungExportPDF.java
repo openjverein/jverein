@@ -30,6 +30,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.MittelverwendungControl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
@@ -39,58 +40,123 @@ public class MittelverwendungExportPDF
 {
 
   public MittelverwendungExportPDF(ArrayList<MittelverwendungZeile> zeile,
-      final File file, Date datumvon, Date datumbis) throws ApplicationException
+      final File file, Date datumvon, Date datumbis, int tab) throws ApplicationException
   {
     try
     {
+      String title = "";
+      switch (tab)
+      {
+        case MittelverwendungControl.FLOW_REPORT:
+          title = "Mittelverwendungsrechnung (Zufluss-basiert)";
+          break;
+        case MittelverwendungControl.SALDO_REPORT:
+          title = "Mittelverwendungsrechnung (Saldo-basiert)";
+          break;
+      }
       FileOutputStream fos = new FileOutputStream(file);
       String subtitle = "Geschäftsjahr: " + new JVDateFormatTTMMJJJJ().format(datumvon)
           + " - " + new JVDateFormatTTMMJJJJ().format(datumbis);
-      Reporter reporter = new Reporter(fos, "Mittelverwendungsrechnung", subtitle,
+      Reporter reporter = new Reporter(fos, title, subtitle,
           zeile.size());
-      makeHeader(reporter);
+      makeHeader(reporter, tab);
 
       for (MittelverwendungZeile mvz : zeile)
       {
         switch (mvz.getStatus())
         {
+          case MittelverwendungZeile.LEERZEILE:
+          {
+            String position = " ";
+            Integer pos = (Integer) mvz.getAttribute("position");
+            if (pos != null)
+            {
+              position = pos.toString();
+            }
+            reporter.addColumn(position, Element.ALIGN_RIGHT);
+            reporter.addColumn((String) mvz.getAttribute("bezeichnung"),
+                Element.ALIGN_LEFT);
+            reporter.addColumn(" ", Element.ALIGN_LEFT);
+            reporter.addColumn(" ", Element.ALIGN_LEFT);
+            if (tab == MittelverwendungControl.SALDO_REPORT)
+            {
+              reporter.addColumn(" ", Element.ALIGN_LEFT);
+            }
+            break;
+          }
           case MittelverwendungZeile.EINNAHME:
           case MittelverwendungZeile.AUSGABE:
           {
-            reporter.addColumn(((Integer) mvz.getAttribute("position")).toString(),
-                Element.ALIGN_LEFT);
-            reporter.addColumn((String) mvz.getAttribute("bezeichnung"),
+            String position = " ";
+            Integer pos = (Integer) mvz.getAttribute("position");
+            if (pos != null)
+            {
+              position = pos.toString();
+            }
+            reporter.addColumn(position, Element.ALIGN_RIGHT);
+            reporter.addColumn(
+                (String) mvz.getAttribute("bezeichnung"),
                 Element.ALIGN_LEFT);
             reporter.addColumn((Double) mvz.getAttribute("betrag"));
-            reporter.addColumn(" ",  Element.ALIGN_LEFT);
+            reporter.addColumn(" ", Element.ALIGN_LEFT);
+            if (tab == MittelverwendungControl.SALDO_REPORT)
+            {
+              reporter.addColumn((String) mvz.getAttribute("kommentar"),
+                  Element.ALIGN_LEFT);
+            }
             break;
           }
           case MittelverwendungZeile.SUMME:
+          case MittelverwendungZeile.ART:
           {
-            reporter.addColumn(
-                ((Integer) mvz.getAttribute("position")).toString(),
-                Element.ALIGN_LEFT);
-            PdfPCell cell = null;
-            cell = new PdfPCell(new Phrase(new Chunk(
-                reporter.notNull((String) mvz.getAttribute("bezeichnung")),
-                Reporter.getFreeSansBold(9))));
-            cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-            reporter.addColumn(cell);
-            reporter.addColumn(" ",  Element.ALIGN_LEFT);
-            Font f = null;
-            Double value = (Double) mvz.getAttribute("summe");
-            if (value >= 0)
+            String position = " ";
+            Integer pos = (Integer) mvz.getAttribute("position");
+            if (pos != null)
             {
-              f = Reporter.getFreeSansBold(9, BaseColor.BLACK);
+              position = pos.toString();
+            }
+            String art = (String) mvz.getAttribute("art");
+            if (mvz.getStatus() == MittelverwendungZeile.ART)
+            {
+              reporter.addColumn(art, Element.ALIGN_LEFT);
             }
             else
             {
-              f = Reporter.getFreeSansBold(9, BaseColor.RED);
+              reporter.addColumn(position, Element.ALIGN_RIGHT);
             }
-            cell = new PdfPCell(
-                new Phrase(Einstellungen.DECIMALFORMAT.format(value), f));
+            PdfPCell cell = null;
+            cell = new PdfPCell(new Phrase(new Chunk(
+                reporter.notNull((String) mvz.getAttribute("bezeichnung")),
+                Reporter.getFreeSansBold(8))));
             cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
             reporter.addColumn(cell);
+            reporter.addColumn(" ", Element.ALIGN_LEFT);
+            Font f = null;
+            Double value = (Double) mvz.getAttribute("summe");
+            if (value != null)
+            {
+              if (value >= 0)
+              {
+                f = Reporter.getFreeSansBold(8, BaseColor.BLACK);
+              }
+              else
+              {
+                f = Reporter.getFreeSansBold(8, BaseColor.RED);
+              }
+              cell = new PdfPCell(
+                  new Phrase(Einstellungen.DECIMALFORMAT.format(value), f));
+              cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+              reporter.addColumn(cell);
+            }
+            else
+            {
+              reporter.addColumn(" ", Element.ALIGN_RIGHT);
+            }
+            if (tab == MittelverwendungControl.SALDO_REPORT)
+            {
+              reporter.addColumn((String) mvz.getAttribute("kommentar"),
+                  Element.ALIGN_LEFT);
+            }
             break;
           }
         }
@@ -108,16 +174,34 @@ public class MittelverwendungExportPDF
     }
   }
 
-  private void makeHeader(Reporter reporter) throws DocumentException
+  private void makeHeader(Reporter reporter, int tab) throws DocumentException
   {
-    reporter.addHeaderColumn("Nr", Element.ALIGN_CENTER, 5,
-        BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Mittel", Element.ALIGN_CENTER, 65,
-        BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 15,
-        BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Summe", Element.ALIGN_CENTER, 15,
-        BaseColor.LIGHT_GRAY);
-    reporter.createHeader();
+    switch (tab)
+    {
+      case MittelverwendungControl.FLOW_REPORT:
+        reporter.addHeaderColumn("Nr", Element.ALIGN_CENTER, 5,
+            BaseColor.LIGHT_GRAY);
+        reporter.addHeaderColumn("Mittel", Element.ALIGN_CENTER, 69,
+            BaseColor.LIGHT_GRAY);
+        reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 13,
+            BaseColor.LIGHT_GRAY);
+        reporter.addHeaderColumn("Summe", Element.ALIGN_CENTER, 13,
+            BaseColor.LIGHT_GRAY);
+        reporter.createHeader();
+        break;
+      case MittelverwendungControl.SALDO_REPORT:
+        reporter.addHeaderColumn("Art", Element.ALIGN_CENTER, 25,
+            BaseColor.LIGHT_GRAY);
+        reporter.addHeaderColumn("Konto", Element.ALIGN_CENTER, 27,
+            BaseColor.LIGHT_GRAY);
+        reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 13,
+            BaseColor.LIGHT_GRAY);
+        reporter.addHeaderColumn("Summe", Element.ALIGN_CENTER, 13,
+            BaseColor.LIGHT_GRAY);
+        reporter.addHeaderColumn("Kommentar", Element.ALIGN_CENTER, 20,
+            BaseColor.LIGHT_GRAY);
+        reporter.createHeader();
+        break;
+    }
   }
 }

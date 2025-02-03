@@ -50,13 +50,13 @@ public class KontoView extends AbstractView
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Hibiscus-Konto", control.getHibiscusId());
     right.addLabelPair("GB-Buchungsart", control.getBuchungsart());
+    right.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     right.addLabelPair("Kommentar", control.getKommentar());
     
     LabelGroup group1 = new LabelGroup(getParent(), "Anlagenkonto Daten");
     ColumnLayout cl1 = new ColumnLayout(group1.getComposite(), 2);
     
     SimpleContainer left1 = new SimpleContainer(cl1.getComposite());
-    left1.addLabelPair("Anlagen Buchungsklasse", control.getAnlagenklasse());
     left1.addLabelPair("Anlagen Buchungsart", control.getAnlagenart());
     left1.addLabelPair("AfA Buchungsart", control.getAfaart());
     left1.addLabelPair("Anlagenwert", control.getBetrag());

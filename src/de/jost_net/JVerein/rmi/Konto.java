@@ -63,11 +63,11 @@ public interface Konto extends DBObject
 
   public void setAnlagenartId(Long anlagensartId) throws RemoteException;
   
-  public Buchungsklasse getAnlagenklasse() throws RemoteException;
+  public Buchungsklasse getBuchungsklasse() throws RemoteException;
 
-  public Long getAnlagenklasseId() throws RemoteException;
+  public Long getBuchungsklasseId() throws RemoteException;
 
-  public void setAnlagenklasseId(Long anlagenklasseId) throws RemoteException;
+  public void setBuchungsklasseId(Long anlagenklasseId) throws RemoteException;
   
   public Buchungsart getAfaart() throws RemoteException;
 

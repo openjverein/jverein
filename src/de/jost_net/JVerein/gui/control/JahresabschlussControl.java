@@ -23,8 +23,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.JahresabschlussDetailAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
 import de.jost_net.JVerein.gui.parts.KontensaldoList;
+import de.jost_net.JVerein.gui.parts.MittelverwendungFlowList;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.io.SaldoZeile;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -39,12 +41,15 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
@@ -73,6 +78,20 @@ public class JahresabschlussControl extends AbstractControl
   
   private CheckboxInput afaberechnung;
 
+  private DecimalInput verwendungsrueckstand;
+
+  private DecimalInput zwanghafteweitergabe;
+
+  private Button zurueck;
+
+  private boolean isSaveEnabled = false;
+
+  private boolean updateMittelverwendung = false;
+
+  private boolean ersterAbschluss = false;
+
+  private boolean mittelverwendungStart = false;
+
   public JahresabschlussControl(AbstractView view)
   {
     super(view);
@@ -81,12 +100,31 @@ public class JahresabschlussControl extends AbstractControl
   }
 
   public Jahresabschluss getJahresabschluss()
+      throws RemoteException, ParseException
   {
     if (jahresabschluss != null)
     {
       return jahresabschluss;
     }
     jahresabschluss = (Jahresabschluss) getCurrentObject();
+    updateMittelverwendung = (Einstellungen.getEinstellung()
+        .getMittelverwendung()
+        && (jahresabschluss.getVerwendungsrueckstand() == null
+            || jahresabschluss.getZwanghafteWeitergabe() == null));
+    if (jahresabschluss.isNewObject() || updateMittelverwendung)
+    {
+      isSaveEnabled = true;
+    }
+    if (Einstellungen.getEinstellung().getMittelverwendung()
+        && jahresabschluss.isNewObject())
+    {
+      MittelverwendungFlowList list = new MittelverwendungFlowList(
+          (Date) getVon().getValue(), (Date) getBis().getValue());
+      list.getInfo();
+      jahresabschluss.setVerwendungsrueckstand(list.getRueckstandVorjahrNeu());
+      jahresabschluss
+          .setZwanghafteWeitergabe(list.getZwanghafteWeitergabeNeu());
+    }
     return jahresabschluss;
   }
 
@@ -118,6 +156,7 @@ public class JahresabschlussControl extends AbstractControl
       cal.add(Calendar.DAY_OF_MONTH, 1);
       return cal.getTime();
     }
+    ersterAbschluss = true;
     DBIterator<Buchung> itbu = Einstellungen.getDBService()
         .createList(Buchung.class);
     itbu.setOrder("ORDER BY datum");
@@ -143,44 +182,58 @@ public class JahresabschlussControl extends AbstractControl
     return bis;
   }
 
-  public DateInput getDatum()
+  public DateInput getDatum() throws RemoteException, ParseException
   {
     if (datum != null)
     {
       return datum;
     }
-    datum = new DateInput(new Date());
+    Date date = new Date();
+    if (!getJahresabschluss().isNewObject())
+    {
+      date = getJahresabschluss().getDatum();
+    }
+    datum = new DateInput(date);
     datum.setEnabled(false);
     return datum;
   }
 
-  public TextInput getName() throws RemoteException
+  public TextInput getName() throws RemoteException, ParseException
   {
     if (name != null)
     {
       return name;
     }
     name = new TextInput(getJahresabschluss().getName(), 50);
+    if (!getJahresabschluss().isNewObject())
+    {
+      name.setEnabled(false);
+    }
     return name;
   }
 
   public CheckboxInput getAnfangsbestaende()
+      throws RemoteException, ParseException
   {
     if (anfangsbestaende != null)
     {
       return anfangsbestaende;
     }
-    anfangsbestaende = new CheckboxInput(true);
+    anfangsbestaende = new CheckboxInput(getJahresabschluss().isNewObject());
+    anfangsbestaende.setName("Anfangsbestände Folgejahr");
+    anfangsbestaende.setEnabled(getJahresabschluss().isNewObject());
     return anfangsbestaende;
   }
   
-  public CheckboxInput getAfaberechnung()
+  public CheckboxInput getAfaberechnung() throws RemoteException, ParseException
   {
     if (afaberechnung != null)
     {
       return afaberechnung;
     }
-    afaberechnung = new CheckboxInput(true);
+    afaberechnung = new CheckboxInput(getJahresabschluss().isNewObject());
+    afaberechnung.setName("Erzeuge Abschreibungen");
+    afaberechnung.setEnabled(getJahresabschluss().isNewObject());
     return afaberechnung;
   }
 
@@ -206,6 +259,105 @@ public class JahresabschlussControl extends AbstractControl
     return jahresabschlusssaldoList;
   }
 
+  public DecimalInput getVerwendungsrueckstand()
+      throws RemoteException, ParseException
+  {
+    if (verwendungsrueckstand != null)
+    {
+      return verwendungsrueckstand;
+    }
+
+    if (getJahresabschluss().getVerwendungsrueckstand() == null)
+    {
+      verwendungsrueckstand = new DecimalInput(Einstellungen.DECIMALFORMAT);
+    }
+    else
+    {
+      verwendungsrueckstand = new DecimalInput(
+          getJahresabschluss().getVerwendungsrueckstand(),
+          Einstellungen.DECIMALFORMAT);
+    }
+    verwendungsrueckstand.setEnabled(
+        updateMittelverwendung && !getJahresabschluss().isNewObject());
+    return verwendungsrueckstand;
+  }
+
+  public DecimalInput getZwanghafteWeitergabe()
+      throws RemoteException, ParseException
+  {
+    if (zwanghafteweitergabe != null)
+    {
+      return zwanghafteweitergabe;
+    }
+
+    if (getJahresabschluss().getZwanghafteWeitergabe() == null)
+    {
+      zwanghafteweitergabe = new DecimalInput(Einstellungen.DECIMALFORMAT);
+    }
+    else
+    {
+      zwanghafteweitergabe = new DecimalInput(
+          getJahresabschluss().getZwanghafteWeitergabe(),
+          Einstellungen.DECIMALFORMAT);
+    }
+    zwanghafteweitergabe.setEnabled(
+        updateMittelverwendung && !getJahresabschluss().isNewObject());
+    return zwanghafteweitergabe;
+  }
+
+  public Button getZurueck()
+  {
+    if (zurueck != null)
+    {
+      return zurueck;
+    }
+    else
+    {
+      zurueck = new Button("", new Action()
+      {
+        @Override
+        public void handleAction(Object context) throws ApplicationException
+        {
+          if (ersterAbschluss)
+          {
+            Calendar cal = Calendar.getInstance();
+            try
+            {
+              mittelverwendungStart = true;
+              cal.setTime((Date) getVon().getValue());
+              cal.add(Calendar.DAY_OF_MONTH, -1);
+              getBis().setValue(cal.getTime());
+              cal.add(Calendar.DAY_OF_MONTH, 1);
+              cal.add(Calendar.YEAR, -1);
+              getVon().setValue(cal.getTime());
+              zurueck.setEnabled(false);
+              verwendungsrueckstand.setValue(null);
+              verwendungsrueckstand.setEnabled(true);
+              zwanghafteweitergabe.setValue(null);
+              zwanghafteweitergabe.setEnabled(true);
+              anfangsbestaende.setValue(false);
+              anfangsbestaende.setEnabled(false);
+              afaberechnung.setValue(false);
+              afaberechnung.setEnabled(false);
+            }
+            catch (RemoteException | ParseException e)
+            {
+              throw new ApplicationException(e.getMessage());
+            }
+          }
+
+        }
+      }, null, false, "go-previous.png");
+    }
+    zurueck.setEnabled(ersterAbschluss);
+    return zurueck;
+  }
+
+  public boolean isSaveEnabled()
+  {
+    return isSaveEnabled;
+  }
+
   /**
    * This method stores the project using the current values.
    */
@@ -214,35 +366,67 @@ public class JahresabschlussControl extends AbstractControl
     try
     {
       Jahresabschluss ja = getJahresabschluss();
-      ja.setVon((Date) getVon().getValue());
-      ja.setBis((Date) getBis().getValue());
-      ja.setDatum((Date) getDatum().getValue());
-      ja.setName((String) getName().getValue());
-      ja.store();
-      if (afaberechnung != null && (Boolean) getAfaberechnung().getValue())
+      if (mittelverwendungStart)
       {
-        new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
+        ja.setVon((Date) getVon().getValue());
+        ja.setBis((Date) getBis().getValue());
+        ja.setDatum((Date) getDatum().getValue());
+        ja.setName((String) getName().getValue());
+        ja.setVerwendungsrueckstand(
+            (Double) getVerwendungsrueckstand().getValue());
+        ja.setZwanghafteWeitergabe(
+            (Double) getZwanghafteWeitergabe().getValue());
+        ja.store();
       }
-      if ((Boolean) getAnfangsbestaende().getValue())
+      else if (ja.isNewObject())
       {
-        KontensaldoList jsl = new KontensaldoList(null,
-            new Geschaeftsjahr(ja.getVon()));
-        ArrayList<SaldoZeile> zeilen = jsl.getInfo(false);
-        for (SaldoZeile z : zeilen)
+        ja.setVon((Date) getVon().getValue());
+        ja.setBis((Date) getBis().getValue());
+        ja.setDatum((Date) getDatum().getValue());
+        ja.setName((String) getName().getValue());
+        ja.store();
+        if (afaberechnung != null && (Boolean) getAfaberechnung().getValue())
         {
-          String ktonr = (String) z.getAttribute("kontonummer");
-          if (ktonr.length() > 0)
+          new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
+        }
+        if (Einstellungen.getEinstellung().getMittelverwendung())
+        {
+          MittelverwendungFlowList list = new MittelverwendungFlowList(
+              ja.getVon(), ja.getBis());
+          list.getInfo();
+          ja.setVerwendungsrueckstand(list.getRueckstandVorjahrNeu());
+          ja.setZwanghafteWeitergabe(list.getZwanghafteWeitergabeNeu());
+          ja.store();
+        }
+        if ((Boolean) getAnfangsbestaende().getValue())
+        {
+          KontensaldoList jsl = new KontensaldoList(null,
+              new Geschaeftsjahr(ja.getVon()));
+          ArrayList<SaldoZeile> zeilen = jsl.getInfo(false);
+          for (SaldoZeile z : zeilen)
           {
-            Double endbestand = (Double) z.getAttribute("endbestand");
-            Anfangsbestand anf = (Anfangsbestand) Einstellungen.getDBService()
-                .createObject(Anfangsbestand.class, null);
-            Konto konto = (Konto) z.getAttribute("konto");
-            anf.setBetrag(endbestand);
-            anf.setDatum(Datum.addTage(ja.getBis(), 1));
-            anf.setKonto(konto);
-            anf.store();
+            String ktonr = (String) z.getAttribute("kontonummer");
+            if (ktonr.length() > 0)
+            {
+              Double endbestand = (Double) z.getAttribute("endbestand");
+              Anfangsbestand anf = (Anfangsbestand) Einstellungen.getDBService()
+                  .createObject(Anfangsbestand.class, null);
+              Konto konto = (Konto) z.getAttribute("konto");
+              anf.setBetrag(endbestand);
+              anf.setDatum(Datum.addTage(ja.getBis(), 1));
+              anf.setKonto(konto);
+              anf.store();
+            }
           }
         }
+      }
+      else
+      {
+        ja.setVerwendungsrueckstand(
+            (Double) getVerwendungsrueckstand().getValue());
+        ja.setZwanghafteWeitergabe(
+            (Double) getZwanghafteWeitergabe().getValue());
+        ja.store();
       }
       GUI.getStatusBar().setSuccessText("Jahresabschluss gespeichert");
     }
@@ -272,7 +456,8 @@ public class JahresabschlussControl extends AbstractControl
         .createList(Jahresabschluss.class);
     jahresabschluesse.setOrder("ORDER BY von desc");
 
-    jahresabschlussList = new TablePart(jahresabschluesse, null);
+    jahresabschlussList = new TablePart(jahresabschluesse,
+        new JahresabschlussDetailAction());
     jahresabschlussList.addColumn("Nr", "id-int");
     jahresabschlussList.addColumn("Von", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
