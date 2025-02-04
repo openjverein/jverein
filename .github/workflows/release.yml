@@ -27,7 +27,7 @@ jobs:
     - name: Build openjverein plugin
       id: openjverein
       run: |
-        mvn --batch-mode --file pom.xml clean package
+        ./mvnw --batch-mode --file pom.xml clean package
         tmp_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
         echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
         tmp_filename=$(basename "./target/jverein-*.zip")
