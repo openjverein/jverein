@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.OpenWirtschaftsplanungAction;
+import de.jost_net.JVerein.gui.action.WirtschaftsplanEditAction;
 import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanungPostenDialog;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.io.WirtschaftsplanungCSV;
@@ -162,7 +162,7 @@ public class WirtschaftsplanungControl extends AbstractControl
         });
 
     TablePart wirtschaftsplaene = new TablePart(
-        new ArrayList<>(zeileMap.values()), new OpenWirtschaftsplanungAction());
+        new ArrayList<>(zeileMap.values()), new WirtschaftsplanEditAction());
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);

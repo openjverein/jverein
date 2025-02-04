@@ -21,7 +21,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class OpenWirtschaftsplanungAction implements Action
+public class WirtschaftsplanEditAction implements Action
 {
   @Override
   public void handleAction(Object context) throws ApplicationException
