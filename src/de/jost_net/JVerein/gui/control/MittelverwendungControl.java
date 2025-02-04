@@ -146,6 +146,7 @@ public class MittelverwendungControl extends SaldoControl
           ja.store();
           getSaldoList();
           updateJahreasabschlüsse();
+          updateConfigButton();
         }
         catch (OperationCanceledException ignore)
         {
