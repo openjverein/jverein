@@ -25,7 +25,6 @@ import de.jost_net.JVerein.gui.menu.WirtschaftsplanungMenu;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -41,6 +40,9 @@ import java.util.List;
 
 public class WirtschaftsplanungView extends AbstractView
 {
+  private static int EINNAHME = 0;
+  private static int AUSGABE = 1;
+
   @Override
   public void bind() throws Exception
   {
@@ -50,12 +52,7 @@ public class WirtschaftsplanungView extends AbstractView
           "Fehler beim Anzeigen des Wirtschaftsplans!");
     }
 
-    GUI.getView().setTitle(
-        "Wirtschaftsplanung vom " + new JVDateFormatTTMMJJJJ().format(
-            ((WirtschaftsplanungZeile) this.getCurrentObject()).getWirtschaftsplan()
-                .getDatumVon()) + " bis " + new JVDateFormatTTMMJJJJ().format(
-            ((WirtschaftsplanungZeile) this.getCurrentObject()).getWirtschaftsplan()
-                .getDatumBis()));
+    GUI.getView().setTitle("Wirtschaftsplanung");
 
     final WirtschaftsplanungControl control = new WirtschaftsplanungControl(
         this);
@@ -67,15 +64,15 @@ public class WirtschaftsplanungView extends AbstractView
 
     SimpleContainer group = new SimpleContainer(this.getParent(), true, 2);
 
-    LabelGroup einnahmen = new LabelGroup(group.getComposite(), "Einnahmen");
+    LabelGroup einnahmen = new LabelGroup(group.getComposite(), "Einnahmen", true);
     TreePart treeEinnahmen = control.getEinnahmen();
-    treeEinnahmen.setContextMenu(new WirtschaftsplanungMenu(0, control));
+    treeEinnahmen.setContextMenu(new WirtschaftsplanungMenu(EINNAHME, control));
     einnahmen.addPart(treeEinnahmen);
     ButtonArea buttonsEinnahmen = new ButtonArea();
     buttonsEinnahmen.addButton("Buchungsklasse hinzufügen", context -> {
       try
       {
-        //noinspection unchecked
+        @SuppressWarnings("unchecked")
         List<WirtschaftsplanungNode> items = (List<WirtschaftsplanungNode>) treeEinnahmen.getItems();
         Buchungsklasse buchungsklasse = showBuchungsklassenDialog(items);
 
@@ -92,9 +89,9 @@ public class WirtschaftsplanungView extends AbstractView
       }
     }, false, false, "list-add.png");
     einnahmen.addButtonArea(buttonsEinnahmen);
-    LabelGroup ausgaben = new LabelGroup(group.getComposite(), "Ausgaben");
+    LabelGroup ausgaben = new LabelGroup(group.getComposite(), "Ausgaben", true);
     TreePart treeAusgaben = control.getAusgaben();
-    treeAusgaben.setContextMenu(new WirtschaftsplanungMenu(1, control));
+    treeAusgaben.setContextMenu(new WirtschaftsplanungMenu(AUSGABE, control));
     ausgaben.addPart(treeAusgaben);
     ButtonArea buttonsAusgaben = new ButtonArea();
     buttonsAusgaben.addButton("Buchungsklasse hinzufügen", context -> {

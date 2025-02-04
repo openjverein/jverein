@@ -69,6 +69,8 @@ public class EinstellungenAnzeigeView extends AbstractView
     left.addLabelPair("Mitgliedsfoto *", control.getMitgliedfoto());
     left.addLabelPair("Mittelverwendung anzeigen" + "*",
         control.getMittelverwendung());
+    left.addLabelPair("Wirtschaftsplanung anzeigen" + "*",
+        control.getWirtschaftsplanung());
 
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
     right.addLabelPair("Lesefelder anzeigen *", control.getUseLesefelder());
