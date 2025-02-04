@@ -12,6 +12,7 @@
     <properties>
         <jameica.url>https://github.com/willuhn/jameica/archive/refs/tags/</jameica.url>
         <jameica.version>V_2_10_4_BUILD_487</jameica.version>
+        <jameica.buildversion>2.10.4-487</jameica.buildversion>
         <hibiscus.url>https://github.com/willuhn/hibiscus/archive/refs/tags/</hibiscus.url>
         <hibiscus.version>V_2_10_23_BUILD_387</hibiscus.version>
         <nc.url>https://prdownloads.sourceforge.net/numchameleon/nc-3.0.0.zip?download</nc.url>
@@ -60,7 +61,11 @@
                                       tofile="${project.basedir}/jameica/releases/jameica-lib.jar"/>
                                 <!-- Copy IDEA project file to jameica -->
                                 <copy file="${project.basedir}/ideaproject/jameica.iml"
-                                      todir="${project.basedir}/jameica"/>
+                                      todir="${project.basedir}/jameica" overwrite="true">
+                                    <filterset>
+                                        <filter token="version" value="${jameica.buildversion}"/>
+                                    </filterset>
+                                </copy>
                             </target>
                         </configuration>
                         <goals>
