@@ -19,19 +19,24 @@ package de.jost_net.JVerein.gui.control;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.dialogs.MittelverwendungDialog;
 import de.jost_net.JVerein.gui.parts.MittelverwendungFlowList;
 import de.jost_net.JVerein.gui.parts.MittelverwendungSaldoList;
 import de.jost_net.JVerein.io.MittelverwendungExportCSV;
 import de.jost_net.JVerein.io.MittelverwendungExportPDF;
 import de.jost_net.JVerein.io.MittelverwendungZeile;
+import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -39,6 +44,7 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -60,9 +66,154 @@ public class MittelverwendungControl extends SaldoControl
 
   private int selectedTab = FLOW_REPORT;
 
-  public MittelverwendungControl(AbstractView view)
+  private Button configButton;
+
+  private Jahresabschluss[] jahresabschluesse = null;
+
+  private Date editDatumvon = null;
+
+  private String jaId = null;
+
+  private String vorJaId = null;
+
+  public MittelverwendungControl(AbstractView view) throws RemoteException
   {
     super(view);
+    updateJahreasabschlüsse();
+  }
+
+  private void updateJahreasabschlüsse() throws RemoteException
+  {
+    DBService service = Einstellungen.getDBService();
+    DBIterator<Jahresabschluss> abschluesse = service
+        .createList(Jahresabschluss.class);
+    abschluesse.setOrder("ORDER BY von desc");
+    jahresabschluesse = new Jahresabschluss[abschluesse.size()];
+    int i = 0;
+    while (abschluesse.hasNext())
+    {
+      jahresabschluesse[i] = abschluesse.next();
+      i++;
+    }
+  }
+
+  public Button getConfigButton() throws RemoteException
+  {
+    configButton = new Button("Startwerte setzen", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        try
+        {
+          Double rueckstand = null;
+          Double weitergabe = null;
+          Jahresabschluss ja = (Jahresabschluss) Einstellungen.getDBService()
+              .createObject(Jahresabschluss.class, jaId);
+          if (vorJaId != null)
+          {
+            Jahresabschluss vorJa = (Jahresabschluss) Einstellungen
+                .getDBService().createObject(Jahresabschluss.class, vorJaId);
+            if (vorJa.getVerwendungsrueckstand() != null
+                && vorJa.getZwanghafteWeitergabe() != null)
+            {
+              MittelverwendungFlowList list = new MittelverwendungFlowList(
+                  ja.getVon(), ja.getBis());
+              list.getInfo();
+              rueckstand = list.getRueckstandVorjahrNeu();
+              weitergabe = list.getZwanghafteWeitergabeNeu();
+            }
+          }
+          MittelverwendungDialog dialog = new MittelverwendungDialog(rueckstand,
+              weitergabe, ja.getName());
+          if (!dialog.open())
+          {
+            return;
+          }
+          if (ja.isNewObject())
+          {
+            ja.setVon(editDatumvon);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(editDatumvon);
+            cal.add(Calendar.YEAR, 1);
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            ja.setBis(cal.getTime());
+            ja.setDatum(new Date());
+            ja.setName(dialog.getName());
+          }
+          ja.setVerwendungsrueckstand(dialog.getVerwendungsrueckstand());
+          ja.setZwanghafteWeitergabe(dialog.getZwanghafteWeitergabe());
+          ja.store();
+          getSaldoList();
+          updateJahreasabschlüsse();
+        }
+        catch (OperationCanceledException ignore)
+        {
+          throw new OperationCanceledException();
+        }
+        catch (Exception e)
+        {
+          throw new ApplicationException(e);
+        }
+      }
+    }, null, false, "text-x-generic.png");
+    updateConfigButton();
+    return configButton;
+  }
+
+  private void updateConfigButton() throws RemoteException
+  {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime((Date) datumvon.getDate());
+    cal.add(Calendar.YEAR, -1);
+    Date abschlussvon = cal.getTime();
+
+    // Es gibt noch keinen Jahresabschluss, dann wird er erzeugt
+    // Oder es ist der Mittelverwendungsreport des ersten Jahressabschlusses
+    // Dann muss einer vorher erzeugt werden
+    if (jahresabschluesse.length == 0
+        || jahresabschluesse[jahresabschluesse.length - 1].getVon()
+            .equals(datumvon.getDate()))
+    {
+      configButton.setEnabled(true);
+      editDatumvon = abschlussvon;
+      jaId = null;
+      vorJaId = null;
+      return;
+    }
+
+    // Der aktuelle Mittelverwendungsreport ist mehr als 1 Jahr nach dem letzten
+    // Jahresabschluss oder vor dem ersten Jahresabschluss
+    if (abschlussvon.after(jahresabschluesse[0].getVon()) || datumvon.getDate()
+        .before(jahresabschluesse[jahresabschluesse.length - 1].getVon()))
+    {
+      configButton.setEnabled(false);
+      return;
+    }
+
+    for (int i = 0; i < jahresabschluesse.length; i++)
+    {
+      if (jahresabschluesse[i].getVon().equals(abschlussvon))
+      {
+        if (jahresabschluesse[i].getVerwendungsrueckstand() == null
+            || jahresabschluesse[i].getZwanghafteWeitergabe() == null)
+        {
+          configButton.setEnabled(true);
+          editDatumvon = abschlussvon;
+          jaId = jahresabschluesse[i].getID();
+          if (i == jahresabschluesse.length - 1)
+          {
+            vorJaId = null;
+          }
+          else
+          {
+            vorJaId = jahresabschluesse[i + 1].getID();
+          }
+          return;
+        }
+      }
+    }
+    configButton.setEnabled(false);
   }
 
   public Button getPDFExportButton()
@@ -75,7 +226,6 @@ public class MittelverwendungControl extends SaldoControl
         starteExport(ExportPDF);
       }
     }, null, false, "file-pdf.png");
-    // button
     return b;
   }
 
@@ -89,7 +239,6 @@ public class MittelverwendungControl extends SaldoControl
         starteExport(ExportCSV);
       }
     }, null, false, "xsd.png");
-    // button
     return b;
   }
 
@@ -103,11 +252,27 @@ public class MittelverwendungControl extends SaldoControl
     if (selectedTab == FLOW_REPORT)
     {
       getSaldoTable();
+      try
+      {
+        updateConfigButton();
+      }
+      catch (RemoteException e)
+      {
+        throw new ApplicationException(e);
+      }
       return getFlowTable();
     }
     else
     {
       getFlowTable();
+      try
+      {
+        updateConfigButton();
+      }
+      catch (RemoteException e)
+      {
+        throw new ApplicationException(e);
+      }
       return getSaldoTable();
     }
   }
@@ -195,8 +360,7 @@ public class MittelverwendungControl extends SaldoControl
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
 
-      exportSaldo(zeilen, file,
-          getDatumvon().getDate(),
+      exportSaldo(zeilen, file, getDatumvon().getDate(),
           getDatumbis().getDate(), type, selectedTab);
     }
     catch (RemoteException e)

@@ -85,6 +85,7 @@ public class MittelverwendungListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITTELVERWENDUNG, false, "question-circle.png");
+    buttons.addButton(control.getConfigButton());
     buttons.addButton(control.getCSVExportButton());
     buttons.addButton(control.getPDFExportButton());
     buttons.paint(this.getParent());

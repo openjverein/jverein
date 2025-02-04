@@ -41,7 +41,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -49,7 +48,6 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
@@ -75,22 +73,12 @@ public class JahresabschlussControl extends AbstractControl
   private Jahresabschluss jahresabschluss;
 
   private CheckboxInput anfangsbestaende;
-  
+
   private CheckboxInput afaberechnung;
 
   private DecimalInput verwendungsrueckstand;
 
   private DecimalInput zwanghafteweitergabe;
-
-  private Button zurueck;
-
-  private boolean isSaveEnabled = false;
-
-  private boolean updateMittelverwendung = false;
-
-  private boolean ersterAbschluss = false;
-
-  private boolean mittelverwendungStart = false;
 
   public JahresabschlussControl(AbstractView view)
   {
@@ -107,14 +95,6 @@ public class JahresabschlussControl extends AbstractControl
       return jahresabschluss;
     }
     jahresabschluss = (Jahresabschluss) getCurrentObject();
-    updateMittelverwendung = (Einstellungen.getEinstellung()
-        .getMittelverwendung()
-        && (jahresabschluss.getVerwendungsrueckstand() == null
-            || jahresabschluss.getZwanghafteWeitergabe() == null));
-    if (jahresabschluss.isNewObject() || updateMittelverwendung)
-    {
-      isSaveEnabled = true;
-    }
     if (Einstellungen.getEinstellung().getMittelverwendung()
         && jahresabschluss.isNewObject())
     {
@@ -156,7 +136,6 @@ public class JahresabschlussControl extends AbstractControl
       cal.add(Calendar.DAY_OF_MONTH, 1);
       return cal.getTime();
     }
-    ersterAbschluss = true;
     DBIterator<Buchung> itbu = Einstellungen.getDBService()
         .createList(Buchung.class);
     itbu.setOrder("ORDER BY datum");
@@ -205,10 +184,7 @@ public class JahresabschlussControl extends AbstractControl
       return name;
     }
     name = new TextInput(getJahresabschluss().getName(), 50);
-    if (!getJahresabschluss().isNewObject())
-    {
-      name.setEnabled(false);
-    }
+    name.setEnabled(getJahresabschluss().isNewObject());
     return name;
   }
 
@@ -224,7 +200,7 @@ public class JahresabschlussControl extends AbstractControl
     anfangsbestaende.setEnabled(getJahresabschluss().isNewObject());
     return anfangsbestaende;
   }
-  
+
   public CheckboxInput getAfaberechnung() throws RemoteException, ParseException
   {
     if (afaberechnung != null)
@@ -277,8 +253,7 @@ public class JahresabschlussControl extends AbstractControl
           getJahresabschluss().getVerwendungsrueckstand(),
           Einstellungen.DECIMALFORMAT);
     }
-    verwendungsrueckstand.setEnabled(
-        updateMittelverwendung && !getJahresabschluss().isNewObject());
+    verwendungsrueckstand.setEnabled(false);
     return verwendungsrueckstand;
   }
 
@@ -300,62 +275,13 @@ public class JahresabschlussControl extends AbstractControl
           getJahresabschluss().getZwanghafteWeitergabe(),
           Einstellungen.DECIMALFORMAT);
     }
-    zwanghafteweitergabe.setEnabled(
-        updateMittelverwendung && !getJahresabschluss().isNewObject());
+    zwanghafteweitergabe.setEnabled(false);
     return zwanghafteweitergabe;
   }
 
-  public Button getZurueck()
+  public boolean isSaveEnabled() throws RemoteException, ParseException
   {
-    if (zurueck != null)
-    {
-      return zurueck;
-    }
-    else
-    {
-      zurueck = new Button("", new Action()
-      {
-        @Override
-        public void handleAction(Object context) throws ApplicationException
-        {
-          if (ersterAbschluss)
-          {
-            Calendar cal = Calendar.getInstance();
-            try
-            {
-              mittelverwendungStart = true;
-              cal.setTime((Date) getVon().getValue());
-              cal.add(Calendar.DAY_OF_MONTH, -1);
-              getBis().setValue(cal.getTime());
-              cal.add(Calendar.DAY_OF_MONTH, 1);
-              cal.add(Calendar.YEAR, -1);
-              getVon().setValue(cal.getTime());
-              zurueck.setEnabled(false);
-              verwendungsrueckstand.setValue(null);
-              verwendungsrueckstand.setEnabled(true);
-              zwanghafteweitergabe.setValue(null);
-              zwanghafteweitergabe.setEnabled(true);
-              anfangsbestaende.setValue(false);
-              anfangsbestaende.setEnabled(false);
-              afaberechnung.setValue(false);
-              afaberechnung.setEnabled(false);
-            }
-            catch (RemoteException | ParseException e)
-            {
-              throw new ApplicationException(e.getMessage());
-            }
-          }
-
-        }
-      }, null, false, "go-previous.png");
-    }
-    zurueck.setEnabled(ersterAbschluss);
-    return zurueck;
-  }
-
-  public boolean isSaveEnabled()
-  {
-    return isSaveEnabled;
+    return getJahresabschluss().isNewObject();
   }
 
   /**
@@ -366,67 +292,44 @@ public class JahresabschlussControl extends AbstractControl
     try
     {
       Jahresabschluss ja = getJahresabschluss();
-      if (mittelverwendungStart)
+      ja.setVon((Date) getVon().getValue());
+      ja.setBis((Date) getBis().getValue());
+      ja.setDatum((Date) getDatum().getValue());
+      ja.setName((String) getName().getValue());
+      ja.store();
+      if (afaberechnung != null && (Boolean) getAfaberechnung().getValue())
       {
-        ja.setVon((Date) getVon().getValue());
-        ja.setBis((Date) getBis().getValue());
-        ja.setDatum((Date) getDatum().getValue());
-        ja.setName((String) getName().getValue());
-        ja.setVerwendungsrueckstand(
-            (Double) getVerwendungsrueckstand().getValue());
-        ja.setZwanghafteWeitergabe(
-            (Double) getZwanghafteWeitergabe().getValue());
+        new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
+      }
+      if (Einstellungen.getEinstellung().getMittelverwendung())
+      {
+        MittelverwendungFlowList list = new MittelverwendungFlowList(
+            ja.getVon(), ja.getBis());
+        list.getInfo();
+        ja.setVerwendungsrueckstand(list.getRueckstandVorjahrNeu());
+        ja.setZwanghafteWeitergabe(list.getZwanghafteWeitergabeNeu());
         ja.store();
       }
-      else if (ja.isNewObject())
+      if ((Boolean) getAnfangsbestaende().getValue())
       {
-        ja.setVon((Date) getVon().getValue());
-        ja.setBis((Date) getBis().getValue());
-        ja.setDatum((Date) getDatum().getValue());
-        ja.setName((String) getName().getValue());
-        ja.store();
-        if (afaberechnung != null && (Boolean) getAfaberechnung().getValue())
+        KontensaldoList jsl = new KontensaldoList(null,
+            new Geschaeftsjahr(ja.getVon()));
+        ArrayList<SaldoZeile> zeilen = jsl.getInfo(false);
+        for (SaldoZeile z : zeilen)
         {
-          new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
-        }
-        if (Einstellungen.getEinstellung().getMittelverwendung())
-        {
-          MittelverwendungFlowList list = new MittelverwendungFlowList(
-              ja.getVon(), ja.getBis());
-          list.getInfo();
-          ja.setVerwendungsrueckstand(list.getRueckstandVorjahrNeu());
-          ja.setZwanghafteWeitergabe(list.getZwanghafteWeitergabeNeu());
-          ja.store();
-        }
-        if ((Boolean) getAnfangsbestaende().getValue())
-        {
-          KontensaldoList jsl = new KontensaldoList(null,
-              new Geschaeftsjahr(ja.getVon()));
-          ArrayList<SaldoZeile> zeilen = jsl.getInfo(false);
-          for (SaldoZeile z : zeilen)
+          String ktonr = (String) z.getAttribute("kontonummer");
+          if (ktonr.length() > 0)
           {
-            String ktonr = (String) z.getAttribute("kontonummer");
-            if (ktonr.length() > 0)
-            {
-              Double endbestand = (Double) z.getAttribute("endbestand");
-              Anfangsbestand anf = (Anfangsbestand) Einstellungen.getDBService()
-                  .createObject(Anfangsbestand.class, null);
-              Konto konto = (Konto) z.getAttribute("konto");
-              anf.setBetrag(endbestand);
-              anf.setDatum(Datum.addTage(ja.getBis(), 1));
-              anf.setKonto(konto);
-              anf.store();
-            }
+            Double endbestand = (Double) z.getAttribute("endbestand");
+            Anfangsbestand anf = (Anfangsbestand) Einstellungen.getDBService()
+                .createObject(Anfangsbestand.class, null);
+            Konto konto = (Konto) z.getAttribute("konto");
+            anf.setBetrag(endbestand);
+            anf.setDatum(Datum.addTage(ja.getBis(), 1));
+            anf.setKonto(konto);
+            anf.store();
           }
         }
-      }
-      else
-      {
-        ja.setVerwendungsrueckstand(
-            (Double) getVerwendungsrueckstand().getValue());
-        ja.setZwanghafteWeitergabe(
-            (Double) getZwanghafteWeitergabe().getValue());
-        ja.store();
       }
       GUI.getStatusBar().setSuccessText("Jahresabschluss gespeichert");
     }
@@ -485,7 +388,7 @@ public class JahresabschlussControl extends AbstractControl
     }
     jahresabschlussList.sort();
   }
-  
+
   public String getInfo()
   {
     String text = "";
@@ -506,24 +409,23 @@ public class JahresabschlussControl extends AbstractControl
         Konto konto = (Konto) kontenIt.next();
         if (konto.getEroeffnung() == null)
         {
-          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer() 
-          + " hat kein Eröffnungsdatum\n";
+          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer()
+              + " hat kein Eröffnungsdatum\n";
         }
         if (konto.getAnschaffung() == null)
         {
-          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer() 
-          + " hat kein Anschaffungsdatum. Bitte auf Plausibilität prüfen!\n";
+          text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer()
+              + " hat kein Anschaffungsdatum. Bitte auf Plausibilität prüfen!\n";
         }
-        else if (konto.getAnschaffung().after(Datum.addTage(vongj, -1)) &&
-            konto.getAnschaffung().before(Datum.addTage(bisgj, 1)))
+        else if (konto.getAnschaffung().after(Datum.addTage(vongj, -1))
+            && konto.getAnschaffung().before(Datum.addTage(bisgj, 1)))
         {
           Double betrag = 0d;
           DBService service2 = Einstellungen.getDBService();
           DBIterator<Buchung> buchungenIt = service2.createList(Buchung.class);
           buchungenIt.join("buchungsart");
           buchungenIt.addFilter("buchungsart.id = buchung.buchungsart");
-          buchungenIt.addFilter("konto = ?",
-              new Object[] { konto.getID() });
+          buchungenIt.addFilter("konto = ?", new Object[] { konto.getID() });
           buchungenIt.addFilter("buchungsart.abschreibung = FALSE");
           buchungenIt.addFilter("datum <= ?",
               new Object[] { new java.sql.Date(bisgj.getTime()) });
@@ -533,9 +435,11 @@ public class JahresabschlussControl extends AbstractControl
           }
           if (Math.abs(betrag - konto.getBetrag()) > Double.MIN_NORMAL)
           {
-            text = text + "Für das Anlagenkonto mit der Nummer " + konto.getNummer() 
-            + " stimmt die Summe der Buchungen (" + betrag + ") nicht mit den Anschaffungskosten (" 
-            + konto.getBetrag() + ") überein. Bitte auf Plausibilität prüfen!\n";
+            text = text + "Für das Anlagenkonto mit der Nummer "
+                + konto.getNummer() + " stimmt die Summe der Buchungen ("
+                + betrag + ") nicht mit den Anschaffungskosten ("
+                + konto.getBetrag()
+                + ") überein. Bitte auf Plausibilität prüfen!\n";
           }
         }
       }

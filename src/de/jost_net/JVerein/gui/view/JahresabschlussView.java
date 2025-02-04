@@ -63,10 +63,15 @@ public class JahresabschlussView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addLabelPair("Von", control.getVon());
     left.addLabelPair("Bis", control.getBis());
+    left.addLabelPair("", control.getAnfangsbestaende());
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addLabelPair("Datum", control.getDatum());
     middle.addLabelPair("Name", control.getName());
+    if (Einstellungen.getEinstellung().getAfaInJahresabschluss())
+    {
+      middle.addLabelPair("", control.getAfaberechnung());
+    }
 
     if (Einstellungen.getEinstellung().getMittelverwendung())
     {
@@ -75,16 +80,6 @@ public class JahresabschlussView extends AbstractView
           control.getVerwendungsrueckstand());
       right.addLabelPair("Zwanghafte satzungsgem‰ﬂe\nWeitergabe von Mitteln",
           control.getZwanghafteWeitergabe());
-    }
-    left.addLabelPair("", control.getAnfangsbestaende());
-    if (Einstellungen.getEinstellung().getAfaInJahresabschluss())
-      middle.addLabelPair("", control.getAfaberechnung());
-
-    if (Einstellungen.getEinstellung().getMittelverwendung())
-    {
-      ButtonArea abuttons = new ButtonArea();
-      abuttons.addButton(control.getZurueck());
-      group.addButtonArea(abuttons);
     }
 
     control.getJahresabschlussSaldo().paint(this.getParent());
