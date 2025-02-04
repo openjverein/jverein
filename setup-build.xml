@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
@@ -16,6 +16,7 @@
         <hibiscus.version>V_2_10_23_BUILD_387</hibiscus.version>
         <nc.url>https://prdownloads.sourceforge.net/numchameleon/nc-3.0.0.zip?download</nc.url>
         <swt.arch>win64</swt.arch>
+        <!-- Skip default plugins -->
         <maven.resources.skip>true</maven.resources.skip>
         <maven.main.skip>true</maven.main.skip>
         <maven.test.skip>true</maven.test.skip>
@@ -57,6 +58,9 @@
                                 </copy>
                                 <move file="${project.basedir}/jameica/releases/jameica.jar"
                                       tofile="${project.basedir}/jameica/releases/jameica-lib.jar"/>
+                                <!-- Copy IDEA project file to jameica -->
+                                <copy file="${project.basedir}/ideaproject/jameica.iml"
+                                      todir="${project.basedir}/jameica"/>
                             </target>
                         </configuration>
                         <goals>
@@ -103,7 +107,7 @@
                             <target>
                                 <get src="${nc.url}"
                                      dest="${project.build.directory}/nc.zip"
-                                     skipexisting="true" />
+                                     skipexisting="true"/>
                                 <unzip src="${project.build.directory}/nc.zip" dest="${project.build.directory}">
                                     <patternset includes="numericalchameleon-3.0.0/bin/nc.jar"/>
                                     <mapper type="flatten"/>
@@ -118,12 +122,20 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <skipIfEmpty>true</skipIfEmpty>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
                 <version>3.1.3</version>
                 <executions>
                     <execution>
                         <id>install-jameica</id>
-                        <phase>initialize</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>install-file</goal>
                         </goals>
@@ -137,7 +149,7 @@
                     </execution>
                     <execution>
                         <id>install-hibiscus</id>
-                        <phase>initialize</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>install-file</goal>
                         </goals>
@@ -151,7 +163,7 @@
                     </execution>
                     <execution>
                         <id>install-willuhn-ds</id>
-                        <phase>initialize</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>install-file</goal>
                         </goals>
@@ -165,7 +177,7 @@
                     </execution>
                     <execution>
                         <id>install-willuhn-util</id>
-                        <phase>initialize</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>install-file</goal>
                         </goals>
@@ -179,7 +191,7 @@
                     </execution>
                     <execution>
                         <id>install-obantoo-bin</id>
-                        <phase>initialize</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>install-file</goal>
                         </goals>
@@ -193,7 +205,7 @@
                     </execution>
                     <execution>
                         <id>install-swt</id>
-                        <phase>initialize</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>install-file</goal>
                         </goals>
@@ -207,7 +219,7 @@
                     </execution>
                     <execution>
                         <id>install-hbci4j</id>
-                        <phase>initialize</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>install-file</goal>
                         </goals>
@@ -221,7 +233,7 @@
                     </execution>
                     <execution>
                         <id>install-nc</id>
-                        <phase>initialize</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>install-file</goal>
                         </goals>
