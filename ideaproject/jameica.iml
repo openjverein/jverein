@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="EclipseModuleManager">
+    <libelement value="jar://$MODULE_DIR$/lib/nanoxml/nanoxml-2.2.3.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/lib/swt/win64/swt.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/lib/swt/org.eclipse.ui.forms_3.6.100.v20140422-1825.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/lib/de_willuhn_ds/de_willuhn_ds.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/lib/de_willuhn_util/de_willuhn_util.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/lib/swtcalendar/swtcalendar.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/lib/splash.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/lib/paperclips/net.sf.paperclips_1.0.4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/lib/paperclips/net.sf.paperclips.ui_1.0.4.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/lib/jakarta_commons/commons-lang-2.6.jar!/" />
+    <src_description expected_position="0">
+      <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
+      <src_folder value="file://$MODULE_DIR$/test" expected_position="1" />
+    </src_description>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/lib" />
+          <root url="file://$MODULE_DIR$/lib/apache_xmlrpc" />
+          <root url="file://$MODULE_DIR$/lib/bouncycastle" />
+          <root url="file://$MODULE_DIR$/lib/de_willuhn_ds" />
+          <root url="file://$MODULE_DIR$/lib/de_willuhn_util" />
+          <root url="file://$MODULE_DIR$/lib/h2" />
+          <root url="file://$MODULE_DIR$/lib/jakarta_commons" />
+          <root url="file://$MODULE_DIR$/lib/java_ee" />
+          <root url="file://$MODULE_DIR$/lib/mckoi" />
+          <root url="file://$MODULE_DIR$/lib/mozilla_rhino" />
+          <root url="file://$MODULE_DIR$/lib/mysql" />
+          <root url="file://$MODULE_DIR$/lib/nanoxml" />
+          <root url="file://$MODULE_DIR$/lib/paperclips" />
+          <root url="file://$MODULE_DIR$/lib/swt" />
+          <root url="file://$MODULE_DIR$/lib/swtcalendar" />
+          <root url="file://$MODULE_DIR$/lib/velocity" />
+          <root url="file://$MODULE_DIR$/lib/swt/win64" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/apache_xmlrpc" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/bouncycastle" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/de_willuhn_ds" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/de_willuhn_util" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/h2" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/jakarta_commons" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/java_ee" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/mckoi" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/mozilla_rhino" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/mysql" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/nanoxml" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/paperclips" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/swt" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/swt/win64" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/swtcalendar" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib/velocity" recursive="false" />
+      </library>
+    </orderEntry>
+  </component>
+</module>
