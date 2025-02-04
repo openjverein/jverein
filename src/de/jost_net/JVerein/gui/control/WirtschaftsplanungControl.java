@@ -69,6 +69,13 @@ public class WirtschaftsplanungControl extends AbstractControl
 
   public final static String AUSWERTUNG_CSV = "CSV";
 
+  private final static int EINNAHME = 0;
+  private final static int AUSGABE = 1;
+
+  private final static int ID_COL = 1;
+  private final static int BETRAG_COL = 2;
+
+
   /**
    * Erzeugt einen neuen AbstractControl der fuer die angegebene View.
    *
@@ -87,74 +94,87 @@ public class WirtschaftsplanungControl extends AbstractControl
   {
     DBService service = Einstellungen.getDBService();
 
-    String sql = "SELECT wirtschaftsplan.id, SUM(wirtschaftsplanitem.soll) " + "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart " + "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " + "AND wirtschaftsplanitem.buchungsart = buchungsart.id " + "AND buchungsart.art = ? " + "GROUP BY wirtschaftsplan.id";
+    String sql = "SELECT wirtschaftsplan.id, SUM(wirtschaftsplanitem.soll) " +
+        "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart " +
+        "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " +
+        "AND wirtschaftsplanitem.buchungsart = buchungsart.id " +
+        "AND buchungsart.art = ? " +
+        "GROUP BY wirtschaftsplan.id";
 
     Map<Long, WirtschaftsplanungZeile> zeileMap = new HashMap<>();
 
-    service.execute(sql, new Object[] { 0 }, resultSet -> {
+    service.execute(sql, new Object[] { EINNAHME }, resultSet -> {
       while (resultSet.next())
       {
-        if (zeileMap.containsKey(resultSet.getLong(1)))
+        if (zeileMap.containsKey(resultSet.getLong(ID_COL)))
         {
-          zeileMap.get(resultSet.getLong(1))
-              .setPlanEinnahme(resultSet.getDouble(2));
+          zeileMap.get(resultSet.getLong(ID_COL))
+              .setPlanEinnahme(resultSet.getDouble(BETRAG_COL));
         }
         else
         {
           WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
               service.createObject(Wirtschaftsplan.class,
-                  resultSet.getString(1)));
-          zeile.setPlanEinnahme(resultSet.getDouble(2));
-          zeileMap.put(resultSet.getLong(1), zeile);
+                  resultSet.getString(ID_COL)));
+          zeile.setPlanEinnahme(resultSet.getDouble(BETRAG_COL));
+          zeileMap.put(resultSet.getLong(ID_COL), zeile);
         }
       }
       return resultSet;
     });
 
-    service.execute(sql, new Object[] { 1 }, resultSet -> {
+    service.execute(sql, new Object[] { AUSGABE }, resultSet -> {
       while (resultSet.next())
       {
-        if (zeileMap.containsKey(resultSet.getLong(1)))
+        if (zeileMap.containsKey(resultSet.getLong(ID_COL)))
         {
-          zeileMap.get(resultSet.getLong(1))
-              .setPlanAusgabe(resultSet.getDouble(2));
+          zeileMap.get(resultSet.getLong(ID_COL))
+              .setPlanAusgabe(resultSet.getDouble(BETRAG_COL));
         }
         else
         {
           WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
               service.createObject(Wirtschaftsplan.class,
-                  resultSet.getString(1)));
-          zeile.setPlanAusgabe(resultSet.getDouble(2));
-          zeileMap.put(resultSet.getLong(1), zeile);
+                  resultSet.getString(ID_COL)));
+          zeile.setPlanAusgabe(resultSet.getDouble(BETRAG_COL));
+          zeileMap.put(resultSet.getLong(ID_COL), zeile);
         }
       }
       return resultSet;
     });
 
-    sql = "SELECT wirtschaftsplan.id, SUM(buchung.betrag) AS ist " + "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart, buchung, konto " + "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " + "AND buchung.buchungsart = buchungsart.id " + "AND buchung.konto = konto.id " + "AND buchung.datum >= wirtschaftsplan.datum_von " + "AND buchung.datum <= wirtschaftsplan.datum_bis " + "AND buchungsart.art = ? " + "AND konto.kontoart < ? " + "GROUP BY wirtschaftsplan.id";
+    sql = "SELECT wirtschaftsplan.id, SUM(buchung.betrag) AS ist " +
+        "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart, buchung, konto " +
+        "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " +
+        "AND buchung.buchungsart = buchungsart.id " +
+        "AND buchung.konto = konto.id " +
+        "AND buchung.datum >= wirtschaftsplan.datum_von " +
+        "AND buchung.datum <= wirtschaftsplan.datum_bis " +
+        "AND buchungsart.art = ? " + "AND konto.kontoart < ? " +
+        "GROUP BY wirtschaftsplan.id";
 
-    service.execute(sql, new Object[] { 0, Kontoart.LIMIT.getKey() },
+    service.execute(sql, new Object[] { EINNAHME, Kontoart.LIMIT.getKey() },
         resultSet -> {
           while (resultSet.next())
           {
-            if (zeileMap.containsKey(resultSet.getLong(1)))
+            if (zeileMap.containsKey(resultSet.getLong(ID_COL)))
             {
-              zeileMap.get(resultSet.getLong(1))
-                  .setIstEinnahme(resultSet.getDouble(2));
+              zeileMap.get(resultSet.getLong(ID_COL))
+                  .setIstEinnahme(resultSet.getDouble(BETRAG_COL));
             }
           }
 
           return resultSet;
         });
 
-    service.execute(sql, new Object[] { 1, Kontoart.LIMIT.getKey() },
+    service.execute(sql, new Object[] { AUSGABE, Kontoart.LIMIT.getKey() },
         resultSet -> {
           while (resultSet.next())
           {
-            if (zeileMap.containsKey(resultSet.getLong(1)))
+            if (zeileMap.containsKey(resultSet.getLong(ID_COL)))
             {
-              zeileMap.get(resultSet.getLong(1))
-                  .setIstAusgabe(resultSet.getDouble(2));
+              zeileMap.get(resultSet.getLong(ID_COL))
+                  .setIstAusgabe(resultSet.getDouble(BETRAG_COL));
             }
           }
 
@@ -195,7 +215,7 @@ public class WirtschaftsplanungControl extends AbstractControl
   {
     if (einnahmen == null)
     {
-      einnahmen = generateTree(0);
+      einnahmen = generateTree(EINNAHME);
     }
     else
     {
@@ -210,7 +230,7 @@ public class WirtschaftsplanungControl extends AbstractControl
   {
     if (ausgaben == null)
     {
-      ausgaben = generateTree(1);
+      ausgaben = generateTree(AUSGABE);
     }
     else
     {
@@ -233,24 +253,27 @@ public class WirtschaftsplanungControl extends AbstractControl
     Map<Long, WirtschaftsplanungNode> nodes = new HashMap<>();
 
     DBService service = Einstellungen.getDBService();
-    String sql = "SELECT wirtschaftsplanitem.buchungsklasse, sum(soll) " + "FROM wirtschaftsplanitem, buchungsart " + "WHERE wirtschaftsplan = ? AND wirtschaftsplanitem.buchungsart = buchungsart.id AND buchungsart.art = ? " + "GROUP BY wirtschaftsplanitem.buchungsklasse";
+    String sql = "SELECT wirtschaftsplanitem.buchungsklasse, sum(soll) " +
+        "FROM wirtschaftsplanitem, buchungsart " +
+        "WHERE wirtschaftsplan = ? AND wirtschaftsplanitem.buchungsart = buchungsart.id AND buchungsart.art = ? " +
+        "GROUP BY wirtschaftsplanitem.buchungsklasse";
 
     service.execute(sql, new Object[] { zeile.getID(), art }, resultSet -> {
       while (resultSet.next())
       {
         DBIterator<Buchungsklasse> iterator = service.createList(
             Buchungsklasse.class);
-        iterator.addFilter("id = ?", resultSet.getLong(1));
+        iterator.addFilter("id = ?", resultSet.getLong(ID_COL));
         if (!iterator.hasNext())
         {
           continue;
         }
 
         Buchungsklasse buchungsklasse = iterator.next();
-        double soll = resultSet.getDouble(2);
-        nodes.put(resultSet.getLong(1),
+        double soll = resultSet.getDouble(BETRAG_COL);
+        nodes.put(resultSet.getLong(ID_COL),
             new WirtschaftsplanungNode(buchungsklasse, art, zeile));
-        nodes.get(resultSet.getLong(1)).setSoll(soll);
+        nodes.get(resultSet.getLong(ID_COL)).setSoll(soll);
       }
 
       return nodes;
@@ -258,12 +281,22 @@ public class WirtschaftsplanungControl extends AbstractControl
 
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
-      sql = "SELECT buchung.buchungsklasse, sum(buchung.betrag) " + "FROM buchung, buchungsart " + "WHERE buchung.buchungsart = buchungsart.id " + "AND buchung.datum >= ? AND buchung.datum <= ? " + "AND buchungsart.art = ? " + "GROUP BY buchung.buchungsklasse";
+      sql = "SELECT buchung.buchungsklasse, sum(buchung.betrag) " +
+          "FROM buchung, buchungsart " +
+          "WHERE buchung.buchungsart = buchungsart.id " +
+          "AND buchung.datum >= ? AND buchung.datum <= ? " +
+          "AND buchungsart.art = ? " +
+          "GROUP BY buchung.buchungsklasse";
 
     }
     else
     {
-      sql = "SELECT buchungsart.buchungsklasse, sum(buchung.betrag) " + "FROM buchung, buchungsart " + "WHERE buchung.buchungsart = buchungsart.id " + "AND buchung.datum >= ? AND buchung.datum <= ? " + "AND buchungsart.art = ? " + "GROUP BY buchungsart.buchungsklasse";
+      sql = "SELECT buchungsart.buchungsklasse, sum(buchung.betrag) " +
+          "FROM buchung, buchungsart " +
+          "WHERE buchung.buchungsart = buchungsart.id " +
+          "AND buchung.datum >= ? AND buchung.datum <= ? " +
+          "AND buchungsart.art = ? " +
+          "GROUP BY buchungsart.buchungsklasse";
 
     }
     service.execute(sql,
@@ -273,7 +306,7 @@ public class WirtschaftsplanungControl extends AbstractControl
           {
             DBIterator<Buchungsklasse> iterator = service.createList(
                 Buchungsklasse.class);
-            Long key = resultSet.getLong(1);
+            Long key = resultSet.getLong(ID_COL);
             iterator.addFilter("id = ?", key);
             if (!iterator.hasNext())
             {
@@ -281,7 +314,7 @@ public class WirtschaftsplanungControl extends AbstractControl
             }
 
             Buchungsklasse buchungsklasse = iterator.next();
-            double ist = resultSet.getDouble(2);
+            double ist = resultSet.getDouble(BETRAG_COL);
 
             if (nodes.containsKey(key))
             {
@@ -403,17 +436,17 @@ public class WirtschaftsplanungControl extends AbstractControl
         iterator.addFilter("wirtschaftsplan = ?", wirtschaftsplan.getID());
         while (iterator.hasNext())
         {
-          iterator.next().delete();
+          iterator.next().delete(); //Löschen alter Einträge, wird später überschrieben
         }
       }
 
       for (WirtschaftsplanungNode rootNode : rootNodesEinnahmen)
       {
-        iterateOverNodes(rootNode.getChildren(), wirtschaftsplan.getID());
+        storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
       }
       for (WirtschaftsplanungNode rootNode : rootNodesAusgaben)
       {
-        iterateOverNodes(rootNode.getChildren(), wirtschaftsplan.getID());
+        storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
       }
 
       //Lösche Wirtschaftsplan, falls keine Planung hinterlegt ist
@@ -446,7 +479,7 @@ public class WirtschaftsplanungControl extends AbstractControl
   }
 
   @SuppressWarnings("rawtypes")
-  private void iterateOverNodes(GenericIterator iterator, String id)
+  private void storeNodes(GenericIterator iterator, String id)
       throws RemoteException, ApplicationException
   {
     while (iterator.hasNext())
@@ -468,7 +501,7 @@ public class WirtschaftsplanungControl extends AbstractControl
       }
       else
       {
-        iterateOverNodes(currentNode.getChildren(), id);
+        storeNodes(currentNode.getChildren(), id);
       }
     }
   }

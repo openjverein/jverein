@@ -16,16 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.rmi.RemoteException;
-import java.text.DecimalFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.kapott.hbci.sepa.SepaVersion;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
@@ -71,6 +61,15 @@ import de.willuhn.jameica.security.Wallet;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.kapott.hbci.sepa.SepaVersion;
+
+import java.rmi.RemoteException;
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.List;
 
 public class EinstellungControl extends AbstractControl
 {
@@ -881,7 +880,6 @@ public class EinstellungControl extends AbstractControl
     }
     wirtschaftsplanung = new CheckboxInput(
         Einstellungen.getEinstellung().getWirtschaftsplanung());
-    wirtschaftsplanung.setName("Wirtschaftsplanung aktivieren");
     return wirtschaftsplanung;
   }
 
@@ -2203,6 +2201,7 @@ public class EinstellungControl extends AbstractControl
       else
         e.setAfaInJahresabschluss(true);
       e.setMittelverwendung((Boolean) mittelverwendung.getValue());
+      e.setWirtschaftsplanung((Boolean) getWirtschaftsplanung().getValue());
 
       e.store();
       Einstellungen.setEinstellung(e);
@@ -2381,7 +2380,6 @@ public class EinstellungControl extends AbstractControl
       e.setOptiert((Boolean) getOptiert().getValue());
       e.setBuchungsklasseInBuchung((Boolean) getFreieBuchungsklasse().getValue());
       e.setSplitPositionZweck((Boolean) getSplitPositionZweck().getValue());
-      e.setWirtschaftsplanung((Boolean) getWirtschaftsplanung().getValue());
       e.store();
       Einstellungen.setEinstellung(e);
 
