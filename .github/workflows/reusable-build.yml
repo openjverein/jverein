@@ -26,7 +26,7 @@ jobs:
 
       - name: Run setup-build.xml
         if: steps.restore-cache.outputs.cache-hit != 'true'
-        run: mvn --batch-mode --file setup-build.xml clean initialize
+        run: mvn --batch-mode --file setup-build.xml clean install
 
       - name: Save cache
         if: steps.restore-cache.outputs.cache-hit != 'true'
