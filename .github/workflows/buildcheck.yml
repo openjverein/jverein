@@ -12,7 +12,6 @@ on:
       - 'lib/**'
       - 'lib.src/**'
       - 'src/**'
-  push:
 jobs:
   call-reusable-workflow:
     uses: ./.github/workflows/reusable-build.yml
@@ -34,7 +33,7 @@ jobs:
             cache-${{ hashFiles('setup-build.xml') }}
 
       - name: Build openjverein plugin
-        run: mvn --batch-mode --file pom.xml clean package
+        run: ./mvnw --batch-mode --file pom.xml clean package
 
       - name: Save cache
         uses: actions/cache/save@v4
