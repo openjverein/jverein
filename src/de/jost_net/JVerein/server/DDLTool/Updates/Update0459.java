@@ -42,7 +42,7 @@ public class Update0459 extends AbstractDDLUpdate
       if (getDriver() == DRIVER.MYSQL)
       {
         execute(
-            "SET @max_id = (SELECT MAX(zaehler)+1 FROM formular WHERE art = 2);"
+            "SET @max_id = (SELECT if(MAX(zaehler),MAX(zaehler)+1,1) FROM formular WHERE art = 2);"
               + "SET @sql = CONCAT('ALTER TABLE rechnung AUTO_INCREMENT = ', @max_id);"
               + "PREPARE st FROM @sql; EXECUTE st;");
       }
