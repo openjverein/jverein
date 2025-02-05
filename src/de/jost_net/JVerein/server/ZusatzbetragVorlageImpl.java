@@ -126,7 +126,7 @@ public class ZusatzbetragVorlageImpl extends AbstractDBObject
   @Override
   public double getBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
+    Number d = (Number) getAttribute("betrag");
     if (d == null)
     {
       return 0;

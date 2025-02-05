@@ -1081,7 +1081,12 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public Double getIndividuellerBeitrag() throws RemoteException
   {
-    return (Double) getAttribute("individuellerbeitrag");
+    Number d = (Number) getAttribute("individuellerbeitrag");
+    if (d == null)
+    {
+      return null;
+    }
+    return d.doubleValue();
   }
 
   @Override

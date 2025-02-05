@@ -132,12 +132,12 @@ public class FormularfeldImpl extends AbstractDBObject implements Formularfeld
   @Override
   public Double getX() throws RemoteException
   {
-    Double ret = (Double) getAttribute("x");
+    Number ret = (Number) getAttribute("x");
     if (ret == null)
     {
       ret = Double.valueOf(0);
     }
-    return ret;
+    return ret.doubleValue();
   }
 
   @Override
@@ -149,13 +149,13 @@ public class FormularfeldImpl extends AbstractDBObject implements Formularfeld
   @Override
   public Double getY() throws RemoteException
   {
-    Double ret = (Double) getAttribute("y");
+    Number ret = (Number) getAttribute("y");
     if (ret == null)
     {
       ret = Double.valueOf(0);
     }
 
-    return ret;
+    return ret.doubleValue();
   }
 
   @Override

@@ -399,7 +399,12 @@ public class KontoImpl extends AbstractDBObject implements Konto
   @Override
   public Double getBetrag() throws RemoteException
   {
-    return (Double) getAttribute("betrag");
+    Number d = (Number) getAttribute("betrag");
+    if (d == null)
+    {
+      return null;
+    }
+    return d.doubleValue();
   }
 
   @Override
@@ -436,7 +441,12 @@ public class KontoImpl extends AbstractDBObject implements Konto
   @Override
   public Double getAfaStart() throws RemoteException
   {
-    return (Double) getAttribute("afastart");
+    Number d = (Number) getAttribute("afastart");
+    if (d == null)
+    {
+      return null;
+    }
+    return d.doubleValue();
   }
 
   @Override
@@ -448,7 +458,12 @@ public class KontoImpl extends AbstractDBObject implements Konto
   @Override
   public Double getAfaDauer() throws RemoteException
   {
-    return (Double) getAttribute("afadauer");
+    Number d = (Number) getAttribute("afadauer");
+    if (d == null)
+    {
+      return null;
+    }
+    return d.doubleValue();
   }
 
   @Override
@@ -460,7 +475,12 @@ public class KontoImpl extends AbstractDBObject implements Konto
   @Override
   public Double getAfaRestwert() throws RemoteException
   {
-    return (Double) getAttribute("afarestwert");
+    Number d = (Number) getAttribute("afarestwert");
+    if (d == null)
+    {
+      return null;
+    }
+    return d.doubleValue();
   }
 
   @Override

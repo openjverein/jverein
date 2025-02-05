@@ -100,7 +100,12 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   @Override
   public Double getBetrag() throws RemoteException
   {
-    return (Double) getAttribute("betrag");
+    Number d = (Number) getAttribute("betrag");
+    if (d == null)
+    {
+      return null;
+    }
+    return d.doubleValue();
   }
 
   @Override
@@ -112,7 +117,12 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   @Override
   public Double getSteuersatz() throws RemoteException
   {
-    return (Double) getAttribute("steuersatz");
+    Number d = (Number) getAttribute("steuersatz");
+    if (d == null)
+    {
+      return null;
+    }
+    return d.doubleValue();
   }
 
   @Override
@@ -124,25 +134,26 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   @Override
   public Double getNettobetrag() throws RemoteException
   {
-    Double betrag = (Double) getAttribute("betrag");
-    Double steuersatz = (Double) getAttribute("steuersatz");
+    Number betrag = (Number) getAttribute("betrag");
+    Number steuersatz = (Number) getAttribute("steuersatz");
     if (steuersatz == null || betrag == null)
     {
-      return betrag;
+      return betrag.doubleValue();
     }
-    return betrag / (1 + steuersatz / 100);
+    return betrag.doubleValue() / (1 + steuersatz.doubleValue() / 100);
   }
 
   @Override
   public Double getSteuerbetrag() throws RemoteException
   {
-    Double betrag = (Double) getAttribute("betrag");
-    Double steuersatz = (Double) getAttribute("steuersatz");
+    Number betrag = (Number) getAttribute("betrag");
+    Number steuersatz = (Number) getAttribute("steuersatz");
     if (steuersatz == null || betrag == null)
     {
       return 0d;
     }
-    return betrag * steuersatz / (100 + steuersatz);
+    return betrag.doubleValue() * steuersatz.doubleValue()
+        / (100 + steuersatz.doubleValue());
   }
 
   @Override

@@ -879,12 +879,12 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   @Override
   public double getSpendenbescheinigungminbetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("spendenbescheinigungminbetrag");
+    Number d = (Number) getAttribute("spendenbescheinigungminbetrag");
     if (d == null)
     {
-      d = Double.valueOf(0.0d);
+      return 0;
     }
-    return (d);
+    return d.doubleValue();
   }
 
   @Override
@@ -2113,7 +2113,12 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   @Override
   public Double getAfaRestwert() throws RemoteException
   {
-    return (Double) getAttribute("afarestwert");
+    Number d = (Number) getAttribute("afarestwert");
+    if (d == null)
+    {
+      return null;
+    }
+    return d.doubleValue();
   }
 
   @Override

@@ -97,7 +97,12 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
   @Override
   public Double getBetrag() throws RemoteException
   {
-    return (Double) getAttribute(COL_BETRAG);
+    Number d = (Number) getAttribute(COL_BETRAG);
+    if (d == null)
+    {
+      return null;
+    }
+    return d.doubleValue();
   }
 
   @Override

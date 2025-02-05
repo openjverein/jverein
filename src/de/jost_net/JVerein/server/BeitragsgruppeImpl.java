@@ -186,7 +186,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public double getBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
+    Number d = (Number) getAttribute("betrag");
     if (d == null)
     {
       return 0;
@@ -203,7 +203,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public double getBetragMonatlich() throws RemoteException
   {
-    Double d = (Double) getAttribute("betragmonatlich");
+    Number d = (Number) getAttribute("betragmonatlich");
     if (d == null)
     {
       return 0;
@@ -220,7 +220,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public double getBetragVierteljaehrlich() throws RemoteException
   {
-    Double d = (Double) getAttribute("betragvierteljaehrlich");
+    Number d = (Number) getAttribute("betragvierteljaehrlich");
     if (d == null)
     {
       return 0;
@@ -237,7 +237,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public double getBetragHalbjaehrlich() throws RemoteException
   {
-    Double d = (Double) getAttribute("betraghalbjaehrlich");
+    Number d = (Number) getAttribute("betraghalbjaehrlich");
     if (d == null)
     {
       return 0;
@@ -254,7 +254,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public double getBetragJaehrlich() throws RemoteException
   {
-    Double d = (Double) getAttribute("betragjaehrlich");
+    Number d = (Number) getAttribute("betragjaehrlich");
     if (d == null)
     {
       return 0;
@@ -313,7 +313,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public double getArbeitseinsatzStunden() throws RemoteException
   {
-    Double d = (Double) getAttribute("arbeitseinsatzstunden");
+    Number d = (Number) getAttribute("arbeitseinsatzstunden");
     if (d == null)
     {
       return 0;
@@ -331,7 +331,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public double getArbeitseinsatzBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("arbeitseinsatzbetrag");
+    Number d = (Number) getAttribute("arbeitseinsatzbetrag");
     if (d == null)
     {
       return 0;

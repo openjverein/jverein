@@ -195,7 +195,12 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   @Override
   public Double getBetrag() throws RemoteException
   {
-    return (Double) getAttribute("betrag");
+    Number d = (Number) getAttribute("betrag");
+    if (d == null)
+    {
+      return null;
+    }
+    return d.doubleValue();
   }
 
   @Override

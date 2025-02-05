@@ -305,9 +305,11 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   public double getBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
+    Number d = (Number) getAttribute("betrag");
     if (d == null)
+    {
       return 0;
+    }
     return d.doubleValue();
   }
 
@@ -320,7 +322,7 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   public boolean isBetragNull() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
+    Number d = (Number) getAttribute("betrag");
     return d == null;
   }
 

@@ -67,7 +67,12 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
   @Override
   public double getBetrag() throws RemoteException
   {
-    return (double) getAttribute("betrag");
+    Number d = (Number) getAttribute("betrag");
+    if (d == null)
+    {
+      return 0d;
+    }
+    return d.doubleValue();
   }
 
   @Override

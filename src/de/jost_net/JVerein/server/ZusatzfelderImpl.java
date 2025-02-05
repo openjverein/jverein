@@ -156,7 +156,12 @@ public class ZusatzfelderImpl extends AbstractDBObject implements Zusatzfelder
   @Override
   public double getFeldGleitkommazahl() throws RemoteException
   {
-    return (Double) getAttribute("feldgleitkommazahl");
+    Number d = (Number) getAttribute("feldgleitkommazahl");
+    if (d == null)
+    {
+      return 0d;
+    }
+    return d.doubleValue();
   }
 
   @Override

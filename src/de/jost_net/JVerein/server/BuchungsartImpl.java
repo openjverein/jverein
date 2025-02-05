@@ -193,7 +193,7 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   @Override
   public double getSteuersatz() throws RemoteException
   {
-    Double i = (Double) getAttribute("steuersatz");
+    Number i = (Number) getAttribute("steuersatz");
     if (i == null)
     {
       return 0;

@@ -225,12 +225,12 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
   @Override
   public Double getBetrag() throws RemoteException
   {
-    Double ret = (Double) getAttribute("betrag");
+    Number ret = (Number) getAttribute("betrag");
     if (ret == null)
     {
       ret = Double.valueOf(0);
     }
-    return ret;
+    return ret.doubleValue();
   }
 
   @Override

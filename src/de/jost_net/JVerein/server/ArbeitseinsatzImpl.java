@@ -131,7 +131,12 @@ public class ArbeitseinsatzImpl extends AbstractDBObject implements
   @Override
   public Double getStunden() throws RemoteException
   {
-    return (Double) getAttribute("stunden");
+    Number d = (Number) getAttribute("stunden");
+    if (d == null)
+    {
+      return null;
+    }
+    return d.doubleValue();
   }
 
   @Override
