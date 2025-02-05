@@ -1,16 +1,16 @@
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
- * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
- *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
  *  the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
@@ -20,15 +20,12 @@ package de.jost_net.JVerein.gui.parts;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import org.eclipse.swt.SWTException;
-
 import de.jost_net.JVerein.rmi.Buchung;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.Listener;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.parts.TablePart;
 
 public class AutoUpdateTablePart extends TablePart
 {
@@ -71,31 +68,7 @@ public class AutoUpdateTablePart extends TablePart
     public void handleEvent(final de.willuhn.datasource.rmi.Event e)
         throws RemoteException
     {
-      try
-      {
-        final int pos = removeItem(e.getObject());
-
-        addItem(e.getObject(), pos);
-      }
-      catch (SWTException ex)
-      {
-        // Fallback: Wir versuchens mal synchronisiert
-        GUI.getDisplay().syncExec(new Runnable()
-        {
-
-          public void run()
-          {
-            try
-            {
-              updateItem(e.getObject(), e.getObject());
-            }
-            catch (Exception ignore)
-            {
-            }
-          }
-
-        });
-      }
+        updateItem(e.getObject(), e.getObject());
     }
   }
 }
