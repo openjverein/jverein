@@ -35,11 +35,11 @@ public class EditAction implements Action
   {
     if (context == null)
     {
-      throw new ApplicationException("Kein Object ausgewählt");
+      throw new ApplicationException("Kein Objekt ausgewählt");
     }
     if (context instanceof Object[])
     {
-      throw new ApplicationException("Mehrere Objecte ausgewählt");
+      throw new ApplicationException("Mehrere Objekte ausgewählt");
     }
     GUI.startView(viewClass, context);
   }
