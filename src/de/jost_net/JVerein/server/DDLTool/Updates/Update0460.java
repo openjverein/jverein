@@ -31,6 +31,6 @@ public class Update0460 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute(addColumn("einstellung", new Column("splitpositionzweck",
-        COLTYPE.BOOLEAN, 1, "0", true, false)));
+        COLTYPE.BOOLEAN, 1, "0", false, false)));
   }
 }
