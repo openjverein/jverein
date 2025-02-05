@@ -16,8 +16,9 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.FelddefinitionDeleteAction;
-import de.jost_net.JVerein.gui.action.FelddefinitionDetailAction;
+import de.jost_net.JVerein.gui.view.FelddefinitionDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -33,7 +34,8 @@ public class FelddefinitionMenu extends ContextMenu
    */
   public FelddefinitionMenu()
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new FelddefinitionDetailAction(),
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(FelddefinitionDetailView.class),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new FelddefinitionDeleteAction(), "user-trash-full.png"));

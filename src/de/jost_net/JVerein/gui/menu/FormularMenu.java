@@ -16,12 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.FormularAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
 import de.jost_net.JVerein.gui.action.FormularDeleteAction;
 import de.jost_net.JVerein.gui.action.FormularDuplizierenAction;
 import de.jost_net.JVerein.gui.action.FormularExportAction;
 import de.jost_net.JVerein.gui.control.FormularControl;
+import de.jost_net.JVerein.gui.view.FormularDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -37,7 +38,8 @@ public class FormularMenu extends ContextMenu
    */
   public FormularMenu(FormularControl control)
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new FormularAction(),
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(FormularDetailView.class),
         "text-x-generic.png"));
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
         new FormularAnzeigeAction(),

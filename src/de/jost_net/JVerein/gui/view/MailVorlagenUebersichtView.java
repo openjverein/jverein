@@ -17,8 +17,10 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.MailVorlageDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
+import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -33,12 +35,15 @@ public class MailVorlagenUebersichtView extends AbstractView
 
     MailVorlageControl control = new MailVorlageControl(this);
 
-    control.getMailVorlageTable(new MailVorlageDetailAction()).paint(this.getParent());
+    control.getMailVorlageTable(new EditAction(MailVorlageDetailView.class))
+        .paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAILVORLAGE, false, "question-circle.png");
-    buttons.addButton("Neu", new MailVorlageDetailAction(), null, false,
+    buttons.addButton("Neu",
+        new NewAction(MailVorlageDetailView.class, MailVorlage.class), null,
+        false,
         "document-new.png");
     buttons.paint(this.getParent());
   }
