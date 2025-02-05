@@ -1746,7 +1746,8 @@ public class MitgliedControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    zusatzbetraegeList.addColumn("Letzte Ausführung", "ausfuehrung",
+    zusatzbetraegeList.addColumn("Letzte abgerechnete Fälligkeit",
+        "ausfuehrung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Intervall", "intervalltext");
     zusatzbetraegeList.addColumn("Nicht mehr ausführen ab", "endedatum",
