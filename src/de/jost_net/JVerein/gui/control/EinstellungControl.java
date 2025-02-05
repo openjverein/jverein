@@ -2065,6 +2065,8 @@ public class EinstellungControl extends AbstractControl
       return anhangspeichern;
     }
     anhangspeichern = new CheckboxInput(Einstellungen.getEinstellung().getAnhangSpeichern());
+    anhangspeichern
+        .setName("Bei Mail Versand von Formularen Anhang in DB speichern");
     return anhangspeichern;
   }
   
