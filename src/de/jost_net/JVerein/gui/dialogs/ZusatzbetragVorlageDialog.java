@@ -108,12 +108,12 @@ public class ZusatzbetragVorlageDialog
         close();
       }
     });
-    tab.addColumn("Startdatum", "startdatum",
+    tab.addColumn("Erste Fälligkeit", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    tab.addColumn("nächste Fälligkeit", "faelligkeit",
+    tab.addColumn("Nächste Fälligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     tab.addColumn("Intervall", "intervalltext");
-    tab.addColumn("Endedatum", "endedatum",
+    tab.addColumn("Nicht mehr ausführen ab", "endedatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     tab.addColumn("Buchungstext", "buchungstext");
     tab.addColumn("Betrag", "betrag",

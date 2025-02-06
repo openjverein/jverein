@@ -1742,14 +1742,15 @@ public class MitgliedControl extends FilterControl
     zusatzbetraegeList.setRememberColWidths(true);
     zusatzbetraegeList.setRememberOrder(true);
 
-    zusatzbetraegeList.addColumn("Startdatum", "startdatum",
+    zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    zusatzbetraegeList.addColumn("Letzte Ausführung", "ausfuehrung",
+    zusatzbetraegeList.addColumn("Letzte abgerechnete Fälligkeit",
+        "ausfuehrung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Intervall", "intervalltext");
-    zusatzbetraegeList.addColumn("Endedatum", "endedatum",
+    zusatzbetraegeList.addColumn("Nicht mehr ausführen ab", "endedatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
     zusatzbetraegeList.addColumn("Betrag", "betrag",
