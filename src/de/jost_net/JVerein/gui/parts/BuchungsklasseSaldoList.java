@@ -49,7 +49,9 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
 	private Date datumvon = null;
 
 	private Date datumbis = null;
-	
+
+  protected static double LIMIT = 0.005;
+
   Double einnahmen;
   Double ausgaben;
   Double umbuchungen;
@@ -318,7 +320,6 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
     suBukUmbuchungen = Double.valueOf(0);
     suBukNetto.clear();
     suBukSteuer.clear();
-    boolean ausgabe = false;
 
     while (buchungsartenIt.hasNext())
     {
@@ -371,7 +372,6 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
       {
         continue;
       }
-      ausgabe = true;
       String sql = null;
       if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
       {
@@ -475,14 +475,19 @@ public class BuchungsklasseSaldoList extends TablePart implements Part
         suBukSteuer.put(steuersatz,
             suBukSteuer.get(steuersatz) + einnahmen + ausgaben + umbuchungen);
       }
-
-      zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.DETAIL,
-          buchungsart, einnahmen, ausgaben, umbuchungen));
+      if (Math.abs(einnahmen) >= LIMIT || Math.abs(ausgaben) >= LIMIT
+          || Math.abs(umbuchungen) >= LIMIT
+          || !Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
+      {
+        zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.DETAIL,
+            buchungsart, einnahmen, ausgaben, umbuchungen));
+      }
     }
     suEinnahmen += suBukEinnahmen;
     suAusgaben += suBukAusgaben;
     suUmbuchungen += suBukUmbuchungen;
-    if (!ausgabe
+    if (Math.abs(suBukEinnahmen) < LIMIT && Math.abs(suBukAusgaben) < LIMIT
+        && Math.abs(suBukUmbuchungen) < LIMIT
         && Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
     {
       zeile.remove(zeile.size() - 1);
