@@ -62,12 +62,19 @@ public class VonBisPart implements Part
     ColumnLayout cl1 = new ColumnLayout(zgroup.getComposite(), 2);
     SimpleContainer left1 = new SimpleContainer(cl1.getComposite());
     left1.addLabelPair("Von", control.getDatumvon());
-    SimpleContainer right1 = new SimpleContainer(cl1.getComposite());
-    right1.addLabelPair("Bis", control.getDatumbis());
+    if (!suchen)
+    {
+      SimpleContainer right1 = new SimpleContainer(cl1.getComposite());
+      right1.addLabelPair("Bis", control.getDatumbis());
+    }
+    else
+    {
+      left1.addLabelPair("Bis", control.getDatumbis());
+    }
 
     if (suchen)
     {
-      left1.addLabelPair("Geschäftsjahr", control.getGeschaeftsjahr());
+      // left1.addLabelPair("Geschäftsjahr", control.getGeschaeftsjahr());
       LabelGroup sgroup = new LabelGroup(group.getComposite(), "Suchen");
       ColumnLayout cl2 = new ColumnLayout(sgroup.getComposite(), 2);
       SimpleContainer left2 = new SimpleContainer(cl2.getComposite());
