@@ -74,7 +74,6 @@ public class VonBisPart implements Part
 
     if (suchen)
     {
-      // left1.addLabelPair("Geschäftsjahr", control.getGeschaeftsjahr());
       LabelGroup sgroup = new LabelGroup(group.getComposite(), "Suchen");
       ColumnLayout cl2 = new ColumnLayout(sgroup.getComposite(), 2);
       SimpleContainer left2 = new SimpleContainer(cl2.getComposite());
