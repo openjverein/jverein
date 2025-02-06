@@ -93,6 +93,14 @@ public class WirtschaftsplanungControl extends AbstractControl
   public Part getWirtschaftsplanungList() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
+    Map<String, WirtschaftsplanungZeile> zeileMap = new HashMap<>();
+
+    GenericIterator<Wirtschaftsplan> iterator = service.createList(Wirtschaftsplan.class);
+    while (iterator.hasNext())
+    {
+      WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(iterator.next());
+      zeileMap.put(zeile.getWirtschaftsplan().getID(), zeile);
+    }
 
     String sql = "SELECT wirtschaftsplan.id, SUM(wirtschaftsplanitem.soll) " +
         "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart " +
@@ -101,24 +109,15 @@ public class WirtschaftsplanungControl extends AbstractControl
         "AND buchungsart.art = ? " +
         "GROUP BY wirtschaftsplan.id";
 
-    Map<Long, WirtschaftsplanungZeile> zeileMap = new HashMap<>();
 
     service.execute(sql, new Object[] { EINNAHME }, resultSet -> {
       while (resultSet.next())
       {
-        if (zeileMap.containsKey(resultSet.getLong(ID_COL)))
-        {
-          zeileMap.get(resultSet.getLong(ID_COL))
-              .setPlanEinnahme(resultSet.getDouble(BETRAG_COL));
-        }
-        else
-        {
-          WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
-              service.createObject(Wirtschaftsplan.class,
-                  resultSet.getString(ID_COL)));
-          zeile.setPlanEinnahme(resultSet.getDouble(BETRAG_COL));
-          zeileMap.put(resultSet.getLong(ID_COL), zeile);
-        }
+        WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
+            service.createObject(Wirtschaftsplan.class,
+                resultSet.getString(ID_COL)));
+        zeile.setPlanEinnahme(resultSet.getDouble(BETRAG_COL));
+        zeileMap.put(resultSet.getString(ID_COL), zeile);
       }
       return resultSet;
     });
@@ -126,19 +125,11 @@ public class WirtschaftsplanungControl extends AbstractControl
     service.execute(sql, new Object[] { AUSGABE }, resultSet -> {
       while (resultSet.next())
       {
-        if (zeileMap.containsKey(resultSet.getLong(ID_COL)))
-        {
-          zeileMap.get(resultSet.getLong(ID_COL))
-              .setPlanAusgabe(resultSet.getDouble(BETRAG_COL));
-        }
-        else
-        {
-          WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
-              service.createObject(Wirtschaftsplan.class,
-                  resultSet.getString(ID_COL)));
-          zeile.setPlanAusgabe(resultSet.getDouble(BETRAG_COL));
-          zeileMap.put(resultSet.getLong(ID_COL), zeile);
-        }
+        WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
+            service.createObject(Wirtschaftsplan.class,
+                resultSet.getString(ID_COL)));
+        zeile.setPlanAusgabe(resultSet.getDouble(BETRAG_COL));
+        zeileMap.put(resultSet.getString(ID_COL), zeile);
       }
       return resultSet;
     });
@@ -157,9 +148,9 @@ public class WirtschaftsplanungControl extends AbstractControl
         resultSet -> {
           while (resultSet.next())
           {
-            if (zeileMap.containsKey(resultSet.getLong(ID_COL)))
+            if (zeileMap.containsKey(resultSet.getString(ID_COL)))
             {
-              zeileMap.get(resultSet.getLong(ID_COL))
+              zeileMap.get(resultSet.getString(ID_COL))
                   .setIstEinnahme(resultSet.getDouble(BETRAG_COL));
             }
           }
@@ -171,9 +162,9 @@ public class WirtschaftsplanungControl extends AbstractControl
         resultSet -> {
           while (resultSet.next())
           {
-            if (zeileMap.containsKey(resultSet.getLong(ID_COL)))
+            if (zeileMap.containsKey(resultSet.getString(ID_COL)))
             {
-              zeileMap.get(resultSet.getLong(ID_COL))
+              zeileMap.get(resultSet.getString(ID_COL))
                   .setIstAusgabe(resultSet.getDouble(BETRAG_COL));
             }
           }
@@ -416,15 +407,6 @@ public class WirtschaftsplanungControl extends AbstractControl
       DBService service = Einstellungen.getDBService();
       Wirtschaftsplan wirtschaftsplan = getWirtschaftsplanungZeile().getWirtschaftsplan();
 
-      if (wirtschaftsplan.isNewObject() && rootNodesEinnahmen.stream()
-          .noneMatch(
-              WirtschaftsplanungNode::hasLeaf) && rootNodesAusgaben.stream()
-          .noneMatch(WirtschaftsplanungNode::hasLeaf))
-      {
-        throw new ApplicationException(
-            "Neuer Wirtschaftsplan enthält keine Planung!");
-      }
-
       DBTransaction.starten();
 
       wirtschaftsplan.store();
@@ -519,6 +501,8 @@ public class WirtschaftsplanungControl extends AbstractControl
     {
       fd.setFilterPath(path);
     }
+
+    handleStore();
 
     try
     {

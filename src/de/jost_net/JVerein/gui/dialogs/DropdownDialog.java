@@ -57,7 +57,7 @@ public class DropdownDialog<T> extends AbstractDialog<T>
       //noinspection unchecked
       value = (T) auswahlInput.getValue();
       close();
-    }, null, false, "ok.png");
+    }, null, true, "ok.png");
     buttonArea.addButton("Abbrechen", context -> {
       throw new OperationCanceledException();
     }, null, false, "process-stop.png");
