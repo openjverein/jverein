@@ -19,9 +19,10 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.EigenschaftDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.EigenschaftGruppeFormatter;
 import de.jost_net.JVerein.gui.menu.EigenschaftMenu;
+import de.jost_net.JVerein.gui.view.EigenschaftDetailView;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.willuhn.datasource.GenericObject;
@@ -146,7 +147,7 @@ public class EigenschaftControl extends AbstractControl
     if (eigenschaftList == null)
     {
       eigenschaftList = new TablePart(eigenschaften,
-          new EigenschaftDetailAction(false));
+          new EditAction(EigenschaftDetailView.class));
       eigenschaftList.addColumn("Bezeichnung", "bezeichnung");
       eigenschaftList.addColumn("Gruppe", "eigenschaftgruppe",
           new EigenschaftGruppeFormatter());

@@ -17,8 +17,9 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.FelddefinitionDetailAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.FelddefinitionControl;
+import de.jost_net.JVerein.rmi.Felddefinition;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -38,7 +39,9 @@ public class FelddefinitionenUebersichtView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FELDDEFINITIONEN, false, "question-circle.png");
-    buttons.addButton("Neu", new FelddefinitionDetailAction(), null, false,
+    buttons.addButton("Neu",
+        new NewAction(FelddefinitionDetailView.class, Felddefinition.class),
+        null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

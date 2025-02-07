@@ -168,12 +168,21 @@ public class SpendenbescheinigungMap
               "Der Zuwendende hat trotz Aufforderung keine Angaben zur Herkunft der Sachzuwendung gemacht.");
           break;
       }
+      boolean ersatz = spb.getErsatzAufwendungen();
+      if (spb.getAutocreate())
+      {
+        // Geldspende und keine Sammelbestätigung
+        if (spb.getBuchungen() != null && spb.getBuchungen().size() == 1)
+        {
+          ersatz = spb.getBuchungen().get(0).getVerzicht().booleanValue();
+        }
+      }
       map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(),
-          (spb.getErsatzAufwendungen() ? "Ja" : "Nein"));
+          (ersatz ? "Ja" : "Nein"));
       map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_JA.getName(),
-          (spb.getErsatzAufwendungen() ? "X" : " "));
+          (ersatz ? "X" : " "));
       map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(),
-          (spb.getErsatzAufwendungen() ? " " : "X"));
+          (ersatz ? " " : "X"));
     }
 
     // bei Sammelbestätigungen ein Zeitraum und "siehe Anlage"

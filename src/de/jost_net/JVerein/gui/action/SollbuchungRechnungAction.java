@@ -18,6 +18,8 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.view.RechnungView;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
@@ -27,9 +29,25 @@ import de.willuhn.util.ApplicationException;
 public class SollbuchungRechnungAction implements Action
 {
   @Override
-  public void handleAction(Object context)
-      throws ApplicationException
+  public void handleAction(Object context) throws ApplicationException
   {
+    if (context instanceof MitgliedskontoNode)
+    {
+      MitgliedskontoNode mkn = (MitgliedskontoNode) context;
+
+      if (mkn.getType() == MitgliedskontoNode.SOLL)
+      {
+        try
+        {
+          context = Einstellungen.getDBService()
+              .createObject(Mitgliedskonto.class, mkn.getID());
+        }
+        catch (RemoteException e)
+        {
+          throw new ApplicationException("Fehler beim anzeigen der Rechnung!");
+        }
+      }
+    }
     if (context instanceof Mitgliedskonto)
     {
       Mitgliedskonto mk = (Mitgliedskonto) context;
@@ -47,5 +65,6 @@ public class SollbuchungRechnungAction implements Action
         throw new ApplicationException("Fehler beim anzeigen der Rechnung!");
       }
     }
+
   }
 }

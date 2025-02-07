@@ -80,7 +80,7 @@ public class SollbuchungListeView extends AbstractView
     buttons.addButton(new Button("Export",
         new SollbuchungExportAction(EXPORT_TYP.MITGLIEDSKONTO), control, false,
         "document-save.png"));
-    buttons.addButton("Neu", new SollbuchungNeuAction(), control, false,
+    buttons.addButton("Neu", new SollbuchungNeuAction(null), control, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

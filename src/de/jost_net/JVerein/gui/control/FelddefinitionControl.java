@@ -23,9 +23,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.FelddefinitionDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.DatentypFormatter;
 import de.jost_net.JVerein.gui.menu.FelddefinitionMenu;
+import de.jost_net.JVerein.gui.view.FelddefinitionDetailView;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
@@ -159,7 +160,8 @@ public class FelddefinitionControl extends AbstractControl
     }
     DBService service = Einstellungen.getDBService();
     DBIterator<Felddefinition> fdef = service.createList(Felddefinition.class);
-    felddefinitionList = new TablePart(fdef, new FelddefinitionDetailAction());
+    felddefinitionList = new TablePart(fdef,
+        new EditAction(FelddefinitionDetailView.class));
     felddefinitionList.addColumn("Name", "name");
     felddefinitionList.addColumn("Label", "label");
     felddefinitionList.addColumn("Datentyp", "datentyp",

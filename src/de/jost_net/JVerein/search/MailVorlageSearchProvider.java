@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.MailVorlageDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.view.MailVorlageDetailView;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.search.Result;
@@ -80,7 +81,7 @@ public class MailVorlageSearchProvider implements SearchProvider
     @Override
     public void execute() throws ApplicationException
     {
-      new MailVorlageDetailAction().handleAction(this.m);
+      new EditAction(MailVorlageDetailView.class).handleAction(this.m);
     }
 
     @Override

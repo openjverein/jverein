@@ -29,19 +29,20 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.KontoAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoInput;
-import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
-import de.jost_net.JVerein.keys.BuchungsartSort;
-import de.jost_net.JVerein.keys.Kontoart;
-import de.jost_net.JVerein.keys.StatusBuchungsart;
+import de.jost_net.JVerein.gui.view.KontoView;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -53,7 +54,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -77,10 +77,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 //import de.jost_net.JVerein.keys.ArtBuchungsart;
 
-public class KontoControl extends AbstractControl
+public class KontoControl extends FilterControl
 {
-
-  private de.willuhn.jameica.system.Settings settings;
 
   private TablePart kontenList;
 
@@ -335,11 +333,7 @@ public class KontoControl extends AbstractControl
 
   public Part getKontenList() throws RemoteException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Konto> konten = service.createList(Konto.class);
-    konten.setOrder("ORDER BY nummer");
-
-    kontenList = new TablePart(konten, new KontoAction());
+    kontenList = new TablePart(getKonten(), new EditAction(KontoView.class));
     kontenList.addColumn("Nummer", "nummer");
     kontenList.addColumn("Bezeichnung", "bezeichnung");
     kontenList.addColumn("Kontoart", "kontoart", new Formatter()
@@ -392,16 +386,68 @@ public class KontoControl extends AbstractControl
     return kontenList;
   }
 
-  public void refreshTable() throws RemoteException
+  public void refreshTable()
   {
+    TabRefresh();
+  }
+
+  protected void TabRefresh()
+  {
+    if (kontenList == null)
+    {
+      return;
+    }
     kontenList.removeAll();
+    try
+    {
+      kontenList.removeAll();
+      DBIterator<Konto> konten = getKonten();
+      while (konten.hasNext())
+      {
+        kontenList.addItem(konten.next());
+      }
+      kontenList.sort();
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
+  }
+
+  private DBIterator<Konto> getKonten() throws RemoteException
+  {
     DBIterator<Konto> konten = Einstellungen.getDBService()
         .createList(Konto.class);
-    while (konten.hasNext())
+
+    if (isSuchKontoartAktiv() && getSuchKontoart().getValue() != null)
     {
-      kontenList.addItem(konten.next());
+      konten.addFilter("kontoart = ?",
+          new Object[] { ((Kontoart) getSuchKontoart().getValue()).getKey() });
     }
-    kontenList.sort();
+    if (isSuchStatusAktiv() && getSuchStatus(null).getValue().toString()
+        .equalsIgnoreCase("Nur aktive Konten"))
+      konten.addFilter("(aufloesung IS NULL OR aufloesung > ?)",
+          new Object[] { new Date() });
+    if (isSuchnameAktiv() && getSuchname().getValue() != null)
+    {
+      String tmpSuchname = (String) getSuchname().getValue();
+      if (tmpSuchname.length() > 0)
+      {
+        konten.addFilter("(lower(bezeichnung) like ?)",
+            new Object[] { "%" + tmpSuchname.toLowerCase() + "%" });
+      }
+    }
+    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
+    {
+      String tmpSuchtext = (String) getSuchtext().getValue();
+      if (tmpSuchtext.length() > 0)
+      {
+        konten.addFilter("(lower(nummer) like ?)",
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
+      }
+    }
+    konten.setOrder("ORDER BY nummer");
+    return konten;
   }
 
   public Input getBuchungsart() throws RemoteException

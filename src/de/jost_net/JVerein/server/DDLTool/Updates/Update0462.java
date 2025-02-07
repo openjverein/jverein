@@ -16,13 +16,12 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 import java.sql.Connection;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
-import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class Update0460 extends AbstractDDLUpdate
+public class Update0462 extends AbstractDDLUpdate
 {
-  public Update0460(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0462(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -30,7 +29,24 @@ public class Update0460 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("einstellung", new Column("splitpositionzweck",
-        COLTYPE.BOOLEAN, 1, "0", false, false)));
+    try
+    {
+      execute(dropColumn("konto", "anlagenkonto"));
+    }
+    catch (Exception e)
+    {
+      // Es gab zwischendurch schon ein Nightly wo das Attribut gelöscht wurde
+      // Das war mit der ersten Version von Update0453
+      // Dann ist es schon nicht mehr da
+    }
+
+    // Diese Attribute sind jetzt in der Sollbuchungposition
+    execute(dropForeignKey("fkMitgliedskonto3", "mitgliedskonto"));
+    execute(dropForeignKey("fkMitgliedkonto4", "mitgliedskonto"));
+    execute(dropColumn("mitgliedskonto", "buchungsart"));
+    execute(dropColumn("mitgliedskonto", "buchungsklasse"));
+    execute(dropColumn("mitgliedskonto", "steuersatz"));
+    execute(dropColumn("mitgliedskonto", "nettobetrag"));
+    execute(dropColumn("mitgliedskonto", "steuerbetrag"));
   }
 }

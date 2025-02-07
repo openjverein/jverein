@@ -23,26 +23,21 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.AbrechnungslaufView;
-import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.gui.view.LizenzView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class AbrechnungslaufDetailAction implements Action
+public class LizenzAction implements Action
 {
 
+  /**
+   * @see de.willuhn.jameica.gui.Action#handleAction(java.lang.Object)
+   */
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null)
-    {
-      throw new ApplicationException("Keine Abrechnunglauf ausgewählt.");
-    }
-    if (!(context instanceof Abrechnungslauf))
-    {
-      throw new ApplicationException("Programmfehler, kein Abrechnunglauf!");
-    }
-    GUI.startView(AbrechnungslaufView.class.getName(), context);
+    GUI.startView(LizenzView.class.getName(), null);
   }
+
 }
