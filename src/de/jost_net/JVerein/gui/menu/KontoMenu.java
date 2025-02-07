@@ -17,8 +17,9 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.AnfangsbestandNeuAction;
-import de.jost_net.JVerein.gui.action.KontoAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.KontoDeleteAction;
+import de.jost_net.JVerein.gui.view.KontoView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -34,7 +35,8 @@ public class KontoMenu extends ContextMenu
    */
   public KontoMenu()
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new KontoAction(),
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(KontoView.class),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Anfangsbestand",
         new AnfangsbestandNeuAction(), "document-new.png"));

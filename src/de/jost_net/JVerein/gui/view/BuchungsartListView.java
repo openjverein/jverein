@@ -16,9 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.BuchungsartAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.BuchungsartControl;
+import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -59,7 +60,8 @@ public class BuchungsartListView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGSART, false, "question-circle.png");
     buttons.addButton(control.getPDFAusgabeButton());
-    buttons.addButton("Neu", new BuchungsartAction(), null, false,
+    buttons.addButton("Neu",
+        new NewAction(BuchungsartView.class, Buchungsart.class), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

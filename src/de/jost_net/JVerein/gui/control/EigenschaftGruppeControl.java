@@ -19,9 +19,10 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.EigenschaftGruppeDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.EigenschaftGruppeMenu;
+import de.jost_net.JVerein.gui.view.EigenschaftGruppeDetailView;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -141,7 +142,7 @@ public class EigenschaftGruppeControl extends AbstractControl
     eigenschaftgruppe.setOrder("ORDER BY bezeichnung");
 
     eigenschaftgruppeList = new TablePart(eigenschaftgruppe,
-        new EigenschaftGruppeDetailAction(false));
+        new EditAction(EigenschaftGruppeDetailView.class));
     eigenschaftgruppeList.addColumn("Bezeichnung", "bezeichnung");
     eigenschaftgruppeList.addColumn("Pflicht", "pflicht",
         new JaNeinFormatter());

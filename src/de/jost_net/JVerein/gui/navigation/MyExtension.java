@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.schlevoigt.JVerein.gui.action.BuchungsTexteKorrigierenAction;
+import com.schlevoigt.JVerein.gui.view.BuchungsTexteKorrigierenView;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AboutAction;
@@ -219,7 +219,8 @@ public class MyExtension implements Extension
           new StartViewAction(BuchungslisteView.class),
           "emblem-documents.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
-          new BuchungsTexteKorrigierenAction(), "emblem-documents.png"));
+          new StartViewAction(BuchungsTexteKorrigierenView.class),
+          "emblem-documents.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",
           new StartViewAction(BuchungsklasseSaldoView.class),
           "emblem-documents.png"));

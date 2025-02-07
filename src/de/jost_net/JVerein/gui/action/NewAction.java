@@ -16,29 +16,42 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.SollbuchungPositionView;
-import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class SollbuchungPositionEditAction implements Action
+public class NewAction implements Action
 {
+  private Class<? extends AbstractView> viewClass;
+
+  private Class<? extends DBObject> objectClass;
+
+  public NewAction(Class<? extends AbstractView> viewClass,
+      Class<? extends DBObject> objectClass)
+  {
+    this.viewClass = viewClass;
+    this.objectClass = objectClass;
+  }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    SollbuchungPosition position = null;
-
-    if (context != null && (context instanceof SollbuchungPosition))
+    try
     {
-      position = (SollbuchungPosition) context;
+      DBObject object = Einstellungen.getDBService().createObject(objectClass,
+          null);
+      GUI.startView(viewClass, object);
     }
-    else
+    catch (RemoteException e)
     {
-      throw new ApplicationException("Keine Sollbuchungsposition ausgewählt");
+      throw new ApplicationException(
+          "Fehler bei der Erzeugung eines neuen " + objectClass.getSimpleName(),
+          e);
     }
-
-    GUI.startView(SollbuchungPositionView.class.getName(), position);
   }
 }
