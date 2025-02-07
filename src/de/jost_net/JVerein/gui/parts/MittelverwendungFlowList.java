@@ -96,6 +96,7 @@ public class MittelverwendungFlowList extends MittelverwendungList
         flowList.addColumn("Summe", "summe",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
+        // Dummy Spalte, damit Summe nicht am rechten Rand klebt
         flowList.addColumn(" ", " ",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_LEFT);

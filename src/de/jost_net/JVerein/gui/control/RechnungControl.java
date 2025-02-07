@@ -59,6 +59,7 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.hbci.HBCIProperties;
@@ -151,6 +152,10 @@ public class RechnungControl extends DruckMailControl
     rechnungList.addColumn("Differenz", "differenz",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     rechnungList.addColumn("Zahlungsweg", "zahlungsweg", new ZahlungswegFormatter());
+    // Dummy Spalte, damit Zahlungsweg nicht am rechten Rand klebt
+    rechnungList.addColumn(" ", " ",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_LEFT);
 
     rechnungList.setRememberColWidths(true);
     rechnungList.setContextMenu(new RechnungMenu());
