@@ -68,7 +68,7 @@ public class MittelverwendungSaldoList extends MittelverwendungList
             Column.ALIGN_RIGHT);
         saldoList.addColumn("Summe", "summe",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-            Column.ALIGN_LEFT);
+            Column.ALIGN_RIGHT);
         saldoList.addColumn("Kommentar", "kommentar");
         saldoList.setRememberColWidths(true);
         saldoList.setRememberOrder(true);

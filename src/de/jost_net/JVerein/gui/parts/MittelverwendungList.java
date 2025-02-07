@@ -100,16 +100,16 @@ public class MittelverwendungList
         || status == MittelverwendungZeile.SUMME)
     {
       summe = einnahme + ausgabe;
-      if (summe == -0.0)
+      if (Math.abs(summe) < LIMIT)
       {
         summe = 0.0;
       }
     }
-    if (einnahme != null && einnahme == -0.0)
+    if (einnahme != null && Math.abs(einnahme) < LIMIT)
     {
       einnahme = 0.0;
     }
-    if (ausgabe != null && ausgabe == -0.0)
+    if (ausgabe != null && Math.abs(ausgabe) < LIMIT)
     {
       ausgabe = 0.0;
     }
