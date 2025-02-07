@@ -95,6 +95,9 @@ public class MittelverwendungFlowList extends MittelverwendungList
             Column.ALIGN_RIGHT);
         flowList.addColumn("Summe", "summe",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+            Column.ALIGN_RIGHT);
+        flowList.addColumn(" ", " ",
+            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_LEFT);
         flowList.setRememberColWidths(true);
         flowList.setRememberOrder(true);

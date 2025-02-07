@@ -104,6 +104,9 @@ public class AnlagenList extends TablePart implements Part
         saldoList.addColumn("Buchwert Ende GJ", "endwert",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
+        saldoList.addColumn(" ", " ",
+            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+            Column.ALIGN_LEFT);
         saldoList.setRememberColWidths(true);
         saldoList.removeFeature(FeatureSummary.class);
       }
