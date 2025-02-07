@@ -27,6 +27,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Lehrgang;
@@ -93,6 +94,11 @@ public class MitgliedDetailAction implements Action
       {
         Rechnung r = (Rechnung) context;
         mitglied = r.getMitglied();
+      }
+      else if (context instanceof Spendenbescheinigung)
+      {
+        Spendenbescheinigung s = (Spendenbescheinigung) context;
+        mitglied = s.getMitglied();
       }
       else if ((context instanceof Buchung ) && ((Buchung) context).getMitgliedskonto() != null ) {
         mitglied = ((Buchung) context).getMitgliedskonto().getMitglied();
