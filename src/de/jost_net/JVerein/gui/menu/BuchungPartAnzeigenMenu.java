@@ -24,15 +24,15 @@ import de.willuhn.jameica.gui.parts.ContextMenu;
 /**
  * Kontext-Menu zu den Buchungen.
  */
-public class BuchungPartMenu extends ContextMenu
+public class BuchungPartAnzeigenMenu extends ContextMenu
 {
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Buchungen.
    */
 
-  public BuchungPartMenu()
+  public BuchungPartAnzeigenMenu()
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+    addItem(new CheckedSingleContextMenuItem("Anzeigen",
         new BuchungAction(false), "text-x-generic.png"));
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
