@@ -34,7 +34,7 @@ import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
-import de.jost_net.JVerein.gui.menu.BuchungPartEditierenMenu;
+import de.jost_net.JVerein.gui.menu.BuchungPartBearbeitenMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
@@ -557,7 +557,7 @@ public class MitgliedskontoControl extends DruckMailControl
   public Part getBuchungListPart() throws RemoteException
   {
     return new BuchungListPart(getMitgliedskonto().getBuchungList(),
-        new BuchungAction(false), new BuchungPartEditierenMenu());
+        new BuchungAction(false), new BuchungPartBearbeitenMenu());
   }
 
   private GenericIterator<Mitglied> getMitgliedIterator() throws RemoteException

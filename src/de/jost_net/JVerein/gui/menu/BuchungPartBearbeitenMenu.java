@@ -24,13 +24,13 @@ import de.willuhn.jameica.gui.parts.ContextMenu;
 /**
  * Kontext-Menu zu den Buchungen.
  */
-public class BuchungPartEditierenMenu extends ContextMenu
+public class BuchungPartBearbeitenMenu extends ContextMenu
 {
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Buchungen.
    */
 
-  public BuchungPartEditierenMenu()
+  public BuchungPartBearbeitenMenu()
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new BuchungAction(false), "text-x-generic.png"));
