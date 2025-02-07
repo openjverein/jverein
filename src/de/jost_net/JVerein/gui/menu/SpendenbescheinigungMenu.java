@@ -44,12 +44,12 @@ public class SpendenbescheinigungMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Löschen",
         new SpendenbescheinigungDeleteAction(), "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
+    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+        new MitgliedDetailAction(), "user-friends.png"));
     addItem(new CheckedContextMenuItem("PDF",
         new SpendenbescheinigungPrintAction(Adressblatt.OHNE_ADRESSBLATT, true), "file-pdf.png"));
     addItem(new CheckedContextMenuItem("Druck und Mail",
         new SpendenbescheinigungSendAction(), "document-print.png"));
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-        new MitgliedDetailAction(), "user-friends.png"));
     addItem(new CheckedContextMenuItem("Mail an Spender",
         new SpendenbescheinigungEmailAction(), "envelope-open.png"));
   }
