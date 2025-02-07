@@ -23,11 +23,12 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.JahresabschlussDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
 import de.jost_net.JVerein.gui.parts.KontensaldoList;
 import de.jost_net.JVerein.gui.parts.MittelverwendungFlowList;
 import de.jost_net.JVerein.gui.util.AfaUtil;
+import de.jost_net.JVerein.gui.view.JahresabschlussView;
 import de.jost_net.JVerein.io.SaldoZeile;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
@@ -360,7 +361,7 @@ public class JahresabschlussControl extends AbstractControl
     jahresabschluesse.setOrder("ORDER BY von desc");
 
     jahresabschlussList = new TablePart(jahresabschluesse,
-        new JahresabschlussDetailAction());
+        new EditAction(JahresabschlussView.class));
     jahresabschlussList.addColumn("Nr", "id-int");
     jahresabschlussList.addColumn("Von", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
