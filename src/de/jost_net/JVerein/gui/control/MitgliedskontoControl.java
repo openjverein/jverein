@@ -30,9 +30,11 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
-import de.jost_net.JVerein.gui.action.SollbuchungPositionEditAction;
+import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
+import de.jost_net.JVerein.gui.menu.BuchungPartBearbeitenMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
@@ -40,6 +42,7 @@ import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.BuchungView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
+import de.jost_net.JVerein.gui.view.SollbuchungPositionView;
 import de.jost_net.JVerein.io.Kontoauszug;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -540,7 +543,7 @@ public class MitgliedskontoControl extends DruckMailControl
     else
     {
       buchungList = new SollbuchungPositionListPart(list,
-          new SollbuchungPositionEditAction());
+          new EditAction(SollbuchungPositionView.class));
     }
 
     buchungList.setRememberColWidths(true);
@@ -553,7 +556,8 @@ public class MitgliedskontoControl extends DruckMailControl
 
   public Part getBuchungListPart() throws RemoteException
   {
-    return new BuchungListPart(getMitgliedskonto().getBuchungList(), null);
+    return new BuchungListPart(getMitgliedskonto().getBuchungList(),
+        new BuchungAction(false), new BuchungPartBearbeitenMenu());
   }
 
   private GenericIterator<Mitglied> getMitgliedIterator() throws RemoteException

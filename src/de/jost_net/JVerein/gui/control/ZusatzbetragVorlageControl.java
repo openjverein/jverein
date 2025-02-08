@@ -231,7 +231,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
 
     Date d = getZusatzbetragVorlage().getEndedatum();
     this.endedatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.endedatum.setTitle("Endedatum");
+    this.endedatum.setTitle("Nicht mehr ausführen ab");
     this.endedatum.setText("Bitte Endedatum wählen");
     this.endedatum.addListener(new Listener()
     {

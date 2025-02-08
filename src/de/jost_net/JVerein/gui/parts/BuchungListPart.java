@@ -30,17 +30,17 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
-import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.logging.Logger;
 
-public class BuchungListPart extends TablePart
+public class BuchungListPart extends BuchungListTablePart
 {
   public BuchungListPart(Action action)
   {
     super(action);
   }
 
-  public BuchungListPart(List<Buchung> list, Action action)
+  public BuchungListPart(List<Buchung> list, Action action, ContextMenu menu)
   {
     super(list, action);
 
@@ -92,6 +92,7 @@ public class BuchungListPart extends TablePart
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     addColumn("Mitglied", "mitgliedskonto", new MitgliedskontoFormatter());
     addColumn("Ersatz für Aufwendungen", "verzicht", new JaNeinFormatter());
+    setContextMenu(menu);
     setRememberColWidths(true);
     setRememberOrder(true);
     setRememberState(true);

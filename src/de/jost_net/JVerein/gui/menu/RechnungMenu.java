@@ -16,10 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MahnungSendAction;
-import de.jost_net.JVerein.gui.action.RechnungAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.RechnungDeleteAction;
 import de.jost_net.JVerein.gui.action.RechnungSendAction;
+import de.jost_net.JVerein.gui.view.RechnungView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -37,10 +39,12 @@ public class RechnungMenu extends ContextMenu
   public RechnungMenu()
   {
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
-        new RechnungAction(), "text-x-generic.png"));
+        new EditAction(RechnungView.class), "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new RechnungDeleteAction(), "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
+    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+        new MitgliedDetailAction(), "user-friends.png"));
     addItem(new CheckedContextMenuItem("Druck und Mail",
         new RechnungSendAction(), "document-print.png"));
     addItem(new CheckedContextMenuItem("Mahnung Druck und Mail",

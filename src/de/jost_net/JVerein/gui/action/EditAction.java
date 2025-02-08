@@ -16,50 +16,31 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.EigenschaftGruppeDetailView;
-import de.jost_net.JVerein.rmi.EigenschaftGruppe;
+import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftGruppeDetailAction implements Action
+public class EditAction implements Action
 {
+  private Class<? extends AbstractView> viewClass;
 
-  private boolean neu;
-
-  public EigenschaftGruppeDetailAction(boolean neu)
+  public EditAction(Class<? extends AbstractView> viewClass)
   {
-    this.neu = neu;
+    this.viewClass = viewClass;
   }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    EigenschaftGruppe eg = null;
-    if (neu)
+    if (context == null)
     {
-      context = null;
+      throw new ApplicationException("Kein Objekt ausgewählt");
     }
-    if (context != null && (context instanceof EigenschaftGruppe))
+    if (context instanceof Object[])
     {
-      eg = (EigenschaftGruppe) context;
+      throw new ApplicationException("Mehrere Objekte ausgewählt");
     }
-    else
-    {
-      try
-      {
-        eg = (EigenschaftGruppe) Einstellungen.getDBService().createObject(
-            EigenschaftGruppe.class, null);
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung der neuen EigenschaftGruppe", e);
-      }
-    }
-    GUI.startView(EigenschaftGruppeDetailView.class.getName(), eg);
+    GUI.startView(viewClass, context);
   }
 }

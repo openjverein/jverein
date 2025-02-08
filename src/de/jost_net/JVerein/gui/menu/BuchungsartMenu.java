@@ -16,8 +16,9 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.BuchungsartAction;
 import de.jost_net.JVerein.gui.action.BuchungsartDeleteAction;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.view.BuchungsartView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -33,7 +34,8 @@ public class BuchungsartMenu extends ContextMenu
    */
   public BuchungsartMenu()
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new BuchungsartAction(),
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(BuchungsartView.class),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new BuchungsartDeleteAction(), "user-trash-full.png"));

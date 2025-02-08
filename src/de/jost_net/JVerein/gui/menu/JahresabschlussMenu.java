@@ -16,8 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.JahresabschlussDeleteAction;
+import de.jost_net.JVerein.gui.view.JahresabschlussView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
@@ -28,9 +33,13 @@ public class JahresabschlussMenu extends ContextMenu
 
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Jahresabschlüsse
+   * 
+   * @throws RemoteException
    */
-  public JahresabschlussMenu()
+  public JahresabschlussMenu() throws RemoteException
   {
+    addItem(new CheckedSingleContextMenuItem("Anzeigen",
+        new EditAction(JahresabschlussView.class), "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new JahresabschlussDeleteAction(), "user-trash-full.png"));
   }

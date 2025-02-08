@@ -41,6 +41,8 @@ public class Update0462 extends AbstractDDLUpdate
     }
 
     // Diese Attribute sind jetzt in der Sollbuchungposition
+    execute(dropForeignKey("fkMitgliedskonto3", "mitgliedskonto"));
+    execute(dropForeignKey("fkMitgliedkonto4", "mitgliedskonto"));
     execute(dropColumn("mitgliedskonto", "buchungsart"));
     execute(dropColumn("mitgliedskonto", "buchungsklasse"));
     execute(dropColumn("mitgliedskonto", "steuersatz"));

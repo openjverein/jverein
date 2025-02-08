@@ -27,15 +27,16 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.BeitragsgruppeDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
-import de.jost_net.JVerein.gui.formatter.NotizFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
+import de.jost_net.JVerein.gui.formatter.NotizFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
-import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
+import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.menu.BeitragsgruppeMenu;
+import de.jost_net.JVerein.gui.view.BeitragsgruppeDetailView;
 import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Altersstaffel;
@@ -485,7 +486,7 @@ public class BeitragsgruppeControl extends AbstractControl
     DBIterator<Beitragsgruppe> beitragsgruppen = service
         .createList(Beitragsgruppe.class);
     beitragsgruppeList = new TablePart(beitragsgruppen,
-        new BeitragsgruppeDetailAction());
+        new EditAction(BeitragsgruppeDetailView.class));
     beitragsgruppeList.addColumn("Bezeichnung", "bezeichnung");
     switch (Einstellungen.getEinstellung().getBeitragsmodel())
     {

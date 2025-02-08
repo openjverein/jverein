@@ -14,31 +14,27 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.action;
+package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.view.SollbuchungPositionView;
-import de.jost_net.JVerein.rmi.SollbuchungPosition;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.util.ApplicationException;
+import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
+import de.willuhn.jameica.gui.parts.ContextMenu;
 
-public class SollbuchungPositionEditAction implements Action
+/**
+ * Kontext-Menu zu den Buchungen.
+ */
+public class BuchungPartAnzeigenMenu extends ContextMenu
 {
+  /**
+   * Erzeugt ein Kontext-Menu fuer die Liste der Buchungen.
+   */
 
-  @Override
-  public void handleAction(Object context) throws ApplicationException
+  public BuchungPartAnzeigenMenu()
   {
-    SollbuchungPosition position = null;
-
-    if (context != null && (context instanceof SollbuchungPosition))
-    {
-      position = (SollbuchungPosition) context;
-    }
-    else
-    {
-      throw new ApplicationException("Keine Sollbuchungsposition ausgewählt");
-    }
-
-    GUI.startView(SollbuchungPositionView.class.getName(), position);
+    addItem(new CheckedSingleContextMenuItem("Anzeigen",
+        new BuchungAction(false), "text-x-generic.png"));
+    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+        new MitgliedDetailAction(), "user-friends.png"));
   }
 }

@@ -18,8 +18,9 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.HibiscusKontenImportAction;
-import de.jost_net.JVerein.gui.action.KontoAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.KontoControl;
+import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -60,7 +61,8 @@ public class KontoListView extends AbstractView
         DokumentationUtil.KONTEN, false, "question-circle.png");
     buttons.addButton("Hibiscus-Konten-Import",
         new HibiscusKontenImportAction(control), null, false, "walking.png");
-    buttons.addButton("Neu", new KontoAction(), null, false,
+    buttons.addButton("Neu", new NewAction(KontoView.class, Konto.class), null,
+        false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

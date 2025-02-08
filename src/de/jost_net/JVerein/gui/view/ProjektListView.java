@@ -17,9 +17,10 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.ProjektAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.ProjektControl;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
+import de.jost_net.JVerein.rmi.Projekt;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -77,7 +78,9 @@ public class ProjektListView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.PROJEKTE, false, "question-circle.png");
-    buttons.addButton("Neu", new ProjektAction(), null, false,
+    buttons.addButton("Neu",
+        new NewAction(ProjektView.class, Projekt.class),
+        null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

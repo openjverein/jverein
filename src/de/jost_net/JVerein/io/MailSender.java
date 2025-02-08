@@ -181,6 +181,7 @@ public class MailSender
     }
     props.put("mail.mime.charset", UTF_8);
     System.setProperty("mail.mime.charset", UTF_8);
+    System.setProperty("mail.mime.encodeparameters", "false");
     if (smtp_ssl)
     {
       props.put("mail.smtp.ssl.enable", "true");

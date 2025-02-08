@@ -14,18 +14,27 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package com.schlevoigt.JVerein.gui.action;
+package de.jost_net.JVerein.gui.menu;
 
-import com.schlevoigt.JVerein.gui.view.BuchungsTexteKorrigierenView;
+import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
+import de.willuhn.jameica.gui.parts.ContextMenu;
 
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-
-public class BuchungsTexteKorrigierenAction implements Action
+/**
+ * Kontext-Menu zu den Buchungen.
+ */
+public class BuchungPartBearbeitenMenu extends ContextMenu
 {
-  @Override
-  public void handleAction(Object context)
+  /**
+   * Erzeugt ein Kontext-Menu fuer die Liste der Buchungen.
+   */
+
+  public BuchungPartBearbeitenMenu()
   {
-    GUI.startView(BuchungsTexteKorrigierenView.class.getName(), null);
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new BuchungAction(false), "text-x-generic.png"));
+    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+        new MitgliedDetailAction(), "user-friends.png"));
   }
 }

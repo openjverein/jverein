@@ -16,23 +16,42 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.QIFBuchungsartZuordnenView;
-import de.jost_net.JVerein.rmi.QIFImportPos;
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.util.ApplicationException;
 
-public class QIFBuchungsartAction implements Action
+public class NewAction implements Action
 {
+  private Class<? extends AbstractView> viewClass;
 
-  @Override
-  public void handleAction(Object context) 
+  private Class<? extends DBObject> objectClass;
+
+  public NewAction(Class<? extends AbstractView> viewClass,
+      Class<? extends DBObject> objectClass)
   {
-    QIFImportPos pos = null;
-    if (context != null && context instanceof QIFImportPos)
-    {
-      pos = (QIFImportPos) context;
-    }
-    GUI.startView(new QIFBuchungsartZuordnenView(), pos);
+    this.viewClass = viewClass;
+    this.objectClass = objectClass;
   }
 
+  @Override
+  public void handleAction(Object context) throws ApplicationException
+  {
+    try
+    {
+      DBObject object = Einstellungen.getDBService().createObject(objectClass,
+          null);
+      GUI.startView(viewClass, object);
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(
+          "Fehler bei der Erzeugung eines neuen " + objectClass.getSimpleName(),
+          e);
+    }
+  }
 }

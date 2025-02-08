@@ -16,12 +16,13 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 import java.sql.Connection;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
+import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class Update0459 extends AbstractDDLUpdate
+public class Update0463 extends AbstractDDLUpdate
 {
-  public Update0459(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0463(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -29,23 +30,15 @@ public class Update0459 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
+
     {
-      // Autoincrement von Rechnung auf den maximalen Zähler aus Formular setzen
-      // so gibt es eine fortlaufende Rechnungsnummer bei verwendung der
-      // Rechnung-ID
-      if (getDriver() == DRIVER.H2)
-      {
-        execute(
-            "SET @max_id = (SELECT case when MAX(zaehler) is null then 1 else MAX(zaehler)+1 end FROM formular WHERE art = 2);"
-                + "ALTER TABLE rechnung ALTER COLUMN id RESTART WITH @max_id;");
-      }
-      if (getDriver() == DRIVER.MYSQL)
-      {
-        execute(
-            "SET @max_id = (SELECT if(MAX(zaehler),MAX(zaehler)+1,1) FROM formular WHERE art = 2);"
-              + "SET @sql = CONCAT('ALTER TABLE rechnung AUTO_INCREMENT = ', @max_id);"
-              + "PREPARE st FROM @sql; EXECUTE st;");
-      }
+      execute(addColumn("jahresabschluss", new Column("verwendungsrueckstand",
+          COLTYPE.DOUBLE, 10, null, false, false)));
+    }
+
+    {
+      execute(addColumn("jahresabschluss", new Column("zwanghafteweitergabe",
+          COLTYPE.DOUBLE, 10, null, false, false)));
     }
   }
 }
