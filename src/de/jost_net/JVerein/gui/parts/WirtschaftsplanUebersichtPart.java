@@ -36,6 +36,10 @@ public class WirtschaftsplanUebersichtPart implements Part
 {
   private final WirtschaftsplanungControl control;
 
+  private DateInput bis;
+
+  private DateInput von;
+
   private DecimalInput sollEinnahme;
 
   private DecimalInput sollAusgaben;
@@ -54,10 +58,9 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     SimpleContainer einnahmen = new SimpleContainer(columns.getComposite());
 
-    DateInput von = new DateInput(
+    von = new DateInput(
         control.getWirtschaftsplanungZeile().getWirtschaftsplan().getDatumVon(),
         new JVDateFormatTTMMJJJJ());
-    von.disable();
     einnahmen.addLabelPair("Von", von);
     sollEinnahme = new DecimalInput(
         control.getWirtschaftsplanungZeile().getPlanEinnahme(),
@@ -72,10 +75,9 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     SimpleContainer ausgaben = new SimpleContainer(columns.getComposite());
 
-    DateInput bis = new DateInput(
+    bis = new DateInput(
         control.getWirtschaftsplanungZeile().getWirtschaftsplan().getDatumBis(),
         new JVDateFormatTTMMJJJJ());
-    bis.disable();
     ausgaben.addLabelPair("Bis", bis);
     sollAusgaben = new DecimalInput(
         control.getWirtschaftsplanungZeile().getPlanAusgabe(),
@@ -121,5 +123,15 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     this.sollEinnahme.setValue(sollEinnahmen);
     this.sollAusgaben.setValue(sollAusgaben);
+  }
+
+  public DateInput getBis()
+  {
+    return bis;
+  }
+
+  public DateInput getVon()
+  {
+    return von;
   }
 }

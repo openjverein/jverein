@@ -16,9 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanungNeuDialog;
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanungView;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
+import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -30,8 +31,8 @@ public class WirtschaftsplanungNeuAction implements Action
   {
     try
     {
-      WirtschaftsplanungNeuDialog neuDialog = new WirtschaftsplanungNeuDialog();
-      WirtschaftsplanungZeile wirtschaftsplan = neuDialog.open();
+      WirtschaftsplanungZeile wirtschaftsplan = new WirtschaftsplanungZeile(
+          Einstellungen.getDBService().createObject(Wirtschaftsplan.class, null));
       GUI.startView(WirtschaftsplanungView.class, wirtschaftsplan);
     }
     catch (Exception e)

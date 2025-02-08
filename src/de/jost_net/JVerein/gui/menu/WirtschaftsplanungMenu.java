@@ -29,6 +29,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
 import java.rmi.RemoteException;
@@ -99,6 +100,7 @@ public class WirtschaftsplanungMenu extends ContextMenu
           control.getAusgaben();
         }
       }
+      catch (OperationCanceledException ignored) {}
       catch (Exception e)
       {
         throw new ApplicationException(

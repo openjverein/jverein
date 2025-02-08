@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,11 +114,8 @@ public class WirtschaftsplanungControl extends AbstractControl
     service.execute(sql, new Object[] { EINNAHME }, resultSet -> {
       while (resultSet.next())
       {
-        WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
-            service.createObject(Wirtschaftsplan.class,
-                resultSet.getString(ID_COL)));
-        zeile.setPlanEinnahme(resultSet.getDouble(BETRAG_COL));
-        zeileMap.put(resultSet.getString(ID_COL), zeile);
+        zeileMap.get(resultSet.getString(ID_COL)).setPlanEinnahme(
+            resultSet.getDouble(BETRAG_COL));
       }
       return resultSet;
     });
@@ -125,19 +123,15 @@ public class WirtschaftsplanungControl extends AbstractControl
     service.execute(sql, new Object[] { AUSGABE }, resultSet -> {
       while (resultSet.next())
       {
-        WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(
-            service.createObject(Wirtschaftsplan.class,
-                resultSet.getString(ID_COL)));
-        zeile.setPlanAusgabe(resultSet.getDouble(BETRAG_COL));
-        zeileMap.put(resultSet.getString(ID_COL), zeile);
+        zeileMap.get(resultSet.getString(ID_COL)).setPlanAusgabe(
+            resultSet.getDouble(BETRAG_COL));
       }
       return resultSet;
     });
 
     sql = "SELECT wirtschaftsplan.id, SUM(buchung.betrag) AS ist " +
-        "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart, buchung, konto " +
-        "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " +
-        "AND buchung.buchungsart = buchungsart.id " +
+        "FROM wirtschaftsplan, buchungsart, buchung, konto " +
+        "WHERE buchung.buchungsart = buchungsart.id " +
         "AND buchung.konto = konto.id " +
         "AND buchung.datum >= wirtschaftsplan.datum_von " +
         "AND buchung.datum <= wirtschaftsplan.datum_bis " +
@@ -241,9 +235,17 @@ public class WirtschaftsplanungControl extends AbstractControl
       return null;
     }
 
-    Map<Long, WirtschaftsplanungNode> nodes = new HashMap<>();
+    Map<String, WirtschaftsplanungNode> nodes = new HashMap<>();
 
     DBService service = Einstellungen.getDBService();
+
+    DBIterator<Buchungsklasse> buchungsklasseIterator = service.createList(Buchungsklasse.class);
+    while (buchungsklasseIterator.hasNext())
+    {
+      Buchungsklasse klasse = buchungsklasseIterator.next();
+      nodes.put(klasse.getID(), new WirtschaftsplanungNode(klasse, art, zeile));
+    }
+
     String sql = "SELECT wirtschaftsplanitem.buchungsklasse, sum(soll) " +
         "FROM wirtschaftsplanitem, buchungsart " +
         "WHERE wirtschaftsplan = ? AND wirtschaftsplanitem.buchungsart = buchungsart.id AND buchungsart.art = ? " +
@@ -260,11 +262,8 @@ public class WirtschaftsplanungControl extends AbstractControl
           continue;
         }
 
-        Buchungsklasse buchungsklasse = iterator.next();
         double soll = resultSet.getDouble(BETRAG_COL);
-        nodes.put(resultSet.getLong(ID_COL),
-            new WirtschaftsplanungNode(buchungsklasse, art, zeile));
-        nodes.get(resultSet.getLong(ID_COL)).setSoll(soll);
+        nodes.get(resultSet.getString(ID_COL)).setSoll(soll);
       }
 
       return nodes;
@@ -297,26 +296,15 @@ public class WirtschaftsplanungControl extends AbstractControl
           {
             DBIterator<Buchungsklasse> iterator = service.createList(
                 Buchungsklasse.class);
-            Long key = resultSet.getLong(ID_COL);
+            String key = resultSet.getString(ID_COL);
             iterator.addFilter("id = ?", key);
             if (!iterator.hasNext())
             {
               continue;
             }
 
-            Buchungsklasse buchungsklasse = iterator.next();
             double ist = resultSet.getDouble(BETRAG_COL);
-
-            if (nodes.containsKey(key))
-            {
-              nodes.get(key).setIst(ist);
-            }
-            else if (ist != 0)
-            {
-              nodes.put(key,
-                  new WirtschaftsplanungNode(buchungsklasse, art, zeile));
-              nodes.get(key).setIst(ist);
-            }
+            nodes.get(key).setIst(ist);
           }
 
           return nodes;
@@ -409,6 +397,17 @@ public class WirtschaftsplanungControl extends AbstractControl
 
       DBTransaction.starten();
 
+      Date von = (Date) uebersicht.getVon().getValue();
+      Date bis = (Date) uebersicht.getBis().getValue();
+
+      if (von.after(bis) || von.equals(bis))
+      {
+        throw new ApplicationException(
+            "Startdatum muss vor Enddatum liegen!");
+      }
+
+      wirtschaftsplan.setDatumBis(bis);
+      wirtschaftsplan.setDatumVon(von);
       wirtschaftsplan.store();
 
       if (!wirtschaftsplan.isNewObject())
@@ -418,7 +417,7 @@ public class WirtschaftsplanungControl extends AbstractControl
         iterator.addFilter("wirtschaftsplan = ?", wirtschaftsplan.getID());
         while (iterator.hasNext())
         {
-          iterator.next().delete(); //Löschen alter Einträge, wird später überschrieben
+          iterator.next().delete(); //Löschen alter Einträge, wird später neu angelegt
         }
       }
 
@@ -429,15 +428,6 @@ public class WirtschaftsplanungControl extends AbstractControl
       for (WirtschaftsplanungNode rootNode : rootNodesAusgaben)
       {
         storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
-      }
-
-      //Lösche Wirtschaftsplan, falls keine Planung hinterlegt ist
-      DBIterator<WirtschaftsplanItem> iterator = service.createList(
-          WirtschaftsplanItem.class);
-      iterator.addFilter("wirtschaftsplan = ?", wirtschaftsplan.getID());
-      if (!iterator.hasNext())
-      {
-        wirtschaftsplan.delete();
       }
 
       DBTransaction.commit();
@@ -457,6 +447,17 @@ public class WirtschaftsplanungControl extends AbstractControl
       String fehler = "Fehler beim Speichern des Wirtschaftsplans";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
+    }
+    finally
+    {
+      try
+      {
+        view.reload();
+      }
+      catch (ApplicationException e)
+      {
+        GUI.getStatusBar().setErrorText("Ansicht konnte nicht neu geladen werden");
+      }
     }
   }
 
@@ -490,6 +491,8 @@ public class WirtschaftsplanungControl extends AbstractControl
 
   public void starteAuswertung(String type) throws ApplicationException
   {
+    handleStore();
+
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
     //
@@ -502,7 +505,6 @@ public class WirtschaftsplanungControl extends AbstractControl
       fd.setFilterPath(path);
     }
 
-    handleStore();
 
     try
     {
