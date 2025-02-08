@@ -20,6 +20,7 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanEditAction;
 import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanungPostenDialog;
+import de.jost_net.JVerein.gui.menu.WirtschaftsplanungListMenu;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.io.WirtschaftsplanungCSV;
 import de.jost_net.JVerein.io.WirtschaftsplanungPDF;
@@ -183,6 +184,8 @@ public class WirtschaftsplanungControl extends AbstractControl
     wirtschaftsplaene.addColumn("Ausgaben Ist", "istAusgabe", formatter);
     wirtschaftsplaene.addColumn("Saldo Ist", "istSaldo", formatter);
     wirtschaftsplaene.addColumn("Saldo Differenz", "differenz", formatter);
+
+    wirtschaftsplaene.setContextMenu(new WirtschaftsplanungListMenu());
 
     return wirtschaftsplaene;
   }
