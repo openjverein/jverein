@@ -14,7 +14,7 @@
         <jameica.version>V_2_10_4_BUILD_487</jameica.version>
         <jameica.buildversion>2.10.4-487</jameica.buildversion>
         <hibiscus.url>https://github.com/willuhn/hibiscus/archive/refs/tags/</hibiscus.url>
-        <hibiscus.version>V_2_10_23_BUILD_387</hibiscus.version>
+        <hibiscus.version>V_2_10_24_BUILD_388</hibiscus.version>
         <nc.url>https://prdownloads.sourceforge.net/numchameleon/nc-3.0.0.zip?download</nc.url>
         <swt.arch>win64</swt.arch>
         <!-- Skip default plugins -->
