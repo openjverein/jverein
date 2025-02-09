@@ -10,8 +10,7 @@
 
     <properties>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
         <maven.test.skip>true</maven.test.skip>
         <jameica.version>V_2_10_4_BUILD_487</jameica.version>
         <hibiscus.version>V_2_10_23_BUILD_387</hibiscus.version>
@@ -262,7 +261,7 @@
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>${maven.compiler.target}</version>
+                                    <version>${maven.compiler.release}</version>
                                 </requireJavaVersion>
                             </rules>
                         </configuration>
