@@ -1,7 +1,7 @@
 <plugin xmlns="https://www.willuhn.de/schema/jameica-plugin"
         xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="https://www.willuhn.de/schema/jameica-plugin https://www.willuhn.de/schema/jameica-plugin-1.5.xsd"
-        name="jverein" version="2.9.0" class="de.jost_net.JVerein.JVereinPlugin">
+        name="jverein" version="3.0.0" class="de.jost_net.JVerein.JVereinPlugin">
 
   <description>OpenSource-Vereinsverwaltung</description>
   <url>https://openjverein.github.io/jameica-repository/[PLUGIN_ZIP]</url>
@@ -9,10 +9,10 @@
   <license>GPL - https://www.gnu.org/copyleft/gpl.html</license>
   <icon>jverein-icon-64x64.png</icon>
   <menu>
-    <item name="JVerein" >
-      <item name="&amp;Über"
+    <item name="OpenJVerein">
+      <item name="Über"
             action="de.jost_net.JVerein.gui.action.AboutAction" 
-            icon="gtk-info.png"  />
+            icon="gtk-info.png" />
       <item name="-" />
       <item name="Lizenzinformationen"
             action="de.jost_net.JVerein.gui.action.LizenzAction"
@@ -25,7 +25,7 @@
   </classfinder>
 
   <navigation>
-    <item name="JVerein"
+    <item name="OpenJVerein"
       icon-close="folder.png"
       icon-open="folder-open.png"
     id="jverein.main">
