@@ -18,10 +18,10 @@ GitBook-Organisation OpenJVerein. In der Member-Ansicht von https://github.com/o
 Für die OpenJVerein-Entwicklung werden benötigt
 
 - Eclipse/IntelliJ IDEA
-- Java 11 (JDK)
+- Java 11 (JDK) oder höher
 
-Es wird Java 11 (keine höhere Version) benötigt, damit die Kompatibilität zu Jameica gewährleistet ist und keine APIs
-verwendet werden, die in späteren Java Versionen eingeführt wurden.
+Bei höheren Versionen ist darauf zu achten, dass man keine APIs oder Sprachfeatures nutzt, die über Java 11 hinaus 
+geht, da Jameica in der verwendeten Version auf Java 11 basiert.
 
 # Einrichtung der IDE
 
