@@ -189,7 +189,7 @@ public class MittelverwendungFlowList extends MittelverwendungList
     sql = getSummenKontoSql();
     Double zufuehrung = (Double) service.execute(sql, new Object[] { datumvon,
         datumbis, Kontoart.GELD.getKey(), ArtBuchungsart.EINNAHME }, rsd);
-    // Summe aller Abflüsse bei nicht nutzungsgebundenen Anlagen
+    // Summe aller Zuflüsse bei nicht nutzungsgebundenen Anlagen
     sql = getSummenKontoZweckSql();
     zufuehrung += (Double) service.execute(sql,
         new Object[] { datumvon, datumbis, Kontoart.ANLAGE.getKey(),

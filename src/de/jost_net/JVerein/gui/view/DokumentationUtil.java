@@ -116,6 +116,9 @@ public class DokumentationUtil
   
   public static final String MITTELVERWENDUNG = PRE + FUNKTIONEN + BUCHF + "mittelverwendung";
 
+  public static final String MITTELVERWENDUNGSALDO = PRE + FUNKTIONEN + BUCHF
+      + "mittelverwendungsaldo";
+
 
   // Abrechnung
   public static final String ABRECHNUNG = PRE + FUNKTIONEN + ABRECH + "abrechnung";

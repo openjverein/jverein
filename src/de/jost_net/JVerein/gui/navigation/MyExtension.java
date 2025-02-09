@@ -79,6 +79,7 @@ import de.jost_net.JVerein.gui.view.MigrationView;
 import de.jost_net.JVerein.gui.view.MitgliederSucheView;
 import de.jost_net.JVerein.gui.view.MitgliedstypenListView;
 import de.jost_net.JVerein.gui.view.MittelverwendungListeView;
+import de.jost_net.JVerein.gui.view.MittelverwendungSaldoView;
 import de.jost_net.JVerein.gui.view.NichtMitgliederSucheView;
 import de.jost_net.JVerein.gui.view.PreNotificationView;
 import de.jost_net.JVerein.gui.view.ProjektListView;
@@ -242,6 +243,9 @@ public class MyExtension implements Extension
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendung",
             new StartViewAction(MittelverwendungListeView.class),
+            "gnome-session-switch.png"));
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendungsaldo",
+            new StartViewAction(MittelverwendungSaldoView.class),
             "gnome-session-switch.png"));
       }
       // Jahresabschluss
