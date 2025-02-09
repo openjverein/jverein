@@ -25,7 +25,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.parts.AbstractSaldoList;
 import de.jost_net.JVerein.gui.parts.BuchungsklasseSaldoList;
+import de.jost_net.JVerein.gui.parts.MittelverwendungFlowSaldoList;
+import de.jost_net.JVerein.gui.view.BuchungsklasseSaldoView;
+import de.jost_net.JVerein.gui.view.MittelverwendungSaldoView;
 import de.jost_net.JVerein.io.BuchungsklasseSaldoZeile;
 import de.jost_net.JVerein.io.BuchungsklassesaldoCSV;
 import de.jost_net.JVerein.io.BuchungsklassesaldoPDF;
@@ -45,7 +49,9 @@ import de.willuhn.util.ProgressMonitor;
 public class BuchungsklasseSaldoControl extends SaldoControl
 {
 
-  private BuchungsklasseSaldoList saldoList;
+  private AbstractSaldoList saldoList;
+
+  private boolean summe = true;
 
   final static String AuswertungPDF = "PDF";
 
@@ -103,8 +109,16 @@ public class BuchungsklasseSaldoControl extends SaldoControl
 
       if (saldoList == null)
       {
-        saldoList = new BuchungsklasseSaldoList(null,
-            datumvon.getDate(), datumbis.getDate());
+        if (view instanceof BuchungsklasseSaldoView)
+        {
+          saldoList = new BuchungsklasseSaldoList(null, datumvon.getDate(),
+              datumbis.getDate());
+        }
+        else if (view instanceof MittelverwendungSaldoView)
+        {
+          saldoList = new MittelverwendungFlowSaldoList(null, datumvon.getDate(),
+              datumbis.getDate());
+        }
       }
       else
       {
@@ -134,6 +148,17 @@ public class BuchungsklasseSaldoControl extends SaldoControl
   {
     try
     {
+      String title = "-";
+      if (view instanceof BuchungsklasseSaldoView)
+      {
+        title = "Buchungsklassen-Saldo";
+        summe = true;
+      }
+      else if (view instanceof MittelverwendungSaldoView)
+      {
+        title = "Mittelverwendung-Saldo";
+        summe = false;
+      }
       ArrayList<BuchungsklasseSaldoZeile> zeile = saldoList.getInfo();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
@@ -147,7 +172,7 @@ public class BuchungsklasseSaldoControl extends SaldoControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("buchungsklassensaldo", "",
+      fd.setFileName(new Dateiname(title, "",
           Einstellungen.getEinstellung().getDateinamenmuster(), type).get());
 
       final String s = fd.open();
@@ -161,7 +186,7 @@ public class BuchungsklasseSaldoControl extends SaldoControl
       settings.setAttribute("lastdir", file.getParent());
 
       auswertungSaldo(zeile, file, getDatumvon().getDate(),
-          getDatumbis().getDate(), type);
+          getDatumbis().getDate(), type, title);
     }
     catch (RemoteException e)
     {
@@ -172,7 +197,7 @@ public class BuchungsklasseSaldoControl extends SaldoControl
 
   private void auswertungSaldo(final ArrayList<BuchungsklasseSaldoZeile> zeile,
       final File file, final Date datumvon, final Date datumbis,
-      final String type)
+      final String type, String title)
   {
     BackgroundTask t = new BackgroundTask()
     {
@@ -181,11 +206,15 @@ public class BuchungsklasseSaldoControl extends SaldoControl
       {
         try
         {
-          // mit Java 1.7 k?nnte man hier eine Swich Anweisung nehmen.
           if (type.equals(AuswertungCSV))
-            new BuchungsklassesaldoCSV(zeile, file, datumvon, datumbis);
+          {
+            new BuchungsklassesaldoCSV(zeile, file, datumvon, datumbis, summe);
+          }
           else if (type.equals(AuswertungPDF))
-            new BuchungsklassesaldoPDF(zeile, file, datumvon, datumbis);
+          {
+            new BuchungsklassesaldoPDF(zeile, file, datumvon, datumbis, title,
+                summe);
+          }
           GUI.getCurrentView().reload();
         }
         catch (ApplicationException ae)
