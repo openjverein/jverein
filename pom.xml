@@ -16,7 +16,6 @@
         <hibiscus.version>V_2_10_23_BUILD_387</hibiscus.version>
         <!-- See https://github.com/willuhn/jameica/commit/2e6c93dbb3f7ec6314494d8f8cc2ed6958cdd865 -->
         <swt.version>4.27</swt.version>
-        <unpack-plugin-for-test.skip>false</unpack-plugin-for-test.skip>
     </properties>
 
     <dependencies>
@@ -337,7 +336,6 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <skip>${unpack-plugin-for-test.skip}</skip>
                             <target>
                                 <unzip src="${project.build.directory}/${project.build.finalName}.zip"
                                        dest="${project.build.directory}"/>
