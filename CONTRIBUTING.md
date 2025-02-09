@@ -33,9 +33,9 @@ verwendet werden, die in späteren Java Versionen eingeführt wurden.
    im check out aus. Damit werden die Abhängigkeiten [Jameica](https://www.willuhn.de/products/jameica/) und
    [Hibiscus](https://www.willuhn.de/products/hibiscus/) heruntergeladen und im lokalen Maven repository
    bereitgestellt. Zusätzlich sind sie als Verzeichnisse unter den Ordnern jameica und hibiscus verfügbar.
-3. Öffne das Projekt in Intellij oder Eclipse und stelle sicher, dass es als Maven Projekt importiert wird.
+3. Öffne das Projekt in IntelliJ oder Eclipse und stelle sicher, dass es als Maven Projekt importiert wird.
 4. Füge `jameica` als Modul hinzu.
-    - In Intellij auf File > New > Module from existing sources... klicken und ./jameica/jameica.iml auswählen
+    - In IntelliJ auf File > New > Module from existing sources... klicken und ./jameica/jameica.iml auswählen
     - In Eclipse auf File > Import... > klicken
         - General > Existing Projects into Workspace auswählen
         - In Select root directory das aktuelle Verzeichnis auswählen
@@ -58,13 +58,31 @@ wird das Plugin gebaut und liegt im `target` unter `jverein-<version>.zip`.
 
 > [!IMPORTANT]
 > Die Konfiguration ist nur für Windows vorbereitet. Eine Anpasung für Linux und MacOS steht noch aus, kann jedoch
-> einfach selbst durchgeführt werden
+> einfach selbst durchgeführt werden, indem die Umgebungsvariable auf $HOME statt USERPROFILE gestellt wird
 
 Zum lokalen Test muss Jameica gestartet und die Konfiguration angepasst werden, sodass die Plugins Hibiscus und 
-JVerein eingebunden werden. Für Intellij ist eine Run configuration mit dem Namen JVerein bereits angelegt, die ein 
-Plugin-Verzeichnis `jameica.test` im home Verzeichnis anlegt. Für Eclipse muss diese importiert werden mit File > 
-Import... > Run/Debug > Launch Configurations. Im Dialog `./eclipse` unter From Directory auswählen. eclipse 
-anklicken und in der rechten Seite JVerein.launch auswählen. Auf Finish klicken.
+JVerein eingebunden werden. Für IntelliJ ist eine Run configuration mit dem Namen JVerein bereits angelegt. Für 
+Eclipse muss diese importiert werden
+1. File > Import... > Run/Debug > Launch Configurations auswählen
+2. Im Dialog `./eclipse` unter From Directory auswählen.
+3. eclipse anklicken und in der rechten Seite JVerein.launch auswählen.
+4. Auf Finish klicken.
+
+Nun kann es losgehen
+1. Das plugin im target Verzeichnis entpacken mit
+   ```maven
+   mvnw clean verify
+   ```
+2. JVerein mit dem Launcher bzw. der Run configuration starten. Damit startet JVerein initial und legt das 
+   Verzeichnis jameica.test im home Verzeichnis (Windows %USERPROFILE%) an.
+3. JVerein beenden und die plugins einbinden. Dazu in der Datei
+   `%USERPROFILE%/jameica.test/cfg/de.willuhn.jameica.system.Config.properties` die Zeilen
+   ```properties
+   jameica.plugin.dir.0=<jverein-checkout>/hibiscus
+   jameica.plugin.dir.1=<jverein-checkout>/target/jverein
+   ```
+   einfügen und `<jverein-checkout>` durch den Pfad zum check out des JVerein Verzeichnisses ersetzen.
+4. JVerein erneut start. Hibscus und JVerein sollten nun verfügbar sein
 
 # Links
 
