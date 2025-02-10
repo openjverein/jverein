@@ -107,7 +107,6 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
-import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
@@ -1252,7 +1251,14 @@ public class BuchungsControl extends AbstractControl
       buchungsList = new BuchungListTablePart(query.get(),
           new BuchungAction(false));
       buchungsList.addColumn("Nr", "id-int");
-      buchungsList.addColumn("Geprüft", "geprueft");
+      buchungsList.addColumn("Geprüft", "geprueft", new Formatter()
+      {
+        @Override
+        public String format(Object o)
+        {
+          return (Boolean) o ? "\u2705" : "";
+        }
+      });
       if (Einstellungen.getEinstellung().getDokumentenspeicherung())
       {
         buchungsList.addColumn("D", "document");
@@ -1352,29 +1358,6 @@ public class BuchungsControl extends AbstractControl
       buchungsList.sort();
     }
 
-    buchungsList.setFormatter(new TableFormatter()
-    {
-      public void format(TableItem item)
-      {
-        Buchung b = (Buchung) item.getData();
-        if (b == null)
-          return;
-
-        try
-        {
-          // Spalte 1 = Geprüft
-          item.setText(1, "");
-          if (b.getGeprueft())
-            item.setImage(1, SWTUtil.getImage("emblem-default.png"));
-          else
-            item.setImage(1, null);
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("unable to format line", e);
-        }
-      }
-    });
     informKontoChangeListener();
 
     return buchungsList;
