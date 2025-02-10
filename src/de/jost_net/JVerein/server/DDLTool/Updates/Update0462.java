@@ -41,9 +41,17 @@ public class Update0462 extends AbstractDDLUpdate
     }
 
     // Diese Attribute sind jetzt in der Sollbuchungposition
-    execute(dropForeignKey("fkMitgliedskonto3", "mitgliedskonto"));
+    try
+    {
+      execute(dropForeignKey("fkMitgliedskonto3", "mitgliedskonto"));
+      execute(dropColumn("mitgliedskonto", "buchungsart"));
+    }
+    catch (Exception e)
+    {
+      // Wenn bei MySQL der Key einen anderen NAmen hat damm lassen wir das
+      // Attribut halt bestehen
+    }
     execute(dropForeignKey("fkMitgliedkonto4", "mitgliedskonto"));
-    execute(dropColumn("mitgliedskonto", "buchungsart"));
     execute(dropColumn("mitgliedskonto", "buchungsklasse"));
     execute(dropColumn("mitgliedskonto", "steuersatz"));
     execute(dropColumn("mitgliedskonto", "nettobetrag"));
