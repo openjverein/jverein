@@ -80,10 +80,6 @@ public class RechnungMailView extends AbstractView
         DokumentationUtil.RECHNUNG_MAIL, false, "question-circle.png");
     buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
         control, false, "view-refresh.png"));
-    /*buttons.addButton(new Button("Export",
-        new MitgliedskontoExportAction(EXPORT_TYP.RECHNUNGEN,
-            getCurrentObject()),
-        control, false, "document-save.png"));*/
     buttons.addButton(control.getStartRechnungButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }

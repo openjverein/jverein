@@ -16,10 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
@@ -30,32 +27,41 @@ import de.willuhn.util.ApplicationException;
 public class SollbuchungNeuAction implements Action
 {
 
+  private Mitglied m;
+
+  public SollbuchungNeuAction(Mitglied m)
+  {
+    super();
+    this.m = m;
+  }
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    MitgliedskontoNode mkn = null;
     Mitgliedskonto mk = null;
 
-    if (context == null || !(context instanceof MitgliedskontoNode))
-    {
-      throw new ApplicationException("Keine Sollbuchung ausgewählt");
-    }
-
-    mkn = (MitgliedskontoNode) context;
     try
     {
-      Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
-          Mitglied.class, mkn.getID());
-      mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-          Mitgliedskonto.class, null);
-      mk.setZahlungsweg(m.getZahlungsweg());
-      mk.setMitglied(m);
+      mk = (Mitgliedskonto) Einstellungen.getDBService()
+          .createObject(Mitgliedskonto.class, null);
+      mk.setBetrag(0.0);
+      if (m != null)
+      {
+        if (m.getID() == null)
+        {
+          throw new ApplicationException(
+              "Neues Mitglied bitte erst speichern. Dann können Zusatzbeträge aufgenommen werden.");
+        }
+        mk.setMitglied(m);
+        mk.setZahlungsweg(m.getZahlungsweg());
+        mk.setZahler(m.getZahler());
+      }
     }
-    catch (RemoteException e)
+    catch (Exception e)
     {
       throw new ApplicationException(
-          "Fehler bei der Erzeugung einer Sollbuchung");
+          "Fehler bei der Erzeugung einer neuen Sollbuchung", e);
     }
-    GUI.startView(new SollbuchungDetailView(MitgliedskontoNode.SOLL), mk);
+    GUI.startView(new SollbuchungDetailView(), mk);
   }
 }

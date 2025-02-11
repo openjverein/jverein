@@ -33,9 +33,10 @@ public enum AllgemeineVar
   ZAEHLER("zaehler"), //
   NAME("verein_name"), //
   STRASSE("verein_strasse"), //
-  PLZ("verein_name"), //
+  PLZ("verein_plz"), //
   ORT("verein_ort"), //
   STAAT("verein_staat"), //
+  ABSENDER("verein_absender"), //
   IBAN("verein_iban"), //
   BIC("verein_bic"), //
   GLAEUBIGER_ID("verein_glaeubiger_id"), //

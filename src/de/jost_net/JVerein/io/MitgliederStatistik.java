@@ -310,16 +310,20 @@ public class MitgliederStatistik
     MitgliedUtils.setNurAktive(list, stichtag);
     MitgliedUtils.setMitglied(list);
 
-    /**
-     * Filter bereits ueber "setNurAktive" gesetzt
-     */
-    // list.addFilter("(eintritt is null or eintritt <= ?)",
-    // new Object[] { stichtag });
-
     if (bg != null)
     {
-      list.addFilter("beitragsgruppe = ?",
-          new Object[] { Integer.valueOf(bg.getID()) });
+      if (bg.getSekundaer())
+      {
+        list.join("sekundaerebeitragsgruppe");
+        list.addFilter("sekundaerebeitragsgruppe.mitglied = mitglied.id");
+        list.addFilter("sekundaerebeitragsgruppe.beitragsgruppe = ?",
+            bg.getID());
+      }
+      else
+      {
+        list.addFilter("beitragsgruppe = ?",
+            new Object[] { Integer.valueOf(bg.getID()) });
+      }
     }
     if (geschlecht != null && (geschlecht.equals(GeschlechtInput.MAENNLICH)
         || geschlecht.equals(GeschlechtInput.WEIBLICH)))

@@ -27,8 +27,8 @@ import de.jost_net.JVerein.gui.action.BuchungsuebernahmeAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
-import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -52,9 +52,6 @@ public class BuchungslisteView extends AbstractView
     
     final BuchungsControl control = new BuchungsControl(this, Kontenfilter.GELDKONTO);
 
-    LabelGroup group = new LabelGroup(getParent(), "Konto");
-    group.addLabelPair("Konto", control.getSuchKonto());
-
     TabFolder folder = new TabFolder(getParent(), SWT.V_SCROLL | SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     folder.setBackground(Color.BACKGROUND.getSWTColor());
@@ -62,16 +59,24 @@ public class BuchungslisteView extends AbstractView
     // Erster Tab
     TabGroup tabAllgemein = new TabGroup(folder, "Suche Buchungen", true, 2);
     LabelGroup labelgroup1 = new LabelGroup(tabAllgemein.getComposite(), "Filter");
-    ColumnLayout cl = new ColumnLayout(labelgroup1.getComposite(), 2);
+    ColumnLayout cl = new ColumnLayout(labelgroup1.getComposite(), 3);
+
     SimpleContainer left = new SimpleContainer(cl.getComposite());
+    SimpleContainer center = new SimpleContainer(cl.getComposite());
     SimpleContainer right = new SimpleContainer(cl.getComposite());
+
+    left.addLabelPair("Konto", control.getSuchKonto());
     left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
     left.addLabelPair("Projekt", control.getSuchProjekt());
-    left.addLabelPair("Betrag", control.getSuchBetrag());
-    left.addLabelPair("Mitglied zugeordnet?", control.getSuchMitgliedZugeordnet());
-    right.addLabelPair("Datum von", control.getVondatum());
-    right.addLabelPair("Datum bis", control.getBisdatum());
+    left.addLabelPair("Splitbuchung", control.getSuchSplibuchung());
+
+    center.addLabelPair("Betrag", control.getSuchBetrag());
+    center.addLabelPair("Datum von", control.getVondatum());
+    center.addLabelPair("Datum bis", control.getBisdatum());
+
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
+    right.addLabelPair("Mitglied zugeordnet?",
+        control.getSuchMitgliedZugeordnet());
     right.addLabelPair("Mitglied Name", control.getMitglied());
     
     ButtonArea buttons1 = new ButtonArea();

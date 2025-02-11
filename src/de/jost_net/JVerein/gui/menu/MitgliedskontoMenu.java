@@ -19,15 +19,17 @@ package de.jost_net.JVerein.gui.menu;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
-import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
-import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.action.IstbuchungEditAction;
 import de.jost_net.JVerein.gui.action.IstbuchungLoesenAction;
+import de.jost_net.JVerein.gui.action.RechnungNeuAction;
+import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
+import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
+import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -46,12 +48,14 @@ public class MitgliedskontoMenu extends ContextMenu
    */
   public MitgliedskontoMenu()
   {
-    addItem(new MitgliedItem("Neue Sollbuchung",
-        new SollbuchungNeuAction(), "document-new.png"));
-    addItem(new SollItem("Sollbuchung bearbeiten",
-        new SollbuchungEditAction(), "text-x-generic.png"));
+    addItem(new SollItem("Sollbuchung bearbeiten", new SollbuchungEditAction(),
+        "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
         new SollbuchungLoeschenAction(), "user-trash-full.png"));
+    addItem(new MitRechnungItem("Rechnung anzeigen",
+        new SollbuchungRechnungAction(), "file-invoice.png"));
+    addItem(new OhneRechnungItem("Rechnung(en) erstellen",
+        new RechnungNeuAction(), "file-invoice.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SollMitIstItem("Istbuchung bearbeiten",
         new IstbuchungEditAction(), "text-x-generic.png"));
@@ -241,4 +245,74 @@ public class MitgliedskontoMenu extends ContextMenu
     }
   }
 
+  private static class OhneRechnungItem extends CheckedContextMenuItem
+  {
+
+    private OhneRechnungItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof MitgliedskontoNode)
+      {
+        MitgliedskontoNode mkn = (MitgliedskontoNode) o;
+        if (mkn.getType() != MitgliedskontoNode.SOLL)
+        {
+          return false;
+        }
+
+        try
+        {
+          Mitgliedskonto mk = Einstellungen.getDBService()
+              .createObject(Mitgliedskonto.class, mkn.getID());
+          return mk.getRechnung() == null;
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return false;
+      }
+      return false;
+    }
+  }
+
+  private static class MitRechnungItem extends CheckedContextMenuItem
+  {
+
+    private MitRechnungItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+
+      if (o instanceof MitgliedskontoNode)
+      {
+        MitgliedskontoNode mkn = (MitgliedskontoNode) o;
+        if (mkn.getType() != MitgliedskontoNode.SOLL)
+        {
+          return false;
+        }
+
+        try
+        {
+          Mitgliedskonto mk = Einstellungen.getDBService()
+              .createObject(Mitgliedskonto.class, mkn.getID());
+          return mk.getRechnung() != null;
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return false;
+      }
+      return false;
+    }
+  }
 }

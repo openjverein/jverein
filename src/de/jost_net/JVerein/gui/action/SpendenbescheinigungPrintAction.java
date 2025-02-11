@@ -220,14 +220,14 @@ public class SpendenbescheinigungPrintAction implements Action
           if (spb.getMitglied() != null)
           {
             fileName = new Dateiname(spb.getMitglied(),
-                spb.getBescheinigungsdatum(), "Spendenbescheinigung",
+                spb.getSpendedatum(), "Spendenbescheinigung",
                 Einstellungen.getEinstellung().getDateinamenmusterSpende(),
                 "pdf").get();
           }
           else
           {
             fileName = new Dateiname(spb.getZeile1(), spb.getZeile2(),
-                spb.getBescheinigungsdatum(), "Spendenbescheinigung",
+                spb.getSpendedatum(), "Spendenbescheinigung",
                 Einstellungen.getEinstellung().getDateinamenmusterSpende(),
                 "pdf").get();
           }
@@ -251,7 +251,10 @@ public class SpendenbescheinigungPrintAction implements Action
           map = new AllgemeineMap().getMap(map);
           if(spb.getMitglied() != null)
             map = new MitgliedMap().getMap(spb.getMitglied(), map);
-          FormularAufbereitung fa = new FormularAufbereitung(file, false);
+          boolean encrypt = Einstellungen.getEinstellung()
+              .getUnterschriftdrucken();
+          FormularAufbereitung fa = new FormularAufbereitung(file, false,
+              encrypt);
           fa.writeForm(fo, map);
           if (adressblatt != Adressblatt.OHNE_ADRESSBLATT)
           {
@@ -311,7 +314,7 @@ public class SpendenbescheinigungPrintAction implements Action
     Map<String, Object> map = new SpendenbescheinigungMap().getMap(spb, null);
     map = new AllgemeineMap().getMap(map);
     boolean isSammelbestaetigung = spb.isSammelbestaetigung();
-    Reporter rpt = new Reporter(fos, 80, 50, 50, 50);
+    Reporter rpt = new Reporter(fos, 80, 50, 50, 50, true);
 
     // Aussteller, kein Header
     rpt.addHeaderColumn("", Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);

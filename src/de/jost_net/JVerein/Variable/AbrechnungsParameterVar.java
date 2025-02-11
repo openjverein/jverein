@@ -25,6 +25,9 @@ public enum AbrechnungsParameterVar
   STICHTAG("abrechnungsparameter_stichtag"), //
   VONDATUM("abrechnungsparameter_vondatum"), //
   BISDATUM("abrechnungsparameter_bisdatum"), //
+  STICHTAG_MONAT("abrechnungsparameter_stichtag_monat"), //
+  STICHTAG_MONAT_TEXT("abrechnungsparameter_stichtag_monat_text"), //
+  STICHTAG_JAHR("abrechnungsparameter_stichtag_jahr"), //
   VERWENDUNGSZWECK("abrechnungsparameter_verwendungszweck"), //
   ZUSATZBETRAEGE("abrechnungsparameter_zusatzbetraege"), //
   KURSTEILNEHMER("abrechnungsparameter_kursteilnehmer"), //

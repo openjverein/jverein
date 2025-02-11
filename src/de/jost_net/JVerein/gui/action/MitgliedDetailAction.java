@@ -26,6 +26,8 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Lehrgang;
@@ -44,49 +46,59 @@ public class MitgliedDetailAction implements Action
     Mitglied mitglied;
     try
     {
-      if (context != null && context instanceof FamilienbeitragNode)
+      if (context instanceof FamilienbeitragNode)
       {
         FamilienbeitragNode fbn = (FamilienbeitragNode) context;
         mitglied = fbn.getMitglied();
       }
-      else if (context != null && (context instanceof Arbeitseinsatz))
+      else if (context instanceof Arbeitseinsatz)
       {
         Arbeitseinsatz aeins = (Arbeitseinsatz) context;
         mitglied = aeins.getMitglied();
       }
-      else if (context != null && context instanceof ArbeitseinsatzZeile)
+      else if (context instanceof ArbeitseinsatzZeile)
       {
         ArbeitseinsatzZeile aez = (ArbeitseinsatzZeile) context;
         mitglied = (Mitglied) aez.getAttribute("mitglied");
       }
-      else if (context != null && (context instanceof Mitglied))
+      else if (context instanceof Mitglied)
       {
         mitglied = (Mitglied) context;
       }
-      else if (context != null && (context instanceof Mitgliedskonto))
+      else if (context instanceof Mitgliedskonto)
       {
         Mitgliedskonto mk = (Mitgliedskonto) context;
         mitglied = mk.getMitglied();
       }
-      else if (context != null && (context instanceof Wiedervorlage))
+      else if (context instanceof Wiedervorlage)
       {
         Wiedervorlage w = (Wiedervorlage) context;
         mitglied = w.getMitglied();
       }
-      else if (context != null && (context instanceof Zusatzbetrag))
+      else if (context instanceof Zusatzbetrag)
       {
         Zusatzbetrag z = (Zusatzbetrag) context;
         mitglied = z.getMitglied();
       }
-      else if (context != null && (context instanceof Lehrgang))
+      else if (context instanceof Lehrgang)
       {
         Lehrgang l = (Lehrgang) context;
         mitglied = l.getMitglied();
       }
-      else if (context != null && (context instanceof Lastschrift))
+      else if (context instanceof Lastschrift)
       {
         Lastschrift l = (Lastschrift) context;
         mitglied = l.getMitglied();
+      }
+      else if (context instanceof Rechnung)
+      {
+        Rechnung r = (Rechnung) context;
+        mitglied = r.getMitglied();
+      }
+      else if (context instanceof Spendenbescheinigung)
+      {
+        Spendenbescheinigung s = (Spendenbescheinigung) context;
+        mitglied = s.getMitglied();
       }
       else if ((context instanceof Buchung ) && ((Buchung) context).getMitgliedskonto() != null ) {
         mitglied = ((Buchung) context).getMitgliedskonto().getMitglied();

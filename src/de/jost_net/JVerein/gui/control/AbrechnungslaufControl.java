@@ -22,10 +22,11 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.AbrechnungslaufDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.AbrechnungsmodusFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.AbrechnungslaufMenu;
+import de.jost_net.JVerein.gui.view.AbrechnungslaufView;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -226,6 +227,13 @@ public class AbrechnungslaufControl extends FilterControl
     return bemerkung;
   }
 
+  final class StatData
+  {
+    Double summe;
+
+    Integer anzahl;
+  }
+
   public LabelInput getStatistikBuchungen() throws RemoteException
   {
     // Summe und Anzahl der Buchungen. Es gibt einen weiterer Datensatz
@@ -235,13 +243,6 @@ public class AbrechnungslaufControl extends FilterControl
     if (statistikbuchungen != null)
     {
       return statistikbuchungen;
-    }
-
-    final class StatData
-    {
-      Double summe;
-
-      Integer anzahl;
     }
 
     ResultSetExtractor rs = new ResultSetExtractor()
@@ -259,8 +260,8 @@ public class AbrechnungslaufControl extends FilterControl
       }
     };
 
-    String sql = "SELECT SUM(betrag), COUNT(id) " + "FROM buchung "
-        + "WHERE abrechnungslauf=? AND (name != 'JVerein' or zweck != 'Gegenbuchung')";
+    String sql = "SELECT SUM(betrag), COUNT(id) " + "FROM mitgliedskonto "
+        + "WHERE abrechnungslauf=?";
     StatData data = (StatData) Einstellungen.getDBService().execute(sql,
         new Object[] { getAbrechnungslaeufe().getID() }, rs);
 
@@ -269,7 +270,7 @@ public class AbrechnungslaufControl extends FilterControl
     String s = String.format("Anzahl: %s; Summe: %s", data.anzahl.toString(),
         cf.format(data.summe));
     statistikbuchungen = new LabelInput(s);
-    statistikbuchungen.setName("Buchungen");
+    statistikbuchungen.setName("Sollbuchungen");
 
     return statistikbuchungen;
   }
@@ -281,13 +282,6 @@ public class AbrechnungslaufControl extends FilterControl
     if (statistiklastschriften != null)
     {
       return statistiklastschriften;
-    }
-
-    final class StatData
-    {
-      Double summe;
-
-      Integer anzahl;
     }
 
     ResultSetExtractor rs = new ResultSetExtractor()
@@ -366,7 +360,7 @@ public class AbrechnungslaufControl extends FilterControl
     if (abrechnungslaufList == null)
     {
       abrechnungslaufList = new TablePart(abrechnungslaeufe,
-          new AbrechnungslaufDetailAction());
+          new EditAction(AbrechnungslaufView.class));
       abrechnungslaufList.addColumn("Nr", "nr");
       abrechnungslaufList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -381,10 +375,16 @@ public class AbrechnungslaufControl extends FilterControl
       abrechnungslaufList.addColumn("Austrittsdatum", "austrittsdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       abrechnungslaufList.addColumn("Zahlungsgrund", "zahlungsgrund");
-      abrechnungslaufList.addColumn("Zusatzbeträge", "zusatzbetraege",
-          new JaNeinFormatter());
-      abrechnungslaufList.addColumn("Kursteilnehmer", "kursteilnehmer",
-          new JaNeinFormatter());
+      if (Einstellungen.getEinstellung().getZusatzbetrag())
+      {
+        abrechnungslaufList.addColumn("Zusatzbeträge", "zusatzbetraege",
+            new JaNeinFormatter());
+      }
+      if (Einstellungen.getEinstellung().getKursteilnehmer())
+      {
+        abrechnungslaufList.addColumn("Kursteilnehmer", "kursteilnehmer",
+            new JaNeinFormatter());
+      }
       abrechnungslaufList.setContextMenu(new AbrechnungslaufMenu());
       abrechnungslaufList.setRememberColWidths(true);
       abrechnungslaufList.setRememberOrder(true);

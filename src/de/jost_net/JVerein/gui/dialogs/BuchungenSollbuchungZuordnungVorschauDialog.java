@@ -24,8 +24,10 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.BuchungsListeAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.dialogs.BuchungenSollbuchungZuordnungDialog.BookingMemberAccountEntry;
+import de.jost_net.JVerein.gui.view.BuchungslisteView;
+import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -129,19 +131,11 @@ public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<
       {
         Mitgliedskonto mk = dao.getMitgliedskonto();
         Buchung buchung = dao.getBuchung();
-        buchung.setMitgliedskonto(dao.getMitgliedskonto());
-        if (mk != null)
-        {
-          if (buchung.getBuchungsartId() == null)
-            buchung.setBuchungsartId(mk.getBuchungsartId());
-          if (buchung.getBuchungsklasseId() == null)
-            buchung.setBuchungsklasseId(mk.getBuchungsklasseId());
-        }
-        buchung.store();
+        SplitbuchungsContainer.autoSplit(buchung, mk, false);
       }
 
       //Darstellung aktualisieren
-      new BuchungsListeAction().handleAction(this);
+      new StartViewAction(BuchungslisteView.class).handleAction(this);
 
       GUI.getStatusBar().setSuccessText("Die Zuordnung wurde erfolgreich durchgeführt");
     }

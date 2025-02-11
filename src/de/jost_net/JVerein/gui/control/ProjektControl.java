@@ -20,8 +20,9 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.ProjektAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.ProjektMenu;
+import de.jost_net.JVerein.gui.view.ProjektView;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -149,7 +150,8 @@ public class ProjektControl extends FilterControl
     {
       return projektList;
     }
-    projektList = new TablePart(getProjekte(), new ProjektAction());
+    projektList = new TablePart(getProjekte(),
+        new EditAction(ProjektView.class));
     projektList.addColumn("Bezeichnung", "bezeichnung");
     projektList.addColumn("Startdatum", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

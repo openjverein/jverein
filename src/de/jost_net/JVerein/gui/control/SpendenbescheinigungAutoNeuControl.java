@@ -27,12 +27,12 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.FormularInput;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.server.SpendenbescheinigungNode;
+import de.jost_net.JVerein.util.SpbAdressaufbereitung;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -179,14 +179,7 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
             Spendenbescheinigung spbescheinigung = (Spendenbescheinigung) Einstellungen
                 .getDBService().createObject(Spendenbescheinigung.class, null);
             spbescheinigung.setSpendenart(Spendenart.GELDSPENDE);
-            spbescheinigung.setMitglied(sp1.getMitglied());
-            spbescheinigung.setZeile1(sp1.getMitglied().getAnrede());
-            spbescheinigung.setZeile2(
-                Adressaufbereitung.getVornameName(sp1.getMitglied()));
-            spbescheinigung.setZeile3(sp1.getMitglied().getStrasse());
-            spbescheinigung.setZeile4(
-                sp1.getMitglied().getPlz() + " " + sp1.getMitglied().getOrt());
-            spbescheinigung.setZeile5(sp1.getMitglied().getStaat());
+            SpbAdressaufbereitung.adressaufbereitung(sp1.getMitglied(), spbescheinigung);
             spbescheinigung.setErsatzAufwendungen(false);
             spbescheinigung.setBescheinigungsdatum(new Date());
             spbescheinigung.setSpendedatum(new Date());

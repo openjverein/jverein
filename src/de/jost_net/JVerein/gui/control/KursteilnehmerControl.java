@@ -30,13 +30,14 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.KursteilnehmerDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.KursteilnehmerMenu;
+import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.Staat;
@@ -256,13 +257,14 @@ public class KursteilnehmerControl extends FilterControl
     }
     if (getKursteilnehmer().getStaat() != null
         && getKursteilnehmer().getStaat().length() > 0
-        && Staat.getByKey(getKursteilnehmer().getStaat()) == null)
+        && Staat.getByKey(getKursteilnehmer().getStaatCode()) == null)
     {
       GUI.getStatusBar()
           .setErrorText("Konnte Staat \"" + getKursteilnehmer().getStaat()
               + "\" nicht finden, bitte anpassen.");
     }
-    staat = new SelectInput(Staat.values(), Staat.getByKey(getKursteilnehmer().getStaat()));
+    staat = new SelectInput(Staat.values(),
+        Staat.getByKey(getKursteilnehmer().getStaatCode()));
     staat.setPleaseChoose("Nicht gesetzt");
     staat.setName("Staat");
     return staat;
@@ -388,7 +390,8 @@ public class KursteilnehmerControl extends FilterControl
       return part;
     }
     DBIterator<Kursteilnehmer> kursteilnehmer = getIterator();
-    part = new TablePart(kursteilnehmer, new KursteilnehmerDetailAction());
+    part = new TablePart(kursteilnehmer,
+        new EditAction(KursteilnehmerDetailView.class));
 
     part.addColumn("Name", "name");
     part.addColumn("Vorname", "vorname");
@@ -466,7 +469,8 @@ public class KursteilnehmerControl extends FilterControl
       k.setAdressierungszuatz((String) getAdressierungszusatz().getValue());
       k.setPlz((String) getPLZ().getValue());
       k.setOrt((String) getOrt().getValue());
-      k.setStaat(((Staat) getStaat().getValue()).getKey());
+      k.setStaat(getStaat().getValue() == null ? ""
+          : ((Staat) getStaat().getValue()).getKey());
       k.setEmail((String) getEmail().getValue());
       k.setVZweck1((String) getVZweck1().getValue());
       k.setMandatDatum((Date) getMandatDatum().getValue());

@@ -20,10 +20,13 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import org.kapott.hbci.sepa.SepaVersion;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Monat;
+import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.HBCI;
@@ -33,7 +36,6 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import org.kapott.hbci.sepa.SepaVersion;
 
 public class AbrechnungSEPAParam
 {
@@ -58,8 +60,20 @@ public class AbrechnungSEPAParam
   public final Boolean kursteilnehmer;
 
   public final Boolean kompakteabbuchung;
+  
+  public final boolean sollbuchungenzusammenfassen;
+  
+  public final boolean rechnung;
+  
+  public final Formular rechnungsformular;
+  
+  public final String rechnungstext;
+
+  public final Date rechnungsdatum;
 
   public final Boolean sepaprint;
+
+  public final Boolean sepacheckdisable;
 
   public final File sepafileRCUR;
 
@@ -89,7 +103,13 @@ public class AbrechnungSEPAParam
     zusatzbetraege = (Boolean) ac.getZusatzbetrag().getValue();
     kursteilnehmer = (Boolean) ac.getKursteilnehmer().getValue();
     kompakteabbuchung = (Boolean) ac.getKompakteAbbuchung().getValue();
+    sollbuchungenzusammenfassen = (Boolean) ac.getSollbuchungenZusammenfassen().getValue();
+    rechnung = (Boolean) ac.getRechnung().getValue(); 
+    rechnungsformular = (Formular) ac.getRechnungFormular().getValue(); 
+    rechnungstext = (String) ac.getRechnungstext().getValue();
+    rechnungsdatum = (Date) ac.getRechnungsdatum().getValue();
     sepaprint = (Boolean) ac.getSEPAPrint().getValue();
+    sepacheckdisable = (Boolean) ac.getSEPACheck().getValue();
     this.pdffileRCUR = pdffileRCUR;
     this.sepafileRCUR = sepafileRCUR;
     this.sepaVersion = sepaVersion;

@@ -29,18 +29,20 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.KontoAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoInput;
-import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
+import de.jost_net.JVerein.gui.view.KontoView;
+import de.jost_net.JVerein.keys.AfaMode;
+import de.jost_net.JVerein.keys.Anlagenzweck;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
-import de.jost_net.JVerein.keys.AfaMode;
-import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -52,7 +54,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -76,10 +77,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 //import de.jost_net.JVerein.keys.ArtBuchungsart;
 
-public class KontoControl extends AbstractControl
+public class KontoControl extends FilterControl
 {
-
-  private de.willuhn.jameica.system.Settings settings;
 
   private TablePart kontenList;
 
@@ -94,37 +93,39 @@ public class KontoControl extends AbstractControl
   private SelectInput hibiscusid;
 
   private Konto konto;
-  
+
   private SelectInput buchungsart;
-  
+
   private SelectInput kontoart;
-  
+
   private int unterdrueckunglaenge = 0;
-  
+
   private AbstractInput anlagenart;
-  
-  private SelectInput anlagenklasse;
-  
+
+  private SelectInput buchungsklasse;
+
   private AbstractInput afaart;
-  
+
   private DecimalInput betrag;
-  
+
   private IntegerNullInput nutzungsdauer;
-  
+
   private TextAreaInput kommentar;
-  
+
   private DateInput anschaffung;
-  
+
   private DecimalInput afastart;
-  
+
   private DecimalInput afadauer;
-  
+
   private DecimalInput afarestwert;
-  
+
   private SelectInput afamode;
-  
+
+  private SelectInput anlagenzweck;
+
   Button autobutton;
-  
+
   Button afabutton;
   
 
@@ -264,7 +265,7 @@ public class KontoControl extends AbstractControl
         k.setHibiscusId(Integer.parseInt(hkto.getID()));
       }
       k.setAnlagenartId(getSelectedAnlagenartId());
-      k.setAnlagenklasseId(getSelectedAnlagenklasseId());
+      k.setBuchungsklasseId(getSelectedBuchungsklasseId());
       k.setAfaartId(getSelectedAfaartId());
       k.setBetrag((Double) getBetrag().getValue());
       k.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
@@ -277,6 +278,10 @@ public class KontoControl extends AbstractControl
       else
       {
         k.setAfaMode(Integer.valueOf(((AfaMode) getAfaMode().getValue()).getKey()));
+      }
+      if (anlagenzweck != null)
+      {
+        k.setAnlagenzweck((Anlagenzweck) getAnlagenzweck().getValue());
       }
       DBService service = Einstellungen.getDBService();
       String sql = "SELECT DISTINCT konto.id from konto "
@@ -328,11 +333,7 @@ public class KontoControl extends AbstractControl
 
   public Part getKontenList() throws RemoteException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Konto> konten = service.createList(Konto.class);
-    konten.setOrder("ORDER BY nummer");
-
-    kontenList = new TablePart(konten, new KontoAction());
+    kontenList = new TablePart(getKonten(), new EditAction(KontoView.class));
     kontenList.addColumn("Nummer", "nummer");
     kontenList.addColumn("Bezeichnung", "bezeichnung");
     kontenList.addColumn("Kontoart", "kontoart", new Formatter()
@@ -385,16 +386,68 @@ public class KontoControl extends AbstractControl
     return kontenList;
   }
 
-  public void refreshTable() throws RemoteException
+  public void refreshTable()
   {
+    TabRefresh();
+  }
+
+  protected void TabRefresh()
+  {
+    if (kontenList == null)
+    {
+      return;
+    }
     kontenList.removeAll();
+    try
+    {
+      kontenList.removeAll();
+      DBIterator<Konto> konten = getKonten();
+      while (konten.hasNext())
+      {
+        kontenList.addItem(konten.next());
+      }
+      kontenList.sort();
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
+  }
+
+  private DBIterator<Konto> getKonten() throws RemoteException
+  {
     DBIterator<Konto> konten = Einstellungen.getDBService()
         .createList(Konto.class);
-    while (konten.hasNext())
+
+    if (isSuchKontoartAktiv() && getSuchKontoart().getValue() != null)
     {
-      kontenList.addItem(konten.next());
+      konten.addFilter("kontoart = ?",
+          new Object[] { ((Kontoart) getSuchKontoart().getValue()).getKey() });
     }
-    kontenList.sort();
+    if (isSuchStatusAktiv() && getSuchStatus(null).getValue().toString()
+        .equalsIgnoreCase("Nur aktive Konten"))
+      konten.addFilter("(aufloesung IS NULL OR aufloesung > ?)",
+          new Object[] { new Date() });
+    if (isSuchnameAktiv() && getSuchname().getValue() != null)
+    {
+      String tmpSuchname = (String) getSuchname().getValue();
+      if (tmpSuchname.length() > 0)
+      {
+        konten.addFilter("(lower(bezeichnung) like ?)",
+            new Object[] { "%" + tmpSuchname.toLowerCase() + "%" });
+      }
+    }
+    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
+    {
+      String tmpSuchtext = (String) getSuchtext().getValue();
+      if (tmpSuchtext.length() > 0)
+      {
+        konten.addFilter("(lower(nummer) like ?)",
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
+      }
+    }
+    konten.setOrder("ORDER BY nummer");
+    return konten;
   }
 
   public Input getBuchungsart() throws RemoteException
@@ -625,37 +678,35 @@ public class KontoControl extends AbstractControl
     }
   }
   
-  public Input getAnlagenklasse() throws RemoteException
+  public Input getBuchungsklasse() throws RemoteException
   {
-    if (anlagenklasse != null)
+    if (buchungsklasse != null)
     {
-      return anlagenklasse;
+      return buchungsklasse;
     }
     DBIterator<Buchungsklasse> list = Einstellungen.getDBService()
         .createList(Buchungsklasse.class);
     list.setOrder(getBuchungartSortOrder());
-    anlagenklasse = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
-        getKonto().getAnlagenklasse());
-    anlagenklasse.setAttribute(getBuchungartAttribute());
-    anlagenklasse.setPleaseChoose("Bitte auswählen");
+    buchungsklasse = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
+        getKonto().getBuchungsklasse());
+    buchungsklasse.setAttribute(getBuchungartAttribute());
+    buchungsklasse.setPleaseChoose("Bitte auswählen");
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
     {
-      anlagenklasse.setMandatory(true);
+      buchungsklasse.setMandatory(true);
     }
     else
     {
-      anlagenklasse.setMandatory(false);
-      anlagenklasse.setValue(null);
-      anlagenklasse.disable();
+      buchungsklasse.setMandatory(false);
     }
-    return anlagenklasse;
+    return buchungsklasse;
   }
   
-  private Long getSelectedAnlagenklasseId() throws ApplicationException
+  private Long getSelectedBuchungsklasseId() throws ApplicationException
   {
     try
     {
-      Buchungsklasse buchungsKlasse = (Buchungsklasse) getAnlagenklasse().getValue();
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
       if (null == buchungsKlasse)
         return null;
       Long id = Long.valueOf(buchungsKlasse.getID());
@@ -663,7 +714,7 @@ public class KontoControl extends AbstractControl
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewählte Anlagenklasse kann nicht ermittelt werden";
+      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -893,6 +944,24 @@ public class KontoControl extends AbstractControl
     }
     return afamode;
   }
+  
+  public SelectInput getAnlagenzweck() throws RemoteException
+  {
+    if (anlagenzweck != null)
+    {
+      return anlagenzweck;
+    }
+    Anlagenzweck zweck = getKonto().getAnlagenzweck();
+    ArrayList<Anlagenzweck> values = new ArrayList<Anlagenzweck>(
+        Arrays.asList(Anlagenzweck.values()));
+    anlagenzweck = new SelectInput(values, zweck);
+    if (getKontoArt().getValue() != Kontoart.ANLAGE)
+    {
+      anlagenzweck.setValue(Anlagenzweck.NUTZUNGSGEBUNDEN);
+      anlagenzweck.disable();
+    }
+    return anlagenzweck;
+  }
 
   public String getBuchungartSortOrder()
   {
@@ -959,8 +1028,8 @@ public class KontoControl extends AbstractControl
         Buchungsart ba = (Buchungsart) getAnlagenart().getValue();
         if (ba != null)
         {
-          if (getAnlagenklasse().getValue() == null)
-            getAnlagenklasse().setValue(ba.getBuchungsklasse());
+          if (getBuchungsklasse().getValue() == null)
+            getBuchungsklasse().setValue(ba.getBuchungsklasse());
         }
       }
       catch (Exception e)
@@ -976,8 +1045,7 @@ public class KontoControl extends AbstractControl
     {
       if (getKontoArt().getValue() == Kontoart.ANLAGE)
       {
-        getAnlagenklasse().enable();
-        getAnlagenklasse().setMandatory(true);
+        getBuchungsklasse().setMandatory(true);
         getAnlagenart().enable();
         getAnlagenart().setMandatory(true);
         getAfaart().enable();
@@ -994,12 +1062,15 @@ public class KontoControl extends AbstractControl
         getAfaMode().setValue(new AfaMode(AfaMode.AUTO));
         getAfaMode().setMandatory(true);
         getAfaMode().setEnabled(true);
+        if (anlagenzweck != null)
+        {
+          anlagenzweck.enable();
+          anlagenzweck.setValue(getKonto().getAnlagenzweck());
+        }
       }
       else
       {
-        getAnlagenklasse().setMandatory(false);
-        getAnlagenklasse().setValue(null);
-        getAnlagenklasse().disable();
+        getBuchungsklasse().setMandatory(false);
         getAnlagenart().setMandatory(false);
         getAnlagenart().setValue(null);
         getAnlagenart().disable();
@@ -1025,6 +1096,11 @@ public class KontoControl extends AbstractControl
         getAfaMode().setMandatory(false);
         getAfaMode().setValue(null);
         getAfaMode().disable();
+        if (anlagenzweck != null)
+        {
+          anlagenzweck.setValue(Anlagenzweck.NUTZUNGSGEBUNDEN);
+          anlagenzweck.disable();
+        }
       }
     }
     catch (RemoteException e)

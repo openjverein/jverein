@@ -17,9 +17,10 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.SollbuchungExportAction;
 import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
+import de.jost_net.JVerein.gui.action.SollbuchungExportAction;
 import de.jost_net.JVerein.gui.action.SollbuchungExportAction.EXPORT_TYP;
+import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
@@ -46,14 +47,15 @@ public class SollbuchungListeView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getSuchname());
+    left.addLabelPair("Zahler", control.getSuchname());
+    left.addLabelPair("Mitglied", control.getSuchtext());
     left.addInput(control.getDifferenz());
     left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
-    right.addInput(control.getMailauswahl());
+    right.addLabelPair("Zahler Mail", control.getMailauswahl());
 
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),
@@ -78,7 +80,7 @@ public class SollbuchungListeView extends AbstractView
     buttons.addButton(new Button("Export",
         new SollbuchungExportAction(EXPORT_TYP.MITGLIEDSKONTO), control, false,
         "document-save.png"));
-    buttons.addButton("Neu", new SollbuchungEditAction(), control, false,
+    buttons.addButton("Neu", new SollbuchungNeuAction(null), control, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

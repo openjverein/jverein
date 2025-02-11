@@ -18,12 +18,14 @@ package de.jost_net.JVerein.Queries;
 
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.BuchungsControl.SplitFilter;
 import de.jost_net.JVerein.io.Suchbetrag;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Konto;
@@ -77,9 +79,12 @@ public class BuchungQuery
   
   public String ordername = null;
 
+  private SplitFilter split;
+
   public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
       Buchungsart buchungsart, Projekt projekt, String text, String betrag,
-      Boolean hasMitglied, String mitglied, boolean geldkonto)
+      Boolean hasMitglied, String mitglied, boolean geldkonto,
+      SplitFilter split)
   {
     this.datumvon = datumvon;
     this.datumbis = datumbis;
@@ -91,6 +96,7 @@ public class BuchungQuery
     this.hasMitglied = hasMitglied;
     this.geldkonto = geldkonto;
     this.mitglied = mitglied;
+    this.split = split;
   }
   
   public String getOrder(String value) {
@@ -220,6 +226,20 @@ public class BuchungQuery
       {
         it.addFilter("projekt = ?", projekt.getID());
       }
+    }
+
+    switch (split)
+    {
+      case SPLIT:
+        it.addFilter("(buchung.splittyp is null or buchung.splittyp = ?)",
+            SplitbuchungTyp.SPLIT);
+        break;
+      case HAUPT:
+        it.addFilter("(buchung.splittyp is null or buchung.splittyp = ?)",
+            SplitbuchungTyp.HAUPT);
+        break;
+      default:
+        break;
     }
 
     if (betrag != null && betrag.length() > 0)

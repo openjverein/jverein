@@ -17,8 +17,8 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzAction;
-import de.jost_net.JVerein.gui.action.ArbeitseinsatzUeberpruefungAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.willuhn.jameica.gui.AbstractView;
@@ -67,7 +67,8 @@ public class ArbeitseinsatzListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
-    buttons.addButton("Auswertung", new ArbeitseinsatzUeberpruefungAction(), 
+    buttons.addButton("Auswertung",
+        new StartViewAction(ArbeitseinsatzUeberpruefungView.class),
         control, false, "screwdriver.png");
     buttons.addButton("Neu", new ArbeitseinsatzAction(null), 
         control, false, "document-new.png");

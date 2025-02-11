@@ -292,8 +292,7 @@ public class MitgliedQuery
       Date d = (Date) control.getSterbedatumbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.isSuchGeschlechtAktiv() && control.getSuchGeschlecht().getText() != null
-        && !control.getSuchGeschlecht().getText().equals("Bitte auswählen"))
+    if (control.isSuchGeschlechtAktiv() && control.getSuchGeschlecht().getValue() != null)
     {
       addCondition("geschlecht = ?");
       String g = (String) control.getSuchGeschlecht().getValue();

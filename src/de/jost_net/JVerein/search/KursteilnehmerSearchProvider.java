@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.KursteilnehmerDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.search.Result;
@@ -82,7 +83,7 @@ public class KursteilnehmerSearchProvider implements SearchProvider
     @Override
     public void execute() throws ApplicationException
     {
-      new KursteilnehmerDetailAction().handleAction(this.k);
+      new EditAction(KursteilnehmerDetailView.class).handleAction(this.k);
     }
 
     @Override

@@ -16,56 +16,80 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.Einstellungen;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.ScrolledContainer;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class SollbuchungDetailView extends AbstractView
 {
 
-  private int typ;
-
-  public SollbuchungDetailView(int typ)
-  {
-    this.typ = typ;
-  }
-
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Buchung");
+    GUI.getView().setTitle("Sollbuchung");
 
     final MitgliedskontoControl control = new MitgliedskontoControl(this);
-    LabelGroup grBuchung = new LabelGroup(getParent(),
-        (typ == MitgliedskontoNode.SOLL ? "Soll" : "Ist") + "buchung");
-    grBuchung.addLabelPair("Mitglied", control.getMitglied());
-    grBuchung.addLabelPair("Datum", control.getDatum());
-    grBuchung.addLabelPair("Verwendungszweck 1", control.getZweck1());
-    grBuchung.addLabelPair("Zahlungsweg", control.getZahlungsweg());
+
+    ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
+    LabelGroup group = new LabelGroup(scrolled.getComposite(), "Sollbuchung");
+    ColumnLayout cols = new ColumnLayout(group.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cols.getComposite());
+    left.addLabelPair("Mitglied", control.getMitglied());
+    left.addLabelPair("Datum", control.getDatum());
+    left.addLabelPair("Zahlungsweg", control.getZahlungsweg());
+
+    SimpleContainer right = new SimpleContainer(cols.getComposite());
+    right.addLabelPair("Zahler", control.getZahler());
+    right.addLabelPair("Verwendungszweck", control.getZweck1());
     control.getBetrag().setMandatory(true);
-    grBuchung.addLabelPair("Betrag", control.getBetrag());
-    grBuchung.addLabelPair("Buchungsart", control.getBuchungsart());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-    {
-      grBuchung.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
-    }
+    right.addLabelPair("Betrag", control.getBetrag());
+
+    boolean hasRechnung = control.hasRechnung();
+
+    LabelGroup cont = new LabelGroup(scrolled.getComposite(),
+        "Sollbuchungspositionen");
+    
+    ButtonArea buttons1 = new ButtonArea();
+    Button neu = new Button("Neu", new SollbuchungPositionNeuAction(),
+        getCurrentObject(), false, "document-new.png");
+    neu.setEnabled(!hasRechnung);
+    buttons1.addButton(neu);
+
+    // Diese Zeilen werden gebraucht um die Buttons rechts zu plazieren
+    GridLayout layout = new GridLayout();
+    Composite comp = new Composite(cont.getComposite(), SWT.NONE);
+    comp.setLayout(layout);
+    comp.setLayoutData(new GridData(GridData.END));
+
+    buttons1.paint(cont.getComposite());
+    cont.addPart(control.getSollbuchungPositionListPart(hasRechnung));
+
+    LabelGroup buch = new LabelGroup(scrolled.getComposite(),
+        "Zugeordnete Buchungen");
+    buch.addPart(control.getBuchungListPart());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
-    
-    boolean hasRechnung = control.hasRechnung();
+
     Button save = new Button("Speichern", new Action()
     {
-
       @Override
       public void handleAction(Object context)
       {
@@ -74,8 +98,7 @@ public class SollbuchungDetailView extends AbstractView
     }, null, true, "document-save.png");
     save.setEnabled(!hasRechnung);
     buttons.addButton(save);
-    
-    
+
     buttons.paint(this.getParent());
   }
 }

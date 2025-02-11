@@ -24,11 +24,17 @@ public enum Kontoart
   // Ids über dem Limit werden in beiden Salden ignoriert.
   GELD(1, "Geldkonto"),
   ANLAGE(2, "Anlagenkonto"),
-  VERBINDLICHKEITEN(3, "Verbindlichkeitskonto"),
+  SCHULDEN(3, "Fremdkapital"),
   LIMIT(100, "-- Limit --"),
-  RUECKLAGE(101, "Rücklagenkonto nach § 62 Abs. 1 AO"),
-  VERMOEGEN(102, "Vermögenskonto nach § 62 Abs. 3 und 4 AO"),
-  SONSTIGE_RUECKLAGEN(103, "Konto für sonstige Rücklagen");
+  RUECKLAGE_ZWECK_GEBUNDEN(101, "Zweckgebundene Rücklage nach § 62 Abs. 1 Nr. 1 AO"),
+  RUECKLAGE_BETRIEBSMITTEL(102, "Betriebsmittelrücklage nach § 62 Abs. 1 Nr. 1 AO"),
+  RUECKLAGE_INVESTITION(103, "Investitionsrücklage nach § 62 Abs. 1 Nr. 1 AO"),
+  RUECKLAGE_INSTANDHALTUNG(104, "Instandhaltungsrücklage nach § 62 Abs. 1 Nr. 1 AO"),
+  RUECKLAGE_WIEDERBESCHAFFUNG(105, "Wiederbeschaffungsrücklage nach § 62 Abs. 1 Nr. 2 AO"),
+  RUECKLAGE_FREI(106, "Freie Rücklage nach § 62 Abs. 1 Nr. 3 AO"),
+  RUECKLAGE_ERWERB(107, "Rücklage für Gesellschaftsrechte nach § 62 Abs. 1 Nr. 4 AO"),
+  VERMOEGEN(108, "Vermögen nach § 62 Abs. 3 und 4 AO"),
+  RUECKLAGE_SONSTIG(109, "Sonstige Rücklage");
 
   private final String text;
 

@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.StringTokenizer;
@@ -41,6 +42,7 @@ import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SuchSpendenart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Adresstyp;
@@ -73,7 +75,9 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FilterControl extends AbstractControl
-{  
+{
+  public final static String ALLE = "Alle";
+
   // String für allgemeine Settings z.B. settings1
   protected String settingsprefix = "";
 
@@ -160,6 +164,8 @@ public class FilterControl extends AbstractControl
   protected SelectInput suchbuchungsklasse = null;
 
   protected SelectInput suchbuchungsartart = null;
+
+  protected SelectInput suchkontoart = null;
 
   private Calendar calendar = Calendar.getInstance();
 
@@ -266,7 +272,7 @@ public class FilterControl extends AbstractControl
       suchadresstyp = new SelectInput(new ArrayList<>(), null);
     }
     suchadresstyp.setName("Mitgliedstyp");
-    suchadresstyp.setPleaseChoose("Bitte auswählen");
+    suchadresstyp.setPleaseChoose(ALLE);
     suchadresstyp.addListener(new FilterListener());
     return suchadresstyp;
   }
@@ -318,7 +324,7 @@ public class FilterControl extends AbstractControl
       Logger.error("Fehler beim lesen der Einstellungen");
     }
     art.setName("Mitgliedsart");
-    art.setPleaseChoose("Bitte auswählen");
+    art.setPleaseChoose(ALLE);
     art.addListener(new FilterListener());
     return art;
   }
@@ -548,7 +554,7 @@ public class FilterControl extends AbstractControl
     beitragsgruppeausw = new SelectInput(list != null ? PseudoIterator.asList(list) : null, bg);
     beitragsgruppeausw.setName("Beitragsgruppe");
     beitragsgruppeausw.setAttribute("bezeichnung");
-    beitragsgruppeausw.setPleaseChoose("Bitte auswählen");
+    beitragsgruppeausw.setPleaseChoose(ALLE);
     beitragsgruppeausw.addListener(new FilterListener());
     return beitragsgruppeausw;
   }
@@ -584,7 +590,7 @@ public class FilterControl extends AbstractControl
     suchgeschlecht = new GeschlechtInput(
         settings.getString(settingsprefix + "geschlecht", ""));
     suchgeschlecht.setName("Geschlecht");
-    suchgeschlecht.setPleaseChoose("Bitte auswählen");
+    suchgeschlecht.setPleaseChoose(ALLE);
     suchgeschlecht.addListener(new FilterListener());
     return suchgeschlecht;
   }
@@ -931,7 +937,7 @@ public class FilterControl extends AbstractControl
       //
     }
     suchlehrgangsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, letztesuche);
-    suchlehrgangsart.setPleaseChoose("Bitte auswählen");
+    suchlehrgangsart.setPleaseChoose(ALLE);
     suchlehrgangsart.addListener(new FilterListener());
     suchlehrgangsart.setName("Lehrgangsart");
     return suchlehrgangsart;
@@ -1100,14 +1106,14 @@ public class FilterControl extends AbstractControl
     return suchspendenart != null;
   }
 
-  public SelectInput getSuchStatus() throws RemoteException
+  public SelectInput getSuchStatus(String suchstring) throws RemoteException
   {
     if (suchstatus != null)
     {
       return suchstatus;
     }
-    suchstatus = new SelectInput(new String[] { "Alle", "Ohne Deaktiviert" },
-        settings.getString(settingsprefix + "suchstatus", "Alle"));
+    suchstatus = new SelectInput(new String[] { ALLE, suchstring },
+        settings.getString(settingsprefix + "suchstatus", ALLE));
     suchstatus.addListener(new FilterListener());
     suchstatus.setName("Status");
     return suchstatus;
@@ -1147,7 +1153,7 @@ public class FilterControl extends AbstractControl
         list != null ? PseudoIterator.asList(list) : null, bk);
     suchbuchungsklasse.setName("Buchungsklasse");
     suchbuchungsklasse.setAttribute("bezeichnung");
-    suchbuchungsklasse.setPleaseChoose("Bitte auswählen");
+    suchbuchungsklasse.setPleaseChoose(ALLE);
     suchbuchungsklasse.addListener(new FilterListener());
     return suchbuchungsklasse;
   }
@@ -1178,7 +1184,7 @@ public class FilterControl extends AbstractControl
     }
     suchbuchungsartart = new SelectInput(ArtBuchungsart.getArray(), artb);
     suchbuchungsartart.setName("Art");
-    suchbuchungsartart.setPleaseChoose("Bitte auswählen");
+    suchbuchungsartart.setPleaseChoose(ALLE);
     suchbuchungsartart.addListener(new FilterListener());
     return suchbuchungsartart;
   }
@@ -1186,6 +1192,36 @@ public class FilterControl extends AbstractControl
   public boolean isSuchBuchungsartArtAktiv()
   {
     return suchbuchungsartart != null;
+  }
+
+  public SelectInput getSuchKontoart() throws RemoteException
+  {
+    if (suchkontoart != null)
+    {
+      return suchkontoart;
+    }
+    ArrayList<Kontoart> values = new ArrayList<Kontoart>(
+        Arrays.asList(Kontoart.values()));
+    values.remove(Kontoart.LIMIT);
+    String key = settings.getString(settingsprefix + "suchkontoart.key", null);
+    if (key != null && !key.isEmpty())
+    {
+      Kontoart defaultwert = Kontoart.getByKey(Integer.parseInt(key));
+      suchkontoart = new SelectInput(values, defaultwert);
+    }
+    else
+    {
+      suchkontoart = new SelectInput(values, null);
+    }
+    suchkontoart.setName("Kontoart");
+    suchkontoart.setPleaseChoose(ALLE);
+    suchkontoart.addListener(new FilterListener());
+    return suchkontoart;
+  }
+
+  public boolean isSuchKontoartAktiv()
+  {
+    return suchkontoart != null;
   }
 
   /**
@@ -1309,11 +1345,13 @@ public class FilterControl extends AbstractControl
         if (suchspendenart != null)
           suchspendenart.setValue(SuchSpendenart.ALLE);
         if (suchstatus != null)
-          suchstatus.setValue("Alle");
+          suchstatus.setValue(ALLE);
         if (suchbuchungsklasse != null)
           suchbuchungsklasse.setValue(null);
         if (suchbuchungsartart != null)
           suchbuchungsartart.setValue(null);
+        if (suchkontoart != null)
+          suchkontoart.setValue(null);
         refresh();
       }
     }, null, false, "eraser.png");
@@ -1474,7 +1512,7 @@ public class FilterControl extends AbstractControl
     if (art != null)
     {
       String tmp = (String) art.getValue();
-      if (tmp != null && !tmp.equals("Bitte auswählen"))
+      if (tmp != null)
       {
         settings.setAttribute(settingsprefix + "status.art", tmp);
       }
@@ -1539,7 +1577,7 @@ public class FilterControl extends AbstractControl
     if (suchgeschlecht != null)
     {
       String tmp = (String) suchgeschlecht.getValue();
-      if (tmp != null && !getSuchGeschlecht().getText().equals("Bitte auswählen"))
+      if (tmp != null)
       {
         settings.setAttribute(settingsprefix + "geschlecht", tmp);
       }
@@ -1746,6 +1784,19 @@ public class FilterControl extends AbstractControl
       else
       {
         settings.setAttribute(settingsprefix + "suchbuchungsartart", "");
+      }
+    }
+
+    if (suchkontoart != null)
+    {
+      Kontoart ka = (Kontoart) suchkontoart.getValue();
+      if (ka != null)
+      {
+        settings.setAttribute(settingsprefix + "suchkontoart.key", ka.getKey());
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "suchkontoart.key", "");
       }
     }
   }

@@ -64,6 +64,8 @@ public class Reporter
 
   private Document rpt;
 
+  private PdfWriter writer;
+
   private PdfPTable table;
 
   private HyphenationAuto hyph;
@@ -108,14 +110,21 @@ public class Reporter
   }
 
   public Reporter(OutputStream out, float linkerRand, float rechterRand,
-      float obererRand, float untererRand) throws DocumentException
+      float obererRand, float untererRand, boolean encrypt)
+      throws DocumentException
   {
     this.out = out;
     rpt = new Document();
     rpt.setMargins(linkerRand, rechterRand, obererRand, untererRand);
     hyph = new HyphenationAuto("de", "DE", 2, 2);
-    PdfWriter.getInstance(rpt, out).setEncryption(null, null, 
-        PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS, PdfWriter.ENCRYPTION_AES_256);
+    writer = PdfWriter.getInstance(rpt, out);
+    if (encrypt)
+    {
+      writer.setEncryption(null, null,
+          PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS
+              | PdfWriter.ALLOW_COPY,
+          PdfWriter.ENCRYPTION_AES_256 | PdfWriter.DO_NOT_ENCRYPT_METADATA);
+    }
     AbstractPlugin plugin = Application.getPluginLoader()
         .getPlugin(JVereinPlugin.class);
     rpt.addAuthor(plugin.getManifest().getName() + " - Version "
@@ -129,39 +138,29 @@ public class Reporter
       int maxRecords, float linkerRand, float rechterRand, float obererRand,
       float untererRand) throws DocumentException
   {
-    this.out = out;
-    rpt = new Document();
-    hyph = new HyphenationAuto("de", "DE", 2, 2);
-    PdfWriter writer = PdfWriter.getInstance(rpt, out);
-    writer.setEncryption(null, null, 
-        PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS, PdfWriter.ENCRYPTION_AES_256);
-    rpt.setMargins(linkerRand, rechterRand, obererRand, untererRand);
-    AbstractPlugin plugin = Application.getPluginLoader()
-        .getPlugin(JVereinPlugin.class);
-    rpt.addAuthor(plugin.getManifest().getName() + " - Version "
-        + plugin.getManifest().getVersion());
-    rpt.addTitle(subtitle);
+    this(out, linkerRand, rechterRand, obererRand, untererRand, false);
 
-    String fuss = title + " | " + subtitle + " | " + "erstellt am "
-        + new JVDateFormatTTMMJJJJ().format(new Date()) + "     " + "Seite: ";
-    HeaderFooter hf = new HeaderFooter();
-    hf.setFooter(fuss);
-    writer.setPageEvent(hf);
-
-    rpt.open();
-
-    if (title.length() > 0)
+    StringBuilder fuss = new StringBuilder();
+    if (title != null && title.length() > 0)
     {
       Paragraph pTitle = new Paragraph(title, getFreeSansBold(13));
       pTitle.setAlignment(Element.ALIGN_CENTER);
       rpt.add(pTitle);
-
+      fuss.append(title + " | ");
+    }
+    if (subtitle != null && subtitle.length() > 0)
+    {
+      rpt.addTitle(subtitle);
       Paragraph psubTitle = new Paragraph(subtitle, getFreeSansBold(10));
       psubTitle.setAlignment(Element.ALIGN_CENTER);
       rpt.add(psubTitle);
+      fuss.append(subtitle + " | ");
     }
-    headers = new ArrayList<>();
-    widths = new ArrayList<>();
+    fuss.append("erstellt am " + new JVDateFormatTTMMJJJJ().format(new Date())
+        + "     Seite: ");
+    HeaderFooter hf = new HeaderFooter();
+    hf.setFooter(fuss.toString());
+    writer.setPageEvent(hf);
   }
 
   /**

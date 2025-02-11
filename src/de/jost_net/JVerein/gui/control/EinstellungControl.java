@@ -30,19 +30,21 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
+import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SEPALandInput;
 import de.jost_net.JVerein.gui.input.SEPALandObject;
+import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.AfaOrt;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
 import de.jost_net.JVerein.keys.Beitragsmodel;
-import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Einstellung;
+import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.server.EinstellungImpl;
 import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
 import de.jost_net.OBanToo.SEPA.Land.SEPALaender;
@@ -53,6 +55,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.DirectoryInput;
 import de.willuhn.jameica.gui.input.ImageInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -346,6 +349,10 @@ public class EinstellungControl extends AbstractControl
   private TextInput ustid;
 
   private SelectInput staat;
+
+  private DialogInput verrechnungskonto;
+
+  private CheckboxInput splitpositionzweck;
 
   public EinstellungControl(AbstractView view)
   {
@@ -840,6 +847,19 @@ public class EinstellungControl extends AbstractControl
     return optiert;
   }
   
+  public CheckboxInput getSplitPositionZweck() throws RemoteException
+  {
+    if (splitpositionzweck != null)
+    {
+      return splitpositionzweck;
+    }
+    splitpositionzweck = new CheckboxInput(
+        Einstellungen.getEinstellung().getSplitPositionZweck());
+    splitpositionzweck.setName("Bei automatischem Splitten den "
+        + "Verwendungszweck aus den Sollbuchungspositionen übernehmen");
+    return splitpositionzweck;
+  }
+
   public CheckboxInput getFreieBuchungsklasse() throws RemoteException 
   {
     if (freiebuchungsklasse != null) 
@@ -1374,6 +1394,20 @@ public class EinstellungControl extends AbstractControl
         Einstellungen.getEinstellung().getCt1SepaVersion());
     ct1sepaversion.setAttribute("file");
     return ct1sepaversion;
+  }
+
+  public DialogInput getVerrechnungskonto() throws RemoteException
+  {
+    if (verrechnungskonto != null)
+    {
+      return verrechnungskonto;
+    }
+    verrechnungskonto = new KontoauswahlInput(null).getKontoAuswahl(false,
+        Einstellungen.getEinstellung().getVerrechnungskontoId() == null ? null
+            : Einstellungen.getEinstellung().getVerrechnungskontoId()
+                .toString(),
+        false, false, null);
+    return verrechnungskonto;
   }
 
   public Input getAltersgruppen() throws RemoteException
@@ -2016,6 +2050,8 @@ public class EinstellungControl extends AbstractControl
       return anhangspeichern;
     }
     anhangspeichern = new CheckboxInput(Einstellungen.getEinstellung().getAnhangSpeichern());
+    anhangspeichern
+        .setName("Bei Mail Versand von Formularen Anhang in DB speichern");
     return anhangspeichern;
   }
   
@@ -2077,7 +2113,7 @@ public class EinstellungControl extends AbstractControl
       e.setOrt((String) getOrt().getValue());
       e.setBic((String) getBic().getValue());
       String ib = (String) getIban().getValue();
-      if (ib == null)
+      if (ib == null || ib.isBlank())
         e.setIban(null);
       else
         e.setIban(ib.toUpperCase().replace(" ",""));
@@ -2206,6 +2242,8 @@ public class EinstellungControl extends AbstractControl
       e.setSEPADatumOffset((Integer) sepadatumoffset.getValue());
       e.setAbrlAbschliessen((Boolean) abrlabschliessen.getValue());
       e.setBeitragAltersstufen((String)beitragaltersstufen.getValue());
+      e.setVerrechnungskontoId((Long
+          .parseLong((String) ((Konto) verrechnungskonto.getValue()).getID())));
       e.store();
       Einstellungen.setEinstellung(e);
 
@@ -2330,6 +2368,7 @@ public class EinstellungControl extends AbstractControl
       e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());
       e.setOptiert((Boolean) getOptiert().getValue());
       e.setBuchungsklasseInBuchung((Boolean) getFreieBuchungsklasse().getValue());
+      e.setSplitPositionZweck((Boolean) getSplitPositionZweck().getValue());
       e.store();
       Einstellungen.setEinstellung(e);
 

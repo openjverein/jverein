@@ -17,7 +17,9 @@
 package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.willuhn.datasource.rmi.DBObject;
 
@@ -29,10 +31,18 @@ public interface Mitgliedskonto extends DBObject
       throws RemoteException;
 
   public Mitglied getMitglied() throws RemoteException;
-  
+
   public String getMitgliedId() throws RemoteException;
 
   public void setMitglied(Mitglied mitglied) throws RemoteException;
+
+  public Mitglied getZahler() throws RemoteException;
+
+  public void setZahler(Mitglied zahler) throws RemoteException;
+
+  public Long getZahlerId() throws RemoteException;
+
+  public void setZahlerId(Long zahlerId) throws RemoteException;
 
   public Date getDatum() throws RemoteException;
 
@@ -46,39 +56,19 @@ public interface Mitgliedskonto extends DBObject
 
   public void setZahlungsweg(Integer zahlungsweg) throws RemoteException;
 
-  public Double getNettobetrag() throws RemoteException;
-
-  public void setNettobetrag(Double nettobetrag) throws RemoteException;
-
-  public Double getSteuersatz() throws RemoteException;
-
-  public void setSteuersatz(Double steuersatz) throws RemoteException;
-
-  public Double getSteuerbetrag() throws RemoteException;
-
-  public void setSteuerbetrag(Double steuerbetrag) throws RemoteException;
-
   public void setBetrag(Double betrag) throws RemoteException;
 
   public Double getBetrag() throws RemoteException;
 
   public Double getIstSumme() throws RemoteException;
 
-  public Buchungsart getBuchungsart() throws RemoteException;
-
-  public void setBuchungsart(Buchungsart buchungsart) throws RemoteException;
-  
-  public Long getBuchungsartId() throws RemoteException;
-
-  public void setBuchungsartId(Long buchungsartId) throws RemoteException;
-
-  public Buchungsklasse getBuchungsklasse() throws RemoteException;
-  
-  public Long getBuchungsklasseId() throws RemoteException;
-
-  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
-
   public Rechnung getRechnung() throws RemoteException;
 
   public void setRechnung(Rechnung rechnung) throws RemoteException;
+
+  ArrayList<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException;
+
+  public List<Buchung> getBuchungList() throws RemoteException;
+
 }
