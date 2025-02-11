@@ -1155,18 +1155,7 @@ public class MitgliedControl extends FilterControl
           else
           {
             getMitglied().setZahlerID(null);
-            if (zahler != null)
-            {
-              if (zahler instanceof SelectNoScrollInput)
-              {
-                ((SelectNoScrollInput) zahler).setPreselected(null);
-              }
-              else if (zahler instanceof VollzahlerSearchInput)
-              {
-                ((VollzahlerSearchInput) zahler).setValue("Zum Suchen tippen");
-              }
-              zahler.setEnabled(false);
-            }
+            disableZahler();
             // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
             if (getMitglied().getID() != null)
             {
@@ -1184,6 +1173,22 @@ public class MitgliedControl extends FilterControl
       }
     });
     return beitragsgruppe;
+  }
+
+  private void disableZahler()
+  {
+    if (zahler != null)
+    {
+      if (zahler instanceof SelectNoScrollInput)
+      {
+        ((SelectNoScrollInput) zahler).setPreselected(null);
+      }
+      else if (zahler instanceof VollzahlerSearchInput)
+      {
+        ((VollzahlerSearchInput) zahler).setValue("Zum Suchen tippen");
+      }
+      zahler.setEnabled(false);
+    }
   }
 
   public MitgliedSekundaereBeitragsgruppePart getMitgliedSekundaereBeitragsgruppeView()
@@ -1358,15 +1363,7 @@ public class MitgliedControl extends FilterControl
     }
     else
     {
-      if (zahler instanceof SelectNoScrollInput)
-      {
-        ((SelectNoScrollInput) zahler).setPreselected(getMitglied());
-      }
-      else if (zahler instanceof VollzahlerSearchInput)
-      {
-        ((VollzahlerSearchInput) zahler).setValue("Zum Suchen tippen");
-      }
-      zahler.setEnabled(false);
+      disableZahler();
     }
 
     return zahler;

@@ -27,6 +27,8 @@ import de.jost_net.JVerein.server.MitgliedUtils;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.input.AbstractInput;
+import de.willuhn.jameica.plugin.Version;
+import de.willuhn.jameica.system.Application;
 
 public class VollzahlerInput
 {
@@ -34,6 +36,11 @@ public class VollzahlerInput
   public AbstractInput getMitgliedInput(AbstractInput mitgliedInput,
       Mitglied mitglied, int auswahl) throws RemoteException
   {
+    Version version = Application.getManifest().getVersion();
+    if (version.compareTo(new Version("2.10.5")) < 0)
+    {
+      auswahl = AbstractInputAuswahl.ComboBox;
+    }
     String suche = "";
     if (mitglied.getZahlerID() != null)
     {
