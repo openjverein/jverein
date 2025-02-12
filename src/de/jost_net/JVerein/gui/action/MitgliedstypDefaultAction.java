@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
@@ -35,15 +35,15 @@ public class MitgliedstypDefaultAction implements Action
   {
     try
     {
-      Adresstyp at = (Adresstyp) Einstellungen.getDBService().createObject(
-          Adresstyp.class, "1");
+      Mitgliedstyp at = (Mitgliedstyp) Einstellungen.getDBService().createObject(
+          Mitgliedstyp.class, String.valueOf(Mitgliedstyp.MITGLIED));
       at.setBezeichnung("Mitglied");
-      at.setJVereinid(1);
+      at.setJVereinid(Mitgliedstyp.MITGLIED);
       at.store();
-      at = (Adresstyp) Einstellungen.getDBService().createObject(
-          Adresstyp.class, "2");
+      at = (Mitgliedstyp) Einstellungen.getDBService().createObject(
+          Mitgliedstyp.class, String.valueOf(Mitgliedstyp.SPENDER));
       at.setBezeichnung("Spender/in");
-      at.setJVereinid(2);
+      at.setJVereinid(Mitgliedstyp.SPENDER);
       at.store();
 
       GUI.getStatusBar().setSuccessText("Mitgliedstypen eingefügt.");

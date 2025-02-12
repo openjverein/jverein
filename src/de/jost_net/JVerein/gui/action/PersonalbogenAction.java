@@ -51,6 +51,7 @@ import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
@@ -290,7 +291,8 @@ public class PersonalbogenAction implements Action
       kommunikation += "Email: " + m.getEmail();
     }
     rpt.addColumn(kommunikation, Element.ALIGN_LEFT);
-    if (m.getAdresstyp().getID().equals("1"))
+    if (m.getMitgliedstyp().getID()
+        .equals(String.valueOf(Mitgliedstyp.MITGLIED)))
     {
       rpt.addColumn("Eintritt", Element.ALIGN_LEFT);
       rpt.addColumn(m.getEintritt(), Element.ALIGN_LEFT);

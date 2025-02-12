@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -38,7 +39,7 @@ public class MitgliedDuplizierenAction implements Action
     {
       m = (Mitglied) context;
       m.setID(null);
-      if (m.getAdresstyp().getJVereinid() == 1)
+      if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
       {
         GUI.startView(new MitgliedDetailView(), m);
       }

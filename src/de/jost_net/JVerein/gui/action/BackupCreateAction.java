@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.server.AbrechnungslaufImpl;
-import de.jost_net.JVerein.server.AdresstypImpl;
+import de.jost_net.JVerein.server.MitgliedstypImpl;
 import de.jost_net.JVerein.server.AltersstaffelImpl;
 import de.jost_net.JVerein.server.AnfangsbestandImpl;
 import de.jost_net.JVerein.server.ArbeitseinsatzImpl;
@@ -163,7 +163,7 @@ public class BackupCreateAction implements Action
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Mitgliedstypen");
-          backup(AdresstypImpl.class, writer, monitor);
+          backup(MitgliedstypImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Buchungsklassen");

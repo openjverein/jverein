@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.rmi.DBIterator;
 
 public class MitgliedUtils
@@ -40,13 +41,14 @@ public class MitgliedUtils
 
   public static void setMitglied(DBIterator<Mitglied> it) throws RemoteException
   {
-    it.addFilter("adresstyp = 1");
+    it.addFilter(Mitglied.MITGLIEDSTYP + " = " + Mitgliedstyp.MITGLIED);
   }
 
   public static void setMitgliedOderSpender(DBIterator<Mitglied> it)
       throws RemoteException
   {
-    it.addFilter("(adresstyp = 1 or adresstyp = 2)");
+    it.addFilter("(" + Mitglied.MITGLIEDSTYP + " = " + Mitgliedstyp.MITGLIED
+        + " OR " + Mitglied.MITGLIEDSTYP + " = " + Mitgliedstyp.SPENDER + ")");
   }
 
   public static void setMitgliedNatuerlichePerson(DBIterator<Mitglied> it)

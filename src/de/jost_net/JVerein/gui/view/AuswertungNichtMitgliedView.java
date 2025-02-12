@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DialogInput;
@@ -50,7 +50,7 @@ public class AuswertungNichtMitgliedView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
 
     left.addInput(control.getMailauswahl());
-    left.addInput(control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED));
+    left.addInput(control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED));
     DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
     left.addInput(eigenschaftenInput);
     control.updateEigenschaftenAuswahlTooltip();

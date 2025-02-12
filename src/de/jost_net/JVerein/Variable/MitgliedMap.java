@@ -71,8 +71,8 @@ public class MitgliedMap
     }
     map.put(MitgliedVar.ADRESSIERUNGSZUSATZ.getName(),
         StringTool.toNotNullString(mitglied.getAdressierungszusatz()));
-    map.put(MitgliedVar.ADRESSTYP.getName(),
-        StringTool.toNotNullString(mitglied.getAdresstyp().getID()));
+    map.put(MitgliedVar.MITGLIEDSTYP.getName(),
+        StringTool.toNotNullString(mitglied.getMitgliedstyp().getID()));
     map.put(MitgliedVar.ANREDE.getName(),
         StringTool.toNotNullString(mitglied.getAnrede()));
     map.put(MitgliedVar.ANREDE_FOERMLICH.getName(),

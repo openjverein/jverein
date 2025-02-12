@@ -26,6 +26,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
@@ -123,7 +124,8 @@ public class MitgliedDetailAction implements Action
           mitglied.setPersonenart("n");
         }
       }
-      if (mitglied.getAdresstyp() == null || mitglied.getAdresstyp().getID().equals("1"))
+      if (mitglied.getMitgliedstyp() == null || mitglied.getMitgliedstyp()
+          .getID().equals(String.valueOf(Mitgliedstyp.MITGLIED)))
       {
         GUI.startView(new MitgliedDetailView(), mitglied);
       }

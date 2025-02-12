@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
@@ -36,13 +36,13 @@ public class MitgliedstypDeleteAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof Adresstyp))
+    if (context == null || !(context instanceof Mitgliedstyp))
     {
       throw new ApplicationException("Kein Mitgliedstyp ausgewählt");
     }
     try
     {
-      Adresstyp at = (Adresstyp) context;
+      Mitgliedstyp at = (Mitgliedstyp) context;
       if (at.getJVereinid() > 0)
       {
         throw new ApplicationException(
@@ -54,7 +54,7 @@ public class MitgliedstypDeleteAction implements Action
       }
       DBIterator<Mitglied> it = Einstellungen.getDBService()
           .createList(Mitglied.class);
-      it.addFilter("adresstyp = ?", new Object[] { at.getID() });
+      it.addFilter(Mitglied.MITGLIEDSTYP + " = ?", new Object[] { at.getID() });
       it.setLimit(1);
       if (it.hasNext())
       {

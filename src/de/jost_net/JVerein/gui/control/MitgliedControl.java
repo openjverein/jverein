@@ -86,7 +86,7 @@ import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Eigenschaft;
@@ -153,7 +153,7 @@ public class MitgliedControl extends FilterControl
 
   private TablePart part;
 
-  private SelectNoScrollInput adresstyp;
+  private SelectNoScrollInput mitgliedstyp;
 
   private TextInput externemitgliedsnummer;
 
@@ -339,19 +339,20 @@ public class MitgliedControl extends FilterControl
     this.mitglied = mitglied;
   }
 
-  public SelectNoScrollInput getAdresstyp() throws RemoteException
+  public SelectNoScrollInput getMitgliedstyp() throws RemoteException
   {
-    if (adresstyp != null)
+    if (mitgliedstyp != null)
     {
-      return adresstyp;
+      return mitgliedstyp;
     }
-    DBIterator<Adresstyp> at = Einstellungen.getDBService()
-        .createList(Adresstyp.class);
-    at.addFilter("jvereinid != 1 or jvereinid is null");
+    DBIterator<Mitgliedstyp> at = Einstellungen.getDBService()
+        .createList(Mitgliedstyp.class);
+    at.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
+        + " OR " + Mitgliedstyp.JVEREINID + " IS NULL");
     at.setOrder("order by bezeichnung");
-    adresstyp = new SelectNoScrollInput(at != null ? PseudoIterator.asList(at) : null, getMitglied().getAdresstyp());
-    adresstyp.setName("Mitgliedstyp");
-    return adresstyp;
+    mitgliedstyp = new SelectNoScrollInput(at != null ? PseudoIterator.asList(at) : null, getMitglied().getMitgliedstyp());
+    mitgliedstyp.setName("Mitgliedstyp");
+    return mitgliedstyp;
   }
 
   public TextInput getExterneMitgliedsnummer() throws RemoteException
@@ -2314,20 +2315,20 @@ public class MitgliedControl extends FilterControl
 
       }
 
-      if (adresstyp != null)
+      if (mitgliedstyp != null)
       {
-        Adresstyp at = (Adresstyp) getAdresstyp().getValue();
-        m.setAdresstyp(Integer.valueOf(at.getID()));
+        Mitgliedstyp at = (Mitgliedstyp) getMitgliedstyp().getValue();
+        m.setMitgliedstyp(Integer.valueOf(at.getID()));
       }
       else
       {
-        m.setAdresstyp(1);
+        m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
       }
       m.setAdressierungszusatz((String) getAdressierungszusatz().getValue());
       m.setAustritt((Date) getAustritt().getValue());
       m.setAnrede((String) getAnrede().getValue());
       GenericObject o = (GenericObject) getBeitragsgruppe(true).getValue();
-      if (adresstyp == null)
+      if (mitgliedstyp == null)
       {
         try
         {
@@ -2445,7 +2446,8 @@ public class MitgliedControl extends FilterControl
       m.setLetzteAenderung();
       m.store();
 
-      boolean ist_mitglied = m.getAdresstyp().getJVereinid() == 1;
+      boolean ist_mitglied = m.getMitgliedstyp()
+          .getJVereinid() == Mitgliedstyp.MITGLIED;
       if (Einstellungen.getEinstellung().getMitgliedfoto() && ist_mitglied)
       {
         Mitgliedfoto f = null;
@@ -2589,7 +2591,7 @@ public class MitgliedControl extends FilterControl
         }
       }
       String successtext = "";
-      if (m.getAdresstyp().getJVereinid() == 1)
+      if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
       {
         successtext = "Mitglied gespeichert";
       }
@@ -2773,7 +2775,7 @@ public class MitgliedControl extends FilterControl
       sort = (String) getSortierung().getValue();
     }
     ArrayList<Mitglied> list = null;
-    Adresstyp atyp = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
+    Mitgliedstyp atyp = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
     if (atyp == null)
     {
       GUI.getStatusBar().setErrorText("Bitte Mitgliedstyp auswählen");
@@ -3035,7 +3037,7 @@ public class MitgliedControl extends FilterControl
     {
       try
       {
-        Adresstyp at = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
+        Mitgliedstyp at = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
         if (at != null)
         {
           refreshMitgliedTable(Integer.parseInt(at.getID()));

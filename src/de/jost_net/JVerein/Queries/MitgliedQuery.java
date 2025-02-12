@@ -34,6 +34,7 @@ import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -64,7 +65,7 @@ public class MitgliedQuery
   }
 
   @SuppressWarnings("unchecked")
-  public ArrayList<Mitglied> get(int adresstyp, String sort) throws RemoteException
+  public ArrayList<Mitglied> get(int mitgliedstyp, String sort) throws RemoteException
   {
 
     this.sort = sort;
@@ -205,13 +206,13 @@ public class MitgliedQuery
         bedingungen.add(Integer.valueOf(bg.getID()));
       }
     }
-    if (adresstyp > 0)
+    if (mitgliedstyp > 0)
     {
-      addCondition("adresstyp = " + adresstyp);
+      addCondition(Mitglied.MITGLIEDSTYP + " = " + mitgliedstyp);
     }
-    else if (adresstyp == 0)
+    else if (mitgliedstyp == 0)
     {
-      addCondition("adresstyp != " + 1);
+      addCondition(Mitglied.MITGLIEDSTYP + " != " + Mitgliedstyp.MITGLIED);
     }
     if (control.isMitgliedStatusAktiv())
     {

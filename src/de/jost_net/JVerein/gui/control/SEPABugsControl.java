@@ -28,6 +28,7 @@ import de.jost_net.JVerein.io.ILastschrift;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.Bug;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
@@ -167,7 +168,7 @@ public class SEPABugsControl extends AbstractControl
     DBIterator<Mitglied> it = Einstellungen.getDBService()
         .createList(Mitglied.class);
     it.addFilter("(austritt is null or austritt > ?)", new Date());
-    it.addFilter("adresstyp = 1");
+    it.addFilter(Mitglied.MITGLIEDSTYP + " = " + Mitgliedstyp.MITGLIED);
     return it;
   }
 }

@@ -20,8 +20,23 @@ import java.rmi.RemoteException;
 
 import de.willuhn.datasource.rmi.DBObject;
 
-public interface Adresstyp extends DBObject
+public interface Mitgliedstyp extends DBObject
 {
+  public static final String TABLE_NAME = "adresstyp";
+
+  public static final String PRIMARY_ATTRIBUTE = "bezeichnung";
+
+  public static final String BEZEICHNUNG = "bezeichnung";
+
+  public static final String BEZEICHNUNG_PLURAL = "bezeichnungplural";
+
+  public static final String JVEREINID = "jvereinid";
+
+  public static final int MITGLIED = 1;
+
+  public static final int SPENDER = 2;
+
+
   public String getBezeichnung() throws RemoteException;
 
   public void setBezeichnung(String bezeichnung) throws RemoteException;

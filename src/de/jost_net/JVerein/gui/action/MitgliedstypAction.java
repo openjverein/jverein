@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.view.MitgliedstypView;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -30,11 +30,11 @@ public class MitgliedstypAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Adresstyp at = null;
+    Mitgliedstyp at = null;
 
-    if (context != null && (context instanceof Adresstyp))
+    if (context != null && (context instanceof Mitgliedstyp))
     {
-      at = (Adresstyp) context;
+      at = (Mitgliedstyp) context;
       try
       {
         if (at.getJVereinid() > 0)
@@ -52,8 +52,8 @@ public class MitgliedstypAction implements Action
     {
       try
       {
-        at = (Adresstyp) Einstellungen.getDBService().createObject(
-            Adresstyp.class, null);
+        at = (Mitgliedstyp) Einstellungen.getDBService().createObject(
+            Mitgliedstyp.class, null);
       }
       catch (RemoteException e)
       {

@@ -617,7 +617,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
 
     if (!isMitgliedDetail())
     {
-      cols.addInput(control.getAdresstyp());
+      cols.addInput(control.getMitgliedstyp());
     }
     cols.addInput(control.getAnrede());
     if (control.getMitglied().getPersonenart().equalsIgnoreCase("n"))

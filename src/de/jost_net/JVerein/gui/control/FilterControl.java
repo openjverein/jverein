@@ -45,7 +45,7 @@ import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SuchSpendenart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Eigenschaft;
@@ -89,11 +89,11 @@ public class FilterControl extends AbstractControl
 
   protected Settings settings = null;
 
-  protected Mitgliedstyp typ = Mitgliedstyp.NOT_USED;
+  protected Mitgliedstypen typ = Mitgliedstypen.NOT_USED;
 
   protected TreePart eigenschaftenAuswahlTree = null;
 
-  protected SelectInput suchadresstyp = null;
+  protected SelectInput suchmitgliedstyp = null;
 
   protected SelectInput status = null;
 
@@ -176,7 +176,7 @@ public class FilterControl extends AbstractControl
 
   protected SelectInput suchspendenart = null;
 
-  public enum Mitgliedstyp {
+  public enum Mitgliedstypen {
     MITGLIED,
     NICHTMITGLIED,
     NOT_USED,
@@ -223,23 +223,24 @@ public class FilterControl extends AbstractControl
   /**
    * Such Input Felder
    */
-  public SelectInput getSuchAdresstyp(Mitgliedstyp typ) throws RemoteException
+  public SelectInput getSuchMitgliedstyp(Mitgliedstypen typ) throws RemoteException
   {
-    if (suchadresstyp != null)
+    if (suchmitgliedstyp != null)
     {
-      return suchadresstyp;
+      return suchmitgliedstyp;
     }
     this.typ = typ;
 
-    DBIterator<Adresstyp> at = Einstellungen.getDBService()
-        .createList(Adresstyp.class);
+    DBIterator<Mitgliedstyp> at = Einstellungen.getDBService()
+        .createList(Mitgliedstyp.class);
     switch (typ)
     {
       case MITGLIED:
-        at.addFilter("jvereinid = 1");
+        at.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
         break;
       case NICHTMITGLIED:
-        at.addFilter("jvereinid != 1 or jvereinid is null");
+        at.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
+            + " OR " + Mitgliedstyp.JVEREINID + " IS NULL");
         break;
       case NOT_USED:
       case ALLE:
@@ -247,39 +248,40 @@ public class FilterControl extends AbstractControl
     }
     at.setOrder("order by bezeichnung");
 
-    if (typ == Mitgliedstyp.MITGLIED)
+    if (typ == Mitgliedstypen.MITGLIED)
     {
-      Adresstyp def = (Adresstyp) Einstellungen.getDBService()
-          .createObject(Adresstyp.class, "1");
-      suchadresstyp = new SelectInput(at != null ? PseudoIterator.asList(at) : null, def);
+      Mitgliedstyp def = (Mitgliedstyp) Einstellungen.getDBService()
+          .createObject(Mitgliedstyp.class,
+              String.valueOf(Mitgliedstyp.MITGLIED));
+      suchmitgliedstyp = new SelectInput(at != null ? PseudoIterator.asList(at) : null, def);
     }
-    else if (typ == Mitgliedstyp.NICHTMITGLIED || typ == Mitgliedstyp.ALLE)
+    else if (typ == Mitgliedstypen.NICHTMITGLIED || typ == Mitgliedstypen.ALLE)
     {
-      Adresstyp def = null;
+      Mitgliedstyp def = null;
       try
       {
-        def = (Adresstyp) Einstellungen.getDBService().createObject(
-            Adresstyp.class, settings.getString(settingsprefix + "suchadresstyp", "2"));
+        def = (Mitgliedstyp) Einstellungen.getDBService().createObject(
+            Mitgliedstyp.class, settings.getString(settingsprefix + "suchadresstyp", "2"));
       }
       catch (Exception e)
       {
         def = null;
       }
-      suchadresstyp = new SelectInput(at != null ? PseudoIterator.asList(at) : null, def);
+      suchmitgliedstyp = new SelectInput(at != null ? PseudoIterator.asList(at) : null, def);
     }
     else
     {
-      suchadresstyp = new SelectInput(new ArrayList<>(), null);
+      suchmitgliedstyp = new SelectInput(new ArrayList<>(), null);
     }
-    suchadresstyp.setName("Mitgliedstyp");
-    suchadresstyp.setPleaseChoose(ALLE);
-    suchadresstyp.addListener(new FilterListener());
-    return suchadresstyp;
+    suchmitgliedstyp.setName("Mitgliedstyp");
+    suchmitgliedstyp.setPleaseChoose(ALLE);
+    suchmitgliedstyp.addListener(new FilterListener());
+    return suchmitgliedstyp;
   }
   
-  public boolean isSuchAdresstypActive()
+  public boolean isSuchMitgliedstypActive()
   {
-    return suchadresstyp != null;
+    return suchmitgliedstyp != null;
   }
   
   public Input getMitgliedStatus()
@@ -1271,8 +1273,8 @@ public class FilterControl extends AbstractControl
         settings.setAttribute("id", "");
         settings.setAttribute("profilname", "");
 
-        if (suchadresstyp != null && typ != Mitgliedstyp.MITGLIED)
-          suchadresstyp.setValue(null);
+        if (suchmitgliedstyp != null && typ != Mitgliedstypen.MITGLIED)
+          suchmitgliedstyp.setValue(null);
         if (status != null)
           status.setValue("Angemeldet");
         if (art != null)
@@ -1483,9 +1485,9 @@ public class FilterControl extends AbstractControl
    */
   public void saveFilterSettings() throws RemoteException
   {
-    if (suchadresstyp != null)
+    if (suchmitgliedstyp != null)
     {
-      Adresstyp tmp = (Adresstyp) suchadresstyp.getValue();
+      Mitgliedstyp tmp = (Mitgliedstyp) suchmitgliedstyp.getValue();
       if (tmp != null)
       {
         settings.setAttribute(settingsprefix + "suchadresstyp", tmp.getID());
