@@ -11,11 +11,12 @@
 
     <properties>
         <jameica.url>https://github.com/willuhn/jameica/archive/refs/tags/</jameica.url>
-        <jameica.version>V_2_10_4_BUILD_487</jameica.version>
+        <jameica.version>V_2_10_5_BUILD_488</jameica.version>
         <jameica.buildversion>2.10.4-487</jameica.buildversion>
         <hibiscus.url>https://github.com/willuhn/hibiscus/archive/refs/tags/</hibiscus.url>
         <hibiscus.version>V_2_10_24_BUILD_388</hibiscus.version>
         <nc.url>https://prdownloads.sourceforge.net/numchameleon/nc-3.0.0.zip?download</nc.url>
+        <swt.version>4.33</swt.version>
         <swt.arch>win64</swt.arch>
         <!-- Skip default plugins -->
         <maven.resources.skip>true</maven.resources.skip>
@@ -219,7 +220,7 @@
                             <groupId>de.willuhn</groupId>
                             <artifactId>swt</artifactId>
                             <packaging>jar</packaging>
-                            <version>4.27</version>
+                            <version>${swt.version}</version>
                         </configuration>
                     </execution>
                     <execution>
