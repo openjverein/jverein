@@ -12,10 +12,10 @@
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <maven.compiler.release>11</maven.compiler.release>
         <maven.test.skip>true</maven.test.skip>
-        <jameica.version>V_2_10_4_BUILD_487</jameica.version>
+        <jameica.version>V_2_10_5_BUILD_488</jameica.version>
         <hibiscus.version>V_2_10_24_BUILD_388</hibiscus.version>
-        <!-- See https://github.com/willuhn/jameica/commit/2e6c93dbb3f7ec6314494d8f8cc2ed6958cdd865 -->
-        <swt.version>4.27</swt.version>
+        <!-- See https://github.com/willuhn/jameica/commit/1a8a8005e04c6201972a63bd403b161f9e3802e7 -->
+        <swt.version>4.33</swt.version>
     </properties>
 
     <dependencies>
