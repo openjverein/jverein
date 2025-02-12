@@ -12,6 +12,7 @@ on:
       - 'lib/**'
       - 'lib.src/**'
       - 'src/**'
+      - '.github/**'
 jobs:
   call-reusable-workflow:
     uses: ./.github/workflows/reusable-build.yml
