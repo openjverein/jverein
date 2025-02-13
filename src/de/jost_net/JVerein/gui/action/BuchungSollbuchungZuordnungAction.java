@@ -18,7 +18,6 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
@@ -39,13 +38,6 @@ import de.willuhn.util.ApplicationException;
  */
 public class BuchungSollbuchungZuordnungAction implements Action
 {
-  private BuchungsControl control;
-
-  public BuchungSollbuchungZuordnungAction(BuchungsControl control)
-  {
-    this.control = control;
-  }
-
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
@@ -214,7 +206,6 @@ public class BuchungSollbuchungZuordnungAction implements Action
             }
           }
         }
-        control.getBuchungsList();
 
         if (mk == null)
         {

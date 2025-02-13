@@ -804,6 +804,23 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   }
 
   @Override
+  public Boolean getGeprueft() throws RemoteException
+  {
+    Boolean geprueft = (Boolean) getAttribute("geprueft");
+    if (geprueft == null)
+    {
+      return false;
+    }
+    return geprueft;
+  }
+
+  @Override
+  public void setGeprueft(Boolean geprueft) throws RemoteException
+  {
+    setAttribute("geprueft", geprueft);
+  }
+
+  @Override
   public void setSpeicherung(boolean speicherung)
   {
     this.speicherung = speicherung;
