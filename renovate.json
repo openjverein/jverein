@@ -2,6 +2,7 @@
   "extends": [
     "config:recommended"
   ],
+  "forkProcessing": "enabled",
   "customManagers": [
     {
       "customType": "regex",
