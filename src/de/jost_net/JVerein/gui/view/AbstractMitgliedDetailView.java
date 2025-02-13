@@ -411,7 +411,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
    * Sinn!)
    * 
    */
-  private void zeichneMitgliedkonto(SollbuchungControl controlMk,
+  private void zeichneMitgliedkonto(SollbuchungControl controlSollb,
       Composite parentComposite) throws RemoteException
   {
     if (!control.getMitglied().isNewObject())
@@ -425,7 +425,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
       ButtonArea buttonszus = new ButtonArea();
       buttonszus.addButton(control.getSollbuchungNeu());
       buttonszus.paint(cont.getComposite());
-      controlMk.getMitgliedskontoTree(control.getMitglied())
+      controlSollb.getMitgliedskontoTree(control.getMitglied())
           .paint(cont.getComposite());
     }
   }

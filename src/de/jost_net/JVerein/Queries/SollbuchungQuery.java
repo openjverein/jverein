@@ -362,13 +362,13 @@ public class SollbuchungQuery
     if (DIFFERENZ.FEHLBETRAG == diff)
     {
       sql.append(" HAVING SUM(buchung.betrag) < " + Sollbuchung.T_BETRAG
-          + " OR " + "(SUM(buchung.betrag) IS NULL AND " + Sollbuchung.T_BETRAG
+          + " OR (SUM(buchung.betrag) IS NULL AND " + Sollbuchung.T_BETRAG
           + " > 0)");
     }
     if (DIFFERENZ.UEBERZAHLUNG == diff)
     {
-      sql.append(" HAVING SUM(buchung.betrag) > " + Sollbuchung.T_BETRAG + " OR"
-          + "(SUM(buchung.betrag) IS NULL AND " + Sollbuchung.T_BETRAG
+      sql.append(" HAVING SUM(buchung.betrag) > " + Sollbuchung.T_BETRAG
+          + " OR (SUM(buchung.betrag) IS NULL AND " + Sollbuchung.T_BETRAG
           + " < 0)");
     }
 

@@ -173,9 +173,9 @@ public class BuchungQuery
     {
       String mitgliedsuche = "%" + mitglied.toLowerCase() + "%";
       it.join(Sollbuchung.TABLE_NAME);
-      it.addFilter(Sollbuchung.TABLE_NAME + ".id = " + Buchung.SOLLBUCHUNG);
+      it.addFilter(Sollbuchung.TABLE_NAME_ID + " = " + Buchung.SOLLBUCHUNG);
       it.join("mitglied");
-      it.addFilter("mitglied.id = " + Sollbuchung.TABLE_NAME + ".mitglied");
+      it.addFilter("mitglied.id = " + Sollbuchung.T_MITGLIED);
       it.addFilter("(lower(mitglied.name) like ? or lower(mitglied.vorname) like ?)",
           new Object[] { mitgliedsuche, mitgliedsuche });
     }

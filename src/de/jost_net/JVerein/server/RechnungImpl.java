@@ -358,10 +358,10 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
   }
 
   @Override
-  public void fill(Sollbuchung mk)
+  public void fill(Sollbuchung sollb)
       throws RemoteException, ApplicationException
   {
-    Mitglied mitglied = mk.getMitglied();
+    Mitglied mitglied = sollb.getMitglied();
 
     if (mitglied == null)
     {
@@ -405,8 +405,8 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
     setMandatID(mitglied.getMandatID());
     setBIC(mitglied.getBic());
     setIBAN(mitglied.getIban());
-    setZahlungsweg(mk.getZahlungsweg());
-    setBetrag(mk.getBetrag());
+    setZahlungsweg(sollb.getZahlungsweg());
+    setBetrag(sollb.getBetrag());
   }
 
   @Override

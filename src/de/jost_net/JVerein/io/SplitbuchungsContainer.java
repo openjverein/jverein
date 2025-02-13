@@ -350,13 +350,13 @@ public class SplitbuchungsContainer
    * @return Wenn die Beträge von Sollbuchung und Buchung verschieden sind, wird
    *         die erzeugte Restbuchung zurückgegeben, sonst <code>null</code>.
    */
-  public static Buchung autoSplit(Buchung buchung, Sollbuchung mk,
+  public static Buchung autoSplit(Buchung buchung, Sollbuchung sollb,
       boolean immerSplitten)
       throws NumberFormatException, RemoteException, ApplicationException
   {
     boolean splitten = false;
     Buchung restBuchung = null;
-    if (mk == null)
+    if (sollb == null)
     {
       buchung.setSollbuchung(null);
       buchung.store();
@@ -365,7 +365,7 @@ public class SplitbuchungsContainer
 
     HashMap<String, Double> splitMap = new HashMap<>();
     HashMap<String, String> splitZweckMap = new HashMap<>();
-    ArrayList<SollbuchungPosition> spArray = mk.getSollbuchungPositionList();
+    ArrayList<SollbuchungPosition> spArray = sollb.getSollbuchungPositionList();
     try
     {
       for (SollbuchungPosition sp : spArray)
@@ -398,7 +398,7 @@ public class SplitbuchungsContainer
         splitZweckMap.put(key, zweck);
       }
 
-      if ((splitMap.size() > 1 && mk.getBetrag().equals(buchung.getBetrag()))
+      if ((splitMap.size() > 1 && sollb.getBetrag().equals(buchung.getBetrag()))
           || immerSplitten)
       {
         splitten = true;
@@ -492,7 +492,7 @@ public class SplitbuchungsContainer
           {
             splitBuchung.setZweck(buchung.getZweck());
           }
-          splitBuchung.setSollbuchung(mk);
+          splitBuchung.setSollbuchung(sollb);
           String buchungsart = entry.getKey().substring(0,
               entry.getKey().indexOf("-"));
           splitBuchung.setBuchungsartId(Long.parseLong(buchungsart));
@@ -507,11 +507,11 @@ public class SplitbuchungsContainer
 
           SplitbuchungsContainer.add(splitBuchung);
         }
-        if (!mk.getBetrag().equals(buchung.getBetrag()))
+        if (!sollb.getBetrag().equals(buchung.getBetrag()))
         {
           restBuchung = (Buchung) Einstellungen.getDBService()
               .createObject(Buchung.class, null);
-          restBuchung.setBetrag(buchung.getBetrag() - mk.getBetrag());
+          restBuchung.setBetrag(buchung.getBetrag() - sollb.getBetrag());
           restBuchung.setDatum(buchung.getDatum());
           restBuchung.setKonto(buchung.getKonto());
           restBuchung.setName(buchung.getName());
@@ -556,7 +556,7 @@ public class SplitbuchungsContainer
       {
         buchung.setBuchungsklasseId(spArray.get(0).getBuchungsklasseId());
       }
-      buchung.setSollbuchung(mk);
+      buchung.setSollbuchung(sollb);
       buchung.store();
     }
     return restBuchung;
