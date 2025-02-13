@@ -17,7 +17,7 @@ jobs:
     - name: Set env
       id: setenvs
       run: |
-        jameica_tag=$(git ls-remote --refs --tags --sort="-v:refname" https://github.com/willuhn/jameica.git V_\* | head -1 | cut -f 2 | cut -d / -f 3)
+        jameica_tag=V_2_10_4_BUILD_487
         echo "jameica_tag=${jameica_tag}" >> $GITHUB_ENV
         hibiscus_tag=$(git ls-remote --refs --tags --sort="-v:refname" https://github.com/willuhn/hibiscus.git V_\* | head -1 | cut -f 2 | cut -d / -f 3)
         echo "hibiscus_tag=${hibiscus_tag}" >> $GITHUB_ENV
