@@ -19,12 +19,14 @@ package de.jost_net.JVerein;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.navigation.MyExtension;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.UmsatzMessageConsumer;
 import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.server.JVereinDBServiceImpl;
 import de.jost_net.JVerein.util.HelpConsumer;
 import de.jost_net.JVerein.util.MemoryAnalyzer;
 import de.willuhn.jameica.gui.extension.ExtensionRegistry;
+import de.willuhn.jameica.messaging.BootMessage;
 import de.willuhn.jameica.messaging.LookupService;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.plugin.AbstractPlugin;
@@ -150,6 +152,14 @@ public class JVereinPlugin extends AbstractPlugin
         service.update(oldVersion, getManifest().getVersion());
       }
     });
+    BootMessage msg = new BootMessage(
+        "Es wurde eine neue JVerein-Version installiert."
+            + " Alle Änderungen sind auf folgender Seite zu finden:");
+    msg.setTitle("Neue JVerein-Version");
+    msg.setIcon("gtk-info.png");
+    msg.setUrl(DokumentationUtil.CHANGELOG);
+    Application.getMessagingFactory().getMessagingQueue("jameica.boot")
+        .queueMessage(msg);
   }
 
   /**

@@ -20,10 +20,11 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AbrechnungslaufAbschliessenAction;
-import de.jost_net.JVerein.gui.action.AbrechnungslaufBuchungenAction;
 import de.jost_net.JVerein.gui.action.AbrechnungslaufDeleteAction;
-import de.jost_net.JVerein.gui.action.AbrechnungslaufDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.PreNotificationAction;
+import de.jost_net.JVerein.gui.view.AbrechnungslaufBuchungenView;
+import de.jost_net.JVerein.gui.view.AbrechnungslaufView;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -42,9 +43,11 @@ public class AbrechnungslaufMenu extends ContextMenu
    */
   public AbrechnungslaufMenu()
   {
-    addItem(new ContextMenuItem("Bearbeiten", new AbrechnungslaufDetailAction(),
+    addItem(new ContextMenuItem("Bearbeiten",
+        new EditAction(AbrechnungslaufView.class),
         "text-x-generic.png"));
-    addItem(new ContextMenuItem("Sollbuchungen", new AbrechnungslaufBuchungenAction(),
+    addItem(new ContextMenuItem("Sollbuchungen",
+        new EditAction(AbrechnungslaufBuchungenView.class),
         "calculator.png"));
     addItem(new AbgeschlossenDisabledItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));

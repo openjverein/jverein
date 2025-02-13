@@ -16,11 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
-
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeDeleteAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeNaechsteFaelligkeitAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeResetAction;
@@ -78,7 +77,8 @@ public class ZusatzbetraegeMenu extends ContextMenu
         Zusatzbetrag z = (Zusatzbetrag) o;
         try
         {
-          return z.getIntervall() == IntervallZusatzzahlung.KEIN ;
+          return z.getIntervall() == IntervallZusatzzahlung.KEIN
+              && z.getAusfuehrung() != null;
         }
         catch (RemoteException e)
         {

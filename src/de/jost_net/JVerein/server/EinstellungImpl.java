@@ -2234,4 +2234,17 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("splitpositionzweck", split);
   }
+
+  @Override
+  public boolean getGeprueftSynchronisieren() throws RemoteException
+  {
+    return (Boolean) getAttribute("geprueftsynchronisieren");
+  }
+
+  @Override
+  public void setGeprueftSynchronisieren(boolean geprueftsynchronisieren)
+      throws RemoteException
+  {
+    setAttribute("geprueftsynchronisieren", geprueftsynchronisieren);
+  }
 }

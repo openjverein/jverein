@@ -16,18 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.rmi.RemoteException;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.DocumentException;
@@ -35,7 +23,6 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
@@ -59,6 +46,17 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.util.ApplicationException;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.rmi.RemoteException;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Action zur Generierung von Spendenbescheinigungen aus der Datenbank.<br>
@@ -220,14 +218,14 @@ public class SpendenbescheinigungPrintAction implements Action
           if (spb.getMitglied() != null)
           {
             fileName = new Dateiname(spb.getMitglied(),
-                spb.getBescheinigungsdatum(), "Spendenbescheinigung",
+                spb.getSpendedatum(), "Spendenbescheinigung",
                 Einstellungen.getEinstellung().getDateinamenmusterSpende(),
                 "pdf").get();
           }
           else
           {
             fileName = new Dateiname(spb.getZeile1(), spb.getZeile2(),
-                spb.getBescheinigungsdatum(), "Spendenbescheinigung",
+                spb.getSpendedatum(), "Spendenbescheinigung",
                 Einstellungen.getEinstellung().getDateinamenmusterSpende(),
                 "pdf").get();
           }
@@ -314,7 +312,7 @@ public class SpendenbescheinigungPrintAction implements Action
     Map<String, Object> map = new SpendenbescheinigungMap().getMap(spb, null);
     map = new AllgemeineMap().getMap(map);
     boolean isSammelbestaetigung = spb.isSammelbestaetigung();
-    Reporter rpt = new Reporter(fos, 80, 50, 50, 50);
+    Reporter rpt = new Reporter(fos, 80, 50, 50, 50, true);
 
     // Aussteller, kein Header
     rpt.addHeaderColumn("", Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);

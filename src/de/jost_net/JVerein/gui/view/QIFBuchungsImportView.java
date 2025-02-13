@@ -17,9 +17,9 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.QIFBuchungsartAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.QIFDateiEinlesenAction;
-import de.jost_net.JVerein.gui.action.QIFMitgliederAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.QIFBuchungsImportControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -71,7 +71,8 @@ public class QIFBuchungsImportView extends AbstractView
 
     LabelGroup poslistGroup = new LabelGroup(getParent(),
         "Importierbare Buchungen im gewählten Konto", true);
-    control.getImportKontoPosList(new QIFBuchungsartAction())
+    control
+        .getImportKontoPosList(new EditAction(QIFBuchungsartZuordnenView.class))
         .paint(poslistGroup.getComposite());
 
     ButtonArea buttons = new ButtonArea();
@@ -84,9 +85,11 @@ public class QIFBuchungsImportView extends AbstractView
         "user-trash-full.png");
     buttons.addButton("Imports löschen", control.getAlleImportsLoeschenAction(),
         null, false, "list-remove.png");
-    buttons.addButton("Buchungsarten zuordnen", new QIFBuchungsartAction(),
+    buttons.addButton("Buchungsarten zuordnen",
+        new EditAction(QIFBuchungsartZuordnenView.class),
         null, false, "zuordnung.png");
-    buttons.addButton("Mitglieder zuordnen", new QIFMitgliederAction(), null,
+    buttons.addButton("Mitglieder zuordnen",
+        new StartViewAction(QIFMitgliederZuordnenView.class), null,
         false, "contact-new.png");
     buttons.addButton("Buchungen übernehmen", control.getPIFPosBuchenAction(),
         null, false, "document-new.png");

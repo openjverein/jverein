@@ -17,7 +17,6 @@
 
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.BuchungsartZuordnungDialog;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -33,12 +32,6 @@ import de.willuhn.util.ApplicationException;
  */
 public class BuchungBuchungsartZuordnungAction implements Action
 {
-  private BuchungsControl control;
-
-  public BuchungBuchungsartZuordnungAction(BuchungsControl control)
-  {
-    this.control = control;
-  }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
@@ -111,7 +104,6 @@ public class BuchungBuchungsartZuordnungAction implements Action
             }
           }
         }
-        control.getBuchungsList();
         if (ba == null)
         {
           GUI.getStatusBar().setSuccessText("Buchungsarten gelöscht");

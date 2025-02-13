@@ -20,8 +20,9 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.LehrgangsartAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.LehrgangsartMenu;
+import de.jost_net.JVerein.gui.view.LehrgangsartDetailView;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -167,7 +168,8 @@ public class LehrgangsartControl extends AbstractControl
         .createList(Lehrgangsart.class);
     lehrgangsarten.setOrder("ORDER BY bezeichnung");
 
-    lehrgangsartList = new TablePart(lehrgangsarten, new LehrgangsartAction());
+    lehrgangsartList = new TablePart(lehrgangsarten,
+        new EditAction(LehrgangsartDetailView.class));
     lehrgangsartList.addColumn("Bezeichnung", "bezeichnung");
     lehrgangsartList.addColumn("Von/am", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

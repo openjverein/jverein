@@ -30,16 +30,19 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
-import de.jost_net.JVerein.gui.action.SollbuchungPositionEditAction;
-import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
-import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
+import de.jost_net.JVerein.gui.menu.BuchungPartBearbeitenMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
+import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
+import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.BuchungView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
+import de.jost_net.JVerein.gui.view.SollbuchungPositionView;
 import de.jost_net.JVerein.io.Kontoauszug;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -211,7 +214,7 @@ public class MitgliedskontoControl extends DruckMailControl
       z = getMitgliedskonto().getZweck1();
     }
     zweck1 = new TextAreaInput(z, 500);
-    zweck1.setHeight(50);
+    zweck1.setHeight(30);
     zweck1.setMandatory(true);
     return zweck1;
   }
@@ -524,43 +527,23 @@ public class MitgliedskontoControl extends DruckMailControl
     mitgliedskontoList2.sort();
   }
 
-  public Part getBuchungenList(boolean hasRechnung) throws RemoteException
+  public Part getSollbuchungPositionListPart(boolean hasRechnung) throws RemoteException
   {
     if (buchungList != null)
     {
       return buchungList;
     }
-    DBIterator<SollbuchungPosition> sps = Einstellungen.getDBService()
-        .createList(SollbuchungPosition.class);
-    sps.addFilter("sollbuchung = ?", getMitgliedskonto().getID());
+    ArrayList<SollbuchungPosition> list = getMitgliedskonto()
+        .getSollbuchungPositionList();
 
     if (hasRechnung)
     {
-      buchungList = new TablePart(sps, null);
+      buchungList = new SollbuchungPositionListPart(list, null);
     }
     else
     {
-      buchungList = new TablePart(sps, new SollbuchungPositionEditAction());
-    }
-    buchungList.addColumn("Datum", "datum",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    buchungList.addColumn("Zweck", "zweck");
-    buchungList.addColumn("Betrag", "betrag",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    if (Einstellungen.getEinstellung().getOptiert())
-    {
-      buchungList.addColumn("Nettobetrag", "nettobetrag",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      buchungList.addColumn("Steuersatz", "steuersatz");
-      buchungList.addColumn("Steuerbetrag", "steuerbetrag",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    }
-    buchungList.addColumn("Buchungsart", "buchungsart",
-        new BuchungsartFormatter());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-    {
-      buchungList.addColumn("Buchungsklasse", "buchungsklasse",
-          new BuchungsklasseFormatter());
+      buchungList = new SollbuchungPositionListPart(list,
+          new EditAction(SollbuchungPositionView.class));
     }
 
     buchungList.setRememberColWidths(true);
@@ -568,9 +551,13 @@ public class MitgliedskontoControl extends DruckMailControl
     {
       buchungList.setContextMenu(new SollbuchungPositionMenu());
     }
-    buchungList.setRememberOrder(true);
-    buchungList.addFeature(new FeatureSummary());
     return buchungList;
+  }
+
+  public Part getBuchungListPart() throws RemoteException
+  {
+    return new BuchungListPart(getMitgliedskonto().getBuchungList(),
+        new BuchungAction(false), new BuchungPartBearbeitenMenu());
   }
 
   private GenericIterator<Mitglied> getMitgliedIterator() throws RemoteException

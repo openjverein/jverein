@@ -23,6 +23,9 @@ import java.util.Map;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.Monat;
+import de.jost_net.JVerein.util.JVDateFormatJJJJ;
+import de.jost_net.JVerein.util.JVDateFormatMM;
+import de.jost_net.JVerein.util.JVDateFormatMMMM;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 
 public class AbrechnungsParameterMap
@@ -59,6 +62,12 @@ public class AbrechnungsParameterMap
         param.sepaprint ? "J" : "N");
     map.put(AbrechnungsParameterVar.STICHTAG.getName(),
         new JVDateFormatTTMMJJJJ().format(param.stichtag));
+    map.put(AbrechnungsParameterVar.STICHTAG_MONAT.getName(),
+        new JVDateFormatMM().format(param.stichtag));
+    map.put(AbrechnungsParameterVar.STICHTAG_MONAT_TEXT.getName(),
+        new JVDateFormatMMMM().format(param.stichtag));
+    map.put(AbrechnungsParameterVar.STICHTAG_JAHR.getName(),
+        new JVDateFormatJJJJ().format(param.stichtag));
     map.put(AbrechnungsParameterVar.VERWENDUNGSZWECK.getName(),
         param.verwendungszweck);
     if (param.vondatum != null)

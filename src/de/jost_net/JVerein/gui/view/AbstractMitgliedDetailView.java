@@ -418,6 +418,13 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
     {
       Container cont = getTabOrLabelContainer(parentComposite,
           "Mitgliedskonto");
+
+      cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
+      cont.getComposite().setLayout(new GridLayout(1, false));
+
+      ButtonArea buttonszus = new ButtonArea();
+      buttonszus.addButton(control.getSollbuchungNeu());
+      buttonszus.paint(cont.getComposite());
       controlMk.getMitgliedskontoTree(control.getMitglied())
           .paint(cont.getComposite());
     }

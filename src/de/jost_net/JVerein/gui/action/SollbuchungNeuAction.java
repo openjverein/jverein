@@ -16,10 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
@@ -30,44 +27,40 @@ import de.willuhn.util.ApplicationException;
 public class SollbuchungNeuAction implements Action
 {
 
+  private Mitglied m;
+
+  public SollbuchungNeuAction(Mitglied m)
+  {
+    super();
+    this.m = m;
+  }
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    MitgliedskontoNode mkn = null;
     Mitgliedskonto mk = null;
 
-    if (context instanceof MitgliedskontoNode)
+    try
     {
-      mkn = (MitgliedskontoNode) context;
-      try
+      mk = (Mitgliedskonto) Einstellungen.getDBService()
+          .createObject(Mitgliedskonto.class, null);
+      mk.setBetrag(0.0);
+      if (m != null)
       {
-        Mitglied m = (Mitglied) Einstellungen.getDBService()
-            .createObject(Mitglied.class, mkn.getID());
-        mk = (Mitgliedskonto) Einstellungen.getDBService()
-            .createObject(Mitgliedskonto.class, null);
-        mk.setZahlungsweg(m.getZahlungsweg());
+        if (m.getID() == null)
+        {
+          throw new ApplicationException(
+              "Neues Mitglied bitte erst speichern. Dann können Zusatzbeträge aufgenommen werden.");
+        }
         mk.setMitglied(m);
-        mk.setBetrag(0.0);
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung einer Sollbuchung");
+        mk.setZahlungsweg(m.getZahlungsweg());
+        mk.setZahler(m.getZahler());
       }
     }
-    else
+    catch (Exception e)
     {
-      try
-      {
-        mk = (Mitgliedskonto) Einstellungen.getDBService()
-            .createObject(Mitgliedskonto.class, null);
-        mk.setBetrag(0.0);
-      }
-      catch (Exception e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung einer neuen Sollbuchung", e);
-      }
+      throw new ApplicationException(
+          "Fehler bei der Erzeugung einer neuen Sollbuchung", e);
     }
     GUI.startView(new SollbuchungDetailView(), mk);
   }

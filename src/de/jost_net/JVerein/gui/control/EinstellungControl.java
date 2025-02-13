@@ -339,7 +339,7 @@ public class EinstellungControl extends AbstractControl
   private SelectInput afaort;
 
   private TextInput beitragaltersstufen;
-
+  
   private CheckboxInput mittelverwendung;
 
   /**
@@ -354,6 +354,8 @@ public class EinstellungControl extends AbstractControl
   private DialogInput verrechnungskonto;
 
   private CheckboxInput splitpositionzweck;
+
+  private CheckboxInput geprueftsynchronisieren;
 
   public EinstellungControl(AbstractView view)
   {
@@ -859,6 +861,19 @@ public class EinstellungControl extends AbstractControl
     splitpositionzweck.setName("Bei automatischem Splitten den "
         + "Verwendungszweck aus den Sollbuchungspositionen übernehmen");
     return splitpositionzweck;
+  }
+
+  public CheckboxInput getGeprueftSynchronisieren() throws RemoteException
+  {
+    if (geprueftsynchronisieren != null)
+    {
+      return geprueftsynchronisieren;
+    }
+    geprueftsynchronisieren = new CheckboxInput(
+        Einstellungen.getEinstellung().getGeprueftSynchronisieren());
+    geprueftsynchronisieren
+        .setName("Geprüft Markierung mit Hibiscus synchronisieren");
+    return geprueftsynchronisieren;
   }
 
   public CheckboxInput getFreieBuchungsklasse() throws RemoteException
@@ -2062,6 +2077,8 @@ public class EinstellungControl extends AbstractControl
       return anhangspeichern;
     }
     anhangspeichern = new CheckboxInput(Einstellungen.getEinstellung().getAnhangSpeichern());
+    anhangspeichern
+        .setName("Bei Mail Versand von Formularen Anhang in DB speichern");
     return anhangspeichern;
   }
   
@@ -2380,6 +2397,8 @@ public class EinstellungControl extends AbstractControl
       e.setOptiert((Boolean) getOptiert().getValue());
       e.setBuchungsklasseInBuchung((Boolean) getFreieBuchungsklasse().getValue());
       e.setSplitPositionZweck((Boolean) getSplitPositionZweck().getValue());
+      e.setGeprueftSynchronisieren(
+          (Boolean) getGeprueftSynchronisieren().getValue());
       e.store();
       Einstellungen.setEinstellung(e);
 

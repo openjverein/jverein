@@ -22,9 +22,12 @@ import de.jost_net.JVerein.gui.control.JahresabschlussControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.InfoPanel;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class JahresabschlussView extends AbstractView
 {
@@ -47,20 +50,45 @@ public class JahresabschlussView extends AbstractView
     }
     
     LabelGroup group = new LabelGroup(getParent(), "Jahresabschluss");
-    group.addLabelPair("Von", control.getVon());
-    group.addLabelPair("Bis", control.getBis());
-    group.addLabelPair("Datum", control.getDatum());
-    group.addLabelPair("Name", control.getName());
-    group.addLabelPair("Anfangsbestände Folgejahr",
-        control.getAnfangsbestaende());
+    ColumnLayout cl;
+    if (Einstellungen.getEinstellung().getMittelverwendung())
+    {
+      cl = new ColumnLayout(group.getComposite(), 3);
+    }
+    else
+    {
+      cl = new ColumnLayout(group.getComposite(), 2);
+    }
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addLabelPair("Von", control.getVon());
+    left.addLabelPair("Bis", control.getBis());
+    left.addLabelPair("", control.getAnfangsbestaende());
+
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    middle.addLabelPair("Datum", control.getDatum());
+    middle.addLabelPair("Name", control.getName());
     if (Einstellungen.getEinstellung().getAfaInJahresabschluss())
-      group.addLabelPair("Erzeuge Abschreibungen", control.getAfaberechnung());
-    group.addPart(control.getJahresabschlussSaldo());
+    {
+      middle.addLabelPair("", control.getAfaberechnung());
+    }
+
+    if (Einstellungen.getEinstellung().getMittelverwendung())
+    {
+      SimpleContainer right = new SimpleContainer(cl.getComposite());
+      right.addLabelPair("Rest Verwendungsrückstand \naus dem Vorjahr",
+          control.getVerwendungsrueckstand());
+      right.addLabelPair("Zwanghafte satzungsgemäße\nWeitergabe von Mitteln",
+          control.getZwanghafteWeitergabe());
+    }
+
+    control.getJahresabschlussSaldo().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.JAHRESABSCHLUSS, false, "question-circle.png");
-    buttons.addButton("Speichern", new Action()
+
+    Button save = new Button("Speichern", new Action()
     {
 
       @Override
@@ -69,6 +97,8 @@ public class JahresabschlussView extends AbstractView
         control.handleStore();
       }
     }, null, true, "document-save.png");
+    save.setEnabled(control.isSaveEnabled());
+    buttons.addButton(save);
     buttons.paint(this.getParent());
   }
 }

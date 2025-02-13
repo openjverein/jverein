@@ -60,7 +60,7 @@ public class Update0457 extends AbstractDDLUpdate
         false);
     t.add(datum);
     
-    Column zweck = new Column("zweck", COLTYPE.VARCHAR, 140, null, false,
+    Column zweck = new Column("zweck", COLTYPE.VARCHAR, 500, null, false,
         false);
     t.add(zweck);
     

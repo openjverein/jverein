@@ -83,6 +83,10 @@ public class ProjektSaldoList extends TablePart implements Part
         saldoList.addColumn("Umbuchungen", "umbuchungen",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
+        // Dummy Spalte, damit Umbuchungen nicht am rechten Rand klebt
+        saldoList.addColumn(" ", " ",
+            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+            Column.ALIGN_LEFT);
         saldoList.setRememberColWidths(true);
         saldoList.removeFeature(FeatureSummary.class);
       }

@@ -21,9 +21,10 @@ import java.sql.SQLException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.KursteilnehmerDetailAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
+import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
@@ -100,7 +101,9 @@ public class KursteilnehmerSucheView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
-    buttons.addButton("Neu", new KursteilnehmerDetailAction(), null, false,
+    buttons.addButton("Neu",
+        new NewAction(KursteilnehmerDetailView.class, Kursteilnehmer.class),
+        null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }
