@@ -22,7 +22,6 @@ import com.schlevoigt.JVerein.Queries.BuchungsKorrekturQuery;
 import com.schlevoigt.JVerein.util.Misc;
 
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
@@ -36,9 +35,6 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.messaging.Message;
-import de.willuhn.jameica.messaging.MessageConsumer;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -47,8 +43,6 @@ public class BuchungsTextKorrekturControl extends AbstractControl {
 	private TablePart buchungsList;
 
 	private BuchungsKorrekturQuery query;
-
-	private BuchungMessageConsumer mc = null;
 
 	public BuchungsTextKorrekturControl(AbstractView view) {
 		super(view);
@@ -121,17 +115,7 @@ public class BuchungsTextKorrekturControl extends AbstractControl {
 			buchungsList.setRememberColWidths(true);
 			buchungsList.setRememberOrder(true);
 			buchungsList.setRememberState(true);
-			this.mc = new BuchungMessageConsumer();
-			Application.getMessagingFactory().registerMessageConsumer(this.mc);
-		} else {
-			buchungsList.removeAll();
-
-			for (Buchung bu : query.get()) {
-				buchungsList.addItem(bu);
-			}
-			buchungsList.sort();
 		}
-
 		return buchungsList;
 	}
 
@@ -174,54 +158,5 @@ public class BuchungsTextKorrekturControl extends AbstractControl {
 			DBTransaction.rollback();
 			GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
 		}
-	}
-
-	/**
-	 * Wird benachrichtigt um die Anzeige zu aktualisieren.
-	 */
-	private class BuchungMessageConsumer implements MessageConsumer {
-
-		/**
-		 * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
-		 */
-		@Override
-		public boolean autoRegister() {
-			return false;
-		}
-
-		/**
-		 * @see de.willuhn.jameica.messaging.MessageConsumer#getExpectedMessageTypes()
-		 */
-		@Override
-		public Class<?>[] getExpectedMessageTypes() {
-			return new Class[] { BuchungMessage.class };
-		}
-
-		/**
-		 * @see de.willuhn.jameica.messaging.MessageConsumer#handleMessage(de.willuhn.jameica.messaging.Message)
-		 */
-		@Override
-		public void handleMessage(final Message message) throws Exception {
-			GUI.getDisplay().syncExec(new Runnable() {
-
-				@Override
-				public void run() {
-					try {
-						if (buchungsList == null) {
-							// Eingabe-Feld existiert nicht. Also abmelden
-							Application.getMessagingFactory().unRegisterMessageConsumer(BuchungMessageConsumer.this);
-							return;
-						}
-						refreshBuchungen();
-					} catch (Exception e) {
-						// Wenn hier ein Fehler auftrat, deregistrieren wir uns
-						// wieder
-						Logger.error("unable to refresh Splitbuchungen", e);
-						Application.getMessagingFactory().unRegisterMessageConsumer(BuchungMessageConsumer.this);
-					}
-				}
-			});
-		}
-
 	}
 }
