@@ -82,10 +82,12 @@ public class BuchungQuery
 
   private SplitFilter split;
 
+  private boolean ungeprueft;
+
   public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
       Buchungsart buchungsart, Projekt projekt, String text, String betrag,
       Boolean hasMitglied, String mitglied, boolean geldkonto,
-      SplitFilter split)
+      SplitFilter split, boolean ungeprueft)
   {
     this.datumvon = datumvon;
     this.datumbis = datumbis;
@@ -98,6 +100,7 @@ public class BuchungQuery
     this.geldkonto = geldkonto;
     this.mitglied = mitglied;
     this.split = split;
+    this.ungeprueft = ungeprueft;
   }
   
   public String getOrder(String value) {
@@ -241,6 +244,11 @@ public class BuchungQuery
         break;
       default:
         break;
+    }
+
+    if (ungeprueft)
+    {
+      it.addFilter("(geprueft = 0 or geprueft is null)");
     }
 
     if (betrag != null && betrag.length() > 0)
