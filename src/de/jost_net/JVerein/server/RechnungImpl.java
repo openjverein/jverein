@@ -347,8 +347,8 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
         .createList(SollbuchungPosition.class);
     it.join(Sollbuchung.TABLE_NAME);
     it.addFilter(
-        Sollbuchung.TABLE_NAME + ".id = sollbuchungposition.sollbuchung");
-    it.addFilter("rechnung = ?", getID());
+        Sollbuchung.TABLE_NAME_ID + " = sollbuchungposition.sollbuchung");
+    it.addFilter(Sollbuchung.T_RECHNUNG + " = ?", getID());
     it.setOrder("ORDER BY datum");
     while (it.hasNext())
     {

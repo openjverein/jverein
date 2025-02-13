@@ -108,7 +108,7 @@ public abstract class SollbuchungExport implements Exporter
   protected abstract void open()
       throws DocumentException, FileNotFoundException;
 
-  protected abstract void add(Sollbuchung mk) throws RemoteException;
+  protected abstract void add(Sollbuchung sollb) throws RemoteException;
 
   protected abstract void close(ProgressMonitor monitor)
       throws IOException, DocumentException;

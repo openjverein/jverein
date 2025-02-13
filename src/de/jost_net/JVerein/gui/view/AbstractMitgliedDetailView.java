@@ -85,7 +85,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
 
     zeichneUeberschrift(); // Einschub Ende
 
-    final SollbuchungControl controlMk = new SollbuchungControl(this);
+    final SollbuchungControl controlSollb = new SollbuchungControl(this);
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 
@@ -122,7 +122,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
     zeichneZusatzbeitraege(showInTab ? folder : oben.getComposite());
 
     showInTab = Einstellungen.getEinstellung().getZeigeMitgliedskontoInTab();
-    zeichneMitgliedkonto(controlMk, showInTab ? folder : oben.getComposite());
+    zeichneMitgliedkonto(controlSollb, showInTab ? folder : oben.getComposite());
 
     showInTab = Einstellungen.getEinstellung().getZeigeVermerkeInTab();
     zeichneVermerke(showInTab ? folder : oben.getComposite(), 1);

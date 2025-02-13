@@ -267,9 +267,9 @@ public class MitgliedskontoMenu extends ContextMenu
 
         try
         {
-          Sollbuchung mk = Einstellungen.getDBService()
+          Sollbuchung sollb = Einstellungen.getDBService()
               .createObject(Sollbuchung.class, mkn.getID());
-          return mk.getRechnung() == null;
+          return sollb.getRechnung() == null;
         }
         catch (RemoteException e)
         {
@@ -303,9 +303,9 @@ public class MitgliedskontoMenu extends ContextMenu
 
         try
         {
-          Sollbuchung mk = Einstellungen.getDBService()
+          Sollbuchung sollb = Einstellungen.getDBService()
               .createObject(Sollbuchung.class, mkn.getID());
-          return mk.getRechnung() != null;
+          return sollb.getRechnung() != null;
         }
         catch (RemoteException e)
         {
