@@ -10,10 +10,10 @@
         "^.github/workflows/reusable-build.yml$"
       ],
       "matchStrings": [
-        "jameica_tag=(?<currentValue>[V_\\d+_\\d+_\\d+_BUILD_\\d+])"
+        "jameica_tag=(?<currentValue>V_\\d+_\\d+_\\d+_BUILD_\\d+)"
       ],
       "datasourceTemplate": "github-releases",
-      "depNameTemplate": "willuhn/hibiscus",
+      "depNameTemplate": "willuhn/jameica",
       "versioningTemplate": "regex:^V_(?<major>\\d+)_(?<minor>\\d+)_(?<patch>\\d+)_BUILD_(?<build>\\d+)$"
     }
   ]
