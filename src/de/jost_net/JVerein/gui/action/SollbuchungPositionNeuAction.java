@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.view.SollbuchungPositionView;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -33,12 +33,12 @@ public class SollbuchungPositionNeuAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Mitgliedskonto sollbuchung = null;
+    Sollbuchung sollbuchung = null;
     SollbuchungPosition position = null;
 
-    if (context != null && (context instanceof Mitgliedskonto))
+    if (context != null && (context instanceof Sollbuchung))
     {
-      sollbuchung = (Mitgliedskonto) context;
+      sollbuchung = (Sollbuchung) context;
       try
       {
         if (sollbuchung.isNewObject())

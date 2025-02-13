@@ -139,9 +139,9 @@ public class MitgliederImport implements Importer
           {
             try
             {
-              Mitgliedstyp at = (Mitgliedstyp) Einstellungen.getDBService()
+              Mitgliedstyp mt = (Mitgliedstyp) Einstellungen.getDBService()
                   .createObject(Mitgliedstyp.class, mitgliedstyp);
-              m.setMitgliedstyp(Integer.valueOf(at.getID()));
+              m.setMitgliedstyp(Integer.valueOf(mt.getID()));
             }
             catch (ObjectNotFoundException e)
             {

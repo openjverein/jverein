@@ -90,7 +90,7 @@ public class BuchungPart implements Part
     grBuchungsinfos.addLabelPair("Projekt", control.getProjekt());
     grBuchungsinfos.addLabelPair("Auszugsnummer", control.getAuszugsnummer());
     grBuchungsinfos.addLabelPair("Blattnummer", control.getBlattnummer());
-    grBuchungsinfos.addLabelPair("Sollbuchung", control.getMitgliedskonto());
+    grBuchungsinfos.addLabelPair("Sollbuchung", control.getSollbuchung());
     grBuchungsinfos.addLabelPair("Kommentar", control.getKommentar());
 
     SimpleContainer grSpendeninfos = grBuchungsinfos;

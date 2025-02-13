@@ -24,7 +24,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.GenericObjectNode;
@@ -80,23 +80,23 @@ public class MitgliedskontoNode implements GenericObjectNode
     this.ist = Double.valueOf(0);
     this.children = new ArrayList<>();
     this.id = m.getID();
-    DBIterator<Mitgliedskonto> it = Einstellungen.getDBService()
-        .createList(Mitgliedskonto.class);
-    it.addFilter("mitglied = ?", new Object[] { m.getID() });
+    DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
+        .createList(Sollbuchung.class);
+    sollbIt.addFilter(Sollbuchung.MITGLIED + " = ?", new Object[] { m.getID() });
     if (von != null)
     {
-      it.addFilter("datum >= ?", von);
+      sollbIt.addFilter(Sollbuchung.DATUM + " >= ?", von);
     }
     if (bis != null)
     {
-      it.addFilter("datum <= ?", bis);
+      sollbIt.addFilter(Sollbuchung.DATUM + " <= ?", bis);
     }
-    it.setOrder("order by datum desc");
-    while (it.hasNext())
+    sollbIt.setOrder("order by " + Sollbuchung.DATUM + " desc");
+    while (sollbIt.hasNext())
     {
-      Mitgliedskonto mk = (Mitgliedskonto) it.next();
-      soll += mk.getBetrag();
-      MitgliedskontoNode mkn = new MitgliedskontoNode(this, mk);
+      Sollbuchung sollb = (Sollbuchung) sollbIt.next();
+      soll += sollb.getBetrag();
+      MitgliedskontoNode mkn = new MitgliedskontoNode(this, sollb);
       children.add(mkn);
     }
     for (MitgliedskontoNode node : children)
@@ -108,30 +108,30 @@ public class MitgliedskontoNode implements GenericObjectNode
     }
   }
 
-  public MitgliedskontoNode(MitgliedskontoNode parent, Mitgliedskonto mk)
+  public MitgliedskontoNode(MitgliedskontoNode parent, Sollbuchung sollb)
       throws RemoteException
   {
     this.type = SOLL;
     this.parent = parent;
-    this.id = mk.getID();
-    this.mitglied = mk.getMitglied();
-    this.zahlungsweg = mk.getZahlungsweg();
-    this.datum = mk.getDatum();
-    this.zweck1 = mk.getZweck1();
-    this.soll = mk.getBetrag();
-    this.ist = mk.getIstSumme();
+    this.id = sollb.getID();
+    this.mitglied = sollb.getMitglied();
+    this.zahlungsweg = sollb.getZahlungsweg();
+    this.datum = sollb.getDatum();
+    this.zweck1 = sollb.getZweck1();
+    this.soll = sollb.getBetrag();
+    this.ist = sollb.getIstSumme();
     if (this.type == SOLL)
     {
       this.children = new ArrayList<>();
       DBIterator<Buchung> it = Einstellungen.getDBService()
           .createList(Buchung.class);
-      it.addFilter("mitgliedskonto = ?", new Object[] { mk.getID() });
+      it.addFilter(Buchung.SOLLBUCHUNG + " = ?", new Object[] { sollb.getID() });
       it.setOrder("order by datum desc");
       ist = 0d;
       while (it.hasNext())
       {
         Buchung bist = (Buchung) it.next();
-        MitgliedskontoNode mkn = new MitgliedskontoNode(this, mk, bist);
+        MitgliedskontoNode mkn = new MitgliedskontoNode(this, sollb, bist);
         ist += bist.getBetrag();
         children.add(mkn);
       }
@@ -139,7 +139,7 @@ public class MitgliedskontoNode implements GenericObjectNode
 
   }
 
-  public MitgliedskontoNode(MitgliedskontoNode parent, Mitgliedskonto mk,
+  public MitgliedskontoNode(MitgliedskontoNode parent, Sollbuchung mk,
       Buchung bist) throws RemoteException
   {
     this.type = IST;

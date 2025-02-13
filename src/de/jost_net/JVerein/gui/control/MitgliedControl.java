@@ -345,12 +345,12 @@ public class MitgliedControl extends FilterControl
     {
       return mitgliedstyp;
     }
-    DBIterator<Mitgliedstyp> at = Einstellungen.getDBService()
+    DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
         .createList(Mitgliedstyp.class);
-    at.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
+    mtIt.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
         + " OR " + Mitgliedstyp.JVEREINID + " IS NULL");
-    at.setOrder("order by bezeichnung");
-    mitgliedstyp = new SelectNoScrollInput(at != null ? PseudoIterator.asList(at) : null, getMitglied().getMitgliedstyp());
+    mtIt.setOrder("order by " + Mitgliedstyp.BEZEICHNUNG);
+    mitgliedstyp = new SelectNoScrollInput(mtIt != null ? PseudoIterator.asList(mtIt) : null, getMitglied().getMitgliedstyp());
     mitgliedstyp.setName("Mitgliedstyp");
     return mitgliedstyp;
   }
@@ -2317,8 +2317,8 @@ public class MitgliedControl extends FilterControl
 
       if (mitgliedstyp != null)
       {
-        Mitgliedstyp at = (Mitgliedstyp) getMitgliedstyp().getValue();
-        m.setMitgliedstyp(Integer.valueOf(at.getID()));
+        Mitgliedstyp mt = (Mitgliedstyp) getMitgliedstyp().getValue();
+        m.setMitgliedstyp(Integer.valueOf(mt.getID()));
       }
       else
       {
@@ -2775,13 +2775,13 @@ public class MitgliedControl extends FilterControl
       sort = (String) getSortierung().getValue();
     }
     ArrayList<Mitglied> list = null;
-    Mitgliedstyp atyp = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
-    if (atyp == null)
+    Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
+    if (mt == null)
     {
       GUI.getStatusBar().setErrorText("Bitte Mitgliedstyp auswählen");
       return;
     }
-    list = new MitgliedQuery(this).get(Integer.parseInt(atyp.getID()), sort);
+    list = new MitgliedQuery(this).get(Integer.parseInt(mt.getID()), sort);
     try
     {
       String dateinamensort = "";
@@ -3037,10 +3037,10 @@ public class MitgliedControl extends FilterControl
     {
       try
       {
-        Mitgliedstyp at = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
-        if (at != null)
+        Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
+        if (mt != null)
         {
-          refreshMitgliedTable(Integer.parseInt(at.getID()));
+          refreshMitgliedTable(Integer.parseInt(mt.getID()));
         }
         else
         {

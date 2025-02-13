@@ -67,10 +67,10 @@ public class MitgliedAdresslistePDF implements IAuswertung
     }
     else
     {
-      DBIterator<Mitgliedstyp> it = Einstellungen.getDBService()
+      DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
           .createList(Mitgliedstyp.class);
-      it.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
-      mitgliedstyp = (Mitgliedstyp) it.next();
+      mtIt.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
+      mitgliedstyp = (Mitgliedstyp) mtIt.next();
     }
     String ueberschrift = (String) control.getAuswertungUeberschrift()
         .getValue();

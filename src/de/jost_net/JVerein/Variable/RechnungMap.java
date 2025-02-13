@@ -104,9 +104,9 @@ public class RechnungMap
     map.put(RechnungVar.MK_BETRAG.getName(), betrag.toArray());
 
     Double ist = 0d;
-    if (re.getMitgliedskonto() != null)
+    if (re.getSollbuchung() != null)
     {
-      ist = re.getMitgliedskonto().getIstSumme();
+      ist = re.getSollbuchung().getIstSumme();
     }
     map.put(RechnungVar.IST.getName(), ist);
     map.put(RechnungVar.MK_SUMME_OFFEN.getName(), summe - ist);

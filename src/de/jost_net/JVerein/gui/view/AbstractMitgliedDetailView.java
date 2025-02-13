@@ -35,7 +35,7 @@ import de.jost_net.JVerein.gui.action.MitgliedMailSendenAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
 import de.jost_net.JVerein.gui.control.DokumentControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
+import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -85,7 +85,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
 
     zeichneUeberschrift(); // Einschub Ende
 
-    final MitgliedskontoControl controlMk = new MitgliedskontoControl(this);
+    final SollbuchungControl controlMk = new SollbuchungControl(this);
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 
@@ -411,7 +411,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
    * Sinn!)
    * 
    */
-  private void zeichneMitgliedkonto(MitgliedskontoControl controlMk,
+  private void zeichneMitgliedkonto(SollbuchungControl controlMk,
       Composite parentComposite) throws RemoteException
   {
     if (!control.getMitglied().isNewObject())

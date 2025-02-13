@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -38,13 +38,13 @@ public class SollbuchungNeuAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Mitgliedskonto mk = null;
+    Sollbuchung sollb = null;
 
     try
     {
-      mk = (Mitgliedskonto) Einstellungen.getDBService()
-          .createObject(Mitgliedskonto.class, null);
-      mk.setBetrag(0.0);
+      sollb = (Sollbuchung) Einstellungen.getDBService()
+          .createObject(Sollbuchung.class, null);
+      sollb.setBetrag(0.0);
       if (m != null)
       {
         if (m.getID() == null)
@@ -52,9 +52,9 @@ public class SollbuchungNeuAction implements Action
           throw new ApplicationException(
               "Neues Mitglied bitte erst speichern. Dann können Zusatzbeträge aufgenommen werden.");
         }
-        mk.setMitglied(m);
-        mk.setZahlungsweg(m.getZahlungsweg());
-        mk.setZahler(m.getZahler());
+        sollb.setMitglied(m);
+        sollb.setZahlungsweg(m.getZahlungsweg());
+        sollb.setZahler(m.getZahler());
       }
     }
     catch (Exception e)
@@ -62,6 +62,6 @@ public class SollbuchungNeuAction implements Action
       throw new ApplicationException(
           "Fehler bei der Erzeugung einer neuen Sollbuchung", e);
     }
-    GUI.startView(new SollbuchungDetailView(), mk);
+    GUI.startView(new SollbuchungDetailView(), sollb);
   }
 }

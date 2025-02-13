@@ -20,7 +20,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -38,10 +38,10 @@ public class NichtMitgliedDetailAction implements Action
       {
         m = (Mitglied) context;
       }
-      else if (context != null && (context instanceof Mitgliedskonto))
+      else if (context != null && (context instanceof Sollbuchung))
       {
-        Mitgliedskonto mk = (Mitgliedskonto) context;
-        m = mk.getMitglied();
+        Sollbuchung sollb = (Sollbuchung) context;
+        m = sollb.getMitglied();
       }
       else
       {

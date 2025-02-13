@@ -18,13 +18,13 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
+import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.Exporter;
 import de.jost_net.JVerein.io.IORegistry;
 import de.jost_net.JVerein.io.SollbuchungExport;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -50,7 +50,7 @@ public class SollbuchungExportAction implements Action
     {
       initExporter();
       ExportDialog d = new ExportDialog(gibSuchGrenzen(context),
-          Mitgliedskonto.class, DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT);
+          Sollbuchung.class, DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT);
       d.open();
     }
     catch (OperationCanceledException oce)
@@ -90,9 +90,9 @@ public class SollbuchungExportAction implements Action
   private Object[] gibSuchGrenzen(Object context)
       throws ApplicationException, RemoteException
   {
-    if (context instanceof MitgliedskontoControl)
+    if (context instanceof SollbuchungControl)
     {
-      MitgliedskontoControl control = (MitgliedskontoControl) context;
+      SollbuchungControl control = (SollbuchungControl) context;
       return control.getCVSExportGrenzen();
     }
     throw new ApplicationException(

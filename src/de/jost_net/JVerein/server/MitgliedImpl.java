@@ -149,13 +149,15 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       throw new ApplicationException("Bitte Vornamen eingeben");
     }
-    if (getMitgliedstyp().getJVereinid() == 1 && getPersonenart().equalsIgnoreCase(
+    if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+        && getPersonenart().equalsIgnoreCase(
         "n") && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime() && Einstellungen.getEinstellung()
         .getGeburtsdatumPflicht())
     {
       throw new ApplicationException("Bitte Geburtsdatum eingeben");
     }
-    if (getMitgliedstyp().getJVereinid() == 1 && getPersonenart().equalsIgnoreCase(
+    if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+        && getPersonenart().equalsIgnoreCase(
         "n") && Einstellungen.getEinstellung().getGeburtsdatumPflicht())
     {
       Calendar cal1 = Calendar.getInstance();
@@ -188,7 +190,9 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       }
     }
 
-    if (getMitgliedstyp().getJVereinid() == 1 && getEintritt().getTime() == Einstellungen.NODATE.getTime() && Einstellungen.getEinstellung()
+    if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+        && getEintritt().getTime() == Einstellungen.NODATE.getTime()
+        && Einstellungen.getEinstellung()
         .getEintrittsdatumPflicht())
     {
       throw new ApplicationException("Bitte Eintrittsdatum eingeben");
@@ -320,7 +324,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   private void checkExterneMitgliedsnummer()
       throws RemoteException, ApplicationException
   {
-    if (getMitgliedstyp().getJVereinid() != 1)
+    if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED)
       return;
     if (Einstellungen.getEinstellung().getExterneMitgliedsnummer() == false)
       return;

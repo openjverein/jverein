@@ -26,7 +26,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Loeschen eines Adresstypen.
+ * Loeschen eines Mitgliedtypen.
  */
 public class MitgliedstypDefaultAction implements Action
 {
@@ -35,16 +35,17 @@ public class MitgliedstypDefaultAction implements Action
   {
     try
     {
-      Mitgliedstyp at = (Mitgliedstyp) Einstellungen.getDBService().createObject(
+      Mitgliedstyp mt = (Mitgliedstyp) Einstellungen.getDBService()
+          .createObject(
           Mitgliedstyp.class, String.valueOf(Mitgliedstyp.MITGLIED));
-      at.setBezeichnung("Mitglied");
-      at.setJVereinid(Mitgliedstyp.MITGLIED);
-      at.store();
-      at = (Mitgliedstyp) Einstellungen.getDBService().createObject(
+      mt.setBezeichnung("Mitglied");
+      mt.setJVereinid(Mitgliedstyp.MITGLIED);
+      mt.store();
+      mt = (Mitgliedstyp) Einstellungen.getDBService().createObject(
           Mitgliedstyp.class, String.valueOf(Mitgliedstyp.SPENDER));
-      at.setBezeichnung("Spender/in");
-      at.setJVereinid(Mitgliedstyp.SPENDER);
-      at.store();
+      mt.setBezeichnung("Spender/in");
+      mt.setJVereinid(Mitgliedstyp.SPENDER);
+      mt.store();
 
       GUI.getStatusBar().setSuccessText("Mitgliedstypen eingefügt.");
     }

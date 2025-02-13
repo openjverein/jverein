@@ -44,12 +44,12 @@ public class MitgliedstypenListView extends AbstractView
         DokumentationUtil.ADRESSTYPEN, false, "question-circle.png");
     buttons.addButton("Neu", new MitgliedstypAction(), null, false, "document-new.png");
 
-    DBIterator<Mitgliedstyp> it = Einstellungen.getDBService()
+    DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
         .createList(Mitgliedstyp.class);
-    it.addFilter(Mitgliedstyp.JVEREINID + " >= " + Mitgliedstyp.MITGLIED
+    mtIt.addFilter(Mitgliedstyp.JVEREINID + " >= " + Mitgliedstyp.MITGLIED
         + " AND " + Mitgliedstyp.JVEREINID + " <= "
         + Mitgliedstyp.SPENDER);
-    if (it.size() == 0)
+    if (mtIt.size() == 0)
     {
       buttons.addButton("Default-Mitgliedstypen einrichten",
           new MitgliedstypDefaultAction());

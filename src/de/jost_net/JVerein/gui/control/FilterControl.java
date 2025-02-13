@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
 import de.jost_net.JVerein.gui.dialogs.ZusatzfelderAuswahlDialog;
@@ -231,43 +231,43 @@ public class FilterControl extends AbstractControl
     }
     this.typ = typ;
 
-    DBIterator<Mitgliedstyp> at = Einstellungen.getDBService()
+    DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
         .createList(Mitgliedstyp.class);
     switch (typ)
     {
       case MITGLIED:
-        at.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
+        mtIt.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
         break;
       case NICHTMITGLIED:
-        at.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
+        mtIt.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
             + " OR " + Mitgliedstyp.JVEREINID + " IS NULL");
         break;
       case NOT_USED:
       case ALLE:
         break;
     }
-    at.setOrder("order by bezeichnung");
+    mtIt.setOrder("order by " + Mitgliedstyp.BEZEICHNUNG);
 
     if (typ == Mitgliedstypen.MITGLIED)
     {
-      Mitgliedstyp def = (Mitgliedstyp) Einstellungen.getDBService()
+      Mitgliedstyp mt = (Mitgliedstyp) Einstellungen.getDBService()
           .createObject(Mitgliedstyp.class,
               String.valueOf(Mitgliedstyp.MITGLIED));
-      suchmitgliedstyp = new SelectInput(at != null ? PseudoIterator.asList(at) : null, def);
+      suchmitgliedstyp = new SelectInput(mtIt != null ? PseudoIterator.asList(mtIt) : null, mt);
     }
     else if (typ == Mitgliedstypen.NICHTMITGLIED || typ == Mitgliedstypen.ALLE)
     {
-      Mitgliedstyp def = null;
+      Mitgliedstyp mt = null;
       try
       {
-        def = (Mitgliedstyp) Einstellungen.getDBService().createObject(
+        mt = (Mitgliedstyp) Einstellungen.getDBService().createObject(
             Mitgliedstyp.class, settings.getString(settingsprefix + "suchadresstyp", "2"));
       }
       catch (Exception e)
       {
-        def = null;
+        mt = null;
       }
-      suchmitgliedstyp = new SelectInput(at != null ? PseudoIterator.asList(at) : null, def);
+      suchmitgliedstyp = new SelectInput(mtIt != null ? PseudoIterator.asList(mtIt) : null, mt);
     }
     else
     {

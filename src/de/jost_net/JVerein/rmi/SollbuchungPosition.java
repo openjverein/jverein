@@ -50,7 +50,7 @@ public interface SollbuchungPosition extends DBObject
 
   public void setSollbuchung(String id) throws RemoteException;
   
-  public Mitgliedskonto getSollbuchung() throws RemoteException;
+  public Sollbuchung getSollbuchung() throws RemoteException;
 
   public void setZweck(String zweck) throws RemoteException;
 

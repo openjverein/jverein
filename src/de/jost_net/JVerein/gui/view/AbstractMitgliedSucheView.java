@@ -86,11 +86,11 @@ public abstract class AbstractMitgliedSucheView extends AbstractView
     Long anzahl = (Long) service.execute(sql, new Object[] {}, rs);
     if (anzahl.longValue() > 0)
     {
-      Mitgliedstyp at = (Mitgliedstyp) control.getSuchMitgliedstyp(Mitgliedstypen.MITGLIED).getValue();
-      if (at != null)
+      Mitgliedstyp mt = (Mitgliedstyp) control.getSuchMitgliedstyp(Mitgliedstypen.MITGLIED).getValue();
+      if (mt != null)
       {
-      Logger.debug(at.getID() + ": " + at.getBezeichnung());
-      p = control.getMitgliedTable(Integer.parseInt(at.getID()),
+      Logger.debug(mt.getID() + ": " + mt.getBezeichnung());
+      p = control.getMitgliedTable(Integer.parseInt(mt.getID()),
           getDetailAction());
       }
       else

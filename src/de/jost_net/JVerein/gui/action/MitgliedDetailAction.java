@@ -25,7 +25,7 @@ import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -66,10 +66,10 @@ public class MitgliedDetailAction implements Action
       {
         mitglied = (Mitglied) context;
       }
-      else if (context instanceof Mitgliedskonto)
+      else if (context instanceof Sollbuchung)
       {
-        Mitgliedskonto mk = (Mitgliedskonto) context;
-        mitglied = mk.getMitglied();
+        Sollbuchung s = (Sollbuchung) context;
+        mitglied = s.getMitglied();
       }
       else if (context instanceof Wiedervorlage)
       {
@@ -101,8 +101,8 @@ public class MitgliedDetailAction implements Action
         Spendenbescheinigung s = (Spendenbescheinigung) context;
         mitglied = s.getMitglied();
       }
-      else if ((context instanceof Buchung ) && ((Buchung) context).getMitgliedskonto() != null ) {
-        mitglied = ((Buchung) context).getMitgliedskonto().getMitglied();
+      else if ((context instanceof Buchung ) && ((Buchung) context).getSollbuchung() != null ) {
+        mitglied = ((Buchung) context).getSollbuchung().getMitglied();
       }
       else
       {

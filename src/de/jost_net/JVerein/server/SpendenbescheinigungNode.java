@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
@@ -58,12 +59,12 @@ public class SpendenbescheinigungNode implements GenericObjectNode
 
   /**
    * Selektiert über die Buchungen mit einer Buchungsart, die als Spende
-   * markiert ist, alle Mitglieder, die eine Buchung im Mitgliedskonto
-   * eingetragen haben. Die Buchungen dürfen noch nicht auf einer
-   * Spendenbescheinigung eingetragen sein. Es werden nur die Mitglieder
-   * selektiert, bei denen auch eine Adresse (Straße, PLZ, Ort) eingetragen ist.
-   * Zusätzlich muss die Summe der Buchungen größer gleich dem in den
-   * Einstellungen hinterlegten Mindestbetrag für Spendenbescheinigungen sein.
+   * markiert ist, alle Mitglieder, die eine Buchung in Sollbuchung eingetragen
+   * haben. Die Buchungen dürfen noch nicht auf einer Spendenbescheinigung
+   * eingetragen sein. Es werden nur die Mitglieder selektiert, bei denen auch
+   * eine Adresse (Straße, PLZ, Ort) eingetragen ist. Zusätzlich muss die Summe
+   * der Buchungen größer gleich dem in den Einstellungen hinterlegten
+   * Mindestbetrag für Spendenbescheinigungen sein.
    * 
    * @param jahr
    *          Das Jahr der Buchung
@@ -92,11 +93,12 @@ public class SpendenbescheinigungNode implements GenericObjectNode
     };
     String sql = "SELECT mitglied.id, sum(buchung.betrag) " + "FROM buchung "
         + "  JOIN buchungsart ON buchung.buchungsart = buchungsart.id "
-        + "  JOIN mitgliedskonto ON buchung.mitgliedskonto = mitgliedskonto.id "
-        + "  JOIN mitglied ON mitgliedskonto.zahler = mitglied.id "
+        + "  JOIN " + Sollbuchung.TABLE_NAME + " ON " + Buchung.T_SOLLBUCHUNG
+        + " = " + Sollbuchung.TABLE_NAME_ID
+        + "  JOIN mitglied ON " + Sollbuchung.T_ZAHLER + " = mitglied.id "
         + "WHERE year(buchung.datum) = ? " + "  AND buchungsart.spende = true "
         + "  AND buchung.spendenbescheinigung IS NULL "
-        + "  AND buchung.mitgliedskonto IS NOT NULL "
+        + "  AND " + Buchung.T_SOLLBUCHUNG + " IS NOT NULL "
         // rdc: Nur Mitglieder mit bekannter Adresse
         + "  AND (mitglied.strasse IS NOT NULL AND LENGTH(mitglied.strasse) > 0) "
         + "  AND (mitglied.plz IS NOT NULL AND LENGTH(mitglied.plz) > 0) "
@@ -152,11 +154,11 @@ public class SpendenbescheinigungNode implements GenericObjectNode
     };
     String sql = "SELECT buchung.id, buchung.datum FROM buchung "
         + "  JOIN buchungsart ON buchung.buchungsart = buchungsart.id "
-        + "  JOIN mitgliedskonto ON buchung.mitgliedskonto = mitgliedskonto.id "
-        + "WHERE year(buchung.datum) = ? " + "  AND buchungsart.spende = true "
-        + "  AND mitgliedskonto.zahler = ? "
-        + "  AND buchung.spendenbescheinigung IS NULL "
-        + "  AND buchung.mitgliedskonto IS NOT NULL "
+        + "  JOIN " + Sollbuchung.TABLE_NAME + " ON " + Buchung.T_SOLLBUCHUNG
+        + " = " + Sollbuchung.TABLE_NAME_ID + " WHERE year(buchung.datum) = ? "
+        + "  AND buchungsart.spende = true " + "  AND " + Sollbuchung.T_ZAHLER
+        + " = ? " + "  AND buchung.spendenbescheinigung IS NULL "
+        + "  AND " + Buchung.T_SOLLBUCHUNG + " IS NOT NULL "
         + "ORDER BY buchung.datum";
     @SuppressWarnings("unchecked")
     ArrayList<String> idliste = (ArrayList<String>) Einstellungen.getDBService()

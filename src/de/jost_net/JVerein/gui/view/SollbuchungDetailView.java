@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
+import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -42,7 +42,7 @@ public class SollbuchungDetailView extends AbstractView
   {
     GUI.getView().setTitle("Sollbuchung");
 
-    final MitgliedskontoControl control = new MitgliedskontoControl(this);
+    final SollbuchungControl control = new SollbuchungControl(this);
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
     LabelGroup group = new LabelGroup(scrolled.getComposite(), "Sollbuchung");

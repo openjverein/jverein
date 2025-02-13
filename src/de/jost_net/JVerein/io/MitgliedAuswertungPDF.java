@@ -77,10 +77,10 @@ public class MitgliedAuswertungPDF implements IAuswertung
     }
     else
     {
-      DBIterator<Mitgliedstyp> it = Einstellungen.getDBService()
+      DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
           .createList(Mitgliedstyp.class);
-      it.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
-      mitgliedstyp = (Mitgliedstyp) it.next();
+      mtIt.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
+      mitgliedstyp = (Mitgliedstyp) mtIt.next();
     }
 
     if (control.isMitgliedStatusAktiv())

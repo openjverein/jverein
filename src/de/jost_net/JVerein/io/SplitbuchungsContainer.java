@@ -29,7 +29,7 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
@@ -303,7 +303,7 @@ public class SplitbuchungsContainer
     buch.setDatum(b.getDatum());
     buch.setKommentar(b.getKommentar());
     buch.setKonto(b.getKonto());
-    buch.setMitgliedskontoID(b.getMitgliedskontoID());
+    buch.setSollbuchungID(b.getSollbuchungID());
     buch.setName(b.getName());
     buch.setProjekt(b.getProjekt());
     buch.setSplitId(Long.valueOf(b.getID()));
@@ -326,7 +326,7 @@ public class SplitbuchungsContainer
     buch.setDatum(master.getDatum());
     buch.setKommentar(origin.getKommentar());
     buch.setKonto(master.getKonto());
-    buch.setMitgliedskontoID(master.getMitgliedskontoID());
+    buch.setSollbuchungID(master.getSollbuchungID());
     buch.setName(master.getName());
     buch.setProjekt(master.getProjekt());
     buch.setSplitId(Long.valueOf(master.getID()));
@@ -343,14 +343,14 @@ public class SplitbuchungsContainer
    * 
    * @param Buchung
    *          die zu splittende Buchung
-   * @param Mitgliedskonto
+   * @param Sollbuchung
    *          die Sollbuchung, die der Buchung zugewiesen werden soll
    * @param immerSpliten
    *          auch bei nur einer Sollbuchungsposition splitten
    * @return Wenn die Beträge von Sollbuchung und Buchung verschieden sind, wird
    *         die erzeugte Restbuchung zurückgegeben, sonst <code>null</code>.
    */
-  public static Buchung autoSplit(Buchung buchung, Mitgliedskonto mk,
+  public static Buchung autoSplit(Buchung buchung, Sollbuchung mk,
       boolean immerSplitten)
       throws NumberFormatException, RemoteException, ApplicationException
   {
@@ -358,7 +358,7 @@ public class SplitbuchungsContainer
     Buchung restBuchung = null;
     if (mk == null)
     {
-      buchung.setMitgliedskonto(null);
+      buchung.setSollbuchung(null);
       buchung.store();
       return null;
     }
@@ -434,7 +434,7 @@ public class SplitbuchungsContainer
         if (buchung.getSplitTyp() == null)
         {
           buchung.setSplitTyp(SplitbuchungTyp.HAUPT);
-          buchung.setMitgliedskontoID(null);
+          buchung.setSollbuchungID(null);
         }
         // Haupt- und Gegen-Buchungen können nicht gesplittet werden.
         else if (buchung.getSplitTyp() == SplitbuchungTyp.GEGEN
@@ -492,7 +492,7 @@ public class SplitbuchungsContainer
           {
             splitBuchung.setZweck(buchung.getZweck());
           }
-          splitBuchung.setMitgliedskonto(mk);
+          splitBuchung.setSollbuchung(mk);
           String buchungsart = entry.getKey().substring(0,
               entry.getKey().indexOf("-"));
           splitBuchung.setBuchungsartId(Long.parseLong(buchungsart));
@@ -556,7 +556,7 @@ public class SplitbuchungsContainer
       {
         buchung.setBuchungsklasseId(spArray.get(0).getBuchungsklasseId());
       }
-      buchung.setMitgliedskonto(mk);
+      buchung.setSollbuchung(mk);
       buchung.store();
     }
     return restBuchung;

@@ -37,8 +37,8 @@ import com.itextpdf.text.Element;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Ausgabeart;
@@ -66,7 +66,7 @@ public class Kontoauszug
     settings.setStoreWhenRead(true);
   }
 
-  public Kontoauszug(Object object, MitgliedskontoControl control) throws Exception
+  public Kontoauszug(Object object, SollbuchungControl control) throws Exception
   {
     this();
     ArrayList<Mitglied> mitglieder = new ArrayList<>();
@@ -74,9 +74,9 @@ public class Kontoauszug
     if (object == null && control.isSuchMitgliedstypActive() && 
         control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() != null)
     {
-      Mitgliedstyp atyp = (Mitgliedstyp) control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue();
+      Mitgliedstyp mt = (Mitgliedstyp) control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue();
       mitglieder = new MitgliedQuery(control).
-          get(Integer.parseInt(atyp.getID()), null);
+          get(Integer.parseInt(mt.getID()), null);
     }
     else if (object == null && control.isSuchMitgliedstypActive() && 
         control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() == null)
@@ -196,7 +196,7 @@ public class Kontoauszug
     settings.setAttribute("lastdir", file.getParent());
   }
 
-  private boolean generiereMitglied(Mitglied m, MitgliedskontoControl control)
+  private boolean generiereMitglied(Mitglied m, SollbuchungControl control)
       throws RemoteException, DocumentException
   {
     DIFFERENZ diff = DIFFERENZ.EGAL;

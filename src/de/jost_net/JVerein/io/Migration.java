@@ -46,7 +46,7 @@ import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
@@ -1091,13 +1091,13 @@ public class Migration
         Mitgliedfoto m = listmitgliedfoto.next();
         m.delete();
       }
-      // Mitgliedskonto
-      DBIterator<Mitgliedskonto> listmitgliedskonten = Einstellungen
-          .getDBService().createList(Mitgliedskonto.class);
-      while (listmitgliedskonten.hasNext())
+      // Sollbuchung
+      DBIterator<Sollbuchung> sollbIt = Einstellungen
+          .getDBService().createList(Sollbuchung.class);
+      while (sollbIt.hasNext())
       {
-        Mitgliedskonto m = listmitgliedskonten.next();
-        m.delete();
+        Sollbuchung sollb = sollbIt.next();
+        sollb.delete();
       }
       // Spendenbescheinigung
       DBIterator<Spendenbescheinigung> listspendenbescheinigungen = Einstellungen

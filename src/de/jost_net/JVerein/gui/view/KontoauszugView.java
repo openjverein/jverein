@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
+import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -36,7 +36,7 @@ public class KontoauszugView extends AbstractView
   {
     GUI.getView().setTitle("Kontoauszüge");
 
-    final MitgliedskontoControl control = new MitgliedskontoControl(this);
+    final SollbuchungControl control = new SollbuchungControl(this);
     control.init("kontoauszug.", null, null);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");

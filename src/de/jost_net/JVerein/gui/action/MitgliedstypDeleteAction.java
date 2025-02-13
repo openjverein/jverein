@@ -42,25 +42,25 @@ public class MitgliedstypDeleteAction implements Action
     }
     try
     {
-      Mitgliedstyp at = (Mitgliedstyp) context;
-      if (at.getJVereinid() > 0)
+      Mitgliedstyp mt = (Mitgliedstyp) context;
+      if (mt.getJVereinid() > 0)
       {
         throw new ApplicationException(
             "Dieser Mitgliedstyp darf nicht gelöscht werden");
       }
-      if (at.isNewObject())
+      if (mt.isNewObject())
       {
         return;
       }
       DBIterator<Mitglied> it = Einstellungen.getDBService()
           .createList(Mitglied.class);
-      it.addFilter(Mitglied.MITGLIEDSTYP + " = ?", new Object[] { at.getID() });
+      it.addFilter(Mitglied.MITGLIEDSTYP + " = ?", new Object[] { mt.getID() });
       it.setLimit(1);
       if (it.hasNext())
       {
         throw new ApplicationException(String.format(
             "Mitgliedstyp '%s' kann nicht gelöscht werden. Es existieren Nicht-Mitglieder dieses Typs.",
-            at.getBezeichnung()));
+            mt.getBezeichnung()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Mitgliedstyp löschen");
@@ -77,7 +77,7 @@ public class MitgliedstypDeleteAction implements Action
         return;
       }
 
-      at.delete();
+      mt.delete();
       GUI.getStatusBar().setSuccessText("Mitgliedstyp gelöscht.");
     }
     catch (RemoteException e)

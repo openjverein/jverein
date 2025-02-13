@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 
 public class SollbuchungMap
 {
@@ -29,7 +29,7 @@ public class SollbuchungMap
   {
   }
 
-  public Map<String, Object> getMap(Mitgliedskonto mk, Map<String, Object> inma)
+  public Map<String, Object> getMap(Sollbuchung mk, Map<String, Object> inma)
       throws RemoteException
   {
     Map<String, Object> map = null;

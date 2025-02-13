@@ -38,7 +38,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.QIFImportHead;
 import de.jost_net.JVerein.rmi.QIFImportPos;
 import de.jost_net.JVerein.server.BuchungImpl;
@@ -733,17 +733,17 @@ public class QIFBuchungsImportControl extends AbstractControl
       if (null == mitglied)
         return;
 
-      Mitgliedskonto mk = (Mitgliedskonto) Einstellungen.getDBService()
-          .createObject(Mitgliedskonto.class, null);
-      mk.setBetrag(buchung.getBetrag());
-      mk.setDatum(buchung.getDatum());
-      mk.setMitglied(mitglied);
-      mk.setZahler(mitglied);
-      mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
-      mk.setZweck1(buchung.getZweck());
-      mk.store();
+      Sollbuchung sollb = (Sollbuchung) Einstellungen.getDBService()
+          .createObject(Sollbuchung.class, null);
+      sollb.setBetrag(buchung.getBetrag());
+      sollb.setDatum(buchung.getDatum());
+      sollb.setMitglied(mitglied);
+      sollb.setZahler(mitglied);
+      sollb.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+      sollb.setZweck1(buchung.getZweck());
+      sollb.store();
 
-      buchung.setMitgliedskonto(mk);
+      buchung.setSollbuchung(sollb);
       buchung.store();
     }
 

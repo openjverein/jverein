@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -32,20 +32,20 @@ public class SollbuchungEditAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Mitgliedskonto mk = null;
+    Sollbuchung sollb = null;
     MitgliedskontoNode mkn = null;
 
-    if (context instanceof Mitgliedskonto)
+    if (context instanceof Sollbuchung)
     {
-      mk = (Mitgliedskonto) context;
+      sollb = (Sollbuchung) context;
     }
     else if (context instanceof MitgliedskontoNode)
     {
       mkn = (MitgliedskontoNode) context;
       try
       {
-        mk = (Mitgliedskonto) Einstellungen.getDBService()
-            .createObject(Mitgliedskonto.class, mkn.getID());
+        sollb = (Sollbuchung) Einstellungen.getDBService()
+            .createObject(Sollbuchung.class, mkn.getID());
       }
       catch (RemoteException e)
       {
@@ -57,6 +57,6 @@ public class SollbuchungEditAction implements Action
     {
       throw new ApplicationException("Keine Sollbuchung ausgewählt");
     }
-    GUI.startView(new SollbuchungDetailView(), mk);
+    GUI.startView(new SollbuchungDetailView(), sollb);
   }
 }

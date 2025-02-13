@@ -22,7 +22,7 @@ import java.util.List;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
-import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
+import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -90,7 +90,7 @@ public class BuchungListPart extends BuchungListTablePart
     addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
     addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    addColumn("Mitglied", "mitgliedskonto", new MitgliedskontoFormatter());
+    addColumn("Mitglied", Buchung.SOLLBUCHUNG, new SollbuchungFormatter());
     addColumn("Ersatz für Aufwendungen", "verzicht", new JaNeinFormatter());
     setContextMenu(menu);
     setRememberColWidths(true);

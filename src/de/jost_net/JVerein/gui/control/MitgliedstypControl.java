@@ -92,12 +92,12 @@ public class MitgliedstypControl extends AbstractControl
   {
     try
     {
-      Mitgliedstyp at = getMitgliedstyp();
-      at.setBezeichnung((String) getBezeichnung().getValue());
-      at.setBezeichnungPlural((String) getBezeichnungPlural().getValue());
+      Mitgliedstyp mt = getMitgliedstyp();
+      mt.setBezeichnung((String) getBezeichnung().getValue());
+      mt.setBezeichnungPlural((String) getBezeichnungPlural().getValue());
       try
       {
-        at.store();
+        mt.store();
         GUI.getStatusBar().setSuccessText("Mitgliedstyp gespeichert");
       }
       catch (ApplicationException e)
@@ -116,10 +116,10 @@ public class MitgliedstypControl extends AbstractControl
   public Part getMitgliedstypList() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
-    DBIterator<Mitgliedstyp> mitgliedstypen = service.createList(Mitgliedstyp.class);
-    mitgliedstypen.setOrder("ORDER BY bezeichnung");
+    DBIterator<Mitgliedstyp> mtIt = service.createList(Mitgliedstyp.class);
+    mtIt.setOrder("ORDER BY " + Mitgliedstyp.BEZEICHNUNG);
 
-    mitgliedstypList = new TablePart(mitgliedstypen, new MitgliedstypAction());
+    mitgliedstypList = new TablePart(mtIt, new MitgliedstypAction());
     mitgliedstypList.addColumn("Bezeichnung", Mitgliedstyp.BEZEICHNUNG);
     mitgliedstypList.addColumn("Bezeichnung Plural",
         Mitgliedstyp.BEZEICHNUNG_PLURAL);

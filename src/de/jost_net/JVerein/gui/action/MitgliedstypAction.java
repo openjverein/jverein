@@ -30,14 +30,14 @@ public class MitgliedstypAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Mitgliedstyp at = null;
+    Mitgliedstyp mt = null;
 
     if (context != null && (context instanceof Mitgliedstyp))
     {
-      at = (Mitgliedstyp) context;
+      mt = (Mitgliedstyp) context;
       try
       {
-        if (at.getJVereinid() > 0)
+        if (mt.getJVereinid() > 0)
         {
           throw new ApplicationException(
               "Dieser Mitgliedstyp ist reserviert und darf durch den Benutzer nicht verändert werden.");
@@ -52,7 +52,7 @@ public class MitgliedstypAction implements Action
     {
       try
       {
-        at = (Mitgliedstyp) Einstellungen.getDBService().createObject(
+        mt = (Mitgliedstyp) Einstellungen.getDBService().createObject(
             Mitgliedstyp.class, null);
       }
       catch (RemoteException e)
@@ -61,6 +61,6 @@ public class MitgliedstypAction implements Action
             "Fehler bei der Erzeugung eines neuen Mitgliedstypen", e);
       }
     }
-    GUI.startView(MitgliedstypView.class.getName(), at);
+    GUI.startView(MitgliedstypView.class.getName(), mt);
   }
 }

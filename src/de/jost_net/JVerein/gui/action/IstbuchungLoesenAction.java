@@ -67,7 +67,7 @@ public class IstbuchungLoesenAction implements Action
       {
         bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
             mkn.getID());
-        bu.setMitgliedskonto(null);
+        bu.setSollbuchung(null);
         bu.store();
         GUI.getStatusBar().setSuccessText(
 
