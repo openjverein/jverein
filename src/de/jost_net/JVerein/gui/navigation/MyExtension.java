@@ -16,12 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.navigation;
 
-import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.schlevoigt.JVerein.gui.view.BuchungsTexteKorrigierenView;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AboutAction;
 import de.jost_net.JVerein.gui.action.BackupCreateAction;
@@ -92,8 +87,8 @@ import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.jost_net.JVerein.gui.view.StatistikMitgliedView;
 import de.jost_net.JVerein.gui.view.WiedervorlagelisteView;
+import de.jost_net.JVerein.gui.view.WirtschaftsplanungListView;
 import de.jost_net.JVerein.gui.view.ZusatzbetraegelisteView;
-import de.jost_net.JVerein.gui.action.WirtschaftsplanungListAction;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -104,6 +99,10 @@ import de.willuhn.jameica.gui.NavigationItem;
 import de.willuhn.jameica.gui.extension.Extendable;
 import de.willuhn.jameica.gui.extension.Extension;
 import de.willuhn.logging.Logger;
+
+import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class MyExtension implements Extension
 {
@@ -253,7 +252,7 @@ public class MyExtension implements Extension
       if (Einstellungen.getEinstellung().getWirtschaftsplanung())
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Wirtschaftsplanung",
-            new WirtschaftsplanungListAction(), "euro-sign.png"));
+            new StartViewAction(WirtschaftsplanungListView.class), "euro-sign.png"));
       }
 
       NavigationItem abrechnung = null;

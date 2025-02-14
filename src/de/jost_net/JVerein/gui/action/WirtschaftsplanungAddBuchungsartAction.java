@@ -36,6 +36,8 @@ public class WirtschaftsplanungAddBuchungsartAction implements Action
   private final WirtschaftsplanungControl control;
   private final int art;
 
+  private final static int EINNAHME = 0;
+
   public WirtschaftsplanungAddBuchungsartAction(
       WirtschaftsplanungControl control, int art)
   {
@@ -98,7 +100,7 @@ public class WirtschaftsplanungAddBuchungsartAction implements Action
       node.addChild(new WirtschaftsplanungNode(node, buchungsart, art,
           control.getWirtschaftsplanungZeile()));
 
-      if (art == 0)
+      if (art == EINNAHME)
       {
         control.getEinnahmen();
       }

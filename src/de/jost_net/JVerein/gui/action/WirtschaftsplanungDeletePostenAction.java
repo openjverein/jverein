@@ -30,6 +30,8 @@ public class WirtschaftsplanungDeletePostenAction implements Action
   private final WirtschaftsplanungControl control;
   private final int art;
 
+  private final static int EINNAHME = 0;
+
   public WirtschaftsplanungDeletePostenAction(WirtschaftsplanungControl control,
       int art)
   {
@@ -100,12 +102,12 @@ public class WirtschaftsplanungDeletePostenAction implements Action
 
           if (node.getIst() == 0.)
           {
-            List items = art == 0 ?
+            List items = art == EINNAHME ?
                 control.getEinnahmen().getItems() :
                 control.getAusgaben().getItems();
             items.remove(node);
 
-            if (art == 0)
+            if (art == EINNAHME)
             {
               control.getEinnahmen().setList(items);
             }

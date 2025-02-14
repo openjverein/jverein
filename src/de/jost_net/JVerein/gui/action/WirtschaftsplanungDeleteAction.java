@@ -1,11 +1,8 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
-import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -63,12 +60,6 @@ public class WirtschaftsplanungDeleteAction implements Action
     {
       for (Wirtschaftsplan wirtschaftsplan : wirtschaftsplaene)
       {
-        DBIterator<WirtschaftsplanItem> iterator = Einstellungen.getDBService().createList(WirtschaftsplanItem.class);
-        iterator.addFilter("wirtschaftsplan = ?", wirtschaftsplan.getID());
-        while (iterator.hasNext())
-        {
-          iterator.next().delete();
-        }
         wirtschaftsplan.delete();
       }
       DBTransaction.commit();

@@ -22,6 +22,7 @@ import de.jost_net.JVerein.gui.control.WirtschaftsplanungNode;
 import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanungPostenDialog;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
 public class WirtschaftsplanungAddPostenAction implements Action
@@ -59,6 +60,7 @@ public class WirtschaftsplanungAddPostenAction implements Action
 
       control.reloadSoll(node, art);
     }
+    catch (OperationCanceledException ignored) {}
     catch (Exception e)
     {
       throw new ApplicationException("Fehler beim Anlegen des Postens");
