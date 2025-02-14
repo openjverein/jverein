@@ -71,5 +71,7 @@ public class WirtschaftsplanungDeleteAction implements Action
       Logger.error("Fehler beim Löschen des Wirtschaftsplans", e);
       DBTransaction.rollback();
     }
+
+    GUI.getCurrentView().reload();
   }
 }

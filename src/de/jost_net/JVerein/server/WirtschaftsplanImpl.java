@@ -47,6 +47,7 @@ public class WirtschaftsplanImpl extends AbstractDBObject
   @Override
   public void setId(String id) throws RemoteException
   {
+    this.setID(id);
     setAttribute("id", id);
   }
 
