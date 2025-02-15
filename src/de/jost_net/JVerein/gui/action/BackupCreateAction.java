@@ -64,6 +64,7 @@ import de.jost_net.JVerein.server.QIFImportHeadImpl;
 import de.jost_net.JVerein.server.QIFImportPosImpl;
 import de.jost_net.JVerein.server.RechnungImpl;
 import de.jost_net.JVerein.server.SekundaereBeitragsgruppeImpl;
+import de.jost_net.JVerein.server.SollbuchungPositionImpl;
 import de.jost_net.JVerein.server.SpendenbescheinigungImpl;
 import de.jost_net.JVerein.server.SuchprofilImpl;
 import de.jost_net.JVerein.server.VersionImpl;
@@ -270,6 +271,10 @@ public class BackupCreateAction implements Action
 
           monitor.setStatusText("Speichere Mitgliedskonten");
           backup(MitgliedskontoImpl.class, writer, monitor);
+          monitor.addPercentComplete(1);
+
+          monitor.setStatusText("Speichere Sollbuchungpositionen");
+          backup(SollbuchungPositionImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Spendenbescheinigungen");
