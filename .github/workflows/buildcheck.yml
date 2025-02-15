@@ -31,11 +31,6 @@ jobs:
           hibiscus
         key: ${{ runner.os }}-${{ github.repository_id }}
 
-    - name: Checkout openjverein
-      uses: actions/checkout@v4
-      with:
-        path: jverein
-
     - name: Build openjverein plugin
       working-directory: ./
       run: ant -noinput -buildfile jverein/build/build.xml compile

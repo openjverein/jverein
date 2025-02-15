@@ -14,12 +14,16 @@ jobs:
         distribution: 'temurin'
         architecture: x64
 
+    - name: Check out jverein
+      uses: actions/checkout@v4
+      with:
+        path: jverein
     - name: Set env
       id: setenvs
       run: |
-        cat plugin.dependencies >> $GITHUB_ENV
+        cat jverein/plugin.dependencies >> $GITHUB_ENV
         echo "### plugin.dependencies"
-        cat plugin.dependencies
+        cat jverein/plugin.dependencies
 
     - name: Restore cached tags and folders
       id: cache-tags-jars
