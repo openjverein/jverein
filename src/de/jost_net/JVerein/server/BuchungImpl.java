@@ -136,10 +136,11 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     {
       throw new ApplicationException("Buchungsdatum liegt mehr als 10 Jahre in der Zukunft");
     }
-    cal2.add(Calendar.YEAR, -20);
+    cal2.add(Calendar.YEAR, -50);
     if (cal1.before(cal2))
     {
-      throw new ApplicationException("Buchungsdatum liegt mehr als 10 Jahre zurück");
+      throw new ApplicationException(
+          "Buchungsdatum liegt mehr als 50 Jahre zurück");
     }
 
     /* Prüfung des Projektes */
@@ -442,7 +443,15 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   public Long getAbrechnungslaufID() throws RemoteException
   {
-    return (Long) super.getAttribute("abrechnungslauf");
+    Abrechnungslauf lauf = getAbrechnungslauf();
+    if (lauf != null)
+    {
+      return Long.parseLong(lauf.getID());
+    }
+    else
+    {
+      return null;
+    }
   }
 
   @Override
@@ -544,7 +553,15 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   public Long getProjektID() throws RemoteException
   {
-    return (Long) super.getAttribute("projekt");
+    Projekt projekt = getProjekt();
+    if (projekt != null)
+    {
+      return Long.parseLong(projekt.getID());
+    }
+    else
+    {
+      return null;
+    }
   }
 
   @Override
