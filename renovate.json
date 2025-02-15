@@ -7,7 +7,7 @@
     {
       "customType": "regex",
       "fileMatch": [
-        "^.github/workflows/reusable-build.yml$"
+        "^plugin.dependencies$"
       ],
       "matchStrings": [
         "jameica_tag=(?<currentValue>V_\\d+_\\d+_\\d+_BUILD_\\d+)"
@@ -19,7 +19,7 @@
     {
       "customType": "regex",
       "fileMatch": [
-        "^.github/workflows/reusable-build.yml$"
+        "^plugin.dependencies$"
       ],
       "matchStrings": [
         "hibiscus_tag=(?<currentValue>V_\\d+_\\d+_\\d+_BUILD_\\d+)"
