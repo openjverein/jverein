@@ -21,7 +21,7 @@ jobs:
           ./cached-tags
           jameica
           hibiscus
-        key: ${{ runner.os }}-${{ github.repository_id }}
+        key: ${{ hashFiles('plugin.dependencies') }}
 
     - name: Build openjverein plugin
       id: openjverein
