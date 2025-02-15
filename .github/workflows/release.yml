@@ -21,7 +21,7 @@ jobs:
           ./cached-tags
           jameica
           hibiscus
-        key: ${{ hashFiles('plugin.dependencies') }}
+        key: ${{ hashFiles('jverein/plugin.dependencies') }}
 
     - name: Build openjverein plugin
       id: openjverein
