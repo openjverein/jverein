@@ -8,6 +8,7 @@ on:
     types: [opened, reopened, synchronize, edited]
     paths:
       - 'plugin.xml'
+      - 'plugin.dependencies'
       - 'build/**'
       - 'lib/**'
       - 'lib.src/**'
