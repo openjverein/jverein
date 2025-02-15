@@ -13,52 +13,57 @@ jobs:
     needs: call-reusable-workflow
     runs-on: ubuntu-latest
     steps:
-    - name: Restore cached tags and jars
-      id: cache-tags-jars
-      uses: actions/cache@v4
-      with:
-        path: |
-          ./cached-tags
-          jameica
-          hibiscus
-        key: ${{ hashFiles('jverein/plugin.dependencies') }}
+      - name: Check out jverein
+        uses: actions/checkout@v4
+        with:
+          path: jverein
 
-    - name: Build openjverein plugin
-      id: openjverein
-      working-directory: ./
-      run: |
-        ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml)
-        echo ${ant_output}
+      - name: Restore cached tags and jars
+        id: cache-tags-jars
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./cached-tags
+            jameica
+            hibiscus
+          key: ${{ hashFiles('jverein/plugin.dependencies') }}
 
-        ssa="SELECTED_VERSION="
-        ssb=".zip"
-        text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
-        tmp_version=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-        tmp_version=$tmp_version
+      - name: Build openjverein plugin
+        id: openjverein
+        working-directory: ./
+        run: |
+          ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml)
+          echo ${ant_output}
+          
+          ssa="SELECTED_VERSION="
+          ssb=".zip"
+          text="${ant_output#*${ssa}}"
+          text="${text%${ssb}*}.zip"
+          tmp_version=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
+          tmp_version=$tmp_version
+          
+          ssa="SELECTED_FILENAME="
+          text="${ant_output#*${ssa}}"
+          text="${text%${ssb}*}.zip"
+          tmp_filename=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
+          
+          ssa="SELECTED_PATH="
+          text="${ant_output#*${ssa}}"
+          text="${text%${ssb}*}.zip"
+          tmp_path=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
+          
+          echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
+          echo "selected_filename=${tmp_filename}" >> $GITHUB_OUTPUT
+          echo "selected_path=${tmp_path}" >> $GITHUB_OUTPUT
+          
+          builddatetime=$(date +'%Y-%m-%d %H:%M')
+          echo "### Version: ${tmp_version} | filename: ${tmp_filename} | build datetime: ${builddatetime}" >> $GITHUB_STEP_SUMMARY
 
-        ssa="SELECTED_FILENAME="
-        text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
-        tmp_filename=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-
-        ssa="SELECTED_PATH="
-        text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
-        tmp_path=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-
-        echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
-        echo "selected_filename=${tmp_filename}" >> $GITHUB_OUTPUT
-        echo "selected_path=${tmp_path}" >> $GITHUB_OUTPUT
-
-        builddatetime=$(date +'%Y-%m-%d %H:%M')
-        echo "### Version: ${tmp_version} | filename: ${tmp_filename} | build datetime: ${builddatetime}" >> $GITHUB_STEP_SUMMARY
-
-    - name: Release
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: ${{ steps.openjverein.outputs.selected_version }}
-        prerelease: false
-        name: Release ${{ steps.openjverein.outputs.selected_version }}
-        files: ./jverein/${{ steps.openjverein.outputs.selected_path }}
-        generate_release_notes: true
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.openjverein.outputs.selected_version }}
+          prerelease: false
+          name: Release ${{ steps.openjverein.outputs.selected_version }}
+          files: ./jverein/${{ steps.openjverein.outputs.selected_path }}
+          generate_release_notes: true

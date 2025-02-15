@@ -5,7 +5,7 @@ name: OpenJVerein build check
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, edited]
+    types: [ opened, reopened, synchronize, edited ]
     paths:
       - 'plugin.xml'
       - 'plugin.dependencies'
@@ -21,17 +21,22 @@ jobs:
     needs: call-reusable-workflow
     runs-on: ubuntu-latest
     steps:
-    - name: Restore cached tags and jars
-      id: cache-tags-jars
-      uses: actions/cache@v4
-      with:
-        path: |
-          ./cached-tags
-          jameica
-          hibiscus
-        key: ${{ hashFiles('jverein/plugin.dependencies') }}
+      - name: Check out jverein
+        uses: actions/checkout@v4
+        with:
+          path: jverein
+
+      - name: Restore cached tags and jars
+        id: cache-tags-jars
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./cached-tags
+            jameica
+            hibiscus
+          key: ${{ hashFiles('jverein/plugin.dependencies') }}
 
 
-    - name: Build openjverein plugin
-      working-directory: ./
-      run: ant -noinput -buildfile jverein/build/build.xml compile
+      - name: Build openjverein plugin
+        working-directory: ./
+        run: ant -noinput -buildfile jverein/build/build.xml compile
