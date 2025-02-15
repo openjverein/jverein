@@ -288,7 +288,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public Buchungsklasse getBuchungsklasse() throws RemoteException
   {
-    Long l = (Long) super.getAttribute("buchungsklasse");
+    Object l = (Object) super.getAttribute("buchungsklasse");
     if (l == null)
     {
       return null; // Keine Buchungsklasse zugeordnet
@@ -348,7 +348,7 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
   @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
-    Long l = (Long) super.getAttribute("buchungsart");
+    Object l = (Object) super.getAttribute("buchungsart");
     if (l == null)
     {
       return null; // Keine Buchungsart zugeordnet
