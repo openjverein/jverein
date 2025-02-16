@@ -23,8 +23,10 @@ jobs:
       uses: actions/cache/restore@v4
       with:
         path: |
+          jameica/bin/
           jameica/lib/**.jar
           jameica/releases/jameica-lib.jar
+          hibiscus/bin/
           hibiscus/lib/**.jar
           hibiscus/releases/hibiscus-lib.jar
         fail-on-cache-miss: true

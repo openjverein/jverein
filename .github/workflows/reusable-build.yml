@@ -24,8 +24,10 @@ jobs:
       uses: actions/cache/restore@v4
       with:
         path: |
+          jameica/bin/
           jameica/lib/**.jar
           jameica/releases/jameica-lib.jar
+          hibiscus/bin/
           hibiscus/lib/**.jar
           hibiscus/releases/hibiscus-lib.jar
         key: ${{ hashFiles('jverein/build/build.properties', 'jverein/build/build.xml') }}
@@ -39,8 +41,10 @@ jobs:
       uses: actions/cache/save@v4
       with:
         path: |
+          jameica/bin/
           jameica/lib/**.jar
           jameica/releases/jameica-lib.jar
+          hibiscus/bin/
           hibiscus/lib/**.jar
           hibiscus/releases/hibiscus-lib.jar
         key: ${{ hashFiles('jverein/build/build.properties', 'jverein/build/build.xml') }}
