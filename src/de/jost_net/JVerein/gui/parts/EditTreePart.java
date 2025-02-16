@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.gui.control.listener.TreeEditListener;
+import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -52,8 +53,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Ein TreePart bei dem Spalten editiert werden können. Dazu müssen sie als
- * editable gesetzt werden. per
+ * Ein TreePart, bei dem Spalten editiert werden können. Dazu müssen die Spalten
+ * <code>editable</code> sein. Per
  * <code>addChangeListener(TableChangeListener l)</code> kann ein Listener
  * angehängt werden, der bei Änderungen benachrichtigt wird.
  */
@@ -118,10 +119,10 @@ public class EditTreePart extends TreePart
           if (!col.canChange())
             return;
 
-          // Wir rufen den Listener auf, wenn er false zurückgibt soll das Feld
-          // nicht bearbeitet werden können. Das ist nötig da bei einem Tree
-          // verschiedene Nodes Typen gibt von denen nicht alle gleich behandelt
-          // werden sollen
+          // Wir rufen den Listener auf, wenn dieser false zurückgibt, soll das
+          // Feld nicht bearbeitet werden können.
+          // Das ist nötig, da es bei einem Tree verschiedene Nodes Typen gibt,
+          // die nicht alle gleich behandelt werden sollen.
           for (TreeEditListener l : editListeners)
           {
             if (!l.editItem(item.getData(), col.getColumnId()))
@@ -138,11 +139,10 @@ public class EditTreePart extends TreePart
           editor.setEditor(editorControl, item, index);
 
           // Wir merken uns noch die letzte Farbe des Items.
-          // Denn falls der User Unfug eingibt, faerben wir
+          // Denn falls der User entwas ungültiges eingibt, faerben wir
           // sie rot. Allerdings wollen wir sie anschliessend
           // wieder auf die richtige urspruengliche Farbe
-          // zuruecksetzen, wenn der User den Wert korrigiert
-          // hat.
+          // zuruecksetzen, wenn der User den Wert korrigiert hat.
           if (item.getData("color") == null)
           {
             // wir hatten den Wert noch nicht gespeichert
@@ -197,6 +197,29 @@ public class EditTreePart extends TreePart
                 if (oldValue != null && oldValue.equals(newValue))
                   return; // nothing changed
 
+
+                // Wir versuchen den neuen Wert zu formatieren. Wenn es nicht
+                // klappt, verwenden wir ihn so wie er ist.
+                try
+                {
+                  // Wird gebraucht, um den ursprünglichen Typ zu kennen.
+                  Object value = BeanUtil.get(item.getData(),
+                      col.getColumnId());
+                  Object o = newValue;
+                  if (value instanceof Double)
+                  {
+                    o = Double.parseDouble(newValue);
+                  }
+                  else if (value instanceof Integer)
+                  {
+                    o = Integer.parseInt(newValue);
+                  }
+                  newValue = col.getFormattedValue(o, item);
+                }
+                catch (Exception ignore)
+                {
+                }
+
                 item.setText(index, newValue);
 
                 for (TableChangeListener l : changeListeners)
@@ -221,15 +244,6 @@ public class EditTreePart extends TreePart
                     break;
                   }
                 }
-
-                // // Zeile neu formatieren
-                // if (treeFormatter != null)
-                // tableFormatter.format(item);
-                //
-                // // BUGZILLA 1025: Text-Cache aktualisieren
-                // String[] values = textTable.get(item.getData());
-                // if (values != null)
-                // values[index] = newValue;
               }
               finally
               {
@@ -278,11 +292,11 @@ public class EditTreePart extends TreePart
    * Das zu bearbeitende Item bestimmen
    * 
    * @param pt
-   *          der angeclickte Punkt
+   *          der angeklickte Punkt
    * @param cols
-   *          anzahl spaten des Trees
+   *          Anzahl Spalten des Trees
    * @param items
-   *          die SubItems des Aktuellen Nodes
+   *          die SubItems des aktuellen Nodes
    * @return TreeItem
    */
   private TreeItem getSelectedItem(Point pt, int cols, TreeItem[] items)
