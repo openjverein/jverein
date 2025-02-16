@@ -25,10 +25,10 @@ jobs:
       with:
         path: |
           jameica/bin/
-          jameica/lib/**.jar
+          jameica/lib/
           jameica/releases/jameica-lib.jar
           hibiscus/bin/
-          hibiscus/lib/**.jar
+          hibiscus/lib/
           hibiscus/releases/hibiscus-lib.jar
         key: ${{ hashFiles('jverein/build/build.properties', 'jverein/build/build.xml') }}
 
@@ -42,9 +42,9 @@ jobs:
       with:
         path: |
           jameica/bin/
-          jameica/lib/**.jar
+          jameica/lib/
           jameica/releases/jameica-lib.jar
           hibiscus/bin/
-          hibiscus/lib/**.jar
+          hibiscus/lib/
           hibiscus/releases/hibiscus-lib.jar
         key: ${{ hashFiles('jverein/build/build.properties', 'jverein/build/build.xml') }}

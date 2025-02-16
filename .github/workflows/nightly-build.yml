@@ -29,10 +29,10 @@ jobs:
       with:
         path: |
           jameica/bin/
-          jameica/lib/**.jar
+          jameica/lib/
           jameica/releases/jameica-lib.jar
           hibiscus/bin/
-          hibiscus/lib/**.jar
+          hibiscus/lib/
           hibiscus/releases/hibiscus-lib.jar
         fail-on-cache-miss: true
         key: ${{ hashFiles('jverein/build/build.properties', 'jverein/build/build.xml') }}
