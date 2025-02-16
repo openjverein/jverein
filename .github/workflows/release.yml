@@ -13,20 +13,22 @@ jobs:
     needs: call-reusable-workflow
     runs-on: ubuntu-latest
     steps:
-    - name: Restore cached tags and jars
-      id: cache-tags-jars
-      uses: actions/cache@v4
-      with:
-        path: |
-          ./cached-tags
-          jameica
-          hibiscus
-        key: ${{ runner.os }}-${{ github.repository_id }}
-
     - name: Checkout openjverein
       uses: actions/checkout@v4
       with:
         path: jverein
+
+    - name: Restore build dependencies
+      id: restore-cache
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          jameica/lib/**.jar
+          jameica/releases/jameica-lib.jar
+          hibiscus/lib/**.jar
+          hibiscus/releases/hibiscus-lib.jar
+        fail-on-cache-miss: true
+        key: ${{ hashFiles('jverein/build/build.properties', 'jverein/build/build.xml') }}
 
     - name: Build openjverein plugin
       id: openjverein
