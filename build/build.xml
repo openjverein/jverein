@@ -174,57 +174,38 @@
   </target>
 
   <target name="build-dependencies" description="Downloads and builds Jameica and Hibiscus"
-          depends="init,build-jameica,build-hibiscus"/>
-
-  <target name="build-jameica">
-    <!-- Download jameica -->
-    <get src="${jameica.url}${jameica.version}.zip"
-         dest="jameica-${jameica.version}.zip"
-         skipexisting="true"/>
-
-    <!-- Unpack into folder jameica -->
-    <unzip src="jameica-${jameica.version}.zip"
-           dest="../"/>
-    <move file="../jameica-${jameica.version}"
-          tofile="../jameica"/>
-
-    <!-- Run build -->
-    <ant dir="../jameica" antfile="build/build.xml" inheritall="false" target="jar"/>
-
-    <!-- Copy jameica.jar to jameica-lib.jar, because that's how hibiscus expects it -->
-    <copy todir="../jameica/releases" flatten="true">
-      <fileset dir="../jameica/releases">
-        <include name="**/jameica.jar"/>
-      </fileset>
-    </copy>
-    <move file="../jameica/releases/jameica.jar"
-          tofile="../jameica/releases/jameica-lib.jar"/>
+          depends="init">
+    <antcall target="build-package">
+      <param name="name" value="jameica"/>
+      <param name="url" value="${jameica.url}"/>
+      <param name="version" value="${jameica.version}"/>
+      <param name="lib.target" value="lib"/>
+    </antcall>
+    <antcall target="build-package">
+      <param name="name" value="hibiscus"/>
+      <param name="url" value="${hibiscus.url}"/>
+      <param name="version" value="${hibiscus.version}"/>
+      <param name="lib.target" value="nightly"/>
+    </antcall>
   </target>
 
-  <target name="build-hibiscus">
-    <!-- Download hibiscus -->
-    <get src="${hibiscus.url}${hibiscus.version}.zip"
-         dest="hibiscus-${hibiscus.version}.zip"
+  <target name="build-package">
+    <!-- Download package -->
+    <get src="${url}/${version}.zip"
+         dest="${name}-${version}.zip"
          skipexisting="true"/>
 
-    <!-- Unpack into folder jameica -->
-    <unzip src="hibiscus-${hibiscus.version}.zip"
+    <!-- Unpack into folder $name -->
+    <unzip src="${name}-${version}.zip"
            dest="../"/>
-    <move file="../hibiscus-${hibiscus.version}"
-          tofile="../hibiscus"/>
+    <move file="../${name}-${version}"
+          tofile="../${name}"/>
 
     <!-- Run build -->
-    <ant dir="../hibiscus" antfile="build/build.xml" inheritall="false" target="jar"/>
-
-    <!-- Copy hibiscus.jar to hibiscus-lib.jar, because that's how jverein expects it -->
-    <copy todir="../hibiscus/releases" flatten="true">
-      <fileset dir="../hibiscus/releases">
-        <include name="**/hibiscus.jar"/>
-      </fileset>
-    </copy>
-    <move file="../hibiscus/releases/hibiscus.jar"
-          tofile="../hibiscus/releases/hibiscus-lib.jar"/>
+    <ant dir="../${name}" antfile="build/build.xml" inheritall="false">
+      <target name="jar"/>
+      <target name="${lib.target}"/>
+    </ant>
   </target>
-
 
 </project>
