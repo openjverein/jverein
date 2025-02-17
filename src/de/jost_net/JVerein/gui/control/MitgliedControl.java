@@ -58,6 +58,8 @@ import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.input.SelectNoScrollInput;
 import de.jost_net.JVerein.gui.input.SpinnerNoScrollInput;
+import de.jost_net.JVerein.gui.input.VollzahlerInput;
+import de.jost_net.JVerein.gui.input.VollzahlerSearchInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.menu.FamilienbeitragMenu;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
@@ -103,7 +105,6 @@ import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.server.EigenschaftenNode;
-import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTIMESTAMP;
@@ -123,6 +124,7 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.formatter.TreeFormatter;
+import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -253,7 +255,7 @@ public class MitgliedControl extends FilterControl
 
   private TreePart familienbeitragtree;
 
-  private SelectNoScrollInput zahler;
+  private AbstractInput zahler;
 
   private DateInput austritt = null;
 
@@ -1188,6 +1190,22 @@ public class MitgliedControl extends FilterControl
     return beitragsgruppe;
   }
 
+  private void disableZahler()
+  {
+    if (zahler != null)
+    {
+      if (zahler instanceof SelectNoScrollInput)
+      {
+        ((SelectNoScrollInput) zahler).setPreselected(null);
+      }
+      else if (zahler instanceof VollzahlerSearchInput)
+      {
+        ((VollzahlerSearchInput) zahler).setValue("Zum Suchen tippen");
+      }
+      zahler.setEnabled(false);
+    }
+  }
+
   public MitgliedSekundaereBeitragsgruppePart getMitgliedSekundaereBeitragsgruppeView()
   {
     if (null == mitgliedSekundaereBeitragsgruppeView)
@@ -1322,8 +1340,8 @@ public class MitgliedControl extends FilterControl
       // Dies ist nötig, wenn Zahler ausgeblendet wurde und daher der
       // Parent vom GC disposed wurde.
     }
-
-    StringBuffer cond = new StringBuffer();
+    zahler = new VollzahlerInput().getMitgliedInput(zahler, getMitglied(),
+        Einstellungen.getEinstellung().getMitgliedAuswahl());
 
     // Beitragsgruppen ermitteln, die Zahler für andere Mitglieder sind
     DBIterator<Beitragsgruppe> bg = Einstellungen.getDBService()
@@ -1365,10 +1383,6 @@ public class MitgliedControl extends FilterControl
       @Override
       public void handleEvent(Event event)
       {
-        if (event.type != SWT.Selection)
-        {
-          return;
-        }
         try
         {
           Mitglied m = (Mitglied) zahler.getValue();
@@ -1392,15 +1406,15 @@ public class MitgliedControl extends FilterControl
     if (getBeitragsgruppe(true) != null
         && getBeitragsgruppe(true).getValue() != null
         && ((Beitragsgruppe) getBeitragsgruppe(true).getValue()).getBeitragsArt() 
-             == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+        == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
     {
       zahler.setEnabled(true);
     }
     else
     {
-      zahler.setPreselected(getMitglied());
-      zahler.setEnabled(false);
+      disableZahler();
     }
+
     return zahler;
   }
 
