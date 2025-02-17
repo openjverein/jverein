@@ -435,7 +435,7 @@ public class BeitragsgruppeControl extends AbstractControl
               {
                 a = (Altersstaffel)Einstellungen.getDBService().createObject(Altersstaffel.class, null);
                 a.setBeitragsgruppe(beitrag);
-                a.setBetrag(d);
+                a.setBetrag(betrag);
                 a.setNummer((Integer)i.getData("nummer"));
               }
               a.store();
