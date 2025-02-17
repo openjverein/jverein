@@ -139,7 +139,7 @@ public class EditTreePart extends TreePart
           editor.setEditor(editorControl, item, index);
 
           // Wir merken uns noch die letzte Farbe des Items.
-          // Denn falls der User entwas ungültiges eingibt, faerben wir
+          // Denn falls der User etwas Ungültiges eingibt, faerben wir
           // sie rot. Allerdings wollen wir sie anschliessend
           // wieder auf die richtige urspruengliche Farbe
           // zuruecksetzen, wenn der User den Wert korrigiert hat.
