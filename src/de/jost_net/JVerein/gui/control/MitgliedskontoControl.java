@@ -329,6 +329,11 @@ public class MitgliedskontoControl extends DruckMailControl
         }
       }
 
+      if (getZahler().getValue() == null)
+      {
+        throw new ApplicationException("Zahler fehlt");
+      }
+
       if (mkto.getRechnung() != null)
         throw new ApplicationException(
             "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
