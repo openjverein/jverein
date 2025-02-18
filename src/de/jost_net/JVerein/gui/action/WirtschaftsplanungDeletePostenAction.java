@@ -23,14 +23,11 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.util.ApplicationException;
 
 import java.rmi.RemoteException;
-import java.util.List;
 
 public class WirtschaftsplanungDeletePostenAction implements Action
 {
   private final WirtschaftsplanungControl control;
   private final int art;
-
-  private final static int EINNAHME = 0;
 
   public WirtschaftsplanungDeletePostenAction(WirtschaftsplanungControl control,
       int art)
@@ -78,6 +75,7 @@ public class WirtschaftsplanungDeletePostenAction implements Action
           while (iterator1.hasNext())
           {
             boolean hasChanged = false;
+
             WirtschaftsplanungNode currentNode = (WirtschaftsplanungNode) iterator1.next();
             GenericIterator iterator2 = currentNode.getChildren();
             while (iterator2.hasNext())
@@ -97,23 +95,6 @@ public class WirtschaftsplanungDeletePostenAction implements Action
             if (hasChanged)
             {
               control.reloadSoll(currentNode, art);
-            }
-          }
-
-          if (node.getIst() == 0.)
-          {
-            List items = art == EINNAHME ?
-                control.getEinnahmen().getItems() :
-                control.getAusgaben().getItems();
-            items.remove(node);
-
-            if (art == EINNAHME)
-            {
-              control.getEinnahmen().setList(items);
-            }
-            else
-            {
-              control.getAusgaben().setList(items);
             }
           }
           break;

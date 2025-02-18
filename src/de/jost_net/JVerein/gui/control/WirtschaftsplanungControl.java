@@ -25,8 +25,6 @@ import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanungView;
 import de.jost_net.JVerein.io.WirtschaftsplanungCSV;
 import de.jost_net.JVerein.io.WirtschaftsplanungPDF;
-import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
-import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
@@ -96,81 +94,16 @@ public class WirtschaftsplanungControl extends AbstractControl
   public Part getWirtschaftsplanungList() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
-    Map<String, WirtschaftsplanungZeile> zeileMap = new HashMap<>();
+    List<Wirtschaftsplan> plaene = new ArrayList<>();
 
     GenericIterator<Wirtschaftsplan> iterator = service.createList(Wirtschaftsplan.class);
     while (iterator.hasNext())
     {
-      WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(iterator.next());
-      zeileMap.put(zeile.getWirtschaftsplan().getID(), zeile);
+      plaene.add(iterator.next());
     }
 
-    String sql = "SELECT wirtschaftsplan.id, SUM(wirtschaftsplanitem.soll) " +
-        "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart " +
-        "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " +
-        "AND wirtschaftsplanitem.buchungsart = buchungsart.id " +
-        "AND buchungsart.art = ? " +
-        "GROUP BY wirtschaftsplan.id";
-
-
-    service.execute(sql, new Object[] { EINNAHME }, resultSet -> {
-      while (resultSet.next())
-      {
-        zeileMap.get(resultSet.getString(ID_COL)).setPlanEinnahme(
-            resultSet.getDouble(BETRAG_COL));
-      }
-      return resultSet;
-    });
-
-    service.execute(sql, new Object[] { AUSGABE }, resultSet -> {
-      while (resultSet.next())
-      {
-        zeileMap.get(resultSet.getString(ID_COL)).setPlanAusgabe(
-            resultSet.getDouble(BETRAG_COL));
-      }
-      return resultSet;
-    });
-
-    sql = "SELECT wirtschaftsplan.id, SUM(buchung.betrag) AS ist " +
-        "FROM wirtschaftsplan, buchungsart, buchung, konto " +
-        "WHERE buchung.buchungsart = buchungsart.id " +
-        "AND buchung.konto = konto.id " +
-        "AND buchung.datum >= wirtschaftsplan.datum_von " +
-        "AND buchung.datum <= wirtschaftsplan.datum_bis " +
-        "AND buchungsart.art = ? " + "AND konto.kontoart < ? " +
-        "GROUP BY wirtschaftsplan.id";
-
-    service.execute(sql, new Object[] { EINNAHME, Kontoart.LIMIT.getKey() },
-        resultSet -> {
-          while (resultSet.next())
-          {
-            if (zeileMap.containsKey(resultSet.getString(ID_COL)))
-            {
-              zeileMap.get(resultSet.getString(ID_COL))
-                  .setIstEinnahme(resultSet.getDouble(BETRAG_COL));
-            }
-          }
-
-          return resultSet;
-        });
-
-    service.execute(sql, new Object[] { AUSGABE, Kontoart.LIMIT.getKey() },
-        resultSet -> {
-          while (resultSet.next())
-          {
-            if (zeileMap.containsKey(resultSet.getString(ID_COL)))
-            {
-              zeileMap.get(resultSet.getString(ID_COL))
-                  .setIstAusgabe(resultSet.getDouble(BETRAG_COL));
-            }
-          }
-
-          return resultSet;
-        });
-
     TablePart wirtschaftsplaene = new TablePart(
-        new ArrayList<>(zeileMap.values()), new EditAction(
-        WirtschaftsplanungView.class));
+        plaene, new EditAction(WirtschaftsplanungView.class));
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
@@ -192,11 +125,11 @@ public class WirtschaftsplanungControl extends AbstractControl
     return wirtschaftsplaene;
   }
 
-  public WirtschaftsplanungZeile getWirtschaftsplanungZeile()
+  public Wirtschaftsplan getWirtschaftsplan()
   {
-    if (getCurrentObject() instanceof WirtschaftsplanungZeile)
+    if (getCurrentObject() instanceof Wirtschaftsplan)
     {
-      return (WirtschaftsplanungZeile) getCurrentObject();
+      return (Wirtschaftsplan) getCurrentObject();
     }
     return null;
   }
@@ -233,9 +166,9 @@ public class WirtschaftsplanungControl extends AbstractControl
 
   private TreePart generateTree(int art) throws RemoteException
   {
-    WirtschaftsplanungZeile zeile = getWirtschaftsplanungZeile();
+    Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
 
-    if (zeile == null)
+    if (wirtschaftsplan == null)
     {
       return null;
     }
@@ -248,7 +181,7 @@ public class WirtschaftsplanungControl extends AbstractControl
     while (buchungsklasseIterator.hasNext())
     {
       Buchungsklasse klasse = buchungsklasseIterator.next();
-      nodes.put(klasse.getID(), new WirtschaftsplanungNode(klasse, art, zeile));
+      nodes.put(klasse.getID(), new WirtschaftsplanungNode(klasse, art, wirtschaftsplan));
     }
 
     String sql = "SELECT wirtschaftsplanitem.buchungsklasse, sum(soll) " +
@@ -256,7 +189,7 @@ public class WirtschaftsplanungControl extends AbstractControl
         "WHERE wirtschaftsplan = ? AND wirtschaftsplanitem.buchungsart = buchungsart.id AND buchungsart.art = ? " +
         "GROUP BY wirtschaftsplanitem.buchungsklasse";
 
-    service.execute(sql, new Object[] { zeile.getID(), art }, resultSet -> {
+    service.execute(sql, new Object[] { wirtschaftsplan.getID(), art }, resultSet -> {
       while (resultSet.next())
       {
         DBIterator<Buchungsklasse> iterator = service.createList(
@@ -295,8 +228,8 @@ public class WirtschaftsplanungControl extends AbstractControl
 
     }
     service.execute(sql,
-        new Object[] { zeile.getWirtschaftsplan().getDatumVon(),
-            zeile.getWirtschaftsplan().getDatumBis(), art }, resultSet -> {
+        new Object[] { wirtschaftsplan.getDatumVon(),
+            wirtschaftsplan.getDatumBis(), art }, resultSet -> {
           while (resultSet.next())
           {
             DBIterator<Buchungsklasse> iterator = service.createList(
@@ -369,7 +302,7 @@ public class WirtschaftsplanungControl extends AbstractControl
       @SuppressWarnings("unchecked") List<WirtschaftsplanungNode> rootNodesAusgaben = (List<WirtschaftsplanungNode>) ausgaben.getItems();
 
       DBService service = Einstellungen.getDBService();
-      Wirtschaftsplan wirtschaftsplan = getWirtschaftsplanungZeile().getWirtschaftsplan();
+      Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
 
       DBTransaction.starten();
 
@@ -403,6 +336,8 @@ public class WirtschaftsplanungControl extends AbstractControl
 
       DBTransaction.commit();
 
+      view.reload();
+
       GUI.getStatusBar().setSuccessText("Wirtschaftsplan gespeichert");
     }
     catch (ApplicationException e)
@@ -418,17 +353,6 @@ public class WirtschaftsplanungControl extends AbstractControl
       String fehler = "Fehler beim Speichern des Wirtschaftsplans";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
-    }
-    finally
-    {
-      try
-      {
-        view.reload();
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText("Ansicht konnte nicht neu geladen werden");
-      }
     }
   }
 
@@ -526,7 +450,7 @@ public class WirtschaftsplanungControl extends AbstractControl
             break;
           case AUSWERTUNG_PDF:
             new WirtschaftsplanungPDF(einnahmenList, ausgabenList, file,
-                getWirtschaftsplanungZeile().getWirtschaftsplan());
+                getWirtschaftsplan());
             break;
           default:
             GUI.getStatusBar()

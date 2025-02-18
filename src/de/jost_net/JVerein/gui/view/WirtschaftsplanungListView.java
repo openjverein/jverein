@@ -17,8 +17,9 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.WirtschaftsplanungNeuAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
+import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -37,7 +38,7 @@ public class WirtschaftsplanungListView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.WIRTSCHAFTSPLANUNG, false, "question-circle.png");
-    buttons.addButton("Neu", new WirtschaftsplanungNeuAction(), control, false,
+    buttons.addButton("Neu", new NewAction(WirtschaftsplanungView.class, Wirtschaftsplan.class), control, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

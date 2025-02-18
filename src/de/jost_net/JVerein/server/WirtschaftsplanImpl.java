@@ -16,8 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.datasource.rmi.DBService;
 
 import java.rmi.RemoteException;
 import java.util.Date;
@@ -26,6 +29,11 @@ public class WirtschaftsplanImpl extends AbstractDBObject
     implements Wirtschaftsplan
 {
   private static final long serialVersionUID = 1L;
+
+  private final static int EINNAHME = 0;
+  private final static int AUSGABE = 1;
+
+  private final static int BETRAG_COL = 2;
 
   public WirtschaftsplanImpl() throws RemoteException
   {
@@ -73,5 +81,90 @@ public class WirtschaftsplanImpl extends AbstractDBObject
   public void setDatumBis(Date date) throws RemoteException
   {
     setAttribute("datum_bis", date);
+  }
+
+  @Override
+  public Object getAttribute(String s) throws RemoteException
+  {
+    DBService service = Einstellungen.getDBService();
+
+    String sqlSoll = "SELECT wirtschaftsplan.id, SUM(wirtschaftsplanitem.soll) " +
+        "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart " +
+        "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " +
+        "AND wirtschaftsplanitem.buchungsart = buchungsart.id " +
+        "AND buchungsart.art = ? " +
+        "AND wirtschaftsplan.id = ? " +
+        "GROUP BY wirtschaftsplan.id";
+
+    String sqlIst = "SELECT wirtschaftsplan.id, SUM(buchung.betrag) AS ist " +
+        "FROM wirtschaftsplan, buchungsart, buchung, konto " +
+        "WHERE buchung.buchungsart = buchungsart.id " +
+        "AND buchung.konto = konto.id " +
+        "AND buchung.datum >= wirtschaftsplan.datum_von " +
+        "AND buchung.datum <= wirtschaftsplan.datum_bis " +
+        "AND buchungsart.art = ? " +
+        "AND konto.kontoart < ? " +
+        "AND wirtschaftsplan.id = ? " +
+        "GROUP BY wirtschaftsplan.id";
+
+    switch (s)
+    {
+      case "planEinnahme":
+        return service.execute(sqlSoll, new Object[] { EINNAHME, this.getID() }, resultSet -> {
+          try
+          {
+            resultSet.next();
+            return resultSet.getDouble(BETRAG_COL);
+          }
+          catch (Exception e)
+          {
+            return 0.;
+          }
+        });
+      case "planAusgabe":
+        return service.execute(sqlSoll, new Object[] { AUSGABE, this.getID() }, resultSet -> {
+          try
+          {
+            resultSet.next();
+            return resultSet.getDouble(BETRAG_COL);
+          }
+          catch (Exception e)
+          {
+            return 0.;
+          }
+        });
+      case "istEinnahme":
+        return service.execute(sqlIst, new Object[] { EINNAHME, Kontoart.LIMIT.getKey(), this.getID() }, resultSet -> {
+          try
+          {
+            resultSet.next();
+            return resultSet.getDouble(BETRAG_COL);
+          }
+          catch (Exception e)
+          {
+            return 0.;
+          }
+        });
+      case "istAusgabe":
+        return service.execute(sqlIst, new Object[] { AUSGABE, Kontoart.LIMIT.getKey(), this.getID() }, resultSet -> {
+          try
+          {
+            resultSet.next();
+            return resultSet.getDouble(BETRAG_COL);
+          }
+          catch (Exception e)
+          {
+            return 0.;
+          }
+        });
+      case "planSaldo":
+        return (Double) getAttribute("planEinnahme") + (Double) getAttribute("planAusgabe");
+      case "istSaldo":
+        return (Double) getAttribute("istEinnahme") + (Double) getAttribute("istAusgabe");
+      case "differenz":
+        return (Double) getAttribute("istSaldo") - (Double) getAttribute("planSaldo");
+      default:
+        return super.getAttribute(s);
+    }
   }
 }

@@ -17,9 +17,9 @@
 package de.jost_net.JVerein.gui.control;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
@@ -62,7 +62,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
   private final static int BETRAG_COL = 2;
 
   public WirtschaftsplanungNode(Buchungsklasse buchungsklasse, int art,
-      WirtschaftsplanungZeile zeile) throws RemoteException
+      Wirtschaftsplan wirtschaftsplan) throws RemoteException
   {
     type = Type.BUCHUNGSKLASSE;
     this.soll = 0;
@@ -80,7 +80,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     while (buchungsartIterator.hasNext())
     {
       Buchungsart buchungsart = buchungsartIterator.next();
-      nodes.put(buchungsart.getID(), new WirtschaftsplanungNode(this, buchungsart, art, zeile));
+      nodes.put(buchungsart.getID(), new WirtschaftsplanungNode(this, buchungsart, art, wirtschaftsplan));
     }
 
     String sql = "SELECT wirtschaftsplanitem.buchungsart, sum(wirtschaftsplanitem.soll)" +
@@ -92,7 +92,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
         "GROUP BY wirtschaftsplanitem.buchungsart";
 
     service.execute(sql,
-        new Object[] { art, buchungsklasse.getID(), zeile.getID() },
+        new Object[] { art, buchungsklasse.getID(), wirtschaftsplan.getID() },
         resultSet -> {
           while (resultSet.next())
           {
@@ -134,8 +134,8 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     }
 
     service.execute(sql,
-        new Object[] { zeile.getWirtschaftsplan().getDatumVon(),
-            zeile.getWirtschaftsplan().getDatumBis(), art,
+        new Object[] { wirtschaftsplan.getDatumVon(),
+            wirtschaftsplan.getDatumBis(), art,
             buchungsklasse.getID() }, resultSet -> {
           while (resultSet.next())
           {
@@ -159,7 +159,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
   }
 
   public WirtschaftsplanungNode(WirtschaftsplanungNode parent,
-      Buchungsart buchungsart, int art, WirtschaftsplanungZeile zeile)
+      Buchungsart buchungsart, int art, Wirtschaftsplan wirtschaftsplan)
       throws RemoteException
   {
     type = Type.BUCHUNGSART;
@@ -171,7 +171,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
 
     DBService service = Einstellungen.getDBService();
 
-    if (zeile.getWirtschaftsplan().isNewObject())
+    if (wirtschaftsplan.isNewObject())
     {
       WirtschaftsplanItem item = service.createObject(WirtschaftsplanItem.class, null);
       item.setBuchungsklasseId(parent.getBuchungsklasse().getID());
@@ -193,7 +193,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
 
     service.execute(sql,
         new Object[] { buchungsart.getID(), parent.getBuchungsklasse().getID(),
-            art, zeile.getID() }, resultSet -> {
+            art, wirtschaftsplan.getID() }, resultSet -> {
           while (resultSet.next())
           {
             children.add(new WirtschaftsplanungNode(this,

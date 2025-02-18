@@ -20,7 +20,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanungNode;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanungView;
-import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -56,7 +55,7 @@ public class WirtschaftsplanUebersichtPart implements Part
 
   private DecimalInput sollAusgaben;
 
-  private final Calendar calendar = Calendar.getInstance();;
+  private final Calendar calendar = Calendar.getInstance();
 
   private enum RANGE
   {
@@ -78,16 +77,16 @@ public class WirtschaftsplanUebersichtPart implements Part
     SimpleContainer einnahmen = new SimpleContainer(columns.getComposite());
 
     von = new DateInput(
-        control.getWirtschaftsplanungZeile().getWirtschaftsplan().getDatumVon(),
+        control.getWirtschaftsplan().getDatumVon(),
         new JVDateFormatTTMMJJJJ());
     einnahmen.addLabelPair("Von", von);
     sollEinnahme = new DecimalInput(
-        control.getWirtschaftsplanungZeile().getPlanEinnahme(),
+        (Double) control.getWirtschaftsplan().getAttribute("planEinnahme"),
         Einstellungen.DECIMALFORMAT);
     sollEinnahme.disable();
     einnahmen.addLabelPair("Einnahmen Soll", sollEinnahme);
     DecimalInput istEinnahme = new DecimalInput(
-        control.getWirtschaftsplanungZeile().getIstEinnahme(),
+        (Double) control.getWirtschaftsplan().getAttribute("istEinnahme"),
         Einstellungen.DECIMALFORMAT);
     istEinnahme.disable();
     einnahmen.addLabelPair("Einnahmen Ist", istEinnahme);
@@ -95,16 +94,16 @@ public class WirtschaftsplanUebersichtPart implements Part
     SimpleContainer ausgaben = new SimpleContainer(columns.getComposite());
 
     bis = new DateInput(
-        control.getWirtschaftsplanungZeile().getWirtschaftsplan().getDatumBis(),
+        control.getWirtschaftsplan().getDatumBis(),
         new JVDateFormatTTMMJJJJ());
     ausgaben.addLabelPair("Bis", bis);
     sollAusgaben = new DecimalInput(
-        control.getWirtschaftsplanungZeile().getPlanAusgabe(),
+        (Double) control.getWirtschaftsplan().getAttribute("planAusgabe"),
         Einstellungen.DECIMALFORMAT);
     sollAusgaben.disable();
     ausgaben.addLabelPair("Ausgaben Soll", sollAusgaben);
     DecimalInput istAusgaben = new DecimalInput(
-        control.getWirtschaftsplanungZeile().getIstAusgabe(),
+        (Double) control.getWirtschaftsplan().getAttribute("istAusgabe"),
         Einstellungen.DECIMALFORMAT);
     istAusgaben.disable();
     ausgaben.addLabelPair("Ausgaben Ist", istAusgaben);
@@ -220,8 +219,7 @@ public class WirtschaftsplanUebersichtPart implements Part
       if (iterator.hasNext())
       {
         Wirtschaftsplan plan = iterator.next();
-        WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(plan);
-        GUI.startView(WirtschaftsplanungView.class, zeile);
+        GUI.startView(WirtschaftsplanungView.class, plan);
         if (iterator.hasNext())
         {
           GUI.getStatusBar().setSuccessText(
@@ -233,8 +231,7 @@ public class WirtschaftsplanUebersichtPart implements Part
         Wirtschaftsplan plan = Einstellungen.getDBService().createObject(Wirtschaftsplan.class, null);
         plan.setDatumVon(vonDate);
         plan.setDatumBis(bisDate);
-        WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(plan);
-        GUI.startView(WirtschaftsplanungView.class, zeile);
+        GUI.startView(WirtschaftsplanungView.class, plan);
         GUI.getStatusBar().setErrorText(
             "Kein Plan für den Zeitraum gefunden. Neuer Plan wurde erstellt!");
       }

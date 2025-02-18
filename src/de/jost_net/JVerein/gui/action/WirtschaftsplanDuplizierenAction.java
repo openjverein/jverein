@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.view.WirtschaftsplanungView;
-import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
+import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -29,20 +29,16 @@ public class WirtschaftsplanDuplizierenAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (! (context instanceof WirtschaftsplanungZeile))
+    if (! (context instanceof Wirtschaftsplan))
     {
       throw new ApplicationException("Fehler beim Duplizieren!");
     }
-    WirtschaftsplanungZeile zeile = (WirtschaftsplanungZeile) context;
-    zeile.setIstAusgabe(0.);
-    zeile.setIstEinnahme(0.);
+    Wirtschaftsplan wirtschaftsplan = (Wirtschaftsplan) context;
     try
     {
-      zeile.getWirtschaftsplan().setDatumVon(null);
-      zeile.getWirtschaftsplan().setDatumBis(null);
       WirtschaftsplanungView view = new WirtschaftsplanungView();
-      GUI.startView(view, zeile);
-      zeile.getWirtschaftsplan().setId(null);
+      GUI.startView(view, wirtschaftsplan);
+      wirtschaftsplan.setId(null);
     }
     catch (RemoteException e) {
       throw new ApplicationException("Fehler beim Duplizieren");

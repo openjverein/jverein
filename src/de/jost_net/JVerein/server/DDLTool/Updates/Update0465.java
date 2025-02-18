@@ -62,7 +62,7 @@ public class Update0465 extends AbstractDDLUpdate
         null, true, false);
     wirtschaftsplanItem.add(buchungsklasse);
     wirtschaftsplanItem.add(
-        new Column("posten", COLTYPE.VARCHAR, 40, null, true, false));
+        new Column("posten", COLTYPE.VARCHAR, 200, null, true, false));
     wirtschaftsplanItem.add(
         new Column("soll", COLTYPE.DOUBLE, 10, null, true, false));
 

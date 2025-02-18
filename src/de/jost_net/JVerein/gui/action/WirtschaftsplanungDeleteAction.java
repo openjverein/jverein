@@ -1,7 +1,6 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -10,22 +9,19 @@ import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-import java.util.Arrays;
-
 public class WirtschaftsplanungDeleteAction implements Action
 {
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
     Wirtschaftsplan[] wirtschaftsplaene;
-    if (context instanceof WirtschaftsplanungZeile)
+    if (context instanceof Wirtschaftsplan)
     {
-      wirtschaftsplaene = new Wirtschaftsplan[] { ((WirtschaftsplanungZeile) context).getWirtschaftsplan() };
+      wirtschaftsplaene = new Wirtschaftsplan[] { ((Wirtschaftsplan) context) };
     }
-    else if (context instanceof WirtschaftsplanungZeile[])
+    else if (context instanceof Wirtschaftsplan[])
     {
-      wirtschaftsplaene = (Wirtschaftsplan[]) Arrays.stream(((WirtschaftsplanungZeile[]) context)).map(
-          WirtschaftsplanungZeile::getWirtschaftsplan).toArray();
+      wirtschaftsplaene = (Wirtschaftsplan[]) context;
     }
     else
     {

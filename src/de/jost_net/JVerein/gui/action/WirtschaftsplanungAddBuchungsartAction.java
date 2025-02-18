@@ -103,7 +103,7 @@ public class WirtschaftsplanungAddBuchungsartAction implements Action
       }
 
       node.addChild(new WirtschaftsplanungNode(node, buchungsart, art,
-          control.getWirtschaftsplanungZeile()));
+          control.getWirtschaftsplan()));
 
       if (art == EINNAHME)
       {
