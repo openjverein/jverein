@@ -37,6 +37,7 @@ import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.gui.view.KontoView;
+import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -73,6 +74,8 @@ import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.hbci.Settings;
+import de.willuhn.jameica.plugin.Version;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 //import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -643,9 +646,19 @@ public class KontoControl extends FilterControl
     {
       return anlagenart;
     }
-    anlagenart = new BuchungsartInput().getBuchungsartInput( anlagenart,
-        getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+    Version version = Application.getManifest().getVersion();
+    if (version.compareTo(new Version("2.10.5")) < 0)
+    {
+      anlagenart = new BuchungsartInput().getBuchungsartInput(anlagenart,
+          getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART,
+          AbstractInputAuswahl.ComboBox);
+    }
+    else
+    {
+      anlagenart = new BuchungsartInput().getBuchungsartInput(anlagenart,
+          getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART,
+          Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+    }
     anlagenart.addListener(new AnlagenartListener());
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
     {
@@ -726,9 +739,19 @@ public class KontoControl extends FilterControl
     {
       return afaart;
     }
-    afaart = new BuchungsartInput().getBuchungsartInput( afaart,
-        getKonto().getAfaart(), buchungsarttyp.AFAART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+    Version version = Application.getManifest().getVersion();
+    if (version.compareTo(new Version("2.10.5")) < 0)
+    {
+      afaart = new BuchungsartInput().getBuchungsartInput(afaart,
+          getKonto().getAfaart(), buchungsarttyp.AFAART,
+          AbstractInputAuswahl.ComboBox);
+    }
+    else
+    {
+      afaart = new BuchungsartInput().getBuchungsartInput(afaart,
+          getKonto().getAfaart(), buchungsarttyp.AFAART,
+          Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+    }
     afaart.addListener(new AnlagenartListener());
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
     {

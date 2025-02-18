@@ -197,7 +197,7 @@ public class ZusatzbetragVorlageImpl extends AbstractDBObject
   @Override
   public Buchungsklasse getBuchungsklasse() throws RemoteException
   {
-    Long l = (Long) super.getAttribute("buchungsklasse");
+    Object l = (Object) super.getAttribute("buchungsklasse");
     if (l == null)
     {
       return null; // Keine Buchungsklasse zugeordnet

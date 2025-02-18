@@ -951,7 +951,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
               MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
                   .createObject(MailAnhang.class, null);
               String fileName = new Dateiname(m,
-                  spba[i].getBescheinigungsdatum(), "Spendenbescheinigung",
+                  spba[i].getSpendedatum(), "Spendenbescheinigung",
                   Einstellungen.getEinstellung().getDateinamenmusterSpende(),
                   "pdf").get();
               anh.setDateiname(fileName);
