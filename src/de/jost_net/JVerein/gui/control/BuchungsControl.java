@@ -40,7 +40,6 @@ import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAutomatischAction;
@@ -112,8 +111,6 @@ import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisungBuchung;
-import de.willuhn.jameica.messaging.Message;
-import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -263,6 +260,8 @@ public class BuchungsControl extends AbstractControl
   private Calendar calendar = Calendar.getInstance();
 
   private SelectInput suchsplitbuchung;
+
+  private CheckboxInput ungeprueft;
   
   private enum RANGE
   {
@@ -902,6 +901,18 @@ public class BuchungsControl extends AbstractControl
     return bisdatum;
   }
 
+  public CheckboxInput getUngeprueft()
+  {
+    if (ungeprueft != null)
+    {
+      return ungeprueft;
+    }
+    ungeprueft = new CheckboxInput(
+        settings.getBoolean(settingsprefix + "ungeprueft", false));
+    ungeprueft.addListener(new FilterListener());
+    return ungeprueft;
+  }
+
   public Button getStartAuswertungEinzelbuchungenButton()
   {
     Button b = new Button("PDF Einzelbuchungen", new Action()
@@ -976,7 +987,7 @@ public class BuchungsControl extends AbstractControl
         try
         {
           new AfaUtil(new Geschaeftsjahr(new Date()), null);
-          refreshBuchungen();
+          refreshBuchungsList();
         }
         catch (RemoteException e)
         {
@@ -1050,7 +1061,6 @@ public class BuchungsControl extends AbstractControl
             for (Buchung b_tmp : getDependentBuchungen()) {
               b_tmp.setDependencyId(-1);
               b_tmp.setDelete(true);
-              Application.getMessagingFactory().sendMessage(new BuchungMessage(b_tmp));
             }
             b.setDependencyId(-1);
           }
@@ -1222,6 +1232,8 @@ public class BuchungsControl extends AbstractControl
     {
       settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, -2);
     }
+    settings.setAttribute(settingsprefix + "ungeprueft",
+        (Boolean) getUngeprueft().getValue());
     settings.setAttribute(settingsprefix + "suchtext", (String) getSuchtext().getValue());
     settings.setAttribute(settingsprefix + "suchbetrag", (String) getSuchBetrag().getValue());
     settings.setAttribute(settingsprefix + "mitglied", (String) getMitglied().getValue());
@@ -1231,13 +1243,22 @@ public class BuchungsControl extends AbstractControl
     query = new BuchungQuery(dv, db, k, b, p, (String) getSuchtext().getValue(),
         (String) getSuchBetrag().getValue(), m.getValue(),
         (String) getMitglied().getValue(), geldkonto,
-        (SplitFilter) getSuchSplibuchung().getValue());
+        (SplitFilter) getSuchSplibuchung().getValue(),
+        (Boolean) getUngeprueft().getValue());
 
     if (buchungsList == null)
     {
       buchungsList = new BuchungListTablePart(query.get(),
           new BuchungAction(false));
       buchungsList.addColumn("Nr", "id-int");
+      buchungsList.addColumn("Geprüft", "geprueft", new Formatter()
+      {
+        @Override
+        public String format(Object o)
+        {
+          return (Boolean) o ? "\u2705" : "";
+        }
+      });
       if (Einstellungen.getEinstellung().getDokumentenspeicherung())
       {
         buchungsList.addColumn("D", "document");
@@ -1251,6 +1272,7 @@ public class BuchungsControl extends AbstractControl
           return SplitbuchungTyp.get(typ).substring(0, 1);
         }
       });
+
       buchungsList.addColumn("Konto", "konto", new Formatter()
       {
 
@@ -1322,8 +1344,6 @@ public class BuchungsControl extends AbstractControl
       buchungsList.setRememberOrder(true);
       buchungsList.setRememberState(true);
       buchungsList.addFeature(new FeatureSummary());
-      Application.getMessagingFactory()
-          .registerMessageConsumer(new BuchungMessageConsumer());
       buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
     }
     else
@@ -1400,8 +1420,6 @@ public class BuchungsControl extends AbstractControl
       splitbuchungsList.setContextMenu(new SplitBuchungMenu(this));
       splitbuchungsList.setRememberColWidths(true);
       splitbuchungsList.addFeature(new FeatureSummary());
-      Application.getMessagingFactory()
-          .registerMessageConsumer(new SplitBuchungMessageConsumer());
       splitbuchungsList.setFormatter(new TableFormatter()
       {
         /**
@@ -1434,21 +1452,6 @@ public class BuchungsControl extends AbstractControl
       refreshSplitbuchungen();
     }
     return splitbuchungsList;
-  }
-
-  public void refreshBuchungen() throws RemoteException
-  {
-    if (buchungsList == null)
-    {
-      return;
-    }
-    buchungsList.removeAll();
-
-    for (Buchung b : query.get())
-    {
-      buchungsList.addItem(b);
-    }
-    buchungsList.sort();
   }
 
   public void refreshSplitbuchungen() throws RemoteException
@@ -1747,7 +1750,7 @@ public class BuchungsControl extends AbstractControl
     }
 
   }
-  
+
   public void refreshBuchungsList()
   {
     try
@@ -1755,7 +1758,7 @@ public class BuchungsControl extends AbstractControl
       getBuchungsList();
     }
     catch (RemoteException e)
-    
+
     {
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
@@ -1875,126 +1878,6 @@ public class BuchungsControl extends AbstractControl
     {
       DBTransaction.rollback();
       GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
-    }
-  }
-
-  /**
-   * Wird benachrichtigt um die Anzeige zu aktualisieren.
-   */
-  private class BuchungMessageConsumer implements MessageConsumer
-  {
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
-     */
-    @Override
-    public boolean autoRegister()
-    {
-      return false;
-    }
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#getExpectedMessageTypes()
-     */
-    @Override
-    public Class<?>[] getExpectedMessageTypes()
-    {
-      return new Class[] { BuchungMessage.class };
-    }
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#handleMessage(de.willuhn.jameica.messaging.Message)
-     */
-    @Override
-    public void handleMessage(final Message message) throws Exception
-    {
-      GUI.getDisplay().syncExec(new Runnable()
-      {
-
-        @Override
-        public void run()
-        {
-          try
-          {
-            if (buchungsList == null)
-            {
-              // Eingabe-Feld existiert nicht. Also abmelden
-              Application.getMessagingFactory()
-                  .unRegisterMessageConsumer(BuchungMessageConsumer.this);
-              return;
-            }
-            refreshBuchungen();
-          }
-          catch (Exception e)
-          {
-            // Wenn hier ein Fehler auftrat, deregistrieren wir uns
-            // wieder
-            Logger.error("unable to refresh Splitbuchungen", e);
-            Application.getMessagingFactory()
-                .unRegisterMessageConsumer(BuchungMessageConsumer.this);
-          }
-        }
-      });
-    }
-  }
-
-  /**
-   * Wird benachrichtigt um die Anzeige zu aktualisieren.
-   */
-  private class SplitBuchungMessageConsumer implements MessageConsumer
-  {
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
-     */
-    @Override
-    public boolean autoRegister()
-    {
-      return false;
-    }
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#getExpectedMessageTypes()
-     */
-    @Override
-    public Class<?>[] getExpectedMessageTypes()
-    {
-      return new Class[] { BuchungMessage.class };
-    }
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#handleMessage(de.willuhn.jameica.messaging.Message)
-     */
-    @Override
-    public void handleMessage(final Message message) throws Exception
-    {
-      GUI.getDisplay().syncExec(new Runnable()
-      {
-
-        @Override
-        public void run()
-        {
-          try
-          {
-            if (splitbuchungsList == null)
-            {
-              // Eingabe-Feld existiert nicht. Also abmelden
-              Application.getMessagingFactory()
-                  .unRegisterMessageConsumer(SplitBuchungMessageConsumer.this);
-              return;
-            }
-            refreshSplitbuchungen();
-          }
-          catch (Exception e)
-          {
-            // Wenn hier ein Fehler auftrat, deregistrieren wir uns
-            // wieder
-            Logger.error("unable to refresh Splitbuchungen", e);
-            Application.getMessagingFactory()
-                .unRegisterMessageConsumer(SplitBuchungMessageConsumer.this);
-          }
-        }
-      });
     }
   }
 
@@ -2181,6 +2064,7 @@ public class BuchungsControl extends AbstractControl
       calendar.add(Calendar.YEAR, 1);
       calendar.add(Calendar.DAY_OF_MONTH, -1);
       bisdatum.setValue(calendar.getTime());
+      ungeprueft.setValue(false);
       suchtext.setValue("");
       mitglied.setValue("");
       refreshBuchungsList();

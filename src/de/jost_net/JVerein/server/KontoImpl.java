@@ -266,7 +266,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
-    Long l = (Long) super.getAttribute("buchungsart");
+    Object l = (Object) super.getAttribute("buchungsart");
     if (l == null)
     {
       return null; // Keine Buchungsart zugeordnet
@@ -337,7 +337,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
   @Override
   public Buchungsklasse getBuchungsklasse() throws RemoteException
   {
-    Long l = (Long) super.getAttribute("anlagenklasse");
+    Object l = (Object) super.getAttribute("anlagenklasse");
     if (l == null)
     {
       return null; // Keine Buchungsklasse zugeordnet

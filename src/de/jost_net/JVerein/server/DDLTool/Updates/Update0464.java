@@ -13,15 +13,16 @@
  **********************************************************************/
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
-import java.sql.Connection;
-
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
+import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class Update0462 extends AbstractDDLUpdate
+import java.sql.Connection;
+
+public class Update0464 extends AbstractDDLUpdate
 {
-  public Update0462(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0464(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -29,32 +30,10 @@ public class Update0462 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    try
-    {
-      execute(dropColumn("konto", "anlagenkonto"));
-    }
-    catch (Exception e)
-    {
-      // Es gab zwischendurch schon ein Nightly wo das Attribut gelöscht wurde
-      // Das war mit der ersten Version von Update0453
-      // Dann ist es schon nicht mehr da
-    }
+    execute(addColumn("buchung",
+        new Column("geprueft", COLTYPE.BOOLEAN, 0, null, false, false)));
 
-    // Diese Attribute sind jetzt in der Sollbuchungposition
-    try
-    {
-      execute(dropForeignKey("fkMitgliedskonto3", "mitgliedskonto"));
-      execute(dropColumn("mitgliedskonto", "buchungsart"));
-    }
-    catch (Exception e)
-    {
-      // Wenn bei MySQL der Key einen anderen NAmen hat damm lassen wir das
-      // Attribut halt bestehen
-    }
-    execute(dropForeignKey("fkMitgliedkonto4", "mitgliedskonto"));
-    execute(dropColumn("mitgliedskonto", "buchungsklasse"));
-    execute(dropColumn("mitgliedskonto", "steuersatz"));
-    execute(dropColumn("mitgliedskonto", "nettobetrag"));
-    execute(dropColumn("mitgliedskonto", "steuerbetrag"));
+    execute(addColumn("einstellung", new Column("geprueftsynchronisieren",
+        COLTYPE.BOOLEAN, 0, "1", false, false)));
   }
 }
