@@ -2213,7 +2213,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   @Override
   public boolean getSplitPositionZweck() throws RemoteException
   {
-    return (Boolean) getAttribute("splitpositionzweck");
+    return Util.getBoolean(getAttribute("splitpositionzweck"));
   }
 
   @Override
