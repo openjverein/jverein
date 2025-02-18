@@ -2225,7 +2225,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   @Override
   public boolean getGeprueftSynchronisieren() throws RemoteException
   {
-    return (Boolean) getAttribute("geprueftsynchronisieren");
+    return Util.getBoolean(getAttribute("geprueftsynchronisieren"));
   }
 
   @Override

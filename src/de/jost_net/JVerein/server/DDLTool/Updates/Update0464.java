@@ -34,6 +34,6 @@ public class Update0464 extends AbstractDDLUpdate
         new Column("geprueft", COLTYPE.BOOLEAN, 0, null, false, false)));
 
     execute(addColumn("einstellung", new Column("geprueftsynchronisieren",
-        COLTYPE.BOOLEAN, 0, "1", true, false)));
+        COLTYPE.BOOLEAN, 0, "1", false, false)));
   }
 }
