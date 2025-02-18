@@ -97,6 +97,20 @@ public class Update0465 extends AbstractDDLUpdate
     execute(alterColumn("zusatzfelder",
         new Column("feldjanein", COLTYPE.BOOLEAN, 0, null, false, false)));
 
+    // Attribute die nur bei der MySQL falsch waren
+    execute(alterColumn("buchung",
+        new Column("verzicht", COLTYPE.BOOLEAN, 0, null, false, false)));
+    execute(alterColumn("spendenbescheinigung",
+        new Column("autocreate", COLTYPE.BOOLEAN, 0, "0", false, false)));
+    execute(alterColumn("einstellung",
+        new Column("spendenbescheinigungprintbuchungsart", COLTYPE.BOOLEAN, 0,
+            "0", false, false)));
+    execute(alterColumn("einstellung", new Column("copy_to_imap_folder",
+        COLTYPE.BOOLEAN, 0, null, false, false)));
+    execute(alterColumn("einstellung",
+        new Column("imap_ssl", COLTYPE.BOOLEAN, 0, null, false, false)));
+    execute(alterColumn("einstellung",
+        new Column("imap_starttls", COLTYPE.BOOLEAN, 0, null, false, false)));
   }
 
 }
