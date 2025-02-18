@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanungPostenDialog;
+import de.jost_net.JVerein.gui.action.WirtschaftsplanPostenDialogAction;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanungListMenu;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanungView;
@@ -315,36 +315,7 @@ public class WirtschaftsplanungControl extends AbstractControl
           return nodes;
         });
 
-    TreePart treePart = new TreePart(new ArrayList<>(nodes.values()),
-        context -> {
-          if (!(context instanceof WirtschaftsplanungNode))
-          {
-            return;
-          }
-
-          WirtschaftsplanungNode node = (WirtschaftsplanungNode) context;
-
-          if (node.getType() != WirtschaftsplanungNode.Type.POSTEN)
-          {
-            return;
-          }
-
-          try
-          {
-            WirtschaftsplanungPostenDialog dialog = new WirtschaftsplanungPostenDialog(
-                node.getWirtschaftsplanItem());
-            WirtschaftsplanItem item = dialog.open();
-            node.setWirtschaftsplanItem(item);
-            node.setSoll(item.getSoll());
-
-            WirtschaftsplanungNode parent = (WirtschaftsplanungNode) node.getParent();
-            reloadSoll(parent, art);
-          }
-          catch (Exception e)
-          {
-            throw new ApplicationException(e);
-          }
-        });
+    TreePart treePart = new TreePart(new ArrayList<>(nodes.values()), new WirtschaftsplanPostenDialogAction(this, art));
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
@@ -494,6 +465,7 @@ public class WirtschaftsplanungControl extends AbstractControl
     }
   }
 
+  @SuppressWarnings("unchecked")
   public void starteAuswertung(String type) throws ApplicationException
   {
     handleStore();
@@ -537,9 +509,7 @@ public class WirtschaftsplanungControl extends AbstractControl
 
     try
     {
-      //noinspection unchecked
       einnahmenList = (List<WirtschaftsplanungNode>) einnahmen.getItems();
-      //noinspection unchecked
       ausgabenList = (List<WirtschaftsplanungNode>) ausgaben.getItems();
     }
     catch (RemoteException e)

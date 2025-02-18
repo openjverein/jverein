@@ -56,7 +56,14 @@ public class WirtschaftsplanungAddPostenAction implements Action
               .getID());
       WirtschaftsplanungPostenDialog dialog = new WirtschaftsplanungPostenDialog(
           item);
-      node.addChild(new WirtschaftsplanungNode(node, dialog.open()));
+
+      WirtschaftsplanItem neuesItem = dialog.open();
+      if (neuesItem == null)
+      {
+        throw new OperationCanceledException();
+      }
+
+      node.addChild(new WirtschaftsplanungNode(node, item));
 
       control.reloadSoll(node, art);
     }

@@ -49,7 +49,7 @@ public class WirtschaftsplanungAddBuchungsartAction implements Action
   public void handleAction(Object context) throws ApplicationException
   {
     if (! (context instanceof WirtschaftsplanungNode)) {
-      throw new ApplicationException("Fehler beim Hinzufügen der Buchunsgart");
+      throw new ApplicationException("Fehler beim Hinzufügen der Buchungsart");
     }
     WirtschaftsplanungNode node = (WirtschaftsplanungNode) context;
     try
@@ -96,6 +96,11 @@ public class WirtschaftsplanungAddBuchungsartAction implements Action
       DropdownDialog<Buchungsart> dialog = new DropdownDialog<>(
           buchungsarten);
       Buchungsart buchungsart = dialog.open();
+
+      if (buchungsart == null)
+      {
+        throw new OperationCanceledException();
+      }
 
       node.addChild(new WirtschaftsplanungNode(node, buchungsart, art,
           control.getWirtschaftsplanungZeile()));
