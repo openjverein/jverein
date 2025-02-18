@@ -19,10 +19,17 @@ package de.jost_net.JVerein.gui.parts;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanungNode;
+import de.jost_net.JVerein.gui.view.WirtschaftsplanungView;
+import de.jost_net.JVerein.io.WirtschaftsplanungZeile;
+import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
@@ -30,6 +37,11 @@ import de.willuhn.util.ApplicationException;
 import org.eclipse.swt.widgets.Composite;
 
 import java.rmi.RemoteException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class WirtschaftsplanUebersichtPart implements Part
@@ -43,6 +55,13 @@ public class WirtschaftsplanUebersichtPart implements Part
   private DecimalInput sollEinnahme;
 
   private DecimalInput sollAusgaben;
+
+  private final Calendar calendar = Calendar.getInstance();;
+
+  private enum RANGE
+  {
+    MONAT, TAG
+  }
 
   public WirtschaftsplanUebersichtPart(WirtschaftsplanungControl control)
   {
@@ -89,6 +108,16 @@ public class WirtschaftsplanUebersichtPart implements Part
         Einstellungen.DECIMALFORMAT);
     istAusgaben.disable();
     ausgaben.addLabelPair("Ausgaben Ist", istAusgaben);
+
+    ButtonArea buttonArea = new ButtonArea();
+
+    Button zurueck = new Button("", context -> loadNextPlan(false), null, false, "go-previous.png");
+    buttonArea.addButton(zurueck);
+
+    Button vor = new Button("", context -> loadNextPlan(true), null, false, "go-next.png");
+    buttonArea.addButton(vor);
+
+    uebersicht.addButtonArea(buttonArea);
   }
 
   @SuppressWarnings("unchecked")
@@ -133,5 +162,86 @@ public class WirtschaftsplanUebersichtPart implements Part
   public DateInput getVon()
   {
     return von;
+  }
+
+  private RANGE getRangeTyp(Date von, Date bis) throws ApplicationException
+  {
+    control.checkDate();
+    calendar.setTime(von);
+    if (calendar.get(Calendar.DAY_OF_MONTH) != 1)
+      return RANGE.TAG;
+    calendar.setTime(bis);
+    calendar.add(Calendar.DAY_OF_MONTH, 1);
+    if (calendar.get(Calendar.DAY_OF_MONTH) != 1)
+      return RANGE.TAG;
+    return RANGE.MONAT;
+  }
+
+  /**
+   * Lädt den nächsten Wirtschaftsplan, wenn man einen der Pfeil-Buttons drückt
+   * @param next true, falls der nächste Plan geladen wird und false, falls der vorherige Plan geladen wird.
+   */
+  private void loadNextPlan(boolean next) throws ApplicationException
+  {
+    Date vonDate = (Date) von.getValue();
+    Date bisDate = (Date) bis.getValue();
+    if (getRangeTyp(vonDate, bisDate) == RANGE.TAG)
+    {
+      int delta = (int) ChronoUnit.DAYS.between(vonDate.toInstant(), bisDate.toInstant());
+      delta++;
+      delta = next ? delta : -delta;
+      calendar.setTime(vonDate);
+      calendar.add(Calendar.DAY_OF_MONTH, delta);
+      vonDate = calendar.getTime();
+      calendar.setTime(bisDate);
+      calendar.add(Calendar.DAY_OF_MONTH, delta);
+      bisDate = calendar.getTime();
+    }
+    else
+    {
+      LocalDate lvon = vonDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+      LocalDate lbis = bisDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+      int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
+      delta++;
+      calendar.setTime(vonDate);
+      calendar.add(Calendar.MONTH, next ? delta : -delta);
+      vonDate = calendar.getTime();
+      calendar.add(Calendar.MONTH, delta);
+      calendar.add(Calendar.DAY_OF_MONTH, -1);
+      bisDate = calendar.getTime();
+    }
+
+    try
+    {
+      DBIterator<Wirtschaftsplan> iterator = Einstellungen.getDBService().createList(Wirtschaftsplan.class);
+      iterator.addFilter("datum_von = ?", vonDate);
+      iterator.addFilter("datum_bis = ?", bisDate);
+
+      if (iterator.hasNext())
+      {
+        Wirtschaftsplan plan = iterator.next();
+        WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(plan);
+        GUI.startView(WirtschaftsplanungView.class, zeile);
+        if (iterator.hasNext())
+        {
+          GUI.getStatusBar().setSuccessText(
+              "Mehr als einen Plan für diesen Zeitraum gefunden. Es wird ein zufälliger Plan für diesen Zeitraum geladen!");
+        }
+      }
+      else
+      {
+        Wirtschaftsplan plan = Einstellungen.getDBService().createObject(Wirtschaftsplan.class, null);
+        plan.setDatumVon(vonDate);
+        plan.setDatumBis(bisDate);
+        WirtschaftsplanungZeile zeile = new WirtschaftsplanungZeile(plan);
+        GUI.startView(WirtschaftsplanungView.class, zeile);
+        GUI.getStatusBar().setErrorText(
+            "Kein Plan für den Zeitraum gefunden. Neuer Plan wurde erstellt!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim Laden des Wirtschaftsplans", e);
+    }
   }
 }

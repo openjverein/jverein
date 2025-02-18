@@ -252,7 +252,7 @@ public class MyExtension implements Extension
       if (Einstellungen.getEinstellung().getWirtschaftsplanung())
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Wirtschaftsplanung",
-            new StartViewAction(WirtschaftsplanungListView.class), "euro-sign.png"));
+            new StartViewAction(WirtschaftsplanungListView.class), "x-office-spreadsheet.png"));
       }
 
       NavigationItem abrechnung = null;

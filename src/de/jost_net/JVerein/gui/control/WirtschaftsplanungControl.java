@@ -373,15 +373,10 @@ public class WirtschaftsplanungControl extends AbstractControl
 
       DBTransaction.starten();
 
+      checkDate();
+
       Date von = (Date) uebersicht.getVon().getValue();
       Date bis = (Date) uebersicht.getBis().getValue();
-
-      if (von.after(bis) || von.equals(bis))
-      {
-        throw new ApplicationException(
-            "Startdatum muss vor Enddatum liegen!");
-      }
-
       wirtschaftsplan.setDatumBis(bis);
       wirtschaftsplan.setDatumVon(von);
       wirtschaftsplan.store();
@@ -554,5 +549,23 @@ public class WirtschaftsplanungControl extends AbstractControl
       }
     };
     Application.getController().start(task);
+  }
+
+  public void checkDate() throws ApplicationException
+  {
+    Date von = (Date) uebersicht.getVon().getValue();
+    Date bis = (Date) uebersicht.getBis().getValue();
+    if (von == null)
+    {
+      throw new ApplicationException("Von-Datum darf nicht leer sein!");
+    }
+    if (bis == null)
+    {
+      throw new ApplicationException("Bis-Datum darf nicht leer sein!");
+    }
+    if (bis.before(von))
+    {
+      throw new ApplicationException("Bis-Datum muss nach Von-Datum liegen");
+    }
   }
 }
