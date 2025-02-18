@@ -114,7 +114,7 @@ public class EditTreePart extends TreePart
 
           final int index = selectedCol;
 
-          // Jetzt checken wir noch, ob die Spalte aenderbar ist
+          // Jetzt checken wir noch, ob die Spalte änderbar ist
           final Column col = columns.get(index);
           if (!col.canChange())
             return;
@@ -139,10 +139,10 @@ public class EditTreePart extends TreePart
           editor.setEditor(editorControl, item, index);
 
           // Wir merken uns noch die letzte Farbe des Items.
-          // Denn falls der User etwas Ungültiges eingibt, faerben wir
+          // Denn falls der User etwas Ungültiges eingibt, färben wir
           // sie rot. Allerdings wollen wir sie anschliessend
-          // wieder auf die richtige urspruengliche Farbe
-          // zuruecksetzen, wenn der User den Wert korrigiert hat.
+          // wieder auf die richtige ursprüngliche Farbe
+          // zurücksetzen, wenn der User den Wert korrigiert hat.
           if (item.getData("color") == null)
           {
             // wir hatten den Wert noch nicht gespeichert
@@ -151,7 +151,7 @@ public class EditTreePart extends TreePart
           final org.eclipse.swt.graphics.Color color = (org.eclipse.swt.graphics.Color) item
               .getData("color");
 
-          // Wir deaktivieren den Default-Button fuer den Zeitraum der
+          // Wir deaktivieren den Default-Button für den Zeitraum der
           // Bearbeitung
           Button b = GUI.getShell().getDefaultButton();
           final boolean enabled;
@@ -184,7 +184,7 @@ public class EditTreePart extends TreePart
           //////////////////////////////////////////////////////////////////////
 
           //////////////////////////////////////////////////////////////////////
-          // Uebernimmt die Aenderungen
+          // Übernimmt die Änderungen
           final Runnable commit = new Runnable()
           {
             public void run()
@@ -254,7 +254,7 @@ public class EditTreePart extends TreePart
           //
           //////////////////////////////////////////////////////////////////////
 
-          // Listener fuer Tastatur
+          // Listener für Tastatur
           editorControl.addTraverseListener(new TraverseListener()
           {
             public void keyTraversed(TraverseEvent e)
@@ -274,7 +274,7 @@ public class EditTreePart extends TreePart
               }
             }
           });
-          // Listener fuer Maus
+          // Listener für Maus
           editorControl.addFocusListener(new FocusAdapter()
           {
             public void focusLost(FocusEvent e)
@@ -322,8 +322,8 @@ public class EditTreePart extends TreePart
   }
 
   /**
-   * fuegt dem Tree einen Listener hinzu, der ausgeloest wird, wenn ein Feld
-   * aenderbar ist und vom Benutzer geaendert wurde.
+   * fügt dem Tree einen Listener hinzu, der ausgelöst wird, wenn ein Feld
+   * änderbar ist und vom Benutzer gäendert wurde.
    * 
    * @param l
    *          der Listener.
@@ -335,8 +335,8 @@ public class EditTreePart extends TreePart
   }
 
   /**
-   * fuegt dem Tree einen Listener hinzu, der ausgeloest wird, wenn ein Feld
-   * aenderbar ist und vom Benutzer zum bearbeitet angeklickt wurde.
+   * fügt dem Tree einen Listener hinzu, der ausgeloöt wird, wenn ein Feld
+   * änderbar ist und vom Benutzer zum bearbeitet angeklickt wurde.
    * 
    * @param l
    *          der Listener.
