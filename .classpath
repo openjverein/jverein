@@ -6,10 +6,10 @@
 	<classpathentry exported="true" kind="src" path="/jameica"/>
 	<classpathentry kind="lib" path="lib/nc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.mail-1.6.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bsh-3.0.0-20230205.094654-3.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/hibiscus"/>
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
 	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/obantoo-bin-2.1.12.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bsh-core-2.0b4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/csvjdbc-1.0.40.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/itext-hyph-xml.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jollyday-0.5.10.jar"/>
