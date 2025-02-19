@@ -33,5 +33,19 @@ jobs:
       with:
         path: jverein
 
+    - name: Restore build dependencies
+      id: restore-cache
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          jameica/bin/
+          jameica/lib/
+          jameica/releases/jameica-lib.jar
+          hibiscus/bin/
+          hibiscus/lib/
+          hibiscus/releases/hibiscus-lib.jar
+        fail-on-cache-miss: true
+        key: ${{ hashFiles('jverein/build/build.properties', 'jverein/build/build.xml') }}
+
     - name: Build openjverein plugin
       run: ant -noinput -buildfile jverein/build/build.xml compile
