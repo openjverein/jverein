@@ -38,7 +38,6 @@ import de.jost_net.JVerein.gui.menu.BuchungPartBearbeitenMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
-import de.jost_net.JVerein.gui.parts.EditTreePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.BuchungView;
@@ -72,6 +71,7 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
@@ -126,7 +126,7 @@ public class MitgliedskontoControl extends DruckMailControl
 
   private Mitgliedskonto mkto;
 
-  private EditTreePart mitgliedskontoTree;
+  private TreePart mitgliedskontoTree;
 
   // SollbuchungListeView, SollbuchungAuswahldialog
   private TablePart mitgliedskontoList;
@@ -356,7 +356,7 @@ public class MitgliedskontoControl extends DruckMailControl
 
   public Part getMitgliedskontoTree(Mitglied mitglied) throws RemoteException
   {
-    mitgliedskontoTree = new EditTreePart(new MitgliedskontoNode(mitglied),
+    mitgliedskontoTree = new TreePart(new MitgliedskontoNode(mitglied),
         new Action()
         {
 
@@ -421,7 +421,7 @@ public class MitgliedskontoControl extends DruckMailControl
     mitgliedskontoTree.addColumn("Zahlungsweg", "zahlungsweg",
         new ZahlungswegFormatter());
     mitgliedskontoTree.addColumn("Soll", "soll",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), true);
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     mitgliedskontoTree.addColumn("Ist", "ist",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     mitgliedskontoTree.addColumn("Differenz", "differenz",
@@ -432,30 +432,6 @@ public class MitgliedskontoControl extends DruckMailControl
     mitgliedskontoTree.setFormatter(new MitgliedskontoTreeFormatter());
     this.mc = new MitgliedskontoMessageConsumer();
     Application.getMessagingFactory().registerMessageConsumer(this.mc);
-    mitgliedskontoTree.addChangeListener((object, attribute, newValue) -> {
-      try
-      {
-        // Speichern
-        GUI.getStatusBar().setSuccessText(
-            "TEST: " + newValue + " in Spalte " + attribute + " gespeichert");
-      }
-      catch (Exception e)
-      {
-        throw new ApplicationException("Fehler");
-      }
-    });
-    mitgliedskontoTree.addEditListener((object, attribute) -> {
-      MitgliedskontoNode node = (MitgliedskontoNode) object;
-      switch (node.getType())
-      {
-        case MitgliedskontoNode.SOLL:
-          return true;
-        case MitgliedskontoNode.IST:
-        case MitgliedskontoNode.MITGLIED:
-        default:
-          return false;
-      }
-    });
 
     return mitgliedskontoTree;
   }
