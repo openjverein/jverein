@@ -48,5 +48,4 @@ jobs:
         key: ${{ hashFiles('jverein/build/build.properties', 'jverein/build/build.xml') }}
 
     - name: Build openjverein plugin
-      working-directory: ./
       run: ant -noinput -buildfile jverein/build/build.xml compile

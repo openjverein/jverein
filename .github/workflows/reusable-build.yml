@@ -21,7 +21,7 @@ jobs:
 
     - name: Restore build dependencies
       id: restore-cache
-      uses: actions/cache/restore@v4
+      uses: actions/cache@v4
       with:
         path: |
           jameica/bin/
@@ -35,16 +35,3 @@ jobs:
     - name: Build Jameica and Hibiscus
       if: steps.restore-cache.outputs.cache-hit != 'true'
       run: ant -noinput -buildfile jverein/build/build.xml build-dependencies
-
-    - name: Save build dependencies
-      if: steps.restore-cache.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v4
-      with:
-        path: |
-          jameica/bin/
-          jameica/lib/
-          jameica/releases/jameica-lib.jar
-          hibiscus/bin/
-          hibiscus/lib/
-          hibiscus/releases/hibiscus-lib.jar
-        key: ${{ hashFiles('jverein/build/build.properties', 'jverein/build/build.xml') }}

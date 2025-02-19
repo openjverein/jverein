@@ -41,7 +41,6 @@ jobs:
 
     - name: Build openjverein plugin
       id: openjverein
-      working-directory: ./
       run: |
         ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml)
         echo ${ant_output}
