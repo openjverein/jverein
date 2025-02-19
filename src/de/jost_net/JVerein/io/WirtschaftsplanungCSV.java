@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.io;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungNode;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
@@ -53,8 +53,8 @@ public class WirtschaftsplanungCSV
   }
 
   @SuppressWarnings("ThrowFromFinallyBlock")
-  public WirtschaftsplanungCSV(List<WirtschaftsplanungNode> einnahmenList,
-      List<WirtschaftsplanungNode> ausgabenList, final File file)
+  public WirtschaftsplanungCSV(List<WirtschaftsplanNode> einnahmenList,
+      List<WirtschaftsplanNode> ausgabenList, final File file)
       throws ApplicationException
   {
     ICsvMapWriter writer = null;
@@ -124,14 +124,14 @@ public class WirtschaftsplanungCSV
   {
     while (iterator.hasNext())
     {
-      WirtschaftsplanungNode currentNode = (WirtschaftsplanungNode) iterator.next();
+      WirtschaftsplanNode currentNode = (WirtschaftsplanNode) iterator.next();
 
-      if (currentNode.getType().equals(WirtschaftsplanungNode.Type.POSTEN))
+      if (currentNode.getType().equals(WirtschaftsplanNode.Type.POSTEN))
       {
         Map<String, Object> csvzeile = new HashMap<>();
 
-        WirtschaftsplanungNode parent = (WirtschaftsplanungNode) currentNode.getParent();
-        WirtschaftsplanungNode root = (WirtschaftsplanungNode) parent.getParent();
+        WirtschaftsplanNode parent = (WirtschaftsplanNode) currentNode.getParent();
+        WirtschaftsplanNode root = (WirtschaftsplanNode) parent.getParent();
 
         csvzeile.put(header[0], root.getBuchungsklasse().getBezeichnung());
         csvzeile.put(header[1], parent.getBuchungsart().getBezeichnung());

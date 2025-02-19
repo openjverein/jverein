@@ -1,8 +1,8 @@
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungNode;
-import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanungPostenDialog;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
+import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanPostenDialog;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -10,10 +10,10 @@ import de.willuhn.util.ApplicationException;
 
 public class WirtschaftsplanPostenDialogAction implements Action
 {
-  private final WirtschaftsplanungControl control;
+  private final WirtschaftsplanControl control;
   private final int art;
 
-  public WirtschaftsplanPostenDialogAction(WirtschaftsplanungControl control, int art)
+  public WirtschaftsplanPostenDialogAction(WirtschaftsplanControl control, int art)
   {
     this.control = control;
     this.art = art;
@@ -22,21 +22,21 @@ public class WirtschaftsplanPostenDialogAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (!(context instanceof WirtschaftsplanungNode))
+    if (!(context instanceof WirtschaftsplanNode))
     {
       return;
     }
 
-    WirtschaftsplanungNode node = (WirtschaftsplanungNode) context;
+    WirtschaftsplanNode node = (WirtschaftsplanNode) context;
 
-    if (node.getType() != WirtschaftsplanungNode.Type.POSTEN)
+    if (node.getType() != WirtschaftsplanNode.Type.POSTEN)
     {
       return;
     }
 
     try
     {
-      WirtschaftsplanungPostenDialog dialog = new WirtschaftsplanungPostenDialog(
+      WirtschaftsplanPostenDialog dialog = new WirtschaftsplanPostenDialog(
           node.getWirtschaftsplanItem());
       WirtschaftsplanItem item = dialog.open();
 
@@ -48,7 +48,7 @@ public class WirtschaftsplanPostenDialogAction implements Action
       node.setWirtschaftsplanItem(item);
       node.setSoll(item.getSoll());
 
-      WirtschaftsplanungNode parent = (WirtschaftsplanungNode) node.getParent();
+      WirtschaftsplanNode parent = (WirtschaftsplanNode) node.getParent();
       control.reloadSoll(parent, art);
     }
     catch (OperationCanceledException ignored) {}

@@ -30,12 +30,12 @@ import org.eclipse.swt.widgets.Composite;
 
 import java.rmi.RemoteException;
 
-public class WirtschaftsplanungPostenDialog
+public class WirtschaftsplanPostenDialog
     extends AbstractDialog<WirtschaftsplanItem>
 {
   private final WirtschaftsplanItem item;
 
-  public WirtschaftsplanungPostenDialog(WirtschaftsplanItem item)
+  public WirtschaftsplanPostenDialog(WirtschaftsplanItem item)
       throws RemoteException
   {
     super(AbstractDialog.POSITION_CENTER);

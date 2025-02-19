@@ -16,20 +16,20 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungNode;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.util.ApplicationException;
 
 import java.rmi.RemoteException;
 
-public class WirtschaftsplanungDeletePostenAction implements Action
+public class WirtschaftsplanDeletePostenAction implements Action
 {
-  private final WirtschaftsplanungControl control;
+  private final WirtschaftsplanControl control;
   private final int art;
 
-  public WirtschaftsplanungDeletePostenAction(WirtschaftsplanungControl control,
+  public WirtschaftsplanDeletePostenAction(WirtschaftsplanControl control,
       int art)
   {
     this.control = control;
@@ -40,63 +40,57 @@ public class WirtschaftsplanungDeletePostenAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (!(context instanceof WirtschaftsplanungNode))
+    if (!(context instanceof WirtschaftsplanNode))
     {
       throw new ApplicationException("Fehler beim Löschen der Posten");
     }
 
-    WirtschaftsplanungNode node = (WirtschaftsplanungNode) context;
+    WirtschaftsplanNode node = (WirtschaftsplanNode) context;
 
     try
     {
+      GenericIterator artIterator;
       switch (node.getType())
       {
         case POSTEN:
-          ((WirtschaftsplanungNode) node.getParent()).removeChild(node);
-          control.reloadSoll((WirtschaftsplanungNode) node.getParent(), art);
+          ((WirtschaftsplanNode) node.getParent()).removeChild(node);
+          control.reloadSoll((WirtschaftsplanNode) node.getParent(), art);
           break;
         case BUCHUNGSART:
-          GenericIterator iterator = node.getChildren();
-          while (iterator.hasNext())
+          artIterator = node.getChildren();
+          while (artIterator.hasNext())
           {
-            WirtschaftsplanungNode currentNode = (WirtschaftsplanungNode) iterator.next();
-            ((WirtschaftsplanungNode) currentNode.getParent()).removeChild(
+            WirtschaftsplanNode currentNode = (WirtschaftsplanNode) artIterator.next();
+            ((WirtschaftsplanNode) currentNode.getParent()).removeChild(
                 currentNode);
           }
           if (node.getIst() == 0.)
           {
-            ((WirtschaftsplanungNode) node.getParent()).removeChild(node);
+            ((WirtschaftsplanNode) node.getParent()).removeChild(node);
           }
 
           control.reloadSoll(node, art);
           break;
         case BUCHUNGSKLASSE:
-          GenericIterator iterator1 = node.getChildren();
-          while (iterator1.hasNext())
+          GenericIterator klasseIterator = node.getChildren();
+          while (klasseIterator.hasNext())
           {
-            boolean hasChanged = false;
-
-            WirtschaftsplanungNode currentNode = (WirtschaftsplanungNode) iterator1.next();
-            GenericIterator iterator2 = currentNode.getChildren();
-            while (iterator2.hasNext())
+            WirtschaftsplanNode currentNode = (WirtschaftsplanNode) klasseIterator.next();
+            artIterator = currentNode.getChildren();
+            while (artIterator.hasNext())
             {
-              WirtschaftsplanungNode posten = (WirtschaftsplanungNode) iterator2.next();
-              ((WirtschaftsplanungNode) posten.getParent()).removeChild(
+              WirtschaftsplanNode posten = (WirtschaftsplanNode) artIterator.next();
+              ((WirtschaftsplanNode) posten.getParent()).removeChild(
                   posten);
-              hasChanged = true;
             }
 
             if (currentNode.getIst() == 0.)
             {
-              ((WirtschaftsplanungNode) currentNode.getParent()).removeChild(
+              ((WirtschaftsplanNode) currentNode.getParent()).removeChild(
                   currentNode);
             }
-
-            if (hasChanged)
-            {
-              control.reloadSoll(currentNode, art);
-            }
           }
+          control.reloadSoll(node, art);
           break;
         case UNBEKANNT:
           throw new ApplicationException("Fehler beim Löschen der Posten");

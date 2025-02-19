@@ -20,14 +20,15 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanPostenDialogAction;
-import de.jost_net.JVerein.gui.menu.WirtschaftsplanungListMenu;
+import de.jost_net.JVerein.gui.menu.WirtschaftsplanListMenu;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
-import de.jost_net.JVerein.gui.view.WirtschaftsplanungView;
+import de.jost_net.JVerein.gui.view.WirtschaftsplanView;
 import de.jost_net.JVerein.io.WirtschaftsplanungCSV;
 import de.jost_net.JVerein.io.WirtschaftsplanungPDF;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
+import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
@@ -58,7 +59,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WirtschaftsplanungControl extends AbstractControl
+public class WirtschaftsplanControl extends AbstractControl
 {
   private TreePart einnahmen;
 
@@ -70,20 +71,14 @@ public class WirtschaftsplanungControl extends AbstractControl
 
   public final static String AUSWERTUNG_CSV = "CSV";
 
-  private final static int EINNAHME = 0;
-  private final static int AUSGABE = 1;
-
-  private final static int ID_COL = 1;
-  private final static int BETRAG_COL = 2;
-
 
   /**
-   * Erzeugt einen neuen AbstractControl der fuer die angegebene View.
+   * Erzeugt einen neuen WirtschaftsplanControl fuer die angegebene View.
    *
    * @param view
-   *     die View, fuer die dieser WirtschaftsplanungControl zustaendig ist.
+   *     die View, fuer die dieser WirtschaftsplanControl zustaendig ist.
    */
-  public WirtschaftsplanungControl(AbstractView view)
+  public WirtschaftsplanControl(AbstractView view)
   {
     super(view);
     de.willuhn.jameica.system.Settings settings = new de.willuhn.jameica.system.Settings(
@@ -103,7 +98,7 @@ public class WirtschaftsplanungControl extends AbstractControl
     }
 
     TablePart wirtschaftsplaene = new TablePart(
-        plaene, new EditAction(WirtschaftsplanungView.class));
+        plaene, new EditAction(WirtschaftsplanView.class));
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
@@ -120,7 +115,7 @@ public class WirtschaftsplanungControl extends AbstractControl
     wirtschaftsplaene.addColumn("Saldo Ist", "istSaldo", formatter);
     wirtschaftsplaene.addColumn("Saldo Differenz", "differenz", formatter);
 
-    wirtschaftsplaene.setContextMenu(new WirtschaftsplanungListMenu());
+    wirtschaftsplaene.setContextMenu(new WirtschaftsplanListMenu());
 
     return wirtschaftsplaene;
   }
@@ -138,7 +133,7 @@ public class WirtschaftsplanungControl extends AbstractControl
   {
     if (einnahmen == null)
     {
-      einnahmen = generateTree(EINNAHME);
+      einnahmen = generateTree(WirtschaftsplanImpl.EINNAHME);
     }
     else
     {
@@ -153,7 +148,7 @@ public class WirtschaftsplanungControl extends AbstractControl
   {
     if (ausgaben == null)
     {
-      ausgaben = generateTree(AUSGABE);
+      ausgaben = generateTree(WirtschaftsplanImpl.AUSGABE);
     }
     else
     {
@@ -166,6 +161,9 @@ public class WirtschaftsplanungControl extends AbstractControl
 
   private TreePart generateTree(int art) throws RemoteException
   {
+    final int ID_COL = 1;
+    final int BETRAG_COL = 2;
+
     Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
 
     if (wirtschaftsplan == null)
@@ -173,7 +171,7 @@ public class WirtschaftsplanungControl extends AbstractControl
       return null;
     }
 
-    Map<String, WirtschaftsplanungNode> nodes = new HashMap<>();
+    Map<String, WirtschaftsplanNode> nodes = new HashMap<>();
 
     DBService service = Einstellungen.getDBService();
 
@@ -181,7 +179,7 @@ public class WirtschaftsplanungControl extends AbstractControl
     while (buchungsklasseIterator.hasNext())
     {
       Buchungsklasse klasse = buchungsklasseIterator.next();
-      nodes.put(klasse.getID(), new WirtschaftsplanungNode(klasse, art, wirtschaftsplan));
+      nodes.put(klasse.getID(), new WirtschaftsplanNode(klasse, art, wirtschaftsplan));
     }
 
     String sql = "SELECT wirtschaftsplanitem.buchungsklasse, sum(soll) " +
@@ -207,24 +205,20 @@ public class WirtschaftsplanungControl extends AbstractControl
       return nodes;
     });
 
+    sql = "SELECT %s.buchungsklasse, sum(buchung.betrag) " +
+        "FROM buchung, buchungsart " +
+        "WHERE buchung.buchungsart = buchungsart.id " +
+        "AND buchung.datum >= ? AND buchung.datum <= ? " +
+        "AND buchungsart.art = ? " +
+        "GROUP BY %s.buchungsklasse";
+
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
-      sql = "SELECT buchung.buchungsklasse, sum(buchung.betrag) " +
-          "FROM buchung, buchungsart " +
-          "WHERE buchung.buchungsart = buchungsart.id " +
-          "AND buchung.datum >= ? AND buchung.datum <= ? " +
-          "AND buchungsart.art = ? " +
-          "GROUP BY buchung.buchungsklasse";
-
+      sql = String.format(sql, "buchung", "buchung");
     }
     else
     {
-      sql = "SELECT buchungsart.buchungsklasse, sum(buchung.betrag) " +
-          "FROM buchung, buchungsart " +
-          "WHERE buchung.buchungsart = buchungsart.id " +
-          "AND buchung.datum >= ? AND buchung.datum <= ? " +
-          "AND buchungsart.art = ? " +
-          "GROUP BY buchungsart.buchungsklasse";
+      sql = String.format(sql, "buchungsart", "buchungsart");
 
     }
     service.execute(sql,
@@ -265,24 +259,46 @@ public class WirtschaftsplanungControl extends AbstractControl
     this.uebersicht = uebersicht;
   }
 
-  public void reloadSoll(WirtschaftsplanungNode parent, int art)
+  public void reloadSoll(WirtschaftsplanNode parent, int art)
       throws RemoteException, ApplicationException
   {
-    while (parent != null)
+    if (parent.getType() == WirtschaftsplanNode.Type.BUCHUNGSKLASSE)
     {
-      @SuppressWarnings("rawtypes") GenericIterator iterator = parent.getChildren();
-      double soll = 0;
-      while (iterator.hasNext())
+      @SuppressWarnings("rawtypes") GenericIterator outerIterator = parent.getChildren();
+      double klasseSoll = 0;
+      while(outerIterator.hasNext())
       {
-        WirtschaftsplanungNode child = (WirtschaftsplanungNode) iterator.next();
-        soll += child.getSoll();
+        WirtschaftsplanNode child = (WirtschaftsplanNode) outerIterator.next();
+        double artSoll = 0;
+        @SuppressWarnings("rawtypes") GenericIterator innerIterator = child.getChildren();
+        while (innerIterator.hasNext())
+        {
+          WirtschaftsplanNode leaf = (WirtschaftsplanNode) innerIterator.next();
+          artSoll += leaf.getSoll();
+        }
+        child.setSoll(artSoll);
+        klasseSoll += artSoll;
       }
-      parent.setSoll(soll);
+      parent.setSoll(klasseSoll);
+    }
+    else
+    {
+      while (parent != null)
+      {
+        @SuppressWarnings("rawtypes") GenericIterator iterator = parent.getChildren();
+        double soll = 0;
+        while (iterator.hasNext())
+        {
+          WirtschaftsplanNode child = (WirtschaftsplanNode) iterator.next();
+          soll += child.getSoll();
+        }
+        parent.setSoll(soll);
 
-      parent = (WirtschaftsplanungNode) parent.getParent();
+        parent = (WirtschaftsplanNode) parent.getParent();
+      }
     }
 
-    if (art == 0)
+    if (art == WirtschaftsplanImpl.EINNAHME)
     {
       getEinnahmen();
     }
@@ -298,8 +314,8 @@ public class WirtschaftsplanungControl extends AbstractControl
   {
     try
     {
-      @SuppressWarnings("unchecked") List<WirtschaftsplanungNode> rootNodesEinnahmen = (List<WirtschaftsplanungNode>) einnahmen.getItems();
-      @SuppressWarnings("unchecked") List<WirtschaftsplanungNode> rootNodesAusgaben = (List<WirtschaftsplanungNode>) ausgaben.getItems();
+      @SuppressWarnings("unchecked") List<WirtschaftsplanNode> rootNodesEinnahmen = (List<WirtschaftsplanNode>) einnahmen.getItems();
+      @SuppressWarnings("unchecked") List<WirtschaftsplanNode> rootNodesAusgaben = (List<WirtschaftsplanNode>) ausgaben.getItems();
 
       DBService service = Einstellungen.getDBService();
       Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
@@ -325,11 +341,11 @@ public class WirtschaftsplanungControl extends AbstractControl
         }
       }
 
-      for (WirtschaftsplanungNode rootNode : rootNodesEinnahmen)
+      for (WirtschaftsplanNode rootNode : rootNodesEinnahmen)
       {
         storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
       }
-      for (WirtschaftsplanungNode rootNode : rootNodesAusgaben)
+      for (WirtschaftsplanNode rootNode : rootNodesAusgaben)
       {
         storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
       }
@@ -362,8 +378,8 @@ public class WirtschaftsplanungControl extends AbstractControl
   {
     while (iterator.hasNext())
     {
-      WirtschaftsplanungNode currentNode = (WirtschaftsplanungNode) iterator.next();
-      if (currentNode.getType().equals(WirtschaftsplanungNode.Type.POSTEN))
+      WirtschaftsplanNode currentNode = (WirtschaftsplanNode) iterator.next();
+      if (currentNode.getType().equals(WirtschaftsplanNode.Type.POSTEN))
       {
         WirtschaftsplanItem item = Einstellungen.getDBService()
             .createObject(WirtschaftsplanItem.class, null);
@@ -371,9 +387,9 @@ public class WirtschaftsplanungControl extends AbstractControl
         item.setPosten(oldItem.getPosten());
         item.setSoll(oldItem.getSoll());
         item.setWirtschaftsplanId(id);
-        WirtschaftsplanungNode parent = (WirtschaftsplanungNode) currentNode.getParent();
+        WirtschaftsplanNode parent = (WirtschaftsplanNode) currentNode.getParent();
         item.setBuchungsartId(parent.getBuchungsart().getID());
-        WirtschaftsplanungNode root = (WirtschaftsplanungNode) parent.getParent();
+        WirtschaftsplanNode root = (WirtschaftsplanNode) parent.getParent();
         item.setBuchungsklasseId(root.getBuchungsklasse().getID());
         item.store();
       }
@@ -387,8 +403,6 @@ public class WirtschaftsplanungControl extends AbstractControl
   @SuppressWarnings("unchecked")
   public void starteAuswertung(String type) throws ApplicationException
   {
-    handleStore();
-
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
     //
@@ -423,13 +437,13 @@ public class WirtschaftsplanungControl extends AbstractControl
     final File file = new File(s);
     settings.setAttribute("lastdir", file.getParent());
 
-    List<WirtschaftsplanungNode> einnahmenList;
-    List<WirtschaftsplanungNode> ausgabenList;
+    List<WirtschaftsplanNode> einnahmenList;
+    List<WirtschaftsplanNode> ausgabenList;
 
     try
     {
-      einnahmenList = (List<WirtschaftsplanungNode>) einnahmen.getItems();
-      ausgabenList = (List<WirtschaftsplanungNode>) ausgaben.getItems();
+      einnahmenList = (List<WirtschaftsplanNode>) einnahmen.getItems();
+      ausgabenList = (List<WirtschaftsplanNode>) ausgaben.getItems();
     }
     catch (RemoteException e)
     {
@@ -455,9 +469,7 @@ public class WirtschaftsplanungControl extends AbstractControl
           default:
             GUI.getStatusBar()
                 .setErrorText("Unable to create Report. Unknown format!");
-            return;
         }
-        GUI.getCurrentView().reload();
       }
 
       @Override

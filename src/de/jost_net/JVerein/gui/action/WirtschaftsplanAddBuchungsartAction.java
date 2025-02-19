@@ -17,10 +17,11 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungNode;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.jost_net.JVerein.gui.dialogs.DropdownDialog;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
@@ -31,15 +32,13 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WirtschaftsplanungAddBuchungsartAction implements Action
+public class WirtschaftsplanAddBuchungsartAction implements Action
 {
-  private final WirtschaftsplanungControl control;
+  private final WirtschaftsplanControl control;
   private final int art;
 
-  private final static int EINNAHME = 0;
-
-  public WirtschaftsplanungAddBuchungsartAction(
-      WirtschaftsplanungControl control, int art)
+  public WirtschaftsplanAddBuchungsartAction(
+      WirtschaftsplanControl control, int art)
   {
     this.control = control;
     this.art = art;
@@ -48,18 +47,18 @@ public class WirtschaftsplanungAddBuchungsartAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (! (context instanceof WirtschaftsplanungNode)) {
+    if (! (context instanceof WirtschaftsplanNode)) {
       throw new ApplicationException("Fehler beim Hinzufügen der Buchungsart");
     }
-    WirtschaftsplanungNode node = (WirtschaftsplanungNode) context;
+    WirtschaftsplanNode node = (WirtschaftsplanNode) context;
     try
     {
       @SuppressWarnings("rawtypes") GenericIterator childrenIterator = node.getChildren();
-      List<WirtschaftsplanungNode> items = new ArrayList<>();
+      List<WirtschaftsplanNode> items = new ArrayList<>();
 
       while (childrenIterator.hasNext())
       {
-        WirtschaftsplanungNode child = (WirtschaftsplanungNode) childrenIterator.next();
+        WirtschaftsplanNode child = (WirtschaftsplanNode) childrenIterator.next();
         items.add(child);
       }
 
@@ -77,7 +76,7 @@ public class WirtschaftsplanungAddBuchungsartAction implements Action
       while (iterator.hasNext())
       {
         Buchungsart buchungsart = iterator.next();
-        if (items.stream().map(WirtschaftsplanungNode::getBuchungsart)
+        if (items.stream().map(WirtschaftsplanNode::getBuchungsart)
             .noneMatch(art1 -> {
               try
               {
@@ -102,10 +101,10 @@ public class WirtschaftsplanungAddBuchungsartAction implements Action
         throw new OperationCanceledException();
       }
 
-      node.addChild(new WirtschaftsplanungNode(node, buchungsart, art,
+      node.addChild(new WirtschaftsplanNode(node, buchungsart, art,
           control.getWirtschaftsplan()));
 
-      if (art == EINNAHME)
+      if (art == WirtschaftsplanImpl.EINNAHME)
       {
         control.getEinnahmen();
       }

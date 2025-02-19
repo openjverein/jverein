@@ -18,27 +18,27 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class WirtschaftsplanungListView extends AbstractView
+public class WirtschaftsplanListView extends AbstractView
 {
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Wirtschaftsplanung");
 
-    WirtschaftsplanungControl control = new WirtschaftsplanungControl(this);
+    WirtschaftsplanControl control = new WirtschaftsplanControl(this);
 
     control.getWirtschaftsplanungList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.WIRTSCHAFTSPLANUNG, false, "question-circle.png");
-    buttons.addButton("Neu", new NewAction(WirtschaftsplanungView.class, Wirtschaftsplan.class), control, false,
+    buttons.addButton("Neu", new NewAction(WirtschaftsplanView.class, Wirtschaftsplan.class), control, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

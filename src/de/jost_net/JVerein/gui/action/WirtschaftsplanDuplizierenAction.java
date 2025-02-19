@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.WirtschaftsplanungView;
+import de.jost_net.JVerein.gui.view.WirtschaftsplanView;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -36,7 +36,7 @@ public class WirtschaftsplanDuplizierenAction implements Action
     Wirtschaftsplan wirtschaftsplan = (Wirtschaftsplan) context;
     try
     {
-      WirtschaftsplanungView view = new WirtschaftsplanungView();
+      WirtschaftsplanView view = new WirtschaftsplanView();
       GUI.startView(view, wirtschaftsplan);
       wirtschaftsplan.setId(null);
     }

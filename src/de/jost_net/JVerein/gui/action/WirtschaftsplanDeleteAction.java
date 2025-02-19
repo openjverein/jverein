@@ -9,7 +9,7 @@ import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class WirtschaftsplanungDeleteAction implements Action
+public class WirtschaftsplanDeleteAction implements Action
 {
   @Override
   public void handleAction(Object context) throws ApplicationException
@@ -67,7 +67,5 @@ public class WirtschaftsplanungDeleteAction implements Action
       Logger.error("Fehler beim Löschen des Wirtschaftsplans", e);
       DBTransaction.rollback();
     }
-
-    GUI.getCurrentView().reload();
   }
 }

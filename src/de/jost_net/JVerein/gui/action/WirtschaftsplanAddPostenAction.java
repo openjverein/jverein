@@ -17,20 +17,20 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungNode;
-import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanungPostenDialog;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
+import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanPostenDialog;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
-public class WirtschaftsplanungAddPostenAction implements Action
+public class WirtschaftsplanAddPostenAction implements Action
 {
-  private final WirtschaftsplanungControl control;
+  private final WirtschaftsplanControl control;
   private final int art;
 
-  public WirtschaftsplanungAddPostenAction(WirtschaftsplanungControl control,
+  public WirtschaftsplanAddPostenAction(WirtschaftsplanControl control,
       int art)
   {
     this.control = control;
@@ -40,11 +40,11 @@ public class WirtschaftsplanungAddPostenAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (! (context instanceof WirtschaftsplanungNode))
+    if (! (context instanceof WirtschaftsplanNode))
     {
       throw new ApplicationException("Fehler beim Anlegen des Postens");
     }
-    WirtschaftsplanungNode node = (WirtschaftsplanungNode) context;
+    WirtschaftsplanNode node = (WirtschaftsplanNode) context;
 
     try
     {
@@ -52,9 +52,9 @@ public class WirtschaftsplanungAddPostenAction implements Action
           .createObject(WirtschaftsplanItem.class, null);
       item.setBuchungsartId(node.getBuchungsart().getID());
       item.setBuchungsklasseId(
-          ((WirtschaftsplanungNode) node.getParent()).getBuchungsklasse()
+          ((WirtschaftsplanNode) node.getParent()).getBuchungsklasse()
               .getID());
-      WirtschaftsplanungPostenDialog dialog = new WirtschaftsplanungPostenDialog(
+      WirtschaftsplanPostenDialog dialog = new WirtschaftsplanPostenDialog(
           item);
 
       WirtschaftsplanItem neuesItem = dialog.open();
@@ -63,7 +63,7 @@ public class WirtschaftsplanungAddPostenAction implements Action
         throw new OperationCanceledException();
       }
 
-      node.addChild(new WirtschaftsplanungNode(node, item));
+      node.addChild(new WirtschaftsplanNode(node, item));
 
       control.reloadSoll(node, art);
     }

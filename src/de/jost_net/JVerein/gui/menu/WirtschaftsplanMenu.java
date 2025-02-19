@@ -17,30 +17,28 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.WirtschaftsplanPostenDialogAction;
-import de.jost_net.JVerein.gui.action.WirtschaftsplanungAddBuchungsartAction;
-import de.jost_net.JVerein.gui.action.WirtschaftsplanungAddPostenAction;
-import de.jost_net.JVerein.gui.action.WirtschaftsplanungDeletePostenAction;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungNode;
+import de.jost_net.JVerein.gui.action.WirtschaftsplanAddBuchungsartAction;
+import de.jost_net.JVerein.gui.action.WirtschaftsplanAddPostenAction;
+import de.jost_net.JVerein.gui.action.WirtschaftsplanDeletePostenAction;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
-public class WirtschaftsplanungMenu extends ContextMenu
+public class WirtschaftsplanMenu extends ContextMenu
 {
-  public WirtschaftsplanungMenu(int art, WirtschaftsplanungControl control)
+  public WirtschaftsplanMenu(int art, WirtschaftsplanControl control)
   {
     addItem(new PostenItem("Bearbeiten", new WirtschaftsplanPostenDialogAction(control, art), "text-x-generic.png"));
     addItem(ContextMenuItem.SEPARATOR);
 
-    addItem(new BuchungsklasseItem("Buchungsart hinzufügen", new WirtschaftsplanungAddBuchungsartAction(control, art), "list-add.png"));
+    addItem(new BuchungsklasseItem("Buchungsart hinzufügen", new WirtschaftsplanAddBuchungsartAction(control, art), "list-add.png"));
+    addItem(new BuchungsartItem("Posten hinzufügen", new WirtschaftsplanAddPostenAction(control, art), "list-add.png"));
     addItem(ContextMenuItem.SEPARATOR);
 
-    addItem(new BuchungsartItem("Posten hinzufügen", new WirtschaftsplanungAddPostenAction(control, art), "list-add.png"));
-    addItem(ContextMenuItem.SEPARATOR);
-
-    addItem(new CheckedContextMenuItem("Posten löschen", new WirtschaftsplanungDeletePostenAction(control, art), "user-trash-full.png"));
+    addItem(new CheckedContextMenuItem("Posten löschen", new WirtschaftsplanDeletePostenAction(control, art), "user-trash-full.png"));
   }
 
   private static class BuchungsklasseItem extends CheckedContextMenuItem
@@ -53,11 +51,11 @@ public class WirtschaftsplanungMenu extends ContextMenu
     @Override
     public boolean isEnabledFor(Object o)
     {
-      if (o instanceof WirtschaftsplanungNode)
+      if (o instanceof WirtschaftsplanNode)
       {
-        WirtschaftsplanungNode node = (WirtschaftsplanungNode) o;
+        WirtschaftsplanNode node = (WirtschaftsplanNode) o;
         return node.getType()
-            .equals(WirtschaftsplanungNode.Type.BUCHUNGSKLASSE);
+            .equals(WirtschaftsplanNode.Type.BUCHUNGSKLASSE);
       }
       return false;
     }
@@ -73,10 +71,10 @@ public class WirtschaftsplanungMenu extends ContextMenu
     @Override
     public boolean isEnabledFor(Object o)
     {
-      if (o instanceof WirtschaftsplanungNode)
+      if (o instanceof WirtschaftsplanNode)
       {
-        WirtschaftsplanungNode node = (WirtschaftsplanungNode) o;
-        return node.getType().equals(WirtschaftsplanungNode.Type.BUCHUNGSART);
+        WirtschaftsplanNode node = (WirtschaftsplanNode) o;
+        return node.getType().equals(WirtschaftsplanNode.Type.BUCHUNGSART);
       }
       return false;
     }
@@ -92,10 +90,10 @@ public class WirtschaftsplanungMenu extends ContextMenu
     @Override
     public boolean isEnabledFor(Object o)
     {
-      if (o instanceof WirtschaftsplanungNode)
+      if (o instanceof WirtschaftsplanNode)
       {
-        WirtschaftsplanungNode node = (WirtschaftsplanungNode) o;
-        return node.getType().equals(WirtschaftsplanungNode.Type.POSTEN);
+        WirtschaftsplanNode node = (WirtschaftsplanNode) o;
+        return node.getType().equals(WirtschaftsplanNode.Type.POSTEN);
       }
 
       return false;

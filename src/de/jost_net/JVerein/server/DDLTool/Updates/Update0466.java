@@ -38,7 +38,7 @@ public class Update0466 extends AbstractDDLUpdate
             false)));
 
     Table wirtschaftsplan = new Table("wirtschaftsplan");
-    Column id = new Column("id", COLTYPE.BIGINT, 4, null, false, true);
+    Column id = new Column("id", COLTYPE.INTEGER, 4, null, false, true);
     wirtschaftsplan.add(id);
     wirtschaftsplan.setPrimaryKey(id);
     wirtschaftsplan.add(
@@ -49,16 +49,16 @@ public class Update0466 extends AbstractDDLUpdate
     execute(createTable(wirtschaftsplan));
 
     Table wirtschaftsplanItem = new Table("wirtschaftsplanitem");
-    Column itemId = new Column("id", COLTYPE.BIGINT, 4, null, false, true);
+    Column itemId = new Column("id", COLTYPE.INTEGER, 4, null, false, true);
     wirtschaftsplanItem.add(itemId);
     wirtschaftsplanItem.setPrimaryKey(itemId);
-    Column wirtschaftsplanCol = new Column("wirtschaftsplan", COLTYPE.BIGINT, 4,
+    Column wirtschaftsplanCol = new Column("wirtschaftsplan", COLTYPE.INTEGER, 4,
         null, true, false);
     wirtschaftsplanItem.add(wirtschaftsplanCol);
-    Column buchungsart = new Column("buchungsart", COLTYPE.BIGINT, 4, null,
+    Column buchungsart = new Column("buchungsart", COLTYPE.INTEGER, 4, null,
         true, false);
     wirtschaftsplanItem.add(buchungsart);
-    Column buchungsklasse = new Column("buchungsklasse", COLTYPE.BIGINT, 4,
+    Column buchungsklasse = new Column("buchungsklasse", COLTYPE.INTEGER, 4,
         null, true, false);
     wirtschaftsplanItem.add(buchungsklasse);
     wirtschaftsplanItem.add(

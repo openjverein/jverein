@@ -19,7 +19,7 @@ package de.jost_net.JVerein.io;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungNode;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
@@ -35,10 +35,10 @@ import java.util.Map;
 
 public class WirtschaftsplanungPDF
 {
-  private final Map<WirtschaftsplanungNode, Double> sollSummen;
+  private final Map<WirtschaftsplanNode, Double> sollSummen;
 
-  public WirtschaftsplanungPDF(List<WirtschaftsplanungNode> einnahmenList,
-      List<WirtschaftsplanungNode> ausgabenList, File file,
+  public WirtschaftsplanungPDF(List<WirtschaftsplanNode> einnahmenList,
+      List<WirtschaftsplanNode> ausgabenList, File file,
       Wirtschaftsplan wirtschaftsplan) throws ApplicationException
   {
     sollSummen = new HashMap<>();
@@ -52,9 +52,9 @@ public class WirtschaftsplanungPDF
           wirtschaftsplan.getDatumVon()) + " - " + new JVDateFormatTTMMJJJJ().format(
           wirtschaftsplan.getDatumBis());
       int size = einnahmenList.stream()
-          .mapToInt(WirtschaftsplanungNode::anzahlLeafs)
+          .mapToInt(WirtschaftsplanNode::anzahlLeafs)
           .sum() + ausgabenList.stream()
-          .mapToInt(WirtschaftsplanungNode::anzahlLeafs).sum();
+          .mapToInt(WirtschaftsplanNode::anzahlLeafs).sum();
       Reporter reporter = new Reporter(fileOutputStream, "Wirtschaftsplan",
           subtitle, size);
 
@@ -149,7 +149,7 @@ public class WirtschaftsplanungPDF
     }
   }
 
-  private double calculateSolls(List<WirtschaftsplanungNode> nodeList)
+  private double calculateSolls(List<WirtschaftsplanNode> nodeList)
   {
     return nodeList.stream().mapToDouble(node -> {
       try
@@ -172,10 +172,10 @@ public class WirtschaftsplanungPDF
 
     while (iterator.hasNext())
     {
-      WirtschaftsplanungNode currentNode = (WirtschaftsplanungNode) iterator.next();
+      WirtschaftsplanNode currentNode = (WirtschaftsplanNode) iterator.next();
       double currentSoll;
 
-      if (currentNode.getType().equals(WirtschaftsplanungNode.Type.POSTEN))
+      if (currentNode.getType().equals(WirtschaftsplanNode.Type.POSTEN))
       {
         currentSoll = currentNode.getSoll();
       }
@@ -197,7 +197,7 @@ public class WirtschaftsplanungPDF
   {
     while (iterator.hasNext())
     {
-      WirtschaftsplanungNode currentNode = (WirtschaftsplanungNode) iterator.next();
+      WirtschaftsplanNode currentNode = (WirtschaftsplanNode) iterator.next();
 
       switch (currentNode.getType())
       {
@@ -227,7 +227,7 @@ public class WirtschaftsplanungPDF
         reporter.addColumn("", Element.ALIGN_CENTER);
         reporter.addColumn(sollSummen.get(currentNode));
       }
-      if (!currentNode.getType().equals(WirtschaftsplanungNode.Type.POSTEN))
+      if (!currentNode.getType().equals(WirtschaftsplanNode.Type.POSTEN))
       {
         iterateOverNodes(currentNode.getChildren(), reporter, einnahme);
       }

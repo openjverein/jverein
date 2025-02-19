@@ -17,9 +17,9 @@
 package de.jost_net.JVerein.gui.parts;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungControl;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanungNode;
-import de.jost_net.JVerein.gui.view.WirtschaftsplanungView;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
+import de.jost_net.JVerein.gui.view.WirtschaftsplanView;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -45,7 +45,7 @@ import java.util.List;
 
 public class WirtschaftsplanUebersichtPart implements Part
 {
-  private final WirtschaftsplanungControl control;
+  private final WirtschaftsplanControl control;
 
   private DateInput bis;
 
@@ -62,7 +62,7 @@ public class WirtschaftsplanUebersichtPart implements Part
     MONAT, TAG
   }
 
-  public WirtschaftsplanUebersichtPart(WirtschaftsplanungControl control)
+  public WirtschaftsplanUebersichtPart(WirtschaftsplanControl control)
   {
     this.control = control;
   }
@@ -127,14 +127,14 @@ public class WirtschaftsplanUebersichtPart implements Part
       return;
     }
 
-    List<WirtschaftsplanungNode> einnahmen;
-    List<WirtschaftsplanungNode> ausgaben;
+    List<WirtschaftsplanNode> einnahmen;
+    List<WirtschaftsplanNode> ausgaben;
 
     try
     {
-      einnahmen = (List<WirtschaftsplanungNode>) control.getEinnahmen()
+      einnahmen = (List<WirtschaftsplanNode>) control.getEinnahmen()
           .getItems();
-      ausgaben = (List<WirtschaftsplanungNode>) control.getAusgaben()
+      ausgaben = (List<WirtschaftsplanNode>) control.getAusgaben()
           .getItems();
     }
     catch (RemoteException e)
@@ -144,10 +144,10 @@ public class WirtschaftsplanUebersichtPart implements Part
     }
 
     double sollEinnahmen = einnahmen.stream()
-        .mapToDouble(WirtschaftsplanungNode::getSoll).sum();
+        .mapToDouble(WirtschaftsplanNode::getSoll).sum();
 
     double sollAusgaben = ausgaben.stream()
-        .mapToDouble(WirtschaftsplanungNode::getSoll).sum();
+        .mapToDouble(WirtschaftsplanNode::getSoll).sum();
 
     this.sollEinnahme.setValue(sollEinnahmen);
     this.sollAusgaben.setValue(sollAusgaben);
@@ -219,7 +219,7 @@ public class WirtschaftsplanUebersichtPart implements Part
       if (iterator.hasNext())
       {
         Wirtschaftsplan plan = iterator.next();
-        GUI.startView(WirtschaftsplanungView.class, plan);
+        GUI.startView(WirtschaftsplanView.class, plan);
         if (iterator.hasNext())
         {
           GUI.getStatusBar().setSuccessText(
@@ -231,7 +231,7 @@ public class WirtschaftsplanUebersichtPart implements Part
         Wirtschaftsplan plan = Einstellungen.getDBService().createObject(Wirtschaftsplan.class, null);
         plan.setDatumVon(vonDate);
         plan.setDatumBis(bisDate);
-        GUI.startView(WirtschaftsplanungView.class, plan);
+        GUI.startView(WirtschaftsplanView.class, plan);
         GUI.getStatusBar().setErrorText(
             "Kein Plan für den Zeitraum gefunden. Neuer Plan wurde erstellt!");
       }

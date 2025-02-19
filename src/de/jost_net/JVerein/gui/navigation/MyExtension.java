@@ -87,7 +87,7 @@ import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.jost_net.JVerein.gui.view.StatistikMitgliedView;
 import de.jost_net.JVerein.gui.view.WiedervorlagelisteView;
-import de.jost_net.JVerein.gui.view.WirtschaftsplanungListView;
+import de.jost_net.JVerein.gui.view.WirtschaftsplanListView;
 import de.jost_net.JVerein.gui.view.ZusatzbetraegelisteView;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -252,7 +252,7 @@ public class MyExtension implements Extension
       if (Einstellungen.getEinstellung().getWirtschaftsplanung())
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Wirtschaftsplanung",
-            new StartViewAction(WirtschaftsplanungListView.class), "x-office-spreadsheet.png"));
+            new StartViewAction(WirtschaftsplanListView.class), "x-office-spreadsheet.png"));
       }
 
       NavigationItem abrechnung = null;

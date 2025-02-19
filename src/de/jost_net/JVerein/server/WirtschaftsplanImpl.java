@@ -30,8 +30,8 @@ public class WirtschaftsplanImpl extends AbstractDBObject
 {
   private static final long serialVersionUID = 1L;
 
-  private final static int EINNAHME = 0;
-  private final static int AUSGABE = 1;
+  public final static int EINNAHME = 0;
+  public final static int AUSGABE = 1;
 
   private final static int BETRAG_COL = 2;
 

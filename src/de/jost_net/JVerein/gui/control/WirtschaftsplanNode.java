@@ -34,11 +34,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WirtschaftsplanungNode implements GenericObjectNode
+public class WirtschaftsplanNode implements GenericObjectNode
 {
 
   public enum Type
-  {BUCHUNGSKLASSE, BUCHUNGSART, POSTEN, UNBEKANNT}
+  {
+    BUCHUNGSKLASSE,
+    BUCHUNGSART,
+    POSTEN,
+    UNBEKANNT
+  }
 
   Type type;
 
@@ -50,37 +55,35 @@ public class WirtschaftsplanungNode implements GenericObjectNode
 
   private double soll;
 
-  private double ist = 0;
+  private double ist;
 
-  private WirtschaftsplanungNode parent;
+  private WirtschaftsplanNode parent;
 
   @SuppressWarnings("FieldMayBeFinal")
-  private List<WirtschaftsplanungNode> children;
+  private List<WirtschaftsplanNode> children;
 
-  private final static int ID_COL = 1;
-
-  private final static int BETRAG_COL = 2;
-
-  public WirtschaftsplanungNode(Buchungsklasse buchungsklasse, int art,
+  public WirtschaftsplanNode(Buchungsklasse buchungsklasse, int art,
       Wirtschaftsplan wirtschaftsplan) throws RemoteException
   {
+    final int ID_COL = 1;
+
+    final int BETRAG_COL = 2;
+
     type = Type.BUCHUNGSKLASSE;
-    this.soll = 0;
-    ist = 0;
     this.buchungsklasse = buchungsklasse;
 
-    Map<String, WirtschaftsplanungNode> nodes = new HashMap<>();
+    Map<String, WirtschaftsplanNode> nodes = new HashMap<>();
     DBService service = Einstellungen.getDBService();
 
     DBIterator<Buchungsart> buchungsartIterator = service.createList(
         Buchungsart.class);
-    buchungsartIterator.addFilter("status != 1");
+    buchungsartIterator.addFilter("status != 1"); //Ignoriert inaktive Buchungsarten
     buchungsartIterator.addFilter("buchungsklasse = ?", buchungsklasse.getID());
     buchungsartIterator.addFilter("art = ?", art);
     while (buchungsartIterator.hasNext())
     {
       Buchungsart buchungsart = buchungsartIterator.next();
-      nodes.put(buchungsart.getID(), new WirtschaftsplanungNode(this, buchungsart, art, wirtschaftsplan));
+      nodes.put(buchungsart.getID(), new WirtschaftsplanNode(this, buchungsart, art, wirtschaftsplan));
     }
 
     String sql = "SELECT wirtschaftsplanitem.buchungsart, sum(wirtschaftsplanitem.soll)" +
@@ -111,26 +114,21 @@ public class WirtschaftsplanungNode implements GenericObjectNode
           return nodes;
         });
 
+    sql = "SELECT buchung.buchungsart, sum(buchung.betrag) " +
+        "FROM buchung, buchungsart " +
+        "WHERE buchung.buchungsart = buchungsart.id " +
+        "AND buchung.datum >= ? AND buchung.datum <= ? " +
+        "AND buchungsart.art = ? " +
+        "AND %s.buchungsklasse = ? " +
+        "GROUP BY buchung.buchungsart";
+
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
-      sql = "SELECT buchung.buchungsart, sum(buchung.betrag) " +
-          "FROM buchung, buchungsart " +
-          "WHERE buchung.buchungsart = buchungsart.id " +
-          "AND buchung.datum >= ? AND buchung.datum <= ? " +
-          "AND buchungsart.art = ? " +
-          "AND buchung.buchungsklasse = ? " +
-          "GROUP BY buchung.buchungsart";
+      sql = String.format(sql, "buchung");
     }
     else
     {
-      sql = "SELECT buchung.buchungsart, sum(buchung.betrag) " +
-          "FROM buchung, buchungsart " +
-          "WHERE buchung.buchungsart = buchungsart.id " +
-          "AND buchung.datum >= ? AND buchung.datum <= ? " +
-          "AND buchungsart.art = ? " +
-          "AND buchungsart.buchungsklasse = ? " +
-          "GROUP BY buchung.buchungsart";
-
+      sql = String.format(sql, "buchungsart");
     }
 
     service.execute(sql,
@@ -158,7 +156,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     children = new ArrayList<>(nodes.values());
   }
 
-  public WirtschaftsplanungNode(WirtschaftsplanungNode parent,
+  public WirtschaftsplanNode(WirtschaftsplanNode parent,
       Buchungsart buchungsart, int art, Wirtschaftsplan wirtschaftsplan)
       throws RemoteException
   {
@@ -166,8 +164,6 @@ public class WirtschaftsplanungNode implements GenericObjectNode
     this.parent = parent;
     this.buchungsart = buchungsart;
     children = new ArrayList<>();
-    this.soll = 0;
-    ist = 0;
 
     DBService service = Einstellungen.getDBService();
 
@@ -179,7 +175,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
       item.setPosten(buchungsart.getBezeichnung());
       item.setSoll(0);
 
-      children.add(new WirtschaftsplanungNode(this, item));
+      children.add(new WirtschaftsplanNode(this, item));
       return;
     }
 
@@ -196,7 +192,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
             art, wirtschaftsplan.getID() }, resultSet -> {
           while (resultSet.next())
           {
-            children.add(new WirtschaftsplanungNode(this,
+            children.add(new WirtschaftsplanNode(this,
                 service.createObject(WirtschaftsplanItem.class,
                     resultSet.getString(1))));
           }
@@ -205,7 +201,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
         });
   }
 
-  public WirtschaftsplanungNode(WirtschaftsplanungNode parent,
+  public WirtschaftsplanNode(WirtschaftsplanNode parent,
       WirtschaftsplanItem wirtschaftsplanItem) throws RemoteException
   {
     type = Type.POSTEN;
@@ -230,19 +226,19 @@ public class WirtschaftsplanungNode implements GenericObjectNode
   public boolean hasChild(GenericObjectNode genericObjectNode)
       throws RemoteException
   {
-    if (!(genericObjectNode instanceof WirtschaftsplanungNode))
+    if (!(genericObjectNode instanceof WirtschaftsplanNode))
     {
       return false;
     }
     return children.contains(genericObjectNode);
   }
 
-  public void addChild(WirtschaftsplanungNode child)
+  public void addChild(WirtschaftsplanNode child)
   {
     children.add(child);
   }
 
-  public void removeChild(WirtschaftsplanungNode node)
+  public void removeChild(WirtschaftsplanNode node)
   {
     children.remove(node);
   }
@@ -393,7 +389,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
       return true;
     }
 
-    return children.stream().anyMatch(WirtschaftsplanungNode::hasLeaf);
+    return children.stream().anyMatch(WirtschaftsplanNode::hasLeaf);
   }
 
   public int anzahlLeafs()
@@ -408,7 +404,7 @@ public class WirtschaftsplanungNode implements GenericObjectNode
       return 0;
     }
 
-    return children.stream().mapToInt(WirtschaftsplanungNode::anzahlLeafs)
+    return children.stream().mapToInt(WirtschaftsplanNode::anzahlLeafs)
         .sum();
   }
 }
