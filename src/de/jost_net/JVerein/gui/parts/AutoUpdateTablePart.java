@@ -20,11 +20,13 @@ package de.jost_net.JVerein.gui.parts;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import de.jost_net.JVerein.rmi.Buchung;
+import org.eclipse.swt.SWTException;
+
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.Listener;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
 
 public class AutoUpdateTablePart extends TablePart
@@ -37,7 +39,7 @@ public class AutoUpdateTablePart extends TablePart
     super(action);
   }
 
-  public AutoUpdateTablePart(List<Buchung> list, Action action)
+  public AutoUpdateTablePart(List<?> list, Action action)
   {
     super(list, action);
   }
@@ -68,7 +70,32 @@ public class AutoUpdateTablePart extends TablePart
     public void handleEvent(final de.willuhn.datasource.rmi.Event e)
         throws RemoteException
     {
+      try
+      {
+        // Dieser Aufruf ist nur, damit wir die Exception bekommen. Bei
+        // updateItem wird sie vorher abgefangen
+        getItems();
         updateItem(e.getObject(), e.getObject());
+      }
+      catch (SWTException ex)
+      {
+        // Fallback: Wir versuchens mal synchronisiert
+        GUI.getDisplay().syncExec(new Runnable()
+        {
+
+          public void run()
+          {
+            try
+            {
+              updateItem(e.getObject(), e.getObject());
+            }
+            catch (Exception ignore)
+            {
+            }
+          }
+
+        });
+      }
     }
   }
 }
