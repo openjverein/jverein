@@ -74,7 +74,7 @@ import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -640,8 +640,8 @@ public class FormularAufbereitung
   @SuppressWarnings("resource")
   public void addZUGFeRD(Rechnung re, boolean mahnung) throws IOException
   {
-    Mitgliedskonto mk = re.getMitgliedskonto();
-    if (mk == null)
+    Sollbuchung sollb = re.getSollbuchung();
+    if (sollb == null)
     {
       return;
     }
@@ -654,9 +654,9 @@ public class FormularAufbereitung
 
     Invoice invoice = new Invoice()
         // Fälligkeitsdatum
-        .setDueDate(mk.getDatum())
+        .setDueDate(sollb.getDatum())
         // Lieferdatum
-        .setDeliveryDate(mk.getDatum())
+        .setDeliveryDate(sollb.getDatum())
         // Rechnungsdatum
         .setIssueDate(re.getDatum())
         // Rechnungsnummer
@@ -690,7 +690,7 @@ public class FormularAufbereitung
     {
       // Bereits gezahlt
       invoice.setTotalPrepaidAmount(
-          new BigDecimal(re.getMitgliedskonto().getIstSumme()));
+          new BigDecimal(re.getSollbuchung().getIstSumme()));
     }
 
     String id = re.getMitglied().getID();
@@ -723,7 +723,7 @@ public class FormularAufbereitung
     }
 
     // Sollbuchungspositionen
-    for (SollbuchungPosition sp : re.getMitgliedskonto()
+    for (SollbuchungPosition sp : re.getSollbuchung()
         .getSollbuchungPositionList())
     {
       BigDecimal betrag = new BigDecimal(sp.getNettobetrag());

@@ -36,14 +36,14 @@ import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
+import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -66,20 +66,20 @@ public class Kontoauszug
     settings.setStoreWhenRead(true);
   }
 
-  public Kontoauszug(Object object, MitgliedskontoControl control) throws Exception
+  public Kontoauszug(Object object, SollbuchungControl control) throws Exception
   {
     this();
     ArrayList<Mitglied> mitglieder = new ArrayList<>();
 
-    if (object == null && control.isSuchAdresstypActive() && 
-        control.getSuchAdresstyp(Mitgliedstyp.ALLE).getValue() != null)
+    if (object == null && control.isSuchMitgliedstypActive() && 
+        control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() != null)
     {
-      Adresstyp atyp = (Adresstyp) control.getSuchAdresstyp(Mitgliedstyp.ALLE).getValue();
+      Mitgliedstyp mt = (Mitgliedstyp) control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue();
       mitglieder = new MitgliedQuery(control).
-          get(Integer.parseInt(atyp.getID()), null);
+          get(Integer.parseInt(mt.getID()), null);
     }
-    else if (object == null && control.isSuchAdresstypActive() && 
-        control.getSuchAdresstyp(Mitgliedstyp.ALLE).getValue() == null)
+    else if (object == null && control.isSuchMitgliedstypActive() && 
+        control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() == null)
     {
       mitglieder = new MitgliedQuery(control).get(-1, null);
     }
@@ -196,7 +196,7 @@ public class Kontoauszug
     settings.setAttribute("lastdir", file.getParent());
   }
 
-  private boolean generiereMitglied(Mitglied m, MitgliedskontoControl control)
+  private boolean generiereMitglied(Mitglied m, SollbuchungControl control)
       throws RemoteException, DocumentException
   {
     DIFFERENZ diff = DIFFERENZ.EGAL;

@@ -145,7 +145,7 @@ public class BuchungslisteView extends AbstractView
     buttons.addButton(control.getStartAuswertungBuchungsjournalButton());
     buttons.addButton(control.getStartAuswertungEinzelbuchungenButton());
     buttons.addButton(control.getStartAuswertungSummenButton());
-    buttons.addButton(control.getStarteBuchungMitgliedskontoZuordnungAutomatischButton());
+    buttons.addButton(control.getStarteBuchungSollbuchungZuordnungAutomatischButton());
     buttons.addButton("Neu", new BuchungNeuAction(control), control, false,
         "document-new.png");
     buttons.paint(this.getParent());

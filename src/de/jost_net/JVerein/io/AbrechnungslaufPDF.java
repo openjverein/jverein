@@ -28,7 +28,7 @@ import com.itextpdf.text.Element;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
@@ -38,7 +38,7 @@ import de.willuhn.util.ApplicationException;
 public class AbrechnungslaufPDF
 {
 
-  public AbrechnungslaufPDF(DBIterator<Mitgliedskonto> it, final File file,
+  public AbrechnungslaufPDF(DBIterator<Sollbuchung> it, final File file,
       final Abrechnungslauf lauf) throws ApplicationException
   {
     try
@@ -66,17 +66,17 @@ public class AbrechnungslaufPDF
 
       while (it.hasNext())
       {
-        Mitgliedskonto mk = it.next();
+        Sollbuchung sollb = it.next();
 
-        reporter.addColumn(new JVDateFormatTTMMJJJJ().format(mk.getDatum()),
+        reporter.addColumn(new JVDateFormatTTMMJJJJ().format(sollb.getDatum()),
             Element.ALIGN_LEFT);
-        reporter.addColumn(Adressaufbereitung.getNameVorname(mk.getMitglied()),
+        reporter.addColumn(Adressaufbereitung.getNameVorname(sollb.getMitglied()),
             Element.ALIGN_LEFT);
-        reporter.addColumn(mk.getZweck1(), Element.ALIGN_LEFT);
+        reporter.addColumn(sollb.getZweck1(), Element.ALIGN_LEFT);
 
-        reporter.addColumn(mk.getBetrag());
-        reporter.addColumn(mk.getIstSumme());
-        reporter.addColumn(Zahlungsweg.get(mk.getZahlungsweg()),
+        reporter.addColumn(sollb.getBetrag());
+        reporter.addColumn(sollb.getIstSumme());
+        reporter.addColumn(Zahlungsweg.get(sollb.getZahlungsweg()),
             Element.ALIGN_LEFT);
       }
       reporter.closeTable();

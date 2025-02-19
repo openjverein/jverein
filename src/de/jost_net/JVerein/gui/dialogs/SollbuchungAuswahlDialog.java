@@ -27,12 +27,12 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -46,7 +46,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Ein Dialog, ueber den man ein Mitgliedskonto auswaehlen kann.
+ * Ein Dialog, ueber den man eine Sollbuchung auswaehlen kann.
  */
 public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 {
@@ -55,9 +55,9 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 
   private Object choosen = null;
 
-  private MitgliedskontoControl control;
+  private SollbuchungControl control;
 
-  private TablePart mitgliedskontolist = null;
+  private TablePart sollbuchunglist = null;
 
   private TablePart mitgliedlist = null;
 
@@ -78,7 +78,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     this.setSize(900, 700);
     this.setTitle("Sollbuchung Auswahl");
     this.buchung = buchung;
-    control = new MitgliedskontoControl(null);
+    control = new SollbuchungControl(null);
   }
 
   @Override
@@ -118,7 +118,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
-        control.refreshMitgliedskontoList1();
+        control.refreshSollbuchungenList();
       }
     }, null, false, "search.png");
     button1.addButton(suchen1);
@@ -130,7 +130,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
       @Override
       public void handleAction(Object context)
       {
-        if (context == null || !(context instanceof Mitgliedskonto))
+        if (context == null || !(context instanceof Sollbuchung))
         {
           return;
         }
@@ -139,15 +139,15 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         close();
       }
     };
-    mitgliedskontolist = control.getMitgliedskontoList(action, null, true);
-    mitgliedskontolist.paint(tabNurIst.getComposite());
+    sollbuchunglist = control.getSollbuchungenList(action, null, true);
+    sollbuchunglist.paint(tabNurIst.getComposite());
 
     TabGroup tabSollIst = new TabGroup(folder, "Sollbuchung erzeugen und Istbuchung zuordnen", true, 1);
     LabelGroup grSollIst = new LabelGroup(tabSollIst.getComposite(), "Filter");
     
     control.getSuchName2(true).setValue(buchung.getName());
     grSollIst.addLabelPair("Name", control.getSuchName2(false));
-    grSollIst.addInput(control.getSpezialSuche2());
+    grSollIst.addInput(control.getSpezialSuche());
     
     ButtonArea button2 = new ButtonArea();
     suchen2 = new MyButton("Suchen", new Action()
@@ -155,7 +155,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
-        control.refreshMitgliedskontoList2();
+        control.refreshMitgliederList();
       }
     }, null, false, "search.png");
     
@@ -177,7 +177,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         close();
       }
     };
-    mitgliedlist = control.getMitgliedskontoList2(action2, null);
+    mitgliedlist = control.getMitgliederList(action2, null);
     mitgliedlist.paint(tabSollIst.getComposite());
     
     ButtonArea b = new ButtonArea();
@@ -191,9 +191,9 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
       @Override
       public void handleAction(Object context)
       {
-        Object o = mitgliedskontolist.getSelection();
+        Object o = sollbuchunglist.getSelection();
 
-        if (o instanceof Mitgliedskonto || o instanceof Mitgliedskonto[])
+        if (o instanceof Sollbuchung || o instanceof Sollbuchung[])
         {
           choosen = o;
           abort = false;
@@ -240,7 +240,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
   }
 
   /**
-   * Liefert das ausgewaehlte Mitgliedskonto zurueck oder <code>null</code> wenn
+   * Liefert das ausgewaehlte Sollbuchung zurueck oder <code>null</code> wenn
    * der Abbrechen-Knopf gedrueckt wurde.
    * 
    * @see de.willuhn.jameica.gui.dialogs.AbstractDialog#getData()

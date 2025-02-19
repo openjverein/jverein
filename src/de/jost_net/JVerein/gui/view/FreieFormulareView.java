@@ -5,7 +5,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.FreieFormulareControl;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DialogInput;
@@ -30,7 +30,7 @@ public class FreieFormulareView extends AbstractView
 
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getSuchAdresstyp(Mitgliedstyp.ALLE));
+    left.addInput(control.getSuchMitgliedstyp(Mitgliedstypen.ALLE));
     left.addInput(control.getMitgliedStatus());
     left.addInput(control.getBeitragsgruppeAusw());
     left.addInput(control.getMailauswahl());

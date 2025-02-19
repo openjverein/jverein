@@ -23,7 +23,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.dialogs.RechnungDialog;
 import de.jost_net.JVerein.rmi.Formular;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -37,7 +37,7 @@ public class RechnungNeuAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Mitgliedskonto[] mks;
+    Sollbuchung[] sollbs;
     if (context instanceof TablePart)
     {
       TablePart tp = (TablePart) context;
@@ -52,7 +52,7 @@ public class RechnungNeuAction implements Action
         try
         {
           context = Einstellungen.getDBService()
-              .createObject(Mitgliedskonto.class, mkn.getID());
+              .createObject(Sollbuchung.class, mkn.getID());
         }
         catch (RemoteException e)
         {
@@ -60,13 +60,13 @@ public class RechnungNeuAction implements Action
         }
       }
     }
-    if (context instanceof Mitgliedskonto)
+    if (context instanceof Sollbuchung)
     {
-      mks = new Mitgliedskonto[] { (Mitgliedskonto) context };
+      sollbs = new Sollbuchung[] { (Sollbuchung) context };
     }
-    else if (context instanceof Mitgliedskonto[])
+    else if (context instanceof Sollbuchung[])
     {
-      mks = (Mitgliedskonto[]) context;
+      sollbs = (Sollbuchung[]) context;
     }
     else
     {
@@ -88,9 +88,9 @@ public class RechnungNeuAction implements Action
       }
       int erstellt = 0;
       int skip = 0;
-      for (Mitgliedskonto mk : mks)
+      for (Sollbuchung sollb : sollbs)
       {
-        if (mk.getRechnung() != null)
+        if (sollb.getRechnung() != null)
         {
           skip++;
           continue;
@@ -100,11 +100,11 @@ public class RechnungNeuAction implements Action
 
         rechnung.setFormular(formular);
         rechnung.setDatum(rechnungsdatum);
-        rechnung.fill(mk);
+        rechnung.fill(sollb);
         rechnung.store();
 
-        mk.setRechnung(rechnung);
-        mk.store();
+        sollb.setRechnung(rechnung);
+        sollb.store();
         erstellt++;
       }
       if (erstellt == 0)

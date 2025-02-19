@@ -21,7 +21,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
@@ -92,7 +92,7 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   {
     if ("sollbuchung".equals(arg0))
     {
-      return Mitgliedskonto.class;
+      return Sollbuchung.class;
     }
     return null;
   }
@@ -216,9 +216,9 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   }
 
   @Override
-  public Mitgliedskonto getSollbuchung() throws RemoteException
+  public Sollbuchung getSollbuchung() throws RemoteException
   {
-    return (Mitgliedskonto) getAttribute("sollbuchung");
+    return (Sollbuchung) getAttribute("sollbuchung");
   }
 
   @Override

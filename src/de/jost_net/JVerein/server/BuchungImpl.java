@@ -32,7 +32,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -63,13 +63,13 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   @Override
   protected String getTableName()
   {
-    return "buchung";
+    return TABLE_NAME;
   }
 
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return PRIMARY_ATTRIBUTE;
   }
 
   @Override
@@ -507,40 +507,40 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   }
 
   @Override
-  public Mitgliedskonto getMitgliedskonto() throws RemoteException
+  public Sollbuchung getSollbuchung() throws RemoteException
   {
-    Object o = super.getAttribute("mitgliedskonto");
+    Object o = super.getAttribute(SOLLBUCHUNG);
     if (o == null)
     {
       return null;
     }
-    Cache cache = Cache.get(Mitgliedskonto.class, false);
-    return (Mitgliedskonto) cache.get(o);
+    Cache cache = Cache.get(Sollbuchung.class, false);
+    return (Sollbuchung) cache.get(o);
   }
 
   @Override
-  public Long getMitgliedskontoID() throws RemoteException
+  public Long getSollbuchungID() throws RemoteException
   {
-    return (Long) super.getAttribute("mitgliedskonto");
+    return (Long) super.getAttribute(SOLLBUCHUNG);
   }
 
   @Override
-  public void setMitgliedskontoID(Long mitgliedskontoID) throws RemoteException
+  public void setSollbuchungID(Long sollbuchungID) throws RemoteException
   {
-    setAttribute("mitgliedskonto", mitgliedskontoID);
+    setAttribute(SOLLBUCHUNG, sollbuchungID);
   }
 
   @Override
-  public void setMitgliedskonto(Mitgliedskonto mitgliedskonto)
+  public void setSollbuchung(Sollbuchung sollbuchung)
       throws RemoteException
   {
-    if (mitgliedskonto != null)
+    if (sollbuchung != null)
     {
-      setAttribute("mitgliedskonto", Long.valueOf(mitgliedskonto.getID()));
+      setAttribute(SOLLBUCHUNG, Long.valueOf(sollbuchung.getID()));
     }
     else
     {
-      setAttribute("mitgliedskonto", null);
+      setAttribute(SOLLBUCHUNG, null);
     }
   }
 
@@ -685,9 +685,9 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     map.put(BuchungVar.KONTONUMMER.getName(),
         this.getKonto() != null ? this.getKonto().getNummer() : "");
     map.put(BuchungVar.MITGLIEDSKONTO.getName(),
-        this.getMitgliedskonto() != null
+        this.getSollbuchung() != null
         ? Adressaufbereitung
-            .getNameVorname(this.getMitgliedskonto().getMitglied())
+            .getNameVorname(this.getSollbuchung().getMitglied())
             : "");
     map.put(BuchungVar.NAME.getName(), this.getName());
     map.put(BuchungVar.ZWECK1.getName(),
@@ -720,8 +720,8 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     if ("konto".equals(fieldName))
       return getKonto();
 
-    if ("mitgliedskonto".equals(fieldName))
-      return getMitgliedskonto();
+    if (SOLLBUCHUNG.equals(fieldName))
+      return getSollbuchung();
 
     if ("document".equals(fieldName))
     {

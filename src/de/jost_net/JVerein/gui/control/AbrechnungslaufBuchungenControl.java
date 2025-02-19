@@ -30,7 +30,7 @@ import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.io.AbrechnungslaufPDF;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -138,33 +138,33 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
     //
   }
 
-  private DBIterator<Mitgliedskonto> getIterator(int lauf)
+  private DBIterator<Sollbuchung> getIterator(int lauf)
       throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
-    DBIterator<Mitgliedskonto> it = service.createList(Mitgliedskonto.class);
+    DBIterator<Sollbuchung> sollbIt = service.createList(Sollbuchung.class);
 
-    it.addFilter("ABRECHNUNGSLAUF = (?)", lauf);
-    it.setOrder("ORDER BY mitglied");
-    return it;
+    sollbIt.addFilter(Sollbuchung.ABRECHNUNGSLAUF + " = (?)", lauf);
+    sollbIt.setOrder("ORDER BY " + Sollbuchung.MITGLIED);
+    return sollbIt;
   }
 
   public Part getSollbuchungsList() throws RemoteException
   {
-    DBIterator<Mitgliedskonto> it = getIterator((Integer) lauf.getValue());
+    DBIterator<Sollbuchung> sollbIt = getIterator((Integer) lauf.getValue());
     if (SollbuchungsList == null)
     {
-      SollbuchungsList = new TablePart(it, new SollbuchungEditAction());
-      SollbuchungsList.addColumn("Fälligkeit", "datum",
+      SollbuchungsList = new TablePart(sollbIt, new SollbuchungEditAction());
+      SollbuchungsList.addColumn("Fälligkeit", Sollbuchung.DATUM,
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
-      SollbuchungsList.addColumn("Mitglied", "mitglied");
-      SollbuchungsList.addColumn("Zweck", "zweck1");
-      SollbuchungsList.addColumn("Betrag", "betrag",
+      SollbuchungsList.addColumn("Mitglied", Sollbuchung.MITGLIED);
+      SollbuchungsList.addColumn("Zweck", Sollbuchung.ZWECK1);
+      SollbuchungsList.addColumn("Betrag", Sollbuchung.BETRAG,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      SollbuchungsList.addColumn("Eingang", "istsumme",
+      SollbuchungsList.addColumn("Eingang", Sollbuchung.ISTSUMME,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      SollbuchungsList.addColumn("Zahlungsweg", "zahlungsweg",
+      SollbuchungsList.addColumn("Zahlungsweg", Sollbuchung.ZAHLUNGSWEG,
           new ZahlungswegFormatter(), false, Column.ALIGN_LEFT);
       SollbuchungsList.setRememberColWidths(true);
       SollbuchungsList.setRememberOrder(true);
@@ -174,9 +174,9 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
     else
     {
       SollbuchungsList.removeAll();
-      while (it.hasNext())
+      while (sollbIt.hasNext())
       {
-        SollbuchungsList.addItem(it.next());
+        SollbuchungsList.addItem(sollbIt.next());
       }
       SollbuchungsList.sort();
     }
@@ -202,7 +202,7 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
 
     try
     {
-      DBIterator<Mitgliedskonto> it = getIterator((Integer) lauf.getValue());
+      DBIterator<Sollbuchung> sollbIt = getIterator((Integer) lauf.getValue());
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
@@ -226,7 +226,7 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
 
-      auswertungPDF(it, file, abrl);
+      auswertungPDF(sollbIt, file, abrl);
     }
     catch (RemoteException e)
     {
@@ -234,7 +234,7 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
     }
   }
 
-  private void auswertungPDF(final DBIterator<Mitgliedskonto> it,
+  private void auswertungPDF(final DBIterator<Sollbuchung> it,
       final File file, final Abrechnungslauf lauf)
   {
     BackgroundTask t = new BackgroundTask()

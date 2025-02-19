@@ -21,7 +21,7 @@ import de.jost_net.JVerein.gui.action.MitgliedstypAction;
 import de.jost_net.JVerein.gui.action.MitgliedstypDefaultAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedstypControl;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -37,17 +37,19 @@ public class MitgliedstypenListView extends AbstractView
 
     MitgliedstypControl control = new MitgliedstypControl(this);
 
-    control.getAdresstypList().paint(this.getParent());
+    control.getMitgliedstypList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ADRESSTYPEN, false, "question-circle.png");
     buttons.addButton("Neu", new MitgliedstypAction(), null, false, "document-new.png");
 
-    DBIterator<Adresstyp> it = Einstellungen.getDBService()
-        .createList(Adresstyp.class);
-    it.addFilter("jvereinid >= 1 and jvereinid <= 2");
-    if (it.size() == 0)
+    DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
+        .createList(Mitgliedstyp.class);
+    mtIt.addFilter(Mitgliedstyp.JVEREINID + " >= " + Mitgliedstyp.MITGLIED
+        + " AND " + Mitgliedstyp.JVEREINID + " <= "
+        + Mitgliedstyp.SPENDER);
+    if (mtIt.size() == 0)
     {
       buttons.addButton("Default-Mitgliedstypen einrichten",
           new MitgliedstypDefaultAction());

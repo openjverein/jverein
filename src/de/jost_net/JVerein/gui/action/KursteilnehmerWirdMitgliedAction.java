@@ -21,6 +21,7 @@ import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -40,7 +41,7 @@ public class KursteilnehmerWirdMitgliedAction implements Action
     {
       Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
           Mitglied.class, null);
-      m.setAdresstyp(1);
+      m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
       m.setAnrede(k.getAnrede());
       m.setBic(k.getBic());
       m.setEmail(k.getEmail());

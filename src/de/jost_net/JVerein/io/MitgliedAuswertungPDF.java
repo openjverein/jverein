@@ -29,11 +29,11 @@ import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.view.IAuswertung;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.Tools.EigenschaftenTool;
@@ -48,7 +48,7 @@ public class MitgliedAuswertungPDF implements IAuswertung
 
   private MitgliedControl control;
 
-  private Adresstyp adresstyp;
+  private Mitgliedstyp mitgliedstyp;
 
   private String subtitle = "";
 
@@ -71,16 +71,16 @@ public class MitgliedAuswertungPDF implements IAuswertung
     zusatzfeld = control.getAdditionalparamprefix1();
     zusatzfelder = control.getAdditionalparamprefix2();
     
-    if (control.isSuchAdresstypActive())
+    if (control.isSuchMitgliedstypActive())
     {
-      adresstyp = (Adresstyp) control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
+      mitgliedstyp = (Mitgliedstyp) control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
     }
     else
     {
-      DBIterator<Adresstyp> it = Einstellungen.getDBService()
-          .createList(Adresstyp.class);
-      it.addFilter("jvereinid=1");
-      adresstyp = (Adresstyp) it.next();
+      DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
+          .createList(Mitgliedstyp.class);
+      mtIt.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
+      mitgliedstyp = (Mitgliedstyp) mtIt.next();
     }
 
     if (control.isMitgliedStatusAktiv())
@@ -194,7 +194,7 @@ public class MitgliedAuswertungPDF implements IAuswertung
     {
       FileOutputStream fos = new FileOutputStream(file);
 
-      Reporter report = new Reporter(fos, adresstyp.getBezeichnungPlural(),
+      Reporter report = new Reporter(fos, mitgliedstyp.getBezeichnungPlural(),
           subtitle, list.size(), 50, 10, 20, 25);
 
       report.addHeaderColumn("Name", Element.ALIGN_CENTER, 100,
@@ -203,7 +203,7 @@ public class MitgliedAuswertungPDF implements IAuswertung
           130, BaseColor.LIGHT_GRAY);
       report.addHeaderColumn("Geburts- datum", Element.ALIGN_CENTER, 30,
           BaseColor.LIGHT_GRAY);
-      if (adresstyp.getJVereinid() == 1)
+      if (mitgliedstyp.getJVereinid() == Mitgliedstyp.MITGLIED)
       {
         report.addHeaderColumn("Eintritt / \nAustritt / \nKündigung"
             + (Einstellungen.getEinstellung().getSterbedatum()
@@ -270,7 +270,7 @@ public class MitgliedAuswertungPDF implements IAuswertung
         {
           zelle += "\n" + new JVDateFormatTTMMJJJJ().format(m.getSterbetag());
         }
-        if (adresstyp.getJVereinid() == 1)
+        if (mitgliedstyp.getJVereinid() == Mitgliedstyp.MITGLIED)
         {
           report.addColumn(zelle, Element.ALIGN_LEFT);
         }
@@ -309,7 +309,7 @@ public class MitgliedAuswertungPDF implements IAuswertung
       report.closeTable();
 
       report.add(new Paragraph(String.format("Anzahl %d: %s", list.size(),
-          adresstyp.getBezeichnungPlural()), Reporter.getFreeSans(8)));
+          mitgliedstyp.getBezeichnungPlural()), Reporter.getFreeSans(8)));
 
       report.add(new Paragraph("Parameter", Reporter.getFreeSans(12)));
 

@@ -23,6 +23,7 @@ import java.util.List;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedAddress;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.hbci.rmi.Address;
 import de.willuhn.jameica.hbci.rmi.Addressbook;
@@ -49,8 +50,9 @@ public class JVereinAdressbuch implements Addressbook
     while (it.hasNext())
     {
       Mitglied m = (Mitglied) it.next();
-      String kategorie = m.getAdresstyp().getBezeichnung();
-      if (m.getAdresstyp().getID().equals("1"))
+      String kategorie = m.getMitgliedstyp().getBezeichnung();
+      if (m.getMitgliedstyp().getID()
+          .equals(String.valueOf(Mitgliedstyp.MITGLIED)))
       {
         kategorie = m.getBeitragsgruppe().getBezeichnung();
       }

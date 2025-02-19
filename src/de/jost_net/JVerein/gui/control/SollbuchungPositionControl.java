@@ -31,7 +31,7 @@ import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -215,7 +215,7 @@ public class SollbuchungPositionControl extends AbstractControl
       pos.store();
       // Betrag in Sollbuchung neu berechnen
       Double betrag = 0.0;
-      Mitgliedskonto sollb = pos.getSollbuchung();
+      Sollbuchung sollb = pos.getSollbuchung();
       ArrayList<SollbuchungPosition> sollbpList = sollb
           .getSollbuchungPositionList();
       for (SollbuchungPosition sollp : sollbpList)

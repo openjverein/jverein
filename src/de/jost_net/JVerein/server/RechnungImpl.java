@@ -26,9 +26,10 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.db.AbstractDBObject;
@@ -248,8 +249,9 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
     }
     DBService service = Einstellungen.getDBService();
     String sql = "select sum(buchung.betrag) from buchung "
-        + "join mitgliedskonto on mitgliedskonto.id = buchung.mitgliedskonto "
-        + "where mitgliedskonto.rechnung = "
+        + "join " + Sollbuchung.TABLE_NAME + " on " + Sollbuchung.TABLE_NAME_ID
+        + " = " + Buchung.SOLLBUCHUNG + " where " + Sollbuchung.T_RECHNUNG
+        + " = "
         + this.getID();
 
     ResultSetExtractor rs = new ResultSetExtractor()
@@ -324,14 +326,14 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
   }
   
   @Override
-  public Mitgliedskonto getMitgliedskonto() throws RemoteException
+  public Sollbuchung getSollbuchung() throws RemoteException
   {
-    DBIterator<Mitgliedskonto> it = Einstellungen.getDBService()
-        .createList(Mitgliedskonto.class);
-    it.addFilter("mitgliedskonto.rechnung = ?", getID());
-    if (it.hasNext())
+    DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
+        .createList(Sollbuchung.class);
+    sollbIt.addFilter(Sollbuchung.RECHNUNG + " = ?", getID());
+    if (sollbIt.hasNext())
     {
-      return it.next();
+      return sollbIt.next();
     }
     return null;
   }
@@ -343,9 +345,10 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
     ArrayList<SollbuchungPosition> sps = new ArrayList<>();
     DBIterator<SollbuchungPosition> it = Einstellungen.getDBService()
         .createList(SollbuchungPosition.class);
-    it.join("mitgliedskonto");
-    it.addFilter("mitgliedskonto.id = sollbuchungposition.sollbuchung");
-    it.addFilter("mitgliedskonto.rechnung = ?", getID());
+    it.join(Sollbuchung.TABLE_NAME);
+    it.addFilter(
+        Sollbuchung.TABLE_NAME_ID + " = sollbuchungposition.sollbuchung");
+    it.addFilter(Sollbuchung.T_RECHNUNG + " = ?", getID());
     it.setOrder("ORDER BY datum");
     while (it.hasNext())
     {
@@ -355,10 +358,10 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
   }
 
   @Override
-  public void fill(Mitgliedskonto mk)
+  public void fill(Sollbuchung sollb)
       throws RemoteException, ApplicationException
   {
-    Mitglied mitglied = mk.getMitglied();
+    Mitglied mitglied = sollb.getMitglied();
 
     if (mitglied == null)
     {
@@ -402,8 +405,8 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
     setMandatID(mitglied.getMandatID());
     setBIC(mitglied.getBic());
     setIBAN(mitglied.getIban());
-    setZahlungsweg(mk.getZahlungsweg());
-    setBetrag(mk.getBetrag());
+    setZahlungsweg(sollb.getZahlungsweg());
+    setBetrag(sollb.getBetrag());
   }
 
   @Override

@@ -46,7 +46,8 @@ import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
@@ -588,7 +589,7 @@ public class Migration
       final Map<String, Integer> beitragsGruppen)
       throws RemoteException, SQLException, ApplicationException, ParseException
   {
-    m.setAdresstyp(1);
+    m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
 
     /*
      * necessary columns
@@ -892,24 +893,24 @@ public class Migration
       m.setZahlungsrhythmus(Integer.valueOf(12));
     }
 
-    String adresstyp = getResultFrom(results, InternalColumns.ADRESSTYP);
-    if (adresstyp.length() > 0)
+    String mitgliedstyp = getResultFrom(results, InternalColumns.ADRESSTYP);
+    if (mitgliedstyp.length() > 0)
     {
-      if (adresstyp.matches("[0-9]+"))
+      if (mitgliedstyp.matches("[0-9]+"))
       {
-        m.setAdresstyp(Integer.parseInt(adresstyp));
+        m.setMitgliedstyp(Integer.parseInt(mitgliedstyp));
       }
       else
       {
         progMonitor.log(String.format(
             "Mitgliedstyp bei: %s ist entweder leer oder besteht nicht nur aus Zahlen, setze auf 1 (Mitglied)",
             Adressaufbereitung.getNameVorname(m)));
-        m.setAdresstyp(Integer.valueOf(1));
+        m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
       }
     }
     else
     { // Default value
-      m.setAdresstyp(Integer.valueOf(1));
+      m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
     }
 
     m.setVermerk1(getResultFrom(results, InternalColumns.VERMERKA));
@@ -1090,13 +1091,13 @@ public class Migration
         Mitgliedfoto m = listmitgliedfoto.next();
         m.delete();
       }
-      // Mitgliedskonto
-      DBIterator<Mitgliedskonto> listmitgliedskonten = Einstellungen
-          .getDBService().createList(Mitgliedskonto.class);
-      while (listmitgliedskonten.hasNext())
+      // Sollbuchung
+      DBIterator<Sollbuchung> sollbIt = Einstellungen
+          .getDBService().createList(Sollbuchung.class);
+      while (sollbIt.hasNext())
       {
-        Mitgliedskonto m = listmitgliedskonten.next();
-        m.delete();
+        Sollbuchung sollb = sollbIt.next();
+        sollb.delete();
       }
       // Spendenbescheinigung
       DBIterator<Spendenbescheinigung> listspendenbescheinigungen = Einstellungen

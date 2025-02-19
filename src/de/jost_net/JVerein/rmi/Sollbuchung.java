@@ -23,8 +23,52 @@ import java.util.List;
 
 import de.willuhn.datasource.rmi.DBObject;
 
-public interface Mitgliedskonto extends DBObject
+public interface Sollbuchung extends DBObject
 {
+  public static final String TABLE_NAME = "mitgliedskonto";
+
+  public static final String TABLE_NAME_ID = "mitgliedskonto.id";
+
+  public static final String PRIMARY_ATTRIBUTE = "mitglied";
+
+  public static final String ABRECHNUNGSLAUF = "abrechnungslauf";
+
+  public static final String T_ABRECHNUNGSLAUF = TABLE_NAME + "."
+      + ABRECHNUNGSLAUF;
+
+  public static final String MITGLIED = "mitglied";
+
+  public static final String T_MITGLIED = TABLE_NAME + "." + MITGLIED;
+
+  public static final String ZAHLER = "zahler";
+
+  public static final String T_ZAHLER = TABLE_NAME + "." + ZAHLER;
+
+  public static final String DATUM = "datum";
+
+  public static final String T_DATUM = TABLE_NAME + "." + DATUM;
+
+  public static final String ZWECK1 = "zweck1";
+
+  public static final String T_ZWECK1 = TABLE_NAME + "." + ZWECK1;
+
+  public static final String ZAHLUNGSWEG = "zahlungsweg";
+
+  public static final String T_ZAHLUNGSWEG = TABLE_NAME + "." + ZAHLUNGSWEG;
+
+  public static final String BETRAG = "betrag";
+
+  public static final String T_BETRAG = TABLE_NAME + "." + BETRAG;
+
+  public static final String ISTSUMME = "istsumme";
+
+  public static final String T_ISTSUMME = TABLE_NAME + "." + ISTSUMME;
+
+  public static final String RECHNUNG = "rechnung";
+
+  public static final String T_RECHNUNG = TABLE_NAME + "." + RECHNUNG;
+
+
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException;
 
   public void setAbrechnungslauf(Abrechnungslauf abrechnungslauf)

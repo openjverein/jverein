@@ -258,7 +258,7 @@ public class FormularAnzeigeAction implements Action
       map.put(SpendenbescheinigungVar.UNTERLAGENWERTERMITTUNG.getName(),
           "Geeignete Unterlagen, die zur Wertermittlung gedient haben, z. B. Rechnung, Gutachten, liegen vor.");
 
-      // Mitgliedskonto
+      // Sollbuchung
 
       ArrayList<Date> buda = new ArrayList<>();
       ArrayList<String> zg = new ArrayList<>();
