@@ -25,4 +25,5 @@ runs:
 
   - name: Build Jameica and Hibiscus
     if: steps.restore-cache.outputs.cache-hit != 'true'
+    shell: bash
     run: ant -noinput -buildfile build/build.xml build-dependencies
