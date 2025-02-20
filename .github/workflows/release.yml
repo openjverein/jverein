@@ -15,7 +15,7 @@ jobs:
         path: jverein
 
     - name: Setup
-      uses: ./.github/actions/build-dependencies
+      uses: ./jverein/.github/actions/build-dependencies
 
     - name: Build openjverein plugin
       id: openjverein
