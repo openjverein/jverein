@@ -235,4 +235,7 @@ public interface Mitglied extends DBObject, ILastschrift
 
   public boolean checkSEPA() throws RemoteException, ApplicationException;
 
+  public String getMandatID() throws RemoteException;
+
+  public void setMandatID(String mandatid) throws RemoteException;
 }
