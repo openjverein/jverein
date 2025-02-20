@@ -179,13 +179,11 @@
       <param name="name" value="jameica"/>
       <param name="url" value="${jameica.url}"/>
       <param name="version" value="${jameica.version}"/>
-      <param name="lib.target" value="lib"/>
     </antcall>
     <antcall target="build-package">
       <param name="name" value="hibiscus"/>
       <param name="url" value="${hibiscus.url}"/>
       <param name="version" value="${hibiscus.version}"/>
-      <param name="lib.target" value="nightly"/>
     </antcall>
   </target>
 
@@ -203,8 +201,7 @@
 
     <!-- Run build -->
     <ant dir="../${name}" antfile="build/build.xml" inheritall="false">
-      <target name="jar"/>
-      <target name="${lib.target}"/>
+      <target name="nightly"/>
     </ant>
   </target>
 
