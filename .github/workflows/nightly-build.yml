@@ -16,8 +16,6 @@ jobs:
     steps:
     - name: Checkout openjverein
       uses: actions/checkout@v4
-      with:
-        path: jverein
 
     - name: Setup
       uses: ./.github/build-dependencies
@@ -25,7 +23,7 @@ jobs:
     - name: Build openjverein plugin
       id: openjverein
       run: |
-        ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml nightly)
+        ant_output=$(ant -e -q -noinput -buildfile build/build.xml nightly)
         echo ${ant_output}
 
         ssa="SELECTED_VERSION="

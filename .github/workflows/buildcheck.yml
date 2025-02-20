@@ -20,11 +20,9 @@ jobs:
     steps:
     - name: Checkout openjverein
       uses: actions/checkout@v4
-      with:
-        path: jverein
 
     - name: Setup
       uses: ./.github/build-dependencies
 
     - name: Build openjverein plugin
-      run: ant -noinput -buildfile jverein/build/build.xml compile
+      run: ant -noinput -buildfile build/build.xml compile
