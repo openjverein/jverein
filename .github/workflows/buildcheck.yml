@@ -21,6 +21,9 @@ jobs:
     - name: Checkout openjverein
       uses: actions/checkout@v4
 
+    - name: Debug
+      run: tree .github
+
     - name: Setup
       uses: ./.github/build-dependencies/actions.yml
 
