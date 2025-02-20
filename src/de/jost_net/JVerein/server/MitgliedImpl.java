@@ -199,6 +199,14 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       {
         throw new ApplicationException("Bitte IBAN eingeben");
       }
+      if (getMandatID() == null || getMandatID().isEmpty())
+      {
+        throw new ApplicationException("Bitte Mandats-ID eingeben");
+      }
+      else if (getMandatID().length() > 20)
+      {
+        throw new ApplicationException("Mandats-ID hat mehr als 20 Stellen");
+      }
       if (getMandatDatum() == Einstellungen.NODATE)
       {
         throw new ApplicationException("Bitte Datum des Mandat eingeben");
@@ -664,10 +672,20 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       return getExterneMitgliedsnummer() + "-" + getMandatVersion();
     }
-    else
+    else if (sepaMandatIdSource == SepaMandatIdSource.DBID)
     {
       return getID() + "-" + getMandatVersion();
     }
+    else
+    {
+      return (String) getAttribute("mandatid");
+    }
+  }
+
+  @Override
+  public void setMandatID(String mandatid) throws RemoteException
+  {
+    setAttribute("mandatid", mandatid);
   }
 
   @Override

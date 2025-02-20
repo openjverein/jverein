@@ -29,6 +29,8 @@ public class SepaMandatIdSource
 
   public static final int EXTERNE_MITGLIEDSNUMMER = 2;
 
+  public static final int INDIVIDUELL = 3;
+
   private int mandatIDSource;
 
   public SepaMandatIdSource(int key)
@@ -54,6 +56,8 @@ public class SepaMandatIdSource
         return "Mitgliedsnummer (default)";
       case SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER:
         return "Externe Mitgliedsnummer";
+      case SepaMandatIdSource.INDIVIDUELL:
+        return "Individuelle ID";
       default:
         return null;
     }
@@ -64,6 +68,7 @@ public class SepaMandatIdSource
     ArrayList<SepaMandatIdSource> ret = new ArrayList<>();
     ret.add(new SepaMandatIdSource(DBID));
     ret.add(new SepaMandatIdSource(EXTERNE_MITGLIEDSNUMMER));
+    ret.add(new SepaMandatIdSource(INDIVIDUELL));
     return ret;
   }
 
