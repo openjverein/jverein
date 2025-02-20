@@ -20,7 +20,7 @@ jobs:
         path: jverein
 
     - name: Setup
-      uses: ./.github/workflows/reusable-build.yml
+      uses: ./.github/build-dependencies
 
     - name: Build openjverein plugin
       id: openjverein
