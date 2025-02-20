@@ -10,11 +10,6 @@ runs:
       distribution: 'temurin'
       architecture: x64
 
-  - name: Checkout openjverein
-    uses: actions/checkout@v4
-    with:
-      path: jverein
-
   - name: Restore build dependencies
     id: restore-cache
     uses: actions/cache@v4

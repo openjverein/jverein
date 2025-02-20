@@ -9,8 +9,14 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout openjverein
+      uses: actions/checkout@v4
+      with:
+        path: jverein
+
     - name: Setup
       uses: ./.github/workflows/reusable-build.yml
+
     - name: Build openjverein plugin
       id: openjverein
       run: |
