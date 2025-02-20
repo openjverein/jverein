@@ -11,25 +11,11 @@ on:
       - '**'
 
 jobs:
-  call-reusable-workflow:
-    uses: ./.github/workflows/reusable-build.yml
-
   nightly-build:
-    needs: call-reusable-workflow
     runs-on: ubuntu-latest
     steps:
-    - name: Set up JDK for x64
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        architecture: x64
-
-    - name: Checkout openjverein
-      uses: actions/checkout@v4
-      with:
-        path: jverein
-
+    - name: Setup
+      uses: ./.github/workflows/reusable-build.yml
     - name: Restore build dependencies
       id: restore-cache
       uses: actions/cache/restore@v4

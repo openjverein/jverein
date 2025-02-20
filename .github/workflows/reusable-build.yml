@@ -1,37 +1,33 @@
 name: Reusable build steps
+description: Setups the build environment and builds Jameica and Hibiscus
+runs:
+  using: "composite"
+  steps:
+  - name: Set up JDK for x64
+    uses: actions/setup-java@v4
+    with:
+      java-version: '17'
+      distribution: 'temurin'
+      architecture: x64
 
-on:
-  workflow_call:
+  - name: Checkout openjverein
+    uses: actions/checkout@v4
+    with:
+      path: jverein
 
-jobs:
-  setup-java-and-cache:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Set up JDK for x64
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        architecture: x64
+  - name: Restore build dependencies
+    id: restore-cache
+    uses: actions/cache@v4
+    with:
+      path: |
+        jameica/bin/
+        jameica/lib/
+        jameica/releases/jameica-lib.jar
+        hibiscus/bin/
+        hibiscus/lib/
+        hibiscus/releases/hibiscus-lib.jar
+      key: ${{ hashFiles('jverein/build/build.properties', 'jverein/build/build.xml') }}
 
-    - name: Checkout openjverein
-      uses: actions/checkout@v4
-      with:
-        path: jverein
-
-    - name: Restore build dependencies
-      id: restore-cache
-      uses: actions/cache@v4
-      with:
-        path: |
-          jameica/bin/
-          jameica/lib/
-          jameica/releases/jameica-lib.jar
-          hibiscus/bin/
-          hibiscus/lib/
-          hibiscus/releases/hibiscus-lib.jar
-        key: ${{ hashFiles('jverein/build/build.properties', 'jverein/build/build.xml') }}
-
-    - name: Build Jameica and Hibiscus
-      if: steps.restore-cache.outputs.cache-hit != 'true'
-      run: ant -noinput -buildfile jverein/build/build.xml build-dependencies
+  - name: Build Jameica and Hibiscus
+    if: steps.restore-cache.outputs.cache-hit != 'true'
+    run: ant -noinput -buildfile jverein/build/build.xml build-dependencies
