@@ -21,11 +21,11 @@ jobs:
     - name: Checkout openjverein
       uses: actions/checkout@v4
 
-    - name: Debug
-      run: tree .github
-
     - name: Setup
       uses: ./.github/actions/build-dependencies
+
+    - name: Debug
+      run: ls -la
 
     - name: Build openjverein plugin
       run: ant -noinput -buildfile build/build.xml compile

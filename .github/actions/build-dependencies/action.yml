@@ -12,7 +12,7 @@ runs:
 
   - name: Restore build dependencies
     id: restore-cache
-    uses: actions/cache@v4
+    uses: actions/cache/restore@v4
     with:
       path: |
         jameica/bin/
@@ -27,3 +27,17 @@ runs:
     if: steps.restore-cache.outputs.cache-hit != 'true'
     shell: bash
     run: ant -noinput -buildfile build/build.xml build-dependencies
+
+  - name: Save build dependencies
+    id: save-cache
+    if: steps.restore-cache.outputs.cache-hit != 'true'
+    uses: actions/cache/save@v4
+    with:
+      path: |
+        jameica/bin/
+        jameica/lib/
+        jameica/releases/jameica-lib.jar
+        hibiscus/bin/
+        hibiscus/lib/
+        hibiscus/releases/hibiscus-lib.jar
+      key: ${{ hashFiles('build/build.properties', 'build/build.xml') }}
