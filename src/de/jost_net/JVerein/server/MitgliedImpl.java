@@ -89,7 +89,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public String getPrimaryAttribute()
   {
-    return "namevorname";
+    return "idnamevorname";
   }
 
   @Override
@@ -1245,6 +1245,10 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     if (fieldName.equals("idint"))
     {
       return Integer.valueOf(getID());
+    }
+    if (fieldName.equals("idnamevorname"))
+    {
+      return Adressaufbereitung.getIdNameVorname(this);
     }
     if (fieldName.equals("namevorname"))
     {
