@@ -440,9 +440,18 @@ public class ZusatzbetragControl extends AbstractControl
           while (it.hasNext())
           {
             Zusatzbetrag z = (Zusatzbetrag) it.next();
-            reporter.addColumn(
-                Adressaufbereitung.getNameVorname(z.getMitglied()),
-                Element.ALIGN_LEFT);
+            if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+            {
+              reporter.addColumn(
+                  Adressaufbereitung.getIdNameVorname(z.getMitglied()),
+                  Element.ALIGN_LEFT);
+            }
+            else
+            {
+              reporter.addColumn(
+                  Adressaufbereitung.getNameVorname(z.getMitglied()),
+                  Element.ALIGN_LEFT);
+            }
             reporter.addColumn(z.getStartdatum(), Element.ALIGN_LEFT);
             reporter.addColumn(z.getFaelligkeit(), Element.ALIGN_LEFT);
             reporter.addColumn(z.getAusfuehrung(), Element.ALIGN_LEFT);

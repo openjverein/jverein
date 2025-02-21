@@ -226,7 +226,14 @@ public class SpendenbescheinigungControl extends DruckMailControl
     Mitglied m = getSpendenbescheinigung().getMitglied();
     if (m != null)
     {
-      text = Adressaufbereitung.getVornameName(m);
+      if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+      {
+        text = Adressaufbereitung.getIdNameVorname(m);
+      }
+      else
+      {
+        text = Adressaufbereitung.getNameVorname(m);
+      }
     }
     mitglied = new TextInput(text);
     mitglied.disable();

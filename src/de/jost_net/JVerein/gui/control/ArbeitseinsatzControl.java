@@ -315,8 +315,16 @@ public class ArbeitseinsatzControl extends FilterControl
           while (it.hasNext())
           {
             ArbeitseinsatzZeile z = (ArbeitseinsatzZeile) it.next();
-            reporter.addColumn((String) z.getAttribute("namevorname"),
-                Element.ALIGN_LEFT);
+            if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+            {
+              reporter.addColumn((String) z.getAttribute("idnamevorname"),
+                  Element.ALIGN_LEFT);
+            }
+            else
+            {
+              reporter.addColumn((String) z.getAttribute("namevorname"),
+                  Element.ALIGN_LEFT);
+            }
             reporter.addColumn((Double) z.getAttribute("soll"));
             reporter.addColumn((Double) z.getAttribute("ist"));
             reporter.addColumn((Double) z.getAttribute("differenz"));

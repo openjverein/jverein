@@ -64,8 +64,7 @@ public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
       {
         arbeitseinsatzueberpruefungList = new TablePart(zeile,
             new MitgliedDetailAction());
-        arbeitseinsatzueberpruefungList.addColumn("Name, Vorname",
-            "namevorname");
+        arbeitseinsatzueberpruefungList.addColumn("Name", "mitglied");
         arbeitseinsatzueberpruefungList.addColumn("Sollstunden", "soll",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
