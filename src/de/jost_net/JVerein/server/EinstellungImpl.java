@@ -2234,4 +2234,17 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("geprueftsynchronisieren", geprueftsynchronisieren);
   }
+
+  @Override
+  public boolean getMitgliedsnummerAnzeigen() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("nummeranzeigen"));
+  }
+
+  @Override
+  public void setMitgliedsnummerAnzeigen(boolean nummeranzeigen)
+      throws RemoteException
+  {
+    setAttribute("nummeranzeigen", nummeranzeigen);
+  }
 }

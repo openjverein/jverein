@@ -89,7 +89,18 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public String getPrimaryAttribute()
   {
-    return "idnamevorname";
+    try
+    {
+      if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+      {
+        return "idnamevorname";
+      }
+    }
+    catch (RemoteException e)
+    {
+      //
+    }
+    return "namevorname";
   }
 
   @Override

@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.formatter;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.formatter.Formatter;
@@ -32,7 +33,14 @@ public class MitgliedskontoFormatter implements Formatter
       Mitgliedskonto mk = (Mitgliedskonto) o;
       try
       {
-        return Adressaufbereitung.getNameVorname(mk.getMitglied());
+        if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+        {
+          return Adressaufbereitung.getIdNameVorname(mk.getMitglied());
+        }
+        else
+        {
+          return Adressaufbereitung.getNameVorname(mk.getMitglied());
+        }
       }
       catch (RemoteException e)
       {

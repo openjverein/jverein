@@ -70,12 +70,12 @@ public class Adressaufbereitung
   {
     if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
     {
-      return mitglied.getExterneMitgliedsnummer() + " - "
-          + getNameVorname(mitglied);
+      return getNameVorname(mitglied) + " - "
+          + mitglied.getExterneMitgliedsnummer();
     }
     else
     {
-      return mitglied.getID() + " - " + getNameVorname(mitglied);
+      return getNameVorname(mitglied) + " - " + mitglied.getID();
     }
   }
 
