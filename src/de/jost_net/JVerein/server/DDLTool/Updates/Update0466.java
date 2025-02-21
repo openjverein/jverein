@@ -31,6 +31,6 @@ public class Update0466 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute(addColumn("mitglied",
-        new Column("mandatid", COLTYPE.VARCHAR, 20, null, false, false)));
+        new Column("mandatid", COLTYPE.VARCHAR, 35, null, false, false)));
   }
 }

@@ -203,9 +203,9 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       {
         throw new ApplicationException("Bitte Mandats-ID eingeben");
       }
-      else if (getMandatID().length() > 20)
+      else if (getMandatID().length() > 35)
       {
-        throw new ApplicationException("Mandats-ID hat mehr als 20 Stellen");
+        throw new ApplicationException("Mandats-ID hat mehr als 35 Stellen");
       }
       if (getMandatDatum() == Einstellungen.NODATE)
       {
