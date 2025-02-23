@@ -14,51 +14,32 @@ jobs:
   nightly-build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout openjverein
-      uses: actions/checkout@v4
+      - name: Checkout openjverein
+        uses: actions/checkout@v4
 
-    - name: Restore cache
-      id: restore-cache
-      uses: actions/cache/restore@v4
-      with:
-        path: ~/.m2/repository
-        key: cache-${{ hashFiles('setup-build.xml') }}-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          cache-${{ hashFiles('setup-build.xml') }}
+      - name: Setup
+        uses: .github/actions/build-dependencies
 
-    - name: Setup
-      uses: ./jverein/.github/actions/build-dependencies
+      - name: Build openjverein plugin
+        id: openjverein
+        run: |
+          ./mvnw --batch-mode --file pom.xml clean package
+          tmp_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
 
-    - name: Build openjverein plugin
-      id: openjverein
-      run: |
-        ./mvnw --batch-mode --file pom.xml clean package
-        tmp_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
-        tmp_filename=$(basename "./target/jverein-*.zip")
-        builddatetime=$(date +'%Y-%m-%d %H:%M')
-        echo "### Version: ${tmp_version} | filename: ${tmp_filename} | build datetime: ${builddatetime}" >> $GITHUB_STEP_SUMMARY
+      # Update tag
+      - name: Tag repo
+        uses: richardsimko/update-tag@v1
+        with:
+          tag_name: ${{ steps.openjverein.outputs.selected_version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Save cache
-      uses: actions/cache/save@v4
-      if: steps.restore-cache.outputs.cache-hit != 'true'
-      with:
-        path: ~/.m2/repository
-        key: cache-${{ hashFiles('setup-build.xml') }}-${{ hashFiles('**/pom.xml') }}
-
-    # Update tag
-    - name: Tag repo
-      uses: richardsimko/update-tag@v1
-      with:
-        tag_name: ${{ steps.openjverein.outputs.selected_version }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Release
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: ${{ steps.openjverein.outputs.selected_version }}
-        prerelease: true
-        name: Release ${{ steps.openjverein.outputs.selected_version }}
-        files: ./target/jverein-*.zip
-        generate_release_notes: false
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.openjverein.outputs.selected_version }}
+          prerelease: true
+          name: Release ${{ steps.openjverein.outputs.selected_version }}
+          files: ./target/jverein-*.zip
+          generate_release_notes: false
