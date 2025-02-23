@@ -14,19 +14,21 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-
-package de.jost_net.JVerein.Messaging;
-
-import de.willuhn.datasource.GenericObject;
-import de.willuhn.jameica.hbci.messaging.ObjectMessage;
+package de.jost_net.JVerein.gui.control.listener;
 
 /**
- * Wird versendet, wenn sich die Buchungstabelle geaendert hat.
+ * Der Listener wird aufgerufen, wenn eine Tree-Spalte/-Zelle bearbeitet werden
+ * soll. Wenn der Listener <code>false</code> zurück gibt, wird das Bearbeiten
+ * abgebrochen.
  */
-public class BuchungMessage extends ObjectMessage
+public interface TreeEditListener
 {
-  public BuchungMessage(GenericObject object)
-  {
-    super(object);
-  }
+
+  /**
+   * Wird aufgerufen, wenn der Wert eines Feldes geaendert wurde.
+   * @param object das zugehoerige Fachobjekt.
+   * @param attribute der Name des geaenderten Attributes.
+   */
+  public boolean editItem(Object object, String attribute);
+  
 }
