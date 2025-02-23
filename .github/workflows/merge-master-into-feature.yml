@@ -25,16 +25,13 @@ jobs:
           git checkout feature-3.1.0
           git pull
           git merge master --no-ff --no-commit
+          # Abort previous merge check
+          git merge --abort
+          git reset --hard HEAD
         continue-on-error: true
 
       - name: Merge master into feature-3.1.0
         run: |
-          # Abort previous merge check
-          git merge --abort
-          git reset --hard HEAD
           # Merge master branch into feature with feature as king (ours)
           git merge -X ours master -m "Auto-merge master into feature-3.1.0" --stat
           git push origin
-
-      - name: Set workflow status
-        run: exit 0
