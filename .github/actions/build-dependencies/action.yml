@@ -1,0 +1,24 @@
+name: Reusable build steps
+description: Setups the build environment and builds Jameica and Hibiscus
+runs:
+  using: "composite"
+  steps:
+    - name: Set up JDK for x64
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        architecture: x64
+
+    - name: Restore cache
+      id: restore-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2/repository
+        key: cache-${{ hashFiles('setup-build.xml') }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: cache-${{ hashFiles('setup-build.xml') }}
+
+    - name: Setup build dependencies
+      if: steps.restore-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: ./mvnw --batch-mode --file setup-build.xml clean install

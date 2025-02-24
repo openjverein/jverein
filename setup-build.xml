@@ -1,0 +1,273 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.openjverein</groupId>
+    <artifactId>setup-build</artifactId>
+    <version>1.0.0</version>
+
+    <properties>
+        <jameica.url>https://github.com/willuhn/jameica/archive/refs/tags/</jameica.url>
+        <jameica.version>V_2_10_5_BUILD_488</jameica.version>
+        <jameica.buildversion>2.10.4-487</jameica.buildversion>
+        <hibiscus.url>https://github.com/willuhn/hibiscus/archive/refs/tags/</hibiscus.url>
+        <hibiscus.version>V_2_10_24_BUILD_388</hibiscus.version>
+        <nc.url>https://prdownloads.sourceforge.net/numchameleon/nc-3.0.0.zip?download</nc.url>
+        <swt.version>4.33</swt.version>
+        <swt.arch>win64</swt.arch>
+        <!-- Skip default plugins -->
+        <maven.resources.skip>true</maven.resources.skip>
+        <maven.main.skip>true</maven.main.skip>
+        <maven.test.skip>true</maven.test.skip>
+        <maven.install.skip>true</maven.install.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>compile-jameica</id>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <target>
+                                <!-- Download jameica -->
+                                <get src="${jameica.url}${jameica.version}.zip"
+                                     dest="${project.build.directory}/jameica-${jameica.version}.zip"
+                                     skipexisting="true"/>
+
+                                <!-- Unpack into folder jamaica -->
+                                <unzip src="${project.build.directory}/jameica-${jameica.version}.zip"
+                                       dest="${project.basedir}"/>
+                                <move file="${project.basedir}/jameica-${jameica.version}"
+                                      tofile="${project.basedir}/jameica"/>
+
+                                <!-- Run build -->
+                                <ant dir="${project.basedir}/jameica" antfile="build/build.xml" target="jar"/>
+
+                                <!-- Copy jameica.jar to jameica-lib.jar, because that's how hibiscus expects it -->
+                                <copy todir="${project.basedir}/jameica/releases" flatten="true">
+                                    <fileset dir="${project.basedir}/jameica/releases">
+                                        <include name="**/jameica.jar"/>
+                                    </fileset>
+                                </copy>
+                                <move file="${project.basedir}/jameica/releases/jameica.jar"
+                                      tofile="${project.basedir}/jameica/releases/jameica-lib.jar"/>
+                                <!-- Copy IDEA project file to jameica -->
+                                <copy file="${project.basedir}/ideaproject/jameica.iml"
+                                      todir="${project.basedir}/jameica" overwrite="true">
+                                    <filterset>
+                                        <filter token="version" value="${jameica.buildversion}"/>
+                                    </filterset>
+                                </copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>compile-hibiscus</id>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <target name="compile-hibiscus">
+                                <!-- Download hibiscus -->
+                                <get src="${hibiscus.url}${hibiscus.version}.zip"
+                                     dest="${project.build.directory}/hibiscus-${hibiscus.version}.zip"
+                                     skipexisting="true"/>
+
+                                <!-- Unpack into folder hibiscus -->
+                                <unzip src="${project.build.directory}/hibiscus-${hibiscus.version}.zip"
+                                       dest="${project.basedir}"/>
+                                <move file="${project.basedir}/hibiscus-${hibiscus.version}"
+                                      tofile="${project.basedir}/hibiscus"/>
+
+                                <!-- Run build -->
+                                <ant dir="${project.basedir}/hibiscus" antfile="build/build.xml" target="jar"/>
+
+                                <!-- Copy hibiscus.jar to hibiscus-lib.jar -->
+                                <copy todir="${project.basedir}/hibiscus/releases" flatten="true">
+                                    <fileset dir="${project.basedir}/hibiscus/releases">
+                                        <include name="**/hibiscus.jar"/>
+                                    </fileset>
+                                </copy>
+                                <move file="${project.basedir}/hibiscus/releases/hibiscus.jar"
+                                      tofile="${project.basedir}/hibiscus/releases/hibiscus-lib.jar"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>get-numerical-chameleon</id>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <target>
+                                <get src="${nc.url}"
+                                     dest="${project.build.directory}/nc.zip"
+                                     skipexisting="true"/>
+                                <unzip src="${project.build.directory}/nc.zip" dest="${project.build.directory}">
+                                    <patternset includes="numericalchameleon-3.0.0/bin/nc.jar"/>
+                                    <mapper type="flatten"/>
+                                </unzip>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <skipIfEmpty>true</skipIfEmpty>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.1.3</version>
+                <executions>
+                    <execution>
+                        <id>install-jameica</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.basedir}/jameica/releases/jameica-lib.jar</file>
+                            <groupId>de.willuhn</groupId>
+                            <artifactId>jameica-lib</artifactId>
+                            <version>${jameica.version}</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-hibiscus</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.basedir}/hibiscus/releases/hibiscus-lib.jar</file>
+                            <groupId>de.willuhn</groupId>
+                            <artifactId>hibiscus-lib</artifactId>
+                            <version>${hibiscus.version}</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-willuhn-ds</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.basedir}/jameica/lib/de_willuhn_ds/de_willuhn_ds.jar</file>
+                            <groupId>de.willuhn</groupId>
+                            <artifactId>datasource</artifactId>
+                            <version>${jameica.version}</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-willuhn-util</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.basedir}/jameica/lib/de_willuhn_util/de_willuhn_util.jar</file>
+                            <groupId>de.willuhn</groupId>
+                            <artifactId>util</artifactId>
+                            <version>${jameica.version}</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-obantoo-bin</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.basedir}/hibiscus/lib/obantoo-bin-2.1.12.jar</file>
+                            <groupId>net.sourceforge</groupId>
+                            <artifactId>obantoo-bin</artifactId>
+                            <version>2.1.12</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-swt</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.basedir}/jameica/lib/swt/${swt.arch}/swt.jar</file>
+                            <groupId>de.willuhn</groupId>
+                            <artifactId>swt</artifactId>
+                            <packaging>jar</packaging>
+                            <version>${swt.version}</version>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-hbci4j</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.basedir}/hibiscus/lib/hbci4j-core-3.1.85.jar</file>
+                            <groupId>de.willuhn</groupId>
+                            <artifactId>hbci4j-core</artifactId>
+                            <packaging>jar</packaging>
+                            <version>3.1.85</version>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-nc</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.build.directory}/nc.jar</file>
+                            <groupId>net.numericalchameleon</groupId>
+                            <artifactId>nc</artifactId>
+                            <version>3.0.0</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.basedir}/jameica</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>${project.basedir}/hibiscus</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

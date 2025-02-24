@@ -11,71 +11,35 @@ on:
       - '**'
 
 jobs:
-  call-reusable-workflow:
-    uses: ./.github/workflows/reusable-build.yml
-
   nightly-build:
-    needs: call-reusable-workflow
     runs-on: ubuntu-latest
     steps:
-    - name: Restore cached tags and jars
-      id: cache-tags-jars
-      uses: actions/cache@v4
-      with:
-        path: |
-          ./cached-tags
-          jameica
-          hibiscus
-        key: ${{ runner.os }}-${{ github.repository_id }}
+      - name: Checkout openjverein
+        uses: actions/checkout@v4
 
-    - name: Checkout openjverein
-      uses: actions/checkout@v4
-      with:
-        path: jverein
+      - name: Setup
+        uses: ./.github/actions/build-dependencies
 
-    - name: Build openjverein plugin
-      id: openjverein
-      working-directory: ./
-      run: |
-        ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml nightly)
-        echo ${ant_output}
+      - name: Build openjverein plugin
+        id: openjverein
+        run: |
+          ./mvnw --batch-mode --file pom.xml clean package
+          tmp_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
 
-        ssa="SELECTED_VERSION="
-        ssb=".zip"
-        text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
-        tmp_version=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
+      # Update tag
+      - name: Tag repo
+        uses: richardsimko/update-tag@v1
+        with:
+          tag_name: ${{ steps.openjverein.outputs.selected_version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-        ssa="SELECTED_FILENAME="
-        text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
-        tmp_filename=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-
-        ssa="SELECTED_PATH="
-        text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
-        tmp_path=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-
-        echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
-        echo "selected_filename=${tmp_filename}" >> $GITHUB_OUTPUT
-        echo "selected_path=${tmp_path}" >> $GITHUB_OUTPUT
-
-        builddatetime=$(date +'%Y-%m-%d %H:%M')
-        echo "### Version: ${tmp_version} | filename: ${tmp_filename} | build datetime: ${builddatetime}" >> $GITHUB_STEP_SUMMARY
-
-    # Update tag
-    - name: Tag repo
-      uses: richardsimko/update-tag@v1
-      with:
-        tag_name: ${{ steps.openjverein.outputs.selected_version }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Release
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: ${{ steps.openjverein.outputs.selected_version }}
-        prerelease: true
-        name: Release ${{ steps.openjverein.outputs.selected_version }}
-        files: ./jverein/${{ steps.openjverein.outputs.selected_path }}
-        generate_release_notes: false
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.openjverein.outputs.selected_version }}
+          prerelease: true
+          name: Release ${{ steps.openjverein.outputs.selected_version }}
+          files: ./target/jverein-*.zip
+          generate_release_notes: false
