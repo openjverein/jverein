@@ -11,31 +11,19 @@ on:
       - '**'
 
 jobs:
-  call-reusable-workflow:
-    uses: ./.github/workflows/reusable-build.yml
-
   nightly-build:
-    needs: call-reusable-workflow
     runs-on: ubuntu-latest
     steps:
-    - name: Restore cached tags and jars
-      id: cache-tags-jars
-      uses: actions/cache@v4
-      with:
-        path: |
-          ./cached-tags
-          jameica
-          hibiscus
-        key: ${{ runner.os }}-${{ github.repository_id }}
-
     - name: Checkout openjverein
       uses: actions/checkout@v4
       with:
         path: jverein
 
+    - name: Setup
+      uses: ./jverein/.github/actions/build-dependencies
+
     - name: Build openjverein plugin
       id: openjverein
-      working-directory: ./
       run: |
         ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml nightly)
         echo ${ant_output}
