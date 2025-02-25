@@ -60,6 +60,12 @@ public class ArbeitseinsatzZeile implements GenericObject
           Mitglied.class, mitgliedid);
       return Adressaufbereitung.getNameVorname(mitglied);
     }
+    else if (arg0.equals("idnamevorname"))
+    {
+      Mitglied mitglied = (Mitglied) Einstellungen.getDBService()
+          .createObject(Mitglied.class, mitgliedid);
+      return Adressaufbereitung.getIdNameVorname(mitglied);
+    }
     else if (arg0.equals("mitgliedid"))
     {
       return mitgliedid;

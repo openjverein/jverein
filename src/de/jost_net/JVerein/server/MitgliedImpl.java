@@ -89,7 +89,18 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   public String getPrimaryAttribute()
   {
-    return PRIMARY_ATTRIBUTE;
+    try
+    {
+      if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+      {
+        return "idnamevorname";
+      }
+    }
+    catch (RemoteException e)
+    {
+      //
+    }
+    return "namevorname";
   }
 
   @Override
@@ -202,6 +213,14 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       if (getIban() == null || getIban().length() == 0)
       {
         throw new ApplicationException("Bitte IBAN eingeben");
+      }
+      if (getMandatID() == null || getMandatID().isEmpty())
+      {
+        throw new ApplicationException("Bitte Mandats-ID eingeben");
+      }
+      else if (getMandatID().length() > 35)
+      {
+        throw new ApplicationException("Mandats-ID hat mehr als 35 Stellen");
       }
       if (getMandatDatum() == Einstellungen.NODATE)
       {
@@ -668,10 +687,20 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       return getExterneMitgliedsnummer() + "-" + getMandatVersion();
     }
-    else
+    else if (sepaMandatIdSource == SepaMandatIdSource.DBID)
     {
       return getID() + "-" + getMandatVersion();
     }
+    else
+    {
+      return (String) getAttribute("mandatid");
+    }
+  }
+
+  @Override
+  public void setMandatID(String mandatid) throws RemoteException
+  {
+    setAttribute("mandatid", mandatid);
   }
 
   @Override
@@ -1249,6 +1278,10 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     if (fieldName.equals("idint"))
     {
       return Integer.valueOf(getID());
+    }
+    if (fieldName.equals("idnamevorname"))
+    {
+      return Adressaufbereitung.getIdNameVorname(this);
     }
     if (fieldName.equals("namevorname"))
     {

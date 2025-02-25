@@ -84,6 +84,7 @@ import de.jost_net.JVerein.io.MitgliedAuswertungPDF;
 import de.jost_net.JVerein.io.MitgliederStatistik;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
@@ -637,12 +638,14 @@ public class MitgliedControl extends FilterControl
           {
             if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
             {
+              mandatid.setMandatory(false);
               mandatdatum.setMandatory(false);
               mandatversion.setMandatory(false);
               iban.setMandatory(false);
             }
             else
             {
+              mandatid.setMandatory(true);
               mandatdatum.setMandatory(true);
               mandatversion.setMandatory(true);
               iban.setMandatory(true);
@@ -770,7 +773,20 @@ public class MitgliedControl extends FilterControl
     }
     mandatid = new TextInput(getMitglied().getMandatID());
     mandatid.setName("Mandats-ID");
-    mandatid.disable();
+    if (((Zahlungsweg) getZahlungsweg().getValue())
+        .getKey() != Zahlungsweg.BASISLASTSCHRIFT)
+    {
+      mandatid.setMandatory(false);
+    }
+    else
+    {
+      mandatid.setMandatory(true);
+    }
+    if (Einstellungen.getEinstellung()
+        .getSepaMandatIdSource() != SepaMandatIdSource.INDIVIDUELL)
+    {
+      mandatid.disable();
+    }
     return mandatid;
   }
 
@@ -2324,6 +2340,7 @@ public class MitgliedControl extends FilterControl
       {
         m.setZahlungstermin(zt.getKey());
       }
+      m.setMandatID((String) getMandatID().getValue());
       m.setMandatDatum((Date) getMandatDatum().getValue());
       m.setMandatVersion((Integer) getMandatVersion().getValue());
       m.setBic((String) getBic().getValue());
