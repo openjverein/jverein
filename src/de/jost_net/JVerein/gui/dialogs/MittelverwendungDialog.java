@@ -125,6 +125,10 @@ public class MittelverwendungDialog extends AbstractDialog<Boolean>
       return nameInput;
     }
     nameInput = new TextInput(name, 50);
+    if (name != null && !name.isEmpty())
+    {
+      nameInput.setEnabled(false);
+    }
     return nameInput;
   }
 
