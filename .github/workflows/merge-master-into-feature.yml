@@ -25,9 +25,6 @@ jobs:
           git checkout feature-3.1.0
           git pull
           git merge master --no-ff --no-commit
-          # Abort previous merge check
-          git merge --abort
-          git reset --hard HEAD
         continue-on-error: true
 
       - name: Abort previous merge check
