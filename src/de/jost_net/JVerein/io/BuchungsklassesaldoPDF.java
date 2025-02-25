@@ -35,7 +35,7 @@ public class BuchungsklassesaldoPDF
 
   public BuchungsklassesaldoPDF(ArrayList<BuchungsklasseSaldoZeile> zeile,
       final File file, Date datumvon, Date datumbis, String title,
-      boolean summe)
+      boolean umbuchung)
       throws ApplicationException
   {
     try
@@ -45,7 +45,7 @@ public class BuchungsklassesaldoPDF
           + new JVDateFormatTTMMJJJJ().format(datumbis);
       Reporter reporter = new Reporter(fos, title, subtitle,
           zeile.size());
-      makeHeader(reporter, summe);
+      makeHeader(reporter, umbuchung);
 
       for (BuchungsklasseSaldoZeile bkz : zeile)
       {
@@ -65,7 +65,7 @@ public class BuchungsklassesaldoPDF
                 Element.ALIGN_LEFT);
             reporter.addColumn((Double) bkz.getAttribute("einnahmen"));
             reporter.addColumn((Double) bkz.getAttribute("ausgaben"));
-            if (summe)
+            if (umbuchung)
             {
               reporter.addColumn((Double) bkz.getAttribute("umbuchungen"));
             }
@@ -78,7 +78,7 @@ public class BuchungsklassesaldoPDF
                 Element.ALIGN_RIGHT);
             reporter.addColumn((Double) bkz.getAttribute("einnahmen"));
             reporter.addColumn((Double) bkz.getAttribute("ausgaben"));
-            if (summe)
+            if (umbuchung)
             {
               reporter.addColumn((Double) bkz.getAttribute("umbuchungen"));
             }
@@ -92,7 +92,7 @@ public class BuchungsklassesaldoPDF
                 Element.ALIGN_RIGHT);
             reporter.addColumn((Double) bkz.getAttribute("einnahmen"));
             reporter.addColumn((Double) bkz.getAttribute("ausgaben"));
-            if (summe)
+            if (umbuchung)
             {
               reporter.addColumn((Double) bkz.getAttribute("umbuchungen"));
             }
@@ -148,7 +148,7 @@ public class BuchungsklassesaldoPDF
     }
   }
 
-  private void makeHeader(Reporter reporter, boolean summe)
+  private void makeHeader(Reporter reporter, boolean umbuchung)
       throws DocumentException
   {
     reporter.addHeaderColumn("Buchungsart", Element.ALIGN_CENTER, 90,
@@ -157,7 +157,7 @@ public class BuchungsklassesaldoPDF
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Ausgaben", Element.ALIGN_CENTER, 45,
         BaseColor.LIGHT_GRAY);
-    if (summe)
+    if (umbuchung)
     {
       reporter.addHeaderColumn("Umbuchungen", Element.ALIGN_CENTER, 45,
           BaseColor.LIGHT_GRAY);

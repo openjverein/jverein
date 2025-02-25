@@ -40,9 +40,9 @@ import de.willuhn.util.ApplicationException;
 public class BuchungsklassesaldoCSV
 {
 
-  private static CellProcessor[] getProcessors(boolean summe)
+  private static CellProcessor[] getProcessors(boolean umbuchung)
   {
-    if (summe)
+    if (umbuchung)
     {
       final CellProcessor[] processors = new CellProcessor[] { new NotNull(), // BuchungsArt/Klasse,
                                                                               // Summe
@@ -68,7 +68,7 @@ public class BuchungsklassesaldoCSV
   }
 
   public BuchungsklassesaldoCSV(ArrayList<BuchungsklasseSaldoZeile> zeile,
-      final File file, Date datumvon, Date datumbis, boolean summe)
+      final File file, Date datumvon, Date datumbis, boolean umbuchung)
       throws ApplicationException
   {
     ICsvMapWriter writer = null;
@@ -76,10 +76,10 @@ public class BuchungsklassesaldoCSV
     {
       writer = new CsvMapWriter(new FileWriter(file),
           CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
-      final CellProcessor[] processors = getProcessors(summe);
+      final CellProcessor[] processors = getProcessors(umbuchung);
       Map<String, Object> csvzeile = new HashMap<>();
       String[] header;
-      if (summe)
+      if (umbuchung)
       {
         header = new String[] { "Buchungsart", "Einnahmen", "Ausgaben",
             "Umbuchung" };
@@ -112,7 +112,7 @@ public class BuchungsklassesaldoCSV
                 (String) bkz.getAttribute("buchungsartbezeichnung"));
             csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
             csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            if (summe)
+            if (umbuchung)
             {
               csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
             }
@@ -124,7 +124,7 @@ public class BuchungsklassesaldoCSV
                 (String) bkz.getAttribute("buchungsklassenbezeichnung"));
             csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
             csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            if (summe)
+            if (umbuchung)
             {
               csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
             }
@@ -136,7 +136,7 @@ public class BuchungsklassesaldoCSV
                 (String) bkz.getAttribute("buchungsklassenbezeichnung"));
             csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
             csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            if (summe)
+            if (umbuchung)
             {
               csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
             }

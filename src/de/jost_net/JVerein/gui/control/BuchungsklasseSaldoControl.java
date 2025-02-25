@@ -51,7 +51,7 @@ public class BuchungsklasseSaldoControl extends SaldoControl
 
   private AbstractSaldoList saldoList;
 
-  private boolean summe = true;
+  private boolean umbuchung = true;
 
   final static String AuswertungPDF = "PDF";
 
@@ -152,12 +152,12 @@ public class BuchungsklasseSaldoControl extends SaldoControl
       if (view instanceof BuchungsklasseSaldoView)
       {
         title = "Buchungsklassen-Saldo";
-        summe = true;
+        umbuchung = true;
       }
       else if (view instanceof MittelverwendungSaldoView)
       {
         title = "Mittelverwendung-Saldo";
-        summe = false;
+        umbuchung = false;
       }
       ArrayList<BuchungsklasseSaldoZeile> zeile = saldoList.getInfo();
 
@@ -208,12 +208,12 @@ public class BuchungsklasseSaldoControl extends SaldoControl
         {
           if (type.equals(AuswertungCSV))
           {
-            new BuchungsklassesaldoCSV(zeile, file, datumvon, datumbis, summe);
+            new BuchungsklassesaldoCSV(zeile, file, datumvon, datumbis, umbuchung);
           }
           else if (type.equals(AuswertungPDF))
           {
             new BuchungsklassesaldoPDF(zeile, file, datumvon, datumbis, title,
-                summe);
+                umbuchung);
           }
           GUI.getCurrentView().reload();
         }
