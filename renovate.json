@@ -11,7 +11,7 @@
         "^build/build\\.properties$"
       ],
       "matchStrings": [
-        "# renovate: depName=(?<depName>.*?)\\s*\\w\\.version\\s+=\\s?(?<currentValue>V_\\d+_\\d+_\\d+_BUILD_\\d+)"
+        "# renovate: depName=(?<depName>.*?)\\s*\\S+\\.version\\s*=\\s*(?<currentValue>V_\\d+_\\d+_\\d+_BUILD_\\d+)"
       ],
       "datasourceTemplate": "github-tags",
       "versioningTemplate": "regex:^V_(?<major>\\d+)_(?<minor>\\d+)_(?<patch>\\d+)_BUILD_(?<build>\\d+)$"
