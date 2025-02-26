@@ -28,11 +28,12 @@ import org.apache.commons.lang.StringUtils;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FilterControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -57,7 +58,7 @@ public class SollbuchungQuery
   }
 
   @SuppressWarnings("unchecked")
-  public GenericIterator<Mitgliedskonto> get() throws RemoteException, ApplicationException
+  public GenericIterator<Sollbuchung> get() throws RemoteException, ApplicationException
   {
     Date d1 = null;
     java.sql.Date vd = null;
@@ -109,42 +110,43 @@ public class SollbuchungQuery
     // Falls kein Name, kein Mailfilter und keine Differenz dann alles lesen
     if (kein_name && keine_email && diff == DIFFERENZ.EGAL)
     {
-      DBIterator<Mitgliedskonto> sollbuchungen = Einstellungen.getDBService()
-          .createList(Mitgliedskonto.class);
+      DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
+          .createList(Sollbuchung.class);
       if (mitglied != null)
       {
-        sollbuchungen.addFilter("mitgliedskonto.mitglied = ?",
+        sollbIt.addFilter(Sollbuchung.T_MITGLIED + " = ?",
             new Object[] { Long.valueOf(mitglied.getID()) });
       }
       if (vd != null)
       {
-        sollbuchungen.addFilter("mitgliedskonto.datum >= ? ",
+        sollbIt.addFilter(Sollbuchung.T_DATUM + " >= ? ",
             new Object[] { vd });
       }
       if (bd != null)
       {
-        sollbuchungen.addFilter("mitgliedskonto.datum <= ? ",
+        sollbIt.addFilter(Sollbuchung.T_DATUM + " <= ? ",
             new Object[] { bd });
       }
       if (control.isOhneAbbucherAktiv()
           && (Boolean) control.getOhneAbbucher().getValue())
       {
-        sollbuchungen.addFilter("mitgliedskonto.zahlungsweg <> ?",
+        sollbIt.addFilter(Sollbuchung.T_ZAHLUNGSWEG + " <> ?",
             Zahlungsweg.BASISLASTSCHRIFT);
       }
-      sollbuchungen.setOrder("ORDER BY mitgliedskonto.datum desc");
-      return sollbuchungen;
+      sollbIt
+          .setOrder("ORDER BY " + Sollbuchung.T_DATUM + " desc");
+      return sollbIt;
     }
 
     // Falls ein Name aber keine Differenz und kein Mailfilter dann alles des
     // Mitglieds lesen
     if (!kein_name && !filter_email && diff == DIFFERENZ.EGAL)
     {
-      DBIterator<Mitgliedskonto> sollbuchungen = Einstellungen.getDBService()
-          .createList(Mitgliedskonto.class);
+      DBIterator<Sollbuchung> sollbuchungen = Einstellungen.getDBService()
+          .createList(Sollbuchung.class);
       if (mitglied != null)
       {
-        sollbuchungen.addFilter("mitgliedskonto.mitglied = ?",
+        sollbuchungen.addFilter(Sollbuchung.T_MITGLIED + " = ?",
             new Object[] { Long.valueOf(mitglied.getID()) });
       }
 
@@ -152,13 +154,13 @@ public class SollbuchungQuery
       if (ein_mitglied_name)
       {
         sollbuchungen.join("mitglied dasMitglied");
-        sollbuchungen.addFilter("dasMitglied.id = mitgliedskonto.mitglied");
+        sollbuchungen.addFilter("dasMitglied.id = " + Sollbuchung.T_MITGLIED);
       }
       if ((ein_zahler_name && ein_mitglied_name)
           || (ein_zahler_name && !umwandeln))
       {
         sollbuchungen.join("mitglied derZahler");
-        sollbuchungen.addFilter("derZahler.id = mitgliedskonto.zahler");
+        sollbuchungen.addFilter("derZahler.id = " + Sollbuchung.T_ZAHLER);
       }
 
       // Nach Namen filtern
@@ -207,28 +209,29 @@ public class SollbuchungQuery
         ArrayList<Long> namenids = getNamenIds(zahlerName);
         if (namenids != null)
         {
-          sollbuchungen.addFilter("mitgliedskonto.zahler in ("
+          sollbuchungen.addFilter(Sollbuchung.T_ZAHLER + " in ("
               + StringUtils.join(namenids, ",") + ")");
         }
       }
 
       if (vd != null)
       {
-        sollbuchungen.addFilter("(mitgliedskonto.datum >= ?) ",
+        sollbuchungen.addFilter(Sollbuchung.T_DATUM + " >= ? ",
             new Object[] { vd });
       }
       if (bd != null)
       {
-        sollbuchungen.addFilter("(mitgliedskonto.datum <= ?) ",
+        sollbuchungen.addFilter(Sollbuchung.T_DATUM + " <= ? ",
             new Object[] { bd });
       }
       if (control.isOhneAbbucherAktiv()
           && (Boolean) control.getOhneAbbucher().getValue())
       {
-        sollbuchungen.addFilter("mitgliedskonto.zahlungsweg <> ?",
+        sollbuchungen.addFilter(Sollbuchung.T_ZAHLUNGSWEG + " <> ?",
             Zahlungsweg.BASISLASTSCHRIFT);
       }
-      sollbuchungen.setOrder("ORDER BY mitgliedskonto.datum desc");
+      sollbuchungen
+          .setOrder("ORDER BY " + Sollbuchung.T_DATUM + " desc");
       return sollbuchungen;
     }
 
@@ -240,28 +243,31 @@ public class SollbuchungQuery
     // worden sein, aber die Sollbuchung existiert noch und evtl.
     // musss eine Buchung zugeordnet werden
     StringBuilder sql = new StringBuilder(
-        "SELECT mitgliedskonto.id, "
-            + " mitgliedskonto.betrag, SUM(buchung.betrag) FROM mitgliedskonto");
+        "SELECT " + Sollbuchung.TABLE_NAME_ID + ", " + Sollbuchung.T_BETRAG
+            + ", SUM(buchung.betrag) FROM " + Sollbuchung.TABLE_NAME);
     if (ein_mitglied_name)
     {
       sql.append(
-          " JOIN mitglied dasMitglied ON (mitgliedskonto.mitglied = dasMitglied.id)");
+          " JOIN mitglied dasMitglied ON (" + Sollbuchung.T_MITGLIED
+              + " = dasMitglied.id)");
     }
     if ((ein_zahler_name && ein_mitglied_name)
         || (ein_zahler_name && !umwandeln) || filter_email)
     {
       sql.append(
-          " LEFT JOIN mitglied derZahler ON (mitgliedskonto.zahler = derZahler.id)");
+          " LEFT JOIN mitglied derZahler ON (" + Sollbuchung.T_ZAHLER
+              + " = derZahler.id)");
     }
     sql.append(
-        " LEFT JOIN buchung ON mitgliedskonto.id = buchung.mitgliedskonto");
+        " LEFT JOIN buchung ON " + Sollbuchung.TABLE_NAME_ID + " = "
+            + Buchung.T_SOLLBUCHUNG);
 
     StringBuilder where = new StringBuilder();
     ArrayList<Object> param = new ArrayList<>();
     if (mitglied != null)
     {
       where.append(where.length() == 0 ? "" : " AND ")
-          .append("mitgliedskonto.mitglied = ? ");
+          .append(Sollbuchung.T_MITGLIED + " = ? ");
       param.add(Long.valueOf(mitglied.getID()));
     }
     if (ein_mitglied_name && ein_zahler_name)
@@ -308,27 +314,27 @@ public class SollbuchungQuery
       if (namenids != null)
       {
         where.append(where.length() == 0 ? "" : " AND ")
-        .append("mitgliedskonto.zahler in ("
+            .append(Sollbuchung.T_ZAHLER + " in ("
             + StringUtils.join(namenids, ",") + ")");
       }
     }
     if (vd != null)
     {
       where.append(where.length() == 0 ? "" : " AND ")
-          .append("mitgliedskonto.datum >= ?");
+          .append(Sollbuchung.T_DATUM + " >= ?");
       param.add(vd);
     }
     if (bd != null)
     {
       where.append(where.length() == 0 ? "" : " AND ")
-          .append("mitgliedskonto.datum <= ?");
+          .append(Sollbuchung.T_DATUM + " <= ?");
       param.add(bd);
     }
     if (control.isOhneAbbucherAktiv()
         && (Boolean) control.getOhneAbbucher().getValue())
     {
       where.append(where.length() == 0 ? "" : " AND ")
-          .append("mitgliedskonto.zahlungsweg <> ?");
+          .append(Sollbuchung.T_ZAHLUNGSWEG + " <> ?");
       param.add(Zahlungsweg.BASISLASTSCHRIFT);
     }
     if (filter_email)
@@ -350,17 +356,20 @@ public class SollbuchungQuery
     {
       sql.append(" WHERE ").append(where);
     }
-    sql.append(" GROUP BY mitgliedskonto.id, mitgliedskonto.betrag");
+    sql.append(
+        " GROUP BY " + Sollbuchung.TABLE_NAME_ID + ", " + Sollbuchung.T_BETRAG);
 
     if (DIFFERENZ.FEHLBETRAG == diff)
     {
-      sql.append(" HAVING SUM(buchung.betrag) < mitgliedskonto.betrag OR "
-          + "(SUM(buchung.betrag) IS NULL AND mitgliedskonto.betrag > 0)");
+      sql.append(" HAVING SUM(buchung.betrag) < " + Sollbuchung.T_BETRAG
+          + " OR (SUM(buchung.betrag) IS NULL AND " + Sollbuchung.T_BETRAG
+          + " > 0)");
     }
     if (DIFFERENZ.UEBERZAHLUNG == diff)
     {
-      sql.append(" HAVING SUM(buchung.betrag) > mitgliedskonto.betrag OR"
-          + "(SUM(buchung.betrag) IS NULL AND mitgliedskonto.betrag < 0)");
+      sql.append(" HAVING SUM(buchung.betrag) > " + Sollbuchung.T_BETRAG
+          + " OR (SUM(buchung.betrag) IS NULL AND " + Sollbuchung.T_BETRAG
+          + " < 0)");
     }
 
     List<Long> ids = (List<Long>) service.execute(sql.toString(), param.toArray(),
@@ -383,11 +392,11 @@ public class SollbuchungQuery
     {
       return null;
     }
-    DBIterator<Mitgliedskonto> list = Einstellungen.getDBService()
-        .createList(Mitgliedskonto.class);
-    list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
-    list.setOrder("ORDER BY mitgliedskonto.datum desc");
-    return list;
+    DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
+        .createList(Sollbuchung.class);
+    sollbIt.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
+    sollbIt.setOrder("ORDER BY " + Sollbuchung.T_DATUM + " desc");
+    return sollbIt;
   }
 
   private ArrayList<Long> getNamenIds(final String suchname)
@@ -439,7 +448,7 @@ public class SollbuchungQuery
               if (maxScore < score)
               {
                 maxScore = score;
-                // We found a Mitgliedskonto matching with a higher equality
+                // We found a Sollbuchung matching with a higher equality
                 // score, so we drop all previous matches, because they were
                 // less equal.
                 ergebnis.clear();

@@ -26,10 +26,10 @@ import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.gui.view.IAuswertung;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
@@ -42,7 +42,7 @@ public class MitgliedAdresslistePDF implements IAuswertung
 
   private MitgliedControl control;
 
-  private Adresstyp adresstyp;
+  private Mitgliedstyp mitgliedstyp;
 
   private String subtitle = "";
   
@@ -61,16 +61,16 @@ public class MitgliedAdresslistePDF implements IAuswertung
     zusatzfeld = control.getAdditionalparamprefix1();
     zusatzfelder = control.getAdditionalparamprefix2();
     
-    if (control.isSuchAdresstypActive())
+    if (control.isSuchMitgliedstypActive())
     {
-      adresstyp = (Adresstyp) control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
+      mitgliedstyp = (Mitgliedstyp) control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
     }
     else
     {
-      DBIterator<Adresstyp> it = Einstellungen.getDBService()
-          .createList(Adresstyp.class);
-      it.addFilter("jvereinid=1");
-      adresstyp = (Adresstyp) it.next();
+      DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
+          .createList(Mitgliedstyp.class);
+      mtIt.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
+      mitgliedstyp = (Mitgliedstyp) mtIt.next();
     }
     String ueberschrift = (String) control.getAuswertungUeberschrift()
         .getValue();
@@ -88,7 +88,7 @@ public class MitgliedAdresslistePDF implements IAuswertung
     {
       FileOutputStream fos = new FileOutputStream(file);
 
-      Reporter report = new Reporter(fos, adresstyp.getBezeichnungPlural(),
+      Reporter report = new Reporter(fos, mitgliedstyp.getBezeichnungPlural(),
           subtitle, list.size(), 20, 20, 20, 25);
 
       report.addHeaderColumn("Name", Element.ALIGN_CENTER, 60,
@@ -140,7 +140,7 @@ public class MitgliedAdresslistePDF implements IAuswertung
       report.closeTable();
 
       report.add(new Paragraph(String.format("Anzahl %s: %d",
-          adresstyp.getBezeichnungPlural(), list.size()), Reporter.getFreeSans(8)));
+          mitgliedstyp.getBezeichnungPlural(), list.size()), Reporter.getFreeSans(8)));
 
       report.close();
       GUI.getStatusBar().setSuccessText(

@@ -19,7 +19,7 @@ package de.jost_net.JVerein.Variable;
 public enum MitgliedVar
 {
   ADRESSIERUNGSZUSATZ("mitglied_adressierungszusatz"), //
-  ADRESSTYP("mitglied_adresstyp"), //
+  MITGLIEDSTYP("mitglied_adresstyp"), //
   ANREDE("mitglied_anrede"), //
   ANREDE_DU("mitglied_anrede_du"), //
   ANREDE_FOERMLICH("mitglied_anrede_foermlich"), //

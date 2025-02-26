@@ -20,26 +20,26 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.formatter.Formatter;
 
-public class MitgliedskontoFormatter implements Formatter
+public class SollbuchungFormatter implements Formatter
 {
   @Override
   public String format(Object o)
   {
-    if (o instanceof Mitgliedskonto)
+    if (o instanceof Sollbuchung)
     {
-      Mitgliedskonto mk = (Mitgliedskonto) o;
+      Sollbuchung sollb = (Sollbuchung) o;
       try
       {
         if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
         {
-          return Adressaufbereitung.getIdNameVorname(mk.getMitglied());
+          return Adressaufbereitung.getIdNameVorname(sollb.getMitglied());
         }
         else
         {
-          return Adressaufbereitung.getNameVorname(mk.getMitglied());
+          return Adressaufbereitung.getNameVorname(sollb.getMitglied());
         }
       }
       catch (RemoteException e)

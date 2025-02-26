@@ -26,7 +26,7 @@ import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -132,8 +132,10 @@ public class AbrechnungslaufDeleteAction implements Action
 
       // Check ob einer der Buchungen des Abrechnungslaufs
       // einer Rechnung zugeordnet ist
-      String sql4 = "SELECT DISTINCT mitgliedskonto.id from mitgliedskonto "
-          + "WHERE (abrechnungslauf = ? and rechnung IS NOT NULL) ";
+      String sql4 = "SELECT DISTINCT " + Sollbuchung.TABLE_NAME_ID + " from "
+          + Sollbuchung.TABLE_NAME
+          + " WHERE (" + Sollbuchung.ABRECHNUNGSLAUF + " = ? and "
+          + Sollbuchung.RECHNUNG + " IS NOT NULL) ";
       boolean rechnung = (boolean) service.execute(sql4,
           new Object[] { abrl.getID() }, new ResultSetExtractor()
       {
@@ -212,15 +214,16 @@ public class AbrechnungslaufDeleteAction implements Action
           // gelöscht wurde, z. B. bei Splitbuchungen.
         }
       }
-      DBIterator<Mitgliedskonto> mitgliedskontoIt = Einstellungen.getDBService()
-          .createList(Mitgliedskonto.class);
-      mitgliedskontoIt.addFilter("abrechnungslauf = ?", new Object[] { abrl.getID() });
-      while (mitgliedskontoIt.hasNext())
+      DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
+          .createList(Sollbuchung.class);
+      sollbIt.addFilter(Sollbuchung.ABRECHNUNGSLAUF + " = ?",
+          new Object[] { abrl.getID() });
+      while (sollbIt.hasNext())
       {
-        Mitgliedskonto mk = mitgliedskontoIt.next();
-        if (mk.getRechnung() != null)
-          mk.getRechnung().delete();
-        mk.delete();
+        Sollbuchung sollb = sollbIt.next();
+        if (sollb.getRechnung() != null)
+          sollb.getRechnung().delete();
+        sollb.delete();
       }
       it = Einstellungen.getDBService()
           .createList(ZusatzbetragAbrechnungslauf.class);

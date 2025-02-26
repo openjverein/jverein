@@ -29,7 +29,7 @@ import de.jost_net.JVerein.gui.dialogs.BuchungenSollbuchungZuordnungDialog.Booki
 import de.jost_net.JVerein.gui.view.BuchungslisteView;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -44,8 +44,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Ein Dialog, der die automatisch ermittelten Zuordnungen zwischen Buchung
- * und Mitgliedskonto anzeigt und bei Bestätigung persistiert 
+ * Ein Dialog, der die automatisch ermittelten Zuordnungen zwischen Buchung und
+ * Sollbuchung anzeigt und bei Bestätigung persistiert
  */
 public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<Object>
 {
@@ -129,9 +129,9 @@ public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<
     {
       for(BookingMemberAccountEntry dao : assignedBooking)
       {
-        Mitgliedskonto mk = dao.getMitgliedskonto();
+        Sollbuchung sollb = dao.getSollbuchung();
         Buchung buchung = dao.getBuchung();
-        SplitbuchungsContainer.autoSplit(buchung, mk, false);
+        SplitbuchungsContainer.autoSplit(buchung, sollb, false);
       }
 
       //Darstellung aktualisieren

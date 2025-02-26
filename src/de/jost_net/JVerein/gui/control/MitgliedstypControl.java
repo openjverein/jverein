@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.MitgliedstypAction;
 import de.jost_net.JVerein.gui.menu.MitgliedstypMenu;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -39,13 +39,13 @@ public class MitgliedstypControl extends AbstractControl
 {
   private de.willuhn.jameica.system.Settings settings;
 
-  private TablePart adresstypList;
+  private TablePart mitgliedstypList;
 
   private Input bezeichnung;
 
   private Input bezeichnungplural;
 
-  private Adresstyp adresstyp;
+  private Mitgliedstyp mitgliedstyp;
 
   public MitgliedstypControl(AbstractView view)
   {
@@ -54,14 +54,14 @@ public class MitgliedstypControl extends AbstractControl
     settings.setStoreWhenRead(true);
   }
 
-  public Adresstyp getAdresstyp()
+  public Mitgliedstyp getMitgliedstyp()
   {
-    if (adresstyp != null)
+    if (mitgliedstyp != null)
     {
-      return adresstyp;
+      return mitgliedstyp;
     }
-    adresstyp = (Adresstyp) getCurrentObject();
-    return adresstyp;
+    mitgliedstyp = (Mitgliedstyp) getCurrentObject();
+    return mitgliedstyp;
   }
 
   public Input getBezeichnung() throws RemoteException
@@ -70,7 +70,7 @@ public class MitgliedstypControl extends AbstractControl
     {
       return bezeichnung;
     }
-    bezeichnung = new TextInput(getAdresstyp().getBezeichnung(), 30);
+    bezeichnung = new TextInput(getMitgliedstyp().getBezeichnung(), 30);
     return bezeichnung;
   }
 
@@ -80,7 +80,7 @@ public class MitgliedstypControl extends AbstractControl
     {
       return bezeichnungplural;
     }
-    bezeichnungplural = new TextInput(getAdresstyp().getBezeichnungPlural(),
+    bezeichnungplural = new TextInput(getMitgliedstyp().getBezeichnungPlural(),
         30);
     return bezeichnungplural;
   }
@@ -92,12 +92,12 @@ public class MitgliedstypControl extends AbstractControl
   {
     try
     {
-      Adresstyp at = getAdresstyp();
-      at.setBezeichnung((String) getBezeichnung().getValue());
-      at.setBezeichnungPlural((String) getBezeichnungPlural().getValue());
+      Mitgliedstyp mt = getMitgliedstyp();
+      mt.setBezeichnung((String) getBezeichnung().getValue());
+      mt.setBezeichnungPlural((String) getBezeichnungPlural().getValue());
       try
       {
-        at.store();
+        mt.store();
         GUI.getStatusBar().setSuccessText("Mitgliedstyp gespeichert");
       }
       catch (ApplicationException e)
@@ -113,20 +113,21 @@ public class MitgliedstypControl extends AbstractControl
     }
   }
 
-  public Part getAdresstypList() throws RemoteException
+  public Part getMitgliedstypList() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
-    DBIterator<Adresstyp> adresstypen = service.createList(Adresstyp.class);
-    adresstypen.setOrder("ORDER BY bezeichnung");
+    DBIterator<Mitgliedstyp> mtIt = service.createList(Mitgliedstyp.class);
+    mtIt.setOrder("ORDER BY " + Mitgliedstyp.BEZEICHNUNG);
 
-    adresstypList = new TablePart(adresstypen, new MitgliedstypAction());
-    adresstypList.addColumn("Bezeichnung", "bezeichnung");
-    adresstypList.addColumn("Bezeichnung Plural", "bezeichnungplural");
-    adresstypList.addColumn("ID", "id");
-    adresstypList.setContextMenu(new MitgliedstypMenu());
-    adresstypList.setRememberColWidths(true);
-    adresstypList.setRememberOrder(true);
-    adresstypList.addFeature(new FeatureSummary());
-    return adresstypList;
+    mitgliedstypList = new TablePart(mtIt, new MitgliedstypAction());
+    mitgliedstypList.addColumn("Bezeichnung", Mitgliedstyp.BEZEICHNUNG);
+    mitgliedstypList.addColumn("Bezeichnung Plural",
+        Mitgliedstyp.BEZEICHNUNG_PLURAL);
+    mitgliedstypList.addColumn("ID", "id");
+    mitgliedstypList.setContextMenu(new MitgliedstypMenu());
+    mitgliedstypList.setRememberColWidths(true);
+    mitgliedstypList.setRememberOrder(true);
+    mitgliedstypList.addFeature(new FeatureSummary());
+    return mitgliedstypList;
   }
 }

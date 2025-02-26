@@ -38,7 +38,7 @@ import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -269,8 +269,11 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
             };
 
             Einstellungen.getDBService().execute(
-                "SELECT mitglied,zweck1 FROM mitgliedskonto WHERE mitglied IS NOT NULL "
-                    + "GROUP BY zweck1 HAVING COUNT(zweck1) = 1",
+                "SELECT " + Sollbuchung.MITGLIED + ", " + Sollbuchung.ZWECK1
+                    + " FROM " + Sollbuchung.TABLE_NAME
+                    + " WHERE " + Sollbuchung.MITGLIED + " IS NOT NULL"
+                    + " GROUP BY " + Sollbuchung.ZWECK1 + " HAVING COUNT("
+                    + Sollbuchung.ZWECK1 + ") = 1",
                 new Object[] {}, rs);
           }
           duplicateIbans.clear();
@@ -291,7 +294,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
               SplitbuchungTyp.HAUPT);
           buchungen.addFilter("(splittyp != ? or splittyp is null)",
               SplitbuchungTyp.GEGEN);
-          buchungen.addFilter("mitgliedskonto is null");
+          buchungen.addFilter(Buchung.SOLLBUCHUNG + " is null");
           buchungen.setOrder("ORDER BY datum");
 
           List<BookingMemberAccountEntry> assignedBooking = new ArrayList<>();
@@ -386,23 +389,23 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
         {
           while (rs.next())
           {
-            long mitgliedskontoId = rs.getLong(1);
+            long sollbuchungId = rs.getLong(1);
 
-            DBIterator<Mitgliedskonto> mitgliedskonten = Einstellungen.getDBService().createList(Mitgliedskonto.class);
-            mitgliedskonten.addFilter("id = ?", mitgliedskontoId);
+            DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService().createList(Sollbuchung.class);
+            sollbIt.addFilter("id = ?", sollbuchungId);
 
-            while(mitgliedskonten.hasNext()) 
+            while(sollbIt.hasNext()) 
             {
-              Mitgliedskonto mitgliedskonto = mitgliedskonten.next();
+              Sollbuchung sollb = sollbIt.next();
 
-              if(!usedMemberAccount.contains(mitgliedskonto.getID())) 
+              if(!usedMemberAccount.contains(sollb.getID())) 
               {
-                BigDecimal ist = convertDoubleToBigDecimal(mitgliedskonto.getIstSumme());
-                BigDecimal soll = convertDoubleToBigDecimal(mitgliedskonto.getBetrag());
+                BigDecimal ist = convertDoubleToBigDecimal(sollb.getIstSumme());
+                BigDecimal soll = convertDoubleToBigDecimal(sollb.getBetrag());
 
                 if(soll.subtract(ist).equals(convertDoubleToBigDecimal(buchung.getBetrag()))) {
-                  assignedBooking.add(new BookingMemberAccountEntry(buchung, mitgliedskonto, zuordnungsart));
-                  usedMemberAccount.add(mitgliedskonto.getID());
+                  assignedBooking.add(new BookingMemberAccountEntry(buchung, sollb, zuordnungsart));
+                  usedMemberAccount.add(sollb.getID());
                   return new Object();
                 }
               }
@@ -412,14 +415,15 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
         }
       };
 
-      String sql = "SELECT m.id FROM mitgliedskonto as m"
-          + " inner join abrechnungslauf as a on a.id = m.abrechnungslauf"
+      String sql = "SELECT " + Sollbuchung.TABLE_NAME_ID + " FROM "
+          + Sollbuchung.TABLE_NAME
+          + " inner join abrechnungslauf as a on a.id = " + Sollbuchung.T_ABRECHNUNGSLAUF
           + " WHERE a.stichtag >= ?"
-          + "   AND a.stichtag <= ?"
-          + "   AND m.mitglied = ?"
-          + "   AND m.zahlungsweg = ?"
-          + " GROUP BY m.id"
-          + " ORDER BY a.stichtag, m.id";
+          + " AND a.stichtag <= ?"
+          + " AND " + Sollbuchung.T_MITGLIED + " = ?" + " AND "
+          + Sollbuchung.T_ZAHLUNGSWEG + " = ?"
+          + " GROUP BY " + Sollbuchung.TABLE_NAME_ID
+          + " ORDER BY a.stichtag, " + Sollbuchung.TABLE_NAME_ID;
       Einstellungen.getDBService().execute(sql, new Object[] { dateFromInput, dateUntilInput, mitgliedsId, Zahlungsweg.ÜBERWEISUNG}, rs);
     }
 
@@ -485,13 +489,13 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
     public static final String PREFIX_MITGLIEDSKONTO = "mitgliedskonto-";
 
     private Buchung buchung;
-    private Mitgliedskonto mitgliedskonto;
+    private Sollbuchung sollbuchung;
     private String zuordnungsart;
     
-    BookingMemberAccountEntry(Buchung buchung, Mitgliedskonto mitgliedskonto, String zuordnungsart) 
+    BookingMemberAccountEntry(Buchung buchung, Sollbuchung sollbuchung, String zuordnungsart) 
     {
       this.buchung = buchung;
-      this.mitgliedskonto = mitgliedskonto;
+      this.sollbuchung = sollbuchung;
       this.zuordnungsart = zuordnungsart;
     }
 
@@ -500,9 +504,9 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
       return buchung;
     }
     
-    public Mitgliedskonto getMitgliedskonto()
+    public Sollbuchung getSollbuchung()
     {
-      return mitgliedskonto;
+      return sollbuchung;
     }
 
     @Override
@@ -511,7 +515,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
       if(arg0 instanceof BookingMemberAccountEntry)
       {
         BookingMemberAccountEntry otherValue = (BookingMemberAccountEntry) arg0;
-        return otherValue.getBuchung().equals(buchung) && otherValue.getMitgliedskonto().equals(mitgliedskonto);
+        return otherValue.getBuchung().equals(buchung) && otherValue.getSollbuchung().equals(sollbuchung);
       }
       return false; 
     }
@@ -528,7 +532,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
 
       if(arg0.startsWith(PREFIX_MITGLIEDSKONTO))
       {
-        return mitgliedskonto.getAttribute(arg0.substring(PREFIX_MITGLIEDSKONTO.length()));
+        return sollbuchung.getAttribute(arg0.substring(PREFIX_MITGLIEDSKONTO.length()));
       }
 
       if(arg0.equals("id"))
@@ -553,7 +557,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
         attributeNames.add(PREFIX_BUCHUNG + dao);
       }
 
-      for(String dao : mitgliedskonto.getAttributeNames()) {
+      for(String dao : sollbuchung.getAttributeNames()) {
         attributeNames.add(PREFIX_MITGLIEDSKONTO + dao);
       }
 
@@ -562,7 +566,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
 
     @Override
     public String getID() throws RemoteException {
-      return buchung.getID() +"."+ mitgliedskonto.getID();
+      return buchung.getID() +"."+ sollbuchung.getID();
     }
 
     @Override

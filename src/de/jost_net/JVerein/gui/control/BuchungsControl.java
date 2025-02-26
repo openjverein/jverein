@@ -47,7 +47,7 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
-import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
+import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -74,7 +74,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
@@ -150,7 +150,7 @@ public class BuchungsControl extends AbstractControl
 
   private Input art;
 
-  private TextInput mitgliedskonto;
+  private TextInput sollbuchung;
 
   private TextAreaInput kommentar;
 
@@ -570,23 +570,23 @@ public class BuchungsControl extends AbstractControl
     return verzicht;
   }
 
-  public TextInput getMitgliedskonto() throws RemoteException
+  public TextInput getSollbuchung() throws RemoteException
   {
 
-    if (mitgliedskonto != null && !mitgliedskonto.getControl().isDisposed())
+    if (sollbuchung != null && !sollbuchung.getControl().isDisposed())
     {
-      return mitgliedskonto;
+      return sollbuchung;
     }
 
-    Mitgliedskonto mk = getBuchung().getMitgliedskonto();
-    mitgliedskonto = new TextInput(
-        mk != null
-            ? Adressaufbereitung.getNameVorname(mk.getMitglied()) + ", "
-                + new JVDateFormatTTMMJJJJ().format(mk.getDatum()) + ", "
-                + Einstellungen.DECIMALFORMAT.format(mk.getBetrag())
+    Sollbuchung sollb = getBuchung().getSollbuchung();
+    sollbuchung = new TextInput(
+        sollb != null
+            ? Adressaufbereitung.getNameVorname(sollb.getMitglied()) + ", "
+                + new JVDateFormatTTMMJJJJ().format(sollb.getDatum()) + ", "
+                + Einstellungen.DECIMALFORMAT.format(sollb.getBetrag())
             : "");
-    mitgliedskonto.disable();
-    return mitgliedskonto;
+    sollbuchung.disable();
+    return sollbuchung;
   }
 
   public Input getArt() throws RemoteException
@@ -955,7 +955,7 @@ public class BuchungsControl extends AbstractControl
     return b;
   }
 
-  public Button getStarteBuchungMitgliedskontoZuordnungAutomatischButton()
+  public Button getStarteBuchungSollbuchungZuordnungAutomatischButton()
   {
     Button b = new Button("Zuordnung", new BuchungSollbuchungZuordnungAutomatischAction(getVondatum(), getBisdatum()), null, false,
             "user-friends.png");
@@ -1041,7 +1041,7 @@ public class BuchungsControl extends AbstractControl
               break;
           }
           
-          b_steuer.setMitgliedskontoID(b.getMitgliedskontoID());
+          b_steuer.setSollbuchungID(b.getSollbuchungID());
           b_steuer.setBuchungsartId(Long.valueOf(b_art.getSteuerBuchungsart().getID()));
           b_steuer.setBuchungsklasseId(b_art.getBuchungsklasseId());
           b_steuer.setBetrag(steuer.doubleValue());
@@ -1333,8 +1333,8 @@ public class BuchungsControl extends AbstractControl
       buchungsList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       if (geldkonto)
-        buchungsList.addColumn(new Column("mitgliedskonto", "Mitglied",
-          new MitgliedskontoFormatter(), false, Column.ALIGN_AUTO,
+        buchungsList.addColumn(new Column(Buchung.SOLLBUCHUNG, "Mitglied",
+          new SollbuchungFormatter(), false, Column.ALIGN_AUTO,
           Column.SORT_BY_DISPLAY));
       buchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
       buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
@@ -1414,8 +1414,8 @@ public class BuchungsControl extends AbstractControl
           new BuchungsartFormatter());
       splitbuchungsList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      splitbuchungsList.addColumn("Mitglied", "mitgliedskonto",
-          new MitgliedskontoFormatter());
+      splitbuchungsList.addColumn("Mitglied", Buchung.SOLLBUCHUNG,
+          new SollbuchungFormatter());
       splitbuchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
       splitbuchungsList.setContextMenu(new SplitBuchungMenu(this));
       splitbuchungsList.setRememberColWidths(true);

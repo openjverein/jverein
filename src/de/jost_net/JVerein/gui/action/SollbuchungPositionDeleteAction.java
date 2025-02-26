@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -75,7 +75,7 @@ public class SollbuchungPositionDeleteAction implements Action
       position.delete();
       // Betrag in Sollbuchung neu berechnen
       Double betrag = 0.0;
-      Mitgliedskonto sollb = position.getSollbuchung();
+      Sollbuchung sollb = position.getSollbuchung();
       ArrayList<SollbuchungPosition> sollbpList = sollb
           .getSollbuchungPositionList();
       for (SollbuchungPosition sollp : sollbpList)

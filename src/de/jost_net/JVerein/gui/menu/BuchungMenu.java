@@ -285,7 +285,7 @@ public class BuchungMenu extends ContextMenu
       {
         if (o instanceof Buchung)
         {
-          return ((Buchung) o).getMitgliedskonto() != null;
+          return ((Buchung) o).getSollbuchung() != null;
         }
       }
       catch (RemoteException e) {
