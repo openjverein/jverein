@@ -8,7 +8,7 @@
     {
       "customType": "regex",
       "fileMatch": [
-        "build.properties"
+        "^build\\.properties$"
       ],
       "matchStrings": [
         "# renovate: depName=(?<depName>.*?)\\s*\\w\\.version\\s+=\\s?(?<currentValue>V_\\d+_\\d+_\\d+_BUILD_\\d+)"
