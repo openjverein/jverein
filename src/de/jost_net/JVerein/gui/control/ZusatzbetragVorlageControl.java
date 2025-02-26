@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
+import de.jost_net.JVerein.gui.parts.ZusatzbetragVorlagePart;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -63,6 +64,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
 
   private ZusatzbetragVorlage zbv;
 
+  private ZusatzbetragVorlagePart part;
+
   private DateInput startdatum;
 
   private SelectInput intervall;
@@ -92,6 +95,16 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     }
     zbv = (ZusatzbetragVorlage) getCurrentObject();
     return zbv;
+  }
+
+  public ZusatzbetragVorlagePart getZusatzbetragVorlagePart()
+  {
+    if (part != null)
+    {
+      return part;
+    }
+    part = new ZusatzbetragVorlagePart(getZusatzbetragVorlage());
+    return part;
   }
 
   public DateInput getFaelligkeit() throws RemoteException
