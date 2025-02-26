@@ -157,8 +157,8 @@ public class MittelverwendungFlowList extends MittelverwendungList
             Kontoart.RUECKLAGE_SONSTIG.getKey() },
         rsd);
 
-    bezeichnung = "Verwendungsrückstand(+)/-überhang(-) am Ende des letzten GJ "
-        + letztesGJ;
+    bezeichnung = "Verwendungsrückstand(+)/-überhang(-) zu Beginn des aktuellen GJ "
+        + aktuellesGJ;
     addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
         vorhandeneMittel, null, BLANK);
 
@@ -180,7 +180,7 @@ public class MittelverwendungFlowList extends MittelverwendungList
     addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
         rueckstandVorVorjahr, null, BLANK);
     bezeichnung = BLANKS
-        + "- Darin enthaltene zwanghafte satzungsgemäße Weitergabe von Mitteln";
+        + "- Überfällige zwanghafte satzungsgemäße Weitergabe von Mitteln aus den letzten GJ";
     addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
         zwanghafteWeitergabeVorjahr, null, BLANK);
 
@@ -294,23 +294,29 @@ public class MittelverwendungFlowList extends MittelverwendungList
     zwanghafteWeitergabeVorjahr = (zwanghafteWeitergabeVorjahr == null) ? 0.0
         : zwanghafteWeitergabeVorjahr;
     Double ausgaben = Math.max(verwendung - summeEntRuecklagen, 0);
-    Double rueckstandVorjahr = vorhandeneMittel - rueckstandVorVorjahr
-        - zwanghafteWeitergabeVorjahr;
+    Double rueckstandVorjahr = Math.max(
+        vorhandeneMittel - rueckstandVorVorjahr - zwanghafteWeitergabeVorjahr,
+        0);
     zwanghafteWeitergabeNeu = 0.0;
     rueckstandVorjahrNeu = 0.0; // Rest aus Rückstand Vorjahr
     // Der Rückstand aus dem vorletzten Jahr muss ganz aufgebraucht werden,
     // ansonsten unterliegt der Restbetrag der zwanghaften satzungsgemäßen
     // Weitergabe von Mitteln
 
-    if (rueckstandVorVorjahr > ausgaben)
+    if (zwanghafteWeitergabeVorjahr > ausgaben)
     {
-      zwanghafteWeitergabeNeu = rueckstandVorVorjahr - ausgaben;
+      zwanghafteWeitergabeNeu = rueckstandVorVorjahr;
+      rueckstandVorjahrNeu = rueckstandVorjahr;
+    }
+    else if (rueckstandVorVorjahr + zwanghafteWeitergabeVorjahr > ausgaben)
+    {
+      zwanghafteWeitergabeNeu = rueckstandVorVorjahr - ausgaben
+          + zwanghafteWeitergabeVorjahr;
       rueckstandVorjahrNeu = rueckstandVorjahr;
     }
     else
     {
-      rueckstandVorjahrNeu = Math
-          .max(vorhandeneMittel - ausgaben - zwanghafteWeitergabeVorjahr, 0);
+      rueckstandVorjahrNeu = Math.max(vorhandeneMittel - ausgaben, 0);
     }
     bezeichnung = BLANKS
         + "- Darin enthaltener Verwendungsrückstand aus dem letzten GJ "
@@ -318,7 +324,7 @@ public class MittelverwendungFlowList extends MittelverwendungList
     addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
         rueckstandVorjahrNeu, null, BLANK);
     bezeichnung = BLANKS
-        + "- Darin enthaltene zwanghafte satzungsgemäße Weitergabe von Mitteln";
+        + "- Überfällige zwanghafte satzungsgemäße Weitergabe von Mitteln";
     addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
         zwanghafteWeitergabeNeu, null, BLANK);
 
