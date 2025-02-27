@@ -154,6 +154,14 @@ public class SollbuchungControl extends DruckMailControl
     settings.setStoreWhenRead(true);
   }
 
+  public SollbuchungControl(AbstractView view, Sollbuchung sollb)
+  {
+    super(view);
+    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings.setStoreWhenRead(true);
+    sollbuchung = sollb;
+  }
+
   public Sollbuchung getSollbuchung()
   {
     if (sollbuchung != null)
@@ -162,6 +170,11 @@ public class SollbuchungControl extends DruckMailControl
     }
     sollbuchung = (Sollbuchung) getCurrentObject();
     return sollbuchung;
+  }
+
+  public void setSollbuchung(Sollbuchung sollb)
+  {
+    sollbuchung = sollb;
   }
 
   public Settings getSettings()
@@ -305,7 +318,7 @@ public class SollbuchungControl extends DruckMailControl
     return suchname2;
   }
 
-  public void handleStore()
+  public boolean handleStore()
   {
     try
     {
@@ -334,6 +347,7 @@ public class SollbuchungControl extends DruckMailControl
 
       sollb.store();
       GUI.getStatusBar().setSuccessText("Sollbuchung gespeichert");
+      return true;
     }
     catch (ApplicationException e)
     {
@@ -345,6 +359,7 @@ public class SollbuchungControl extends DruckMailControl
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
+    return false;
   }
 
   public Part getMitgliedskontoTree(Mitglied mitglied) throws RemoteException
@@ -880,7 +895,7 @@ public class SollbuchungControl extends DruckMailControl
         list.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
         Mitglied m = (Mitglied) getMitglied().getValue();
         Mitglied z = (Mitglied) getZahler().getValue();
-        if (m.getZahlerID() != null)
+        if (m != null && m.getZahlerID() != null)
         {
           list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
           if (z == null)
