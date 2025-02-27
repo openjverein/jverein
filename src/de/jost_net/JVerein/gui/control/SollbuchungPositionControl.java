@@ -83,6 +83,11 @@ public class SollbuchungPositionControl extends AbstractControl
     return position;
   }
 
+  public void setSollbuchungPosition(SollbuchungPosition pos)
+  {
+    position = pos;
+  }
+
   public DecimalInput getBetrag() throws RemoteException
   {
     if (betrag != null)

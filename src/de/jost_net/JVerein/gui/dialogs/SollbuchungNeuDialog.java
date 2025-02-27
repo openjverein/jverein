@@ -117,7 +117,7 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
         edit = false;
         close();
       }
-    }, null, true, "document-save.png");
+    }, null, false, "document-save.png");
 
     // Speichern und Sollbuchung anzeigen
     buttons.addButton("Speichern und Anzeigen", new Action()
@@ -152,9 +152,12 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
           }
           try
           {
-            Sollbuchung sollb = (Sollbuchung) Einstellungen.getDBService()
+            sollbuchung = (Sollbuchung) Einstellungen.getDBService()
                 .createObject(Sollbuchung.class, null);
-            sollbControl.setSollbuchung(sollb);
+            sollbControl.setSollbuchung(sollbuchung);
+            sollbuchungPosition = (SollbuchungPosition) Einstellungen
+                .getDBService().createObject(SollbuchungPosition.class, null);
+            sollbPosControl.setSollbuchungPosition(sollbuchungPosition);
             Input mitgliedInput = sollbControl.getMitglied();
             if (mitgliedInput instanceof SelectInput)
             {
