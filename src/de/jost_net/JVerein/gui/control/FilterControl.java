@@ -274,7 +274,7 @@ public class FilterControl extends AbstractControl
       suchmitgliedstyp = new SelectInput(new ArrayList<>(), null);
     }
     suchmitgliedstyp.setName("Mitgliedstyp");
-    suchmitgliedstyp.setPleaseChoose("Bitte auswählen");
+    suchmitgliedstyp.setPleaseChoose(ALLE);
     suchmitgliedstyp.addListener(new FilterListener());
     return suchmitgliedstyp;
   }
