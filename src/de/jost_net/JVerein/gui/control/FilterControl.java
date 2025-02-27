@@ -272,7 +272,7 @@ public class FilterControl extends AbstractControl
       suchadresstyp = new SelectInput(new ArrayList<>(), null);
     }
     suchadresstyp.setName("Mitgliedstyp");
-    suchadresstyp.setPleaseChoose("Bitte auswählen");
+    suchadresstyp.setPleaseChoose(ALLE);
     suchadresstyp.addListener(new FilterListener());
     return suchadresstyp;
   }
