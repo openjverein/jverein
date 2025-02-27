@@ -16,13 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.ZusatzbetragVorlageControl;
-import de.jost_net.JVerein.gui.parts.ZusatzbetragVorlagePart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class ZusatzbetragVorlageView extends AbstractView
 {
@@ -34,12 +35,21 @@ public class ZusatzbetragVorlageView extends AbstractView
     final ZusatzbetragVorlageControl control = new ZusatzbetragVorlageControl(
         this);
 
-    final ZusatzbetragVorlagePart part = control.getZusatzbetragVorlagePart();
-    part.paint(getParent());
+    LabelGroup group = new LabelGroup(getParent(), "Zusatzbetrag-Vorlage");
+    group.addLabelPair("Erste Fälligkeit ", control.getStartdatum(true));
+    group.addLabelPair("Nächste Fälligkeit", control.getFaelligkeit());
+    group.addLabelPair("Intervall", control.getIntervall());
+    group.addLabelPair("Nicht mehr ausführen ab", control.getEndedatum());
+    group.addLabelPair("Buchungstext", control.getBuchungstext());
+    group.addLabelPair("Betrag", control.getBetrag());
+    group.addLabelPair("Buchungsart", control.getBuchungsart());
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
+    group.addLabelPair("Zahlungsweg", control.getZahlungsweg());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
+        DokumentationUtil.ZUSATZBETRAEGE_VORLAGE, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

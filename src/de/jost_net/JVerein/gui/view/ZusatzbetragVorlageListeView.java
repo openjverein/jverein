@@ -24,7 +24,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class ZusatzbetraegeVorlageListeView extends AbstractView
+public class ZusatzbetragVorlageListeView extends AbstractView
 {
 
   @Override
@@ -39,7 +39,7 @@ public class ZusatzbetraegeVorlageListeView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
+        DokumentationUtil.ZUSATZBETRAEGE_VORLAGE, false, "question-circle.png");
     buttons.addButton("Neu",
         new NewAction(ZusatzbetragVorlageView.class, ZusatzbetragVorlage.class),
         control, false, "document-new.png");
