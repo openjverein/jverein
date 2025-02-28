@@ -25,7 +25,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class ZusatzbetragVorlageView extends AbstractView
+public class ZusatzbetragVorlageDetailView extends AbstractView
 {
 
   @Override

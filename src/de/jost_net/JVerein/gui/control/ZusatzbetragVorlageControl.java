@@ -30,7 +30,7 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.menu.ZusatzbetragVorlageMenu;
-import de.jost_net.JVerein.gui.view.ZusatzbetragVorlageView;
+import de.jost_net.JVerein.gui.view.ZusatzbetragVorlageDetailView;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -352,7 +352,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     if (zusatzbetragVorlageList == null)
     {
       zusatzbetragVorlageList = new TablePart(zusatzbetragsvorlagen,
-          new EditAction(ZusatzbetragVorlageView.class));
+          new EditAction(ZusatzbetragVorlageDetailView.class));
       zusatzbetragVorlageList.addColumn("Erste Fälligkeit", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetragVorlageList.addColumn("Nächste Fälligkeit", "faelligkeit",
