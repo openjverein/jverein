@@ -836,6 +836,11 @@ public class SollbuchungControl extends DruckMailControl
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
           Einstellungen.getEinstellung().getMitgliedAuswahl());
       mitglied.addListener(new MitgliedListener());
+      if (mitglied instanceof SelectInput)
+      {
+        ((SelectInput) mitglied).setPleaseChoose("Bitte auswählen");
+        ((SelectInput) mitglied).setPreselected(null);
+      }
     }
     mitglied.setMandatory(true);
     return mitglied;
@@ -850,6 +855,14 @@ public class SollbuchungControl extends DruckMailControl
     zahler = new MitgliedInput().getMitgliedInput(zahler,
         getSollbuchung().getZahler(),
         Einstellungen.getEinstellung().getMitgliedAuswahl());
+    if (zahler instanceof SelectInput)
+    {
+      ((SelectInput) zahler).setPleaseChoose("Bitte auswählen");
+      if (getSollbuchung().getMitglied() == null)
+      {
+        ((SelectInput) zahler).setPreselected(null);
+      }
+    }
     zahler.setMandatory(true);
     return zahler;
   }
