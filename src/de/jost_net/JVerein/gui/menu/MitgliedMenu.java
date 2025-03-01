@@ -80,7 +80,7 @@ public class MitgliedMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Eigenschaften",
         new MitgliedEigenschaftZuordnungAction(), "document-properties.png"));
     addItem(new CheckedContextMenuItem("Zusatzbeträge zuweisen",
-        new MitgliedZusatzbetraegeZuordnungAction(), "coins.png"));
+        new MitgliedZusatzbetraegeZuordnungAction(), "euro-sign.png"));
     if (Einstellungen.getEinstellung().getArbeitseinsatz() && !(detailaction instanceof NichtMitgliedDetailAction))
     {
       addItem(new CheckedContextMenuItem("Arbeitseinsätze zuweisen",
