@@ -192,6 +192,25 @@ public class MittelverwendungControl extends SaldoControl
       return;
     }
 
+    // Der aktuelle Mittelverwendungsreport ist ein Jahr nach dem letzten
+    // Jahresabschluss, wir erlauben das Rücksetzen z.B. wegen
+    // Unterschreiten der 45.000 EUR Einnahmen Grenze
+    if (abschlussvon.equals(jahresabschluesse[0].getVon()))
+    {
+      configButton.setEnabled(true);
+      editDatumvon = abschlussvon;
+      jaId = jahresabschluesse[0].getID();
+      if (jahresabschluesse.length == 1)
+      {
+        vorJaId = null;
+      }
+      else
+      {
+        vorJaId = jahresabschluesse[1].getID();
+      }
+      return;
+    }
+
     for (int i = 0; i < jahresabschluesse.length; i++)
     {
       if (jahresabschluesse[i].getVon().equals(abschlussvon))
