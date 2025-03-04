@@ -17,11 +17,13 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.dialogs.SollbuchungNeuDialog;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
 public class SollbuchungNeuAction implements Action
@@ -44,24 +46,43 @@ public class SollbuchungNeuAction implements Action
     {
       sollb = (Sollbuchung) Einstellungen.getDBService()
           .createObject(Sollbuchung.class, null);
-      sollb.setBetrag(0.0);
       if (m != null)
       {
         if (m.getID() == null)
         {
           throw new ApplicationException(
-              "Neues Mitglied bitte erst speichern. Dann können Zusatzbeträge aufgenommen werden.");
+              "Neues Mitglied bitte erst speichern. Dann können Sollbuchungen aufgenommen werden.");
         }
         sollb.setMitglied(m);
         sollb.setZahlungsweg(m.getZahlungsweg());
-        sollb.setZahler(m.getZahler());
+        if (m.getZahler() != null)
+        {
+          sollb.setZahler(m.getZahler());
+        }
+        else
+        {
+          sollb.setZahler(m);
+        }
       }
+      SollbuchungNeuDialog sollbd = new SollbuchungNeuDialog(sollb);
+      if (sollbd.open())
+      {
+        // Anzeigen ausgewählt
+        GUI.startView(SollbuchungDetailView.class.getName(), sollb);
+      }
+      else
+      {
+        GUI.getCurrentView().reload();
+      }
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw new OperationCanceledException(oce);
     }
     catch (Exception e)
     {
       throw new ApplicationException(
           "Fehler bei der Erzeugung einer neuen Sollbuchung", e);
     }
-    GUI.startView(new SollbuchungDetailView(), sollb);
   }
 }
