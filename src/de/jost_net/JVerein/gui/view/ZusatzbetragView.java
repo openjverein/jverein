@@ -45,7 +45,7 @@ public class ZusatzbetragView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
-        null, false, "clone.png");
+        null, false, "view-refresh.png");
     buttons.addButton("Speichern", new Action()
     {
 

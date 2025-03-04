@@ -429,7 +429,7 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
     Object o = getAttribute("zahlungsweg");
     if (o == null)
     {
-      return new Zahlungsweg(0);
+      return new Zahlungsweg(Zahlungsweg.STANDARD);
     }
     return new Zahlungsweg((Integer) o);
   }
@@ -439,7 +439,7 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   {
     if (zahlungsweg == null)
     {
-      setAttribute("zahlungsweg", 0);
+      setAttribute("zahlungsweg", Zahlungsweg.STANDARD);
     }
     else
     {

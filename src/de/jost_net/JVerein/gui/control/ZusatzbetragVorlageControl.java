@@ -255,13 +255,13 @@ public class ZusatzbetragVorlageControl extends AbstractControl
   {
     try
     {
-      if (null == buchungsklasse)
+      if (buchungsklasse == null)
         return null;
-      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse()
+      Buchungsklasse bukla = (Buchungsklasse) getBuchungsklasse()
           .getValue();
-      if (null == buchungsKlasse)
+      if (null == bukla)
         return null;
-      Long id = Long.valueOf(buchungsKlasse.getID());
+      Long id = Long.valueOf(bukla.getID());
       return id;
     }
     catch (RemoteException ex)

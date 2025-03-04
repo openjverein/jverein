@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeImportAction;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
@@ -43,6 +44,9 @@ public class ZusatzbetragListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
+    buttons.addButton("Vorlagen",
+        new StartViewAction(ZusatzbetragVorlageListeView.class), null, false,
+        "euro-sign.png");
     buttons.addButton("Import",
         new ZusatzbetraegeImportAction(),null,false, "file-import.png");
     buttons.addButton(control.getPDFAusgabeButton());

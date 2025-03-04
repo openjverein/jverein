@@ -79,11 +79,11 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedInZwischenablageKopierenAction(), "edit-copy.png"));
     addItem(new CheckedContextMenuItem("Eigenschaften",
         new MitgliedEigenschaftZuordnungAction(), "document-properties.png"));
-    addItem(new CheckedContextMenuItem("Zusatzbeträge zuweisen",
+    addItem(new CheckedContextMenuItem("Zusatzbetrag zuordnen",
         new MitgliedZusatzbetraegeZuordnungAction(), "euro-sign.png"));
     if (Einstellungen.getEinstellung().getArbeitseinsatz() && !(detailaction instanceof NichtMitgliedDetailAction))
     {
-      addItem(new CheckedContextMenuItem("Arbeitseinsätze zuweisen",
+      addItem(new CheckedContextMenuItem("Arbeitseinsatz zuordnen",
           new MitgliedArbeitseinsatzZuordnungAction(), "screwdriver.png"));
     }
     if (detailaction instanceof NichtMitgliedDetailAction)
