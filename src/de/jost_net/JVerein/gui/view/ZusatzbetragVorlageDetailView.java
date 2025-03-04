@@ -16,36 +16,40 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
-import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
-import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
+import de.jost_net.JVerein.gui.control.ZusatzbetragVorlageControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class ZusatzbetragView extends AbstractView
+public class ZusatzbetragVorlageDetailView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Zusatzbetrag");
-    final ZusatzbetragControl control = new ZusatzbetragControl(this);
+    GUI.getView().setTitle("Zusatzbetrag-Vorlage");
+    final ZusatzbetragVorlageControl control = new ZusatzbetragVorlageControl(
+        this);
 
-    final ZusatzbetragPart part = control.getZusatzbetragPart();
-    part.paint(getParent());
-
-    LabelGroup group2 = new LabelGroup(getParent(), "Vorlagen");
-    group2.addLabelPair("Als Vorlage speichern", control.getVorlage());
+    LabelGroup group = new LabelGroup(getParent(), "Zusatzbetrag-Vorlage");
+    group.addLabelPair("Erste Fälligkeit ", control.getStartdatum(true));
+    group.addLabelPair("Nächste Fälligkeit", control.getFaelligkeit());
+    group.addLabelPair("Intervall", control.getIntervall());
+    group.addLabelPair("Nicht mehr ausführen ab", control.getEndedatum());
+    group.addLabelPair("Buchungstext", control.getBuchungstext());
+    group.addLabelPair("Betrag", control.getBetrag());
+    group.addLabelPair("Buchungsart", control.getBuchungsart());
+    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
+    group.addLabelPair("Zahlungsweg", control.getZahlungsweg());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
-    buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
-        null, false, "view-refresh.png");
+        DokumentationUtil.ZUSATZBETRAEGE_VORLAGE, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

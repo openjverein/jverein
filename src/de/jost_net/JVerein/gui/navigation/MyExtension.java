@@ -92,7 +92,7 @@ import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.jost_net.JVerein.gui.view.StatistikMitgliedView;
 import de.jost_net.JVerein.gui.view.WiedervorlagelisteView;
-import de.jost_net.JVerein.gui.view.ZusatzbetraegelisteView;
+import de.jost_net.JVerein.gui.view.ZusatzbetragListeView;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -180,7 +180,7 @@ public class MyExtension implements Extension
       if (Einstellungen.getEinstellung().getZusatzbetrag())
       {
         mitglieder.addChild(new MyItem(mitglieder, "Zusatzbeträge",
-            new StartViewAction(ZusatzbetraegelisteView.class),
+            new StartViewAction(ZusatzbetragListeView.class),
             "euro-sign.png"));
       }
       if (Einstellungen.getEinstellung().getWiedervorlage())

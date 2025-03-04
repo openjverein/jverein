@@ -17,44 +17,41 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
+import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
+import de.jost_net.JVerein.gui.action.ZusatzbetraegeImportAction;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
-import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class ZusatzbetragView extends AbstractView
+public class ZusatzbetragListeView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Zusatzbetrag");
+    GUI.getView().setTitle("Zusatzbeträge");
+
     final ZusatzbetragControl control = new ZusatzbetragControl(this);
 
-    final ZusatzbetragPart part = control.getZusatzbetragPart();
-    part.paint(getParent());
+    LabelGroup group = new LabelGroup(getParent(), "Ausführungstag");
+    group.addLabelPair("Ausführungstag", control.getAusfuehrungSuch());
 
-    LabelGroup group2 = new LabelGroup(getParent(), "Vorlagen");
-    group2.addLabelPair("Als Vorlage speichern", control.getVorlage());
+    control.getZusatzbetraegeList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
-    buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
-        null, false, "view-refresh.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
-    buttons.paint(getParent());
+    buttons.addButton("Vorlagen",
+        new StartViewAction(ZusatzbetragVorlageListeView.class), null, false,
+        "euro-sign.png");
+    buttons.addButton("Import",
+        new ZusatzbetraegeImportAction(),null,false, "file-import.png");
+    buttons.addButton(control.getPDFAusgabeButton());
+    buttons.addButton("Neu", new ZusatzbetraegeAction(null), 
+        control, false, "document-new.png");
+    buttons.paint(this.getParent());
   }
 }

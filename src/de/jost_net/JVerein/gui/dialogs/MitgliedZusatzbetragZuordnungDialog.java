@@ -23,17 +23,22 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
+import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
+import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.dialogs.SimpleDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -62,17 +67,22 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    Zusatzbetrag zb = (Zusatzbetrag) Einstellungen.getDBService()
+    Zusatzbetrag zusatzb = (Zusatzbetrag) Einstellungen.getDBService()
         .createObject(Zusatzbetrag.class, null);
-    part = new ZusatzbetragPart(zb, false);
+    part = new ZusatzbetragPart(zusatzb, false);
     part.paint(parent);
 
+    final ZusatzbetragControl control = new ZusatzbetragControl(null);
+    LabelGroup group = new LabelGroup(parent, "Vorlagen");
+    group.addLabelPair("Als Vorlage speichern", control.getVorlage());
+
     ButtonArea buttons = new ButtonArea();
-    
+    buttons.addButton("Hilfe", new DokumentationAction(),
+        DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part)
-        , null, false, "text-x-generic.png");
+        , null, false, "view-refresh.png");
     
-    buttons.addButton("Zuordnen", new Action()
+    buttons.addButton("Speichern", new Action()
     {
       @Override
       public void handleAction(Object context)
@@ -100,6 +110,27 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
             zb.store();
             count++;
           }
+          if (control.getVorlage().getValue().equals(ZusatzbetragControl.MITDATUM)
+              || control.getVorlage().getValue().equals(ZusatzbetragControl.OHNEDATUM))
+          {
+            ZusatzbetragVorlage zv = (ZusatzbetragVorlage) Einstellungen
+                .getDBService().createObject(ZusatzbetragVorlage.class, null);
+            IntervallZusatzzahlung iz = (IntervallZusatzzahlung) part
+                .getIntervall().getValue();
+            zv.setIntervall(iz.getKey());
+            zv.setBuchungstext((String) part.getBuchungstext().getValue());
+            zv.setBetrag((Double) part.getBetrag().getValue());
+            if (control.getVorlage().getValue().equals(ZusatzbetragControl.MITDATUM))
+            {
+              zv.setEndedatum((Date) part.getEndedatum().getValue());
+              zv.setFaelligkeit((Date) part.getFaelligkeit().getValue());
+              zv.setStartdatum((Date) part.getStartdatum(true).getValue());
+            }
+            zv.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
+            zv.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
+            zv.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
+            zv.store();
+          }
           message = String.format("%d Zusatzbeiträge gespeichert.", count);
         }
         catch (RemoteException e)
@@ -124,7 +155,7 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
 
         close();
       }
-    }, null, true, "ok.png");
+    }, null, true, "document-save.png");
 
     buttons.addButton("Abbrechen", new Action()
     {
