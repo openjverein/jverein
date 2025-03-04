@@ -235,11 +235,11 @@ public class BuchungsklasseSaldoList extends AbstractSaldoList
 
     zeile.add(
         new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.SALDOFOOTER,
-            "Salden" + " " + bezeichnung, suBukEinnahmen,
+            "Salden - " + bezeichnung, suBukEinnahmen,
             suBukAusgaben, suBukUmbuchungen));
     zeile.add(new BuchungsklasseSaldoZeile(
         BuchungsklasseSaldoZeile.SALDOGEWINNVERLUST,
-        "Gewinn/Verlust" + " " + bezeichnung,
+        "Gewinn/Verlust - " + bezeichnung,
         suBukEinnahmen + suBukAusgaben + suBukUmbuchungen));
 
     // Buchungsklasse Übersicht Steuern ausgeben
