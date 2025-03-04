@@ -36,6 +36,8 @@ import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Eigenschaft;
+import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedDokument;
@@ -1297,13 +1299,6 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     }
     else if (fieldName.startsWith("zusatzfelder_"))
     {
-      Long l = (Long) super.getAttribute("beitragsgruppe");
-      if (l == null)
-        return null;
-
-      Cache cache = Cache.get(Beitragsgruppe.class, true);
-      cache.get(l);
-
       DBIterator<Felddefinition> it = Einstellungen.getDBService()
           .createList(Felddefinition.class);
       it.addFilter("name = ?", new Object[] { fieldName.substring(13) });
@@ -1338,6 +1333,34 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
             return "";
         }
       }
+    }
+    else if (fieldName.startsWith("eigenschaften_"))
+    {
+      DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
+          .createList(EigenschaftGruppe.class);
+      it.addFilter("bezeichnung = ?", new Object[] { fieldName.substring(14) });
+      EigenschaftGruppe eg = (EigenschaftGruppe) it.next();
+
+      DBIterator<Eigenschaft> eigenschaftIt = Einstellungen.getDBService()
+          .createList(Eigenschaft.class);
+      eigenschaftIt.join("eigenschaften");
+      eigenschaftIt.addFilter("eigenschaften.eigenschaft = eigenschaft.id");
+      eigenschaftIt.addFilter("eigenschaften.mitglied = ?", getID());
+      eigenschaftIt.addFilter("eigenschaft.eigenschaftgruppe = ?", eg.getID());
+
+      if (!eigenschaftIt.hasNext())
+      {
+        return "";
+      }
+
+      String value = "";
+      while (eigenschaftIt.hasNext())
+      {
+        Eigenschaft e = eigenschaftIt.next();
+        value += ", " + e.getBezeichnung();
+      }
+      // Führendes Komme entfernen
+      return value.substring(1).trim();
     }
     else if ("alter".equals(fieldName))
     {
@@ -2016,7 +2039,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     @Override
     public Object getAttribute(String s) throws RemoteException
     {
-      return null;
+      return super.getAttribute(s);
     }
 
     @Override

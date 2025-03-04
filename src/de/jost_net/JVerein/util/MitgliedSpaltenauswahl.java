@@ -25,10 +25,13 @@ import de.jost_net.JVerein.gui.formatter.ZahlungsrhythmusFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungsterminFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.Staat;
+import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.logging.Logger;
@@ -59,6 +62,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Straße", "strasse", true, true);
     add("PLZ", "plz", false, true);
     add("Ort", "ort", true, true);
+    add("Staat", "staat", false, new StaatFormatter(), Column.ALIGN_LEFT, true);
     add("Zahlungsweg", "zahlungsweg", false, new ZahlungswegFormatter(),
         Column.ALIGN_LEFT, false);
     add("Zahlungsrhytmus", "zahlungsrhytmus", false,
@@ -68,8 +72,6 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Datum des Mandats", "mandatdatum", false, false);
     add("BIC", "bic", false, true);
     add("IBAN", "iban", false, new IbanFormatter(), Column.ALIGN_LEFT, true);
-    add("BLZ", "blz", false, true);
-    add("Konto", "konto", false, true);
     add("Kontoinhaber Anrede", "ktoianrede", false, true);
     add("Kontoinhaber Name", "ktoiname", false, true);
     add("Kontoinhaber Titel", "ktoititel", false, true);
@@ -79,8 +81,10 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
         true);
     add("Kontoinhaber PLZ", "ktoiplz", false, true);
     add("Kontoinhaber Ort", "ktoiort", false, true);
-    add("Kontoinhaber Staat", "ktoistaat", false, true);
+    add("Kontoinhaber Staat", "ktoistaat", false, new StaatFormatter(),
+        Column.ALIGN_LEFT, true);
     add("Kontoinhaber Email", "ktoiemail", false, true);
+    add("Kontoinhaber Geschlecht", "ktoigeschlecht", false, true);
     add("Mandat Version", "mandatversion", false, true);
     add("Geburtsdatum", "geburtsdatum", true,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);
@@ -101,8 +105,14 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Kündigung", "kuendigung", false,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);
+    add("Leitweg ID", "leitwegid", false, true);
+    add("Zahler ID", "zahlerid", false, true);
     try
     {
+      if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
+      {
+        add("Individueller Beitrag", "individuellerbeitrag", false, true);
+      }
       if (Einstellungen.getEinstellung().getSterbedatum())
       {
         add("Sterbedatum", "sterbetag", false,
@@ -146,10 +156,42 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
             break;
         }
       }
+
+      DBIterator<EigenschaftGruppe> eigenschaftGruppeit = Einstellungen
+          .getDBService().createList(EigenschaftGruppe.class);
+      while (eigenschaftGruppeit.hasNext())
+      {
+        EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeit.next();
+
+        add(eg.getBezeichnung(), "eigenschaften_" + eg.getBezeichnung(), false,
+            true);
+
+      }
     }
     catch (RemoteException e)
     {
       Logger.error("Fehler", e);
+    }
+  }
+
+  class StaatFormatter implements Formatter
+  {
+
+    @Override
+    public String format(Object o)
+    {
+      if (o == null)
+      {
+        return "";
+      }
+      try
+      {
+        return Staat.getStaat((String) o);
+      }
+      catch (RemoteException e)
+      {
+        return "";
+      }
     }
   }
 }
