@@ -207,7 +207,8 @@ public class AbstractSaldoList extends TablePart
 
     zeile.add(
         new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.GESAMTSALDOFOOTER,
-            "Gesamtsalden" + " ", suEinnahmen, suAusgaben, suUmbuchungen));
+            "Saldo aller Buchungsklassen ", suEinnahmen, suAusgaben,
+            suUmbuchungen));
     zeile.add(new BuchungsklasseSaldoZeile(
         BuchungsklasseSaldoZeile.GESAMTGEWINNVERLUST, "Gesamtsaldo ",
         suEinnahmen + suAusgaben + suUmbuchungen));

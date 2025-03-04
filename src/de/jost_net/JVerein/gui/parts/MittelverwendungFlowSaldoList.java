@@ -240,11 +240,11 @@ public class MittelverwendungFlowSaldoList extends AbstractSaldoList
 
     zeile.add(
         new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.SALDOFOOTER,
-            "Salden" + " " + bezeichnung, suBukEinnahmen,
+            "Salden - " + bezeichnung, suBukEinnahmen,
             suBukAusgaben, suBukUmbuchungen));
     zeile.add(new BuchungsklasseSaldoZeile(
         BuchungsklasseSaldoZeile.SALDOGEWINNVERLUST,
-        "Zufluss/Abfluss" + " " + bezeichnung,
+        "Zufluss/Abfluss - " + bezeichnung,
         suBukEinnahmen + suBukAusgaben + suBukUmbuchungen));
   }
 
