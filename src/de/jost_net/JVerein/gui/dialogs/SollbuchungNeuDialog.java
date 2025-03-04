@@ -34,6 +34,7 @@ import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -78,8 +79,47 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
     left.addHeadline("Sollbuchung");
     left.addLabelPair("Mitglied", sollbControl.getMitglied());
     left.addLabelPair("Zahler", sollbControl.getZahler());
-    left.addLabelPair("Datum", sollbControl.getDatum());
-    left.addLabelPair("Verwendungszweck", sollbControl.getZweck1());
+    DateInput datumInput = sollbControl.getDatum();
+    datumInput.addListener(event -> {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      try
+      {
+        if (sollbPosControl.getDatum().getValue() == null)
+        {
+          sollbPosControl.getDatum()
+              .setValue(sollbControl.getDatum().getValue());
+        }
+      }
+      catch (Exception e)
+      {
+        //
+      }
+    });
+    left.addLabelPair("Datum", datumInput);
+    TextAreaInput zweckInput = sollbControl.getZweck1();
+    zweckInput.addListener(event -> {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      try
+      {
+        String zweck = (String) sollbPosControl.getZweck().getValue();
+        if (zweck == null || zweck.isEmpty())
+        {
+          sollbPosControl.getZweck()
+              .setValue(sollbControl.getZweck1().getValue());
+        }
+      }
+      catch (Exception e)
+      {
+        //
+      }
+    });
+    left.addLabelPair("Verwendungszweck", zweckInput);
     left.addLabelPair("Zahlungsweg", sollbControl.getZahlungsweg());
 
     // Sollbuchungsposition, Datum und Zweck wird von Sollbuchung genommen
