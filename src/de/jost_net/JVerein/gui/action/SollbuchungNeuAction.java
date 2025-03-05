@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungNeuDialog;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
@@ -55,7 +56,8 @@ public class SollbuchungNeuAction implements Action
         }
         sollb.setMitglied(m);
         sollb.setZahlungsweg(m.getZahlungsweg());
-        if (m.getZahler() != null)
+        if (m.getZahlerID() != null
+            && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
         {
           sollb.setZahler(m.getZahler());
         }

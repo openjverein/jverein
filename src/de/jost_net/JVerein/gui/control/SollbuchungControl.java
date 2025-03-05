@@ -42,7 +42,7 @@ import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.BuchungView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
-import de.jost_net.JVerein.gui.view.SollbuchungPositionView;
+import de.jost_net.JVerein.gui.view.SollbuchungPositionDetailView;
 import de.jost_net.JVerein.io.Kontoauszug;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -561,7 +561,7 @@ public class SollbuchungControl extends DruckMailControl
     else
     {
       buchungList = new SollbuchungPositionListPart(list,
-          new EditAction(SollbuchungPositionView.class));
+          new EditAction(SollbuchungPositionDetailView.class));
     }
 
     buchungList.setRememberColWidths(true);
@@ -908,7 +908,7 @@ public class SollbuchungControl extends DruckMailControl
         list.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
         Mitglied m = (Mitglied) getMitglied().getValue();
         Mitglied z = (Mitglied) getZahler().getValue();
-        if (m != null && m.getZahlerID() != null)
+        if (m != null && m.getZahlerID() != null && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
         {
           list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
           if (z == null)

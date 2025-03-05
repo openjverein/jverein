@@ -27,7 +27,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class SollbuchungPositionView extends AbstractView
+public class SollbuchungPositionDetailView extends AbstractView
 {
 
   @Override
