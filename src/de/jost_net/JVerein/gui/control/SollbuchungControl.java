@@ -908,9 +908,13 @@ public class SollbuchungControl extends DruckMailControl
         list.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
         Mitglied m = (Mitglied) getMitglied().getValue();
         Mitglied z = (Mitglied) getZahler().getValue();
-        if (m != null && m.getZahlerID() != null && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+
+        if (m != null && m.getZahlerID() != null)
         {
           list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+        }
+        if (m != null && m.getZahlerID() != null && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        {
           if (z == null)
           {
             getZahler().setValue(m.getZahler());
