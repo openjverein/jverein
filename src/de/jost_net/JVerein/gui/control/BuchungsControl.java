@@ -47,8 +47,8 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
-import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
+import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
@@ -74,8 +74,8 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Projekt;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
@@ -1849,19 +1849,7 @@ public class BuchungsControl extends AbstractControl
     return false;
   }
 
-  public Action getBuchungSpeichernAction()
-  {
-    return new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        buchungSpeichern();
-      }
-    };
-  }
-
-  private void buchungSpeichern()
+  public void buchungSpeichern() throws ApplicationException
   {
     try
     {
@@ -1877,7 +1865,7 @@ public class BuchungsControl extends AbstractControl
     catch (ApplicationException e)
     {
       DBTransaction.rollback();
-      GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
+      throw new ApplicationException(e);
     }
   }
 

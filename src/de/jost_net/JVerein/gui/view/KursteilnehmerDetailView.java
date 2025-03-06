@@ -17,15 +17,19 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
+import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.util.ApplicationException;
 
 public class KursteilnehmerDetailView extends AbstractView
 {
@@ -77,9 +81,32 @@ public class KursteilnehmerDetailView extends AbstractView
       @Override
       public void handleAction(Object context)
       {
-        control.handleStore();
+        try
+        {
+          control.handleStore();
+        }
+        catch (ApplicationException e)
+        {
+          GUI.getStatusBar().setErrorText(e.getMessage());
+        }
       }
     }, null, true, "document-save.png");
+
+    buttons.addButton(new Button("Speichern und neu", context -> {
+      try
+      {
+        control.handleStore();
+
+        new NewAction(KursteilnehmerDetailView.class, Kursteilnehmer.class)
+            .handleAction(null);
+        GUI.getStatusBar().setSuccessText("Kursteilnehmer gespeichert");
+      }
+      catch (ApplicationException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
+    }, null, false, "go-next.png"));
+
     buttons.paint(this.getParent());
   }
 }

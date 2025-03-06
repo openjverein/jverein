@@ -17,12 +17,16 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.BuchungsartControl;
+import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.util.ApplicationException;
 
 public class BuchungsartView extends AbstractView
 {
@@ -54,9 +58,32 @@ public class BuchungsartView extends AbstractView
       @Override
       public void handleAction(Object context)
       {
-        control.handleStore();
+        try
+        {
+          control.handleStore();
+        }
+        catch (ApplicationException e)
+        {
+          GUI.getStatusBar().setErrorText(e.getMessage());
+        }
       }
     }, null, true, "document-save.png");
+
+    buttons.addButton(new Button("Speichern und neu", context -> {
+      try
+      {
+        control.handleStore();
+
+        new NewAction(BuchungsartView.class, Buchungsart.class)
+            .handleAction(null);
+        GUI.getStatusBar().setSuccessText("Buchungsart gespeichert");
+      }
+      catch (ApplicationException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
+    }, null, false, "go-next.png"));
+
     buttons.paint(this.getParent());
   }
 }

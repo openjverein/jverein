@@ -30,8 +30,10 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedMailSendenAction;
+import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
 import de.jost_net.JVerein.gui.control.DokumentControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
@@ -59,6 +61,7 @@ import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.jameica.messaging.StatusBarMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public abstract class AbstractMitgliedDetailView extends AbstractView
 {
@@ -211,17 +214,38 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
       @Override
       public void handleAction(Object context)
       {
-        control.handleStore();
         try
         {
+          control.handleStore();
           zeichneUeberschrift();
         }
-        catch (RemoteException e)
+        catch (RemoteException | ApplicationException e)
         {
-          Logger.error("Fehler", e);
+          GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
     }, null, true, "document-save.png");
+
+    buttons.addButton(new Button("Speichern und neu", context -> {
+      try
+      {
+        control.handleStore();
+
+        if (isMitgliedDetail())
+        {
+          new MitgliedDetailAction().handleAction(null);
+        }
+        else
+        {
+          new NichtMitgliedDetailAction().handleAction(null);
+        }
+      }
+      catch (ApplicationException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
+    }, null, false, "go-next.png"));
+
     buttons.paint(parent);
   }
 
