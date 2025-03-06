@@ -62,14 +62,24 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Straﬂe", "strasse", true, true);
     add("PLZ", "plz", false, true);
     add("Ort", "ort", true, true);
-    add("Staat", "staat", false, new StaatFormatter(), Column.ALIGN_LEFT, true);
+    try
+    {
+      if (Einstellungen.getEinstellung().getAuslandsadressen())
+      {
+        add("Staat", "staat", false, new StaatFormatter(), Column.ALIGN_LEFT,
+            true);
+      }
+    }
+    catch (RemoteException ignore)
+    {
+    }
     add("Zahlungsweg", "zahlungsweg", false, new ZahlungswegFormatter(),
-        Column.ALIGN_LEFT, false);
+        Column.ALIGN_LEFT, true);
     add("Zahlungsrhytmus", "zahlungsrhytmus", false,
         new ZahlungsrhythmusFormatter(), Column.ALIGN_LEFT, false);
     add("Zahlungstermin", "zahlungstermin", false,
         new ZahlungsterminFormatter(), Column.ALIGN_LEFT, true);
-    add("Datum des Mandats", "mandatdatum", false, false);
+    add("Datum des Mandats", "mandatdatum", false, true);
     add("BIC", "bic", false, true);
     add("IBAN", "iban", false, new IbanFormatter(), Column.ALIGN_LEFT, true);
     add("Kontoinhaber Anrede", "ktoianrede", false, true);
@@ -106,18 +116,18 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);
     add("Leitweg ID", "leitwegid", false, true);
-    add("Zahler ID", "zahlerid", false, true);
+    add("Zahler ID", "zahlerid", false, false);
     try
     {
       if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
       {
-        add("Individueller Beitrag", "individuellerbeitrag", false, true);
+        add("Individueller Beitrag", "individuellerbeitrag", false, false);
       }
       if (Einstellungen.getEinstellung().getSterbedatum())
       {
         add("Sterbedatum", "sterbetag", false,
             new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
-            false);
+            true);
       }
     }
     catch (RemoteException re)
@@ -165,7 +175,6 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
 
         add(eg.getBezeichnung(), "eigenschaften_" + eg.getBezeichnung(), false,
             true);
-
       }
     }
     catch (RemoteException e)

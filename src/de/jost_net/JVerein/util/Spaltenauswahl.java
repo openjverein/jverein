@@ -45,19 +45,19 @@ public abstract class Spaltenauswahl
   }
 
   public void add(String spaltenbezeichnung, String spaltenname,
-      boolean defaultvalue, boolean nurMitglied)
+      boolean defaultvalue, boolean auchNichtMitglied)
   {
     spalten.add(new Spalte(spaltenbezeichnung, spaltenname,
         settings.getBoolean(tabelle + "." + spaltenname, defaultvalue),
-        nurMitglied));
+        auchNichtMitglied));
   }
 
   public void add(String spaltenbezeichnung, String spaltenname,
-      boolean defaultvalue, Formatter formatter, int align, boolean nurMitglied)
+      boolean defaultvalue, Formatter formatter, int align, boolean auchNichtMitglied)
   {
     spalten.add(new Spalte(spaltenbezeichnung, spaltenname,
         settings.getBoolean(tabelle + "." + spaltenname, defaultvalue),
-        formatter, align, nurMitglied));
+        formatter, align, auchNichtMitglied));
   }
 
   public void setColumns(TablePart part, int mitgliedstyp)
@@ -66,8 +66,8 @@ public abstract class Spaltenauswahl
     {
       if (spalte.isChecked())
       {
-        if ((mitgliedstyp == Mitgliedstyp.MITGLIED)
-            || mitgliedstyp != Mitgliedstyp.MITGLIED && spalte.isNurAdressen())
+        if (mitgliedstyp == Mitgliedstyp.MITGLIED
+            || spalte.isAuchNichtMitglied())
         {
           part.addColumn(spalte.getSpaltenbezeichnung(),
               spalte.getSpaltenname(), spalte.getFormatter());
