@@ -179,11 +179,6 @@ public class AbrechnungSEPA
           if (!param.kompakteabbuchung && zahler.getZahlungsweg()
               .getKey() == Zahlungsweg.BASISLASTSCHRIFT)
           {
-            if (!zahler.getMitglied().getID().equals(zahler.getPersonId()))
-            {
-              zahler.setVerwendungszweck(zahler.getVerwendungszweck() + " "
-                  + zahler.getMitglied().getVorname());
-            }
             zahlerarray.add(zahler);
           }
         }
@@ -315,7 +310,7 @@ public class AbrechnungSEPA
         monitor.setPercentComplete(
             (int) (count++ / (double) zahlerarray.size() * 100d));
         summelastschriften = summelastschriften.add(zahler.getBetrag());
-        Lastschrift ls = getLastschrift(zahler, abrl);
+        Lastschrift ls = getLastschrift(zahler, abrl, param.kompakteabbuchung);
         ls.store();
       }
 
@@ -1051,7 +1046,8 @@ public class AbrechnungSEPA
     return sp;
   }
 
-  private Lastschrift getLastschrift(JVereinZahler zahler, Abrechnungslauf abrl)
+  private Lastschrift getLastschrift(JVereinZahler zahler, Abrechnungslauf abrl,
+      boolean kompakt)
       throws RemoteException, SEPAException
   {
     Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
@@ -1115,7 +1111,15 @@ public class AbrechnungSEPA
           ls.setEmail(m.getKtoiEmail());
           ls.setGeschlecht(m.getKtoiGeschlecht());
         }
-        String zweck = getVerwendungszweckName(m, zahler.getVerwendungszweck());
+        // Bei nicht kompakter Abbuchung Daten des Mitglieds und nicht die des
+        // Zahlers verwenden.
+        Mitglied mZweck = m;
+        if (!kompakt)
+        {
+          mZweck = zahler.getMitglied();
+        }
+        String zweck = getVerwendungszweckName(mZweck,
+            zahler.getVerwendungszweck());
         ls.setVerwendungszweck(zweck);
         zahler.setVerwendungszweck(zweck);
         break;
