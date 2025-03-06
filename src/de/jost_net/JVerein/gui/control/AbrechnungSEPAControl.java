@@ -107,6 +107,8 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   private DateInput rechnungsdatum;
 
+  private DateInput voneingabedatum;
+
   public AbrechnungSEPAControl(AbstractView view)
   {
     super(view);
@@ -143,11 +145,15 @@ public class AbrechnungSEPAControl extends AbstractControl
         {
           vondatum.setValue(null);
           vondatum.setEnabled(false);
+          voneingabedatum.setValue(null);
+          voneingabedatum.setEnabled(false);
         }
         else
         {
           vondatum.setEnabled(true);
           vondatum.setValue(new Date());
+          voneingabedatum.setValue(new Date());
+          voneingabedatum.setEnabled(true);
         }
         if (m.intValue() != Abrechnungsmodi.ABGEMELDETEMITGLIEDER)
         {
@@ -214,8 +220,21 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.vondatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
     this.vondatum.setTitle("Anfangsdatum Abrechnung");
     this.vondatum.setText("Bitte Anfangsdatum der Abrechnung wählen");
-    this.vondatum.setEnabled(false);
+    this.vondatum.setEnabled(
+        (Integer) modus.getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER);
     return vondatum;
+  }
+
+  public DateInput getVonEingabedatum()
+  {
+    if (voneingabedatum != null)
+    {
+      return voneingabedatum;
+    }
+    this.voneingabedatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
+    this.voneingabedatum.setEnabled(
+        (Integer) modus.getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER);
+    return voneingabedatum;
   }
 
   public DateInput getBisdatum()
@@ -228,7 +247,8 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.bisdatum.setTitle("Enddatum Abrechnung");
     this.bisdatum
         .setText("Bitte maximales Austrittsdatum für die Abrechnung wählen");
-    this.bisdatum.setEnabled(false);
+    this.bisdatum.setEnabled(
+        (Integer) modus.getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER);
     return bisdatum;
   }
 
@@ -487,7 +507,8 @@ public class AbrechnungSEPAControl extends AbstractControl
     if (modus != Abrechnungsmodi.KEINBEITRAG)
     {
       vondatum = (Date) getVondatum().getValue();
-      if (modus == Abrechnungsmodi.EINGETRETENEMITGLIEDER && vondatum == null)
+      if (modus == Abrechnungsmodi.EINGETRETENEMITGLIEDER && vondatum == null
+          && getVonEingabedatum().getValue() == null)
       {
         throw new ApplicationException("von-Datum fehlt");
       }

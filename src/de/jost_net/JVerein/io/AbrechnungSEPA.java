@@ -63,9 +63,9 @@ import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
@@ -392,6 +392,11 @@ public class AbrechnungSEPA
       {
         list.addFilter("eintritt >= ?",
             new java.sql.Date(param.vondatum.getTime()));
+      }
+      if (param.voneingabedatum != null)
+      {
+        list.addFilter("eingabedatum >= ?",
+            new java.sql.Date(param.voneingabedatum.getTime()));
       }
       if (Einstellungen.getEinstellung()
           .getBeitragsmodel() == Beitragsmodel.MONATLICH12631)
