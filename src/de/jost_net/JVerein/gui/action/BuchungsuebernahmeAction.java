@@ -36,6 +36,7 @@ public class BuchungsuebernahmeAction implements Action
       if (d.open())
       {
         new Buchungsuebernahme();
+        GUI.getCurrentView().reload();
       }
     }
     catch (OperationCanceledException oce)

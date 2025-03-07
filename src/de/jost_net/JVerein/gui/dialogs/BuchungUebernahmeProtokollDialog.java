@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
@@ -113,6 +114,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
     });
     bu.addColumn("Betrag", "betrag", new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT));
+    bu.addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
     bu.setRememberColWidths(true);
     bu.setRememberOrder(true);
     bu.paint(parent);
