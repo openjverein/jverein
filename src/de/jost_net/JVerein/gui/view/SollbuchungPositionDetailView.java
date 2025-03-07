@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SollbuchungPositionControl;
@@ -25,7 +27,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class SollbuchungPositionView extends AbstractView
+public class SollbuchungPositionDetailView extends AbstractView
 {
 
   @Override
@@ -56,7 +58,19 @@ public class SollbuchungPositionView extends AbstractView
       @Override
       public void handleAction(Object context)
       {
-        control.handleStore();
+        if (control.handleStore())
+        {
+          try
+          {
+            GUI.startView(SollbuchungDetailView.class.getName(),
+                control.getPosition().getSollbuchung());
+          }
+          catch (RemoteException e)
+          {
+            //
+          }
+          GUI.getStatusBar().setSuccessText("Sollbuchungsposition gespeichert");
+        }
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());

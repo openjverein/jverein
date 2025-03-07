@@ -15,9 +15,9 @@
 
     <loadproperties srcfile="${build.dir}/build.properties" />
 
-  	<echo message="VERSION: ${plugin.version}" level="info"/>
-    <echo message="BUILD  : ${build.number}" level="info"/>
-    <echo message="JAVA   : ${java.version}" level="info"/>
+    <echo message="VERSION: ${plugin.version}" level="info" />
+    <echo message="BUILD  : ${build.number}" level="info" />
+    <echo message="JAVA   : ${java.version}" level="info" />
 
     <path id="compilepath">
       <fileset dir="${lib.dir}">
@@ -54,9 +54,10 @@
 
   <target name="compile" depends="init, clean">
     <mkdir dir="${class.dir}" />
-    <javac debug="true" includeantruntime="false" debuglevel="lines,vars,source" release="${define.java.version}" encoding="${define.encoding}" deprecation="true" destdir="${class.dir}" srcdir="${src.dir}">
-			<classpath refid="compilepath" />
-		</javac>
+    <javac debug="true" includeantruntime="false" debuglevel="lines,vars,source" release="${define.java.version}"
+           encoding="${define.encoding}" deprecation="true" destdir="${class.dir}" srcdir="${src.dir}">
+      <classpath refid="compilepath" />
+    </javac>
   </target>
 
   <target name="jar" depends="init,compile" description="Generates the jar file">
@@ -84,7 +85,7 @@
 
     <copy todir="${project.zipdir}" file="plugin.xml" />
     <replace file="${project.zipdir}/plugin.xml">
-      <replacefilter token="[PLUGIN_ZIP]" value="${project.zipfilename}"/>
+      <replacefilter token="[PLUGIN_ZIP]" value="${project.zipfilename}" />
     </replace>
 
     <!-- Jetzt muessen wir noch das ZIP-File erzeugen -->
@@ -142,16 +143,16 @@
     <delete dir="${project.tmp}" />
     <delete dir="${class.dir}" />
   </target>
-  
+
   <target name="lib">
     <!-- Die Datei brauchen die anderen Plugins zum Kompilieren //-->
     <copy file="${project.zipdir}/${define.jarfilename}" tofile="releases/jverein-lib.jar" />
   </target>
 
   <target name="all" depends="init,jar,javadoc,src,clean" description="Build an official openjverein release">
-  	<echo message="SELECTED_VERSION=${plugin.version}" />
-  	<echo message="SELECTED_PATH=${project.release}/${project.zipfilename}" />
-  	<echo message="SELECTED_FILENAME=${project.zipfilename}" />
+    <echo message="SELECTED_VERSION=${plugin.version}" />
+    <echo message="SELECTED_PATH=${project.release}/${project.zipfilename}" />
+    <echo message="SELECTED_FILENAME=${project.zipfilename}" />
   </target>
 
   <target name="fast" depends="init,jar,src" description="Build an development release">
@@ -161,16 +162,50 @@
   <target name="nightly" depends="init,compile,jar,javadoc,src" description="Build an nightly release">
     <mkdir dir="${project.release.nightly}" />
 
-    <copy file="${project.release}/${project.zipfilename}" tofile="${project.release.nightly}/${project.zipfilename.nightly}" />
-    <copy file="${project.release}/${define.srcfilename}" tofile="${project.release.nightly}/${define.srcfilename.nightly}" />
+    <copy file="${project.release}/${project.zipfilename}"
+          tofile="${project.release.nightly}/${project.zipfilename.nightly}" />
+    <copy file="${project.release}/${define.srcfilename}"
+          tofile="${project.release.nightly}/${define.srcfilename.nightly}" />
 
-    <antcall target="lib"/>
+    <antcall target="lib" />
 
     <delete dir="${project.release}" />
 
-  	<echo message="SELECTED_VERSION=${plugin.version}-nightly" />
-  	<echo message="SELECTED_PATH=${project.release.nightly}/${project.zipfilename.nightly}" />
-  	<echo message="SELECTED_FILENAME=${project.zipfilename.nightly}" />
+    <echo message="SELECTED_VERSION=${plugin.version}-nightly" />
+    <echo message="SELECTED_PATH=${project.release.nightly}/${project.zipfilename.nightly}" />
+    <echo message="SELECTED_FILENAME=${project.zipfilename.nightly}" />
+  </target>
+
+  <target name="build-dependencies" description="Downloads and builds Jameica and Hibiscus"
+          depends="init">
+    <antcall target="build-package">
+      <param name="name" value="jameica" />
+      <param name="url" value="${jameica.url}" />
+      <param name="version" value="${jameica.version}" />
+    </antcall>
+    <antcall target="build-package">
+      <param name="name" value="hibiscus" />
+      <param name="url" value="${hibiscus.url}" />
+      <param name="version" value="${hibiscus.version}" />
+    </antcall>
+  </target>
+
+  <target name="build-package">
+    <!-- Download package -->
+    <get src="${url}/${version}.zip"
+         dest="${name}-${version}.zip"
+         skipexisting="true" />
+
+    <!-- Unpack into folder $name -->
+    <unzip src="${name}-${version}.zip"
+           dest="../" />
+    <move file="../${name}-${version}"
+          tofile="../${name}" />
+
+    <!-- Run build -->
+    <ant dir="../${name}" antfile="build/build.xml" inheritall="false">
+      <target name="nightly" />
+    </ant>
   </target>
 
 </project>

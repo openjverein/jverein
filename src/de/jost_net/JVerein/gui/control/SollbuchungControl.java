@@ -42,12 +42,12 @@ import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.BuchungView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
-import de.jost_net.JVerein.gui.view.SollbuchungPositionView;
+import de.jost_net.JVerein.gui.view.SollbuchungPositionDetailView;
 import de.jost_net.JVerein.io.Kontoauszug;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
@@ -81,7 +81,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoControl extends DruckMailControl
+public class SollbuchungControl extends DruckMailControl
 {
   public enum DIFFERENZ
   {
@@ -124,18 +124,18 @@ public class MitgliedskontoControl extends DruckMailControl
   
   private AbstractInput zahler;
 
-  private Mitgliedskonto mkto;
+  private Sollbuchung sollbuchung;
 
   private TreePart mitgliedskontoTree;
 
   // SollbuchungListeView, SollbuchungAuswahldialog
-  private TablePart mitgliedskontoList;
+  private TablePart sollbuchungenList;
 
-  private TablePart mitgliedskontoList2;
+  private TablePart mitgliederList;
 
   private TextInput suchname2 = null;
 
-  private CheckboxInput spezialsuche2 = null;
+  private CheckboxInput spezialsuche = null;
 
   // private CheckboxInput offenePosten = null;
 
@@ -147,21 +147,34 @@ public class MitgliedskontoControl extends DruckMailControl
 
   private TablePart buchungList;
 
-  public MitgliedskontoControl(AbstractView view)
+  public SollbuchungControl(AbstractView view)
   {
     super(view);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 
-  public Mitgliedskonto getMitgliedskonto()
+  public SollbuchungControl(AbstractView view, Sollbuchung sollb)
   {
-    if (mkto != null)
+    super(view);
+    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings.setStoreWhenRead(true);
+    sollbuchung = sollb;
+  }
+
+  public Sollbuchung getSollbuchung()
+  {
+    if (sollbuchung != null)
     {
-      return mkto;
+      return sollbuchung;
     }
-    mkto = (Mitgliedskonto) getCurrentObject();
-    return mkto;
+    sollbuchung = (Sollbuchung) getCurrentObject();
+    return sollbuchung;
+  }
+
+  public void setSollbuchung(Sollbuchung sollb)
+  {
+    sollbuchung = sollb;
   }
 
   public Settings getSettings()
@@ -177,9 +190,9 @@ public class MitgliedskontoControl extends DruckMailControl
     }
 
     Date d = new Date();
-    if (getMitgliedskonto() != null)
+    if (getSollbuchung() != null)
     {
-      d = getMitgliedskonto().getDatum();
+      d = getSollbuchung().getDatum();
     }
 
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
@@ -209,9 +222,9 @@ public class MitgliedskontoControl extends DruckMailControl
       return zweck1;
     }
     String z = "";
-    if (getMitgliedskonto() != null)
+    if (getSollbuchung() != null)
     {
-      z = getMitgliedskonto().getZweck1();
+      z = getSollbuchung().getZweck1();
     }
     zweck1 = new TextAreaInput(z, 500);
     zweck1.setHeight(30);
@@ -226,9 +239,9 @@ public class MitgliedskontoControl extends DruckMailControl
       return zahlungsweg;
     }
     Integer z = null;
-    if (getMitgliedskonto() != null)
+    if (getSollbuchung() != null)
     {
-      z = getMitgliedskonto().getZahlungsweg();
+      z = getSollbuchung().getZahlungsweg();
     }
     boolean mitVollzahler = false;
     if (getMitglied().getValue() != null
@@ -239,7 +252,7 @@ public class MitgliedskontoControl extends DruckMailControl
     zahlungsweg = new SelectInput(weg,
         z == null
             ? new Zahlungsweg(Einstellungen.getEinstellung().getZahlungsweg())
-            : new Zahlungsweg(getMitgliedskonto().getZahlungsweg()));
+            : new Zahlungsweg(getSollbuchung().getZahlungsweg()));
     zahlungsweg.setName("Zahlungsweg");
     return zahlungsweg;
   }
@@ -251,41 +264,34 @@ public class MitgliedskontoControl extends DruckMailControl
       return betrag;
     }
     Double b = Double.valueOf(0.0d);
-    if (getMitgliedskonto() != null)
+    if (getSollbuchung() != null)
     {
-      b = getMitgliedskonto().getBetrag();
+      b = getSollbuchung().getBetrag();
     }
     betrag = new DecimalInput(b, Einstellungen.DECIMALFORMAT);
     betrag.setEnabled(false);
     return betrag;
   }
 
-  public CheckboxInput getSpezialSuche2()
+  public CheckboxInput getSpezialSuche()
   {
-    if (spezialsuche2 != null && !spezialsuche2.getControl().isDisposed())
+    if (spezialsuche != null && !spezialsuche.getControl().isDisposed())
     {
-      return spezialsuche2;
+      return spezialsuche;
     }
-    spezialsuche2 = new CheckboxInput(false);
-    spezialsuche2.setName("Erlaube Teilstring Vergleich");
-    spezialsuche2.addListener(new Listener()
+    spezialsuche = new CheckboxInput(false);
+    spezialsuche.setName("Erlaube Teilstring Vergleich");
+    spezialsuche.addListener(new Listener()
     {
 
       @Override
       public void handleEvent(Event event)
       {
-        try
-        {
-          refreshMitgliedkonto2();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
+        refreshMitgliederList();
       }
     });
 
-    return spezialsuche2;
+    return spezialsuche;
   }
 
   // Für SollbuchungAuswahlDialog
@@ -312,16 +318,16 @@ public class MitgliedskontoControl extends DruckMailControl
     return suchname2;
   }
 
-  public void handleStore()
+  public boolean handleStore()
   {
     try
     {
-      Mitgliedskonto mkto = getMitgliedskonto();
-      if (mkto.isNewObject())
+      Sollbuchung sollb = getSollbuchung();
+      if (sollb.isNewObject())
       {
         if (getMitglied().getValue() != null)
         {
-          mkto.setMitglied((Mitglied) getMitglied().getValue());
+          sollb.setMitglied((Mitglied) getMitglied().getValue());
         }
         else
         {
@@ -329,23 +335,19 @@ public class MitgliedskontoControl extends DruckMailControl
         }
       }
 
-      if (getZahler().getValue() == null)
-      {
-        throw new ApplicationException("Zahler fehlt");
-      }
-
-      if (mkto.getRechnung() != null)
+      if (sollb.getRechnung() != null)
         throw new ApplicationException(
             "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
-      mkto.setZahlerId(getSelectedZahlerId());
-      mkto.setBetrag((Double) getBetrag().getValue());
-      mkto.setDatum((Date) getDatum().getValue());
+      sollb.setZahlerId(getSelectedZahlerId());
+      sollb.setBetrag((Double) getBetrag().getValue());
+      sollb.setDatum((Date) getDatum().getValue());
       Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
-      mkto.setZahlungsweg(zw.getKey());
-      mkto.setZweck1((String) getZweck1().getValue());
+      sollb.setZahlungsweg(zw.getKey());
+      sollb.setZweck1((String) getZweck1().getValue());
 
-      mkto.store();
+      sollb.store();
       GUI.getStatusBar().setSuccessText("Sollbuchung gespeichert");
+      return true;
     }
     catch (ApplicationException e)
     {
@@ -357,6 +359,7 @@ public class MitgliedskontoControl extends DruckMailControl
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
+    return false;
   }
 
   public Part getMitgliedskontoTree(Mitglied mitglied) throws RemoteException
@@ -383,11 +386,11 @@ public class MitgliedskontoControl extends DruckMailControl
               }
               if (mkn.getType() == MitgliedskontoNode.SOLL)
               {
-                Mitgliedskonto mk = (Mitgliedskonto) Einstellungen
+                Sollbuchung sollb = (Sollbuchung) Einstellungen
                     .getDBService()
-                    .createObject(Mitgliedskonto.class, mkn.getID());
+                    .createObject(Sollbuchung.class, mkn.getID());
                 GUI.startView(
-                    new SollbuchungDetailView(), mk);
+                    new SollbuchungDetailView(), sollb);
               }
             }
             catch (RemoteException e)
@@ -441,95 +444,105 @@ public class MitgliedskontoControl extends DruckMailControl
     return mitgliedskontoTree;
   }
 
-  public TablePart getMitgliedskontoList(Action action, ContextMenu menu,
+  public TablePart getSollbuchungenList(Action action, ContextMenu menu,
       boolean umwandeln) throws RemoteException, ApplicationException
   {
     this.action = action;
     this.umwandeln = umwandeln;
     @SuppressWarnings("rawtypes")
-    GenericIterator mitgliedskonten = new SollbuchungQuery(this, umwandeln,
+    GenericIterator sollbuchungen = new SollbuchungQuery(this, umwandeln,
         null).get();
-    if (mitgliedskontoList == null)
+    if (sollbuchungenList == null)
     {
-      mitgliedskontoList = new SollbuchungListTablePart(mitgliedskonten,
+      sollbuchungenList = new SollbuchungListTablePart(sollbuchungen,
           action);
-      mitgliedskontoList.addColumn("Nr", "id-int");
-      mitgliedskontoList.addColumn("Datum", "datum",
+      sollbuchungenList.addColumn("Nr", "id-int");
+      sollbuchungenList.addColumn("Datum", Sollbuchung.DATUM,
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      mitgliedskontoList.addColumn("Abrechnungslauf", "abrechnungslauf");
-      mitgliedskontoList.addColumn("Mitglied", "mitglied");
-      mitgliedskontoList.addColumn("Zahler", "zahler");
-      mitgliedskontoList.addColumn("Zweck", "zweck1");
-      mitgliedskontoList.addColumn("Betrag", "betrag",
+      sollbuchungenList.addColumn("Abrechnungslauf",
+          Sollbuchung.ABRECHNUNGSLAUF);
+      sollbuchungenList.addColumn("Mitglied", Sollbuchung.MITGLIED);
+      sollbuchungenList.addColumn("Zahler", Sollbuchung.ZAHLER);
+      sollbuchungenList.addColumn("Zweck", Sollbuchung.ZWECK1);
+      sollbuchungenList.addColumn("Betrag", Sollbuchung.BETRAG,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      mitgliedskontoList.addColumn("Zahlungsweg","zahlungsweg", new Formatter() {
+      sollbuchungenList.addColumn("Zahlungsweg", Sollbuchung.ZAHLUNGSWEG,
+          new Formatter()
+          {
         @Override
         public String format(Object o)
         {
           return new Zahlungsweg((Integer)o).getText();
         }
       });
-      mitgliedskontoList.addColumn("Zahlungseingang", "istsumme",
+      sollbuchungenList.addColumn("Zahlungseingang", Sollbuchung.ISTSUMME,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      mitgliedskontoList.addColumn("Rechnung", "rechnung");
-      mitgliedskontoList.setContextMenu(menu);
-      mitgliedskontoList.setRememberColWidths(true);
-      mitgliedskontoList.setRememberOrder(true);
-      mitgliedskontoList.setMulti(true);
-      mitgliedskontoList.addFeature(new FeatureSummary());
+      sollbuchungenList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
+      sollbuchungenList.setContextMenu(menu);
+      sollbuchungenList.setRememberColWidths(true);
+      sollbuchungenList.setRememberOrder(true);
+      sollbuchungenList.setMulti(true);
+      sollbuchungenList.addFeature(new FeatureSummary());
     }
     else
     {
-      mitgliedskontoList.removeAll();
-      if (mitgliedskonten != null)
+      sollbuchungenList.removeAll();
+      if (sollbuchungen != null)
       {
-        while (mitgliedskonten.hasNext())
+        while (sollbuchungen.hasNext())
         {
-          mitgliedskontoList.addItem(mitgliedskonten.next());
+          sollbuchungenList.addItem(sollbuchungen.next());
         }
       }
-      mitgliedskontoList.sort();
+      sollbuchungenList.sort();
     }
-    return mitgliedskontoList;
+    return sollbuchungenList;
   }
 
-  public TablePart getMitgliedskontoList2(Action action, ContextMenu menu)
+  public TablePart getMitgliederList(Action action, ContextMenu menu)
       throws RemoteException
   {
     this.action = action;
     GenericIterator<Mitglied> mitglieder = getMitgliedIterator();
-    if (mitgliedskontoList2 == null)
+    if (mitgliederList == null)
     {
-      mitgliedskontoList2 = new TablePart(mitglieder, action);
-      mitgliedskontoList2.addColumn("Name", "name");
-      mitgliedskontoList2.addColumn("Vorname", "vorname");
-      mitgliedskontoList2.setContextMenu(menu);
-      mitgliedskontoList2.setRememberColWidths(true);
-      mitgliedskontoList2.setRememberOrder(true);
-      mitgliedskontoList2.setMulti(true);
-      mitgliedskontoList2.addFeature(new FeatureSummary());
+      mitgliederList = new TablePart(mitglieder, action);
+      mitgliederList.addColumn("Name", "name");
+      mitgliederList.addColumn("Vorname", "vorname");
+      mitgliederList.setContextMenu(menu);
+      mitgliederList.setRememberColWidths(true);
+      mitgliederList.setRememberOrder(true);
+      mitgliederList.setMulti(true);
+      mitgliederList.addFeature(new FeatureSummary());
     }
     else
     {
-      mitgliedskontoList2.removeAll();
+      mitgliederList.removeAll();
       while (mitglieder.hasNext())
       {
-        mitgliedskontoList2.addItem(mitglieder.next());
+        mitgliederList.addItem(mitglieder.next());
       }
-      mitgliedskontoList2.sort();
+      mitgliederList.sort();
     }
-    return mitgliedskontoList2;
+    return mitgliederList;
   }
 
-  private void refreshMitgliedkonto2() throws RemoteException
+  public void refreshMitgliederList()
   {
-    GenericIterator<Mitglied> mitglieder = getMitgliedIterator();
-    mitgliedskontoList2.removeAll();
-    while (mitglieder.hasNext())
+    try
     {
-      mitgliedskontoList2.addItem(mitglieder.next());
+      GenericIterator<Mitglied> mitglieder = getMitgliedIterator();
+      mitgliederList.removeAll();
+      while (mitglieder.hasNext())
+      {
+        mitgliederList.addItem(mitglieder.next());
+      }
+      mitgliederList.sort();
     }
-    mitgliedskontoList2.sort();
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+    }
   }
 
   public Part getSollbuchungPositionListPart(boolean hasRechnung) throws RemoteException
@@ -538,7 +551,7 @@ public class MitgliedskontoControl extends DruckMailControl
     {
       return buchungList;
     }
-    ArrayList<SollbuchungPosition> list = getMitgliedskonto()
+    ArrayList<SollbuchungPosition> list = getSollbuchung()
         .getSollbuchungPositionList();
 
     if (hasRechnung)
@@ -548,7 +561,7 @@ public class MitgliedskontoControl extends DruckMailControl
     else
     {
       buchungList = new SollbuchungPositionListPart(list,
-          new EditAction(SollbuchungPositionView.class));
+          new EditAction(SollbuchungPositionDetailView.class));
     }
 
     buchungList.setRememberColWidths(true);
@@ -561,7 +574,7 @@ public class MitgliedskontoControl extends DruckMailControl
 
   public Part getBuchungListPart() throws RemoteException
   {
-    return new BuchungListPart(getMitgliedskonto().getBuchungList(),
+    return new BuchungListPart(getSollbuchung().getBuchungList(),
         new BuchungAction(false), new BuchungPartBearbeitenMenu());
   }
 
@@ -588,7 +601,7 @@ public class MitgliedskontoControl extends DruckMailControl
         where.append(
             "upper(name) like upper(?) or upper(vorname) like upper(?) ");
         String o = tok.nextToken();
-        if ((Boolean) getSpezialSuche2().getValue())
+        if ((Boolean) getSpezialSuche().getValue())
         {
           o = "%" + o + "%";
         }
@@ -605,24 +618,35 @@ public class MitgliedskontoControl extends DruckMailControl
     return mitglieder;
   }
 
-  public void refreshMitgliedkonto1() throws RemoteException, ApplicationException
+  public void refreshSollbuchungenList()
   {
-    @SuppressWarnings("rawtypes")
-    GenericIterator mitgliedskonten = new SollbuchungQuery(this, umwandeln,
-        null).get();
-    mitgliedskontoList.removeAll();
-    if (mitgliedskonten != null)
+    try
     {
-      while (mitgliedskonten.hasNext())
+      @SuppressWarnings("rawtypes")
+      GenericIterator sollbIterator = new SollbuchungQuery(this, umwandeln,
+          null).get();
+      sollbuchungenList.removeAll();
+      if (sollbIterator != null)
       {
-        mitgliedskontoList.addItem(mitgliedskonten.next());
+        while (sollbIterator.hasNext())
+        {
+          sollbuchungenList.addItem(sollbIterator.next());
+        }
       }
+      sollbuchungenList.sort();
     }
-    mitgliedskontoList.sort();
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+    }
+    catch (ApplicationException e)
+    {
+      GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
+    }
   }
 
   public Button getStartKontoauszugButton(final Object currentObject,
-      final MitgliedskontoControl control)
+      final SollbuchungControl control)
   {
     Button button = new Button("Starten", new Action()
     {
@@ -648,11 +672,11 @@ public class MitgliedskontoControl extends DruckMailControl
   // Für Sollbuchungen View
   public void TabRefresh()
   {
-    if (mitgliedskontoList != null)
+    if (sollbuchungenList != null)
     {
       try
       {
-        getMitgliedskontoList(action, null, umwandeln);
+        getSollbuchungenList(action, null, umwandeln);
       }
       catch (RemoteException e)
       {
@@ -662,36 +686,6 @@ public class MitgliedskontoControl extends DruckMailControl
       {
         GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
       }
-    }
-  }
-
-  // Für SollbuchungAuswahlDialog
-  public void refreshMitgliedskontoList1()
-  {
-    try
-    {
-      refreshMitgliedkonto1();
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getLocalizedMessage());;
-    }
-  }
-
-  // Für SollbuchungAuswahlDialog
-  public void refreshMitgliedskontoList2()
-  {
-    try
-    {
-      refreshMitgliedkonto2();
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
     }
   }
 
@@ -830,11 +824,11 @@ public class MitgliedskontoControl extends DruckMailControl
       return mitglied;
     }
 
-    if (getMitgliedskonto().getMitglied() != null)
+    if (getSollbuchung().getMitglied() != null)
     {
-      Mitglied[] mitgliedArray = { getMitgliedskonto().getMitglied() };
+      Mitglied[] mitgliedArray = { getSollbuchung().getMitglied() };
       mitglied = new SelectInput(mitgliedArray,
-          getMitgliedskonto().getMitglied());
+          getSollbuchung().getMitglied());
       mitglied.setEnabled(false);
     }
     else
@@ -842,6 +836,11 @@ public class MitgliedskontoControl extends DruckMailControl
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
           Einstellungen.getEinstellung().getMitgliedAuswahl());
       mitglied.addListener(new MitgliedListener());
+      if (mitglied instanceof SelectInput)
+      {
+        ((SelectInput) mitglied).setPleaseChoose("Bitte auswählen");
+        ((SelectInput) mitglied).setPreselected(null);
+      }
     }
     mitglied.setMandatory(true);
     return mitglied;
@@ -854,8 +853,16 @@ public class MitgliedskontoControl extends DruckMailControl
       return zahler;
     }
     zahler = new MitgliedInput().getMitgliedInput(zahler,
-        getMitgliedskonto().getZahler(),
+        getSollbuchung().getZahler(),
         Einstellungen.getEinstellung().getMitgliedAuswahl());
+    if (zahler instanceof SelectInput)
+    {
+      ((SelectInput) zahler).setPleaseChoose("Bitte auswählen");
+      if (getSollbuchung().getMitglied() == null)
+      {
+        ((SelectInput) zahler).setPreselected(null);
+      }
+    }
     zahler.setMandatory(true);
     return zahler;
   }
@@ -901,9 +908,13 @@ public class MitgliedskontoControl extends DruckMailControl
         list.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
         Mitglied m = (Mitglied) getMitglied().getValue();
         Mitglied z = (Mitglied) getZahler().getValue();
-        if (m.getZahlerID() != null)
+
+        if (m != null && m.getZahlerID() != null)
         {
           list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+        }
+        if (m != null && m.getZahlerID() != null && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        {
           if (z == null)
           {
             getZahler().setValue(m.getZahler());
@@ -927,7 +938,7 @@ public class MitgliedskontoControl extends DruckMailControl
 
   public boolean hasRechnung() throws RemoteException
   {
-    if (getMitgliedskonto().getRechnung() != null)
+    if (getSollbuchung().getRechnung() != null)
     {
       GUI.getStatusBar().setErrorText(
           "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");

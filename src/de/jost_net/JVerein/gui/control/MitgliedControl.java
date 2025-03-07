@@ -84,11 +84,12 @@ import de.jost_net.JVerein.io.MitgliedAuswertungPDF;
 import de.jost_net.JVerein.io.MitgliederStatistik;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Eigenschaft;
@@ -155,7 +156,7 @@ public class MitgliedControl extends FilterControl
 
   private TablePart part;
 
-  private SelectNoScrollInput adresstyp;
+  private SelectNoScrollInput mitgliedstyp;
 
   private TextInput externemitgliedsnummer;
 
@@ -341,19 +342,20 @@ public class MitgliedControl extends FilterControl
     this.mitglied = mitglied;
   }
 
-  public SelectNoScrollInput getAdresstyp() throws RemoteException
+  public SelectNoScrollInput getMitgliedstyp() throws RemoteException
   {
-    if (adresstyp != null)
+    if (mitgliedstyp != null)
     {
-      return adresstyp;
+      return mitgliedstyp;
     }
-    DBIterator<Adresstyp> at = Einstellungen.getDBService()
-        .createList(Adresstyp.class);
-    at.addFilter("jvereinid != 1 or jvereinid is null");
-    at.setOrder("order by bezeichnung");
-    adresstyp = new SelectNoScrollInput(at != null ? PseudoIterator.asList(at) : null, getMitglied().getAdresstyp());
-    adresstyp.setName("Mitgliedstyp");
-    return adresstyp;
+    DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
+        .createList(Mitgliedstyp.class);
+    mtIt.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
+        + " OR " + Mitgliedstyp.JVEREINID + " IS NULL");
+    mtIt.setOrder("order by " + Mitgliedstyp.BEZEICHNUNG);
+    mitgliedstyp = new SelectNoScrollInput(mtIt != null ? PseudoIterator.asList(mtIt) : null, getMitglied().getMitgliedstyp());
+    mitgliedstyp.setName("Mitgliedstyp");
+    return mitgliedstyp;
   }
 
   public TextInput getExterneMitgliedsnummer() throws RemoteException
@@ -636,12 +638,14 @@ public class MitgliedControl extends FilterControl
           {
             if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
             {
+              mandatid.setMandatory(false);
               mandatdatum.setMandatory(false);
               mandatversion.setMandatory(false);
               iban.setMandatory(false);
             }
             else
             {
+              mandatid.setMandatory(true);
               mandatdatum.setMandatory(true);
               mandatversion.setMandatory(true);
               iban.setMandatory(true);
@@ -769,7 +773,20 @@ public class MitgliedControl extends FilterControl
     }
     mandatid = new TextInput(getMitglied().getMandatID());
     mandatid.setName("Mandats-ID");
-    mandatid.disable();
+    if (((Zahlungsweg) getZahlungsweg().getValue())
+        .getKey() != Zahlungsweg.BASISLASTSCHRIFT)
+    {
+      mandatid.setMandatory(false);
+    }
+    else
+    {
+      mandatid.setMandatory(true);
+    }
+    if (Einstellungen.getEinstellung()
+        .getSepaMandatIdSource() != SepaMandatIdSource.INDIVIDUELL)
+    {
+      mandatid.disable();
+    }
     return mandatid;
   }
 
@@ -2273,20 +2290,20 @@ public class MitgliedControl extends FilterControl
 
       }
 
-      if (adresstyp != null)
+      if (mitgliedstyp != null)
       {
-        Adresstyp at = (Adresstyp) getAdresstyp().getValue();
-        m.setAdresstyp(Integer.valueOf(at.getID()));
+        Mitgliedstyp mt = (Mitgliedstyp) getMitgliedstyp().getValue();
+        m.setMitgliedstyp(Integer.valueOf(mt.getID()));
       }
       else
       {
-        m.setAdresstyp(1);
+        m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
       }
       m.setAdressierungszusatz((String) getAdressierungszusatz().getValue());
       m.setAustritt((Date) getAustritt().getValue());
       m.setAnrede((String) getAnrede().getValue());
       GenericObject o = (GenericObject) getBeitragsgruppe(true).getValue();
-      if (adresstyp == null)
+      if (mitgliedstyp == null)
       {
         try
         {
@@ -2323,6 +2340,7 @@ public class MitgliedControl extends FilterControl
       {
         m.setZahlungstermin(zt.getKey());
       }
+      m.setMandatID((String) getMandatID().getValue());
       m.setMandatDatum((Date) getMandatDatum().getValue());
       m.setMandatVersion((Integer) getMandatVersion().getValue());
       m.setBic((String) getBic().getValue());
@@ -2404,7 +2422,8 @@ public class MitgliedControl extends FilterControl
       m.setLetzteAenderung();
       m.store();
 
-      boolean ist_mitglied = m.getAdresstyp().getJVereinid() == 1;
+      boolean ist_mitglied = m.getMitgliedstyp()
+          .getJVereinid() == Mitgliedstyp.MITGLIED;
       if (Einstellungen.getEinstellung().getMitgliedfoto() && ist_mitglied)
       {
         Mitgliedfoto f = null;
@@ -2548,7 +2567,7 @@ public class MitgliedControl extends FilterControl
         }
       }
       String successtext = "";
-      if (m.getAdresstyp().getJVereinid() == 1)
+      if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
       {
         successtext = "Mitglied gespeichert";
       }
@@ -2732,13 +2751,13 @@ public class MitgliedControl extends FilterControl
       sort = (String) getSortierung().getValue();
     }
     ArrayList<Mitglied> list = null;
-    Adresstyp atyp = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
-    if (atyp == null)
+    Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
+    if (mt == null)
     {
       GUI.getStatusBar().setErrorText("Bitte Mitgliedstyp auswählen");
       return;
     }
-    list = new MitgliedQuery(this).get(Integer.parseInt(atyp.getID()), sort);
+    list = new MitgliedQuery(this).get(Integer.parseInt(mt.getID()), sort);
     try
     {
       String dateinamensort = "";
@@ -2994,10 +3013,10 @@ public class MitgliedControl extends FilterControl
     {
       try
       {
-        Adresstyp at = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
-        if (at != null)
+        Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
+        if (mt != null)
         {
-          refreshMitgliedTable(Integer.parseInt(at.getID()));
+          refreshMitgliedTable(Integer.parseInt(mt.getID()));
         }
         else
         {

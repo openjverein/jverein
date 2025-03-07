@@ -63,7 +63,7 @@ import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
@@ -1140,32 +1140,32 @@ public class AbrechnungSEPA
       Konto konto, AbrechnungSEPAParam param, Double summe)
       throws ApplicationException, RemoteException, SEPAException
   {
-    Mitgliedskonto mk = null;
+    Sollbuchung sollb = null;
     String zweck = null;
     Rechnung re = null;
     if (spArray != null && adress != null && adress instanceof Mitglied)
     {
-      mk = (Mitgliedskonto) Einstellungen.getDBService()
-          .createObject(Mitgliedskonto.class, null);
-      mk.setAbrechnungslauf(abrl);
-      mk.setZahlungsweg(zahlungsweg);
-      mk.setZahlerId(zahlerId);
-      mk.setDatum(datum);
-      mk.setMitglied((Mitglied) adress);
+      sollb = (Sollbuchung) Einstellungen.getDBService()
+          .createObject(Sollbuchung.class, null);
+      sollb.setAbrechnungslauf(abrl);
+      sollb.setZahlungsweg(zahlungsweg);
+      sollb.setZahlerId(zahlerId);
+      sollb.setDatum(datum);
+      sollb.setMitglied((Mitglied) adress);
       // Zweck wird später gefüllt, es muss aber schon was drin stehen damit
       // gespeichert werden kann
-      mk.setZweck1(" ");
-      mk.setBetrag(0d);
-      mk.store();
+      sollb.setZweck1(" ");
+      sollb.setBetrag(0d);
+      sollb.store();
 
       summe = 0d;
       for (SollbuchungPosition sp : spArray)
       {
         summe += sp.getBetrag();
-        sp.setSollbuchung(mk.getID());
+        sp.setSollbuchung(sollb.getID());
         sp.store();
       }
-      mk.setBetrag(summe);
+      sollb.setBetrag(summe);
 
       if (param.rechnung)
       {
@@ -1180,9 +1180,9 @@ public class AbrechnungSEPA
 
         re.setFormular(form);
         re.setDatum(param.rechnungsdatum);
-        re.fill(mk);
+        re.fill(sollb);
         re.store();
-        mk.setRechnung(re);
+        sollb.setRechnung(re);
 
         if (param.rechnungstext.trim().length() > 0)
         {
@@ -1206,7 +1206,7 @@ public class AbrechnungSEPA
             Logger.error("Fehler bei der Aufbereitung der Variablen", e);
           }
 
-          mk.setZweck1(zweck);
+          sollb.setZweck1(zweck);
         }
       }
       if (zweck == null)
@@ -1224,9 +1224,9 @@ public class AbrechnungSEPA
           }
           zweck = zweck.substring(2);
         }
-        mk.setZweck1(zweck);
+        sollb.setZweck1(zweck);
       }
-      mk.store();
+      sollb.store();
     }
     if (spArray != null && adress != null && adress instanceof Kursteilnehmer)
     {
@@ -1247,10 +1247,10 @@ public class AbrechnungSEPA
       buchung.setZweck(adress == null ? "Gegenbuchung" : zweck);
       buchung.store();
 
-      if (mk != null)
+      if (sollb != null)
       {
         // Buchungen automatisch splitten
-        SplitbuchungsContainer.autoSplit(buchung, mk, false);
+        SplitbuchungsContainer.autoSplit(buchung, sollb, false);
       }
     }
     return zweck;

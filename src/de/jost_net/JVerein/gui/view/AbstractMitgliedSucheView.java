@@ -23,8 +23,8 @@ import java.sql.SQLException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.MitgliederImportAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -86,11 +86,11 @@ public abstract class AbstractMitgliedSucheView extends AbstractView
     Long anzahl = (Long) service.execute(sql, new Object[] {}, rs);
     if (anzahl.longValue() > 0)
     {
-      Adresstyp at = (Adresstyp) control.getSuchAdresstyp(Mitgliedstyp.MITGLIED).getValue();
-      if (at != null)
+      Mitgliedstyp mt = (Mitgliedstyp) control.getSuchMitgliedstyp(Mitgliedstypen.MITGLIED).getValue();
+      if (mt != null)
       {
-      Logger.debug(at.getID() + ": " + at.getBezeichnung());
-      p = control.getMitgliedTable(Integer.parseInt(at.getID()),
+      Logger.debug(mt.getID() + ": " + mt.getBezeichnung());
+      p = control.getMitgliedTable(Integer.parseInt(mt.getID()),
           getDetailAction());
       }
       else

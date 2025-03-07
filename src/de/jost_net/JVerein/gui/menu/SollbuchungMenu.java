@@ -26,7 +26,7 @@ import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
 import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -70,18 +70,19 @@ public class SollbuchungMenu extends ContextMenu
     @Override
     public boolean isEnabledFor(Object o)
     {
-      if (o instanceof Mitgliedskonto)
+      if (o instanceof Sollbuchung)
       {
-        Mitgliedskonto mk = (Mitgliedskonto) o;
+        Sollbuchung sollb = (Sollbuchung) o;
         DBIterator<Buchung> it;
         try
         {
-          if (mk.getRechnung() != null)
+          if (sollb.getRechnung() != null)
           {
             return false;
           }
           it = Einstellungen.getDBService().createList(Buchung.class);
-          it.addFilter("mitgliedskonto = ?", new Object[] { mk.getID() });
+          it.addFilter(Buchung.SOLLBUCHUNG + " = ?",
+              new Object[] { sollb.getID() });
           if (it.size() == 0)
           {
             return true;
@@ -108,12 +109,12 @@ public class SollbuchungMenu extends ContextMenu
     @Override
     public boolean isEnabledFor(Object o)
     {
-      if (o instanceof Mitgliedskonto)
+      if (o instanceof Sollbuchung)
       {
-        Mitgliedskonto mk = (Mitgliedskonto) o;
+        Sollbuchung sollb = (Sollbuchung) o;
         try
         {
-          return mk.getRechnung() == null;
+          return sollb.getRechnung() == null;
         }
         catch (RemoteException e)
         {
@@ -137,12 +138,12 @@ public class SollbuchungMenu extends ContextMenu
     @Override
     public boolean isEnabledFor(Object o)
     {
-      if (o instanceof Mitgliedskonto)
+      if (o instanceof Sollbuchung)
       {
-        Mitgliedskonto mk = (Mitgliedskonto) o;
+        Sollbuchung sollb = (Sollbuchung) o;
         try
         {
-          return mk.getRechnung() != null;
+          return sollb.getRechnung() != null;
         }
         catch (RemoteException e)
         {

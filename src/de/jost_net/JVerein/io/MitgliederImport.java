@@ -21,7 +21,7 @@ import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
@@ -134,28 +134,28 @@ public class MitgliederImport implements Importer
 
         try
         {
-          String adresstyp = results.getString("adresstyp");
-          if (adresstyp != null && adresstyp.length() != 0)
+          String mitgliedstyp = results.getString("adresstyp");
+          if (mitgliedstyp != null && mitgliedstyp.length() != 0)
           {
             try
             {
-              Adresstyp at = (Adresstyp) Einstellungen.getDBService()
-                  .createObject(Adresstyp.class, adresstyp);
-              m.setAdresstyp(Integer.valueOf(at.getID()));
+              Mitgliedstyp mt = (Mitgliedstyp) Einstellungen.getDBService()
+                  .createObject(Mitgliedstyp.class, mitgliedstyp);
+              m.setMitgliedstyp(Integer.valueOf(mt.getID()));
             }
             catch (ObjectNotFoundException e)
             {
               throw new ApplicationException(
-                  "Adresstyp nicht vorhanden: " + adresstyp);
+                  "Adresstyp nicht vorhanden: " + mitgliedstyp);
             }
           }
           else
-            m.setAdresstyp(1);
+            m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
         }
         catch (SQLException e)
         {
           // Wenn Adresstyp nicht vorhanden speichern wir es als Mitglied
-          m.setAdresstyp(1);
+          m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
         }
 
         try
@@ -185,7 +185,7 @@ public class MitgliederImport implements Importer
           // Optionaler parameter, ignorieren wir
         }
 
-        if (m.getAdresstyp().getJVereinid() == 1)
+        if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
         {
           try
           {
@@ -252,7 +252,7 @@ public class MitgliederImport implements Importer
         try
         {
           // Beitragsgruppe nur bei Mitgliedern möglich
-          if (m.getAdresstyp().getJVereinid() == 1)
+          if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
             String beitragsgruppe = results.getString("beitragsgruppe");
             DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
@@ -407,7 +407,7 @@ public class MitgliederImport implements Importer
             m.setMandatDatum(Datum.toDate(mandatdatum));
           }
           else if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getAdresstyp().getJVereinid() == 1)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
             throw new ApplicationException(
                 "Zeile " + anz + ": Mandatdatum fehlt");
@@ -417,7 +417,7 @@ public class MitgliederImport implements Importer
         {
           // Nur bei Zahlungsweg Lastschrift pflicht
           if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getAdresstyp().getJVereinid() == 1)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
             throw new ApplicationException("Mandatdatum fehlt");
           }
@@ -431,7 +431,7 @@ public class MitgliederImport implements Importer
             m.setMandatVersion(Integer.parseInt(mandatversion));
           }
           else if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getAdresstyp().getJVereinid() == 1)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
             m.setMandatVersion(0);
           }
@@ -440,7 +440,7 @@ public class MitgliederImport implements Importer
         {
           // Nur bei Zahlungsweg Lastschrift nötig. 0 als default nehmen
           if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getAdresstyp().getJVereinid() == 1)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
             m.setMandatVersion(0);
           }
@@ -466,7 +466,7 @@ public class MitgliederImport implements Importer
             }
           }
           else if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getAdresstyp().getJVereinid() == 1)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
             throw new ApplicationException("Zeile " + anz + ": IBAN fehlt");
           }
@@ -475,7 +475,7 @@ public class MitgliederImport implements Importer
         {
           // Nur bei Zahlungsweg Lastschrift nötig
           if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getAdresstyp().getJVereinid() == 1)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
             throw new ApplicationException("IBAN fehlt");
           }
@@ -559,14 +559,14 @@ public class MitgliederImport implements Importer
             m.setGeburtsdatum(Datum.toDate(geburtsdatum));
           }
           else if (Einstellungen.getEinstellung().getGeburtsdatumPflicht()
-              && m.getAdresstyp().getJVereinid() == 1)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
             throw new ApplicationException(
                 "Zeile " + anz + ": Geburtsdatum fehlt");
         }
         catch (SQLException e)
         {
           if (Einstellungen.getEinstellung().getGeburtsdatumPflicht()
-              && m.getAdresstyp().getJVereinid() == 1)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
             throw new ApplicationException("Geburtsdatum fehlt");
         }
 
@@ -1054,7 +1054,7 @@ public class MitgliederImport implements Importer
           }
         }
         // Sekundaere-Beitragsgruppe nur bei Mitgliedern möglich
-        if (m.getAdresstyp().getJVereinid() == 1)
+        if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
         {
           for (Beitragsgruppe bg : sekundaerList)
           {

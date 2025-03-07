@@ -18,17 +18,17 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AdresstypImpl extends AbstractDBObject implements Adresstyp
+public class MitgliedstypImpl extends AbstractDBObject implements Mitgliedstyp
 {
 
   private static final long serialVersionUID = 500102542884220658L;
 
-  public AdresstypImpl() throws RemoteException
+  public MitgliedstypImpl() throws RemoteException
   {
     super();
   }
@@ -36,13 +36,13 @@ public class AdresstypImpl extends AbstractDBObject implements Adresstyp
   @Override
   protected String getTableName()
   {
-    return "adresstyp";
+    return TABLE_NAME;
   }
 
   @Override
   public String getPrimaryAttribute()
   {
-    return "bezeichnung";
+    return PRIMARY_ATTRIBUTE;
   }
 
   @Override
@@ -96,32 +96,32 @@ public class AdresstypImpl extends AbstractDBObject implements Adresstyp
   @Override
   public String getBezeichnung() throws RemoteException
   {
-    return (String) getAttribute("bezeichnung");
+    return (String) getAttribute(BEZEICHNUNG);
   }
 
   @Override
   public void setBezeichnung(String bezeichnung) throws RemoteException
   {
-    setAttribute("bezeichnung", bezeichnung);
+    setAttribute(BEZEICHNUNG, bezeichnung);
   }
 
   @Override
   public String getBezeichnungPlural() throws RemoteException
   {
-    return (String) getAttribute("bezeichnungplural");
+    return (String) getAttribute(BEZEICHNUNG_PLURAL);
   }
 
   @Override
   public void setBezeichnungPlural(String bezeichnungplural)
       throws RemoteException
   {
-    setAttribute("bezeichnungplural", bezeichnungplural);
+    setAttribute(BEZEICHNUNG_PLURAL, bezeichnungplural);
   }
 
   @Override
   public int getJVereinid() throws RemoteException
   {
-    Integer i = (Integer) getAttribute("jvereinid");
+    Integer i = (Integer) getAttribute(JVEREINID);
     if (i == null)
       return 0;
     return i.intValue();
@@ -130,7 +130,7 @@ public class AdresstypImpl extends AbstractDBObject implements Adresstyp
   @Override
   public void setJVereinid(int jvereinid) throws RemoteException
   {
-    setAttribute("jvereinid", Integer.valueOf(jvereinid));
+    setAttribute(JVEREINID, Integer.valueOf(jvereinid));
   }
 
   @Override

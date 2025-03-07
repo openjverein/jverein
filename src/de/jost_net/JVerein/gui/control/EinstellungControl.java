@@ -339,6 +339,8 @@ public class EinstellungControl extends AbstractControl
 
   private TextInput beitragaltersstufen;
   
+  private CheckboxInput nummeranzeigen;
+
   private CheckboxInput mittelverwendung;
 
   /**
@@ -2105,6 +2107,17 @@ public class EinstellungControl extends AbstractControl
     return afaort;
   }
 
+  public CheckboxInput getMitgliedsnummerAnzeigen() throws RemoteException
+  {
+    if (nummeranzeigen != null)
+    {
+      return nummeranzeigen;
+    }
+    nummeranzeigen = new CheckboxInput(
+        Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen());
+    return nummeranzeigen;
+  }
+
   public CheckboxInput getMittelverwendung() throws RemoteException
   {
     if (mittelverwendung != null)
@@ -2205,6 +2218,7 @@ public class EinstellungControl extends AbstractControl
         e.setAfaInJahresabschluss(false);
       else
         e.setAfaInJahresabschluss(true);
+      e.setMitgliedsnummerAnzeigen((Boolean) nummeranzeigen.getValue());
       e.setMittelverwendung((Boolean) mittelverwendung.getValue());
 
       e.store();

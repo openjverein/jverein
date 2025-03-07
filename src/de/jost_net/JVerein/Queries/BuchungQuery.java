@@ -30,6 +30,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Projekt;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -171,10 +172,10 @@ public class BuchungQuery
     if (mitglied != null && !mitglied.isEmpty())
     {
       String mitgliedsuche = "%" + mitglied.toLowerCase() + "%";
-      it.join("mitgliedskonto");
-      it.addFilter("mitgliedskonto.id = mitgliedskonto");
+      it.join(Sollbuchung.TABLE_NAME);
+      it.addFilter(Sollbuchung.TABLE_NAME_ID + " = " + Buchung.SOLLBUCHUNG);
       it.join("mitglied");
-      it.addFilter("mitglied.id = mitgliedskonto.mitglied");
+      it.addFilter("mitglied.id = " + Sollbuchung.T_MITGLIED);
       it.addFilter("(lower(mitglied.name) like ? or lower(mitglied.vorname) like ?)",
           new Object[] { mitgliedsuche, mitgliedsuche });
     }
@@ -211,11 +212,11 @@ public class BuchungQuery
     {
       if (hasMitglied)
       {
-        it.addFilter("mitgliedskonto is not null");
+        it.addFilter(Buchung.SOLLBUCHUNG + " is not null");
       }
       else
       {
-        it.addFilter("mitgliedskonto is null");
+        it.addFilter(Buchung.SOLLBUCHUNG + " is null");
       }
     }
 

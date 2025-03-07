@@ -29,7 +29,7 @@ import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -150,7 +150,8 @@ public class MitgliedskontoMenu extends ContextMenu
           try
           {
             it = Einstellungen.getDBService().createList(Buchung.class);
-            it.addFilter("mitgliedskonto = ?", new Object[] { mkn.getID() });
+            it.addFilter(Buchung.SOLLBUCHUNG + " = ?",
+                new Object[] { mkn.getID() });
             if (it.size() == 0)
             {
               return true;
@@ -266,9 +267,9 @@ public class MitgliedskontoMenu extends ContextMenu
 
         try
         {
-          Mitgliedskonto mk = Einstellungen.getDBService()
-              .createObject(Mitgliedskonto.class, mkn.getID());
-          return mk.getRechnung() == null;
+          Sollbuchung sollb = Einstellungen.getDBService()
+              .createObject(Sollbuchung.class, mkn.getID());
+          return sollb.getRechnung() == null;
         }
         catch (RemoteException e)
         {
@@ -302,9 +303,9 @@ public class MitgliedskontoMenu extends ContextMenu
 
         try
         {
-          Mitgliedskonto mk = Einstellungen.getDBService()
-              .createObject(Mitgliedskonto.class, mkn.getID());
-          return mk.getRechnung() != null;
+          Sollbuchung sollb = Einstellungen.getDBService()
+              .createObject(Sollbuchung.class, mkn.getID());
+          return sollb.getRechnung() != null;
         }
         catch (RemoteException e)
         {

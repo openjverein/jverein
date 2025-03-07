@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
@@ -59,13 +60,14 @@ public abstract class Spaltenauswahl
         formatter, align, nurMitglied));
   }
 
-  public void setColumns(TablePart part, int adresstyp)
+  public void setColumns(TablePart part, int mitgliedstyp)
   {
     for (Spalte spalte : spalten)
     {
       if (spalte.isChecked())
       {
-        if ((adresstyp == 1) || adresstyp != 1 && spalte.isNurAdressen())
+        if ((mitgliedstyp == Mitgliedstyp.MITGLIED)
+            || mitgliedstyp != Mitgliedstyp.MITGLIED && spalte.isNurAdressen())
         {
           part.addColumn(spalte.getSpaltenbezeichnung(),
               spalte.getSpaltenname(), spalte.getFormatter());

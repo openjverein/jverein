@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 
 public class SollbuchungMap
 {
@@ -29,7 +29,7 @@ public class SollbuchungMap
   {
   }
 
-  public Map<String, Object> getMap(Mitgliedskonto mk, Map<String, Object> inma)
+  public Map<String, Object> getMap(Sollbuchung sollb, Map<String, Object> inma)
       throws RemoteException
   {
     Map<String, Object> map = null;
@@ -41,12 +41,12 @@ public class SollbuchungMap
     {
       map = inma;
     }
-    map.put(SollbuchungVar.BUCHUNGSDATUM.getName(), mk.getDatum());
-    map.put(SollbuchungVar.ZAHLUNGSGRUND.getName(), mk.getZweck1());
-    map.put(SollbuchungVar.BETRAG.getName(), mk.getBetrag());
-    map.put(SollbuchungVar.IST.getName(), mk.getIstSumme());
+    map.put(SollbuchungVar.BUCHUNGSDATUM.getName(), sollb.getDatum());
+    map.put(SollbuchungVar.ZAHLUNGSGRUND.getName(), sollb.getZweck1());
+    map.put(SollbuchungVar.BETRAG.getName(), sollb.getBetrag());
+    map.put(SollbuchungVar.IST.getName(), sollb.getIstSumme());
     map.put(SollbuchungVar.DIFFERENZ.getName(),
-        mk.getBetrag() - mk.getIstSumme());
+        sollb.getBetrag() - sollb.getIstSumme());
     return map;
   }
 }

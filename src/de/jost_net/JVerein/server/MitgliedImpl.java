@@ -34,7 +34,7 @@ import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -83,12 +83,23 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   @Override
   protected String getTableName()
   {
-    return "mitglied";
+    return TABLE_NAME;
   }
 
   @Override
   public String getPrimaryAttribute()
   {
+    try
+    {
+      if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+      {
+        return "idnamevorname";
+      }
+    }
+    catch (RemoteException e)
+    {
+      //
+    }
     return "namevorname";
   }
 
@@ -149,13 +160,15 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       throw new ApplicationException("Bitte Vornamen eingeben");
     }
-    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equalsIgnoreCase(
+    if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+        && getPersonenart().equalsIgnoreCase(
         "n") && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime() && Einstellungen.getEinstellung()
         .getGeburtsdatumPflicht())
     {
       throw new ApplicationException("Bitte Geburtsdatum eingeben");
     }
-    if (getAdresstyp().getJVereinid() == 1 && getPersonenart().equalsIgnoreCase(
+    if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+        && getPersonenart().equalsIgnoreCase(
         "n") && Einstellungen.getEinstellung().getGeburtsdatumPflicht())
     {
       Calendar cal1 = Calendar.getInstance();
@@ -188,7 +201,9 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       }
     }
 
-    if (getAdresstyp().getJVereinid() == 1 && getEintritt().getTime() == Einstellungen.NODATE.getTime() && Einstellungen.getEinstellung()
+    if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+        && getEintritt().getTime() == Einstellungen.NODATE.getTime()
+        && Einstellungen.getEinstellung()
         .getEintrittsdatumPflicht())
     {
       throw new ApplicationException("Bitte Eintrittsdatum eingeben");
@@ -198,6 +213,14 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       if (getIban() == null || getIban().length() == 0)
       {
         throw new ApplicationException("Bitte IBAN eingeben");
+      }
+      if (getMandatID() == null || getMandatID().isEmpty())
+      {
+        throw new ApplicationException("Bitte Mandats-ID eingeben");
+      }
+      else if (getMandatID().length() > 35)
+      {
+        throw new ApplicationException("Mandats-ID hat mehr als 35 Stellen");
       }
       if (getMandatDatum() == Einstellungen.NODATE)
       {
@@ -320,7 +343,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   private void checkExterneMitgliedsnummer()
       throws RemoteException, ApplicationException
   {
-    if (getAdresstyp().getJVereinid() != 1)
+    if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED)
       return;
     if (Einstellungen.getEinstellung().getExterneMitgliedsnummer() == false)
       return;
@@ -367,23 +390,23 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       return Mitgliedfoto.class;
     }
-    if ("adresstyp".equals(field))
+    if (MITGLIEDSTYP.equals(field))
     {
-      return Adresstyp.class;
+      return Mitgliedstyp.class;
     }
     return null;
   }
 
   @Override
-  public void setAdresstyp(Integer adresstyp) throws RemoteException
+  public void setMitgliedstyp(Integer mitgliedstyp) throws RemoteException
   {
-    setAttribute("adresstyp", adresstyp);
+    setAttribute(MITGLIEDSTYP, mitgliedstyp);
   }
 
   @Override
-  public Adresstyp getAdresstyp() throws RemoteException
+  public Mitgliedstyp getMitgliedstyp() throws RemoteException
   {
-    return (Adresstyp) getAttribute("adresstyp");
+    return (Mitgliedstyp) getAttribute(MITGLIEDSTYP);
   }
 
   @Override
@@ -664,10 +687,20 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       return getExterneMitgliedsnummer() + "-" + getMandatVersion();
     }
-    else
+    else if (sepaMandatIdSource == SepaMandatIdSource.DBID)
     {
       return getID() + "-" + getMandatVersion();
     }
+    else
+    {
+      return (String) getAttribute("mandatid");
+    }
+  }
+
+  @Override
+  public void setMandatID(String mandatid) throws RemoteException
+  {
+    setAttribute("mandatid", mandatid);
   }
 
   @Override
@@ -1246,6 +1279,10 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     {
       return Integer.valueOf(getID());
     }
+    if (fieldName.equals("idnamevorname"))
+    {
+      return Adressaufbereitung.getIdNameVorname(this);
+    }
     if (fieldName.equals("namevorname"))
     {
       return Adressaufbereitung.getNameVorname(this);
@@ -1456,7 +1493,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
 
     private final static Map<String, String> VARIABLEN = new HashMap<>();
 
-    private final static Adresstyp ADRESSTYP = new Adresstyp()
+    private final static Mitgliedstyp ADRESSTYP = new Mitgliedstyp()
     {
       @Override
       public void transactionBegin() throws RemoteException
@@ -1724,7 +1761,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     }
 
     @Override
-    public Adresstyp getAdresstyp() throws RemoteException
+    public Mitgliedstyp getMitgliedstyp() throws RemoteException
     {
       return ADRESSTYP;
     }

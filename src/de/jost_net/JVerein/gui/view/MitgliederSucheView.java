@@ -28,7 +28,7 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 
 public class MitgliederSucheView extends AbstractMitgliedSucheView
 {
@@ -36,7 +36,7 @@ public class MitgliederSucheView extends AbstractMitgliedSucheView
   public MitgliederSucheView() throws RemoteException
   {
     control.init("mitglied.", "zusatzfeld.", "zusatzfelder.");
-    control.getSuchAdresstyp(Mitgliedstyp.MITGLIED).getValue();
+    control.getSuchMitgliedstyp(Mitgliedstypen.MITGLIED).getValue();
   }
 
   @Override

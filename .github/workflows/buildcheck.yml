@@ -12,29 +12,20 @@ on:
       - 'lib/**'
       - 'lib.src/**'
       - 'src/**'
+      - '.github/workflows/**/*.yml'
+      - '.github/actions/**/*.yml'
+  push:
 jobs:
-  call-reusable-workflow:
-    uses: ./.github/workflows/reusable-build.yml
-
   build-check:
-    needs: call-reusable-workflow
     runs-on: ubuntu-latest
     steps:
-    - name: Restore cached tags and jars
-      id: cache-tags-jars
-      uses: actions/cache@v4
-      with:
-        path: |
-          ./cached-tags
-          jameica
-          hibiscus
-        key: ${{ runner.os }}-${{ github.repository_id }}
-
     - name: Checkout openjverein
       uses: actions/checkout@v4
       with:
         path: jverein
 
+    - name: Setup
+      uses: ./jverein/.github/actions/build-dependencies
+
     - name: Build openjverein plugin
-      working-directory: ./
       run: ant -noinput -buildfile jverein/build/build.xml compile

@@ -31,14 +31,14 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.SollbuchungMap;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ProgressMonitor;
 
 public class SollbuchungExportCSV extends SollbuchungExport
 {
 
-  private ArrayList<Mitgliedskonto> mkonten = null;
+  private ArrayList<Sollbuchung> sollbuchungen = null;
 
   @Override
   public String getName()
@@ -49,7 +49,7 @@ public class SollbuchungExportCSV extends SollbuchungExport
   @Override
   public IOFormat[] getIOFormats(Class<?> objectType)
   {
-    if (objectType != Mitgliedskonto.class)
+    if (objectType != Sollbuchung.class)
     {
       return null;
     }
@@ -77,7 +77,7 @@ public class SollbuchungExportCSV extends SollbuchungExport
   @Override
   protected void open()
   {
-    mkonten = new ArrayList<>();
+    sollbuchungen = new ArrayList<>();
   }
 
   @Override
@@ -93,9 +93,9 @@ public class SollbuchungExportCSV extends SollbuchungExport
   }
 
   @Override
-  protected void add(Mitgliedskonto mk)
+  protected void add(Sollbuchung sollb)
   {
-    mkonten.add(mk);
+    sollbuchungen.add(sollb);
   }
 
   @Override
@@ -107,22 +107,22 @@ public class SollbuchungExportCSV extends SollbuchungExport
           CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
 
       Mitglied m = null;
-      Mitgliedskonto mk = null;
-      if (mkonten.size() > 0)
+      Sollbuchung sollb = null;
+      if (sollbuchungen.size() > 0)
       {
-        mk = mkonten.get(0);
-        m = mk.getMitglied();
+        sollb = sollbuchungen.get(0);
+        m = sollb.getMitglied();
       }
       else
       {
-        mk = (Mitgliedskonto) Einstellungen.getDBService()
-            .createObject(Mitgliedskonto.class, null);
+        sollb = (Sollbuchung) Einstellungen.getDBService()
+            .createObject(Sollbuchung.class, null);
         m = (Mitglied) Einstellungen.getDBService().createObject(Mitglied.class,
             null);
       }
 
       Map<String, Object> map = new MitgliedMap().getMap(m, null);
-      map = new SollbuchungMap().getMap(mk, map);
+      map = new SollbuchungMap().getMap(sollb, map);
       String[] header = createHeader(map);
       Logger.debug("Header");
       for (String s : header)
@@ -133,14 +133,14 @@ public class SollbuchungExportCSV extends SollbuchungExport
 
       writer.writeHeader(header);
 
-      for (Mitgliedskonto mkto : mkonten)
+      for (Sollbuchung sollbuch : sollbuchungen)
       {
-        Map<String, Object> mp = new MitgliedMap().getMap(mkto.getMitglied(),
+        Map<String, Object> mp = new MitgliedMap().getMap(sollbuch.getMitglied(),
             null);
-        map = new SollbuchungMap().getMap(mkto, mp);
+        map = new SollbuchungMap().getMap(sollbuch, mp);
         writer.write(map, header, processors);
         monitor.log(
-            "Export: " + Adressaufbereitung.getNameVorname(mkto.getMitglied()));
+            "Export: " + Adressaufbereitung.getNameVorname(sollbuch.getMitglied()));
       }
       writer.close();
     }

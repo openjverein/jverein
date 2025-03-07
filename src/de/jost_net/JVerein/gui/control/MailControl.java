@@ -178,7 +178,7 @@ public class MailControl extends FilterControl
     mitgliedmitmail.addColumn("EMail", "email");
     mitgliedmitmail.addColumn("Name", "name");
     mitgliedmitmail.addColumn("Vorname", "vorname");
-    mitgliedmitmail.addColumn("Mitgliedstyp", "adresstyp");
+    mitgliedmitmail.addColumn("Mitgliedstyp", Mitglied.MITGLIEDSTYP);
     mitgliedmitmail.setRememberOrder(true);
     mitgliedmitmail.setCheckable(true);
     mitgliedmitmail.removeFeature(FeatureSummary.class);

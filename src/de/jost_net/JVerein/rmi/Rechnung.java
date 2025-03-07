@@ -40,7 +40,7 @@ public interface Rechnung extends DBObject, IAdresse
    * @param mk
    *          die Sollbuchung aus der eine Rechnung erstellt werden soll
    */
-  public void fill(Mitgliedskonto mk)
+  public void fill(Sollbuchung sollb)
       throws RemoteException, ApplicationException;
 
   double getBetrag() throws RemoteException;
@@ -131,7 +131,7 @@ public interface Rechnung extends DBObject, IAdresse
   public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
       throws RemoteException;
 
-  public Mitgliedskonto getMitgliedskonto() throws RemoteException;
+  public Sollbuchung getSollbuchung() throws RemoteException;
 
   public String getLeitwegID() throws RemoteException;
 

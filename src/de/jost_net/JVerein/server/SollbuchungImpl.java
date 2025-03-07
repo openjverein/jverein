@@ -27,7 +27,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.db.AbstractDBObject;
@@ -38,15 +38,15 @@ import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedskontoImpl extends AbstractDBObject
-    implements Mitgliedskonto
+public class SollbuchungImpl extends AbstractDBObject
+    implements Sollbuchung
 {
 
   private static final long serialVersionUID = -1234L;
 
   private Double ist = null;
 
-  public MitgliedskontoImpl() throws RemoteException
+  public SollbuchungImpl() throws RemoteException
   {
     super();
   }
@@ -54,13 +54,13 @@ public class MitgliedskontoImpl extends AbstractDBObject
   @Override
   protected String getTableName()
   {
-    return "mitgliedskonto";
+    return TABLE_NAME;
   }
 
   @Override
   public String getPrimaryAttribute()
   {
-    return "mitglied";
+    return PRIMARY_ATTRIBUTE;
   }
 
   @Override
@@ -127,7 +127,7 @@ public class MitgliedskontoImpl extends AbstractDBObject
   @Override
   protected Class<?> getForeignObject(String arg0)
   {
-    if (arg0.equals("rechnung"))
+    if (arg0.equals(RECHNUNG))
     {
       return Rechnung.class;
     }
@@ -137,7 +137,7 @@ public class MitgliedskontoImpl extends AbstractDBObject
   @Override
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException
   {
-    Object o = (Object) super.getAttribute("abrechnungslauf");
+    Object o = (Object) super.getAttribute(ABRECHNUNGSLAUF);
     if (o == null)
       return null;
 
@@ -152,28 +152,28 @@ public class MitgliedskontoImpl extends AbstractDBObject
   public void setAbrechnungslauf(Abrechnungslauf abrechnungslauf)
       throws RemoteException
   {
-    setAttribute("abrechnungslauf", Integer.valueOf(abrechnungslauf.getID()));
+    setAttribute(ABRECHNUNGSLAUF, Integer.valueOf(abrechnungslauf.getID()));
   }
 
   @Override
   public Rechnung getRechnung() throws RemoteException
   {
-    return (Rechnung) getAttribute("rechnung");
+    return (Rechnung) getAttribute(RECHNUNG);
   }
 
   @Override
   public void setRechnung(Rechnung rechnung) throws RemoteException
   {
     if (rechnung != null)
-      setAttribute("rechnung", Long.valueOf(rechnung.getID()));
+      setAttribute(RECHNUNG, Long.valueOf(rechnung.getID()));
     else
-      setAttribute("rechnung", null);
+      setAttribute(RECHNUNG, null);
   }
 
   @Override
   public Mitglied getMitglied() throws RemoteException
   {
-    Object o = (Object) super.getAttribute("mitglied");
+    Object o = (Object) super.getAttribute(MITGLIED);
     if (o == null)
       return null;
 
@@ -186,19 +186,19 @@ public class MitgliedskontoImpl extends AbstractDBObject
 
   public String getMitgliedId() throws RemoteException
   {
-    return String.valueOf(super.getAttribute("mitglied"));
+    return String.valueOf(super.getAttribute(MITGLIED));
   }
 
   @Override
   public void setMitglied(Mitglied mitglied) throws RemoteException
   {
-    setAttribute("mitglied", Integer.valueOf(mitglied.getID()));
+    setAttribute(MITGLIED, Integer.valueOf(mitglied.getID()));
   }
 
   @Override
   public Mitglied getZahler() throws RemoteException
   {
-    Object o = (Object) super.getAttribute("zahler");
+    Object o = (Object) super.getAttribute(ZAHLER);
     if (o == null)
     {
       return null;
@@ -218,71 +218,71 @@ public class MitgliedskontoImpl extends AbstractDBObject
   {
     if (zahler != null)
     {
-      setAttribute("zahler", Long.valueOf(zahler.getID()));
+      setAttribute(ZAHLER, Long.valueOf(zahler.getID()));
     }
     else
     {
-      setAttribute("zahler", null);
+      setAttribute(ZAHLER, null);
     }
   }
 
   public Long getZahlerId() throws RemoteException
   {
-    return (Long) super.getAttribute("zahler");
+    return (Long) super.getAttribute(ZAHLER);
   }
 
   @Override
   public void setZahlerId(Long zahlerId) throws RemoteException
   {
-    setAttribute("zahler", zahlerId);
+    setAttribute(ZAHLER, zahlerId);
   }
 
   @Override
   public Date getDatum() throws RemoteException
   {
-    return (Date) getAttribute("datum");
+    return (Date) getAttribute(DATUM);
   }
 
   @Override
   public void setDatum(Date datum) throws RemoteException
   {
-    setAttribute("datum", datum);
+    setAttribute(DATUM, datum);
   }
 
   @Override
   public String getZweck1() throws RemoteException
   {
-    return (String) getAttribute("zweck1");
+    return (String) getAttribute(ZWECK1);
   }
 
   @Override
   public void setZweck1(String zweck1) throws RemoteException
   {
-    setAttribute("zweck1", zweck1);
+    setAttribute(ZWECK1, zweck1);
   }
 
   @Override
   public Integer getZahlungsweg() throws RemoteException
   {
-    return (Integer) getAttribute("zahlungsweg");
+    return (Integer) getAttribute(ZAHLUNGSWEG);
   }
 
   @Override
   public void setZahlungsweg(Integer zahlungsweg) throws RemoteException
   {
-    setAttribute("zahlungsweg", zahlungsweg);
+    setAttribute(ZAHLUNGSWEG, zahlungsweg);
   }
 
   @Override
   public Double getBetrag() throws RemoteException
   {
-    return (Double) super.getAttribute("betrag");
+    return (Double) super.getAttribute(BETRAG);
   }
 
   @Override
   public void setBetrag(Double d) throws RemoteException
   {
-    setAttribute("betrag", d);
+    setAttribute(BETRAG, d);
   }
 
   @Override
@@ -293,8 +293,8 @@ public class MitgliedskontoImpl extends AbstractDBObject
       return ist;
     }
     DBService service = Einstellungen.getDBService();
-    String sql = "select sum(betrag) from buchung where mitgliedskonto = "
-        + this.getID();
+    String sql = "select sum(betrag) from buchung where " + Buchung.SOLLBUCHUNG
+        + " = " + this.getID();
 
     ResultSetExtractor rs = new ResultSetExtractor()
     {
@@ -328,19 +328,19 @@ public class MitgliedskontoImpl extends AbstractDBObject
         return getID();
       }
     }
-    if (fieldName.equals("istsumme"))
+    if (fieldName.equals(ISTSUMME))
     {
       return getIstSumme();
     }
-    if (fieldName.equals("mitglied"))
+    if (fieldName.equals(MITGLIED))
     {
       return getMitglied();
     }
-    if (fieldName.equals("zahler"))
+    if (fieldName.equals(ZAHLER))
     {
       return getZahler();
     }
-    if (fieldName.equals("abrechnungslauf"))
+    if (fieldName.equals(ABRECHNUNGSLAUF))
     {
       return getAbrechnungslauf();
     }
@@ -369,7 +369,7 @@ public class MitgliedskontoImpl extends AbstractDBObject
     ArrayList<Buchung> buchungen = new ArrayList<>();
     DBIterator<Buchung> it = Einstellungen.getDBService()
         .createList(Buchung.class);
-    it.addFilter("mitgliedskonto = ?", getID());
+    it.addFilter(Buchung.SOLLBUCHUNG + " = ?", getID());
     it.setOrder("ORDER BY datum asc");
     while (it.hasNext())
     {

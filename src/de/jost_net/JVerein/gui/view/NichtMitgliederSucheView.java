@@ -28,14 +28,14 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 
 public class NichtMitgliederSucheView extends AbstractMitgliedSucheView
 {
   public NichtMitgliederSucheView() throws RemoteException
   {
     control.init("nichtmitglied.", "nichtzusatzfeld.", "nichtzusatzfelder.");
-    control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
+    control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
   }
 
   @Override
@@ -52,7 +52,7 @@ public class NichtMitgliederSucheView extends AbstractMitgliedSucheView
     
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
-    left.addInput(control.getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED));
+    left.addInput(control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED));
     DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
     left.addInput(eigenschaftenInput);
     control.updateEigenschaftenAuswahlTooltip();
