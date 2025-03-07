@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.dialogs.KontoAuswahlDialog;
-import de.jost_net.JVerein.gui.view.AnfangsbestandView;
+import de.jost_net.JVerein.gui.view.AnfangsbestandDetailView;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.jameica.gui.Action;
@@ -70,7 +70,7 @@ public class AnfangsbestandNeuAction implements Action
           GUI.getStatusBar().setErrorText("Fehler bei der Auswahl des Kontos.");
         }
       }
-      GUI.startView(AnfangsbestandView.class, anf);
+      GUI.startView(AnfangsbestandDetailView.class, anf);
     }
     catch (RemoteException e)
     {

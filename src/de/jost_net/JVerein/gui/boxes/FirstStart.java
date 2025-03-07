@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Label;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.StartViewAction;
-import de.jost_net.JVerein.gui.view.BeitragsgruppeSucheView;
+import de.jost_net.JVerein.gui.view.BeitragsgruppeListeView;
 import de.jost_net.JVerein.gui.view.EinstellungenAllgemeinView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.boxes.AbstractBox;
@@ -136,7 +136,7 @@ public class FirstStart extends AbstractBox
     buttons.addButton("Einstellungen",
         new StartViewAction(EinstellungenAllgemeinView.class), null);
     buttons.addButton("Beitragsgruppen",
-        new StartViewAction(BeitragsgruppeSucheView.class), null);
+        new StartViewAction(BeitragsgruppeListeView.class), null);
     buttons.paint(parent);
   }
 

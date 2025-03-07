@@ -36,7 +36,7 @@ import de.jost_net.JVerein.gui.menu.RechnungMenu;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
-import de.jost_net.JVerein.gui.view.RechnungView;
+import de.jost_net.JVerein.gui.view.RechnungDetailView;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -142,7 +142,7 @@ public class RechnungControl extends DruckMailControl
     }
     GenericIterator<Rechnung> rechnungen = getRechnungIterator();
     rechnungList = new TablePart(rechnungen,
-        new EditAction(RechnungView.class));
+        new EditAction(RechnungDetailView.class));
     rechnungList.addColumn("Nr", "id-int");
     rechnungList.addColumn("Rechnungsdatum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

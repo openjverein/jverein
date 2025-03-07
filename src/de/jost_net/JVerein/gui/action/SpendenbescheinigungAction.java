@@ -25,7 +25,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.SpendenbescheinigungView;
+import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -142,7 +142,7 @@ public class SpendenbescheinigungAction implements Action
           }
         }
       }
-      GUI.startView(SpendenbescheinigungView.class.getName(), spb);
+      GUI.startView(SpendenbescheinigungDetailView.class.getName(), spb);
     }
     catch (RemoteException e)
     {
