@@ -24,7 +24,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class MitgliederSuchProfilListeView extends AbstractView
+public class MitgliedSuchProfilListeView extends AbstractView
 {
 
   @Override

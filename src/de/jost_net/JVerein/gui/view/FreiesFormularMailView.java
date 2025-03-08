@@ -15,7 +15,7 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class FreieFormulareMailView extends AbstractView
+public class FreiesFormularMailView extends AbstractView
 {
 
   @Override

@@ -62,7 +62,7 @@ import de.jost_net.JVerein.gui.view.EinstellungenStatistikView;
 import de.jost_net.JVerein.gui.view.FamilienbeitragView;
 import de.jost_net.JVerein.gui.view.ZusatzfeldListeView;
 import de.jost_net.JVerein.gui.view.FormularListeView;
-import de.jost_net.JVerein.gui.view.FreieFormulareMailView;
+import de.jost_net.JVerein.gui.view.FreiesFormularMailView;
 import de.jost_net.JVerein.gui.view.JahresabschlussListeView;
 import de.jost_net.JVerein.gui.view.JubilaeenView;
 import de.jost_net.JVerein.gui.view.KontoSaldoView;
@@ -298,7 +298,7 @@ public class MyExtension implements Extension
           new StartViewAction(KontoauszugMailView.class),
           "document-print.png"));
       mail.addChild(new MyItem(mail, "Freie Formulare",
-          new StartViewAction(FreieFormulareMailView.class),
+          new StartViewAction(FreiesFormularMailView.class),
           "document-print.png"));
       mail.addChild(new MyItem(mail, "Pre-Notification",
           new StartViewAction(PreNotificationMailView.class),

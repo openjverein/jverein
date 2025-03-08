@@ -75,7 +75,7 @@ import de.jost_net.JVerein.gui.view.AbstractMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.AuswertungVorlagenCsvView;
 import de.jost_net.JVerein.gui.view.IAuswertung;
 import de.jost_net.JVerein.gui.view.MitgliedNextBGruppeView;
-import de.jost_net.JVerein.gui.view.MitgliederSuchProfilListeView;
+import de.jost_net.JVerein.gui.view.MitgliedSuchProfilListeView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.MitgliedAdressbuchExport;
 import de.jost_net.JVerein.io.MitgliedAdresslistePDF;
@@ -2071,7 +2071,7 @@ public class MitgliedControl extends FilterControl
         {
           throw new ApplicationException(e);
         }
-        GUI.startView(MitgliederSuchProfilListeView.class.getName(), settings);
+        GUI.startView(MitgliedSuchProfilListeView.class.getName(), settings);
       }
     }, null, true, "user-check.png"); // "true" defines this button as the
                                       // default button
