@@ -62,7 +62,6 @@ public class IstbuchungLoesenAction implements Action
     }
     MitgliedskontoNode mkn = null;
     Buchung bu = null;
-    Sollbuchung sollb = null;
     try
     {
       if (context instanceof MitgliedskontoNode)
@@ -74,20 +73,14 @@ public class IstbuchungLoesenAction implements Action
       else
       {
         bu = (Buchung) context;
-        sollb = bu.getSollbuchung();
+        bu.getSollbuchung();
       }
       bu.setSollbuchung(null);
       bu.store();
       GUI.getStatusBar().setSuccessText("Istbuchung von Sollbuchung gelöst.");
-      if (context instanceof MitgliedskontoNode)
-      {
-        Application.getMessagingFactory()
-            .sendMessage(new MitgliedskontoMessage(mkn.getMitglied()));
-      }
-      if (sollb != null)
-      {
-        GUI.startView(SollbuchungDetailView.class.getName(), sollb);
-      }
+      Application.getMessagingFactory()
+          .sendMessage(new MitgliedskontoMessage(bu));
+
     }
     catch (RemoteException e)
     {
