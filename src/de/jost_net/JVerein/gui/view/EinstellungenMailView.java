@@ -77,6 +77,9 @@ public class EinstellungenMailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_MAIL, false, "question-circle.png");
+    buttons.addButton("Testmail versenden", context -> {
+      control.testMail();
+    }, null, false, "envelope-open.png");
     buttons.addButton("Speichern", new Action()
     {
 
