@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.input;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.eclipse.swt.SWT;
@@ -29,6 +30,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DialogInput;
@@ -134,10 +136,16 @@ public class SollbuchungAuswahlInput
             buchungen[0].setZweck(sollbuchung.getZweck1());
             buchungen[0].setBetrag(sollbuchung.getBetrag());
             buchungen[0].setDatum(new Date());
-            buchungen[0].setBuchungsartId(sollbuchung
-                .getSollbuchungPositionList().get(0).getBuchungsartId());
-            buchungen[0].setBuchungsklasseId(sollbuchung
-                .getSollbuchungPositionList().get(0).getBuchungsklasseId());
+
+            ArrayList<SollbuchungPosition> sbpList = sollbuchung
+                .getSollbuchungPositionList();
+            if (sbpList.size() > 0)
+            {
+              buchungen[0].setBuchungsartId(sollbuchung
+                  .getSollbuchungPositionList().get(0).getBuchungsartId());
+              buchungen[0].setBuchungsklasseId(sollbuchung
+                  .getSollbuchungPositionList().get(0).getBuchungsklasseId());
+            }
           }
         }
         else if (event.data instanceof Mitglied)
