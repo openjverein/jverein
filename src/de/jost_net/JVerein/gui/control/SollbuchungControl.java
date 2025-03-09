@@ -40,7 +40,7 @@ import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
-import de.jost_net.JVerein.gui.view.BuchungView;
+import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungPositionView;
 import de.jost_net.JVerein.io.Kontoauszug;
@@ -367,7 +367,7 @@ public class SollbuchungControl extends DruckMailControl
               {
                 Buchung bu = (Buchung) Einstellungen.getDBService()
                     .createObject(Buchung.class, mkn.getID());
-                GUI.startView(BuchungView.class.getName(), bu);
+                GUI.startView(BuchungDetailView.class.getName(), bu);
               }
               if (mkn.getType() == MitgliedskontoNode.SOLL)
               {

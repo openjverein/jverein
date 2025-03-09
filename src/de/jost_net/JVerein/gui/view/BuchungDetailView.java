@@ -31,7 +31,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class BuchungView extends AbstractView
+public class BuchungDetailView extends AbstractView
 {
 
   @Override

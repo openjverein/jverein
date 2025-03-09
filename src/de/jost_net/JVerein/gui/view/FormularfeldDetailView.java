@@ -16,10 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.BuchungsartControl;
-import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.gui.action.FormularfeldAction;
+import de.jost_net.JVerein.gui.control.FormularfeldControl;
+import de.jost_net.JVerein.rmi.Formularfeld;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -28,41 +30,42 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsartView extends AbstractView
+public class FormularfeldDetailView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Buchungsart");
+    GUI.getView().setTitle("Formularfeld");
+    Formularfeld ff = (Formularfeld) getCurrentObject();
 
-    final BuchungsartControl control = new BuchungsartControl(this);
+    final FormularfeldControl control = new FormularfeldControl(this,
+        ff.getFormular());
 
-    LabelGroup group = new LabelGroup(getParent(), "Buchungsart");
-    group.addLabelPair("Nummer", control.getNummer(true));
-    group.addLabelPair("Bezeichnung", control.getBezeichnung());
-    group.addLabelPair("Art", control.getArt());
-    group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
-    group.addLabelPair("Spende", control.getSpende());
-    group.addLabelPair("Abschreibung", control.getAbschreibung());
-    group.addLabelPair("Steuersatz", control.getSteuersatz());
-    group.addLabelPair("Steuer Buchungsart", control.getSteuerBuchungsart());
-    // TODO Jo Dokumentation nachpflegen
-    group.addLabelPair("Status", control.getStatus());
+    LabelGroup group = new LabelGroup(getParent(), "Formularfeld");
+    group.addLabelPair("Name", control.getName());
+    group.addLabelPair("Seite", control.getSeite());
+    group.addLabelPair("Von links", control.getX());
+    group.addLabelPair("Von unten", control.getY());
+    group.addLabelPair("Schriftart", control.getFont());
+    group.addLabelPair("Schriftgröße", control.getFontsize());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.BUCHUNGSART, false, "question-circle.png");
+        DokumentationUtil.FORMULARE, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
+
       @Override
       public void handleAction(Object context)
       {
         try
         {
           control.handleStore();
+          GUI.startView(FormularDetailView.class, ff.getFormular());
+          GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
         }
-        catch (ApplicationException e)
+        catch (ApplicationException | RemoteException e)
         {
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
@@ -74,11 +77,10 @@ public class BuchungsartView extends AbstractView
       {
         control.handleStore();
 
-        new NewAction(BuchungsartView.class, Buchungsart.class, true)
-            .handleAction(null);
-        GUI.getStatusBar().setSuccessText("Buchungsart gespeichert");
+        new FormularfeldAction().handleAction(ff.getFormular());
+        GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
       }
-      catch (ApplicationException e)
+      catch (ApplicationException | RemoteException e)
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
       }

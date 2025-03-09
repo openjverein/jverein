@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.BuchungView;
+import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -58,7 +58,7 @@ public class SplitbuchungNeuAction implements Action
       // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
       // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
       GUI.getCurrentView().setCurrentObject(buch);
-      GUI.startView(BuchungView.class, buch);
+      GUI.startView(BuchungDetailView.class, buch);
     }
     catch (RemoteException e)
     {

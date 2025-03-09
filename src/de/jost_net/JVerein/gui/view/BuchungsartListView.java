@@ -61,7 +61,7 @@ public class BuchungsartListView extends AbstractView
         DokumentationUtil.BUCHUNGSART, false, "question-circle.png");
     buttons.addButton(control.getPDFAusgabeButton());
     buttons.addButton("Neu",
-        new NewAction(BuchungsartView.class, Buchungsart.class), null, false,
+        new NewAction(BuchungsartDetailView.class, Buchungsart.class), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

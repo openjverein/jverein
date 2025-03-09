@@ -21,7 +21,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.view.BuchungView;
+import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
@@ -86,7 +86,7 @@ public class BuchungNeuAction implements Action
       // sind, wird die atuelle View nicht in die History aufgenommen. Dadurch
       // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
       GUI.getCurrentView().setCurrentObject(buch);
-      GUI.startView(BuchungView.class, buch);
+      GUI.startView(BuchungDetailView.class, buch);
     }
     catch (RemoteException e)
     {
