@@ -9,6 +9,7 @@ runs:
       java-version: '17'
       distribution: 'temurin'
       architecture: x64
+      cache: 'maven'
 
   - name: Restore build dependencies
     id: restore-cache
@@ -21,6 +22,7 @@ runs:
         hibiscus/bin/
         hibiscus/lib/
         hibiscus/releases/hibiscus-lib.jar
+        .m2/
       key: ${{ hashFiles('jverein/build/build.properties', 'jverein/build/build.xml') }}
 
   - name: Build Jameica and Hibiscus
