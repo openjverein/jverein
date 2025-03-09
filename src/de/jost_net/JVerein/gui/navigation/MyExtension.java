@@ -31,20 +31,20 @@ import de.jost_net.JVerein.gui.action.KontenrahmenExportAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenImportAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
-import de.jost_net.JVerein.gui.view.AbrechnungslaufListView;
-import de.jost_net.JVerein.gui.view.AnfangsbestandListView;
-import de.jost_net.JVerein.gui.view.AnlagenbuchungenListeView;
-import de.jost_net.JVerein.gui.view.AnlagenlisteView;
+import de.jost_net.JVerein.gui.view.AbrechnungslaufListeView;
+import de.jost_net.JVerein.gui.view.AnfangsbestandListeView;
+import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
+import de.jost_net.JVerein.gui.view.AnlagenverzeichnisView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzListeView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzUeberpruefungView;
 import de.jost_net.JVerein.gui.view.AuswertungKursteilnehmerView;
 import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
 import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
-import de.jost_net.JVerein.gui.view.BeitragsgruppeSucheView;
-import de.jost_net.JVerein.gui.view.BuchungsartListView;
-import de.jost_net.JVerein.gui.view.BuchungsklasseListView;
+import de.jost_net.JVerein.gui.view.BeitragsgruppeListeView;
+import de.jost_net.JVerein.gui.view.BuchungsartListeView;
+import de.jost_net.JVerein.gui.view.BuchungsklasseListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseSaldoView;
-import de.jost_net.JVerein.gui.view.BuchungslisteView;
+import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.gui.view.DbBereinigenView;
 import de.jost_net.JVerein.gui.view.EigenschaftGruppeListeView;
 import de.jost_net.JVerein.gui.view.EigenschaftListeView;
@@ -60,28 +60,28 @@ import de.jost_net.JVerein.gui.view.EinstellungenRechnungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenSpendenbescheinigungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenStatistikView;
 import de.jost_net.JVerein.gui.view.FamilienbeitragView;
-import de.jost_net.JVerein.gui.view.FelddefinitionenUebersichtView;
+import de.jost_net.JVerein.gui.view.ZusatzfeldListeView;
 import de.jost_net.JVerein.gui.view.FormularListeView;
-import de.jost_net.JVerein.gui.view.FreieFormulareView;
-import de.jost_net.JVerein.gui.view.JahresabschlussListView;
+import de.jost_net.JVerein.gui.view.FreiesFormularMailView;
+import de.jost_net.JVerein.gui.view.JahresabschlussListeView;
 import de.jost_net.JVerein.gui.view.JubilaeenView;
-import de.jost_net.JVerein.gui.view.KontensaldoView;
-import de.jost_net.JVerein.gui.view.KontoListView;
-import de.jost_net.JVerein.gui.view.KontoauszugView;
-import de.jost_net.JVerein.gui.view.KursteilnehmerSucheView;
+import de.jost_net.JVerein.gui.view.KontoSaldoView;
+import de.jost_net.JVerein.gui.view.KontoListeView;
+import de.jost_net.JVerein.gui.view.KontoauszugMailView;
+import de.jost_net.JVerein.gui.view.KursteilnehmerListeView;
 import de.jost_net.JVerein.gui.view.LastschriftListeView;
-import de.jost_net.JVerein.gui.view.LehrgaengeListeView;
+import de.jost_net.JVerein.gui.view.LehrgangListeView;
 import de.jost_net.JVerein.gui.view.LehrgangsartListeView;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
-import de.jost_net.JVerein.gui.view.MailUebersichtView;
-import de.jost_net.JVerein.gui.view.MailVorlagenUebersichtView;
+import de.jost_net.JVerein.gui.view.MailListeView;
+import de.jost_net.JVerein.gui.view.MailVorlageListeView;
 import de.jost_net.JVerein.gui.view.MigrationView;
-import de.jost_net.JVerein.gui.view.MitgliederSucheView;
-import de.jost_net.JVerein.gui.view.MitgliedstypenListView;
-import de.jost_net.JVerein.gui.view.MittelverwendungListeView;
-import de.jost_net.JVerein.gui.view.NichtMitgliederSucheView;
-import de.jost_net.JVerein.gui.view.PreNotificationView;
-import de.jost_net.JVerein.gui.view.ProjektListView;
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
+import de.jost_net.JVerein.gui.view.MitgliedstypListeView;
+import de.jost_net.JVerein.gui.view.MittelverwendungReportView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedListeView;
+import de.jost_net.JVerein.gui.view.PreNotificationMailView;
+import de.jost_net.JVerein.gui.view.ProjektListeView;
 import de.jost_net.JVerein.gui.view.ProjektSaldoView;
 import de.jost_net.JVerein.gui.view.QIFBuchungsImportView;
 import de.jost_net.JVerein.gui.view.RechnungListeView;
@@ -91,7 +91,7 @@ import de.jost_net.JVerein.gui.view.SpendenbescheinigungListeView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.jost_net.JVerein.gui.view.StatistikMitgliedView;
-import de.jost_net.JVerein.gui.view.WiedervorlagelisteView;
+import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragListeView;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -147,17 +147,17 @@ public class MyExtension implements Extension
       mitglieder = new MyItem(mitglieder, "Mitglieder", null);
       
       mitglieder.addChild(new MyItem(mitglieder, "Mitglieder",
-          new StartViewAction(MitgliederSucheView.class), "user-friends.png"));
+          new StartViewAction(MitgliedListeView.class), "user-friends.png"));
       if (Einstellungen.getEinstellung().getZusatzadressen())
       {
         mitglieder.addChild(new MyItem(mitglieder, "Nicht-Mitglieder",
-            new StartViewAction(NichtMitgliederSucheView.class),
+            new StartViewAction(NichtMitgliedListeView.class),
             "user-friends.png"));
       }
       if (Einstellungen.getEinstellung().getKursteilnehmer())
       {
         mitglieder.addChild(new MyItem(mitglieder, "Kursteilnehmer",
-            new StartViewAction(KursteilnehmerSucheView.class),
+            new StartViewAction(KursteilnehmerListeView.class),
             "user-friends.png"));
       }
       DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
@@ -186,13 +186,13 @@ public class MyExtension implements Extension
       if (Einstellungen.getEinstellung().getWiedervorlage())
       {
         mitglieder.addChild(new MyItem(mitglieder, "Wiedervorlagen",
-            new StartViewAction(WiedervorlagelisteView.class),
+            new StartViewAction(WiedervorlageListeView.class),
             "office-calendar.png"));
       }
       if (Einstellungen.getEinstellung().getLehrgaenge())
       {
         mitglieder.addChild(new MyItem(mitglieder, "Lehrgänge",
-            new StartViewAction(LehrgaengeListeView.class),
+            new StartViewAction(LehrgangListeView.class),
             "chalkboard-teacher.png"));
       }
       if (Einstellungen.getEinstellung().getArbeitseinsatz())
@@ -207,16 +207,17 @@ public class MyExtension implements Extension
       buchfuehrung = new MyItem(buchfuehrung, "Buchführung", null);
       // Konten
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Konten",
-          new StartViewAction(KontoListView.class), "system-file-manager.png"));
+          new StartViewAction(KontoListeView.class),
+          "system-file-manager.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbestände",
-          new StartViewAction(AnfangsbestandListView.class),
+          new StartViewAction(AnfangsbestandListeView.class),
           "system-file-manager.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
-          new StartViewAction(KontensaldoView.class),
+          new StartViewAction(KontoSaldoView.class),
           "system-file-manager.png"));
       // Buchungen
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
-          new StartViewAction(BuchungslisteView.class),
+          new StartViewAction(BuchungListeView.class),
           "emblem-documents.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
           new StartViewAction(BuchungsTexteKorrigierenView.class),
@@ -231,29 +232,29 @@ public class MyExtension implements Extension
       if (anlagenkonto)
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenbuchungen",
-            new StartViewAction(AnlagenbuchungenListeView.class),
+            new StartViewAction(AnlagenbuchungListeView.class),
             "office-chart-area.png"));
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenverzeichnis",
-            new StartViewAction(AnlagenlisteView.class),
+            new StartViewAction(AnlagenverzeichnisView.class),
             "office-chart-area.png"));
       }
       // Mittelverwendung
       if (Einstellungen.getEinstellung().getMittelverwendung())
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendung",
-            new StartViewAction(MittelverwendungListeView.class),
+            new StartViewAction(MittelverwendungReportView.class),
             "gnome-session-switch.png"));
       }
       // Jahresabschluss
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
-          new StartViewAction(JahresabschlussListView.class),
+          new StartViewAction(JahresabschlussListeView.class),
           "office-calendar.png"));
       jverein.addChild(buchfuehrung);
       
       NavigationItem abrechnung = null;
       abrechnung = new MyItem(abrechnung, "Abrechnung", null);
       abrechnung.addChild(new MyItem(abrechnung, "Abrechnungsläufe",
-          new StartViewAction(AbrechnungslaufListView.class),
+          new StartViewAction(AbrechnungslaufListeView.class),
           "calculator.png"));
       abrechnung.addChild(new MyItem(abrechnung, "Lastschriften",
           new StartViewAction(LastschriftListeView.class), "file-invoice.png"));
@@ -294,21 +295,23 @@ public class MyExtension implements Extension
       mail.addChild(new MyItem(mail, "Mahnungen",
           new StartViewAction(MahnungMailView.class), "document-print.png"));
       mail.addChild(new MyItem(mail, "Kontoauszüge",
-          new StartViewAction(KontoauszugView.class), "document-print.png"));
+          new StartViewAction(KontoauszugMailView.class),
+          "document-print.png"));
       mail.addChild(new MyItem(mail, "Freie Formulare",
-          new StartViewAction(FreieFormulareView.class), "document-print.png"));
+          new StartViewAction(FreiesFormularMailView.class),
+          "document-print.png"));
       mail.addChild(new MyItem(mail, "Pre-Notification",
-          new StartViewAction(PreNotificationView.class),
+          new StartViewAction(PreNotificationMailView.class),
           "document-print.png"));
       mail.addChild(new MyItem(mail, "Spendenbescheinigungen",
           new StartViewAction(SpendenbescheinigungMailView.class),
           "document-print.png"));
       mail.addChild(
           new MyItem(mail, "Mails",
-              new StartViewAction(MailUebersichtView.class),
+              new StartViewAction(MailListeView.class),
               "envelope-open.png"));
       mail.addChild(new MyItem(mail, "Mail-Vorlagen",
-          new StartViewAction(MailVorlagenUebersichtView.class),
+          new StartViewAction(MailVorlageListeView.class),
           "envelope-open.png"));
       jverein.addChild(mail);
       
@@ -368,7 +371,7 @@ public class MyExtension implements Extension
       einstellungenmitglieder = new MyItem(einstellungenmitglieder,
           "Mitglieder", null);
       einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Beitragsgruppen",
-          new StartViewAction(BeitragsgruppeSucheView.class), "clone.png"));
+          new StartViewAction(BeitragsgruppeListeView.class), "clone.png"));
       einstellungenmitglieder
           .addChild(new MyItem(einstellungenmitglieder, "Eigenschaftengruppen",
               new StartViewAction(EigenschaftGruppeListeView.class),
@@ -377,7 +380,7 @@ public class MyExtension implements Extension
           new StartViewAction(EigenschaftListeView.class),
           "document-properties.png"));
       einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Zusatzfelder",
-          new StartViewAction(FelddefinitionenUebersichtView.class),
+          new StartViewAction(ZusatzfeldListeView.class),
           "list.png"));
       if (Einstellungen.getEinstellung().getUseLesefelder())
       {
@@ -396,7 +399,7 @@ public class MyExtension implements Extension
       if (Einstellungen.getEinstellung().getZusatzadressen())
       {
         einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Mitgliedstypen",
-            new StartViewAction(MitgliedstypenListView.class),
+            new StartViewAction(MitgliedstypListeView.class),
             "user-friends.png"));
       }
       administration.addChild(einstellungenmitglieder);
@@ -405,10 +408,10 @@ public class MyExtension implements Extension
       einstellungenbuchfuehrung = new MyItem(einstellungenbuchfuehrung,
           "Buchführung", null);
       einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-          "Buchungsklassen", new StartViewAction(BuchungsklasseListView.class),
+          "Buchungsklassen", new StartViewAction(BuchungsklasseListeView.class),
           "ellipsis-v.png"));
       einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-          "Buchungsarten", new StartViewAction(BuchungsartListView.class),
+          "Buchungsarten", new StartViewAction(BuchungsartListeView.class),
           "ellipsis-v.png"));
       einstellungenbuchfuehrung
           .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Export",
@@ -417,7 +420,7 @@ public class MyExtension implements Extension
           .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Import",
               new KontenrahmenImportAction(), "file-import.png"));
       einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-          "Projekte", new StartViewAction(ProjektListView.class),
+          "Projekte", new StartViewAction(ProjektListeView.class),
           "screwdriver.png"));
       administration.addChild(einstellungenbuchfuehrung);
       

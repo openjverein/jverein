@@ -26,7 +26,7 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.AbrechnungsmodusFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.AbrechnungslaufMenu;
-import de.jost_net.JVerein.gui.view.AbrechnungslaufView;
+import de.jost_net.JVerein.gui.view.AbrechnungslaufDetailView;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -362,7 +362,7 @@ public class AbrechnungslaufControl extends FilterControl
     if (abrechnungslaufList == null)
     {
       abrechnungslaufList = new TablePart(abrechnungslaeufe,
-          new EditAction(AbrechnungslaufView.class));
+          new EditAction(AbrechnungslaufDetailView.class));
       abrechnungslaufList.addColumn("Nr", "nr");
       abrechnungslaufList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));

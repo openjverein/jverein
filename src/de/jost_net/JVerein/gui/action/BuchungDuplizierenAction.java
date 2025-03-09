@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.BuchungView;
+import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -55,7 +55,7 @@ public class BuchungDuplizierenAction implements Action
       bu.setAuszugsnummer(b.getAuszugsnummer());
       bu.setBlattnummer(b.getBlattnummer());
       bu.setVerzicht(b.getVerzicht());
-      GUI.startView(new BuchungView(), bu);
+      GUI.startView(new BuchungDetailView(), bu);
     }
     catch (Exception e)
     {

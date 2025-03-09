@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.io.ByteArrayInputStream;
 import java.util.Properties;
 
-import de.jost_net.JVerein.gui.view.MitgliederSucheView;
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.rmi.Suchprofil;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -60,6 +60,6 @@ public class SuchprofilLadenAction implements Action
       Logger.error("Fehler", e);
       throw new ApplicationException(e);
     }
-    GUI.startView(MitgliederSucheView.class.getName(), null);
+    GUI.startView(MitgliedListeView.class.getName(), null);
   }
 }

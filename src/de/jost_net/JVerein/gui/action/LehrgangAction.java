@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.LehrgangView;
+import de.jost_net.JVerein.gui.view.LehrgangDetailView;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
@@ -69,6 +69,6 @@ public class LehrgangAction implements Action
             "Fehler bei der Erzeugung eines neuen Lehrgangs", e);
       }
     }
-    GUI.startView(LehrgangView.class.getName(), l);
+    GUI.startView(LehrgangDetailView.class.getName(), l);
   }
 }

@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.BuchungView;
+import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -42,7 +42,7 @@ public class IstbuchungEditAction implements Action
       MitgliedskontoNode mkn = (MitgliedskontoNode) context;
       Buchung bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
           mkn.getID());
-      GUI.startView(BuchungView.class.getName(), bu);
+      GUI.startView(BuchungDetailView.class.getName(), bu);
     }
     catch (RemoteException e)
     {
