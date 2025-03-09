@@ -74,7 +74,7 @@ public class BuchungsartView extends AbstractView
       {
         control.handleStore();
 
-        new NewAction(BuchungsartView.class, Buchungsart.class)
+        new NewAction(BuchungsartView.class, Buchungsart.class, true)
             .handleAction(null);
         GUI.getStatusBar().setSuccessText("Buchungsart gespeichert");
       }

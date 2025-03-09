@@ -97,7 +97,8 @@ public class KursteilnehmerDetailView extends AbstractView
       {
         control.handleStore();
 
-        new NewAction(KursteilnehmerDetailView.class, Kursteilnehmer.class)
+        new NewAction(KursteilnehmerDetailView.class, Kursteilnehmer.class,
+            true)
             .handleAction(null);
         GUI.getStatusBar().setSuccessText("Kursteilnehmer gespeichert");
       }
