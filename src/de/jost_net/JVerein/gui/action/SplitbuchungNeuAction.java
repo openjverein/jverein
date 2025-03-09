@@ -53,6 +53,11 @@ public class SplitbuchungNeuAction implements Action
       buch.setSpeicherung(false);
       buch.setSplitTyp(SplitbuchungTyp.SPLIT);
       buch.setBetrag(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT).doubleValue() - SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT).doubleValue());
+
+      // Wenn CurrentObject und View von aktueller und nächster View gleich
+      // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
+      // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
+      GUI.getCurrentView().setCurrentObject(buch);
       GUI.startView(BuchungView.class, buch);
     }
     catch (RemoteException e)
