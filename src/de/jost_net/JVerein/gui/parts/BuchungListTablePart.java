@@ -27,11 +27,14 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
+import de.willuhn.jameica.gui.parts.table.Feature.Event;
 
 public class BuchungListTablePart extends AutoUpdateTablePart
 {
 
   private Double saldo = null;
+
+  private Context ctx;
 
   public BuchungListTablePart(Action action)
   {
@@ -41,6 +44,16 @@ public class BuchungListTablePart extends AutoUpdateTablePart
   public BuchungListTablePart(List<Buchung> list, Action action)
   {
     super(list, action);
+
+    // ChangeListener für die Summe der ausgewählten Buchungen anhängen.
+    addSelectionListener(e -> {
+      createFeatureEventContext(Event.REFRESH, ctx);
+      Feature feature = this.getFeature(FeatureSummary.class);
+      if (feature != null)
+      {
+        feature.handleEvent(Event.REFRESH, ctx);
+      }
+    });
   }
   
   /**
@@ -51,7 +64,7 @@ public class BuchungListTablePart extends AutoUpdateTablePart
   @Override
   protected Context createFeatureEventContext(Feature.Event e, Object data)
   {
-    Context ctx = super.createFeatureEventContext(e, data);
+    ctx = super.createFeatureEventContext(e, data);
     if (this.hasEvent(FeatureSummary.class,e))
     {
       double sumBetrag = 0.0;
@@ -74,6 +87,18 @@ public class BuchungListTablePart extends AutoUpdateTablePart
         summary += " / " + "Kontosaldo:" + " "
             + Einstellungen.DECIMALFORMAT.format(saldo) + " "
             + Einstellungen.CURRENCY;
+        }
+        Object o = getSelection();
+        if (o != null && o instanceof Buchung[])
+        {
+          double summe = 0d;
+          for (Buchung b : (Buchung[]) o)
+          {
+            summe += b.getBetrag();
+          }
+          summary += " / " + "Summe Auswahl: "
+              + Einstellungen.DECIMALFORMAT.format(summe) + " "
+              + Einstellungen.CURRENCY;
         }
       }
       catch (RemoteException re)

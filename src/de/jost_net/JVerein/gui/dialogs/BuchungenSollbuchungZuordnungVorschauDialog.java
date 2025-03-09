@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.dialogs.BuchungenSollbuchungZuordnungDialog.BookingMemberAccountEntry;
-import de.jost_net.JVerein.gui.view.BuchungslisteView;
+import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -135,7 +135,7 @@ public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<
       }
 
       //Darstellung aktualisieren
-      new StartViewAction(BuchungslisteView.class).handleAction(this);
+      new StartViewAction(BuchungListeView.class).handleAction(this);
 
       GUI.getStatusBar().setSuccessText("Die Zuordnung wurde erfolgreich durchgeführt");
     }

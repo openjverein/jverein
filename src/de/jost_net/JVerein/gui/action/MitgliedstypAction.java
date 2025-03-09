@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.MitgliedstypView;
+import de.jost_net.JVerein.gui.view.MitgliedstypDetailView;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -61,6 +61,6 @@ public class MitgliedstypAction implements Action
             "Fehler bei der Erzeugung eines neuen Mitgliedstypen", e);
       }
     }
-    GUI.startView(MitgliedstypView.class.getName(), mt);
+    GUI.startView(MitgliedstypDetailView.class.getName(), mt);
   }
 }

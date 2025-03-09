@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.AnfangsbestandView;
+import de.jost_net.JVerein.gui.view.AnfangsbestandDetailView;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.willuhn.jameica.gui.Action;
@@ -63,6 +63,6 @@ public class AnfangsbestandDetailAction implements Action
             "Fehler bei der Erzeugung eines neuen Anfangsbestandes: ", e);
       }
     }
-    GUI.startView(AnfangsbestandView.class.getName(), a);
+    GUI.startView(AnfangsbestandDetailView.class.getName(), a);
   }
 }
