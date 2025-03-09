@@ -35,7 +35,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.BuchungsartMenu;
-import de.jost_net.JVerein.gui.view.BuchungDetailView;
+import de.jost_net.JVerein.gui.view.BuchungsartDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -386,8 +386,10 @@ public class BuchungsartControl extends FilterControl
 
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
@@ -398,8 +400,7 @@ public class BuchungsartControl extends FilterControl
       }
       catch (NullPointerException e)
       {
-        GUI.getStatusBar().setErrorText("Nummer fehlt");
-        return;
+        throw new ApplicationException("Nummer fehlt");
       }
       b.setBezeichnung((String) getBezeichnung().getValue());
       ArtBuchungsart ba = (ArtBuchungsart) getArt().getValue();
@@ -435,21 +436,14 @@ public class BuchungsartControl extends FilterControl
       StatusBuchungsart st = (StatusBuchungsart) getStatus().getValue();
       b.setStatus(st.getKey());
 
-      try
-      {
-        b.store();
-        GUI.getStatusBar().setSuccessText("Buchungsart gespeichert");
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
+      b.store();
+      GUI.getStatusBar().setSuccessText("Buchungsart gespeichert");
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern der Buchungsart";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler);
     }
   }
 
@@ -458,7 +452,7 @@ public class BuchungsartControl extends FilterControl
     if (buchungsartList == null)
     {
       buchungsartList = new TablePart(getBuchungsarten(),
-          new EditAction(BuchungDetailView.class));
+          new EditAction(BuchungsartDetailView.class));
       buchungsartList.addColumn("Nummer", "nummer");
       buchungsartList.addColumn("Bezeichnung", "bezeichnung");
       buchungsartList.addColumn("Art", "art", new Formatter()
