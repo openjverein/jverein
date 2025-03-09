@@ -205,12 +205,14 @@ public class SollbuchungQuery
       {
         // Der Name muss umgewandelt werden, es kann mehrere Matches geben
         String zahlerName = ((String) control.getSuchname().getValue())
-            .toLowerCase() + "%";
+            .toLowerCase();
         ArrayList<Long> namenids = getNamenIds(zahlerName);
         if (namenids != null)
         {
-          sollbuchungen.addFilter(Sollbuchung.T_ZAHLER + " in ("
-              + StringUtils.join(namenids, ",") + ")");
+          sollbuchungen.addFilter("(" + Sollbuchung.T_ZAHLER + " in ("
+              + StringUtils.join(namenids, ",") + ") OR "
+              + Sollbuchung.T_MITGLIED + " in ("
+              + StringUtils.join(namenids, ",") + "))");
         }
       }
 
@@ -314,8 +316,10 @@ public class SollbuchungQuery
       if (namenids != null)
       {
         where.append(where.length() == 0 ? "" : " AND ")
-            .append(Sollbuchung.T_ZAHLER + " in ("
-            + StringUtils.join(namenids, ",") + ")");
+            .append("(" + Sollbuchung.T_ZAHLER + " in ("
+                + StringUtils.join(namenids, ",") + ") OR "
+                + Sollbuchung.T_MITGLIED + " in ("
+                + StringUtils.join(namenids, ",") + "))");
       }
     }
     if (vd != null)

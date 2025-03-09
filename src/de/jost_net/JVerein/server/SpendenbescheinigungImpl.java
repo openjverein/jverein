@@ -69,9 +69,9 @@ public class SpendenbescheinigungImpl extends AbstractDBObject
   {
     try
     {
-      if (getBetrag().doubleValue() <= 0)
+      if (getBetrag().doubleValue() < 0.01)
       {
-        throw new ApplicationException("Betrag größer als 0 eingeben.");
+        throw new ApplicationException("Betrag muss größer als 0 sein.");
       }
       if (getSpendedatum() == null)
       {

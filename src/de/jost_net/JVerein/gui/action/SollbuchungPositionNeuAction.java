@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.SollbuchungPositionView;
+import de.jost_net.JVerein.gui.view.SollbuchungPositionDetailView;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.jameica.gui.Action;
@@ -62,6 +62,6 @@ public class SollbuchungPositionNeuAction implements Action
       throw new ApplicationException("Keine Sollbuchung ausgewählt");
     }
 
-    GUI.startView(SollbuchungPositionView.class.getName(), position);
+    GUI.startView(SollbuchungPositionDetailView.class.getName(), position);
   }
 }

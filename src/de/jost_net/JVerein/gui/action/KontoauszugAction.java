@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.KontoauszugView;
+import de.jost_net.JVerein.gui.view.KontoauszugMailView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -29,11 +29,11 @@ public class KontoauszugAction implements Action
     if (context != null
         && (context instanceof Mitglied || context instanceof Mitglied[]))
     {
-      GUI.startView(KontoauszugView.class.getName(), context);
+      GUI.startView(KontoauszugMailView.class.getName(), context);
     }
     else
     {
-      GUI.startView(KontoauszugView.class.getName(), null);
+      GUI.startView(KontoauszugMailView.class.getName(), null);
     }
   }
 }
