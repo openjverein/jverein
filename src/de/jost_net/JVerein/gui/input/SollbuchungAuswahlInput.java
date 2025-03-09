@@ -150,7 +150,7 @@ public class SollbuchungAuswahlInput
       }
       catch (RemoteException er)
       {
-        String error = "Fehler bei Zuordnung des Mitgliedskontos";
+        String error = "Fehler bei Zuordnung der Sollbuchung";
         Logger.error(error, er);
         GUI.getStatusBar().setErrorText(error);
       }

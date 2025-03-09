@@ -588,6 +588,17 @@ public class BuchungsControl extends AbstractControl
             if (sollbuchung.getValue() instanceof Sollbuchung)
             {
               Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
+            if (getBuchungsart().getValue() == null)
+            {
+              getBuchungsart().setValue(
+                  sb.getSollbuchungPositionList().get(0).getBuchungsart());
+            }
+            if (isBuchungsklasseActive()
+                && getBuchungsklasse().getValue() == null)
+            {
+              getBuchungsklasse().setValue(
+                  sb.getSollbuchungPositionList().get(0).getBuchungsklasse());
+            }
               getName().setValue(
                   Adressaufbereitung.getNameVorname(sb.getMitglied()));
               getBetrag().setValue(sb.getBetrag());
