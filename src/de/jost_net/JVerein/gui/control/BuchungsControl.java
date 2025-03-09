@@ -77,6 +77,7 @@ import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
@@ -604,16 +605,18 @@ public class BuchungsControl extends AbstractControl
         if (sollbuchung.getValue() instanceof Sollbuchung)
         {
           Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
-          if (getBuchungsart().getValue() == null)
+          ArrayList<SollbuchungPosition> sbpList = sb
+              .getSollbuchungPositionList();
+          if (getBuchungsart().getValue() == null && sbpList.size() > 0)
           {
             getBuchungsart().setValue(
-                sb.getSollbuchungPositionList().get(0).getBuchungsart());
+                sbpList.get(0).getBuchungsart());
           }
           if (isBuchungsklasseActive()
-              && getBuchungsklasse().getValue() == null)
+              && getBuchungsklasse().getValue() == null && sbpList.size() > 0)
           {
             getBuchungsklasse().setValue(
-                sb.getSollbuchungPositionList().get(0).getBuchungsklasse());
+                sbpList.get(0).getBuchungsklasse());
           }
         }
       }
