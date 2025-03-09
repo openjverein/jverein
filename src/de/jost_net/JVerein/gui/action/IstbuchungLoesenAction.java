@@ -21,9 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -37,7 +35,7 @@ public class IstbuchungLoesenAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !((context instanceof MitgliedskontoNode)
+    if (!((context instanceof MitgliedskontoNode)
         || context instanceof Buchung))
     {
       throw new ApplicationException("Keine Istbuchung ausgewählt");
@@ -73,7 +71,6 @@ public class IstbuchungLoesenAction implements Action
       else
       {
         bu = (Buchung) context;
-        bu.getSollbuchung();
       }
       bu.setSollbuchung(null);
       bu.store();
