@@ -65,8 +65,7 @@ public class ZipMailer
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
-        ZipFile zip = null;
-        try
+        try (ZipFile zip = new ZipFile(zipfile))
         {
           MailSender sender = new MailSender(
               Einstellungen.getEinstellung().getSmtpServer(),
@@ -88,7 +87,6 @@ public class ZipMailer
           monitor.setPercentComplete(0);
           int sentCount = 0;
 
-          zip = new ZipFile(zipfile);
           int zae = 0;
           int size = zip.size();
           for (@SuppressWarnings("rawtypes")
@@ -210,16 +208,6 @@ public class ZipMailer
         {
           e.printStackTrace();
           throw new ApplicationException(e);
-        }
-        finally
-        {
-          try
-          {
-            zip.close();
-          }
-          catch (IOException ignore)
-          {
-          }
         }
 
         monitor.setPercentComplete(100);
