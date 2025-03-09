@@ -30,7 +30,7 @@ import de.jost_net.JVerein.Messaging.DokumentMessage;
 import de.jost_net.JVerein.gui.action.DokumentShowAction;
 import de.jost_net.JVerein.gui.menu.DokumentMenu;
 import de.jost_net.JVerein.gui.parts.DokumentPart;
-import de.jost_net.JVerein.gui.view.DokumentView;
+import de.jost_net.JVerein.gui.view.DokumentDetailView;
 import de.jost_net.JVerein.rmi.AbstractDokument;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -112,13 +112,13 @@ public class DokumentControl extends AbstractControl
 
   public Button getNeuButton(final AbstractDokument doc)
   {
-    neuButton = new Button("neues Dokument", new Action()
+    neuButton = new Button("Neues Dokument", new Action()
     {
 
       @Override
       public void handleAction(Object context)
       {
-        GUI.startView(new DokumentView(verzeichnis), doc);
+        GUI.startView(new DokumentDetailView(verzeichnis), doc);
       }
     }, null);
     neuButton.setEnabled(enabled);

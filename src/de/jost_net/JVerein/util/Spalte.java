@@ -32,9 +32,9 @@ public class Spalte
   private int align;
 
   /**
-   * Spezialfall Mitglied/Adressen
+   * Wenn true auch bei NichtMitgliedern anzeigen.
    */
-  private boolean nurMitglied;
+  private boolean auchNichtMitglied;
 
   public Spalte(String spaltenbezeichnung, String spaltenname, boolean checked,
       boolean nurMitglied)
@@ -44,14 +44,14 @@ public class Spalte
   }
 
   public Spalte(String spaltenbezeichnung, String spaltenname, boolean checked,
-      Formatter formatter, int align, boolean nurMitglied)
+      Formatter formatter, int align, boolean auchNichtMitglied)
   {
     this.spaltenbezeichnung = spaltenbezeichnung;
     this.spaltenname = spaltenname;
     this.formatter = formatter;
     this.checked = checked;
     this.align = align;
-    this.nurMitglied = nurMitglied;
+    this.auchNichtMitglied = auchNichtMitglied;
   }
 
   @Override
@@ -95,8 +95,8 @@ public class Spalte
     return this.align;
   }
 
-  public boolean isNurAdressen()
+  public boolean isAuchNichtMitglied()
   {
-    return this.nurMitglied;
+    return this.auchNichtMitglied;
   }
 }

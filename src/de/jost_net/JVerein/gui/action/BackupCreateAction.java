@@ -277,10 +277,6 @@ public class BackupCreateAction implements Action
           backup(SollbuchungPositionImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Sollbuchungpositionen");
-          backup(SollbuchungPositionImpl.class, writer, monitor);
-          monitor.addPercentComplete(1);
-
           monitor.setStatusText("Speichere Spendenbescheinigungen");
           backup(SpendenbescheinigungImpl.class, writer, monitor);
           monitor.addPercentComplete(1);

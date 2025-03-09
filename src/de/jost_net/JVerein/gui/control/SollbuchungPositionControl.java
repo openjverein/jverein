@@ -27,7 +27,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
-import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -67,6 +66,13 @@ public class SollbuchungPositionControl extends AbstractControl
     super(view);
   }
 
+  public SollbuchungPositionControl(AbstractView view,
+      SollbuchungPosition sollbPos)
+  {
+    super(view);
+    position = sollbPos;
+  }
+
   public SollbuchungPosition getPosition()
   {
     if (position != null)
@@ -75,6 +81,11 @@ public class SollbuchungPositionControl extends AbstractControl
     }
     position = (SollbuchungPosition) getCurrentObject();
     return position;
+  }
+
+  public void setSollbuchungPosition(SollbuchungPosition pos)
+  {
+    position = pos;
   }
 
   public DecimalInput getBetrag() throws RemoteException
@@ -184,7 +195,7 @@ public class SollbuchungPositionControl extends AbstractControl
     return steuersatz;
   }
 
-  public void handleStore()
+  public boolean handleStore()
   {
     try
     {
@@ -224,9 +235,7 @@ public class SollbuchungPositionControl extends AbstractControl
       }
       sollb.setBetrag(betrag);
       sollb.store();
-
-      GUI.startView(SollbuchungDetailView.class.getName(), sollb);
-      GUI.getStatusBar().setSuccessText("Sollbuchungsposition gespeichert");
+      return true;
     }
     catch (RemoteException e)
     {
@@ -238,6 +247,7 @@ public class SollbuchungPositionControl extends AbstractControl
     {
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
+    return false;
   }
 
 }

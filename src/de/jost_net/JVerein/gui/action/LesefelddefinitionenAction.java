@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.LesefeldUebersichtView;
+import de.jost_net.JVerein.gui.view.LesefeldListeView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
@@ -54,6 +54,6 @@ public class LesefelddefinitionenAction implements Action
       }
     }
 
-    GUI.startView(LesefeldUebersichtView.class.getName(), selectedMitglied);
+    GUI.startView(LesefeldListeView.class.getName(), selectedMitglied);
   }
 }

@@ -32,6 +32,7 @@ import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
+import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 
 /**
  * Hilfs-Objekt
@@ -139,6 +140,7 @@ public class SaldoZeile implements GenericObject
       extract(service, vonRange, bisRange);
       // Jetzt Anfangsstand zum von Datum setzen
       anfangsbestand = endbestand;
+      bemerkung = "";
       extract(service, von, bis);
       return;
     }
@@ -156,6 +158,7 @@ public class SaldoZeile implements GenericObject
       Anfangsbestand a = anf1.get(0);
       // Endstand zum von Datum berechnen
       anfangsbestand = a.getBetrag() - endbestand;
+      bemerkung = "";
       extract(service, von, bis);
       return;
     }
@@ -260,7 +263,25 @@ public class SaldoZeile implements GenericObject
         new Object[] { von, bis , konto.getID(), 1 },  rs);
     umbuchungen = (Double) service.execute(sql,
         new Object[] { von, bis, konto.getID(), 2 }, rs);
-    endbestand = anfangsbestand + einnahmen + ausgaben + umbuchungen;
+
+    String sqlOhneBuchungsart = "select sum(betrag) from buchung "
+        + "where datum >= ? and datum <= ? AND konto = ? "
+        + "and buchung.buchungsart is null";
+
+    Double ohneBuchungsart = (Double) service.execute(sqlOhneBuchungsart,
+        new Object[] { von, bis, konto.getID() }, rs);
+
+    if (ohneBuchungsart >= 0.01d || ohneBuchungsart <= -0.01d)
+    {
+      bemerkung += "Summe Buchungen ohne Buchungsart: "
+          + new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+              .format(ohneBuchungsart)
+          + "  ";
+    }
+
+    endbestand = anfangsbestand + einnahmen + ausgaben + umbuchungen
+        + ohneBuchungsart;
   }
   
 }
+

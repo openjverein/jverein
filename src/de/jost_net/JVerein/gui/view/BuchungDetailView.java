@@ -63,7 +63,7 @@ public class BuchungDetailView extends AbstractView
         // Bei Splitbuchungen nach dem Speichern zurück zu Splitübersicht
         if (!control.getBuchung().getSpeicherung())
         {
-          GUI.startView(SplitBuchungView.class.getName(),
+          GUI.startView(SplitbuchungDetailView.class.getName(),
               SplitbuchungsContainer.getMaster());
         }
       }
@@ -89,7 +89,7 @@ public class BuchungDetailView extends AbstractView
                   .doubleValue()) >= .01d)
             new SplitbuchungNeuAction().handleAction(context);
           else
-            GUI.startView(SplitBuchungView.class.getName(),
+            GUI.startView(SplitbuchungDetailView.class.getName(),
                 SplitbuchungsContainer.getMaster());
         }
         else
