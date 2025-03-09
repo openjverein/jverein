@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<project basedir=".." default="all" name="All">
-
+<project xmlns:resolver="antlib:org.apache.maven.resolver.ant" basedir=".." default="all" name="All">
+  <taskdef uri="antlib:org.apache.maven.resolver.ant" resource="org/apache/maven/resolver/ant/antlib.xml"
+           classpath="lib/maven-resolver-ant-tasks-1.5.2-uber.jar" />
   <target name="init" description="inits the build">
 
     <property environment="env" />
     <property name="build.dir" value="build" />
     <buildnumber file="${build.dir}/BUILD" />
     <xmlproperty file="plugin.xml" collapseattributes="true" />
+    <resolver:pom file="pom.xml" id="pom" />
+
+    <resolver:resolve failonmissingattachments="true">
+      <resolver:path refid="cp" classpath="compile" />
+    </resolver:resolve>
+    <pathconvert property="classpathProp" refid="cp" />
+
+    <echo>Classpath is ${classpathProp}</echo>
 
     <tstamp>
       <format property="build.timestamp" pattern="yyyyMMdd" />
@@ -20,8 +29,9 @@
     <echo message="JAVA   : ${java.version}" level="info" />
 
     <path id="compilepath">
+      <path refid="cp" />
       <fileset dir="${lib.dir}">
-        <include name="**/*.jar" />
+        <include name="nc.jar" />
       </fileset>
       <fileset dir="../hibiscus/lib">
         <include name="**/*.jar" />
@@ -80,8 +90,15 @@
 
     <mkdir dir="${project.zipdir}/lib" />
     <copy todir="${project.zipdir}/lib">
-      <fileset dir="${lib.dir}" />
+      <fileset dir="${lib.dir}">
+        <exclude name="maven-resolver-ant-tasks*.jar" />
+      </fileset>
     </copy>
+    <resolver:resolve failonmissingattachments="true">
+      <resolver:files dir="${project.zipdir}/lib"
+                      scopes="compile,runtime"
+                      layout="{artifactId}-{version}.{extension}" />
+    </resolver:resolve>
 
     <copy todir="${project.zipdir}" file="plugin.xml" />
     <replace file="${project.zipdir}/plugin.xml">
