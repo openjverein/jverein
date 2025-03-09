@@ -248,7 +248,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.bisdatum
         .setText("Bitte maximales Austrittsdatum für die Abrechnung wählen");
     this.bisdatum.setEnabled(
-        (Integer) modus.getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER);
+        (Integer) modus.getValue() == Abrechnungsmodi.ABGEMELDETEMITGLIEDER);
     return bisdatum;
   }
 
