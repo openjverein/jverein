@@ -73,6 +73,16 @@
       <groupId>com.google.zxing</groupId>
       <artifactId>javase</artifactId>
       <version>3.5.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.beust</groupId>
+          <artifactId>jcommander</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.github.jai-imageio</groupId>
+          <artifactId>jai-imageio-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.sun.mail</groupId>
@@ -88,6 +98,20 @@
       <groupId>de.jollyday</groupId>
       <artifactId>jollyday</artifactId>
       <version>0.5.10</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.glassfish.jaxb</groupId>
+          <artifactId>jaxb-runtime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.threeten</groupId>
+          <artifactId>threeten-extra</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jsoup</groupId>
@@ -102,6 +126,38 @@
         <exclusion>
           <groupId>org.apache.xmlgraphics</groupId>
           <artifactId>fop</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.angus</groupId>
+          <artifactId>angus-activation</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>net.sf.saxon</groupId>
+          <artifactId>Saxon-HE</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.helger</groupId>
+          <artifactId>en16931-cii2ubl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.pdfbox</groupId>
+          <artifactId>preflight</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.glassfish.jaxb</groupId>
+          <artifactId>jaxb-runtime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jakarta.xml.bind</groupId>
+          <artifactId>jakarta.xml.bind-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -119,6 +175,12 @@
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>xmpbox</artifactId>
       <version>3.0.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>

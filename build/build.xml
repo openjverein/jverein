@@ -1,22 +1,30 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <project xmlns:resolver="antlib:org.apache.maven.resolver.ant" basedir=".." default="all" name="All">
-  <taskdef uri="antlib:org.apache.maven.resolver.ant" resource="org/apache/maven/resolver/ant/antlib.xml"
-           classpath="lib/maven-resolver-ant-tasks-1.5.2-uber.jar" />
-  <target name="init" description="inits the build">
+  <taskdef uri="antlib:org.apache.maven.resolver.ant" resource="org/apache/maven/resolver/ant/antlib.xml">
+    <classpath>
+      <fileset dir="build" includes="maven-resolver-ant-tasks-*uber.jar" />
+    </classpath>
+  </taskdef>
+
+  <target name="resolve-dependencies" description="get dependencies with maven">
+    <resolver:pom file="pom.xml" id="pom" />
+    <resolver:resolve failonmissingattachments="true">
+      <resolver:path refid="cp" classpath="compile" />
+    </resolver:resolve>
+    <resolver:resolve failonmissingattachments="true">
+      <resolver:files dir="lib"
+                      scopes="compile,runtime"
+                      layout="{artifactId}-{version}.{extension}" />
+    </resolver:resolve>
+  </target>
+
+  <target name="init" description="inits the build" depends="resolve-dependencies">
 
     <property environment="env" />
     <property name="build.dir" value="build" />
     <buildnumber file="${build.dir}/BUILD" />
     <xmlproperty file="plugin.xml" collapseattributes="true" />
-    <resolver:pom file="pom.xml" id="pom" />
-
-    <resolver:resolve failonmissingattachments="true">
-      <resolver:path refid="cp" classpath="compile" />
-    </resolver:resolve>
-    <pathconvert property="classpathProp" refid="cp" />
-
-    <echo>Classpath is ${classpathProp}</echo>
 
     <tstamp>
       <format property="build.timestamp" pattern="yyyyMMdd" />
@@ -90,15 +98,8 @@
 
     <mkdir dir="${project.zipdir}/lib" />
     <copy todir="${project.zipdir}/lib">
-      <fileset dir="${lib.dir}">
-        <exclude name="maven-resolver-ant-tasks*.jar" />
-      </fileset>
+      <fileset dir="${lib.dir}" />
     </copy>
-    <resolver:resolve failonmissingattachments="true">
-      <resolver:files dir="${project.zipdir}/lib"
-                      scopes="compile,runtime"
-                      layout="{artifactId}-{version}.{extension}" />
-    </resolver:resolve>
 
     <copy todir="${project.zipdir}" file="plugin.xml" />
     <replace file="${project.zipdir}/plugin.xml">
