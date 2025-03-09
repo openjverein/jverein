@@ -578,43 +578,47 @@ public class BuchungsControl extends AbstractControl
         .getSollbuchungAuswahl();
     sollbuchung.addListener(event ->
       {
-        try
+      try
+      {
+        String name = (String) getName().getValue();
+        String zweck1 = (String) getZweck().getValue();
+        if (sollbuchung.getValue() != null && name.length() == 0
+            && zweck1.length() == 0)
         {
-          String name = (String) getName().getValue();
-          String zweck1 = (String) getZweck().getValue();
-          if (sollbuchung.getValue() != null && name.length() == 0
-              && zweck1.length() == 0)
+          if (sollbuchung.getValue() instanceof Sollbuchung)
           {
-            if (sollbuchung.getValue() instanceof Sollbuchung)
-            {
-              Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
-            if (getBuchungsart().getValue() == null)
-            {
-              getBuchungsart().setValue(
-                  sb.getSollbuchungPositionList().get(0).getBuchungsart());
-            }
-            if (isBuchungsklasseActive()
-                && getBuchungsklasse().getValue() == null)
-            {
-              getBuchungsklasse().setValue(
-                  sb.getSollbuchungPositionList().get(0).getBuchungsklasse());
-            }
-              getName().setValue(
-                  Adressaufbereitung.getNameVorname(sb.getMitglied()));
-              getBetrag().setValue(sb.getBetrag());
-              getZweck().setValue(sb.getZweck1());
-              getDatum().setValue(sb.getDatum());
-            }
-            if (sollbuchung.getValue() instanceof Mitglied)
-            {
-              Mitglied m2 = (Mitglied) sollbuchung.getValue();
-              getName().setValue(Adressaufbereitung.getNameVorname(m2));
-              getDatum().setValue(new Date());
-            }
+            Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
+            getName()
+                .setValue(Adressaufbereitung.getNameVorname(sb.getMitglied()));
+            getBetrag().setValue(sb.getBetrag());
+            getZweck().setValue(sb.getZweck1());
+            getDatum().setValue(sb.getDatum());
+          }
+          if (sollbuchung.getValue() instanceof Mitglied)
+          {
+            Mitglied m2 = (Mitglied) sollbuchung.getValue();
+            getName().setValue(Adressaufbereitung.getNameVorname(m2));
+            getDatum().setValue(new Date());
           }
         }
-        catch (RemoteException e)
+        if (sollbuchung.getValue() instanceof Sollbuchung)
         {
+          Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
+          if (getBuchungsart().getValue() == null)
+          {
+            getBuchungsart().setValue(
+                sb.getSollbuchungPositionList().get(0).getBuchungsart());
+          }
+          if (isBuchungsklasseActive()
+              && getBuchungsklasse().getValue() == null)
+          {
+            getBuchungsklasse().setValue(
+                sb.getSollbuchungPositionList().get(0).getBuchungsklasse());
+          }
+        }
+      }
+      catch (RemoteException e)
+      {
           Logger.error("Fehler", e);
         }
     });
