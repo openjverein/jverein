@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<project basedir=".." default="all" name="All">
+<project xmlns:resolver="antlib:org.apache.maven.resolver.ant" basedir=".." default="all" name="All">
+  <taskdef uri="antlib:org.apache.maven.resolver.ant" resource="org/apache/maven/resolver/ant/antlib.xml">
+    <classpath>
+      <fileset dir="build" includes="maven-resolver-ant-tasks-*uber.jar" />
+    </classpath>
+  </taskdef>
 
-  <target name="init" description="inits the build">
+  <target name="resolve-dependencies" description="get dependencies with maven">
+    <resolver:pom file="pom.xml" id="pom" />
+    <resolver:resolve failonmissingattachments="true">
+      <resolver:path refid="cp" classpath="compile" />
+    </resolver:resolve>
+    <resolver:resolve failonmissingattachments="true">
+      <resolver:files dir="lib"
+                      scopes="compile,runtime"
+                      layout="{artifactId}-{version}.{extension}" />
+    </resolver:resolve>
+  </target>
+
+  <target name="init" description="inits the build" depends="resolve-dependencies">
 
     <property environment="env" />
     <property name="build.dir" value="build" />
@@ -20,8 +37,9 @@
     <echo message="JAVA   : ${java.version}" level="info" />
 
     <path id="compilepath">
+      <path refid="cp" />
       <fileset dir="${lib.dir}">
-        <include name="**/*.jar" />
+        <include name="nc.jar" />
       </fileset>
       <fileset dir="../hibiscus/lib">
         <include name="**/*.jar" />
