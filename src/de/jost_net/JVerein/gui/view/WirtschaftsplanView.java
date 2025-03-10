@@ -20,6 +20,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanMenu;
+import de.jost_net.JVerein.gui.parts.EditTreePart;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
@@ -28,7 +29,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
@@ -71,11 +71,11 @@ public class WirtschaftsplanView extends AbstractView
     SimpleContainer group = new SimpleContainer(this.getParent(), true, 2);
 
     LabelGroup einnahmen = new LabelGroup(group.getComposite(), "Einnahmen", true);
-    TreePart treeEinnahmen = control.getEinnahmen();
+    EditTreePart treeEinnahmen = control.getEinnahmen();
     treeEinnahmen.setContextMenu(new WirtschaftsplanMenu(WirtschaftsplanImpl.EINNAHME, control));
     einnahmen.addPart(treeEinnahmen);
     LabelGroup ausgaben = new LabelGroup(group.getComposite(), "Ausgaben", true);
-    TreePart treeAusgaben = control.getAusgaben();
+    EditTreePart treeAusgaben = control.getAusgaben();
     treeAusgaben.setContextMenu(new WirtschaftsplanMenu(WirtschaftsplanImpl.AUSGABE, control));
     ausgaben.addPart(treeAusgaben);
 

@@ -19,8 +19,8 @@ package de.jost_net.JVerein.gui.control;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.WirtschaftsplanPostenDialogAction;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanListMenu;
+import de.jost_net.JVerein.gui.parts.EditTreePart;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanView;
 import de.jost_net.JVerein.io.WirtschaftsplanungCSV;
@@ -41,7 +41,6 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -53,17 +52,13 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import java.io.File;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WirtschaftsplanControl extends AbstractControl
 {
-  private TreePart einnahmen;
+  private EditTreePart einnahmen;
 
-  private TreePart ausgaben;
+  private EditTreePart ausgaben;
 
   private WirtschaftsplanUebersichtPart uebersicht;
 
@@ -129,7 +124,7 @@ public class WirtschaftsplanControl extends AbstractControl
     return null;
   }
 
-  public TreePart getEinnahmen() throws RemoteException
+  public EditTreePart getEinnahmen() throws RemoteException
   {
     if (einnahmen == null)
     {
@@ -144,7 +139,7 @@ public class WirtschaftsplanControl extends AbstractControl
     return einnahmen;
   }
 
-  public TreePart getAusgaben() throws RemoteException
+  public EditTreePart getAusgaben() throws RemoteException
   {
     if (ausgaben == null)
     {
@@ -159,7 +154,7 @@ public class WirtschaftsplanControl extends AbstractControl
     return ausgaben;
   }
 
-  private TreePart generateTree(int art) throws RemoteException
+  private EditTreePart generateTree(int art) throws RemoteException
   {
     final int ID_COL = 1;
     final int BETRAG_COL = 2;
@@ -242,14 +237,63 @@ public class WirtschaftsplanControl extends AbstractControl
           return nodes;
         });
 
-    TreePart treePart = new TreePart(new ArrayList<>(nodes.values()), new WirtschaftsplanPostenDialogAction(this, art));
+    EditTreePart treePart = new EditTreePart(new ArrayList<>(nodes.values()), null);
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
     treePart.addColumn("Buchungsklasse", "buchungsklassebezeichnung");
-    treePart.addColumn("Buchungsart / Posten", "buchungsartbezeichnung_posten");
-    treePart.addColumn("Soll", "soll", formatter);
+    treePart.addColumn("Buchungsart / Posten", "buchungsartbezeichnung_posten", null, true);
+    treePart.addColumn("Soll", "soll", formatter, true);
     treePart.addColumn("Ist", "ist", formatter);
+
+    treePart.addChangeListener(((object, attribute, newValue) -> {
+      if (!(object instanceof WirtschaftsplanNode))
+      {
+        throw new ApplicationException("Fehler!");
+      }
+
+      WirtschaftsplanNode node = (WirtschaftsplanNode) object;
+
+
+      WirtschaftsplanItem item = node.getWirtschaftsplanItem();
+
+      try {
+        switch (attribute) {
+          case "buchungsartbezeichnung_posten":
+            item.setPosten(newValue);
+            break;
+          case "soll":
+            try {
+              item.setSoll(Double.parseDouble(newValue.replace(",", ".")));
+            }
+            catch (NumberFormatException e)
+            {
+              GUI.getStatusBar().setErrorText("Bitte gebe eine gültige Zahl ein!");
+              throw new ApplicationException("Keine Zahl eingegeben");
+            }
+            break;
+          default:
+            throw new ApplicationException("Fehler!");
+        }
+
+        node.setWirtschaftsplanItem(item);
+        node.setSoll(item.getSoll());
+
+        WirtschaftsplanNode parent = (WirtschaftsplanNode) node.getParent();
+        reloadSoll(parent, art);
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+        throw new ApplicationException("Fehler!");
+      }
+    }));
+
+    treePart.addEditListener(((object, attribute) -> {
+
+      WirtschaftsplanNode node = (WirtschaftsplanNode) object;
+      return node.getType() == WirtschaftsplanNode.Type.POSTEN;
+    }));
 
     return treePart;
   }

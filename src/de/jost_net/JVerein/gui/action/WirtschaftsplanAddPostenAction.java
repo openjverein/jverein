@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.action;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
-import de.jost_net.JVerein.gui.dialogs.WirtschaftsplanPostenDialog;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -54,14 +53,8 @@ public class WirtschaftsplanAddPostenAction implements Action
       item.setBuchungsklasseId(
           ((WirtschaftsplanNode) node.getParent()).getBuchungsklasse()
               .getID());
-      WirtschaftsplanPostenDialog dialog = new WirtschaftsplanPostenDialog(
-          item);
-
-      WirtschaftsplanItem neuesItem = dialog.open();
-      if (neuesItem == null)
-      {
-        throw new OperationCanceledException();
-      }
+      item.setSoll(0);
+      item.setPosten("Neuer Posten");
 
       node.addChild(new WirtschaftsplanNode(node, item));
 

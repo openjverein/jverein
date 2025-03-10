@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.WirtschaftsplanPostenDialogAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanAddBuchungsartAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanAddPostenAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanDeletePostenAction;
@@ -31,9 +30,6 @@ public class WirtschaftsplanMenu extends ContextMenu
 {
   public WirtschaftsplanMenu(int art, WirtschaftsplanControl control)
   {
-    addItem(new PostenItem("Bearbeiten", new WirtschaftsplanPostenDialogAction(control, art), "text-x-generic.png"));
-    addItem(ContextMenuItem.SEPARATOR);
-
     addItem(new BuchungsklasseItem("Buchungsart hinzufügen", new WirtschaftsplanAddBuchungsartAction(control, art), "list-add.png"));
     addItem(new BuchungsartItem("Posten hinzufügen", new WirtschaftsplanAddPostenAction(control, art), "list-add.png"));
     addItem(ContextMenuItem.SEPARATOR);
@@ -76,26 +72,6 @@ public class WirtschaftsplanMenu extends ContextMenu
         WirtschaftsplanNode node = (WirtschaftsplanNode) o;
         return node.getType().equals(WirtschaftsplanNode.Type.BUCHUNGSART);
       }
-      return false;
-    }
-  }
-
-  private static class PostenItem extends CheckedContextMenuItem
-  {
-    private PostenItem(String text, Action action, String icon)
-    {
-      super(text, action, icon);
-    }
-
-    @Override
-    public boolean isEnabledFor(Object o)
-    {
-      if (o instanceof WirtschaftsplanNode)
-      {
-        WirtschaftsplanNode node = (WirtschaftsplanNode) o;
-        return node.getType().equals(WirtschaftsplanNode.Type.POSTEN);
-      }
-
       return false;
     }
   }
