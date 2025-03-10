@@ -39,7 +39,7 @@ import de.willuhn.util.ApplicationException;
 public class KontensaldoList extends TablePart implements Part
 {
 
-  private TablePart saldoList;
+  private KontensaldoListTablePart saldoList;
   
   private Date von = null;
   
@@ -68,7 +68,7 @@ public class KontensaldoList extends TablePart implements Part
 
       if (saldoList == null)
       {
-        saldoList = new TablePart(zeile, null)
+        saldoList = new KontensaldoListTablePart(zeile, null)
         {
           @Override
           protected void orderBy(int index)
@@ -96,7 +96,8 @@ public class KontensaldoList extends TablePart implements Part
             Column.ALIGN_RIGHT);
         saldoList.addColumn("Bemerkung", "bemerkung");
         saldoList.setRememberColWidths(true);
-        saldoList.removeFeature(FeatureSummary.class);
+        saldoList.setMulti(true);
+        saldoList.addFeature(new FeatureSummary());
       }
       else
       {
