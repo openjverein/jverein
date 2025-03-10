@@ -211,6 +211,20 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     return "";
   }
 
+  public String alterColumnDropNotNull(String table, Column col)
+  {
+    switch (drv)
+    {
+      case H2:
+        return "ALTER TABLE " + table + " ALTER COLUMN " + col.getName()
+            + " DROP NOT NULL;\n";
+      case MYSQL:
+        return "ALTER TABLE " + table + " MODIFY COLUMN " + col.getName() + " "
+            + getType(col) + ";\n";
+    }
+    return "";
+  }
+
   public String renameColumn(String table, String columnold, Column colnew)
   {
     switch (drv)
