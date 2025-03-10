@@ -1183,7 +1183,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       }
       catch (Exception e)
       {
-        e.printStackTrace();
+        Logger.error("Fehler beim Setzen des Mitglieds:", e);
       }
     }
   }
