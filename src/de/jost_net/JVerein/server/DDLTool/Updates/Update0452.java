@@ -34,6 +34,6 @@ public class Update0452 extends AbstractDDLUpdate
     
     Column betrag = new Column("betrag", COLTYPE.DOUBLE, 0, null, true,
         false);
-    execute(alterColumnNotNull("mitgliedskonto", betrag));
+    execute(alterColumnSetNotNull("mitgliedskonto", betrag));
   }
 }
