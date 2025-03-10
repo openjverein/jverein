@@ -35,7 +35,8 @@ public class IstbuchungLoesenAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof MitgliedskontoNode))
+    if (!((context instanceof MitgliedskontoNode)
+        || context instanceof Buchung))
     {
       throw new ApplicationException("Keine Istbuchung ausgewählt");
     }
@@ -59,27 +60,29 @@ public class IstbuchungLoesenAction implements Action
     }
     MitgliedskontoNode mkn = null;
     Buchung bu = null;
-
-    if (context != null && (context instanceof MitgliedskontoNode))
+    try
     {
-      mkn = (MitgliedskontoNode) context;
-      try
+      if (context instanceof MitgliedskontoNode)
       {
+        mkn = (MitgliedskontoNode) context;
         bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
             mkn.getID());
-        bu.setSollbuchung(null);
-        bu.store();
-        GUI.getStatusBar().setSuccessText(
-
-        "Istbuchung von Sollbuchung gelöst.");
-        Application.getMessagingFactory().sendMessage(
-            new MitgliedskontoMessage(mkn.getMitglied()));
       }
-      catch (RemoteException e)
+      else
       {
-        throw new ApplicationException(
-            "Fehler beim lösen der Istbuchung von der Sollbuchung");
+        bu = (Buchung) context;
       }
+      bu.setSollbuchung(null);
+      bu.store();
+      GUI.getStatusBar().setSuccessText("Istbuchung von Sollbuchung gelöst.");
+      Application.getMessagingFactory()
+          .sendMessage(new MitgliedskontoMessage(bu));
+
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(
+          "Fehler beim lösen der Istbuchung von der Sollbuchung");
     }
   }
 }

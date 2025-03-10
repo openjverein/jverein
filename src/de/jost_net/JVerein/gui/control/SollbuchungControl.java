@@ -147,6 +147,8 @@ public class SollbuchungControl extends DruckMailControl
 
   private TablePart buchungList;
 
+  private BuchungListPart istbuchungList;
+
   public SollbuchungControl(AbstractView view)
   {
     super(view);
@@ -574,8 +576,15 @@ public class SollbuchungControl extends DruckMailControl
 
   public Part getBuchungListPart() throws RemoteException
   {
-    return new BuchungListPart(getSollbuchung().getBuchungList(),
+    if (istbuchungList != null)
+    {
+      return istbuchungList;
+    }
+    istbuchungList = new BuchungListPart(getSollbuchung().getBuchungList(),
         new BuchungAction(false), new BuchungPartBearbeitenMenu());
+    Application.getMessagingFactory()
+        .registerMessageConsumer(new MitgliedskontoMessageConsumer());
+    return istbuchungList;
   }
 
   private GenericIterator<Mitglied> getMitgliedIterator() throws RemoteException
@@ -750,7 +759,18 @@ public class SollbuchungControl extends DruckMailControl
         {
           try
           {
-            if (mitgliedskontoTree == null)
+            if (mitgliedskontoTree != null)
+            {
+              Mitglied mitglied = (Mitglied) getCurrentObject();
+              mitgliedskontoTree
+                  .setRootObject(new MitgliedskontoNode(mitglied));
+            }
+            else if (istbuchungList != null)
+            {
+              MitgliedskontoMessage msg = (MitgliedskontoMessage) message;
+              istbuchungList.removeItem(msg.getObject());
+            }
+            else
             {
               // Eingabe-Feld existiert nicht. Also abmelden
               Application.getMessagingFactory().unRegisterMessageConsumer(
@@ -758,9 +778,7 @@ public class SollbuchungControl extends DruckMailControl
               return;
             }
 
-            MitgliedskontoMessage msg = (MitgliedskontoMessage) message;
-            Mitglied mitglied = (Mitglied) msg.getObject();
-            mitgliedskontoTree.setRootObject(new MitgliedskontoNode(mitglied));
+
           }
           catch (Exception e)
           {

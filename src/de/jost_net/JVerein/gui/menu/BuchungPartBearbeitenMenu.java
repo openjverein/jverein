@@ -17,9 +17,11 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.action.IstbuchungLoesenAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 /**
  * Kontext-Menu zu den Buchungen.
@@ -34,6 +36,9 @@ public class BuchungPartBearbeitenMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new BuchungAction(false), "text-x-generic.png"));
+    addItem(new CheckedSingleContextMenuItem("Istbuchung von Sollbuchung lösen",
+        new IstbuchungLoesenAction(), "unlocked.png"));
+    addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
   }
