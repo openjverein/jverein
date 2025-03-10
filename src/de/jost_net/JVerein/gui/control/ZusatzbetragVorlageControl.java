@@ -23,17 +23,23 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
+import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
+import de.jost_net.JVerein.gui.menu.ZusatzbetragVorlageMenu;
+import de.jost_net.JVerein.gui.view.ZusatzbetragVorlageDetailView;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -71,7 +77,9 @@ public class ZusatzbetragVorlageControl extends AbstractControl
 
   private AbstractInput buchungsart;
 
-  private TablePart zusatzbetraegeList;
+  private SelectInput buchungsklasse;
+
+  private TablePart zusatzbetragVorlageList;
 
   public ZusatzbetragVorlage auswahl;
 
@@ -206,8 +214,62 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         getZusatzbetragVorlage().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
         Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
-
+    buchungsart.addListener(new Listener()
+    {
+      @Override
+      public void handleEvent(Event event)
+      {
+        try
+        {
+          Buchungsart bua = (Buchungsart) buchungsart.getValue();
+          if (buchungsklasse != null && buchungsklasse.getValue() == null
+              && bua != null)
+            buchungsklasse.setValue(bua.getBuchungsklasse());
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+    });
     return buchungsart;
+  }
+
+  public SelectInput getBuchungsklasse() throws RemoteException
+  {
+    if (buchungsklasse != null)
+    {
+      return buchungsklasse;
+    }
+    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(
+        buchungsklasse, getZusatzbetragVorlage().getBuchungsklasse());
+    return buchungsklasse;
+  }
+
+  public boolean isBuchungsklasseActive()
+  {
+    return buchungsklasse != null;
+  }
+
+  public Long getSelectedBuchungsKlasseId() throws ApplicationException
+  {
+    try
+    {
+      if (buchungsklasse == null)
+        return null;
+      Buchungsklasse bukla = (Buchungsklasse) getBuchungsklasse()
+          .getValue();
+      if (null == bukla)
+        return null;
+      Long id = Long.valueOf(bukla.getID());
+      return id;
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
   }
 
   public SelectInput getZahlungsweg() throws RemoteException
@@ -262,10 +324,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
       z.setBuchungstext((String) getBuchungstext().getValue());
       Double d = (Double) getBetrag().getValue();
       z.setBetrag(d.doubleValue());
-      if (getBuchungsart().getValue() != null)
-      {
-        z.setBuchungsart((Buchungsart) getBuchungsart().getValue());
-      }
+      z.setBuchungsart((Buchungsart) getBuchungsart().getValue());
+      z.setBuchungsklasseId(getSelectedBuchungsKlasseId());
       z.setZahlungsweg((Zahlungsweg) getZahlungsweg().getValue());
 
       z.store();
@@ -289,54 +349,52 @@ public class ZusatzbetragVorlageControl extends AbstractControl
         .getDBService().createList(ZusatzbetragVorlage.class);
     zusatzbetragsvorlagen.setOrder("ORDER BY buchungstext");
 
-    if (zusatzbetraegeList == null)
+    if (zusatzbetragVorlageList == null)
     {
-      zusatzbetraegeList = new TablePart(zusatzbetragsvorlagen, new Action()
-      {
-        @Override
-        public void handleAction(Object context) throws ApplicationException
-        {
-          auswahl = (ZusatzbetragVorlage) context;
-        }
-      });
-      zusatzbetraegeList.addColumn("Startdatum", "startdatum",
+      zusatzbetragVorlageList = new TablePart(zusatzbetragsvorlagen,
+          new EditAction(ZusatzbetragVorlageDetailView.class));
+      zusatzbetragVorlageList.addColumn("Erste Fälligkeit", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("nächste Fälligkeit", "faelligkeit",
+      zusatzbetragVorlageList.addColumn("Nächste Fälligkeit", "faelligkeit",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("Intervall", "intervalltext");
-      zusatzbetraegeList.addColumn("Endedatum", "endedatum",
+      zusatzbetragVorlageList.addColumn("Intervall", "intervalltext");
+      zusatzbetragVorlageList.addColumn("Nicht mehr ausführen ab", "endedatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
-      zusatzbetraegeList.addColumn("Betrag", "betrag",
+      zusatzbetragVorlageList.addColumn("Buchungstext", "buchungstext");
+      zusatzbetragVorlageList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
-      {
-        @Override
-        public String format(Object o)
-        {
-          if (o == null)
+      zusatzbetragVorlageList.addColumn("Zahlungsweg", "zahlungsweg",
+          new Formatter()
           {
-            return "";
-          }
-          return new Zahlungsweg((Integer) o).getText();
-        }
-      });
-      // zusatzbetraegeList.setContextMenu(new ZusatzbetraegeMenu(
-      // zusatzbetraegeList));
-      zusatzbetraegeList.setRememberColWidths(true);
-      zusatzbetraegeList.setRememberOrder(true);
-      zusatzbetraegeList.addFeature(new FeatureSummary());
-      zusatzbetraegeList.setMulti(true);
+            @Override
+            public String format(Object o)
+            {
+              return new Zahlungsweg((Integer) o).getText();
+            }
+          });
+      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      {
+        zusatzbetragVorlageList.addColumn("Buchungsklasse", "buchungsklasse",
+            new BuchungsklasseFormatter());
+      }
+      zusatzbetragVorlageList.addColumn("Buchungsart", "buchungsart",
+          new BuchungsartFormatter());
+
+      zusatzbetragVorlageList.setContextMenu(new ZusatzbetragVorlageMenu());
+      zusatzbetragVorlageList.setRememberColWidths(true);
+      zusatzbetragVorlageList.setRememberOrder(true);
+      zusatzbetragVorlageList.addFeature(new FeatureSummary());
+      zusatzbetragVorlageList.setMulti(true);
     }
     else
     {
-      zusatzbetraegeList.removeAll();
+      zusatzbetragVorlageList.removeAll();
       while (zusatzbetragsvorlagen.hasNext())
       {
-        zusatzbetraegeList.addItem(zusatzbetragsvorlagen.next());
+        zusatzbetragVorlageList.addItem(zusatzbetragsvorlagen.next());
       }
-      zusatzbetraegeList.sort();
+      zusatzbetragVorlageList.sort();
     }
-    return zusatzbetraegeList;
+    return zusatzbetragVorlageList;
   }
 }

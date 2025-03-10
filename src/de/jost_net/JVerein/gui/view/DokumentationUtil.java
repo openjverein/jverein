@@ -82,6 +82,9 @@ public class DokumentationUtil
 
   public static final String ZUSATZBETRAEGE = PRE + FUNKTIONEN + MITGLIEDER  + "zusatzbetrage";
 
+  public static final String ZUSATZBETRAEGE_VORLAGE = PRE + FUNKTIONEN
+      + MITGLIEDER + "zusatzbetragevorlage";
+
   public static final String ZUSATZBETRAEGEIMPORT = PRE + FUNKTIONEN + MITGLIEDER 
       + "zusatzbetrage-importieren";
   

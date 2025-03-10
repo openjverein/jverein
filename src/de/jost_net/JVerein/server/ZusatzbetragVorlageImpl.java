@@ -239,7 +239,7 @@ public class ZusatzbetragVorlageImpl extends AbstractDBObject
     Object o = getAttribute("zahlungsweg");
     if (o == null)
     {
-      return null;
+      return new Zahlungsweg(Zahlungsweg.STANDARD);
     }
     return new Zahlungsweg((Integer) o);
   }
@@ -249,7 +249,7 @@ public class ZusatzbetragVorlageImpl extends AbstractDBObject
   {
     if (zahlungsweg == null)
     {
-      setAttribute("zahlungsweg", null);
+      setAttribute("zahlungsweg", Zahlungsweg.STANDARD);
     }
     else
     {
