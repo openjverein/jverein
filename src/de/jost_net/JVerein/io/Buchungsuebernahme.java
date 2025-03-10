@@ -30,7 +30,6 @@ import com.schlevoigt.JVerein.util.Misc;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.BuchungUebernahmeProtokollDialog;
-import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
@@ -208,9 +207,7 @@ public class Buchungsuebernahme
             + " " + zweck;
         for (Buchungsart ba : buchungsartList)
         {
-          if ((ba.getArt() == ArtBuchungsart.EINNAHME && u.getBetrag() <= 0.01d)
-              || (ba.getArt() == ArtBuchungsart.AUSGABE
-                  && u.getBetrag() >= -0.01d))
+          if (Math.abs(u.getBetrag()) < 0.01d)
           {
             continue;
           }
