@@ -259,6 +259,10 @@ public class WirtschaftsplanControl extends AbstractControl
     this.uebersicht = uebersicht;
   }
 
+  public WirtschaftsplanUebersichtPart getUebersicht() {
+    return uebersicht;
+  }
+
   public void reloadSoll(WirtschaftsplanNode parent, int art)
       throws RemoteException, ApplicationException
   {
