@@ -22,7 +22,6 @@ import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.SaldoZeile;
-import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
