@@ -46,6 +46,7 @@ import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
+import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartAnzeigenMenu;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
@@ -54,7 +55,6 @@ import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportCSV;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportPDF;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -70,6 +70,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.SpbAdressaufbereitung;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -81,9 +82,11 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
+import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -103,7 +106,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   private SelectInput spendenart;
 
-  private TextInput mitglied;
+  private AbstractInput mitglied;
   
   private TextInput zeile1;
 
@@ -216,27 +219,28 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
   }
   
-  public TextInput getMitglied() throws RemoteException
+  public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
     {
       return mitglied;
     }
-    String text = "";
     Mitglied m = getSpendenbescheinigung().getMitglied();
-    if (m != null)
+    mitglied = new MitgliedInput().getMitgliedInput(mitglied, m,
+        Einstellungen.getEinstellung().getMitgliedAuswahl());
+    mitglied.addListener(new MitgliedListener());
+    if (mitglied instanceof SelectInput)
     {
-      if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+      ((SelectInput) mitglied).setPleaseChoose("Optional auswählen");
+      if (m == null)
       {
-        text = Adressaufbereitung.getIdNameVorname(m);
-      }
-      else
-      {
-        text = Adressaufbereitung.getNameVorname(m);
+        ((SelectInput) mitglied).setPreselected(null);
       }
     }
-    mitglied = new TextInput(text);
-    mitglied.disable();
+    if (m != null || !editable)
+    {
+      mitglied.disable();
+    }
     return mitglied;
   }
 
@@ -1149,6 +1153,39 @@ public class SpendenbescheinigungControl extends DruckMailControl
       }
     };
     Application.getController().start(t);
+  }
+
+  public class MitgliedListener implements Listener
+  {
+
+    MitgliedListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      try
+      {
+        Mitglied selected = (Mitglied) getMitglied().getValue();
+        if (selected != null)
+        {
+          SpbAdressaufbereitung.adressaufbereitung(selected,
+              spendenbescheinigung);
+          zeile1.setValue(spendenbescheinigung.getZeile1());
+          zeile2.setValue(spendenbescheinigung.getZeile2());
+          zeile3.setValue(spendenbescheinigung.getZeile3());
+          zeile4.setValue(spendenbescheinigung.getZeile4());
+          zeile5.setValue(spendenbescheinigung.getZeile5());
+          zeile6.setValue(spendenbescheinigung.getZeile6());
+          zeile7.setValue(spendenbescheinigung.getZeile7());
+        }
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+      }
+    }
   }
 
 }
