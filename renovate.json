@@ -1,0 +1,21 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "forkProcessing": "enabled",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^build/build\\.properties$"
+      ],
+      "matchStrings": [
+        "# renovate: depName=(?<depName>.*?)\\s*\\S+\\.version\\s*=\\s*(?<currentValue>V_\\d+_\\d+_\\d+_BUILD_\\d+)"
+      ],
+      "datasourceTemplate": "github-tags",
+      "versioningTemplate": "regex:^V_(?<major>\\d+)_(?<minor>\\d+)_(?<patch>\\d+)_BUILD_(?<build>\\d+)$"
+    }
+  ]
+}
+

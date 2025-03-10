@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.ZusatzbetragView;
+import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.Action;
@@ -69,6 +69,6 @@ public class ZusatzbetraegeAction implements Action
             "Fehler bei der Erzeugung eines neuen Zusatzbetrages", e);
       }
     }
-    GUI.startView(ZusatzbetragView.class.getName(), z);
+    GUI.startView(ZusatzbetragDetailView.class.getName(), z);
   }
 }

@@ -20,7 +20,6 @@ package de.jost_net.JVerein.io;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
-import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.ColumnText;
@@ -37,35 +36,6 @@ class HeaderFooter extends PdfPageEventHelper
 
   String footer = null;
 
-  int pagenumber;
-
-  /**
-   * 
-   * @see com.itextpdf.text.pdf.PdfPageEventHelper#onOpenDocument(com.itextpdf.text.pdf.PdfWriter,
-   *      com.itextpdf.text.Document)
-   */
-  @Override
-  public void onOpenDocument(PdfWriter writer, Document document)
-  {
-    //
-  }
-
-  @Override
-  public void onChapter(PdfWriter writer, Document document,
-      float paragraphPosition, Paragraph title)
-  {
-    //
-  }
-
-  /**
-   * Increase the page number.
-   */
-  @Override
-  public void onStartPage(PdfWriter writer, Document document)
-  {
-    pagenumber++;
-  }
-
   public void setFooter(String footer)
   {
     this.footer = footer;
@@ -79,18 +49,7 @@ class HeaderFooter extends PdfPageEventHelper
   public void onEndPage(PdfWriter writer, Document document)
   {
     Rectangle rect = document.getPageSize();
-    switch (writer.getPageNumber() % 2)
-    {
-      case 0:
-        // ColumnText.showTextAligned(writer.getDirectContent(),
-        // Element.ALIGN_RIGHT, header[0], rect.getRight(), rect.getTop(), 0);
-        break;
-      case 1:
-        // ColumnText.showTextAligned(writer.getDirectContent(),
-        // Element.ALIGN_LEFT,
-        // header[1], rect.getLeft(), rect.getTop(), 0);
-        break;
-    }
+
     float left = rect.getLeft() + document.leftMargin();
     float right = rect.getRight() - document.rightMargin();
     float bottom = rect.getBottom() + document.bottomMargin();
@@ -107,7 +66,8 @@ class HeaderFooter extends PdfPageEventHelper
     ColumnText.showTextAligned(
         pc,
         Element.ALIGN_CENTER,
-        new Phrase(footer + " " + pagenumber, Reporter.getFreeSans(7)),
+        new Phrase(footer + " " + writer.getPageNumber(),
+            Reporter.getFreeSans(7)),
         (left + right) / 2, bottom - 18, 0);
   }
 }

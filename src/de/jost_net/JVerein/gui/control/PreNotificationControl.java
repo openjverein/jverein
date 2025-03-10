@@ -670,8 +670,18 @@ public class PreNotificationControl extends DruckMailControl
 
             try
             {
-              sender.sendMail(ls.getEmail(), wtext1.getBuffer().toString(),
-                  wtext2.getBuffer().toString(), new TreeSet<MailAnhang>());
+              try
+              {
+                sender.sendMail(ls.getEmail(), wtext1.getBuffer().toString(),
+                    wtext2.getBuffer().toString(), new TreeSet<MailAnhang>());
+              }
+              // Wenn eine ApplicationException geworfen wurde, wurde die
+              // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
+              catch (ApplicationException ae)
+              {
+                Logger.error("Fehler: ", ae);
+                monitor.log(ls.getEmail() + " - " + ae.getMessage());
+              }
 
               // Mail in die Datenbank schreiben
               if (ls.getMitglied() != null)

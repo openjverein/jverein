@@ -27,11 +27,11 @@ import com.itextpdf.text.DocumentException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
 import de.jost_net.JVerein.gui.action.SollbuchungExportAction.EXPORT_TYP;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
+import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput.MailAuswertungObject;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.util.ApplicationException;
@@ -50,7 +50,7 @@ public abstract class SollbuchungExport implements Exporter
 
   protected File file;
 
-  protected MitgliedskontoControl control = new MitgliedskontoControl(null);
+  protected SollbuchungControl control = new SollbuchungControl(null);
 
   @Override
   public void doExport(final Object[] objects, IOFormat format, File file,
@@ -75,7 +75,7 @@ public abstract class SollbuchungExport implements Exporter
     {
       Mitglied m = (Mitglied) mitgl.next();
       startMitglied(m);
-      GenericIterator<Mitgliedskonto> sollbuchnungen = new SollbuchungQuery(
+      GenericIterator<Sollbuchung> sollbuchnungen = new SollbuchungQuery(
           control, false, m).get();
       if (sollbuchnungen != null)
       {
@@ -108,7 +108,7 @@ public abstract class SollbuchungExport implements Exporter
   protected abstract void open()
       throws DocumentException, FileNotFoundException;
 
-  protected abstract void add(Mitgliedskonto mk) throws RemoteException;
+  protected abstract void add(Sollbuchung sollb) throws RemoteException;
 
   protected abstract void close(ProgressMonitor monitor)
       throws IOException, DocumentException;

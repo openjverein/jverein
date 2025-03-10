@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.dialogs.KontoAuswahlDialog;
-import de.jost_net.JVerein.gui.view.BuchungView;
+import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -73,7 +73,7 @@ public class BuchungGegenbuchungAction implements Action
         if (b.getProjekt() != null)
           bu.setProjektID(b.getProjektID());
         
-        GUI.startView(new BuchungView(), bu);
+        GUI.startView(new BuchungDetailView(), bu);
       }
     }
     catch (OperationCanceledException oce)

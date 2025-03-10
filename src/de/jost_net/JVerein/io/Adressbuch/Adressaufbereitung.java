@@ -18,8 +18,10 @@ package de.jost_net.JVerein.io.Adressbuch;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.IAdresse;
+import de.jost_net.JVerein.rmi.Mitglied;
 
 public class Adressaufbereitung
 {
@@ -58,6 +60,23 @@ public class Adressaufbereitung
     }
     ret += adr.getVorname();
     return ret;
+  }
+
+  /**
+   * Gibt den Namen aufbereitet zurück, Nr. - Meier, Dr. Willi
+   */
+  public static String getIdNameVorname(Mitglied mitglied)
+      throws RemoteException
+  {
+    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    {
+      return getNameVorname(mitglied) + " ("
+          + mitglied.getExterneMitgliedsnummer() + ")";
+    }
+    else
+    {
+      return getNameVorname(mitglied) + " (" + mitglied.getID() + ")";
+    }
   }
 
   /**

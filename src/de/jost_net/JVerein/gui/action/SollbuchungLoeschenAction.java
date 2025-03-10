@@ -22,7 +22,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -37,7 +37,7 @@ public class SollbuchungLoeschenAction implements Action
   public void handleAction(Object context) throws ApplicationException
   {
     if (context == null || !((context instanceof MitgliedskontoNode)
-        || context instanceof Mitgliedskonto))
+        || context instanceof Sollbuchung))
     {
       throw new ApplicationException("Keine Sollbuchung ausgewählt");
     }
@@ -60,21 +60,21 @@ public class SollbuchungLoeschenAction implements Action
       return;
     }
     MitgliedskontoNode mkn = null;
-    Mitgliedskonto mk = null;
+    Sollbuchung sollb = null;
     try
     {
       if (context instanceof MitgliedskontoNode)
       {
         mkn = (MitgliedskontoNode) context;
-        mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-            Mitgliedskonto.class, mkn.getID());
+        sollb = (Sollbuchung) Einstellungen.getDBService().createObject(
+            Sollbuchung.class, mkn.getID());
       }
       else
       {
-        mk = (Mitgliedskonto) context;
+        sollb = (Sollbuchung) context;
       }
-      Mitglied mitglied = mk.getMitglied();
-      mk.delete();
+      Mitglied mitglied = sollb.getMitglied();
+      sollb.delete();
       GUI.getStatusBar().setSuccessText("Sollbuchung gelöscht.");
       Application.getMessagingFactory().sendMessage(
           new MitgliedskontoMessage(mitglied));

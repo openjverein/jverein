@@ -47,13 +47,14 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
-import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
+import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
+import de.jost_net.JVerein.gui.input.SollbuchungAuswahlInput;
 import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
@@ -74,7 +75,9 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
@@ -150,7 +153,7 @@ public class BuchungsControl extends AbstractControl
 
   private Input art;
 
-  private TextInput mitgliedskonto;
+  private DialogInput sollbuchung;
 
   private TextAreaInput kommentar;
 
@@ -570,23 +573,59 @@ public class BuchungsControl extends AbstractControl
     return verzicht;
   }
 
-  public TextInput getMitgliedskonto() throws RemoteException
+  public DialogInput getSollbuchung() throws RemoteException
   {
-
-    if (mitgliedskonto != null && !mitgliedskonto.getControl().isDisposed())
-    {
-      return mitgliedskonto;
-    }
-
-    Mitgliedskonto mk = getBuchung().getMitgliedskonto();
-    mitgliedskonto = new TextInput(
-        mk != null
-            ? Adressaufbereitung.getNameVorname(mk.getMitglied()) + ", "
-                + new JVDateFormatTTMMJJJJ().format(mk.getDatum()) + ", "
-                + Einstellungen.DECIMALFORMAT.format(mk.getBetrag())
-            : "");
-    mitgliedskonto.disable();
-    return mitgliedskonto;
+    sollbuchung = new SollbuchungAuswahlInput(getBuchung())
+        .getSollbuchungAuswahl();
+    sollbuchung.addListener(event ->
+      {
+      try
+      {
+        String name = (String) getName().getValue();
+        String zweck1 = (String) getZweck().getValue();
+        if (sollbuchung.getValue() != null && name.length() == 0
+            && zweck1.length() == 0)
+        {
+          if (sollbuchung.getValue() instanceof Sollbuchung)
+          {
+            Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
+            getName()
+                .setValue(Adressaufbereitung.getNameVorname(sb.getMitglied()));
+            getBetrag().setValue(sb.getBetrag());
+            getZweck().setValue(sb.getZweck1());
+            getDatum().setValue(sb.getDatum());
+          }
+          if (sollbuchung.getValue() instanceof Mitglied)
+          {
+            Mitglied m2 = (Mitglied) sollbuchung.getValue();
+            getName().setValue(Adressaufbereitung.getNameVorname(m2));
+            getDatum().setValue(new Date());
+          }
+        }
+        if (sollbuchung.getValue() instanceof Sollbuchung)
+        {
+          Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
+          ArrayList<SollbuchungPosition> sbpList = sb
+              .getSollbuchungPositionList();
+          if (getBuchungsart().getValue() == null && sbpList.size() > 0)
+          {
+            getBuchungsart().setValue(
+                sbpList.get(0).getBuchungsart());
+          }
+          if (isBuchungsklasseActive()
+              && getBuchungsklasse().getValue() == null && sbpList.size() > 0)
+          {
+            getBuchungsklasse().setValue(
+                sbpList.get(0).getBuchungsklasse());
+          }
+        }
+      }
+      catch (RemoteException e)
+      {
+          Logger.error("Fehler", e);
+        }
+    });
+    return sollbuchung;
   }
 
   public Input getArt() throws RemoteException
@@ -955,7 +994,7 @@ public class BuchungsControl extends AbstractControl
     return b;
   }
 
-  public Button getStarteBuchungMitgliedskontoZuordnungAutomatischButton()
+  public Button getStarteBuchungSollbuchungZuordnungAutomatischButton()
   {
     Button b = new Button("Zuordnung", new BuchungSollbuchungZuordnungAutomatischAction(getVondatum(), getBisdatum()), null, false,
             "user-friends.png");
@@ -1041,7 +1080,7 @@ public class BuchungsControl extends AbstractControl
               break;
           }
           
-          b_steuer.setMitgliedskontoID(b.getMitgliedskontoID());
+          b_steuer.setSollbuchungID(b.getSollbuchungID());
           b_steuer.setBuchungsartId(Long.valueOf(b_art.getSteuerBuchungsart().getID()));
           b_steuer.setBuchungsklasseId(b_art.getBuchungsklasseId());
           b_steuer.setBetrag(steuer.doubleValue());
@@ -1333,8 +1372,8 @@ public class BuchungsControl extends AbstractControl
       buchungsList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       if (geldkonto)
-        buchungsList.addColumn(new Column("mitgliedskonto", "Mitglied",
-          new MitgliedskontoFormatter(), false, Column.ALIGN_AUTO,
+        buchungsList.addColumn(new Column(Buchung.SOLLBUCHUNG, "Mitglied",
+          new SollbuchungFormatter(), false, Column.ALIGN_AUTO,
           Column.SORT_BY_DISPLAY));
       buchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
       buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
@@ -1414,8 +1453,8 @@ public class BuchungsControl extends AbstractControl
           new BuchungsartFormatter());
       splitbuchungsList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      splitbuchungsList.addColumn("Mitglied", "mitgliedskonto",
-          new MitgliedskontoFormatter());
+      splitbuchungsList.addColumn("Mitglied", Buchung.SOLLBUCHUNG,
+          new SollbuchungFormatter());
       splitbuchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
       splitbuchungsList.setContextMenu(new SplitBuchungMenu(this));
       splitbuchungsList.setRememberColWidths(true);

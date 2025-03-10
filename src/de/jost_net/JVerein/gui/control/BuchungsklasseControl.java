@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.BuchungsklasseMenu;
-import de.jost_net.JVerein.gui.view.BuchungsklasseView;
+import de.jost_net.JVerein.gui.view.BuchungsklasseDetailView;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -127,7 +127,7 @@ public class BuchungsklasseControl extends AbstractControl
     buchungsklassen.setOrder("ORDER BY nummer");
 
     buchungsklassenList = new TablePart(buchungsklassen,
-        new EditAction(BuchungsklasseView.class));
+        new EditAction(BuchungsklasseDetailView.class));
     buchungsklassenList.addColumn("Nummer", "nummer");
     buchungsklassenList.addColumn("Bezeichnung", "bezeichnung");
     buchungsklassenList.setContextMenu(new BuchungsklasseMenu());

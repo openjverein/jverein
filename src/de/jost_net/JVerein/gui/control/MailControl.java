@@ -30,6 +30,7 @@ import de.jost_net.JVerein.gui.action.MailDetailAction;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailAuswahlMenu;
 import de.jost_net.JVerein.gui.menu.MailMenu;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.util.EvalMail;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.rmi.Mail;
@@ -60,7 +61,7 @@ import de.willuhn.util.ProgressMonitor;
 public class MailControl extends FilterControl
 {
 
-  private TablePart empfaenger;
+  private AutoUpdateTablePart empfaenger;
 
   private TextInput betreff;
 
@@ -91,7 +92,7 @@ public class MailControl extends FilterControl
     return mail;
   }
 
-  public TablePart getEmpfaenger() throws RemoteException
+  public AutoUpdateTablePart getEmpfaenger() throws RemoteException
   {
     if (empfaenger != null)
     {
@@ -122,7 +123,7 @@ public class MailControl extends FilterControl
     {
       empf2.add(me);
     }
-    empfaenger = new TablePart(empf2, null);
+    empfaenger = new AutoUpdateTablePart(empf2, null);
     empfaenger.addColumn("Mail-Adresse", "mailadresse");
     empfaenger.addColumn("Name", "name");
     empfaenger.addColumn("Versand", "versand",
@@ -177,7 +178,7 @@ public class MailControl extends FilterControl
     mitgliedmitmail.addColumn("EMail", "email");
     mitgliedmitmail.addColumn("Name", "name");
     mitgliedmitmail.addColumn("Vorname", "vorname");
-    mitgliedmitmail.addColumn("Mitgliedstyp", "adresstyp");
+    mitgliedmitmail.addColumn("Mitgliedstyp", Mitglied.MITGLIEDSTYP);
     mitgliedmitmail.setRememberOrder(true);
     mitgliedmitmail.setCheckable(true);
     mitgliedmitmail.removeFeature(FeatureSummary.class);
@@ -465,8 +466,18 @@ public class MailControl extends FilterControl
               EvalMail em = new EvalMail(empf);
               if (erneutSenden || empf.getVersand() == null)
               {
-                sender.sendMail(empf.getMailAdresse(), em.evalBetreff(betr),
-                    em.evalText(txt), getMail().getAnhang());
+                try
+                {
+                  sender.sendMail(empf.getMailAdresse(), em.evalBetreff(betr),
+                      em.evalText(txt), getMail().getAnhang());
+                }
+                // Wenn eine ApplicationException geworfen wurde, wurde die
+                // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
+                catch (ApplicationException ae)
+                {
+                  Logger.error("Fehler: ", ae);
+                  monitor.log(empf.getMailAdresse() + " - " + ae.getMessage());
+                }
                 sentCount++;
                 monitor.log(empf.getMailAdresse() + " - versendet");
                 // Nachricht wurde erfolgreich versendet; speicher Versand-Datum
@@ -475,10 +486,6 @@ public class MailControl extends FilterControl
                 // Fix null value in colum mail for mailempfaenger
                 empf.setMail(getMail());
                 empf.store();
-                // aktualisiere TablePart getEmpfaenger() (zeige neues
-                // Versand-Datum)
-                GUI.startView(GUI.getCurrentView().getClass(),
-                    GUI.getCurrentView().getCurrentObject());
               }
               else
               {
@@ -502,7 +509,6 @@ public class MailControl extends FilterControl
           GUI.getStatusBar().setSuccessText(
               "Mail" + (sentCount > 1 ? "s" : "") + " verschickt");
           getMail().store();
-          GUI.getCurrentView().reload();
         }
         catch (ApplicationException ae)
         {

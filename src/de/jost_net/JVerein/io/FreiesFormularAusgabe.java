@@ -18,11 +18,11 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstyp;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.gui.control.FreieFormulareControl;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.Dateiname;
@@ -64,11 +64,11 @@ public class FreiesFormularAusgabe
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }
-    Adresstyp adresstype = (Adresstyp) control.getSuchAdresstyp(Mitgliedstyp.ALLE)
+    Mitgliedstyp mitgliedstyp = (Mitgliedstyp) control.getSuchMitgliedstyp(Mitgliedstypen.ALLE)
         .getValue();
     int type = -1;
-    if (adresstype != null)
-      type = Integer.parseInt(adresstype.getID());
+    if (mitgliedstyp != null)
+      type = Integer.parseInt(mitgliedstyp.getID());
     ArrayList<Mitglied> mitglieder = new MitgliedQuery(control).get(type, null);
 
     if (mitglieder.size() == 0)

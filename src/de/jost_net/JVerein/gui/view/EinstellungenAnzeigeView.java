@@ -83,7 +83,10 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getIndividuelleBeitraege());
     right.addLabelPair("Externe Mitgliedsnummer",
         control.getExterneMitgliedsnummer());
-    right.addLabelPair("Summen Anlagenkonto in Kontensaldo", control.getSummenAnlagenkonto());
+    right.addLabelPair("(Externe) Mitgliedsnummer bei Namen anzeigen",
+        control.getMitgliedsnummerAnzeigen());
+    right.addLabelPair("Summen Anlagenkonto in Kontensaldo",
+        control.getSummenAnlagenkonto());
     right.addLabelPair("Basis für Berechnung des Alters",
         control.getAltersModel());
     // Einstellung zum Buchungsdialog
@@ -92,8 +95,8 @@ public class EinstellungenAnzeigeView extends AbstractView
     right.addLabelPair("Mitglied Auswahl", control.getMitgliedAuswahl());
     right.addLabelPair("Ort der Abschreibung", control.getAfaOrt());
 
-    right.addHeadline("* " + "Änderung erfordert Neustart");
     cont.addSeparator();
+    cont.addHeadline("* " + "Änderung erfordert Neustart");
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_ANZEIGE, false, "question-circle.png");

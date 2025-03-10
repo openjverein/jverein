@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Version;
@@ -206,7 +206,7 @@ public class BackupRestoreAction implements Action
             catch (Exception e)
             {
               //Fehler Bei Adresstyp ignorieren, da hier bereits "Spender" und "Mitglied" existiert und es einen DUPLICATE KEY gibt
-              if(!(o instanceof Adresstyp))
+              if(!(o instanceof Mitgliedstyp))
               {
                 Logger.error("unable to import " + o.getClass().getName() + ":"
                     + o.getID() + ", skipping", e);

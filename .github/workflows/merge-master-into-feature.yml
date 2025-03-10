@@ -1,0 +1,41 @@
+name: Merge master branch bugfixes into feature branches
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths-ignore:
+      - plugin.xml
+jobs:
+  merge-branch:
+    if: github.repository == 'openjverein/jverein'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout openjverein
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Set Git config
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "Github Actions"
+
+      - name: Check for merge conflicts for master into feature-3.1.0
+        run: |
+          git checkout feature-3.1.0
+          git pull
+          git merge master --no-ff --no-commit
+        continue-on-error: true
+
+      - name: Abort previous merge check
+        run: |
+          git merge --abort
+          git reset --hard HEAD
+      
+      - name: Merge master into feature-3.1.0
+        run: |
+          # Merge master branch into feature with feature as king (ours)
+          git merge -X ours master -m "Auto-merge master into feature-3.1.0" --stat
+          git push origin

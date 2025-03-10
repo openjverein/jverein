@@ -31,6 +31,7 @@ import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Datum;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -587,9 +588,9 @@ public class DbBereinigenControl extends AbstractControl
           }
           try
           {
-            if (sollloeschen && (b.getMitgliedskonto() != null))
+            if (sollloeschen && (b.getSollbuchung() != null))
             {
-              b.getMitgliedskonto().delete();
+              b.getSollbuchung().delete();
               counts++;
             }
           }
@@ -606,7 +607,7 @@ public class DbBereinigenControl extends AbstractControl
           catch (Exception e)
           {
             String fehler = "Fehler beim Löschen der Sollbuchung mit Nr " + 
-                b.getMitgliedskonto().getID() + ", " + e.getMessage();
+                b.getSollbuchung().getID() + ", " + e.getMessage();
             monitor.setStatusText(fehler);
           }
           countb++;
@@ -744,8 +745,9 @@ public class DbBereinigenControl extends AbstractControl
 
           // Suche Sollbuchung des Abrechnungslaufes
           final DBService service1 = Einstellungen.getDBService();
-          String sql1 = "SELECT mitgliedskonto.id from mitgliedskonto "
-              + "WHERE abrechnungslauf = ? ";      
+          String sql1 = "SELECT " + Sollbuchung.TABLE_NAME_ID + " from "
+              + Sollbuchung.TABLE_NAME + " WHERE " + Sollbuchung.ABRECHNUNGSLAUF
+              + " = ? ";
           boolean sollbuchungen = (boolean) service1.execute(sql1,
               new Object[] { al.getID() }, new ResultSetExtractor()
           {

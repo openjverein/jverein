@@ -24,7 +24,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
@@ -36,12 +36,14 @@ import de.jost_net.JVerein.gui.menu.RechnungMenu;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
-import de.jost_net.JVerein.gui.view.RechnungView;
+import de.jost_net.JVerein.gui.view.RechnungDetailView;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
@@ -140,7 +142,7 @@ public class RechnungControl extends DruckMailControl
     }
     GenericIterator<Rechnung> rechnungen = getRechnungIterator();
     rechnungList = new TablePart(rechnungen,
-        new EditAction(RechnungView.class));
+        new EditAction(RechnungDetailView.class));
     rechnungList.addColumn("Nr", "id-int");
     rechnungList.addColumn("Rechnungsdatum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -290,20 +292,24 @@ public class RechnungControl extends DruckMailControl
 
     if (isDifferenzAktiv() && getDifferenz().getValue() != DIFFERENZ.EGAL)
     {
-      String sql = "SELECT DISTINCT mitgliedskonto.rechnung, mitgliedskonto.betrag, "
-          + "sum(buchung.betrag) FROM mitgliedskonto "
-          + "LEFT JOIN buchung on mitgliedskonto.id = buchung.mitgliedskonto "
-          + "WHERE mitgliedskonto.rechnung is not null "
-          + "group by mitgliedskonto.id ";
+      String sql = "SELECT DISTINCT " + Sollbuchung.T_RECHNUNG + ", "
+          + Sollbuchung.T_BETRAG + ", " + "sum(buchung.betrag) FROM "
+          + Sollbuchung.TABLE_NAME
+          + " LEFT JOIN buchung on " + Sollbuchung.TABLE_NAME_ID + " = "
+          + Buchung.T_SOLLBUCHUNG
+          + " WHERE " + Sollbuchung.T_RECHNUNG + " is not null " + " group by "
+          + Sollbuchung.TABLE_NAME_ID;
       if (getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
       {
-        sql += "having sum(buchung.betrag) < mitgliedskonto.betrag or "
-            + "(sum(buchung.betrag) is null and mitgliedskonto.betrag > 0) ";
+        sql += "having sum(buchung.betrag) < " + Sollbuchung.T_BETRAG + " or "
+            + "(sum(buchung.betrag) is null and " + Sollbuchung.T_BETRAG
+            + " > 0) ";
       }
       else
       {
-        sql += "having sum(buchung.betrag) > mitgliedskonto.betrag or "
-            + "(sum(buchung.betrag) is null and mitgliedskonto.betrag < 0) ";
+        sql += "having sum(buchung.betrag) > " + Sollbuchung.T_BETRAG + " or "
+            + "(sum(buchung.betrag) is null and " + Sollbuchung.T_BETRAG
+            + " < 0) ";
       }
 
       @SuppressWarnings("unchecked")

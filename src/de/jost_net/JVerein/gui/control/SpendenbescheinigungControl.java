@@ -226,7 +226,14 @@ public class SpendenbescheinigungControl extends DruckMailControl
     Mitglied m = getSpendenbescheinigung().getMitglied();
     if (m != null)
     {
-      text = Adressaufbereitung.getVornameName(m);
+      if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+      {
+        text = Adressaufbereitung.getIdNameVorname(m);
+      }
+      else
+      {
+        text = Adressaufbereitung.getNameVorname(m);
+      }
     }
     mitglied = new TextInput(text);
     mitglied.disable();
@@ -964,8 +971,18 @@ public class SpendenbescheinigungControl extends DruckMailControl
               anhang.add(anh);
               fis.close();
 
-              sender.sendMail(m.getEmail(), wtext1.getBuffer().toString(),
-                  wtext2.getBuffer().toString(), anhang);
+              try
+              {
+                sender.sendMail(m.getEmail(), wtext1.getBuffer().toString(),
+                    wtext2.getBuffer().toString(), anhang);
+              }
+              // Wenn eine ApplicationException geworfen wurde, wurde die
+              // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
+              catch (ApplicationException ae)
+              {
+                Logger.error("Fehler: ", ae);
+                monitor.log(m.getEmail() + " - " + ae.getMessage());
+              }
               sentCount++;
 
               // Mail in die Datenbank schreiben

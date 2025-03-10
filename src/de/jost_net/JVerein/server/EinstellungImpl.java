@@ -199,6 +199,12 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
       {
         throw new ApplicationException(e.getMessage());
       }
+
+      if (getSpendenbescheinigungminbetrag() < 0.01d)
+      {
+        throw new ApplicationException(
+            "Mindestbetrag für Spendenbescheinigungen darf nicht kleiner als 0.01 sein");
+      }
     }
     catch (RemoteException e)
     {
@@ -882,7 +888,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     Double d = (Double) getAttribute("spendenbescheinigungminbetrag");
     if (d == null)
     {
-      d = Double.valueOf(0.0d);
+      d = Double.valueOf(0.01d);
     }
     return (d);
   }
@@ -2246,5 +2252,18 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
       throws RemoteException
   {
     setAttribute("geprueftsynchronisieren", geprueftsynchronisieren);
+  }
+
+  @Override
+  public boolean getMitgliedsnummerAnzeigen() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("nummeranzeigen"));
+  }
+
+  @Override
+  public void setMitgliedsnummerAnzeigen(boolean nummeranzeigen)
+      throws RemoteException
+  {
+    setAttribute("nummeranzeigen", nummeranzeigen);
   }
 }

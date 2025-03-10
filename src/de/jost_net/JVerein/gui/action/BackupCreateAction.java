@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.server.AbrechnungslaufImpl;
-import de.jost_net.JVerein.server.AdresstypImpl;
+import de.jost_net.JVerein.server.MitgliedstypImpl;
 import de.jost_net.JVerein.server.AltersstaffelImpl;
 import de.jost_net.JVerein.server.AnfangsbestandImpl;
 import de.jost_net.JVerein.server.ArbeitseinsatzImpl;
@@ -50,7 +50,7 @@ import de.jost_net.JVerein.server.MitgliedDokumentImpl;
 import de.jost_net.JVerein.server.MitgliedImpl;
 import de.jost_net.JVerein.server.MitgliedNextBGruppeImpl;
 import de.jost_net.JVerein.server.MitgliedfotoImpl;
-import de.jost_net.JVerein.server.MitgliedskontoImpl;
+import de.jost_net.JVerein.server.SollbuchungImpl;
 import de.jost_net.JVerein.server.ProjektImpl;
 import de.jost_net.JVerein.server.QIFImportHeadImpl;
 import de.jost_net.JVerein.server.QIFImportPosImpl;
@@ -166,7 +166,7 @@ public class BackupCreateAction implements Action
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Mitgliedstypen");
-          backup(AdresstypImpl.class, writer, monitor);
+          backup(MitgliedstypImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Buchungsklassen");
@@ -271,7 +271,7 @@ public class BackupCreateAction implements Action
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Mitgliedskonten");
-          backup(MitgliedskontoImpl.class, writer, monitor);
+          backup(SollbuchungImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Sollbuchungpositionen");

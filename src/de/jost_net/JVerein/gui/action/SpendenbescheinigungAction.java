@@ -25,10 +25,11 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.SpendenbescheinigungView;
+import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.SpbAdressaufbereitung;
 import de.willuhn.datasource.rmi.DBService;
@@ -94,10 +95,10 @@ public class SpendenbescheinigungAction implements Action
                 throw new ApplicationException(
                     "Die Buchung ist bereits auf einer Spendenbescheinigung eingetragen!");
               }
-              if (b.getMitgliedskonto() != null)
+              if (b.getSollbuchung() != null)
               {
                 // Zahler aus Sollbuchung lesen
-                Mitglied zahler = b.getMitgliedskonto().getZahler();
+                Mitglied zahler = b.getSollbuchung().getZahler();
                 if (zahler != null)
                 {
                   SpbAdressaufbereitung.adressaufbereitung(zahler, spb);
@@ -141,7 +142,7 @@ public class SpendenbescheinigungAction implements Action
           }
         }
       }
-      GUI.startView(SpendenbescheinigungView.class.getName(), spb);
+      GUI.startView(SpendenbescheinigungDetailView.class.getName(), spb);
     }
     catch (RemoteException e)
     {
@@ -173,11 +174,12 @@ public class SpendenbescheinigungAction implements Action
     };
     String sql = "SELECT buchung.id  FROM buchung "
         + "  JOIN buchungsart ON buchung.buchungsart = buchungsart.id "
-        + "  JOIN mitgliedskonto ON buchung.mitgliedskonto = mitgliedskonto.id "
-        + "WHERE buchungsart.spende = true "
-        + "  AND mitgliedskonto.zahler = ? "
+        + "  JOIN " + Sollbuchung.TABLE_NAME + " ON " + Buchung.T_SOLLBUCHUNG
+        + " = " + Sollbuchung.TABLE_NAME_ID
+        + " WHERE buchungsart.spende = true "
+        + "  AND " + Sollbuchung.T_ZAHLER + " = ? "
         + "  AND buchung.spendenbescheinigung IS NULL "
-        + "  AND buchung.mitgliedskonto IS NOT NULL "
+        + "  AND " + Buchung.T_SOLLBUCHUNG + " IS NOT NULL "
         + "ORDER BY buchung.datum";
     @SuppressWarnings("unchecked")
     ArrayList<Buchung> buchungen = (ArrayList<Buchung>) Einstellungen.getDBService()

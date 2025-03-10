@@ -645,4 +645,9 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public void setGeprueftSynchronisieren(boolean geprueftsynchonisieren)
       throws RemoteException;
+
+  public boolean getMitgliedsnummerAnzeigen() throws RemoteException;
+
+  public void setMitgliedsnummerAnzeigen(boolean nummeranzeigen)
+      throws RemoteException;
 }

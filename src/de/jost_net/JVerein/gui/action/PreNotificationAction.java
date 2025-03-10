@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.PreNotificationView;
+import de.jost_net.JVerein.gui.view.PreNotificationMailView;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.willuhn.jameica.gui.Action;
@@ -31,11 +31,11 @@ public class PreNotificationAction implements Action
     if (context != null && (context instanceof Abrechnungslauf ||
         context instanceof Lastschrift || context instanceof Lastschrift[]))
     {
-      GUI.startView(PreNotificationView.class.getName(), context);
+      GUI.startView(PreNotificationMailView.class.getName(), context);
     }
     else
     {
-      GUI.startView(PreNotificationView.class.getName(), null);
+      GUI.startView(PreNotificationMailView.class.getName(), null);
     }
   }
 }

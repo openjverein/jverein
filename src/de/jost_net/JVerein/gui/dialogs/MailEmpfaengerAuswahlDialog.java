@@ -28,6 +28,7 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
@@ -149,7 +150,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
           for (Object o : control.getMitgliedMitMail().getItems(false))
           {
             Mitglied m = (Mitglied) o;
-            if (m.getAdresstyp().getJVereinid() == 1
+            if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
                 && m.isAngemeldet(stichtag))
             {
               control.getMitgliedMitMail().setChecked(o, true);
@@ -174,7 +175,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
           for (Object o : control.getMitgliedMitMail().getItems(false))
           {
             Mitglied m = (Mitglied) o;
-            if (m.getAdresstyp().getJVereinid() == 1
+            if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
                 && !m.isAngemeldet(stichtag))
             {
               control.getMitgliedMitMail().setChecked(o, true);
@@ -198,7 +199,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
           for (Object o : control.getMitgliedMitMail().getItems(false))
           {
             Mitglied m = (Mitglied) o;
-            if (m.getAdresstyp().getJVereinid() != 1)
+            if (m.getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED)
             {
               control.getMitgliedMitMail().setChecked(o, true);
             }
@@ -222,8 +223,8 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
           for (Object o : control.getMitgliedMitMail().getItems(false))
           {
             Mitglied m = (Mitglied) o;
-            if (m.getAdresstyp().getJVereinid() != 1
-                || (m.getAdresstyp().getJVereinid() == 1
+            if (m.getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED
+                || (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
                     && m.isAngemeldet(stichtag)))
             {
               control.getMitgliedMitMail().setChecked(o, true);

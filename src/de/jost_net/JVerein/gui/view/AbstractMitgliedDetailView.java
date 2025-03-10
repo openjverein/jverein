@@ -35,7 +35,7 @@ import de.jost_net.JVerein.gui.action.MitgliedMailSendenAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
 import de.jost_net.JVerein.gui.control.DokumentControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.MitgliedskontoControl;
+import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -85,7 +85,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
 
     zeichneUeberschrift(); // Einschub Ende
 
-    final MitgliedskontoControl controlMk = new MitgliedskontoControl(this);
+    final SollbuchungControl controlSollb = new SollbuchungControl(this);
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 
@@ -122,7 +122,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
     zeichneZusatzbeitraege(showInTab ? folder : oben.getComposite());
 
     showInTab = Einstellungen.getEinstellung().getZeigeMitgliedskontoInTab();
-    zeichneMitgliedkonto(controlMk, showInTab ? folder : oben.getComposite());
+    zeichneMitgliedkonto(controlSollb, showInTab ? folder : oben.getComposite());
 
     showInTab = Einstellungen.getEinstellung().getZeigeVermerkeInTab();
     zeichneVermerke(showInTab ? folder : oben.getComposite(), 1);
@@ -411,7 +411,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
    * Sinn!)
    * 
    */
-  private void zeichneMitgliedkonto(MitgliedskontoControl controlMk,
+  private void zeichneMitgliedkonto(SollbuchungControl controlSollb,
       Composite parentComposite) throws RemoteException
   {
     if (!control.getMitglied().isNewObject())
@@ -425,7 +425,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
       ButtonArea buttonszus = new ButtonArea();
       buttonszus.addButton(control.getSollbuchungNeu());
       buttonszus.paint(cont.getComposite());
-      controlMk.getMitgliedskontoTree(control.getMitglied())
+      controlSollb.getMitgliedskontoTree(control.getMitglied())
           .paint(cont.getComposite());
     }
   }
@@ -617,7 +617,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
 
     if (!isMitgliedDetail())
     {
-      cols.addInput(control.getAdresstyp());
+      cols.addInput(control.getMitgliedstyp());
     }
     cols.addInput(control.getAnrede());
     if (control.getMitglied().getPersonenart().equalsIgnoreCase("n"))

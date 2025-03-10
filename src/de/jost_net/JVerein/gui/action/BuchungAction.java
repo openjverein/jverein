@@ -18,8 +18,8 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.view.BuchungView;
-import de.jost_net.JVerein.gui.view.SplitBuchungView;
+import de.jost_net.JVerein.gui.view.BuchungDetailView;
+import de.jost_net.JVerein.gui.view.SplitbuchungDetailView;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
@@ -52,12 +52,12 @@ public class BuchungAction implements Action
     {
       if (b.getSplitId() == null || splitbuchung && !b.isToDelete())
       {
-        GUI.startView(BuchungView.class.getName(), b);
+        GUI.startView(BuchungDetailView.class.getName(), b);
       }
       else if (!b.isToDelete())
       {
         SplitbuchungsContainer.init(b);
-        GUI.startView(SplitBuchungView.class.getName(), b);
+        GUI.startView(SplitbuchungDetailView.class.getName(), b);
       }
     }
     catch (RemoteException e)
