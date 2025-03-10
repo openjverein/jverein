@@ -16,16 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.rmi.RemoteException;
-import java.text.DecimalFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.TreeSet;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BICInput;
@@ -84,6 +74,7 @@ import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
 
 public class EinstellungControl extends AbstractControl
 {
