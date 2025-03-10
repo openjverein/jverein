@@ -72,10 +72,6 @@ public class KontensaldoListTablePart extends TablePart
         Object o = getSelection();
         if (o != null && o instanceof SaldoZeile[])
         {
-          Konto k = (Konto) Einstellungen.getDBService()
-              .createObject(Konto.class, null);
-          k.setNummer("");
-          k.setBezeichnung("Mehrere Konten");
           Double anfangsbestand = Double.valueOf(0d);
           Double einnahmen = Double.valueOf(0d);
           Double ausgaben = Double.valueOf(0d);
