@@ -16,16 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.rmi.RemoteException;
-import java.text.DecimalFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.TreeSet;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BICInput;
@@ -75,6 +65,16 @@ import de.willuhn.jameica.security.Wallet;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.kapott.hbci.sepa.SepaVersion;
+
+import java.rmi.RemoteException;
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.TreeSet;
 
 public class EinstellungControl extends AbstractControl
 {
@@ -314,6 +314,8 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput anhangspeichern;
   
   private CheckboxInput freiebuchungsklasse;
+
+  private CheckboxInput wirtschaftsplanung;
 
   private CheckboxInput summenAnlagenkonto;
 
@@ -881,7 +883,7 @@ public class EinstellungControl extends AbstractControl
     return geprueftsynchronisieren;
   }
 
-  public CheckboxInput getFreieBuchungsklasse() throws RemoteException 
+  public CheckboxInput getFreieBuchungsklasse() throws RemoteException
   {
     if (freiebuchungsklasse != null) 
     {
@@ -890,6 +892,17 @@ public class EinstellungControl extends AbstractControl
     freiebuchungsklasse = new CheckboxInput(Einstellungen.getEinstellung().getBuchungsklasseInBuchung());
     freiebuchungsklasse.setName("Keine feste Zuordnung von Buchungsklasse zu Buchungsart z.B. SKR 42");
     return freiebuchungsklasse;
+  }
+
+  public CheckboxInput getWirtschaftsplanung() throws RemoteException
+  {
+    if (wirtschaftsplanung != null)
+    {
+      return wirtschaftsplanung;
+    }
+    wirtschaftsplanung = new CheckboxInput(
+        Einstellungen.getEinstellung().getWirtschaftsplanung());
+    return wirtschaftsplanung;
   }
 
   public CheckboxInput getExterneMitgliedsnummer() throws RemoteException
@@ -2267,6 +2280,7 @@ public class EinstellungControl extends AbstractControl
         e.setAfaInJahresabschluss(true);
       e.setMitgliedsnummerAnzeigen((Boolean) nummeranzeigen.getValue());
       e.setMittelverwendung((Boolean) mittelverwendung.getValue());
+      e.setWirtschaftsplanung((Boolean) getWirtschaftsplanung().getValue());
 
       e.store();
       Einstellungen.setEinstellung(e);
