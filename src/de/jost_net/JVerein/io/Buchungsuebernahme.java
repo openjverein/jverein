@@ -207,10 +207,6 @@ public class Buchungsuebernahme
             + " " + zweck;
         for (Buchungsart ba : buchungsartList)
         {
-          if (Math.abs(u.getBetrag()) < 0.01d)
-          {
-            continue;
-          }
           if (match(ba.getSuchbegriff(), suchZweck, ba.getRegexp()))
           {
             b.setBuchungsartId(Long.parseLong(ba.getID()));
