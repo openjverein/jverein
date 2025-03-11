@@ -208,6 +208,40 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   }
 
   @Override
+  public String getSuchbegriff() throws RemoteException
+  {
+    String s = (String) getAttribute("suchbegriff");
+    if (s == null)
+    {
+      return "";
+    }
+    return s;
+  }
+
+  @Override
+  public void setRegexp(boolean regexp) throws RemoteException
+  {
+    setAttribute("regularexp", regexp);
+  }
+
+  @Override
+  public boolean getRegexp() throws RemoteException
+  {
+    Boolean b = (Boolean) getAttribute("regularexp");
+    if (b == null)
+    {
+      return false;
+    }
+    return b;
+  }
+
+  @Override
+  public void setSuchbegriff(String suchbegriff) throws RemoteException
+  {
+    setAttribute("suchbegriff", suchbegriff);
+  }
+
+  @Override
   public Buchungsart getSteuerBuchungsart() throws RemoteException
   {
     Long id = (Long) getAttribute("steuer_buchungsart");

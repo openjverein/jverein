@@ -45,6 +45,9 @@ public class BuchungsartDetailView extends AbstractView
     group.addLabelPair("Steuer Buchungsart", control.getSteuerBuchungsart());
     // TODO Jo Dokumentation nachpflegen
     group.addLabelPair("Status", control.getStatus());
+    group.addLabelPair("Suchbegriff", control.getSuchbegriff());
+    group.addLabelPair("Suchbegriff ist ein Regulärer Ausdruck",
+        control.getRegexp());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

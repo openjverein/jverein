@@ -60,4 +60,12 @@ public interface Buchungsart extends DBObject
 
   public void setAbschreibung(Boolean abschreibung) throws RemoteException;
 
+  public String getSuchbegriff() throws RemoteException;
+
+  public void setSuchbegriff(String suchbegriff) throws RemoteException;
+
+  public boolean getRegexp() throws RemoteException;
+
+  public void setRegexp(boolean regexp) throws RemoteException;
+
 }
