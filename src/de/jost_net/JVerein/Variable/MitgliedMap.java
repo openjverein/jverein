@@ -188,7 +188,7 @@ public class MitgliedMap
     map.put(MitgliedVar.VORNAME.getName(), mitglied.getVorname());
     map.put(MitgliedVar.VORNAMENAME.getName(),
         Adressaufbereitung.getVornameName(mitglied));
-    map.put(MitgliedVar.ZAHLERID.getName(), mitglied.getZahlerID());
+    map.put(MitgliedVar.ZAHLERID.getName(), mitglied.getVollZahlerID());
     map.put(MitgliedVar.ZAHLUNGSRHYTMUS.getName(),
         mitglied.getZahlungsrhythmus() + "");
     map.put(MitgliedVar.ZAHLUNGSRHYTHMUS.getName(),

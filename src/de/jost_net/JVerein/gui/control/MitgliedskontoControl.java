@@ -232,7 +232,7 @@ public class MitgliedskontoControl extends DruckMailControl
     }
     boolean mitVollzahler = false;
     if (getMitglied().getValue() != null
-        && ((Mitglied) getMitglied().getValue()).getZahlerID() != null)
+        && ((Mitglied) getMitglied().getValue()).getVollZahlerID() != null)
       mitVollzahler = true;
     ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray(mitVollzahler);
 
@@ -901,12 +901,12 @@ public class MitgliedskontoControl extends DruckMailControl
         list.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
         Mitglied m = (Mitglied) getMitglied().getValue();
         Mitglied z = (Mitglied) getZahler().getValue();
-        if (m.getZahlerID() != null)
+        if (m.getVollZahlerID() != null)
         {
           list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
           if (z == null)
           {
-            getZahler().setValue(m.getZahler());
+            getZahler().setValue(m.getVollZahler());
           }
         }
         else

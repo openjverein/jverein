@@ -269,7 +269,7 @@ public class MitgliederImport implements Importer
             m.setBeitragsgruppe(Integer.parseInt(bg.getID()));
             if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
             {
-              m.setZahlerID(null);
+              m.setVollZahlerID(null);
             }
           }
         }

@@ -300,7 +300,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
     //Wenn es bisher ein angehöriger war und jetzt nicht mehr zahlerid entfernen
     if(mitglied.getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER && beitragsGruppe.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
     {
-      mitglied.setZahlerID(null);
+      mitglied.setVollZahlerID(null);
       //Bei Zahlung über Vollzahler Zahlungsweg umstellen
       if(mitglied.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
         mitglied.setZahlungsweg(Einstellungen.getEinstellung().getZahlungsweg());

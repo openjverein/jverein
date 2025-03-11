@@ -108,7 +108,7 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
         if (getMitglied().getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
         {
           Mitglied m = Einstellungen.getDBService().createObject(
-              MitgliedImpl.class, getMitglied().getZahlerID().toString());
+              MitgliedImpl.class, getMitglied().getVollZahlerID().toString());
           if (m.getIban().length() == 0
               || m.getMandatDatum().equals(Einstellungen.NODATE))
           {
