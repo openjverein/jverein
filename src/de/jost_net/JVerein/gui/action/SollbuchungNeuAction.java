@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.Action;
@@ -53,7 +54,7 @@ public class SollbuchungNeuAction implements Action
               "Neues Mitglied bitte erst speichern. Dann können Zusatzbeträge aufgenommen werden.");
         }
         mk.setMitglied(m);
-        mk.setZahlungsweg(m.getZahlungsweg());
+        mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
         mk.setZahler(m.getZahler());
       }
     }
