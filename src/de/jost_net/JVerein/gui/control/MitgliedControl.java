@@ -1171,7 +1171,7 @@ public class MitgliedControl extends FilterControl
           }
           else
           {
-            getMitglied().setZahlerID(null);
+            getMitglied().setVollZahlerID(null);
             disableZahler();
             // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
             if (getMitglied().getID() != null)
