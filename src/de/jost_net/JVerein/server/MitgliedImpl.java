@@ -258,7 +258,10 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       }
     }
     // Ist das Mitglied Teil eines Familienverbandes?
-    if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER && getVollZahlerID() != null)
+    if (getBeitragsgruppe() != null
+        && getBeitragsgruppe()
+            .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
+        && getVollZahlerID() != null)
     {
       // ja, suche Vollzahler. Er darf nicht, bzw nicht früher, ausgetreten sein!
       DBIterator<Mitglied> zahler = Einstellungen.getDBService()
