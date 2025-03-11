@@ -474,6 +474,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       Spendenbescheinigung spb = getSpendenbescheinigung();
       Spendenart spa = (Spendenart) getSpendenart().getValue();
+      spb.setMitglied((Mitglied) getMitglied().getValue());
       spb.setSpendenart(spa.getKey());
       spb.setZeile1((String) getZeile1(false).getValue());
       spb.setZeile2((String) getZeile2().getValue());
@@ -1179,6 +1180,10 @@ public class SpendenbescheinigungControl extends DruckMailControl
           zeile5.setValue(spendenbescheinigung.getZeile5());
           zeile6.setValue(spendenbescheinigung.getZeile6());
           zeile7.setValue(spendenbescheinigung.getZeile7());
+        }
+        else
+        {
+          spendenbescheinigung.setMitglied(null);
         }
       }
       catch (Exception e)
