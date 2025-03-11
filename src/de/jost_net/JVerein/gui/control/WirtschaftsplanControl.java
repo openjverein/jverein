@@ -350,15 +350,6 @@ public class WirtschaftsplanControl extends AbstractControl
       }
     }
 
-    if (art == WirtschaftsplanImpl.EINNAHME)
-    {
-      getEinnahmen();
-    }
-    else
-    {
-      getAusgaben();
-    }
-
     uebersicht.updateSoll();
   }
 
