@@ -16,12 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.navigation;
 
-import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.schlevoigt.JVerein.gui.view.BuchungsTexteKorrigierenView;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AboutAction;
 import de.jost_net.JVerein.gui.action.BackupCreateAction;
@@ -91,6 +86,7 @@ import de.jost_net.JVerein.gui.view.SpendenbescheinigungListeView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.jost_net.JVerein.gui.view.StatistikMitgliedView;
+import de.jost_net.JVerein.gui.view.WirtschaftsplanListeView;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragListeView;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
@@ -103,6 +99,10 @@ import de.willuhn.jameica.gui.NavigationItem;
 import de.willuhn.jameica.gui.extension.Extendable;
 import de.willuhn.jameica.gui.extension.Extension;
 import de.willuhn.logging.Logger;
+
+import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class MyExtension implements Extension
 {
@@ -250,7 +250,12 @@ public class MyExtension implements Extension
           new StartViewAction(JahresabschlussListeView.class),
           "office-calendar.png"));
       jverein.addChild(buchfuehrung);
-      
+      if (Einstellungen.getEinstellung().getWirtschaftsplanung())
+      {
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Wirtschaftsplanung",
+            new StartViewAction(WirtschaftsplanListeView.class), "x-office-spreadsheet.png"));
+      }
+
       NavigationItem abrechnung = null;
       abrechnung = new MyItem(abrechnung, "Abrechnung", null);
       abrechnung.addChild(new MyItem(abrechnung, "Abrechnungsläufe",
