@@ -916,32 +916,12 @@ public class SollbuchungControl extends DruckMailControl
     {
       try
       {
-        @SuppressWarnings("unchecked")
-        ArrayList<Zahlungsweg> list = (ArrayList<Zahlungsweg>) getZahlungsweg()
-            .getList();
-        list.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
         Mitglied m = (Mitglied) getMitglied().getValue();
         Mitglied z = (Mitglied) getZahler().getValue();
-
-        if (m != null && m.getZahlerID() != null)
+        if (m != null && z == null)
         {
-          list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+          getZahler().setValue(m.getZahler());
         }
-        if (m != null && m.getZahlerID() != null && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
-        {
-          if (z == null)
-          {
-            getZahler().setValue(m.getVollZahler());
-          }
-        }
-        else
-        {
-          if (z == null)
-          {
-            getZahler().setValue(getMitglied().getValue());
-          }
-        }
-        getZahlungsweg().setList(list);
       }
       catch (RemoteException e)
       {
