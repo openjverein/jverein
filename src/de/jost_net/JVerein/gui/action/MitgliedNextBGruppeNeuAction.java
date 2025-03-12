@@ -16,11 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.view.MitgliedNextBGruppeView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.logging.Logger;
 
 /**
  * @author Rolf Mamat
@@ -38,7 +41,22 @@ public class MitgliedNextBGruppeNeuAction implements Action
     public void handleAction(Object context) 
     {
         Mitglied mitglied = control.getMitglied();
-        GUI.startView(MitgliedNextBGruppeView.class.getName(), mitglied);
+        try
+        {
+          if (mitglied.isNewObject())
+          {
+            GUI.getView().setErrorText(
+                "Bitte erst das Mitglied speichern bevor eine nächste Beitragsgruppe angelegt werden kann");
+          }
+          else
+          {
+            GUI.startView(MitgliedNextBGruppeView.class.getName(), mitglied);
+          }
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
     }
 
 }

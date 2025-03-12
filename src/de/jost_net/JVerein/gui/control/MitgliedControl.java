@@ -1139,7 +1139,6 @@ public class MitgliedControl extends FilterControl
           if (bg != null
               && bg.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
           {
-            getZukuenftigeBeitraegeView().setVisible(false);
             if (zahler != null)
             {
               zahler.setEnabled(true);
@@ -1174,11 +1173,6 @@ public class MitgliedControl extends FilterControl
             {
               zahler.setPreselected(null);
               zahler.setEnabled(false);
-            }
-            // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
-            if (getMitglied().getID() != null)
-            {
-              getZukuenftigeBeitraegeView().setVisible(true);
             }
           }
           refreshFamilienangehoerigeTable();
