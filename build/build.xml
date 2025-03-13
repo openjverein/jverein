@@ -17,6 +17,12 @@
                       scopes="compile,runtime"
                       layout="{artifactId}-{version}.{extension}" />
     </resolver:resolve>
+    <mkdir dir="lib.test" />
+    <resolver:resolve failonmissingattachments="true">
+      <resolver:files dir="lib.test"
+                      scopes="test"
+                      layout="{artifactId}-{version}.{extension}" />
+    </resolver:resolve>
   </target>
 
   <target name="init" description="inits the build" depends="resolve-dependencies">
