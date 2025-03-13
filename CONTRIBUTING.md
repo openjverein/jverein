@@ -20,16 +20,15 @@ Das Handbuch ist im Repository https://github.com/openjverein/jverein-Book. Der 
 Für die OpenJVerein-Entwicklung werden benötigt
 
 - Eclipse/IntelliJ IDEA
-- Java 17 (JDK)
+- Java 17+ (JDK)
 
-Es wird Java 17 (keine höhere Version) benötigt, damit die Kompatibilität zu Jameica gewährleistet ist und keine 
-APIs verwendet werden, die in späteren Java Versionen eingeführt wurden.
+Es wird Java 17 oder eine höhere Version benötigt, damit die Kompatibilität zu Jameica gewährleistet ist.
 
 # Build und Test
 Build und Test sind hier beschrieben: https://www.willuhn.de/wiki/doku.php?id=develop:eclipse
 
 # Einrichtung der IDE
-Um alle externen Abhängigkeiten bereitzustellen, muss initial das Ant-Build-Scripts mit dem Parameter `resolve-dependencies` ausgeführt 
+Um alle externen Abhängigkeiten bereitzustellen, muss initial das Ant-Build-Script mit dem Parameter `resolve-dependencies` ausgeführt 
 werden. Dieses lädt die benötigten Bibliotheken herunter und kopiert sie in das Verzeichnis `lib`.
 
 ```shell
