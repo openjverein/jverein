@@ -42,9 +42,9 @@ public class VollzahlerInput
       auswahl = AbstractInputAuswahl.ComboBox;
     }
     String suche = "";
-    if (mitglied.getZahlerID() != null)
+    if (mitglied.getVollZahlerID() != null)
     {
-      suche = mitglied.getZahlerID().toString();
+      suche = mitglied.getVollZahlerID().toString();
     }
     Mitglied zahlmitglied = (Mitglied) Einstellungen.getDBService()
         .createObject(Mitglied.class, suche);

@@ -34,7 +34,7 @@ public class Update0382 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     // Liquibase id=114
-    execute(alterColumnNotNull("kursteilnehmer",
+    execute(alterColumnSetNotNull("kursteilnehmer",
         new Column("blz", COLTYPE.VARCHAR, 8, null, true, false)));
   }
 }

@@ -608,6 +608,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
         container.addPart(control.getMitgliedSekundaereBeitragsgruppeView());
       }
 
+      container.addPart(control.getZukuenftigeBeitraegeView());
+
       // Wenn es mindestens eine Beitragsgruppe mit Beitragsart
       // "Familienangehöriger" gibt, zeige Familienverband-Part.
       // Dieser Familien-Part soll über die komplette Breite angezeigt werden,
@@ -620,7 +622,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
       {
         container.addPart(control.getFamilienverband());
       }
-      container.addPart(control.getZukuenftigeBeitraegeView());
     }
   }
 

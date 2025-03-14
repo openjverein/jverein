@@ -130,4 +130,46 @@ public class LastschriftMap
     return map;
   }
 
+  public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
+  {
+    Map<String, Object> map = null;
+    if (inMap == null)
+    {
+      map = new HashMap<>();
+    }
+    else
+    {
+      map = inMap;
+    }
+
+    map.put(LastschriftVar.ABRECHNUNGSLAUF_NR.getName(), "99");
+    map.put(LastschriftVar.ABRECHNUNGSLAUF_DATUM.getName(), "01.01.2025");
+    map.put(LastschriftVar.ABRECHNUNGSLAUF_FAELLIGKEIT.getName(), "10.01.2025");
+    map.put(LastschriftVar.ANREDE_DU.getName(), "Hallo Willi,");
+    map.put(LastschriftVar.ANREDE_FOERMLICH.getName(),
+        "Sehr geehrter Herr Dr. Dr. Wichtig,");
+    map.put(LastschriftVar.PERSONENART.getName(), "n");
+    map.put(LastschriftVar.GESCHLECHT.getName(), GeschlechtInput.MAENNLICH);
+    map.put(LastschriftVar.ANREDE.getName(), "Herrn");
+    map.put(LastschriftVar.TITEL.getName(), "Dr. Dr.");
+    map.put(LastschriftVar.NAME.getName(), "Wichtig");
+    map.put(LastschriftVar.VORNAME.getName(), "Willi");
+    map.put(LastschriftVar.STRASSE.getName(), "Bahnhofstr. 22");
+    map.put(LastschriftVar.ADRESSSIERUNGSZUSATZ.getName(),
+        "Hinterhof bei Müller");
+    map.put(LastschriftVar.PLZ.getName(), "12345");
+    map.put(LastschriftVar.ORT.getName(), "Testenhausen");
+    map.put(LastschriftVar.STAAT.getName(), "Deutschland");
+    map.put(LastschriftVar.EMAIL.getName(), "willi.wichtig@email.de");
+    map.put(LastschriftVar.MANDATID.getName(), "12345");
+    map.put(LastschriftVar.MANDATDATUM.getName(), "01.01.2024");
+    map.put(LastschriftVar.BIC.getName(), "XXXXXXXXXXX");
+    map.put(LastschriftVar.IBAN.getName(), "DE89370400440532013000");
+    map.put(LastschriftVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
+    map.put(LastschriftVar.VERWENDUNGSZWECK.getName(), "Zweck");
+    map.put(LastschriftVar.BETRAG.getName(), "23,80");
+    map.put(LastschriftVar.EMPFAENGER.getName(),
+        "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
+    return map;
+  }
 }

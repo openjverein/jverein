@@ -54,6 +54,7 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
+import de.jost_net.JVerein.gui.input.SollbuchungAuswahlInput;
 import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
@@ -74,6 +75,9 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -150,7 +154,7 @@ public class BuchungsControl extends AbstractControl
 
   private Input art;
 
-  private TextInput sollbuchung;
+  private DialogInput sollbuchung;
 
   private TextAreaInput kommentar;
 
@@ -570,22 +574,58 @@ public class BuchungsControl extends AbstractControl
     return verzicht;
   }
 
-  public TextInput getSollbuchung() throws RemoteException
+  public DialogInput getSollbuchung() throws RemoteException
   {
-
-    if (sollbuchung != null && !sollbuchung.getControl().isDisposed())
-    {
-      return sollbuchung;
-    }
-
-    Sollbuchung sollb = getBuchung().getSollbuchung();
-    sollbuchung = new TextInput(
-        sollb != null
-            ? Adressaufbereitung.getNameVorname(sollb.getMitglied()) + ", "
-                + new JVDateFormatTTMMJJJJ().format(sollb.getDatum()) + ", "
-                + Einstellungen.DECIMALFORMAT.format(sollb.getBetrag())
-            : "");
-    sollbuchung.disable();
+    sollbuchung = new SollbuchungAuswahlInput(getBuchung())
+        .getSollbuchungAuswahl();
+    sollbuchung.addListener(event ->
+      {
+      try
+      {
+        String name = (String) getName().getValue();
+        String zweck1 = (String) getZweck().getValue();
+        if (sollbuchung.getValue() != null && name.length() == 0
+            && zweck1.length() == 0)
+        {
+          if (sollbuchung.getValue() instanceof Sollbuchung)
+          {
+            Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
+            getName()
+                .setValue(Adressaufbereitung.getNameVorname(sb.getMitglied()));
+            getBetrag().setValue(sb.getBetrag());
+            getZweck().setValue(sb.getZweck1());
+            getDatum().setValue(sb.getDatum());
+          }
+          if (sollbuchung.getValue() instanceof Mitglied)
+          {
+            Mitglied m2 = (Mitglied) sollbuchung.getValue();
+            getName().setValue(Adressaufbereitung.getNameVorname(m2));
+            getDatum().setValue(new Date());
+          }
+        }
+        if (sollbuchung.getValue() instanceof Sollbuchung)
+        {
+          Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
+          ArrayList<SollbuchungPosition> sbpList = sb
+              .getSollbuchungPositionList();
+          if (getBuchungsart().getValue() == null && sbpList.size() > 0)
+          {
+            getBuchungsart().setValue(
+                sbpList.get(0).getBuchungsart());
+          }
+          if (isBuchungsklasseActive()
+              && getBuchungsklasse().getValue() == null && sbpList.size() > 0)
+          {
+            getBuchungsklasse().setValue(
+                sbpList.get(0).getBuchungsklasse());
+          }
+        }
+      }
+      catch (RemoteException e)
+      {
+          Logger.error("Fehler", e);
+        }
+    });
     return sollbuchung;
   }
 

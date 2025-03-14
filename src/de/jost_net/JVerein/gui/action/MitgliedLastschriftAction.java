@@ -51,11 +51,11 @@ public class MitgliedLastschriftAction implements Action
       m = (Mitglied) context;
 
       // pruefe wer der Zahler ist
-      if (m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER && m.getZahlerID() != null)
+      if (m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER && m.getVollZahlerID() != null)
       {
         // Mitglied ist Familienangehoeriger, hat also anderen Zahler
         mZ = (Mitglied) Einstellungen.getDBService().createObject(
-            Mitglied.class, m.getZahlerID() + "");
+            Mitglied.class, m.getVollZahlerID() + "");
 
         if (!AbrechnungSEPAControl.confirmDialog("Familienangehöriger",
             "Dieses Mitglied ist ein Familienangehöriger.\n\n"

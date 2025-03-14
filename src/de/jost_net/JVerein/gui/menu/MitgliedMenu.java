@@ -79,11 +79,11 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedInZwischenablageKopierenAction(), "edit-copy.png"));
     addItem(new CheckedContextMenuItem("Eigenschaften",
         new MitgliedEigenschaftZuordnungAction(), "document-properties.png"));
-    addItem(new CheckedContextMenuItem("Zusatzbeträge zuweisen",
-        new MitgliedZusatzbetraegeZuordnungAction(), "coins.png"));
+    addItem(new CheckedContextMenuItem("Zusatzbetrag zuordnen",
+        new MitgliedZusatzbetraegeZuordnungAction(), "euro-sign.png"));
     if (Einstellungen.getEinstellung().getArbeitseinsatz() && !(detailaction instanceof NichtMitgliedDetailAction))
     {
-      addItem(new CheckedContextMenuItem("Arbeitseinsätze zuweisen",
+      addItem(new CheckedContextMenuItem("Arbeitseinsatz zuordnen",
           new MitgliedArbeitseinsatzZuordnungAction(), "screwdriver.png"));
     }
     if (detailaction instanceof NichtMitgliedDetailAction)
@@ -155,7 +155,7 @@ public class MitgliedMenu extends ContextMenu
             m.setEintritt("");
             m.setAustritt("");
             m.setKuendigung("");
-            m.setZahlerID(null);
+            m.setVollZahlerID(null);
             DBService service = Einstellungen.getDBService();
             // Sekundäre Beitragsgruppen löschen
             DBIterator<SekundaereBeitragsgruppe> sit = service

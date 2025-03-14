@@ -417,4 +417,58 @@ public class SpendenbescheinigungMap
     }
     return map;
   }
+
+  public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
+  {
+    Map<String, Object> map = null;
+    if (inMap == null)
+    {
+      map = new HashMap<>();
+    }
+    else
+    {
+      map = inMap;
+    }
+
+    map.put(SpendenbescheinigungVar.ANREDE.getName(), "Herrn");
+    map.put(SpendenbescheinigungVar.EMPFAENGER.getName(),
+        "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
+    map.put(SpendenbescheinigungVar.BETRAG.getName(), "300,00");
+    map.put(SpendenbescheinigungVar.BETRAGINWORTEN.getName(), "dreihundert");
+    map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(), "10.01.2025");
+    map.put(SpendenbescheinigungVar.SPENDEART.getName(), "Geldspende");
+    map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), "01.01.2025");
+    map.put(SpendenbescheinigungVar.SPENDENZEITRAUM.getName(),
+        "01.01.2025 bis 01.03.2025");
+    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(), "X");
+    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_JA.getName(), "X");
+    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(),
+        (char) 113);
+    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE.getName(), "Wichtig");
+    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_DATEN.getName(), "Willi");
+    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_ART.getName(), "Spende");
+    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_VERZICHT.getName(), "nein");
+    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_BETRAG.getName(), "300,00");
+    map.put(SpendenbescheinigungVar.BEZEICHNUNGSACHZUWENDUNG.getName(),
+        "Waschmaschine");
+    map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
+        "Privatvermögen");
+    map.put(SpendenbescheinigungVar.UNTERLAGENWERTERMITTUNG.getName(), "X");
+    map.put(SpendenbescheinigungVar.FINANZAMT.getName(), "Testhausen");
+    map.put(SpendenbescheinigungVar.STEUER_NR.getName(), "14/814/70099");
+    map.put(SpendenbescheinigungVar.DATUM_BESCHEID.getName(), "01.06.2025");
+    map.put(SpendenbescheinigungVar.VERANLAGUNGSZEITRAUM.getName(),
+        "2022 bis 2024");
+    map.put(SpendenbescheinigungVar.ZWECK.getName(), "Spende");
+    map.put(SpendenbescheinigungVar.UNTERSCHRIFT.getName(), "Unterschrift");
+    map.put(SpendenbescheinigungVar.ZEILE1.getName(), "Herr");
+    map.put(SpendenbescheinigungVar.ZEILE2.getName(), "Willi Wichtig");
+    map.put(SpendenbescheinigungVar.ZEILE3.getName(), "Bahnhofstr. 22");
+    map.put(SpendenbescheinigungVar.ZEILE4.getName(), "12345 Testenhausen");
+    map.put(SpendenbescheinigungVar.ZEILE5.getName(), "");
+    map.put(SpendenbescheinigungVar.ZEILE6.getName(), "");
+    map.put(SpendenbescheinigungVar.ZEILE7.getName(), "");
+
+    return map;
+  }
 }
