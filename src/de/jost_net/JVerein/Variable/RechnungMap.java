@@ -132,7 +132,7 @@ public class RechnungMap
     map.put(RechnungVar.ANREDE.getName(), re.getAnrede());
     map.put(RechnungVar.ANREDE_DU.getName(),
         Adressaufbereitung.getAnredeDu(re));
-    map.put(RechnungVar.ANREDE_DU.getName(),
+    map.put(RechnungVar.ANREDE_FOERMLICH.getName(),
         Adressaufbereitung.getAnredeFoermlich(re));
     map.put(RechnungVar.TITEL.getName(), re.getTitel());
     map.put(RechnungVar.NAME.getName(), re.getName());

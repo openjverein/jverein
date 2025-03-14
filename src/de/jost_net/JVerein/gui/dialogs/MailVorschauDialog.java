@@ -125,7 +125,7 @@ public class MailVorschauDialog extends AbstractDialog<Object>
     container.addLabelPair("Betreff", betreff);
     TextAreaInput body = new TextAreaInput(em.evalText(text));
     body.setEnabled(false);
-    container.addInput(body);
+    container.addLabelPair("Text", body);
 
     if (control instanceof MailControl && ((MailControl) control).getAnhang()
         .getItems().size() > 0)
