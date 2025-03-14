@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
@@ -933,7 +934,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
             context.put("decimalformat", Einstellungen.DECIMALFORMAT);
             context.put("email", m.getEmail());
 
-            Map<String, Object> map = new MitgliedMap().getMap(m, null);
+            Map<String, Object> map = new SpendenbescheinigungMap()
+                .getMap(spba[i], null);
+            map = new MitgliedMap().getMap(m, map);
             map = new AllgemeineMap().getMap(map);
             VarTools.add(context, map);
 
