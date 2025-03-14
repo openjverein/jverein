@@ -60,7 +60,10 @@ public class NewAction implements Action
         // sind, wird die aktuelle View nicht in die History aufgenommen.
         // Dadurch führt der Zurückbutton auch bei "Speichern und neu" zur Liste
         // zurück.
-        GUI.getCurrentView().setCurrentObject(object);
+        if (GUI.getCurrentView().getClass().equals(viewClass))
+        {
+          GUI.getCurrentView().setCurrentObject(object);
+        }
       }
       GUI.startView(viewClass, object);
     }

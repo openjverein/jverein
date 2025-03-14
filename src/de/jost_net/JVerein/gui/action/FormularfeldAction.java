@@ -76,7 +76,10 @@ public class FormularfeldAction implements Action
     // Wenn CurrentObject und View von aktueller und nächster View gleich
     // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
     // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
-    GUI.getCurrentView().setCurrentObject(ff);
-    GUI.startView(FormularfeldDetailView.class.getName(), ff);
+    if (GUI.getCurrentView().getClass().equals(FormularfeldDetailView.class))
+    {
+      GUI.getCurrentView().setCurrentObject(ff);
+    }
+    GUI.startView(FormularfeldDetailView.class, ff);
   }
 }

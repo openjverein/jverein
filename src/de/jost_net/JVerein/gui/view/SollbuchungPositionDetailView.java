@@ -20,12 +20,15 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.SollbuchungPositionControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.util.ApplicationException;
 
 public class SollbuchungPositionDetailView extends AbstractView
 {
@@ -58,21 +61,40 @@ public class SollbuchungPositionDetailView extends AbstractView
       @Override
       public void handleAction(Object context)
       {
-        if (control.handleStore())
+        try
         {
-          try
-          {
-            GUI.startView(SollbuchungDetailView.class.getName(),
-                control.getPosition().getSollbuchung());
-          }
-          catch (RemoteException e)
-          {
-            //
-          }
+          control.handleStore();
+          GUI.startView(SollbuchungDetailView.class.getName(),
+              control.getPosition().getSollbuchung());
           GUI.getStatusBar().setSuccessText("Sollbuchungsposition gespeichert");
+        }
+        catch (ApplicationException | RemoteException e)
+        {
+          GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
     }, null, true, "document-save.png");
+
+    buttons.addButton(new Button("Speichern und neu", context -> {
+      try
+      {
+        control.handleStore();
+
+        new SollbuchungPositionNeuAction()
+            .handleAction(control.getPosition().getSollbuchung());
+        GUI.getStatusBar().setSuccessText("Sollbuchungsposition gespeichert");
+      }
+      catch (ApplicationException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
+      catch (RemoteException e)
+      {
+        GUI.getStatusBar()
+            .setErrorText("Fehler beim Speichern der Sollbuchungsposition: "
+                + e.getMessage());
+      }
+    }, null, false, "go-next.png"));
     buttons.paint(this.getParent());
   }
 }

@@ -76,7 +76,10 @@ public class NichtMitgliedDetailAction implements Action
     // Wenn CurrentObject und View von aktueller und nächster View gleich
     // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
     // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
-    GUI.getCurrentView().setCurrentObject(m);
-    GUI.startView(new NichtMitgliedDetailView(), m);
+    if (GUI.getCurrentView().getClass().equals(NichtMitgliedDetailView.class))
+    {
+      GUI.getCurrentView().setCurrentObject(m);
+    }
+    GUI.startView(NichtMitgliedDetailView.class, m);
   }
 }
