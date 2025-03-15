@@ -24,6 +24,7 @@ import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
+import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -99,6 +100,9 @@ public class MahnungMailView extends AbstractView
     buttons
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
         control, false, "edit-copy.png"));
+    buttons.addButton(
+        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+            control, false, "document-new.png"));
     /*buttons.addButton(new Button("Export", new MitgliedskontoExportAction(
         EXPORT_TYP.MAHNUNGEN, getCurrentObject()), control, false, "document-save.png"));*/
     buttons.addButton(control.getStartMahnungButton(this.getCurrentObject()));
