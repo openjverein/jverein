@@ -101,8 +101,21 @@ public class MailVorlageControl extends AbstractControl
   {
     try
     {
+      String betreff = (String) getBetreff(false).getValue();
+      if (betreff == null || betreff.isEmpty())
+      {
+        throw new ApplicationException("Bitte Betreff eingeben!");
+      }
       MailVorlage mv = getMailVorlage();
-      mv.setBetreff((String) getBetreff(false).getValue());
+      DBIterator<MailVorlage> vorlagen = Einstellungen.getDBService()
+          .createList(MailVorlage.class);
+      vorlagen.addFilter("betreff = ?", betreff);
+      if (vorlagen.hasNext() && mv.isNewObject())
+      {
+        throw new ApplicationException(
+            "Es existiert bereits eine Vorlage mit diesem Betreff!");
+      }
+      mv.setBetreff(betreff);
       mv.setTxt((String) getTxt().getValue());
       mv.store();
       GUI.getStatusBar().setSuccessText("MailVorlage gespeichert");
