@@ -62,6 +62,15 @@ public class SollbuchungPositionNeuAction implements Action
       throw new ApplicationException("Keine Sollbuchung ausgewählt");
     }
 
+    // Wenn CurrentObject und View von aktueller und nächster View gleich
+    // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
+    // führt der Zurückbutton auch bei "Speichern und neu" zur Liste
+    // zurück.
+    if (GUI.getCurrentView().getClass()
+        .equals(SollbuchungPositionDetailView.class))
+    {
+      GUI.getCurrentView().setCurrentObject(position);
+    }
     GUI.startView(SollbuchungPositionDetailView.class.getName(), position);
   }
 }

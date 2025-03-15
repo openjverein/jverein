@@ -16,14 +16,19 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.FormularfeldAction;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.util.ApplicationException;
 
 public class FormularfeldDetailView extends AbstractView
 {
@@ -54,9 +59,33 @@ public class FormularfeldDetailView extends AbstractView
       @Override
       public void handleAction(Object context)
       {
-        control.handleStore();
+        try
+        {
+          control.handleStore();
+          GUI.startPreviousView();
+          GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
+        }
+        catch (ApplicationException e)
+        {
+          GUI.getStatusBar().setErrorText(e.getMessage());
+        }
       }
     }, null, true, "document-save.png");
+
+    buttons.addButton(new Button("Speichern und neu", context -> {
+      try
+      {
+        control.handleStore();
+
+        new FormularfeldAction().handleAction(ff.getFormular());
+        GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
+      }
+      catch (ApplicationException | RemoteException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
+    }, null, false, "go-next.png"));
+
     buttons.paint(this.getParent());
   }
 }
