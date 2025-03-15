@@ -546,6 +546,10 @@ public class AbrechnungSEPAControl extends AbstractControl
       fd.setFileName(new Dateiname("abbuchungRCUR", "",
           Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
       pdffileRCUR = fd.open();
+      if (pdffileRCUR == null)
+      {
+        return;
+      }
       File file = new File(pdffileRCUR);
       // Wir merken uns noch das Verzeichnis fürs nächste mal
       settings.setAttribute("lastdir.pdf", file.getParent());
@@ -605,7 +609,8 @@ public class AbrechnungSEPAControl extends AbstractControl
               Logger.error("error during operation", e);
               ae = new ApplicationException("Fehler beim Abrechnungslauf", e);
             }
-            GUI.getStatusBar().setErrorText(ae.getMessage());
+            GUI.getStatusBar()
+                .setErrorText(ae.getMessage() + ": " + e.getMessage());
             throw ae;
           }
         }
