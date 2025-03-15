@@ -76,7 +76,7 @@
     </path>
   </target>
 
-  <target name="compile" depends="init, clean">
+  <target name="compile" depends="init">
     <mkdir dir="${class.dir}" />
     <javac debug="true" includeantruntime="false" debuglevel="lines,vars,source" release="${define.java.version}"
            encoding="${define.encoding}" deprecation="true" destdir="${class.dir}" srcdir="${src.dir}">
@@ -179,7 +179,7 @@
     <copy file="${project.zipdir}/${define.jarfilename}" tofile="releases/jverein-lib.jar" />
   </target>
 
-  <target name="all" depends="init,jar,javadoc,src,clean" description="Build an official openjverein release">
+  <target name="all" depends="init,jar,javadoc,src" description="Build an official openjverein release">
     <echo message="SELECTED_VERSION=${plugin.version}" />
     <echo message="SELECTED_PATH=${project.release}/${project.zipfilename}" />
     <echo message="SELECTED_FILENAME=${project.zipfilename}" />
