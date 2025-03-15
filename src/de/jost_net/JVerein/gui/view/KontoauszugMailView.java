@@ -23,6 +23,7 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
+import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.server.MitgliedImpl;
@@ -106,6 +107,9 @@ public class KontoauszugMailView extends AbstractView
     buttons
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
         control, false, "edit-copy.png"));
+    buttons.addButton(
+        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+            control, false, "document-new.png"));
     buttons.addButton(control.getStartKontoauszugButton(
         this.getCurrentObject(), control));
     buttons.paint(this.getParent());

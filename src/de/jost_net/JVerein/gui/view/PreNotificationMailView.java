@@ -31,6 +31,7 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
+import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.PreNotificationControl;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -94,6 +95,9 @@ public class PreNotificationMailView extends AbstractView
     buttons1
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
         control, false, "edit-copy.png"));
+    buttons1.addButton(
+        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+            control, false, "document-new.png"));
     buttons1.addButton(control.getStartButton(this.getCurrentObject()));
     addButtonArea(buttons1, grtabMailPDF.getComposite());
 

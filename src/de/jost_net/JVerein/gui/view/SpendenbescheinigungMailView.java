@@ -24,6 +24,7 @@ import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
+import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
 import de.jost_net.JVerein.server.MitgliedImpl;
@@ -100,6 +101,9 @@ public class SpendenbescheinigungMailView extends AbstractView
     buttons
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
         control, false, "edit-copy.png"));
+    buttons.addButton(
+        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+            control, false, "document-new.png"));
     buttons.addButton(control.getStartButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }
