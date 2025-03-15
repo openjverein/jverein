@@ -38,10 +38,12 @@ public class BuchungDetailView extends AbstractView
   public void bind() throws Exception
   {
     Kontenfilter art = Kontenfilter.GELDKONTO;
-    if (this.getCurrentObject() != null && this.getCurrentObject() instanceof Buchung)
+    if (this.getCurrentObject() != null
+        && this.getCurrentObject() instanceof Buchung)
     {
       Buchung bu = (Buchung) this.getCurrentObject();
-      if (bu.getKonto() != null && bu.getKonto().getKontoArt() == Kontoart.ANLAGE)
+      if (bu.getKonto() != null
+          && bu.getKonto().getKontoArt() == Kontoart.ANLAGE)
         art = Kontenfilter.ANLAGEKONTO;
     }
     final BuchungsControl control = new BuchungsControl(this, art);
@@ -63,8 +65,7 @@ public class BuchungDetailView extends AbstractView
         // Bei Splitbuchungen nach dem Speichern zurück zu Splitübersicht
         if (!control.getBuchung().getSpeicherung())
         {
-          GUI.startView(SplitbuchungDetailView.class.getName(),
-              SplitbuchungsContainer.getMaster());
+          GUI.startPreviousView();
         }
       }
       catch (Exception e)
@@ -89,8 +90,7 @@ public class BuchungDetailView extends AbstractView
                   .doubleValue()) >= .01d)
             new SplitbuchungNeuAction().handleAction(context);
           else
-            GUI.startView(SplitbuchungDetailView.class.getName(),
-                SplitbuchungsContainer.getMaster());
+            GUI.startPreviousView();
         }
         else
         {

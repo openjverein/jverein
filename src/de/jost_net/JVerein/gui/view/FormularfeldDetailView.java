@@ -62,10 +62,10 @@ public class FormularfeldDetailView extends AbstractView
         try
         {
           control.handleStore();
-          GUI.startView(FormularDetailView.class, ff.getFormular());
+          GUI.startPreviousView();
           GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
         }
-        catch (ApplicationException | RemoteException e)
+        catch (ApplicationException e)
         {
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
