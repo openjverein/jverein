@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.menu.MailVorlageMenu;
+import de.jost_net.JVerein.gui.view.IMailText;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -33,7 +34,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailVorlageControl extends AbstractControl
+public class MailVorlageControl extends AbstractControl implements IMailText
 {
 
   private TablePart mailvorlageList;
@@ -75,6 +76,7 @@ public class MailVorlageControl extends AbstractControl
     return betreff;
   }
 
+  @Override
   public String getBetreffString()
   {
     return (String) betreff.getValue();
@@ -92,6 +94,7 @@ public class MailVorlageControl extends AbstractControl
     return txt;
   }
 
+  @Override
   public String getTxtString()
   {
     return (String) txt.getValue();
