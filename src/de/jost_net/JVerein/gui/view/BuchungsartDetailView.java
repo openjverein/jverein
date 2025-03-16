@@ -46,7 +46,7 @@ public class BuchungsartDetailView extends AbstractView
     // TODO Jo Dokumentation nachpflegen
     group.addLabelPair("Status", control.getStatus());
     group.addLabelPair("Suchbegriff", control.getSuchbegriff());
-    group.addLabelPair("Suchbegriff ist ein Regulärer Ausdruck",
+    group.addLabelPair("Suchbegriff ist ein regulärer Ausdruck",
         control.getRegexp());
 
     ButtonArea buttons = new ButtonArea();
