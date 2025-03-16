@@ -29,10 +29,10 @@ public class SpbAdressaufbereitung
   public static void adressaufbereitung(Mitglied m, Spendenbescheinigung spb)
       throws RemoteException
   {
+    spb.setMitglied(m);
     ArrayList<String> adresse = new ArrayList<>();
     if (m.getKtoiName() == null || m.getKtoiName().length() == 0)
     {
-      spb.setMitglied(m);
       adresse.add(m.getAnrede());
       adresse.add(Adressaufbereitung.getVornameName(m));
       if (m.getAdressierungszusatz() != null
