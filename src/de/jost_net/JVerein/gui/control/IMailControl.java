@@ -15,14 +15,14 @@
  * www.jverein.de
  **********************************************************************/
 
-package de.jost_net.JVerein.gui.view;
+package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 
 /**
  * Interface für den zugriff auf Mail Betreff und Text
  */
-public interface IMailText
+public interface IMailControl
 {
 
   /**

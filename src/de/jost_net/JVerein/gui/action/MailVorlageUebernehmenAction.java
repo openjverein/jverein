@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.IMailText;
+import de.jost_net.JVerein.gui.control.IMailControl;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
@@ -36,15 +36,15 @@ public class MailVorlageUebernehmenAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (!(context instanceof IMailText))
+    if (!(context instanceof IMailControl))
     {
       throw new ApplicationException("Keine Mail Information vorhanden!");
     }
 
     try
     {
-      String betreff = ((IMailText) context).getBetreffString();
-      String text = ((IMailText) context).getTxtString();
+      String betreff = ((IMailControl) context).getBetreffString();
+      String text = ((IMailControl) context).getTxtString();
       if (betreff == null || betreff.isEmpty())
       {
         throw new ApplicationException("Bitte Betreff eingeben!");
