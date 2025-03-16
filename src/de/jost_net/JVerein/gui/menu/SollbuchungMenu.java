@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.RechnungMultiNeuAction;
 import de.jost_net.JVerein.gui.action.RechnungNeuAction;
 import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
@@ -57,6 +58,8 @@ public class SollbuchungMenu extends ContextMenu
         new SollbuchungRechnungAction(), "file-invoice.png"));
     addItem(new OhneRechnungItem("Rechnung(en) erstellen",
         new RechnungNeuAction(), "file-invoice.png"));
+    addItem(new OhneRechnungItem("Multi Rechnung erstellen",
+        new RechnungMultiNeuAction(), "file-invoice.png"));
   }
 
   private static class SollOhneIstItem extends CheckedContextMenuItem
