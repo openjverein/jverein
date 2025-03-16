@@ -4,6 +4,7 @@ bin.test
 releases
 lib
 lib.test
+lib.src
 nbproject/private/
 .DS_Store
 *.zip
