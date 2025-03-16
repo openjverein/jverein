@@ -38,8 +38,14 @@ ant --file build/build.xml resolve-dependencies
 Sowohl IntelliJ als auch Eclipse enthalten eine Unterstützung für Ant-Build-Scripts, die es ermöglicht, das 
 Build-Script über die IDE auszuführen.
 
-- Eclipse: https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftasks-ant-running.htm
-- IntelliJ: https://www.jetbrains.com/help/idea/ant.html
+- Eclipse:
+  - siehe [Running Ant Buildfiles](https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftasks-ant-running.htm)
+  und im Schritt 3 `resolve-dependencies` auswählen.
+  - Alternativ über die [Ant View](https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Freference%2Fref-antview.htm) die
+  build.xml hinzufügen, danach resolve-dependencies anklicken und auf den grünen Play-Button klicken.
+- IntelliJ:
+  - Plugin wie unter [Getting started with Ant](https://www.jetbrains.com/help/idea/ant.html) beschrieben, installieren und wie in der dort verlinkten früheren 
+    Dokumentation beschrieben, benutzen.
 ## Eclipse 
 Die Einrichtung von Eclipse ist hier: https://www.willuhn.de/wiki/doku.php?id=develop:eclipse und hier: https://www.willuhn.de/wiki/doku.php?id=develop:jameica:faq beschrieben.
 
