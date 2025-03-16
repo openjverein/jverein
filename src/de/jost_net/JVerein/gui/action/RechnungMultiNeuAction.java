@@ -36,11 +36,6 @@ public class RechnungMultiNeuAction implements Action
   public void handleAction(Object context) throws ApplicationException
   {
     Sollbuchung[] sollbs;
-    // if (context instanceof TablePart)
-    // {
-    // TablePart tp = (TablePart) context;
-    // context = tp.getSelection();
-    // }
     if (context instanceof Sollbuchung[])
     {
       sollbs = (Sollbuchung[]) context;
