@@ -3,6 +3,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.input.FormularInput;
+import de.jost_net.JVerein.gui.view.IMailText;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.Ausgabesortierung;
@@ -12,7 +13,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 
-public class DruckMailControl extends FilterControl
+public class DruckMailControl extends FilterControl implements IMailText
 {
   public DruckMailControl(AbstractView view)
   {
@@ -157,6 +158,7 @@ public class DruckMailControl extends FilterControl
     return mailbetreff;
   }
 
+  @Override
   public String getBetreffString()
   {
     return (String) getBetreff().getValue();
@@ -174,6 +176,7 @@ public class DruckMailControl extends FilterControl
     return mailtext;
   }
   
+  @Override
   public String getTxtString()
   {
     return (String) getTxt().getValue();

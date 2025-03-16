@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.DruckMailControl;
+import de.jost_net.JVerein.gui.view.IMailText;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
@@ -36,18 +36,19 @@ public class MailVorlageUebernehmenAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (!(context instanceof DruckMailControl))
+    if (!(context instanceof IMailText))
     {
       throw new ApplicationException("Keine Mail Information vorhanden!");
     }
-    String betreff = ((DruckMailControl) context).getBetreffString();
-    String text = ((DruckMailControl) context).getTxtString();
-    if (betreff == null || betreff.isEmpty())
-    {
-      throw new ApplicationException("Bitte Betreff eingeben!");
-    }
+
     try
     {
+      String betreff = ((IMailText) context).getBetreffString();
+      String text = ((IMailText) context).getTxtString();
+      if (betreff == null || betreff.isEmpty())
+      {
+        throw new ApplicationException("Bitte Betreff eingeben!");
+      }
       DBIterator<MailVorlage> vorlagen = Einstellungen.getDBService()
           .createList(MailVorlage.class);
       vorlagen.addFilter("betreff = ?", betreff);
