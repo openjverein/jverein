@@ -37,7 +37,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.BuchungsartMenu;
-import de.jost_net.JVerein.gui.view.BuchungDetailView;
+import de.jost_net.JVerein.gui.view.BuchungsartDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -501,7 +501,7 @@ public class BuchungsartControl extends FilterControl
     if (buchungsartList == null)
     {
       buchungsartList = new TablePart(getBuchungsarten(),
-          new EditAction(BuchungDetailView.class));
+          new EditAction(BuchungsartDetailView.class));
       buchungsartList.addColumn("Nummer", "nummer");
       buchungsartList.addColumn("Bezeichnung", "bezeichnung");
       buchungsartList.addColumn("Art", "art", new Formatter()

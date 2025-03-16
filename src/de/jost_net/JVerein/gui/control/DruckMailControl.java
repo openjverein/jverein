@@ -157,6 +157,11 @@ public class DruckMailControl extends FilterControl
     return mailbetreff;
   }
 
+  public String getBetreffString()
+  {
+    return (String) getBetreff().getValue();
+  }
+
   public TextAreaInput getTxt()
   {
     if (mailtext != null)
@@ -169,6 +174,11 @@ public class DruckMailControl extends FilterControl
     return mailtext;
   }
   
+  public String getTxtString()
+  {
+    return (String) getTxt().getValue();
+  }
+
   protected void saveDruckMailSettings() throws RemoteException
   {
     if (ausgabeart != null )

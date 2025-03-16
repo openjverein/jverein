@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
@@ -933,7 +934,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
             context.put("decimalformat", Einstellungen.DECIMALFORMAT);
             context.put("email", m.getEmail());
 
-            Map<String, Object> map = new MitgliedMap().getMap(m, null);
+            Map<String, Object> map = new SpendenbescheinigungMap()
+                .getMap(spba[i], null);
+            map = new MitgliedMap().getMap(m, map);
             map = new AllgemeineMap().getMap(map);
             VarTools.add(context, map);
 
@@ -971,8 +974,18 @@ public class SpendenbescheinigungControl extends DruckMailControl
               anhang.add(anh);
               fis.close();
 
-              sender.sendMail(m.getEmail(), wtext1.getBuffer().toString(),
-                  wtext2.getBuffer().toString(), anhang);
+              try
+              {
+                sender.sendMail(m.getEmail(), wtext1.getBuffer().toString(),
+                    wtext2.getBuffer().toString(), anhang);
+              }
+              // Wenn eine ApplicationException geworfen wurde, wurde die
+              // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
+              catch (ApplicationException ae)
+              {
+                Logger.error("Fehler: ", ae);
+                monitor.log(m.getEmail() + " - " + ae.getMessage());
+              }
               sentCount++;
 
               // Mail in die Datenbank schreiben

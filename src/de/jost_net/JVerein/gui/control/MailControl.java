@@ -466,8 +466,18 @@ public class MailControl extends FilterControl
               EvalMail em = new EvalMail(empf);
               if (erneutSenden || empf.getVersand() == null)
               {
-                sender.sendMail(empf.getMailAdresse(), em.evalBetreff(betr),
-                    em.evalText(txt), getMail().getAnhang());
+                try
+                {
+                  sender.sendMail(empf.getMailAdresse(), em.evalBetreff(betr),
+                      em.evalText(txt), getMail().getAnhang());
+                }
+                // Wenn eine ApplicationException geworfen wurde, wurde die
+                // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
+                catch (ApplicationException ae)
+                {
+                  Logger.error("Fehler: ", ae);
+                  monitor.log(empf.getMailAdresse() + " - " + ae.getMessage());
+                }
                 sentCount++;
                 monitor.log(empf.getMailAdresse() + " - versendet");
                 // Nachricht wurde erfolgreich versendet; speicher Versand-Datum

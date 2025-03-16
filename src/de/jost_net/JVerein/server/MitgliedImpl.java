@@ -283,12 +283,15 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       }
     }
     // Ist das Mitglied Teil eines Familienverbandes?
-    if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER && getZahlerID() != null)
+    if (getBeitragsgruppe() != null
+        && getBeitragsgruppe()
+            .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
+        && getVollZahlerID() != null)
     {
       // ja, suche Vollzahler. Er darf nicht, bzw nicht früher, ausgetreten sein!
       DBIterator<Mitglied> zahler = Einstellungen.getDBService()
           .createList(Mitglied.class);
-      zahler.addFilter("id = " + getZahlerID());
+      zahler.addFilter("id = " + getVollZahlerID());
       if (getAustritt() != null)
         zahler.addFilter("(austritt is not null and austritt < ?)",
             getAustritt());
@@ -321,7 +324,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
             "Dieses Mitglied ist Vollzahler in einem Familienverband.. Zunächst Beitragsart der Angehörigen ändern!");
       }
     }
-    if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER && getZahlerID() == null)
+    if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER && getVollZahlerID() == null)
     {
       throw new ApplicationException("Bitte Vollzahler auswählen!");
     }
@@ -1138,7 +1141,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   }
 
   @Override
-  public Mitglied getZahler() throws RemoteException
+  public Mitglied getVollZahler() throws RemoteException
   {
     Object o = (Object) super.getAttribute("zahlerid");
     if (o == null)
@@ -1152,16 +1155,36 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   }
 
   @Override
-  public Long getZahlerID() throws RemoteException
+  public Long getVollZahlerID() throws RemoteException
   {
     Long zahlerid = (Long) getAttribute("zahlerid");
     return zahlerid;
   }
 
   @Override
-  public void setZahlerID(Long id) throws RemoteException
+  public void setVollZahlerID(Long id) throws RemoteException
   {
     setAttribute("zahlerid", id);
+  }
+
+  @Override
+  public Mitglied getZahler() throws RemoteException
+  {
+    if (getZahlungsweg() == Zahlungsweg.VOLLZAHLER && getVollZahlerID() != null)
+    {
+      return getVollZahler();
+    }
+    return this;
+  }
+
+  @Override
+  public Long getZahlerID() throws RemoteException
+  {
+    if (getZahlungsweg() == Zahlungsweg.VOLLZAHLER && getVollZahlerID() != null)
+    {
+      return (Long) getAttribute("zahlerid");
+    }
+    return Long.valueOf(getID());
   }
 
   @Override
@@ -1965,7 +1988,7 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
     }
 
     @Override
-    public Long getZahlerID() throws RemoteException
+    public Long getVollZahlerID() throws RemoteException
     {
       return ZAHLERID;
     }

@@ -519,13 +519,13 @@ public class AbrechnungSEPA
     if (m.getZahlungsweg() != null
         && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
     {
-      if (m.getZahlerID() == null)
+      if (m.getVollZahlerID() == null)
       {
         throw new ApplicationException("Kein Vollzahler vorhanden: "
             + Adressaufbereitung.getNameVorname(m));
       }
       mZahler = Einstellungen.getDBService().createObject(Mitglied.class,
-          m.getZahlerID().toString());
+          m.getVollZahlerID().toString());
     }
     if ((Einstellungen.getEinstellung()
         .getBeitragsmodel() == Beitragsmodel.FLEXIBEL)
@@ -658,7 +658,7 @@ public class AbrechnungSEPA
             && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
         {
           mZahler = Einstellungen.getDBService().createObject(Mitglied.class,
-              m.getZahlerID().toString());
+              m.getVollZahlerID().toString());
         }
         Integer zahlungsweg;
         if (z.getZahlungsweg() != null

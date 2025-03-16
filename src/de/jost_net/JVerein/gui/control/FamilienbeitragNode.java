@@ -78,9 +78,9 @@ public class FamilienbeitragNode implements GenericObjectNode
     while(angIt.hasNext())
     {
       Mitglied a = angIt.next();
-      if(!set.contains(a.getZahlerID().toString()))
+      if(!set.contains(a.getVollZahlerID().toString()))
       {
-        set.add(a.getZahlerID().toString());
+        set.add(a.getVollZahlerID().toString());
       }
     }
     while (it.hasNext())

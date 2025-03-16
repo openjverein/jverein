@@ -1,10 +1,17 @@
 package de.jost_net.JVerein.gui.view;
 
+import java.util.Map;
+
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.FreieFormulareControl;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.server.MitgliedImpl;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -68,11 +75,20 @@ public class FreiesFormularMailView extends AbstractView
     fbuttons.addButton(control.getSpeichernButton());
     group.addButtonArea(fbuttons);
 
+    Map<String, Object> map = new MitgliedMap().getMap(MitgliedImpl.getDummy(),
+        null);
+    map = new AllgemeineMap().getMap(map);
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FREIESFORMULAR, false, "question-circle.png");
     buttons.addButton(new Button("Mail-Vorlage",
         new MailVorlageZuweisenAction(), control, false, "view-refresh.png"));
+    buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
+        control, false, "bookmark.png");
+    buttons
+        .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
+        control, false, "edit-copy.png"));
     buttons.addButton(
         control.getStartFreieFormulareButton(this.getCurrentObject(), control));
     buttons.paint(this.getParent());
