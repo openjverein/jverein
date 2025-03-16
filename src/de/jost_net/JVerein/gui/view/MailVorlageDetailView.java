@@ -16,9 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.MailVorschauAction;
+import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
 import de.jost_net.JVerein.server.MitgliedImpl;
@@ -47,15 +48,16 @@ public class MailVorlageDetailView extends AbstractView
     t.addPart(control.getTxt());
 
     Map<String, Object> map = new MitgliedMap().getMap(MitgliedImpl.getDummy(),
-        null);
+        new AllgemeineMap().getMap(null));
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAILVORLAGE, false, "question-circle.png");
     buttons.addButton("Variablen anzeigen",
         new OpenInsertVariableDialogAction(), map, false, "bookmark.png");
-    buttons.addButton(new Button("Vorschau", new MailVorschauAction(control),
-        MitgliedImpl.getDummy(), false, "edit-copy.png"));
+    buttons
+        .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
+            control, false, "edit-copy.png"));
     buttons.addButton("Speichern", context -> control.handleStore(), null, true,
         "document-save.png");
     buttons.paint(this.getParent());

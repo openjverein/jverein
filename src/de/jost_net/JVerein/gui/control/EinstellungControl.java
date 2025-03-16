@@ -2318,8 +2318,11 @@ public class EinstellungControl extends AbstractControl
       e.setSEPADatumOffset((Integer) sepadatumoffset.getValue());
       e.setAbrlAbschliessen((Boolean) abrlabschliessen.getValue());
       e.setBeitragAltersstufen((String)beitragaltersstufen.getValue());
-      e.setVerrechnungskontoId((Long
+      if (verrechnungskonto.getValue() != null)
+      {
+        e.setVerrechnungskontoId((Long
           .parseLong((String) ((Konto) verrechnungskonto.getValue()).getID())));
+      }
       e.store();
       Einstellungen.setEinstellung(e);
 

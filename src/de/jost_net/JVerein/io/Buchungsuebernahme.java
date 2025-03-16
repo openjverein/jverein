@@ -19,14 +19,22 @@ package de.jost_net.JVerein.io;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.schlevoigt.JVerein.util.Misc;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.BuchungUebernahmeProtokollDialog;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -44,16 +52,27 @@ public class Buchungsuebernahme
 
   private Exception exception = null;
 
+  private List<Buchungsart> buchungsartList;
+
+  private final static transient Map<String, Pattern> patternCache = new HashMap<String, Pattern>();
+
   public Buchungsuebernahme()
   {
     uebernahme();
   }
 
+  @SuppressWarnings("unchecked")
   private void uebernahme()
   {
     try
     {
       Logger.info("Buchungsübernahme zu JVerein gestartet");
+
+      // BuchungsartList für automatische Buchungszuordnung bestimmen.
+      DBIterator<Buchungsart> buchungsartIt = Einstellungen.getDBService()
+          .createList(Buchungsart.class);
+      buchungsartIt.addFilter("suchbegriff != '' and suchbegriff is not null");
+      buchungsartList = PseudoIterator.asList(buchungsartIt);
 
       // Protokollliste initialisieren
       buchungen = new ArrayList<>();
@@ -182,6 +201,18 @@ public class Buchungsuebernahme
           zweck = zweck.substring(0, 500);
         }
         b.setZweck(zweck);
+        
+        // Buchungsart automatisch zuordnen
+        String suchZweck = u.getGegenkontoNummer() + " " + u.getGegenkontoName()
+            + " " + zweck;
+        for (Buchungsart ba : buchungsartList)
+        {
+          if (match(ba.getSuchbegriff(), suchZweck, ba.getRegexp()))
+          {
+            b.setBuchungsartId(Long.parseLong(ba.getID()));
+          }
+        }
+        
         b.setDatum(u.getDatum());
         b.setArt(u.getArt());
         b.setKommentar(u.getKommentar());
@@ -195,6 +226,68 @@ public class Buchungsuebernahme
         throw e;
       }
     }
+  }
+
+  /**
+   * 
+   * @param suchtext
+   *          der Text oder eine Kommegetrennte Liste nach der gesucht werden
+   *          soll
+   * @param zweck
+   *          der Verwendungszweck etc. der Buchung
+   * @param isRegexp
+   *          ist der Suchtext ein regulärer Ausdruck?
+   * @return true wenn der zweck zum suchtext passt
+   */
+  private boolean match(String suchtext, String zweck, boolean isRegexp)
+  {
+    if (!isRegexp)
+    {
+      final List<String> result = new ArrayList<String>();
+      for (String s : suchtext.toLowerCase().split("(?<!\\\\),"))
+      {
+        s = StringUtils.trimToNull(s);
+        if (s == null)
+          continue;
+
+        // Escaping-Zeichen entfernen, falls vorhanden
+        s = s.replace("\\", "");
+        result.add(s);
+      }
+
+      zweck = zweck.toLowerCase();
+      for (String test : result)
+      {
+        if (test.isEmpty())
+        {
+          continue;
+        }
+        if (zweck.indexOf(test) != -1)
+        {
+          return true;
+        }
+      }
+    }
+    else
+    {
+      Pattern pattern = patternCache.get(suchtext);
+      try
+      {
+        if (pattern == null)
+        {
+          pattern = Pattern.compile(suchtext, Pattern.CASE_INSENSITIVE);
+          patternCache.put(suchtext, pattern);
+        }
+
+        return pattern.matcher(zweck).matches();
+      }
+      catch (Exception e)
+      {
+        Logger.error("invalid regex pattern: " + e.getMessage(), e);
+        return false;
+      }
+    }
+    return false;
   }
 
 }

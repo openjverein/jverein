@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import java.util.Map;
 
-import de.jost_net.JVerein.gui.control.DruckMailControl;
+import de.jost_net.JVerein.gui.control.IMailControl;
 import de.jost_net.JVerein.gui.dialogs.MailTextVorschauDialog;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.logging.Logger;
@@ -40,9 +40,9 @@ public class MailTextVorschauAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context instanceof DruckMailControl)
+    if (context instanceof IMailControl)
     {
-      new MailTextVorschauDialog((DruckMailControl) context, map,
+      new MailTextVorschauDialog((IMailControl) context, map,
           MailTextVorschauDialog.POSITION_CENTER, mitMitglied);
     }
     else

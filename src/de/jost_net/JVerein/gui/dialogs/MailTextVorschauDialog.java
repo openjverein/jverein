@@ -20,15 +20,13 @@ package de.jost_net.JVerein.gui.dialogs;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-import de.willuhn.jameica.gui.AbstractControl;
-import de.willuhn.util.ApplicationException;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.control.DruckMailControl;
+import de.jost_net.JVerein.gui.control.IMailControl;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.util.EvalMail;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -48,7 +46,7 @@ import de.willuhn.logging.Logger;
 public class MailTextVorschauDialog extends AbstractDialog<Object>
 {
 
-  private final AbstractControl control;
+  private final IMailControl control;
 
   private Map<String, Object> map;
 
@@ -68,7 +66,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
 
   private final de.willuhn.jameica.system.Settings settings;
 
-  public MailTextVorschauDialog(AbstractControl control,
+  public MailTextVorschauDialog(IMailControl control,
       Map<String, Object> map, int position, boolean mitMitglied)
   {
     super(position);
@@ -101,15 +99,8 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     SimpleContainer container = new SimpleContainer(parent, true, 2);
     em = new EvalMail(map);
 
-    if (control instanceof DruckMailControl)
-    {
-      betreffString = ((DruckMailControl) control).getBetreffString();
-      textString = ((DruckMailControl) control).getTxtString();
-    }
-    else
-    {
-      throw new ApplicationException("Fehler beim Anzeigen der Vorschau");
-    }
+    betreffString = control.getBetreffString();
+    textString = control.getTxtString();
 
     if (mitMitglied)
     {

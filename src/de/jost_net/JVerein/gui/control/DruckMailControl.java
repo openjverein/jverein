@@ -12,7 +12,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 
-public class DruckMailControl extends FilterControl
+public class DruckMailControl extends FilterControl implements IMailControl
 {
   public DruckMailControl(AbstractView view)
   {
@@ -157,6 +157,7 @@ public class DruckMailControl extends FilterControl
     return mailbetreff;
   }
 
+  @Override
   public String getBetreffString()
   {
     return (String) getBetreff().getValue();
@@ -174,6 +175,7 @@ public class DruckMailControl extends FilterControl
     return mailtext;
   }
   
+  @Override
   public String getTxtString()
   {
     return (String) getTxt().getValue();
