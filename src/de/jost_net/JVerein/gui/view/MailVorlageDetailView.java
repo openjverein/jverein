@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MailVorschauAction;
@@ -47,7 +48,7 @@ public class MailVorlageDetailView extends AbstractView
     t.addPart(control.getTxt());
 
     Map<String, Object> map = new MitgliedMap().getMap(MitgliedImpl.getDummy(),
-        null);
+        new AllgemeineMap().getMap(null));
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
