@@ -30,7 +30,7 @@ import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class RechnungMultiNeuAction implements Action
+public class GesamtrechnungNeuAction implements Action
 {
   @Override
   public void handleAction(Object context) throws ApplicationException
@@ -42,7 +42,8 @@ public class RechnungMultiNeuAction implements Action
     }
     else
     {
-      throw new ApplicationException("Keine Sollbuchungen ausgewählt");
+      throw new ApplicationException(
+          "Es sind zu wenig Sollbuchungen ausgewählt.");
     }
 
     try
@@ -72,19 +73,19 @@ public class RechnungMultiNeuAction implements Action
         if (!mitglied.equals(sollb.getMitgliedId()))
         {
           throw new ApplicationException(
-              "Es sind nicht alle Sollbuchungen dem gleichen Mitglied zugeordnet.");
+              "Es können nur Sollbuchungen eines Mitglieds zu einer Rechnung zusammengefasst werden.");
         }
         if ((zahler == null && sollb.getZahlerId() != null)
             || (zahler != null && !zahler.equals(sollb.getZahlerId())))
         {
           throw new ApplicationException(
-              "Es sind nicht alle Sollbuchungen dem gleichen Zahler zugeordnet.");
+              "Es können nur Sollbuchungen des gleichen Zahlers zu einer Rechnung zusammengefasst werden.");
         }
         if (zahlungsweg == null || sollb.getZahlungsweg() == null
             || !zahlungsweg.equals(sollb.getZahlungsweg()))
         {
           throw new ApplicationException(
-              "Es haben nicht alle Sollbuchungen den gleichen Zahlungsweg.");
+              "Es können nur Sollbuchungen mit gleichen Zahlungsweg einer Rechnung zusammengefasst werden.");
         }
       }
 
@@ -103,7 +104,7 @@ public class RechnungMultiNeuAction implements Action
       }
       DBTransaction.commit();
       GUI.getCurrentView().reload();
-      GUI.getStatusBar().setSuccessText("Rechnung erstellt.");
+      GUI.getStatusBar().setSuccessText("Gesamtrechnung erstellt.");
     }
     catch (OperationCanceledException ignore)
     {
@@ -117,7 +118,7 @@ public class RechnungMultiNeuAction implements Action
     catch (Exception e)
     {
       DBTransaction.rollback();
-      String fehler = "Fehler beim erstellen der Rechnung";
+      String fehler = "Fehler beim Erstellen der Gesamtrechnung";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
       return;
