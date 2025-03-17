@@ -86,7 +86,8 @@ public class GesamtrechnungNeuAction implements Action
       }
       Formular formular = dialog.getFormular();
       Date rechnungsdatum = dialog.getDatum();
-      if (formular == null || rechnungsdatum == null)
+      boolean sollbuchungsDatum = dialog.getSollbuchungsdatum();
+      if (formular == null || (rechnungsdatum == null && !sollbuchungsDatum))
       {
         throw new OperationCanceledException();
       }
@@ -124,7 +125,24 @@ public class GesamtrechnungNeuAction implements Action
       Rechnung rechnung = (Rechnung) Einstellungen.getDBService()
           .createObject(Rechnung.class, null);
       rechnung.setFormular(formular);
-      rechnung.setDatum(rechnungsdatum);
+      if (sollbuchungsDatum)
+      {
+        // Datum der letzten Sollbuchung finden und als Rechnungsdatum verwenden
+        Date datum = null;
+        for (Sollbuchung sb : sollbs)
+        {
+          Date d = sb.getDatum();
+          if (datum == null || d.after(datum))
+          {
+            datum = d;
+          }
+        }
+        rechnung.setDatum(datum);
+      }
+      else
+      {
+        rechnung.setDatum(rechnungsdatum);
+      }
       rechnung.fill(sollbs[0]);
       rechnung.store();
 
