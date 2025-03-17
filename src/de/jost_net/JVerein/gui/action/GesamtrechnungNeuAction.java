@@ -116,7 +116,7 @@ public class GesamtrechnungNeuAction implements Action
             || !zahlungsweg.equals(sollb.getZahlungsweg()))
         {
           throw new ApplicationException(
-              "Es können nur Sollbuchungen mit gleichen Zahlungsweg einer Rechnung zusammengefasst werden.");
+              "Es können nur Sollbuchungen mit demselben Zahlungsweg zu einer Rechnung zusammengefasst werden.");
         }
       }
 
