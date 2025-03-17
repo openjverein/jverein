@@ -410,6 +410,70 @@ public class BuchungsartControl extends FilterControl
     return buchungsklasse;
   }
 
+  @Override
+  public void fill() throws RemoteException, ApplicationException
+  {
+    Buchungsart b = getBuchungsart();
+    try
+    {
+      b.setNummer(((Integer) getNummer(false).getValue()).intValue());
+    }
+    catch (NullPointerException e)
+    {
+      throw new ApplicationException("Nummer fehlt");
+    }
+    b.setBezeichnung((String) getBezeichnung().getValue());
+    ArtBuchungsart ba = (ArtBuchungsart) getArt().getValue();
+    b.setArt(ba.getKey());
+    if (buchungsklasse != null)
+    {
+      GenericObject o = (GenericObject) getBuchungsklasse().getValue();
+      if (o != null)
+      {
+        b.setBuchungsklasseId(Long.valueOf(o.getID()));
+      }
+      else
+      {
+        b.setBuchungsklasseId(null);
+      }
+    }
+    else
+    {
+      b.setBuchungsklasseId(null);
+    }
+    b.setSpende((Boolean) spende.getValue());
+    b.setAbschreibung((Boolean) abschreibung.getValue());
+    double steuersatzValue = (SteuersatzBuchungsart) steuersatz
+        .getValue() == null ? 0
+            : ((SteuersatzBuchungsart) steuersatz.getValue()).getSteuersatz();
+    b.setSteuersatz(steuersatzValue);
+    if (steuer_buchungsart.getValue() instanceof Buchungsart)
+    {
+      b.setSteuerBuchungsart(Long
+          .parseLong(((Buchungsart) steuer_buchungsart.getValue()).getID()));
+    }
+    else
+    {
+      b.setSteuerBuchungsart(null);
+    }
+    StatusBuchungsart st = (StatusBuchungsart) getStatus().getValue();
+    b.setStatus(st.getKey());
+    b.setSuchbegriff((String) getSuchbegriff().getValue());
+    b.setRegexp((Boolean) getRegexp().getValue());
+    if ((Boolean) getRegexp().getValue())
+    {
+      try
+      {
+        Pattern.compile((String) getSuchbegriff().getValue());
+      }
+      catch (PatternSyntaxException pse)
+      {
+        throw new ApplicationException(
+            "Regulärer Ausdruck ungültig: " + pse.getDescription());
+      }
+    }
+  }
+
   /**
    * This method stores the project using the current values.
    * 
@@ -419,62 +483,8 @@ public class BuchungsartControl extends FilterControl
   {
     try
     {
+      fill();
       Buchungsart b = getBuchungsart();
-      try
-      {
-        b.setNummer(((Integer) getNummer(false).getValue()).intValue());
-      }
-      catch (NullPointerException e)
-      {
-        throw new ApplicationException("Nummer fehlt");
-      }
-      b.setBezeichnung((String) getBezeichnung().getValue());
-      ArtBuchungsart ba = (ArtBuchungsart) getArt().getValue();
-      b.setArt(ba.getKey());
-      if (buchungsklasse != null)
-      {
-        GenericObject o = (GenericObject) getBuchungsklasse().getValue();
-        if (o != null)
-        {
-          b.setBuchungsklasseId(Long.valueOf(o.getID()));
-        }
-        else
-        {
-          b.setBuchungsklasseId(null);
-        }
-      }
-      else
-      {
-        b.setBuchungsklasseId(null);
-      }
-      b.setSpende((Boolean) spende.getValue());
-      b.setAbschreibung((Boolean) abschreibung.getValue());
-      double steuersatzValue = (SteuersatzBuchungsart) steuersatz.getValue() == null ? 0 : ((SteuersatzBuchungsart) steuersatz.getValue()).getSteuersatz();
-      b.setSteuersatz(steuersatzValue);
-      if (steuer_buchungsart.getValue() instanceof Buchungsart) 
-      {
-        b.setSteuerBuchungsart(Long.parseLong(((Buchungsart) steuer_buchungsart.getValue()).getID()));
-      }
-      else
-      {
-        b.setSteuerBuchungsart(null);
-      }
-      StatusBuchungsart st = (StatusBuchungsart) getStatus().getValue();
-      b.setStatus(st.getKey());
-      b.setSuchbegriff((String) getSuchbegriff().getValue());
-      b.setRegexp((Boolean) getRegexp().getValue());
-      if ((Boolean) getRegexp().getValue())
-      {
-        try
-        {
-          Pattern.compile((String) getSuchbegriff().getValue());
-        }
-        catch (PatternSyntaxException pse)
-        {
-          throw new ApplicationException(
-              "Regulärer Ausdruck ungültig: " + pse.getDescription());
-        }
-      }
       b.store();
       GUI.getStatusBar().setSuccessText("Buchungsart gespeichert");
     }

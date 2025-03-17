@@ -2220,75 +2220,206 @@ public class MitgliedControl extends FilterControl
     return eigenschaftenTree;
   }
 
+  @Override
+  public void fill() throws RemoteException, ApplicationException
+  {
+    Mitglied m = getMitglied();
+
+    if (eigenschaftenTree != null)
+    {
+      // liefert nur denRoot
+      ArrayList<?> rootNodes = (ArrayList<?>) eigenschaftenTree.getItems();
+      EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
+
+      HashMap<String, Boolean> pflichtgruppen = new HashMap<>();
+      DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
+          .createList(EigenschaftGruppe.class);
+      it.addFilter("pflicht = ?", new Object[] { Boolean.TRUE });
+      while (it.hasNext())
+      {
+        EigenschaftGruppe eg = it.next();
+        pflichtgruppen.put(eg.getID(), Boolean.valueOf(false));
+      }
+
+      for (EigenschaftenNode checkedNode : root.getCheckedNodes())
+      {
+        Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
+        pflichtgruppen.put(ei.getEigenschaftGruppeId() + "",
+            Boolean.valueOf(true));
+      }
+      for (String key : pflichtgruppen.keySet())
+      {
+        if (!pflichtgruppen.get(key))
+        {
+          EigenschaftGruppe eg = (EigenschaftGruppe) Einstellungen
+              .getDBService().createObject(EigenschaftGruppe.class, key);
+          throw new ApplicationException(String.format(
+              "In der Eigenschaftengruppe \"%s\" fehlt ein Eintrag!",
+              eg.getBezeichnung()));
+        }
+      }
+      // Max eine Eigenschaft pro Gruppe
+      HashMap<String, Boolean> max1gruppen = new HashMap<>();
+      it = Einstellungen.getDBService().createList(EigenschaftGruppe.class);
+      it.addFilter("max1 = ?", new Object[] { Boolean.TRUE });
+      while (it.hasNext())
+      {
+        EigenschaftGruppe eg = it.next();
+        max1gruppen.put(eg.getID(), Boolean.valueOf(false));
+      }
+      for (EigenschaftenNode checkedNode : root.getCheckedNodes())
+      {
+        Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
+        Boolean m1 = max1gruppen.get(ei.getEigenschaftGruppe().getID());
+        if (m1 != null)
+        {
+          if (m1)
+          {
+            throw new ApplicationException(String.format(
+                "In der Eigenschaftengruppe '%s' mehr als ein Eintrag markiert!",
+                ei.getEigenschaftGruppe().getBezeichnung()));
+          }
+          else
+          {
+            max1gruppen.put(ei.getEigenschaftGruppe().getID(),
+                Boolean.valueOf(true));
+          }
+        }
+      }
+    }
+
+    m.setAdressierungszusatz((String) getAdressierungszusatz().getValue());
+    m.setAustritt((Date) getAustritt().getValue());
+    m.setAnrede((String) getAnrede().getValue());
+    GenericObject o = (GenericObject) getBeitragsgruppe(true).getValue();
+    if (mitgliedstyp == null)
+    {
+      try
+      {
+        Beitragsgruppe bg = (Beitragsgruppe) o;
+        m.setBeitragsgruppe(bg);
+        if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+        {
+          m.setVollZahlerID(null);
+        }
+      }
+      catch (NullPointerException e)
+      {
+        throw new ApplicationException("Beitragsgruppe fehlt");
+      }
+    }
+    if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
+    {
+      if (getIndividuellerBeitrag().getValue() != null)
+      {
+        m.setIndividuellerBeitrag(
+            (Double) getIndividuellerBeitrag().getValue());
+      }
+      else
+      {
+        m.setIndividuellerBeitrag(null);
+      }
+    }
+    Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
+    m.setZahlungsweg(zw.getKey());
+    Zahlungsrhythmus zr = (Zahlungsrhythmus) getZahlungsrhythmus().getValue();
+    m.setZahlungsrhythmus(zr.getKey());
+    Zahlungstermin zt = (Zahlungstermin) getZahlungstermin().getValue();
+    if (zt != null)
+    {
+      m.setZahlungstermin(zt.getKey());
+    }
+    m.setMandatID((String) getMandatID().getValue());
+    m.setMandatDatum((Date) getMandatDatum().getValue());
+    m.setMandatVersion((Integer) getMandatVersion().getValue());
+    m.setBic((String) getBic().getValue());
+    String ib = (String) getIban().getValue();
+    if (ib == null)
+      m.setIban(null);
+    else
+      m.setIban(ib.toUpperCase().replace(" ", ""));
+    m.setEintritt((Date) getEintritt().getValue());
+    m.setEmail((String) getEmail().getValue());
+    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    {
+      if (externemitgliedsnummer != null)
+      {
+        String mitgliedsnummer = (String) getExterneMitgliedsnummer()
+            .getValue();
+        if (mitgliedsnummer != null && !mitgliedsnummer.isEmpty())
+        {
+          m.setExterneMitgliedsnummer(mitgliedsnummer);
+        }
+        else
+        {
+          throw new ApplicationException("Externe Mitgliedsnummer fehlt");
+        }
+      }
+    }
+    else
+    {
+      m.setExterneMitgliedsnummer(null);
+    }
+
+    if (m.getPersonenart().equalsIgnoreCase("n"))
+    {
+      m.setGeburtsdatum((Date) getGeburtsdatum().getValue());
+      if (getGeschlecht().getSelectedValue() == null)
+      {
+        throw new ApplicationException("Bitte Geschlecht auswählen!");
+      }
+
+      m.setGeschlecht((String) getGeschlecht().getValue());
+    }
+    else
+    {
+      m.setLeitwegID((String) getLeitwegID().getValue());
+    }
+    m.setKtoiAdressierungszusatz(
+        (String) getKtoiAdressierungszusatz().getValue());
+    m.setKtoiAnrede((String) getKtoiAnrede().getValue());
+    m.setKtoiEmail((String) getKtoiEmail().getValue());
+    m.setKtoiName((String) getKtoiName().getValue());
+    m.setKtoiOrt((String) getKtoiOrt().getValue());
+    String persa = (String) getKtoiPersonenart().getValue();
+    m.setKtoiPersonenart(persa.substring(0, 1));
+    m.setKtoiPlz((String) getKtoiPlz().getValue());
+    m.setKtoiStaat(getKtoiStaat().getValue() == null ? ""
+        : ((Staat) getKtoiStaat().getValue()).getKey());
+    m.setKtoiStrasse((String) getKtoiStrasse().getValue());
+    m.setKtoiTitel((String) getKtoiTitel().getValue());
+    m.setKtoiVorname((String) getKtoiVorname().getValue());
+    m.setKtoiGeschlecht((String) getKtoiGeschlecht().getValue());
+    m.setKuendigung((Date) getKuendigung().getValue());
+    m.setSterbetag((Date) getSterbetag().getValue());
+    m.setName((String) getName(false).getValue());
+    m.setOrt((String) getOrt().getValue());
+    m.setPlz((String) getPlz().getValue());
+    m.setStaat(getStaat().getValue() == null ? ""
+        : ((Staat) getStaat().getValue()).getKey());
+    m.setStrasse((String) getStrasse().getValue());
+    m.setTelefondienstlich((String) getTelefondienstlich().getValue());
+    m.setTelefonprivat((String) getTelefonprivat().getValue());
+    m.setHandy((String) getHandy().getValue());
+    m.setTitel((String) getTitel().getValue());
+    m.setVermerk1((String) getVermerk1().getValue());
+    m.setVermerk2((String) getVermerk2().getValue());
+    m.setVorname((String) getVorname().getValue());
+    if (m.getID() == null)
+    {
+      m.setEingabedatum();
+    }
+  }
+
   public void handleStore() throws ApplicationException
   {
     try
     {
+      fill();
       Mitglied m = getMitglied();
-
-      if (eigenschaftenTree != null)
-      {
-        ArrayList<?> rootNodes = (ArrayList<?>) eigenschaftenTree.getItems();  // liefert nur den Root
-        EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
-        
-        HashMap<String, Boolean> pflichtgruppen = new HashMap<>();
-        DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
-            .createList(EigenschaftGruppe.class);
-        it.addFilter("pflicht = ?", new Object[] { Boolean.TRUE });
-        while (it.hasNext())
-        {
-          EigenschaftGruppe eg = it.next();
-          pflichtgruppen.put(eg.getID(), Boolean.valueOf(false));
-        }
-        
-        for (EigenschaftenNode checkedNode : root.getCheckedNodes())
-        {
-          Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
-          pflichtgruppen.put(ei.getEigenschaftGruppeId() + "",
-              Boolean.valueOf(true));
-        }
-        for (String key : pflichtgruppen.keySet())
-        {
-          if (!pflichtgruppen.get(key))
-          {
-            EigenschaftGruppe eg = (EigenschaftGruppe) Einstellungen
-                .getDBService().createObject(EigenschaftGruppe.class, key);
-            throw new ApplicationException(String.format(
-                "In der Eigenschaftengruppe \"%s\" fehlt ein Eintrag!",
-                eg.getBezeichnung()));
-          }
-        }
-        // Max eine Eigenschaft pro Gruppe
-        HashMap<String, Boolean> max1gruppen = new HashMap<>();
-        it = Einstellungen.getDBService().createList(EigenschaftGruppe.class);
-        it.addFilter("max1 = ?", new Object[] { Boolean.TRUE });
-        while (it.hasNext())
-        {
-          EigenschaftGruppe eg = it.next();
-          max1gruppen.put(eg.getID(), Boolean.valueOf(false));
-        }
-        for (EigenschaftenNode checkedNode : root.getCheckedNodes())
-        {
-          Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
-          Boolean m1 = max1gruppen.get(ei.getEigenschaftGruppe().getID());
-          if (m1 != null)
-          {
-            if (m1)
-            {
-              throw new ApplicationException(String.format(
-                  "In der Eigenschaftengruppe '%s' mehr als ein Eintrag markiert!",
-                  ei.getEigenschaftGruppe().getBezeichnung()));
-            }
-            else
-            {
-              max1gruppen.put(ei.getEigenschaftGruppe().getID(),
-                  Boolean.valueOf(true));
-            }
-          }
-        }
-
-      }
-
+      // Mitgleidstyp ist in der DB als Long, wird jedoch sonst als Integer
+      // verwendet, daher können wir ihn nicht in fill() setzen, sonst wird der
+      // Eintrag immer als geändert erkannt.
       if (mitgliedstyp != null)
       {
         Mitgliedstyp mt = (Mitgliedstyp) getMitgliedstyp().getValue();
@@ -2297,126 +2428,6 @@ public class MitgliedControl extends FilterControl
       else
       {
         m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
-      }
-      m.setAdressierungszusatz((String) getAdressierungszusatz().getValue());
-      m.setAustritt((Date) getAustritt().getValue());
-      m.setAnrede((String) getAnrede().getValue());
-      GenericObject o = (GenericObject) getBeitragsgruppe(true).getValue();
-      if (mitgliedstyp == null)
-      {
-        try
-        {
-          Beitragsgruppe bg = (Beitragsgruppe) o;
-          m.setBeitragsgruppe(Integer.valueOf(bg.getID()));
-          if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-          {
-            m.setVollZahlerID(null);
-          }
-        }
-        catch (NullPointerException e)
-        {
-          throw new ApplicationException("Beitragsgruppe fehlt");
-        }
-      }
-      if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
-      {
-        if (getIndividuellerBeitrag().getValue() != null)
-        {
-          m.setIndividuellerBeitrag(
-              (Double) getIndividuellerBeitrag().getValue());
-        }
-        else
-        {
-          m.setIndividuellerBeitrag(null);
-        }
-      }
-      Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
-      m.setZahlungsweg(zw.getKey());
-      Zahlungsrhythmus zr = (Zahlungsrhythmus) getZahlungsrhythmus().getValue();
-      m.setZahlungsrhythmus(zr.getKey());
-      Zahlungstermin zt = (Zahlungstermin) getZahlungstermin().getValue();
-      if (zt != null)
-      {
-        m.setZahlungstermin(zt.getKey());
-      }
-      m.setMandatID((String) getMandatID().getValue());
-      m.setMandatDatum((Date) getMandatDatum().getValue());
-      m.setMandatVersion((Integer) getMandatVersion().getValue());
-      m.setBic((String) getBic().getValue());
-      String ib = (String) getIban().getValue();
-      if (ib == null)
-        m.setIban(null);
-      else
-        m.setIban(ib.toUpperCase().replace(" ",""));
-      m.setEintritt((Date) getEintritt().getValue());
-      m.setEmail((String) getEmail().getValue());
-      if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
-      {
-        if (externemitgliedsnummer != null)
-        {
-          String mitgliedsnummer = (String) getExterneMitgliedsnummer().getValue();
-          if (mitgliedsnummer != null && !mitgliedsnummer.isEmpty())
-          {
-            m.setExterneMitgliedsnummer(mitgliedsnummer);
-          }
-          else
-          {
-            throw new ApplicationException("Externe Mitgliedsnummer fehlt");
-          }
-        }
-      }
-      else
-      {
-        m.setExterneMitgliedsnummer(null);
-      }
-
-      if (m.getPersonenart().equalsIgnoreCase("n"))
-      {
-        m.setGeburtsdatum((Date) getGeburtsdatum().getValue());
-        if (getGeschlecht().getSelectedValue() == null)
-        {
-          throw new ApplicationException("Bitte Geschlecht auswählen!");
-        }
-
-        m.setGeschlecht((String) getGeschlecht().getValue());
-      }
-      else
-      {
-        m.setLeitwegID((String) getLeitwegID().getValue());
-      }
-      m.setKtoiAdressierungszusatz(
-          (String) getKtoiAdressierungszusatz().getValue());
-      m.setKtoiAnrede((String) getKtoiAnrede().getValue());
-      m.setKtoiEmail((String) getKtoiEmail().getValue());
-      m.setKtoiName((String) getKtoiName().getValue());
-      m.setKtoiOrt((String) getKtoiOrt().getValue());
-      String persa = (String) getKtoiPersonenart().getValue();
-      m.setKtoiPersonenart(persa.substring(0, 1));
-      m.setKtoiPlz((String) getKtoiPlz().getValue());
-      m.setKtoiStaat(getKtoiStaat().getValue() == null ? ""
-          : ((Staat) getKtoiStaat().getValue()).getKey());
-      m.setKtoiStrasse((String) getKtoiStrasse().getValue());
-      m.setKtoiTitel((String) getKtoiTitel().getValue());
-      m.setKtoiVorname((String) getKtoiVorname().getValue());
-      m.setKtoiGeschlecht((String) getKtoiGeschlecht().getValue());
-      m.setKuendigung((Date) getKuendigung().getValue());
-      m.setSterbetag((Date) getSterbetag().getValue());
-      m.setName((String) getName(false).getValue());
-      m.setOrt((String) getOrt().getValue());
-      m.setPlz((String) getPlz().getValue());
-      m.setStaat(getStaat().getValue() == null ? ""
-          : ((Staat) getStaat().getValue()).getKey());
-      m.setStrasse((String) getStrasse().getValue());
-      m.setTelefondienstlich((String) getTelefondienstlich().getValue());
-      m.setTelefonprivat((String) getTelefonprivat().getValue());
-      m.setHandy((String) getHandy().getValue());
-      m.setTitel((String) getTitel().getValue());
-      m.setVermerk1((String) getVermerk1().getValue());
-      m.setVermerk2((String) getVermerk2().getValue());
-      m.setVorname((String) getVorname().getValue());
-      if (m.getID() == null)
-      {
-        m.setEingabedatum();
       }
       m.setLetzteAenderung();
       m.store();

@@ -168,10 +168,20 @@ public class WiedervorlageControl extends FilterControl
     return mitglied;
   }
 
+  @Override
+  public void fill() throws RemoteException
+  {
+    Wiedervorlage w = getWiedervorlage();
+    w.setDatum((Date) getDatum(false).getValue());
+    w.setVermerk((String) getVermerk().getValue());
+    w.setErledigung((Date) getErledigung().getValue());
+  }
+
   public void handleStore()
   {
     try
     {
+      fill();
       Wiedervorlage w = getWiedervorlage();
       if (w.isNewObject())
       {
@@ -185,9 +195,6 @@ public class WiedervorlageControl extends FilterControl
           throw new ApplicationException("Bitte Mitglied eingeben");
         }
       }
-      w.setDatum((Date) getDatum(false).getValue());
-      w.setVermerk((String) getVermerk().getValue());
-      w.setErledigung((Date) getErledigung().getValue());
       w.store();
       GUI.getStatusBar().setSuccessText("Wiedervorlage gespeichert");
     }

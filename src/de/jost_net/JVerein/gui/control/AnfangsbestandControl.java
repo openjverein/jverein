@@ -105,6 +105,29 @@ public class AnfangsbestandControl extends FilterControl
     return betrag;
   }
 
+  @Override
+  public void fill() throws RemoteException
+  {
+    Anfangsbestand a = getAnfangsbestand();
+    DBIterator<Konto> konten = Einstellungen.getDBService()
+        .createList(Konto.class);
+    konten.addFilter("nummer = ?",
+        new Object[] { (String) getKonto().getValue() });
+    if (konten.size() == 0)
+    {
+      throw new RemoteException("Konto nicht gefunden");
+    }
+    if (konten.size() > 1)
+    {
+      throw new RemoteException(
+          "Mehrere Konten mit gleicher Nummer sind nicht zulässig!");
+    }
+    Konto k = konten.next();
+    a.setKonto(k);
+    a.setDatum((Date) getDatum(false).getValue());
+    a.setBetrag((Double) getBetrag().getValue());
+  }
+
   /**
    * This method stores the project using the current values.
    */
@@ -112,24 +135,8 @@ public class AnfangsbestandControl extends FilterControl
   {
     try
     {
+      fill();
       Anfangsbestand a = getAnfangsbestand();
-      DBIterator<Konto> konten = Einstellungen.getDBService()
-          .createList(Konto.class);
-      konten.addFilter("nummer = ?",
-          new Object[] { (String) getKonto().getValue() });
-      if (konten.size() == 0)
-      {
-        throw new RemoteException("Konto nicht gefunden");
-      }
-      if (konten.size() > 1)
-      {
-        throw new RemoteException(
-            "Mehrere Konten mit gleicher Nummer sind nicht zulässig!");
-      }
-      Konto k = konten.next();
-      a.setKonto(k);
-      a.setDatum((Date) getDatum(false).getValue());
-      a.setBetrag((Double) getBetrag().getValue());
       a.store();
       GUI.getStatusBar().setSuccessText("Anfangsbestand gespeichert");
     }

@@ -55,7 +55,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -73,7 +72,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class ZusatzbetragControl extends AbstractControl
+public class ZusatzbetragControl extends AbstractJVereinControl
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -183,10 +182,32 @@ public class ZusatzbetragControl extends AbstractControl
     return ausfuehrungSuch;
   }
 
+  @Override
+  public void fill() throws RemoteException, ApplicationException
+  {
+    Zusatzbetrag z = getZusatzbetrag();
+    z.setFaelligkeit((Date) getZusatzbetragPart().getFaelligkeit().getValue());
+    z.setStartdatum(
+        (Date) getZusatzbetragPart().getStartdatum(false).getValue());
+    IntervallZusatzzahlung iz = (IntervallZusatzzahlung) getZusatzbetragPart()
+        .getIntervall().getValue();
+    z.setIntervall(iz.getKey());
+    z.setEndedatum((Date) getZusatzbetragPart().getEndedatum().getValue());
+    z.setBuchungstext(
+        (String) getZusatzbetragPart().getBuchungstext().getValue());
+    z.setBuchungsart(
+        (Buchungsart) getZusatzbetragPart().getBuchungsart().getValue());
+    z.setBuchungsklasseId(getZusatzbetragPart().getSelectedBuchungsKlasseId());
+    z.setBetrag((Double) getZusatzbetragPart().getBetrag().getValue());
+    z.setZahlungsweg(
+        (Zahlungsweg) getZusatzbetragPart().getZahlungsweg().getValue());
+  }
+
   public void handleStore()
   {
     try
     {
+      fill();
       Zusatzbetrag z = getZusatzbetrag();
       if (z.isNewObject())
       {
@@ -200,21 +221,6 @@ public class ZusatzbetragControl extends AbstractControl
           throw new ApplicationException("Bitte Mitglied eingeben");
         }
       }
-      z.setFaelligkeit(
-          (Date) getZusatzbetragPart().getFaelligkeit().getValue());
-      z.setStartdatum(
-          (Date) getZusatzbetragPart().getStartdatum(false).getValue());
-      IntervallZusatzzahlung iz = (IntervallZusatzzahlung) getZusatzbetragPart()
-          .getIntervall().getValue();
-      z.setIntervall(iz.getKey());
-      z.setEndedatum((Date) getZusatzbetragPart().getEndedatum().getValue());
-      z.setBuchungstext(
-          (String) getZusatzbetragPart().getBuchungstext().getValue());
-      z.setBuchungsart(
-          (Buchungsart) getZusatzbetragPart().getBuchungsart().getValue());
-      z.setBuchungsklasseId(getZusatzbetragPart().getSelectedBuchungsKlasseId());
-      z.setBetrag((Double) getZusatzbetragPart().getBetrag().getValue());
-      z.setZahlungsweg((Zahlungsweg) getZusatzbetragPart().getZahlungsweg().getValue());
       z.store();
       if (getVorlage().getValue().equals(MITDATUM)
           || getVorlage().getValue().equals(OHNEDATUM))

@@ -25,7 +25,6 @@ import de.jost_net.JVerein.gui.view.BuchungsklasseDetailView;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -37,7 +36,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsklasseControl extends AbstractControl
+public class BuchungsklasseControl extends AbstractJVereinControl
 {
   private de.willuhn.jameica.system.Settings settings;
 
@@ -90,6 +89,14 @@ public class BuchungsklasseControl extends AbstractControl
     return bezeichnung;
   }
 
+  @Override
+  public void fill() throws RemoteException
+  {
+    Buchungsklasse b = getBuchungsklasse();
+    b.setNummer(((Integer) getNummer(false).getValue()).intValue());
+    b.setBezeichnung((String) getBezeichnung().getValue());
+  }
+
   /**
    * This method stores the project using the current values.
    */
@@ -97,18 +104,14 @@ public class BuchungsklasseControl extends AbstractControl
   {
     try
     {
+      fill();
       Buchungsklasse b = getBuchungsklasse();
-      b.setNummer(((Integer) getNummer(false).getValue()).intValue());
-      b.setBezeichnung((String) getBezeichnung().getValue());
-      try
-      {
-        b.store();
-        GUI.getStatusBar().setSuccessText("Buchungsklasse gespeichert");
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
+      b.store();
+      GUI.getStatusBar().setSuccessText("Buchungsklasse gespeichert");
+    }
+    catch (ApplicationException e)
+    {
+      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {

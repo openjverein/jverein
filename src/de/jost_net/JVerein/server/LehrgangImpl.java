@@ -22,11 +22,10 @@ import java.util.Date;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangImpl extends AbstractDBObject implements Lehrgang
+public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
 {
 
   private static final long serialVersionUID = 380278347818535726L;
@@ -130,7 +129,7 @@ public class LehrgangImpl extends AbstractDBObject implements Lehrgang
   }
 
   @Override
-  public void setLehrgangsart(Integer lehrgangsart) throws RemoteException
+  public void setLehrgangsart(Long lehrgangsart) throws RemoteException
   {
     setAttribute("lehrgangsart", lehrgangsart);
   }

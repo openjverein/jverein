@@ -33,6 +33,7 @@ import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.action.MailVorschauAction;
 import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
 import de.jost_net.JVerein.gui.util.JameicaUtil;
@@ -40,7 +41,6 @@ import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedImpl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -50,15 +50,16 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailDetailView extends AbstractView
+public class MailDetailView extends AbstractJVereinView
 {
+  private MailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Mail");
 
-    final MailControl control = new MailControl(this);
+    control = new MailControl(this);
 
     Composite comp = new Composite(this.getParent(), SWT.NONE);
     comp.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -200,5 +201,11 @@ public class MailDetailView extends AbstractView
     buttons.addButton(control.getMailReSendButton());
     buttons.addButton(control.getMailSendButton());
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

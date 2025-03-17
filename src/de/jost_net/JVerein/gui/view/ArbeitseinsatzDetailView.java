@@ -17,22 +17,23 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzPart;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class ArbeitseinsatzDetailView extends AbstractView
+public class ArbeitseinsatzDetailView extends AbstractJVereinView
 {
+  private ArbeitseinsatzControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Arbeitseinsatz");
 
-    final ArbeitseinsatzControl control = new ArbeitseinsatzControl(this);
+    control = new ArbeitseinsatzControl(this);
 
     ArbeitseinsatzPart part = control.getPart();
     part.paint(getParent());
@@ -49,5 +50,11 @@ public class ArbeitseinsatzDetailView extends AbstractView
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

@@ -17,22 +17,23 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.LehrgangsartControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class LehrgangsartDetailView extends AbstractView
+public class LehrgangsartDetailView extends AbstractJVereinView
 {
+  private LehrgangsartControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Lehrgangsart");
 
-    final LehrgangsartControl control = new LehrgangsartControl(this);
+    control = new LehrgangsartControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Lehrgangsart");
     group.addLabelPair("Bezeichnung", control.getBezeichnung(true));
@@ -53,5 +54,11 @@ public class LehrgangsartDetailView extends AbstractView
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

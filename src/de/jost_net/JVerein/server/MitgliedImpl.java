@@ -50,7 +50,6 @@ import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.GenericObject;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
@@ -61,7 +60,7 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedImpl extends AbstractDBObject implements Mitglied
+public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
 {
 
   private static String FEHLER_ZAHLUNGSWEG = ": Der Zahlungsweg ist nicht Basislastschrift.";
@@ -1111,7 +1110,14 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
   }
 
   @Override
-  public void setBeitragsgruppe(Integer beitragsgruppe) throws RemoteException
+  public void setBeitragsgruppe(Beitragsgruppe beitragsgruppe)
+      throws RemoteException
+  {
+    setAttribute("beitragsgruppe", beitragsgruppe);
+  }
+
+  @Override
+  public void setBeitragsgruppeId(Integer beitragsgruppe) throws RemoteException
   {
     setAttribute("beitragsgruppe", beitragsgruppe);
   }
@@ -1697,6 +1703,12 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       public void overwrite(DBObject dbObject) throws RemoteException
       {
 
+      }
+
+      @Override
+      public boolean isChanged() throws RemoteException
+      {
+        return false;
       }
     };
 

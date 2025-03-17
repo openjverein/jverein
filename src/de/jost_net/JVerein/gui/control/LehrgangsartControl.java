@@ -27,7 +27,6 @@ import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -39,7 +38,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangsartControl extends AbstractControl
+public class LehrgangsartControl extends AbstractJVereinControl
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -133,6 +132,16 @@ public class LehrgangsartControl extends AbstractControl
     return veranstalter;
   }
 
+  @Override
+  public void fill() throws RemoteException
+  {
+    Lehrgangsart l = getLehrgangsart();
+    l.setBezeichnung((String) getBezeichnung(false).getValue());
+    l.setVon((Date) getVon().getValue());
+    l.setBis((Date) getBis().getValue());
+    l.setVeranstalter((String) getVeranstalter().getValue());
+  }
+
   /**
    * This method stores the project using the current values.
    */
@@ -140,11 +149,8 @@ public class LehrgangsartControl extends AbstractControl
   {
     try
     {
+      fill();
       Lehrgangsart l = getLehrgangsart();
-      l.setBezeichnung((String) getBezeichnung(false).getValue());
-      l.setVon((Date) getVon().getValue());
-      l.setBis((Date) getBis().getValue());
-      l.setVeranstalter((String) getVeranstalter().getValue());
       l.store();
       GUI.getStatusBar().setSuccessText("Lehrgangsart gespeichert");
     }

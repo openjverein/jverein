@@ -19,25 +19,26 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungAufloesenAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.InfoPanel;
 
-public class SplitbuchungDetailView extends AbstractView
+public class SplitbuchungDetailView extends AbstractJVereinView
 {
+  private BuchungsControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Splitbuchungen");
 
-    final BuchungsControl control = new BuchungsControl(this, Kontenfilter.GELDKONTO);
+    control = new BuchungsControl(this, Kontenfilter.GELDKONTO);
     
     final boolean buchungabgeschlossen = control.isSplitBuchungAbgeschlossen();
     
@@ -90,5 +91,11 @@ public class SplitbuchungDetailView extends AbstractView
     speichern.setEnabled(!buchungabgeschlossen);
     buttons.addButton(speichern);
     buttons.paint(getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

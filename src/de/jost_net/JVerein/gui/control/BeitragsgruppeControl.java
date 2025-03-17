@@ -46,7 +46,6 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.util.VonBis;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -63,7 +62,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BeitragsgruppeControl extends AbstractControl
+public class BeitragsgruppeControl extends AbstractJVereinControl
 {
   private Input[] alterstaffel;
   
@@ -389,31 +388,41 @@ public class BeitragsgruppeControl extends AbstractControl
     return notiz;
   }
 
+  @Override
+  public void fill() throws RemoteException, ApplicationException
+  {
+    Beitragsgruppe b = getBeitragsgruppe();
+    b.setBezeichnung((String) getBezeichnung(false).getValue());
+    if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen())
+    {
+      b.setSekundaer((Boolean) sekundaer.getValue());
+    }
+    else
+    {
+      b.setSekundaer(false);
+    }
+    ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
+
+    b.setBeitragsArt(ba.getKey());
+    b.setBuchungsart((Buchungsart) getBuchungsart().getValue());
+    b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
+    Double d = (Double) getArbeitseinsatzStunden().getValue();
+    b.setArbeitseinsatzStunden(d.doubleValue());
+    d = (Double) getArbeitseinsatzBetrag().getValue();
+    b.setArbeitseinsatzBetrag(d.doubleValue());
+    b.setNotiz((String) getNotiz().getValue());
+    // Beträge fehlen hier noch, sind bei handleStore() im switch mit den
+    // Alterstufen
+  }
+
   public void handleStore()
   {
     try
     {
+      fill();
       Beitragsgruppe b = getBeitragsgruppe();
-      b.setBezeichnung((String) getBezeichnung(false).getValue());
-      if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen())
-      {
-        b.setSekundaer((Boolean) sekundaer.getValue());
-      }
-      else
-      {
-        b.setSekundaer(false);
-      }
-      ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
-
-      b.setBeitragsArt(ba.getKey());
-      b.setBuchungsart((Buchungsart) getBuchungsart().getValue());
-      b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
-      Double d = (Double) getArbeitseinsatzStunden().getValue();
-      b.setArbeitseinsatzStunden(d.doubleValue());
-      d = (Double) getArbeitseinsatzBetrag().getValue();
-      b.setArbeitseinsatzBetrag(d.doubleValue());
-      b.setNotiz((String) getNotiz().getValue());
-      //Die Beitragsgruppe in die DB schreiben damit sie evtl für Altersstaffel verfügbar ist
+      // Die Beitragsgruppe in die DB schreiben damit sie evtl für Altersstaffel
+      // verfügbar ist
       b.setHasAltersstaffel(false);
       b.store();
       

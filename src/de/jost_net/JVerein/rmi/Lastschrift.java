@@ -20,9 +20,8 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.io.IAdresse;
-import de.willuhn.datasource.rmi.DBObject;
 
-public interface Lastschrift extends DBObject, IAdresse
+public interface Lastschrift extends JVereinDBObject, IAdresse
 {
 
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException;

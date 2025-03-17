@@ -17,10 +17,10 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -29,16 +29,16 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class SpendenbescheinigungDetailView extends AbstractView
+public class SpendenbescheinigungDetailView extends AbstractJVereinView
 {
+  private SpendenbescheinigungControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Spendenbescheinigung");
 
-    final SpendenbescheinigungControl control = new SpendenbescheinigungControl(
-        this);
+    control = new SpendenbescheinigungControl(this);
 
     Spendenbescheinigung spb = control.getSpendenbescheinigung();
     if (spb.isNewObject())
@@ -109,5 +109,11 @@ public class SpendenbescheinigungDetailView extends AbstractView
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

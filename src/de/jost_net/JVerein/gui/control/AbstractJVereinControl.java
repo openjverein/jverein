@@ -14,22 +14,28 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
+package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 
-public interface EigenschaftGruppe extends JVereinDBObject
+import de.willuhn.jameica.gui.AbstractControl;
+import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.util.ApplicationException;
+
+public abstract class AbstractJVereinControl extends AbstractControl
 {
-  public String getBezeichnung() throws RemoteException;
 
-  public void setBezeichnung(String bezeichnung) throws RemoteException;
+  public AbstractJVereinControl(AbstractView view)
+  {
+    super(view);
+  }
 
-  public void setPflicht(Boolean pflicht) throws RemoteException;
-
-  public Boolean getPflicht() throws RemoteException;
-
-  public void setMax1(Boolean max1) throws RemoteException;
-
-  public Boolean getMax1() throws RemoteException;
-
+  /**
+   * Diese Funktion muss implementiert werden und das setzen der Werte im
+   * JVereinDBObject übernehmen. Das Speichern soll in handleStore() erfolgen
+   * 
+   * @throws RemoteException
+   * @throws ApplicationException
+   */
+  public abstract void fill() throws RemoteException, ApplicationException;
 }

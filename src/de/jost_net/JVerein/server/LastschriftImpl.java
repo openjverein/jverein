@@ -25,10 +25,10 @@ import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 
-public class LastschriftImpl extends AbstractDBObject implements Lastschrift
+public class LastschriftImpl extends AbstractJVereinDBObject
+    implements Lastschrift
 {
 
   private static final long serialVersionUID = 380278347818535726L;

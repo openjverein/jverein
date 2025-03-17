@@ -17,22 +17,23 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.AnfangsbestandControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class AnfangsbestandDetailView extends AbstractView
+public class AnfangsbestandDetailView extends AbstractJVereinView
 {
+  private AnfangsbestandControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Anfangsbestand");
 
-    final AnfangsbestandControl control = new AnfangsbestandControl(this);
+    control = new AnfangsbestandControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Anfangsbestand");
     group.addLabelPair("Konto", control.getKonto());
@@ -55,5 +56,11 @@ public class AnfangsbestandDetailView extends AbstractView
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

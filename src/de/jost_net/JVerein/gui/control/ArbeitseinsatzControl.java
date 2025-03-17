@@ -125,26 +125,33 @@ public class ArbeitseinsatzControl extends FilterControl
     return auswertungschluessel;
   }
 
+  @Override
+  public void fill() throws RemoteException, ApplicationException
+  {
+    Arbeitseinsatz ae = getArbeitseinsatz();
+    if (ae.isNewObject())
+    {
+      if (getPart().getMitglied().getValue() != null)
+      {
+        Mitglied m = (Mitglied) getPart().getMitglied().getValue();
+        ae.setMitglied(Integer.parseInt(m.getID()));
+      }
+      else
+      {
+        throw new ApplicationException("Bitte Mitglied eingeben");
+      }
+    }
+    ae.setDatum((Date) part.getDatum().getValue());
+    ae.setStunden((Double) part.getStunden().getValue());
+    ae.setBemerkung((String) part.getBemerkung().getValue());
+  }
+
   public void handleStore()
   {
     try
     {
+      fill();
       Arbeitseinsatz ae = getArbeitseinsatz();
-      if (ae.isNewObject())
-      {
-        if (getPart().getMitglied().getValue() != null)
-        {
-          Mitglied m = (Mitglied) getPart().getMitglied().getValue();
-          ae.setMitglied(Integer.parseInt(m.getID()));
-        }
-        else
-        {
-          throw new ApplicationException("Bitte Mitglied eingeben");
-        }
-      }
-      ae.setDatum((Date) part.getDatum().getValue());
-      ae.setStunden((Double) part.getStunden().getValue());
-      ae.setBemerkung((String) part.getBemerkung().getValue());
       ae.store();
       GUI.getStatusBar().setSuccessText("Arbeitseinsatz gespeichert");
     }

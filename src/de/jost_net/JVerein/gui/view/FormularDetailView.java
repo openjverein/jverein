@@ -26,9 +26,9 @@ import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
 import de.jost_net.JVerein.gui.action.FormularfeldAction;
 import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
 import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.FormularControl;
 import de.jost_net.JVerein.rmi.Formular;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -36,15 +36,16 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class FormularDetailView extends AbstractView
+public class FormularDetailView extends AbstractJVereinView
 {
+  private FormularControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Formular");
 
-    final FormularControl control = new FormularControl(this, (Formular) getCurrentObject());
+    control = new FormularControl(this, (Formular) getCurrentObject());
 
     LabelGroup group = new LabelGroup(getParent(), "Formular");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
@@ -94,5 +95,11 @@ public class FormularDetailView extends AbstractView
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

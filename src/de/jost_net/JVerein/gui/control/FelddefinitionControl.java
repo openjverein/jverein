@@ -33,7 +33,6 @@ import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
@@ -45,7 +44,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FelddefinitionControl extends AbstractControl
+public class FelddefinitionControl extends AbstractJVereinControl
 {
 
   private TablePart felddefinitionList;
@@ -123,19 +122,26 @@ public class FelddefinitionControl extends AbstractControl
     return laenge;
   }
 
+  @Override
+  public void fill() throws RemoteException, ApplicationException
+  {
+    Felddefinition f = getFelddefinition();
+    Datentyp d = (Datentyp) getDatentyp().getValue();
+    konvertiereTyp(true, f, d);
+    konvertiereTyp(false, f, d);
+    f.setName((String) getName(true).getValue());
+    f.setLabel((String) getLabel().getValue());
+    f.setDatentyp(d.getKey());
+    Integer i = (Integer) getLaenge().getValue();
+    f.setLaenge(i.intValue());
+  }
+
   public void handleStore()
   {
     try
     {
+      fill();
       Felddefinition f = getFelddefinition();
-      Datentyp d = (Datentyp) getDatentyp().getValue();
-      konvertiereTyp(true, f, d);
-      konvertiereTyp(false, f, d);
-      f.setName((String) getName(true).getValue());
-      f.setLabel((String) getLabel().getValue());
-      f.setDatentyp(d.getKey());
-      Integer i = (Integer) getLaenge().getValue();
-      f.setLaenge(i.intValue());
       f.store();
       GUI.getStatusBar().setSuccessText("Felddefinition gespeichert");
     }

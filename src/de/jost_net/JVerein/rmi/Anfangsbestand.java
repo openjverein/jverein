@@ -19,9 +19,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 import java.util.Date;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Anfangsbestand extends DBObject
+public interface Anfangsbestand extends JVereinDBObject
 {
   public Konto getKonto() throws RemoteException;
 

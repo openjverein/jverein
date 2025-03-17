@@ -18,9 +18,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Buchungsart extends DBObject
+public interface Buchungsart extends JVereinDBObject
 {
   public int getNummer() throws RemoteException;
 

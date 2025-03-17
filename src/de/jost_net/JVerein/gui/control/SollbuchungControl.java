@@ -316,10 +316,23 @@ public class SollbuchungControl extends DruckMailControl
     return suchname2;
   }
 
+  @Override
+  public void fill() throws RemoteException, ApplicationException
+  {
+    Sollbuchung sollb = getSollbuchung();
+    sollb.setZahlerId(getSelectedZahlerId());
+    sollb.setBetrag((Double) getBetrag().getValue());
+    sollb.setDatum((Date) getDatum().getValue());
+    Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
+    sollb.setZahlungsweg(zw.getKey());
+    sollb.setZweck1((String) getZweck1().getValue());
+  }
+
   public boolean handleStore()
   {
     try
     {
+      fill();
       Sollbuchung sollb = getSollbuchung();
       if (sollb.isNewObject())
       {
@@ -336,13 +349,6 @@ public class SollbuchungControl extends DruckMailControl
       if (sollb.getRechnung() != null)
         throw new ApplicationException(
             "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
-      sollb.setZahlerId(getSelectedZahlerId());
-      sollb.setBetrag((Double) getBetrag().getValue());
-      sollb.setDatum((Date) getDatum().getValue());
-      Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
-      sollb.setZahlungsweg(zw.getKey());
-      sollb.setZweck1((String) getZweck1().getValue());
-
       sollb.store();
       GUI.getStatusBar().setSuccessText("Sollbuchung gespeichert");
       return true;

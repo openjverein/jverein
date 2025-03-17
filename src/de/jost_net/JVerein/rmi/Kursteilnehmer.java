@@ -20,10 +20,9 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.io.ILastschrift;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.util.ApplicationException;
 
-public interface Kursteilnehmer extends DBObject, ILastschrift
+public interface Kursteilnehmer extends JVereinDBObject, ILastschrift
 {
 
   public void setID(String id) throws RemoteException;

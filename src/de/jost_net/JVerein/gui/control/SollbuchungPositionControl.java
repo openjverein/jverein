@@ -33,7 +33,6 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -44,7 +43,7 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SollbuchungPositionControl extends AbstractControl
+public class SollbuchungPositionControl extends AbstractJVereinControl
 {
 
   private DateInput datum;
@@ -195,7 +194,8 @@ public class SollbuchungPositionControl extends AbstractControl
     return steuersatz;
   }
 
-  public void handleStore() throws ApplicationException, RemoteException
+  @Override
+  public void fill() throws RemoteException
   {
     SollbuchungPosition pos = getPosition();
     pos.setDatum((Date) getDatum().getValue());
@@ -221,6 +221,12 @@ public class SollbuchungPositionControl extends AbstractControl
     {
       pos.setBuchungsklasseId(null);
     }
+  }
+
+  public void handleStore() throws RemoteException, ApplicationException
+  {
+    fill();
+    SollbuchungPosition pos = getPosition();
     pos.store();
     // Betrag in Sollbuchung neu berechnen
     Double betrag = 0.0;

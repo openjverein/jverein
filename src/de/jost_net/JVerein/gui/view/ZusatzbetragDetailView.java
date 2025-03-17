@@ -18,22 +18,24 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class ZusatzbetragDetailView extends AbstractView
+public class ZusatzbetragDetailView extends AbstractJVereinView
 {
+
+  private ZusatzbetragControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Zusatzbetrag");
-    final ZusatzbetragControl control = new ZusatzbetragControl(this);
+    control = new ZusatzbetragControl(this);
 
     final ZusatzbetragPart part = control.getZusatzbetragPart();
     part.paint(getParent());
@@ -56,5 +58,11 @@ public class ZusatzbetragDetailView extends AbstractView
       }
     }, null, true, "document-save.png");
     buttons.paint(getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

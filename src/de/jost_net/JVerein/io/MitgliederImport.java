@@ -266,7 +266,7 @@ public class MitgliederImport implements Importer
             if (it.hasNext())
               throw new ApplicationException("Beitragsgruppe mit dem Namen "
                   + beitragsgruppe + " ist mehrfach vorhanden");
-            m.setBeitragsgruppe(Integer.parseInt(bg.getID()));
+            m.setBeitragsgruppe(bg);
             if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
             {
               m.setVollZahlerID(null);
