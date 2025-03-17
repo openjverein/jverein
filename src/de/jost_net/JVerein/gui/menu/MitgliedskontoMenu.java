@@ -34,6 +34,7 @@ import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.logging.Logger;
@@ -71,7 +72,7 @@ public class MitgliedskontoMenu extends ContextMenu
         new SpendenbescheinigungAction(Spendenart.SACHSPENDE), "file-invoice.png"));
   }
 
-  private static class MitgliedItem extends CheckedContextMenuItem
+  private static class MitgliedItem extends CheckedSingleContextMenuItem
   {
 
     /**
@@ -102,7 +103,7 @@ public class MitgliedskontoMenu extends ContextMenu
     }
   }
 
-  private static class SollItem extends CheckedContextMenuItem
+  private static class SollItem extends CheckedSingleContextMenuItem
   {
 
     /**
@@ -133,7 +134,7 @@ public class MitgliedskontoMenu extends ContextMenu
     }
   }
 
-  private static class SollOhneIstItem extends CheckedContextMenuItem
+  private static class SollOhneIstItem extends CheckedSingleContextMenuItem
   {
 
     private SollOhneIstItem(String text, Action action, String icon)
@@ -175,7 +176,7 @@ public class MitgliedskontoMenu extends ContextMenu
     }
   }
 
-  private static class SollMitIstItem extends CheckedContextMenuItem
+  private static class SollMitIstItem extends CheckedSingleContextMenuItem
   {
 
     /**
@@ -206,7 +207,8 @@ public class MitgliedskontoMenu extends ContextMenu
     }
   }
 
-  private static class SpendenbescheinigungItem extends CheckedContextMenuItem
+  private static class SpendenbescheinigungItem
+      extends CheckedSingleContextMenuItem
   {
 
     private SpendenbescheinigungItem(String text, Action action, String icon)
@@ -249,7 +251,7 @@ public class MitgliedskontoMenu extends ContextMenu
     }
   }
 
-  private static class OhneRechnungItem extends CheckedContextMenuItem
+  private static class OhneRechnungItem extends CheckedSingleContextMenuItem
   {
 
     private OhneRechnungItem(String text, Action action, String icon)
@@ -299,7 +301,7 @@ public class MitgliedskontoMenu extends ContextMenu
     }
   }
 
-  private static class MitRechnungItem extends CheckedContextMenuItem
+  private static class MitRechnungItem extends CheckedSingleContextMenuItem
   {
 
     private MitRechnungItem(String text, Action action, String icon)

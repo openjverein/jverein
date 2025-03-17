@@ -128,11 +128,16 @@ public class GesamtrechnungNeuAction implements Action
       rechnung.fill(sollbs[0]);
       rechnung.store();
 
+      double summe = 0d;
       for (Sollbuchung sollb : sollbs)
       {
+        summe += sollb.getBetrag();
         sollb.setRechnung(rechnung);
         sollb.store();
       }
+      rechnung.setBetrag(summe);
+      rechnung.store();
+
       DBTransaction.commit();
       GUI.getCurrentView().reload();
       GUI.getStatusBar().setSuccessText("Gesamtrechnung erstellt.");
