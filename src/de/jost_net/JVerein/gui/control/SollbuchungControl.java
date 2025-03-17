@@ -420,6 +420,7 @@ public class SollbuchungControl extends DruckMailControl
         }
       }
     };
+    mitgliedskontoTree.setMulti(true);
     mitgliedskontoTree.addColumn("Name, Vorname", "name");
     mitgliedskontoTree.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

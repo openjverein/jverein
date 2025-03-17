@@ -16,10 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.dialogs.RechnungDialog;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -39,6 +41,35 @@ public class GesamtrechnungNeuAction implements Action
     if (context instanceof Sollbuchung[])
     {
       sollbs = (Sollbuchung[]) context;
+    }
+    else if (context instanceof MitgliedskontoNode[])
+    {
+      MitgliedskontoNode[] mkns = (MitgliedskontoNode[]) context;
+
+      ArrayList<Sollbuchung> sollArray = new ArrayList<>();
+      for (MitgliedskontoNode mkn : mkns)
+      {
+        // Nur Sollbuchungen behandeln, Istbuchungen ignorieren wir
+        if (mkn.getType() == MitgliedskontoNode.SOLL)
+        {
+          try
+          {
+            sollArray.add(Einstellungen.getDBService()
+                .createObject(Sollbuchung.class, mkn.getID()));
+          }
+          catch (RemoteException e)
+          {
+            throw new ApplicationException(
+                "Fehler beim erstellen der Rechnung!");
+          }
+        }
+      }
+      if (sollArray.size() <= 1)
+      {
+        throw new ApplicationException(
+            "Es sind zu wenig Sollbuchungen ausgewählt.");
+      }
+      sollbs = sollArray.toArray(new Sollbuchung[sollArray.size()]);
     }
     else
     {
