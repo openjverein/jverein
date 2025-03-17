@@ -301,13 +301,13 @@ public class RechnungControl extends DruckMailControl
           + Sollbuchung.TABLE_NAME_ID;
       if (getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
       {
-        sql += "having sum(buchung.betrag) < " + Sollbuchung.T_BETRAG + " or "
+        sql += " having sum(buchung.betrag) < " + Sollbuchung.T_BETRAG + " or "
             + "(sum(buchung.betrag) is null and " + Sollbuchung.T_BETRAG
             + " > 0) ";
       }
       else
       {
-        sql += "having sum(buchung.betrag) > " + Sollbuchung.T_BETRAG + " or "
+        sql += " having sum(buchung.betrag) > " + Sollbuchung.T_BETRAG + " or "
             + "(sum(buchung.betrag) is null and " + Sollbuchung.T_BETRAG
             + " < 0) ";
       }
