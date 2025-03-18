@@ -852,6 +852,14 @@ public class MitgliedskontoControl extends DruckMailControl
     zahler = new MitgliedInput().getMitgliedInput(zahler,
         getMitgliedskonto().getZahler(),
         Einstellungen.getEinstellung().getMitgliedAuswahl());
+    if (zahler instanceof SelectInput)
+    {
+      ((SelectInput) zahler).setPleaseChoose("Bitte auswählen");
+      if (getMitgliedskonto().getZahler() == null)
+      {
+        ((SelectInput) zahler).setPreselected(null);
+      }
+    }
     zahler.setMandatory(true);
     return zahler;
   }
