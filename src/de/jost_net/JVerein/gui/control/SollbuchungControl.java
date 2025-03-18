@@ -321,6 +321,15 @@ public class SollbuchungControl extends DruckMailControl
     try
     {
       Sollbuchung sollb = getSollbuchung();
+
+      if (getZahler().getValue() != null)
+      {
+        sollb.setZahler((Mitglied) getZahler().getValue());
+      }
+      else
+      {
+        throw new ApplicationException("Bitte Zahler eingeben");
+      }
       sollb.setMitglied((Mitglied) getMitglied().getValue());
       if (sollb.getRechnung() != null)
         throw new ApplicationException(

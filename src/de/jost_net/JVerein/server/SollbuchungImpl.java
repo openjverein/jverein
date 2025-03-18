@@ -98,10 +98,6 @@ public class SollbuchungImpl extends AbstractDBObject
       {
         throw new ApplicationException("Bitte Mitglied eingeben");
       }
-      if (getZahler() == null)
-      {
-        throw new ApplicationException("Bitte Zahler eingeben");
-      }
       if (getDatum() == null)
       {
         throw new ApplicationException("Datum fehlt");
