@@ -1390,7 +1390,21 @@ public class MitgliedImpl extends AbstractDBObject implements Mitglied
       return getAlter();
     }
     else if ("beitragsgruppe".equals(fieldName))
+    {
       return getBeitragsgruppe();
+    }
+    else if ("status".equals(fieldName))
+    {
+      try
+      {
+        plausi();
+        return true;
+      }
+      catch (Exception e)
+      {
+        return false;
+      }
+    }
     return super.getAttribute(fieldName);
   }
 
