@@ -321,18 +321,7 @@ public class SollbuchungControl extends DruckMailControl
     try
     {
       Sollbuchung sollb = getSollbuchung();
-      if (sollb.isNewObject())
-      {
-        if (getMitglied().getValue() != null)
-        {
-          sollb.setMitglied((Mitglied) getMitglied().getValue());
-        }
-        else
-        {
-          throw new ApplicationException("Bitte Mitglied eingeben");
-        }
-      }
-
+      sollb.setMitglied((Mitglied) getMitglied().getValue());
       if (sollb.getRechnung() != null)
         throw new ApplicationException(
             "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
@@ -872,7 +861,7 @@ public class SollbuchungControl extends DruckMailControl
     if (zahler instanceof SelectInput)
     {
       ((SelectInput) zahler).setPleaseChoose("Bitte auswählen");
-      if (getSollbuchung().getMitglied() == null)
+      if (getSollbuchung().getZahler() == null)
       {
         ((SelectInput) zahler).setPreselected(null);
       }
