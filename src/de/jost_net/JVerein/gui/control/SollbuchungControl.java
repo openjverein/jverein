@@ -912,8 +912,7 @@ public class SollbuchungControl extends DruckMailControl
       try
       {
         Mitglied m = (Mitglied) getMitglied().getValue();
-        Mitglied z = (Mitglied) getZahler().getValue();
-        if (m != null && z == null)
+        if (m != null)
         {
           getZahler().setValue(m.getZahler());
         }
