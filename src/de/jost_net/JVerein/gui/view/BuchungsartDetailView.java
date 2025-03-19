@@ -18,9 +18,9 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.BuchungsartControl;
 import de.jost_net.JVerein.rmi.Buchungsart;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -28,15 +28,16 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsartDetailView extends AbstractView
+public class BuchungsartDetailView extends AbstractJVereinView
 {
+  private BuchungsartControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Buchungsart");
 
-    final BuchungsartControl control = new BuchungsartControl(this);
+    control = new BuchungsartControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Buchungsart");
     group.addLabelPair("Nummer", control.getNummer(true));
@@ -88,5 +89,11 @@ public class BuchungsartDetailView extends AbstractView
     }, null, false, "go-next.png"));
 
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

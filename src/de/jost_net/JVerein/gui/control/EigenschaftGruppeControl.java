@@ -26,7 +26,6 @@ import de.jost_net.JVerein.gui.view.EigenschaftGruppeDetailView;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -38,7 +37,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftGruppeControl extends AbstractControl
+public class EigenschaftGruppeControl extends AbstractJVereinControl
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -100,6 +99,15 @@ public class EigenschaftGruppeControl extends AbstractControl
     return max1;
   }
 
+  @Override
+  public void fill() throws RemoteException
+  {
+    EigenschaftGruppe eg = getEigenschaftGruppe();
+    eg.setBezeichnung((String) getBezeichnung().getValue());
+    eg.setPflicht((Boolean) getPflicht().getValue());
+    eg.setMax1((Boolean) getMax1().getValue());
+  }
+
   /**
    * This method stores the project using the current values.
    */
@@ -107,19 +115,15 @@ public class EigenschaftGruppeControl extends AbstractControl
   {
     try
     {
+      fill();
       EigenschaftGruppe eg = getEigenschaftGruppe();
-      eg.setBezeichnung((String) getBezeichnung().getValue());
-      eg.setPflicht((Boolean) getPflicht().getValue());
-      eg.setMax1((Boolean) getMax1().getValue());
-      try
-      {
-        eg.store();
-        GUI.getStatusBar().setSuccessText("Eigenschaften Gruppe gespeichert");
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
+
+      eg.store();
+      GUI.getStatusBar().setSuccessText("Eigenschaften Gruppe gespeichert");
+    }
+    catch (ApplicationException e)
+    {
+      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {

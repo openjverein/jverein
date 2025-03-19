@@ -17,22 +17,24 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.ProjektControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class ProjektDetailView extends AbstractView
+public class ProjektDetailView extends AbstractJVereinView
 {
+
+  private ProjektControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Projekt");
 
-    final ProjektControl control = new ProjektControl(this);
+    control = new ProjektControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Projekt");
     group.addInput(control.getBezeichnung());
@@ -52,5 +54,10 @@ public class ProjektDetailView extends AbstractView
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());
+  }
+
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

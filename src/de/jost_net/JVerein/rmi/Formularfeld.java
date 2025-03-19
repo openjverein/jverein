@@ -18,9 +18,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Formularfeld extends DBObject
+public interface Formularfeld extends JVereinDBObject
 {
   public void setID(String id) throws RemoteException;
 

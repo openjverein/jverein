@@ -16,33 +16,30 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.BeitragsgruppeControl;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.Beitragsmodel;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.AbstractDialog;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Container;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.util.ApplicationException;
 
-public class BeitragsgruppeDetailView extends AbstractView
+public class BeitragsgruppeDetailView extends AbstractJVereinView
 {
 
-  final BeitragsgruppeControl control = new BeitragsgruppeControl(this);
+  private BeitragsgruppeControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Beitragsgruppe");
+
+    control = new BeitragsgruppeControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Beitrag");
     group.addLabelPair("Bezeichnung", control.getBezeichnung(true));
@@ -121,32 +118,8 @@ public class BeitragsgruppeDetailView extends AbstractView
   }
 
   @Override
-  public void unbind() throws ApplicationException
+  protected AbstractJVereinControl getControl()
   {
-    try
-    {
-      if (control.getBezeichnung(true).hasChanged()
-          || control.getBetrag().hasChanged())
-      {
-        YesNoDialog dialog = new YesNoDialog(AbstractDialog.POSITION_CENTER);
-        dialog.setText("Soll die Änderung gespeichert werden?");
-        try
-        {
-          Boolean yesno = (Boolean) dialog.open();
-          if (yesno)
-          {
-            throw new ApplicationException("Änderungen bitte speichern.");
-          }
-        }
-        catch (Exception e)
-        {
-          throw new ApplicationException(e);
-        }
-      }
-    }
-    catch (RemoteException e)
-    {
-      throw new ApplicationException(e);
-    }
+    return control;
   }
 }

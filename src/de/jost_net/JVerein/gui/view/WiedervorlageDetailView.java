@@ -17,21 +17,22 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.WiedervorlageControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class WiedervorlageDetailView extends AbstractView
+public class WiedervorlageDetailView extends AbstractJVereinView
 {
+  private WiedervorlageControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Wiedervorlage");
-    final WiedervorlageControl control = new WiedervorlageControl(this);
+    control = new WiedervorlageControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Wiedervorlage");
     group.addLabelPair("Mitglied", control.getMitglied());
@@ -52,5 +53,11 @@ public class WiedervorlageDetailView extends AbstractView
       }
     }, null, true, "document-save.png");
     buttons.paint(getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

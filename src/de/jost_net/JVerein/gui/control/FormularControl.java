@@ -141,7 +141,7 @@ public class FormularControl extends FormularPartControl
     }
 
     Formular currentForm = getFormular();
-    Integer currentlyLinkedFormId = currentForm.getFormlink();
+    Long currentlyLinkedFormId = currentForm.getFormlink();
     // Create select box
     if (currentlyLinkedFormId != 0)
     {
@@ -187,6 +187,26 @@ public class FormularControl extends FormularPartControl
     return formlink;
   }
 
+  @Override
+  public void fill() throws RemoteException
+  {
+    Formular f = getFormular();
+    f.setBezeichnung((String) getBezeichnung(true).getValue());
+    FormularArt fa = (FormularArt) getArt().getValue();
+    f.setArt(fa);
+    f.setZaehler((int) getZaehler().getValue());
+
+    Formular fl = (Formular) getFormlink().getValue();
+    if (fl != null)
+    {
+      f.setFormlink(Long.valueOf(fl.getID()));
+    }
+    else
+    {
+      f.setFormlink(null);
+    }
+  }
+
   /**
    * This method stores the project using the current values.
    */
@@ -194,10 +214,9 @@ public class FormularControl extends FormularPartControl
   {
     try
     {
+      fill();
       Formular f = getFormular();
-      f.setBezeichnung((String) getBezeichnung(true).getValue());
-      FormularArt fa = (FormularArt) getArt().getValue();
-      f.setArt(fa);
+      f.setZaehlerToFormlink((int) getZaehler().getValue());
       String dat = (String) getDatei().getValue();
       if (dat.length() > 0)
       {
@@ -206,20 +225,6 @@ public class FormularControl extends FormularPartControl
         fis.read(b);
         fis.close();
         f.setInhalt(b);
-      }
-
-      int newZaehler = (int) getZaehler().getValue();
-      f.setZaehler(newZaehler);
-      f.setZaehlerToFormlink(newZaehler);
-
-      Formular fl = (Formular) getFormlink().getValue();
-      if (fl != null)
-      {
-        f.setFormlink(Integer.valueOf(fl.getID()));
-      }
-      else
-      {
-        f.setFormlink(null);
       }
 
       f.store();

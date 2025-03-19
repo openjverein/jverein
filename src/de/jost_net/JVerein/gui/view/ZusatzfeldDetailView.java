@@ -17,22 +17,24 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.FelddefinitionControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class ZusatzfeldDetailView extends AbstractView
+public class ZusatzfeldDetailView extends AbstractJVereinView
 {
+
+  private FelddefinitionControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Zusatzfeld");
 
-    final FelddefinitionControl control = new FelddefinitionControl(this);
+    control = new FelddefinitionControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Zusatzfeld");
     group.addLabelPair("Name", control.getName(true));
@@ -53,5 +55,11 @@ public class ZusatzfeldDetailView extends AbstractView
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

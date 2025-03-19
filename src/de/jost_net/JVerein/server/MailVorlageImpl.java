@@ -19,11 +19,11 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.MailVorlage;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailVorlageImpl extends AbstractDBObject implements MailVorlage
+public class MailVorlageImpl extends AbstractJVereinDBObject
+    implements MailVorlage
 {
 
   private static final long serialVersionUID = 1L;

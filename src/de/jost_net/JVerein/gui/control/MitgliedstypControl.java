@@ -24,7 +24,6 @@ import de.jost_net.JVerein.gui.menu.MitgliedstypMenu;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -35,7 +34,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedstypControl extends AbstractControl
+public class MitgliedstypControl extends AbstractJVereinControl
 {
   private de.willuhn.jameica.system.Settings settings;
 
@@ -85,6 +84,14 @@ public class MitgliedstypControl extends AbstractControl
     return bezeichnungplural;
   }
 
+  @Override
+  public void fill() throws RemoteException
+  {
+    Mitgliedstyp mt = getMitgliedstyp();
+    mt.setBezeichnung((String) getBezeichnung().getValue());
+    mt.setBezeichnungPlural((String) getBezeichnungPlural().getValue());
+  }
+
   /**
    * This method stores the project using the current values.
    */
@@ -92,9 +99,8 @@ public class MitgliedstypControl extends AbstractControl
   {
     try
     {
+      fill();
       Mitgliedstyp mt = getMitgliedstyp();
-      mt.setBezeichnung((String) getBezeichnung().getValue());
-      mt.setBezeichnungPlural((String) getBezeichnungPlural().getValue());
       try
       {
         mt.store();

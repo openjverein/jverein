@@ -172,36 +172,45 @@ public class LehrgangControl extends FilterControl
     return ergebnis;
   }
 
+  @Override
+  public void fill() throws RemoteException
+  {
+    Lehrgang l = getLehrgang();
+
+    Lehrgangsart la = (Lehrgangsart) getLehrgangsart().getValue();
+    if (la != null)
+    {
+      l.setLehrgangsart(Long.valueOf(la.getID()));
+    }
+    else
+    {
+      l.setLehrgangsart(null);
+    }
+    l.setVon((Date) getVon().getValue());
+    l.setBis((Date) getBis().getValue());
+    l.setVeranstalter((String) getVeranstalter().getValue());
+    l.setErgebnis((String) getErgebnis().getValue());
+  }
+
   public void handleStore()
   {
     try
     {
+      fill();
       Lehrgang l = getLehrgang();
       if (l.isNewObject())
       {
         if (getMitglied().getValue() != null)
         {
-          l.setMitglied(Integer.valueOf(
-              ((Mitglied) getMitglied().getValue()).getID()));
+          l.setMitglied(
+              Integer.valueOf(((Mitglied) getMitglied().getValue()).getID()));
         }
         else
         {
           throw new ApplicationException("Bitte Mitglied eingeben");
         }
       }
-      Lehrgangsart la = (Lehrgangsart) getLehrgangsart().getValue();
-      if (la != null)
-      {
-        l.setLehrgangsart(Integer.valueOf(la.getID()));
-      }
-      else
-      {
-        l.setLehrgangsart(null);
-      }
-      l.setVon((Date) getVon().getValue());
-      l.setBis((Date) getBis().getValue());
-      l.setVeranstalter((String) getVeranstalter().getValue());
-      l.setErgebnis((String) getErgebnis().getValue());
+
       l.store();
       GUI.getStatusBar().setSuccessText("Lehrgang gespeichert");
     }

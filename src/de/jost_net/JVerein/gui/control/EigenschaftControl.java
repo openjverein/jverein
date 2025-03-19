@@ -29,7 +29,6 @@ import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -41,7 +40,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftControl extends AbstractControl
+public class EigenschaftControl extends AbstractJVereinControl
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -103,31 +102,35 @@ public class EigenschaftControl extends AbstractControl
     return eigenschaftgruppe;
   }
 
+  @Override
+  public void fill() throws RemoteException
+  {
+    Eigenschaft ei = getEigenschaft();
+
+    GenericObject o = (GenericObject) getEigenschaftGruppe().getValue();
+    if (o != null)
+    {
+      ei.setEigenschaftGruppe(Long.valueOf(o.getID()));
+    }
+    else
+    {
+      ei.setEigenschaftGruppe(null);
+    }
+    ei.setBezeichnung((String) getBezeichnung().getValue());
+  }
+
   public void handleStore()
   {
     try
     {
+      fill();
       Eigenschaft ei = getEigenschaft();
-
-      GenericObject o = (GenericObject) getEigenschaftGruppe().getValue();
-      try
-      {
-        if (o != null)
-        {
-          ei.setEigenschaftGruppe(Integer.valueOf(o.getID()));
-        }
-        else
-        {
-          ei.setEigenschaftGruppe(null);
-        }
-        ei.setBezeichnung((String) getBezeichnung().getValue());
-        ei.store();
-        GUI.getStatusBar().setSuccessText("Eigenschaft gespeichert");
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
+      ei.store();
+      GUI.getStatusBar().setSuccessText("Eigenschaft gespeichert");
+    }
+    catch (ApplicationException e)
+    {
+      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {

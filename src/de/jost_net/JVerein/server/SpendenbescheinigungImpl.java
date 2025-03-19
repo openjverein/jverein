@@ -28,12 +28,11 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SpendenbescheinigungImpl extends AbstractDBObject
+public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
     implements Spendenbescheinigung
 {
 

@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.parts.BuchungPart;
@@ -26,13 +27,13 @@ import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class BuchungDetailView extends AbstractView
+public class BuchungDetailView extends AbstractJVereinView
 {
+  private BuchungsControl control;
 
   @Override
   public void bind() throws Exception
@@ -46,7 +47,7 @@ public class BuchungDetailView extends AbstractView
           && bu.getKonto().getKontoArt() == Kontoart.ANLAGE)
         art = Kontenfilter.ANLAGEKONTO;
     }
-    final BuchungsControl control = new BuchungsControl(this, art);
+    control = new BuchungsControl(this, art);
 
     final boolean buchungabgeschlossen = control.isBuchungAbgeschlossen();
 
@@ -107,5 +108,11 @@ public class BuchungDetailView extends AbstractView
     buttons.addButton(saveNextButton);
 
     buttons.paint(getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

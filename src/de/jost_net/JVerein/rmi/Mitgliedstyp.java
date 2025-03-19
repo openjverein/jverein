@@ -18,9 +18,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Mitgliedstyp extends DBObject
+public interface Mitgliedstyp extends JVereinDBObject
 {
   public static final String TABLE_NAME = "adresstyp";
 
