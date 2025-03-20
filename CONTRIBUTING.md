@@ -53,3 +53,129 @@ Für die Verwendung von IntelliJ folge diesen Schritten:
 3. Füge die Zeilen `jameica.plugin.dir.0=../../hibiscus-<version>-nightly.src/hibiscus` und `jameica.plugin.dir.1=../../jverein` in die Datei ein.
 4. Führe nun die Jameica-Configuration erneut aus und die Plugins werden jetzt geladen. Die Einrichtung ist abgeschlossen und du kannst anfangen an diesem Projekt mitzuwirken.
 5. Wenn du etwas am Code geändert hast und du deine Änderungen testen willst, musst du vor dem erneuten Ausführen der Run-Configuration einen Rebuild des Projekts durchführen.
+
+
+# Code Struktur
+Der Code von JVerein ist in folgende Packages gegliedert.
+
+Fehlerausgabe in Action, io, control
+Standard Buttons: Speichern, Speichern und neu, Hilfe, Neu ==========> Input und Action erstellen
+
+
+### gui.view
+extends AbstractView oder AbstractDetailView (überwacht Verlassen ohne Speichern)
+
+Enthält die Anordnung von Inputelementen, Parts, Buttons. Wirklich nur die Anordnung ohne Actions etc.
+Fehler werden nur als Exception geworfen und ggf. geloggt (Logger.debug()/info()/error()), nicht direkt in der GUI angezeigt
+
+### gui.control
+extends AbstracControl, AbstractJVereinControl (für Überwachung vonn Verllassen ohne Speichern), FilterControl (Liste mit Filtermöglichkeiten), DruckMailControl (Mailversand), SaldoControl, ForumlarPartControl
+
+Enthält alle Inputelemente mit initialisierng
+Für jedes Input, Part, Button eine get Funktion.
+getOBJECT() zum holen des DBObjects (ruft getCurrentObject() auf und castet nach OBJECT)
+fill() zum füllen der Daten aus den Inputs in das Object
+handleStore() speichert die gefüllten Daten -> Impl->store()
+Möglichst keine weiteren public funktionen
+Fehler werden nur per Exception behandelt, keine direkte Ausgabe, das ist Aufgabe der Actions
+Möglichst keine direkten SQL abfragen, diese sollten nach server.
+Enthält Listener (Mehrfachverwendete in gui.control.listener)
+
+### server
+extends AbstractDBObject oder AbstractJVereinDBObject (zur bereitstellung einer public isChanged() funktion)
+
+Fachobjecte.
+Hier wird alles was direkt mit der DB zu tun hat implementiert.
+In den anderen KLssen sollte möglichst nur über diese DBObjecte auf die DB zugegriffen werden, keine direkten SQL Queries.
+Alle getter und Setter der DB Attribute
+deleteCheck(), insertCheck(), updateCheck() zum testen der eingegebenen Daten. Das sollte nur hier erfolgen und nicht im Control oder Action. throws ApplicationException
+getForeignObject() für Fremdschlüssel
+ggf. weiter DBIterator etc.
+ggf. refresh()
+Hier keine GUI ausgabe, so dass auch ein Betrieb ohne GUI möglich wäre. Fehler werden nur als Exception geworfen und ggf. geloggt (Logger.debug()/info()/error()).
+
+### gui.menu
+extends ContextMenu
+
+Die Menüeinträge eines Kontextmenüs
+ggf. Spezielle ContextMenueItems, dabei auftretende Exceptions nur per Logger.error() ausgeben, nicht per GUI.
+Keine Behandlung von Actions etc. das wir alles von den Actions erledigt
+
+### gui.action
+implements Action
+Aktionen die beim Kick auf Menüeinträge und Buttons ausgeführt werden.
+Aufruf von Views, handleStore(), doExport() etc.
+Nicht die Behandlung der Aktion sofern sie auswirkungen außerhalb der GUI hat (Also nicht direkte SQL Queries ausführen sondern die entsprechenden Funktionen der Impl aufrufen)
+Fehlermeldungen werden durch diese Klassen aufgefangen und ausgegeben.
+
+### io
+Alle Ein- und Ausgabe in Datei, Mail, Hibsicus etc.
+Hier keine GUI ausgabe, so dass auch ein Betrieb ohne GUI möglich wäre. Fehler werden nur als Exception geworfen und ggf. geloggt (Logger.debug()/info()/error()).
+
+
+
+### Calendar
+Einträge, die im Jameica Kalender erscheinen sollen
+
+### DBTools
+zzT. nur Transaction
+
+### keys
+Konstanten für Arten von Eigenschaften, zB. Formulararten, Kontoarten.
+
+### Messaging
+Messages und globale MessageConsumer.
+
+### Queries
+Ausgelagerte, umfangreiche SQL-Queries (die an mehreren stellen benötigt werden).
+
+### rmi
+Interfaces der Fachobjekte.
+
+### search
+Objecte die bei der Jameica Suche gefunden werden sollen.
+
+### server.DDLTOOL
+Tools zum erstellen un Bearbeiten der DBSpalten und Tabellen.
+
+### server.DDLTool.Updates
+DB Updatescripte in der Form UpdateXXXX.
+
+### server.Tools
+===>verschieben
+
+### util
+Hilfsfunktionen die nichts mit der gui zu tun haben
+
+### Variable
+Maps die für Variablen in Mails, Pdfs, Abrechnung etc. verwendet werden
+
+## gui
+Alles was hier ist, ist ausschlieslich für die GUI, ein Serverbetrieb muss auch ohne diese Klassen auskommen!
+
+
+### gui.boxes
+Boxen die auf der Startseite angezeigt werden.
+
+### gui.dialogs
+extends AbstractDialog
+
+Dialoge.
+
+### gui.formatter
+Mehrfach verwendete Formatter.
+
+### gui.inpus
+Mehrfach verwendete Inputs.
+
+### gui.navigation
+MyExtension: Die Navigation links mit allen Einträgen.
+
+### gui.parts
+extends Part, TablePart, TreePart
+
+Vorgefertigte Tabellen, Trees etc.
+
+### gui.util
+Werkzeuge für die GUI
+
