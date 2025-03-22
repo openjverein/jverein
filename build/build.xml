@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project xmlns:resolver="antlib:org.apache.maven.resolver.ant" basedir=".." default="all" name="All">
-  <property environment="env" />
   <property name="build.dir" value="build" />
-  <xmlproperty file="plugin.xml" collapseattributes="true" />
-  <loadproperties srcfile="${build.dir}/build.properties" />
-
 
   <taskdef uri="antlib:org.apache.maven.resolver.ant" resource="org/apache/maven/resolver/ant/antlib.xml">
     <classpath>
@@ -37,6 +33,9 @@
     <tstamp>
       <format property="build.timestamp" pattern="yyyyMMdd" />
     </tstamp>
+    <xmlproperty file="plugin.xml" collapseattributes="true" />
+    <loadproperties srcfile="${build.dir}/build.properties" />
+
 
     <echo message="VERSION: ${plugin.version}" level="info" />
     <echo message="BUILD  : ${build.number}" level="info" />
@@ -164,6 +163,7 @@
   </target>
 
   <target name="clean" description="Cleanup">
+    <loadproperties srcfile="${build.dir}/build.properties" />
     <delete dir="${project.tmp}" />
     <delete dir="${class.dir}" />
     <delete includeemptydirs="true">
