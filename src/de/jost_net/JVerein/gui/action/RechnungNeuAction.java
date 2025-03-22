@@ -82,7 +82,8 @@ public class RechnungNeuAction implements Action
       }
       Formular formular = dialog.getFormular();
       Date rechnungsdatum = dialog.getDatum();
-      if (formular == null || rechnungsdatum == null)
+      boolean sollbuchungsDatum = dialog.getSollbuchungsdatum();
+      if (formular == null || (rechnungsdatum == null && !sollbuchungsDatum))
       {
         return;
       }
@@ -99,7 +100,15 @@ public class RechnungNeuAction implements Action
             .createObject(Rechnung.class, null);
 
         rechnung.setFormular(formular);
-        rechnung.setDatum(rechnungsdatum);
+
+        if (sollbuchungsDatum)
+        {
+          rechnung.setDatum(sollb.getDatum());
+        }
+        else
+        {
+          rechnung.setDatum(rechnungsdatum);
+        }
         rechnung.fill(sollb);
         rechnung.store();
 
