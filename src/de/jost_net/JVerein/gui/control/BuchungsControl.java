@@ -47,8 +47,8 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
-import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
+import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
@@ -1888,19 +1888,7 @@ public class BuchungsControl extends AbstractControl
     return false;
   }
 
-  public Action getBuchungSpeichernAction()
-  {
-    return new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        buchungSpeichern();
-      }
-    };
-  }
-
-  private void buchungSpeichern()
+  public void buchungSpeichern() throws ApplicationException
   {
     try
     {
@@ -1916,7 +1904,7 @@ public class BuchungsControl extends AbstractControl
     catch (ApplicationException e)
     {
       DBTransaction.rollback();
-      GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
+      throw new ApplicationException(e);
     }
   }
 

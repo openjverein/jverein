@@ -180,11 +180,25 @@ public interface Mitglied extends DBObject, ILastschrift
   public void setIndividuellerBeitrag(Double individuellerbeitrag)
       throws RemoteException;
 
+  /**
+   * Ist das Mitglied Teil in einem Familienverband, wird das voll zahlende
+   * Mitglied zurück geliefert.
+   */
+  public Mitglied getVollZahler() throws RemoteException;
+
+  public Long getVollZahlerID() throws RemoteException;
+
+  public void setVollZahlerID(Long id) throws RemoteException;
+
+  /**
+   * Liefert das Mitglied welches den Beitrag für das Mitglied bezahlt. Es ist
+   * normalerweise das Mitglied selbst. Ist das Mitglied Teil in einem
+   * Familienverband und als Zahlungsweg "Vollzahler" konfiguriert, wird das
+   * voll zahlende Mitglied zurückgeliefert.
+   */
   public Mitglied getZahler() throws RemoteException;
 
   public Long getZahlerID() throws RemoteException;
-
-  public void setZahlerID(Long id) throws RemoteException;
 
   public Date getAustritt() throws RemoteException;
 

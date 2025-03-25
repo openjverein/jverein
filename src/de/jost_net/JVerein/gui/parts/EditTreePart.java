@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.TreeEditor;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -47,8 +48,6 @@ import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.gui.util.Color;
-import de.willuhn.jameica.messaging.StatusBarMessage;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -89,6 +88,10 @@ public class EditTreePart extends TreePart
   protected Context createFeatureEventContext(Feature.Event e, Object data)
   {
     Context ctx = super.createFeatureEventContext(e, data);
+    if (!e.equals(Feature.Event.PAINT))
+    {
+      return ctx;
+    }
     tree = (Tree) ctx.control;
     if (this.changeable)
     {
@@ -169,7 +172,7 @@ public class EditTreePart extends TreePart
           {
             public void run()
             {
-              if (editorControl != null && !editorControl.isDisposed())
+              if (editorControl != null)
                 editorControl.dispose();
 
               Button b = GUI.getShell().getDefaultButton();
@@ -177,7 +180,8 @@ public class EditTreePart extends TreePart
                 b.setEnabled(enabled);
 
               // Aktuelle Zeile markieren
-              select(item.getData());
+              if (!item.isDisposed())
+                select(item.getData());
             }
           };
           //
@@ -197,9 +201,9 @@ public class EditTreePart extends TreePart
                 if (oldValue != null && oldValue.equals(newValue))
                   return; // nothing changed
 
-
                 // Wir versuchen den neuen Wert zu formatieren. Wenn es nicht
                 // klappt, verwenden wir ihn so wie er ist.
+                String formattedValue = newValue;
                 try
                 {
                   // Wird gebraucht, um den ursprünglichen Typ zu kennen.
@@ -214,35 +218,36 @@ public class EditTreePart extends TreePart
                   {
                     o = Integer.parseInt(newValue);
                   }
-                  newValue = col.getFormattedValue(o, item);
+                  formattedValue = col.getFormattedValue(o, item);
                 }
-                catch (Exception ignore)
+                catch (Exception e)
                 {
+                  Logger.error(
+                      "error while formatting new value: " + e.getMessage());
                 }
 
-                item.setText(index, newValue);
-
-                for (TableChangeListener l : changeListeners)
+                try
                 {
-                  try
+                  item.setText(index, formattedValue);
+
+                  for (TableChangeListener l : changeListeners)
                   {
                     l.itemChanged(item.getData(), col.getColumnId(), newValue);
-                    if (color != null)
-                      item.setForeground(index, color);
                   }
-                  catch (ApplicationException ae)
-                  {
+                  if (color != null && !item.isDisposed())
+                    item.setForeground(index, color);
+                }
+                catch (SWTException | ApplicationException ae)
+                {
+                  if (!item.isDisposed())
                     item.setForeground(index, Color.ERROR.getSWTColor());
-                    String msg = ae.getMessage();
-                    if (msg == null || msg.length() == 0)
-                    {
-                      msg = "Fehler beim Ändern des Wertes";
-                      Logger.error("error while changing value", ae);
-                    }
-                    Application.getMessagingFactory().sendMessage(
-                        new StatusBarMessage(msg, StatusBarMessage.TYPE_ERROR));
-                    break;
+                  String msg = ae.getMessage();
+                  if (msg == null || msg.length() == 0)
+                  {
+                    msg = "Fehler beim Ändern des Wertes";
+                    Logger.error("error while changing value", ae);
                   }
+                  GUI.getStatusBar().setErrorText(msg);
                 }
               }
               finally
@@ -366,6 +371,9 @@ public class EditTreePart extends TreePart
     newText.setText(oldValue);
     newText.selectAll();
     newText.setFocus();
+
+    // Falls der tree neu geladen wird sofort auch den Editro entfernen
+    item.addDisposeListener(e -> newText.dispose());
     return newText;
   }
 

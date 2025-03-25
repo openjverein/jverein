@@ -50,10 +50,21 @@ public class EvalMail
     context = new VelocityContext();
     context.put("dateformat", new JVDateFormatTTMMJJJJ());
     context.put("decimalformat", Einstellungen.DECIMALFORMAT);
-    context.put("email", mitglied.getEmail());
-    context.put("empf", mitglied);
+    if (mitglied != null)
+    {
+      context.put("email", mitglied.getEmail());
+      context.put("empf", mitglied);
+    }
     Map<String, Object> map = new MitgliedMap().getMap(mitglied,
         new AllgemeineMap().getMap(null));
+    VarTools.add(context, map);
+  }
+
+  public EvalMail(Map<String, Object> map) throws RemoteException
+  {
+    context = new VelocityContext();
+    context.put("dateformat", new JVDateFormatTTMMJJJJ());
+    context.put("decimalformat", Einstellungen.DECIMALFORMAT);
     VarTools.add(context, map);
   }
 

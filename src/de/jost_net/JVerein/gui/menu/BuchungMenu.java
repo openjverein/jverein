@@ -29,11 +29,13 @@ import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
 import de.jost_net.JVerein.gui.action.SyntaxExportAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
@@ -84,6 +86,9 @@ public class BuchungMenu extends ContextMenu
               new MitgliedDetailAction(), "user-friends.png"));
       addItem(new SingleGegenBuchungItem("Neues Anlagenkonto", new AnlagenkontoNeuAction(),
           "document-new.png"));
+      addItem(new SpendenbescheinigungMenuItem("Geldspendenbescheinigung",
+          new SpendenbescheinigungAction(Spendenart.GELDSPENDE),
+          "file-invoice.png"));
     }
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(), "view-refresh.png"));
@@ -322,6 +327,38 @@ public class BuchungMenu extends ContextMenu
         }
       }
       return true;
+    }
+  }
+
+  private static class SpendenbescheinigungMenuItem
+      extends CheckedSingleContextMenuItem
+  {
+    private SpendenbescheinigungMenuItem(String text, Action action,
+        String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      try
+      {
+        if (o instanceof Buchung)
+        {
+          Buchung b = (Buchung) o;
+          if (b.getBuchungsart() != null)
+          {
+            return b.getBuchungsart().getSpende()
+                && b.getSpendenbescheinigung() == null;
+          }
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+      }
+      return false;
     }
   }
 }

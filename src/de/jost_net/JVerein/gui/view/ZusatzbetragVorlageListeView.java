@@ -17,40 +17,31 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.StartViewAction;
-import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
-import de.jost_net.JVerein.gui.action.ZusatzbetraegeImportAction;
-import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
+import de.jost_net.JVerein.gui.action.NewAction;
+import de.jost_net.JVerein.gui.control.ZusatzbetragVorlageControl;
+import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class ZusatzbetragListeView extends AbstractView
+public class ZusatzbetragVorlageListeView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Zusatzbeträge");
+    GUI.getView().setTitle("Zusatzbeträge-Vorlagen");
 
-    final ZusatzbetragControl control = new ZusatzbetragControl(this);
+    final ZusatzbetragVorlageControl control = new ZusatzbetragVorlageControl(
+        this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Ausführungstag");
-    group.addLabelPair("Ausführungstag", control.getAusfuehrungSuch());
-
-    control.getZusatzbetraegeList().paint(this.getParent());
+    control.getZusatzbetraegeVorlageList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
-    buttons.addButton("Vorlagen",
-        new StartViewAction(ZusatzbetragVorlageListeView.class), null, false,
-        "euro-sign.png");
-    buttons.addButton("Import",
-        new ZusatzbetraegeImportAction(),null,false, "file-import.png");
-    buttons.addButton(control.getPDFAusgabeButton());
-    buttons.addButton("Neu", new ZusatzbetraegeAction(null), 
+        DokumentationUtil.ZUSATZBETRAEGE_VORLAGE, false, "question-circle.png");
+    buttons.addButton("Neu",
+        new NewAction(ZusatzbetragVorlageDetailView.class, ZusatzbetragVorlage.class),
         control, false, "document-new.png");
     buttons.paint(this.getParent());
   }

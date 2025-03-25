@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.io.Ct1Ueberweisung;
 import de.jost_net.JVerein.io.FormularAufbereitung;
@@ -660,6 +661,10 @@ public class PreNotificationControl extends DruckMailControl
 
             Map<String, Object> map = new AllgemeineMap().getMap(null);
             map = new LastschriftMap().getMap(ls, map);
+            boolean ohneLesefelder = !(betr + txt)
+                .contains(Einstellungen.LESEFELD_PRE);
+            map = new MitgliedMap().getMap(ls.getMitglied(), map,
+                ohneLesefelder);
             VarTools.add(context, map);
 
             StringWriter wtext1 = new StringWriter();

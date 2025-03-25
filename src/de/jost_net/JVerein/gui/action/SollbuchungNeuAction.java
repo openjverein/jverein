@@ -55,16 +55,8 @@ public class SollbuchungNeuAction implements Action
               "Neues Mitglied bitte erst speichern. Dann können Sollbuchungen aufgenommen werden.");
         }
         sollb.setMitglied(m);
-        sollb.setZahlungsweg(m.getZahlungsweg());
-        if (m.getZahlerID() != null
-            && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
-        {
-          sollb.setZahler(m.getZahler());
-        }
-        else
-        {
-          sollb.setZahler(m);
-        }
+        sollb.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+        sollb.setZahlerId(m.getZahlerID());
       }
       SollbuchungNeuDialog sollbd = new SollbuchungNeuDialog(sollb);
       if (sollbd.open())

@@ -275,11 +275,7 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
         return false;
       }
       sollbuchungPosition.setSollbuchung(sollbuchung.getID());
-      if (!sollbPosControl.handleStore())
-      {
-        DBTransaction.rollback();
-        return false;
-      }
+      sollbPosControl.handleStore();
       DBTransaction.commit();
       return true;
     }

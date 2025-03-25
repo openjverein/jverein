@@ -35,7 +35,6 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -43,6 +42,7 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class SollbuchungPositionControl extends AbstractControl
 {
@@ -195,59 +195,44 @@ public class SollbuchungPositionControl extends AbstractControl
     return steuersatz;
   }
 
-  public boolean handleStore()
+  public void handleStore() throws ApplicationException, RemoteException
   {
-    try
+    SollbuchungPosition pos = getPosition();
+    pos.setDatum((Date) getDatum().getValue());
+    pos.setZweck((String) getZweck().getValue());
+    pos.setBetrag((Double) getBetrag().getValue());
+    if (getBuchungsart().getValue() != null)
     {
-      SollbuchungPosition pos = getPosition();
-      pos.setDatum((Date) getDatum().getValue());
-      pos.setZweck((String) getZweck().getValue());
-      pos.setBetrag((Double) getBetrag().getValue());
-      if (getBuchungsart().getValue() != null)
-      {
-        Buchungsart ba = (Buchungsart) getBuchungsart().getValue();
-        pos.setBuchungsartId(Long.parseLong(ba.getID()));
-        pos.setSteuersatz(ba.getSteuersatz());
-      }
-      else
-      {
-        pos.setBuchungsartId(null);
-        pos.setSteuersatz(0.0);
-      }
-      if (getBuchungsklasse().getValue() != null)
-      {
-        pos.setBuchungsklasseId(Long.parseLong(
-            ((Buchungsklasse) getBuchungsklasse().getValue()).getID()));
-      }
-      else
-      {
-        pos.setBuchungsklasseId(null);
-      }
-      pos.store();
-      // Betrag in Sollbuchung neu berechnen
-      Double betrag = 0.0;
-      Sollbuchung sollb = pos.getSollbuchung();
-      ArrayList<SollbuchungPosition> sollbpList = sollb
-          .getSollbuchungPositionList();
-      for (SollbuchungPosition sollp : sollbpList)
-      {
-        betrag += sollp.getBetrag();
-      }
-      sollb.setBetrag(betrag);
-      sollb.store();
-      return true;
+      Buchungsart ba = (Buchungsart) getBuchungsart().getValue();
+      pos.setBuchungsartId(Long.parseLong(ba.getID()));
+      pos.setSteuersatz(ba.getSteuersatz());
     }
-    catch (RemoteException e)
+    else
     {
-      String fehler = "Fehler beim Speichern der Sollbuchungsposition";
-      Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      pos.setBuchungsartId(null);
+      pos.setSteuersatz(0.0);
     }
-    catch (Exception e)
+    if (getBuchungsklasse().getValue() != null)
     {
-      GUI.getStatusBar().setErrorText(e.getMessage());
+      pos.setBuchungsklasseId(Long.parseLong(
+          ((Buchungsklasse) getBuchungsklasse().getValue()).getID()));
     }
-    return false;
+    else
+    {
+      pos.setBuchungsklasseId(null);
+    }
+    pos.store();
+    // Betrag in Sollbuchung neu berechnen
+    Double betrag = 0.0;
+    Sollbuchung sollb = pos.getSollbuchung();
+    ArrayList<SollbuchungPosition> sollbpList = sollb
+        .getSollbuchungPositionList();
+    for (SollbuchungPosition sollp : sollbpList)
+    {
+      betrag += sollp.getBetrag();
+    }
+    sollb.setBetrag(betrag);
+    sollb.store();
   }
 
 }

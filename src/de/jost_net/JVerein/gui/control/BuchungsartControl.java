@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -93,6 +95,10 @@ public class BuchungsartControl extends FilterControl
 
   private SelectInput status;
 
+  private TextInput suchbegriff;
+
+  private CheckboxInput regexp;
+
 
   public BuchungsartControl(AbstractView view)
   {
@@ -155,6 +161,26 @@ public class BuchungsartControl extends FilterControl
     status = new SelectInput(StatusBuchungsart.getArray(),
         new StatusBuchungsart(getBuchungsart().getStatus()));
     return status;
+  }
+
+  public TextInput getSuchbegriff() throws RemoteException
+  {
+    if (suchbegriff != null)
+    {
+      return suchbegriff;
+    }
+    suchbegriff = new TextInput(getBuchungsart().getSuchbegriff(), 150);
+    return suchbegriff;
+  }
+
+  public CheckboxInput getRegexp() throws RemoteException
+  {
+    if (regexp != null)
+    {
+      return regexp;
+    }
+    regexp = new CheckboxInput(getBuchungsart().getRegexp());
+    return regexp;
   }
 
   public CheckboxInput getSpende() throws RemoteException
@@ -386,8 +412,10 @@ public class BuchungsartControl extends FilterControl
 
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
@@ -398,8 +426,7 @@ public class BuchungsartControl extends FilterControl
       }
       catch (NullPointerException e)
       {
-        GUI.getStatusBar().setErrorText("Nummer fehlt");
-        return;
+        throw new ApplicationException("Nummer fehlt");
       }
       b.setBezeichnung((String) getBezeichnung().getValue());
       ArtBuchungsart ba = (ArtBuchungsart) getArt().getValue();
@@ -434,22 +461,32 @@ public class BuchungsartControl extends FilterControl
       }
       StatusBuchungsart st = (StatusBuchungsart) getStatus().getValue();
       b.setStatus(st.getKey());
-
-      try
+      b.setSuchbegriff((String) getSuchbegriff().getValue());
+      b.setRegexp((Boolean) getRegexp().getValue());
+      if ((Boolean) getRegexp().getValue())
       {
-        b.store();
-        GUI.getStatusBar().setSuccessText("Buchungsart gespeichert");
+        try
+        {
+          Pattern.compile((String) getSuchbegriff().getValue());
+        }
+        catch (PatternSyntaxException pse)
+        {
+          throw new ApplicationException(
+              "Regulärer Ausdruck ungültig: " + pse.getDescription());
+        }
       }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
+      b.store();
+      GUI.getStatusBar().setSuccessText("Buchungsart gespeichert");
+    }
+    catch (ApplicationException e)
+    {
+      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern der Buchungsart";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler);
     }
   }
 
@@ -516,6 +553,7 @@ public class BuchungsartControl extends FilterControl
           return "ungültig";
         }
       }, false, Column.ALIGN_LEFT);
+      buchungsartList.addColumn("Suchtext", "suchbegriff");
       buchungsartList.setContextMenu(new BuchungsartMenu());
       buchungsartList.setMulti(true);
       buchungsartList.setRememberColWidths(true);

@@ -14,27 +14,24 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.server.DDLTool.Updates;
 
-import java.sql.Connection;
+package de.jost_net.JVerein.gui.control;
 
-import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
-import de.jost_net.JVerein.server.DDLTool.Column;
-import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
+import java.rmi.RemoteException;
 
-public class Update0380 extends AbstractDDLUpdate
+/**
+ * Interface für den zugriff auf Mail Betreff und Text
+ */
+public interface IMailControl
 {
-  public Update0380(String driver, ProgressMonitor monitor, Connection conn)
-  {
-    super(driver, monitor, conn);
-  }
 
-  @Override
-  public void run() throws ApplicationException
-  {
-    // Liquibase id=112
-    execute(alterColumnSetNotNull("mailempfaenger",
-        new Column("versand", COLTYPE.TIMESTAMP, 0, null, true, false)));
-  }
+  /**
+   * @return Betreff der Mail
+   */
+  public String getBetreffString() throws RemoteException;
+
+  /**
+   * @return Text der Mail
+   */
+  public String getTxtString() throws RemoteException;
 }

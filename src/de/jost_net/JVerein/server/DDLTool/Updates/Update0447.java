@@ -31,10 +31,10 @@ public class Update0447 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(alterColumn("mail",
+    execute(alterColumnDropNotNull("mail",
         new Column("versand", COLTYPE.TIMESTAMP, 0, "NULL", false, false)));
 
-    execute(alterColumn("mailempfaenger",
+    execute(alterColumnDropNotNull("mailempfaenger",
         new Column("versand", COLTYPE.TIMESTAMP, 0, "NULL", false, false)));
 
     execute(dropForeignKey("fkAnfangsbestand1", "anfangsbestand"));

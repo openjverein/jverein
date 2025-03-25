@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import java.rmi.RemoteException;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -24,10 +25,17 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.LastschriftMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
+import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.PreNotificationControl;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.server.MitgliedImpl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -73,11 +81,23 @@ public class PreNotificationMailView extends AbstractView
     grtabMailPDF.addInput(control.getBetreff());
     grtabMailPDF.addInput(control.getTxt());
 
+    Map<String, Object> map = LastschriftMap.getDummyMap(null);
+    map = new MitgliedMap().getMap(MitgliedImpl.getDummy(), map);
+    map = new AllgemeineMap().getMap(map);
+
     ButtonArea buttons1 = new ButtonArea();
     buttons1.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.PRENOTIFICATION, false, "question-circle.png");
     buttons1.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
         control, false, "view-refresh.png"));
+    buttons1.addButton("Variablen anzeigen",
+        new InsertVariableDialogAction(map), control, false, "bookmark.png");
+    buttons1
+        .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
+        control, false, "edit-copy.png"));
+    buttons1.addButton(
+        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+            control, false, "document-new.png"));
     buttons1.addButton(control.getStartButton(this.getCurrentObject()));
     addButtonArea(buttons1, grtabMailPDF.getComposite());
 

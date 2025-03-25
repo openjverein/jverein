@@ -55,7 +55,7 @@ public class SpendenbescheinigungAction implements Action
   {
     try
     {
-      if (context != null && context instanceof Spendenbescheinigung)
+      if (context instanceof Spendenbescheinigung)
       {
         spb = (Spendenbescheinigung) context;
       }
@@ -77,7 +77,7 @@ public class SpendenbescheinigungAction implements Action
             handleMitglied(m);
           }
         }
-        else if (context != null && (context instanceof MitgliedskontoNode))
+        else if (context instanceof MitgliedskontoNode)
         {
           MitgliedskontoNode mkn = (MitgliedskontoNode) context;
 
@@ -123,6 +123,32 @@ public class SpendenbescheinigungAction implements Action
               handleMitglied(spb.getMitglied());
             }
           }
+        }
+        else if (context instanceof Buchung)
+        {
+          Buchung b = (Buchung) context;
+          if (b.getBuchungsart() == null || !b.getBuchungsart().getSpende())
+          {
+            throw new ApplicationException(
+                "Die Buchung hat keine Buchungsart die als Spende deklariert ist!");
+          }
+          if (b.getSpendenbescheinigung() != null)
+          {
+            throw new ApplicationException(
+                "Die Buchung ist bereits auf einer Spendenbescheinigung eingetragen!");
+          }
+          if (b.getSollbuchung() != null)
+          {
+            // Zahler aus Sollbuchung lesen
+            Mitglied zahler = b.getSollbuchung().getZahler();
+            if (zahler != null)
+            {
+              SpbAdressaufbereitung.adressaufbereitung(zahler, spb);
+            }
+          }
+          spb.setBuchung(b);
+          spb.setSpendedatum(b.getDatum());
+          spb.setAutocreate(Boolean.TRUE);
         }
         else
         {

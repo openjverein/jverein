@@ -34,7 +34,7 @@ public class Update0381 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     // Liquibase id=113
-    execute(alterColumnNotNull("mail",
+    execute(alterColumnSetNotNull("mail",
         new Column("versand", COLTYPE.TIMESTAMP, 0, null, true, false)));
   }
 }

@@ -16,84 +16,49 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
-import de.jost_net.JVerein.gui.control.SollbuchungPositionControl;
+import de.jost_net.JVerein.gui.control.ZusatzbetragVorlageControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.util.ApplicationException;
 
-public class SollbuchungPositionDetailView extends AbstractView
+public class ZusatzbetragVorlageDetailView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Sollbuchungsposition");
-
-    final SollbuchungPositionControl control = new SollbuchungPositionControl(
+    GUI.getView().setTitle("Zusatzbetrag-Vorlage");
+    final ZusatzbetragVorlageControl control = new ZusatzbetragVorlageControl(
         this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Sollbuchungsposition");
-    group.addLabelPair("Datum", control.getDatum());
-    group.addLabelPair("Zweck", control.getZweck());
+    LabelGroup group = new LabelGroup(getParent(), "Zusatzbetrag-Vorlage");
+    group.addLabelPair("Erste Fälligkeit ", control.getStartdatum(true));
+    group.addLabelPair("Nächste Fälligkeit", control.getFaelligkeit());
+    group.addLabelPair("Intervall", control.getIntervall());
+    group.addLabelPair("Nicht mehr ausführen ab", control.getEndedatum());
+    group.addLabelPair("Buchungstext", control.getBuchungstext());
     group.addLabelPair("Betrag", control.getBetrag());
     group.addLabelPair("Buchungsart", control.getBuchungsart());
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
-    {
       group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
-    }
+    group.addLabelPair("Zahlungsweg", control.getZahlungsweg());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
-        "question-circle.png");
+        DokumentationUtil.ZUSATZBETRAEGE_VORLAGE, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 
       @Override
       public void handleAction(Object context)
       {
-        try
-        {
-          control.handleStore();
-          GUI.startPreviousView();
-          GUI.getStatusBar().setSuccessText("Sollbuchungsposition gespeichert");
-        }
-        catch (ApplicationException | RemoteException e)
-        {
-          GUI.getStatusBar().setErrorText(e.getMessage());
-        }
+        control.handleStore();
       }
     }, null, true, "document-save.png");
-
-    buttons.addButton(new Button("Speichern und neu", context -> {
-      try
-      {
-        control.handleStore();
-
-        new SollbuchungPositionNeuAction()
-            .handleAction(control.getPosition().getSollbuchung());
-        GUI.getStatusBar().setSuccessText("Sollbuchungsposition gespeichert");
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
-      catch (RemoteException e)
-      {
-        GUI.getStatusBar()
-            .setErrorText("Fehler beim Speichern der Sollbuchungsposition: "
-                + e.getMessage());
-      }
-    }, null, false, "go-next.png"));
-    buttons.paint(this.getParent());
+    buttons.paint(getParent());
   }
 }

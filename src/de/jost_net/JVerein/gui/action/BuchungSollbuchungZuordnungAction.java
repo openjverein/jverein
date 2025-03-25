@@ -91,15 +91,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
           sollb.setBetrag(betrag);
           sollb.setDatum(b[0].getDatum());
           sollb.setMitglied(m);
-          Long zahlerId = m.getZahlerID();
-          if (zahlerId != null)
-          {
-            sollb.setZahlerId(zahlerId);
-          }
-          else
-          {
-            sollb.setZahler(m);
-          }
+          sollb.setZahlerId(m.getZahlerID());
           sollb.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
           sollb.setZweck1(b[0].getZweck());
           sollb.store();

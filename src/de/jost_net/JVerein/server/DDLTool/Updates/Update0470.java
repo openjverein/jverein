@@ -13,16 +13,16 @@
  **********************************************************************/
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
+import java.sql.Connection;
+
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-import java.sql.Connection;
-
-public class Update0452 extends AbstractDDLUpdate
+public class Update0470 extends AbstractDDLUpdate
 {
-  public Update0452(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0470(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -30,10 +30,10 @@ public class Update0452 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute("update mitgliedskonto set betrag = 0 where betrag IS NULL");
-    
-    Column betrag = new Column("betrag", COLTYPE.DOUBLE, 0, null, true,
-        false);
-    execute(alterColumnSetNotNull("mitgliedskonto", betrag));
+    execute(addColumn("buchungsart",
+        new Column("suchbegriff", COLTYPE.VARCHAR, 150, null, false, false)));
+
+    execute(addColumn("buchungsart",
+        new Column("regularexp", COLTYPE.BOOLEAN, 0, null, false, false)));
   }
 }

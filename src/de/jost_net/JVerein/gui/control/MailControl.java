@@ -58,7 +58,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class MailControl extends FilterControl
+public class MailControl extends FilterControl implements IMailControl
 {
 
   private AutoUpdateTablePart empfaenger;
@@ -389,11 +389,13 @@ public class MailControl extends FilterControl
     return b;
   }
 
+  @Override
   public String getBetreffString() throws RemoteException
   {
     return (String) getBetreff().getValue();
   }
 
+  @Override
   public String getTxtString() throws RemoteException
   {
     return (String) getTxt().getValue();

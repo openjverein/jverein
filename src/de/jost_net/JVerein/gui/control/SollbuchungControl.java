@@ -147,6 +147,8 @@ public class SollbuchungControl extends DruckMailControl
 
   private TablePart buchungList;
 
+  private BuchungListPart istbuchungList;
+
   public SollbuchungControl(AbstractView view)
   {
     super(view);
@@ -243,11 +245,7 @@ public class SollbuchungControl extends DruckMailControl
     {
       z = getSollbuchung().getZahlungsweg();
     }
-    boolean mitVollzahler = false;
-    if (getMitglied().getValue() != null
-        && ((Mitglied) getMitglied().getValue()).getZahlerID() != null)
-      mitVollzahler = true;
-    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray(mitVollzahler);
+    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray(false);
 
     zahlungsweg = new SelectInput(weg,
         z == null
@@ -323,18 +321,12 @@ public class SollbuchungControl extends DruckMailControl
     try
     {
       Sollbuchung sollb = getSollbuchung();
-      if (sollb.isNewObject())
-      {
-        if (getMitglied().getValue() != null)
-        {
-          sollb.setMitglied((Mitglied) getMitglied().getValue());
-        }
-        else
-        {
-          throw new ApplicationException("Bitte Mitglied eingeben");
-        }
-      }
 
+      if (getZahler().getValue() == null)
+      {
+        throw new ApplicationException("Bitte Zahler eingeben");
+      }
+      sollb.setMitglied((Mitglied) getMitglied().getValue());
       if (sollb.getRechnung() != null)
         throw new ApplicationException(
             "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
@@ -422,6 +414,7 @@ public class SollbuchungControl extends DruckMailControl
         }
       }
     };
+    mitgliedskontoTree.setMulti(true);
     mitgliedskontoTree.addColumn("Name, Vorname", "name");
     mitgliedskontoTree.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -574,8 +567,15 @@ public class SollbuchungControl extends DruckMailControl
 
   public Part getBuchungListPart() throws RemoteException
   {
-    return new BuchungListPart(getSollbuchung().getBuchungList(),
+    if (istbuchungList != null)
+    {
+      return istbuchungList;
+    }
+    istbuchungList = new BuchungListPart(getSollbuchung().getBuchungList(),
         new BuchungAction(false), new BuchungPartBearbeitenMenu());
+    Application.getMessagingFactory()
+        .registerMessageConsumer(new MitgliedskontoMessageConsumer());
+    return istbuchungList;
   }
 
   private GenericIterator<Mitglied> getMitgliedIterator() throws RemoteException
@@ -750,7 +750,18 @@ public class SollbuchungControl extends DruckMailControl
         {
           try
           {
-            if (mitgliedskontoTree == null)
+            if (mitgliedskontoTree != null)
+            {
+              Mitglied mitglied = (Mitglied) getCurrentObject();
+              mitgliedskontoTree
+                  .setRootObject(new MitgliedskontoNode(mitglied));
+            }
+            else if (istbuchungList != null)
+            {
+              MitgliedskontoMessage msg = (MitgliedskontoMessage) message;
+              istbuchungList.removeItem(msg.getObject());
+            }
+            else
             {
               // Eingabe-Feld existiert nicht. Also abmelden
               Application.getMessagingFactory().unRegisterMessageConsumer(
@@ -758,9 +769,7 @@ public class SollbuchungControl extends DruckMailControl
               return;
             }
 
-            MitgliedskontoMessage msg = (MitgliedskontoMessage) message;
-            Mitglied mitglied = (Mitglied) msg.getObject();
-            mitgliedskontoTree.setRootObject(new MitgliedskontoNode(mitglied));
+
           }
           catch (Exception e)
           {
@@ -858,7 +867,7 @@ public class SollbuchungControl extends DruckMailControl
     if (zahler instanceof SelectInput)
     {
       ((SelectInput) zahler).setPleaseChoose("Bitte auswählen");
-      if (getSollbuchung().getMitglied() == null)
+      if (getSollbuchung().getZahler() == null)
       {
         ((SelectInput) zahler).setPreselected(null);
       }
@@ -902,32 +911,11 @@ public class SollbuchungControl extends DruckMailControl
     {
       try
       {
-        @SuppressWarnings("unchecked")
-        ArrayList<Zahlungsweg> list = (ArrayList<Zahlungsweg>) getZahlungsweg()
-            .getList();
-        list.remove(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
         Mitglied m = (Mitglied) getMitglied().getValue();
-        Mitglied z = (Mitglied) getZahler().getValue();
-
-        if (m != null && m.getZahlerID() != null)
+        if (m != null)
         {
-          list.add(new Zahlungsweg(Zahlungsweg.VOLLZAHLER));
+          getZahler().setValue(m.getZahler());
         }
-        if (m != null && m.getZahlerID() != null && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
-        {
-          if (z == null)
-          {
-            getZahler().setValue(m.getZahler());
-          }
-        }
-        else
-        {
-          if (z == null)
-          {
-            getZahler().setValue(getMitglied().getValue());
-          }
-        }
-        getZahlungsweg().setList(list);
       }
       catch (RemoteException e)
       {
