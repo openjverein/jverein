@@ -23,9 +23,9 @@ import de.willuhn.util.ProgressMonitor;
 import java.sql.Connection;
 
 @SuppressWarnings("unused")
-public class Update0469 extends AbstractDDLUpdate
+public class Update0471 extends AbstractDDLUpdate
 {
-  public Update0469(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0471(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -38,7 +38,7 @@ public class Update0469 extends AbstractDDLUpdate
             false)));
 
     Table wirtschaftsplan = new Table("wirtschaftsplan");
-    Column id = new Column("id", COLTYPE.INTEGER, 4, null, false, true);
+    Column id = new Column("id", COLTYPE.BIGINT, 4, null, false, true);
     wirtschaftsplan.add(id);
     wirtschaftsplan.setPrimaryKey(id);
     wirtschaftsplan.add(
@@ -49,7 +49,7 @@ public class Update0469 extends AbstractDDLUpdate
     execute(createTable(wirtschaftsplan));
 
     Table wirtschaftsplanItem = new Table("wirtschaftsplanitem");
-    Column itemId = new Column("id", COLTYPE.INTEGER, 4, null, false, true);
+    Column itemId = new Column("id", COLTYPE.BIGINT, 4, null, false, true);
     wirtschaftsplanItem.add(itemId);
     wirtschaftsplanItem.setPrimaryKey(itemId);
     Column wirtschaftsplanCol = new Column("wirtschaftsplan", COLTYPE.INTEGER, 4,

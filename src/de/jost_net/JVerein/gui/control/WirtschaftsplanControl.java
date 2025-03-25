@@ -23,8 +23,8 @@ import de.jost_net.JVerein.gui.menu.WirtschaftsplanListMenu;
 import de.jost_net.JVerein.gui.parts.EditTreePart;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanView;
-import de.jost_net.JVerein.io.WirtschaftsplanungCSV;
-import de.jost_net.JVerein.io.WirtschaftsplanungPDF;
+import de.jost_net.JVerein.io.WirtschaftsplanCSV;
+import de.jost_net.JVerein.io.WirtschaftsplanPDF;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
@@ -88,16 +88,9 @@ public class WirtschaftsplanControl extends AbstractControl
   public Part getWirtschaftsplanungList() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
-    List<Wirtschaftsplan> plaene = new ArrayList<>();
-
-    GenericIterator<Wirtschaftsplan> iterator = service.createList(Wirtschaftsplan.class);
-    while (iterator.hasNext())
-    {
-      plaene.add(iterator.next());
-    }
 
     TablePart wirtschaftsplaene = new TablePart(
-        plaene, new EditAction(WirtschaftsplanView.class));
+            service.createList(Wirtschaftsplan.class), new EditAction(WirtschaftsplanView.class));
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
@@ -503,15 +496,15 @@ public class WirtschaftsplanControl extends AbstractControl
         switch (type)
         {
           case AUSWERTUNG_CSV:
-            new WirtschaftsplanungCSV(einnahmenList, ausgabenList, file);
+            new WirtschaftsplanCSV(einnahmenList, ausgabenList, file);
             break;
           case AUSWERTUNG_PDF:
-            new WirtschaftsplanungPDF(einnahmenList, ausgabenList, file,
+            new WirtschaftsplanPDF(einnahmenList, ausgabenList, file,
                 getWirtschaftsplan());
             break;
           default:
             GUI.getStatusBar()
-                .setErrorText("Unable to create Report. Unknown format!");
+                .setErrorText("Report konnte nicht erzeugt werden! Das Format ist unbekannt!");
         }
       }
 

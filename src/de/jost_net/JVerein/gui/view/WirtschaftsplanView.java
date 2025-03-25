@@ -124,6 +124,7 @@ public class WirtschaftsplanView extends AbstractView
         iterator.addFilter("datum_bis = ?", calendar.getTime());
       }
 
+      iterator.setOrder("order by id");
       if (iterator.hasNext())
       {
         Wirtschaftsplan plan = iterator.next();
@@ -131,7 +132,7 @@ public class WirtschaftsplanView extends AbstractView
         if (iterator.hasNext())
         {
           GUI.getStatusBar().setSuccessText(
-                  "Mehr als einen Plan für diesen Zeitraum gefunden. Es wird ein zufälliger Plan für diesen Zeitraum geladen!");
+                  "Mehr als einen Plan für diesen Zeitraum gefunden. Es wird der erste Plan für diesen Zeitraum geladen!");
         }
       }
       else

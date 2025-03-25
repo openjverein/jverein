@@ -16,6 +16,18 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.rmi.RemoteException;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.DocumentException;
@@ -23,6 +35,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
@@ -46,17 +59,6 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.util.ApplicationException;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.rmi.RemoteException;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Action zur Generierung von Spendenbescheinigungen aus der Datenbank.<br>

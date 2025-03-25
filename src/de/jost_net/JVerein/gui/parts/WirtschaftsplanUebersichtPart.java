@@ -112,7 +112,7 @@ public class WirtschaftsplanUebersichtPart implements Part
     catch (RemoteException e)
     {
       throw new ApplicationException(
-          "Fehler beim aktualisieren der Übersicht!");
+          "Fehler beim Aktualisieren der Übersicht!");
     }
 
     double sollEinnahmen = einnahmen.stream()

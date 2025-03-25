@@ -250,6 +250,7 @@ public class MyExtension implements Extension
           new StartViewAction(JahresabschlussListeView.class),
           "office-calendar.png"));
       jverein.addChild(buchfuehrung);
+      // Wirtschaftsplan
       if (Einstellungen.getEinstellung().getWirtschaftsplanung())
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Wirtschaftsplanung",

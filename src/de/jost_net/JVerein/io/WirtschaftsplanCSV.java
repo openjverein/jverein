@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WirtschaftsplanungCSV
+public class WirtschaftsplanCSV
 {
   private static CellProcessor[] getProcessors()
   {
@@ -53,8 +53,8 @@ public class WirtschaftsplanungCSV
   }
 
   @SuppressWarnings("ThrowFromFinallyBlock")
-  public WirtschaftsplanungCSV(List<WirtschaftsplanNode> einnahmenList,
-      List<WirtschaftsplanNode> ausgabenList, final File file)
+  public WirtschaftsplanCSV(List<WirtschaftsplanNode> einnahmenList,
+                            List<WirtschaftsplanNode> ausgabenList, final File file)
       throws ApplicationException
   {
     ICsvMapWriter writer = null;

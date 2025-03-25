@@ -33,13 +33,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WirtschaftsplanungPDF
+public class WirtschaftsplanPDF
 {
   private final Map<WirtschaftsplanNode, Double> sollSummen;
 
-  public WirtschaftsplanungPDF(List<WirtschaftsplanNode> einnahmenList,
-      List<WirtschaftsplanNode> ausgabenList, File file,
-      Wirtschaftsplan wirtschaftsplan) throws ApplicationException
+  public WirtschaftsplanPDF(List<WirtschaftsplanNode> einnahmenList,
+                            List<WirtschaftsplanNode> ausgabenList, File file,
+                            Wirtschaftsplan wirtschaftsplan) throws ApplicationException
   {
     sollSummen = new HashMap<>();
     try
