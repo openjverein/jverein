@@ -17,14 +17,6 @@
 
 package de.jost_net.JVerein.gui.action;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Date;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.server.AbrechnungslaufImpl;
 import de.jost_net.JVerein.server.MitgliedstypImpl;
@@ -69,6 +61,8 @@ import de.jost_net.JVerein.server.SpendenbescheinigungImpl;
 import de.jost_net.JVerein.server.SuchprofilImpl;
 import de.jost_net.JVerein.server.VersionImpl;
 import de.jost_net.JVerein.server.WiedervorlageImpl;
+import de.jost_net.JVerein.server.WirtschaftsplanImpl;
+import de.jost_net.JVerein.server.WirtschaftsplanItemImpl;
 import de.jost_net.JVerein.server.ZusatzbetragAbrechnungslaufImpl;
 import de.jost_net.JVerein.server.ZusatzbetragImpl;
 import de.jost_net.JVerein.server.ZusatzbetragVorlageImpl;
@@ -88,6 +82,13 @@ import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Date;
 
 /**
  * Action zum Erstellen eines Komplett-Backups im XML-Format.
@@ -340,6 +341,11 @@ public class BackupCreateAction implements Action
           
           monitor.setStatusText("Speichere Zusatzbetrag Vorlagen");
           backup(ZusatzbetragVorlageImpl.class, writer, monitor);
+          monitor.addPercentComplete(1);
+
+          monitor.setStatusText("Speichere Wirtschaftsplanung");
+          backup(WirtschaftsplanImpl.class, writer, monitor);
+          backup(WirtschaftsplanItemImpl.class, writer, monitor, "wirtschaftsplan");
           monitor.addPercentComplete(1);
 
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
