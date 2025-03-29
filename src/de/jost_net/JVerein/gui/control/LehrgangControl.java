@@ -48,6 +48,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class LehrgangControl extends FilterControl
+    implements Savable
 {
 
   private TablePart lehrgaengeList;
@@ -173,7 +174,7 @@ public class LehrgangControl extends FilterControl
   }
 
   @Override
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     Lehrgang l = getLehrgang();
 
@@ -196,7 +197,7 @@ public class LehrgangControl extends FilterControl
   {
     try
     {
-      fill();
+      prepareStore();
       Lehrgang l = getLehrgang();
       if (l.isNewObject())
       {

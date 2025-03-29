@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
-import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SollbuchungPositionControl;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -67,7 +67,7 @@ public class SollbuchungPositionDetailView extends AbstractJVereinView
           GUI.startPreviousView();
           GUI.getStatusBar().setSuccessText("Sollbuchungsposition gespeichert");
         }
-        catch (ApplicationException | RemoteException e)
+        catch (ApplicationException e)
         {
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
@@ -98,7 +98,7 @@ public class SollbuchungPositionDetailView extends AbstractJVereinView
   }
 
   @Override
-  protected AbstractJVereinControl getControl()
+  protected Savable getControl()
   {
     return control;
   }

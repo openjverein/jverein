@@ -73,6 +73,7 @@ import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class ArbeitseinsatzControl extends FilterControl
+    implements Savable
 {
   private ArbeitseinsatzPart part = null;
 
@@ -126,7 +127,7 @@ public class ArbeitseinsatzControl extends FilterControl
   }
 
   @Override
-  public void fill() throws RemoteException, ApplicationException
+  public void prepareStore() throws RemoteException, ApplicationException
   {
     Arbeitseinsatz ae = getArbeitseinsatz();
     if (ae.isNewObject())
@@ -150,7 +151,7 @@ public class ArbeitseinsatzControl extends FilterControl
   {
     try
     {
-      fill();
+      prepareStore();
       Arbeitseinsatz ae = getArbeitseinsatz();
       ae.store();
       GUI.getStatusBar().setSuccessText("Arbeitseinsatz gespeichert");

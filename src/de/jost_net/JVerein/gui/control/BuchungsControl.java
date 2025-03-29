@@ -87,6 +87,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -121,7 +122,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class BuchungsControl extends AbstractJVereinControl
+public class BuchungsControl extends AbstractControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -299,7 +301,7 @@ public class BuchungsControl extends AbstractJVereinControl
   }
 
   @Override
-  public void fill() throws RemoteException, ApplicationException
+  public void prepareStore() throws RemoteException, ApplicationException
   {
     fill((Buchung) getCurrentObject());
   }
@@ -1046,7 +1048,7 @@ public class BuchungsControl extends AbstractJVereinControl
     return b;
   }
 
-  private void handleStore() throws ApplicationException
+  public void handleStore() throws ApplicationException
   {
     try
     {

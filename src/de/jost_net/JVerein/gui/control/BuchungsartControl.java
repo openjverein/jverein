@@ -72,6 +72,7 @@ import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class BuchungsartControl extends FilterControl
+    implements Savable
 {
   private TablePart buchungsartList;
 
@@ -411,7 +412,7 @@ public class BuchungsartControl extends FilterControl
   }
 
   @Override
-  public void fill() throws RemoteException, ApplicationException
+  public void prepareStore() throws RemoteException, ApplicationException
   {
     Buchungsart b = getBuchungsart();
     try
@@ -483,7 +484,7 @@ public class BuchungsartControl extends FilterControl
   {
     try
     {
-      fill();
+      prepareStore();
       Buchungsart b = getBuchungsart();
       b.store();
       GUI.getStatusBar().setSuccessText("Buchungsart gespeichert");

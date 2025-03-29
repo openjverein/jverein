@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.AnfangsbestandControl;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -59,7 +59,7 @@ public class AnfangsbestandDetailView extends AbstractJVereinView
   }
 
   @Override
-  protected AbstractJVereinControl getControl()
+  protected Savable getControl()
   {
     return control;
   }

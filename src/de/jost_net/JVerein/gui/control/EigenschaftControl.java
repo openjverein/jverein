@@ -29,6 +29,7 @@ import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -40,7 +41,8 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftControl extends AbstractJVereinControl
+public class EigenschaftControl extends AbstractControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -103,7 +105,7 @@ public class EigenschaftControl extends AbstractJVereinControl
   }
 
   @Override
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     Eigenschaft ei = getEigenschaft();
 
@@ -123,7 +125,7 @@ public class EigenschaftControl extends AbstractJVereinControl
   {
     try
     {
-      fill();
+      prepareStore();
       Eigenschaft ei = getEigenschaft();
       ei.store();
       GUI.getStatusBar().setSuccessText("Eigenschaft gespeichert");

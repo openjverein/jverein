@@ -18,24 +18,29 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.jameica.gui.AbstractControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.util.ApplicationException;
 
-public abstract class AbstractJVereinControl extends AbstractControl
+/**
+ * Dieses Intervace ermöglicht die Überwachung von Änderungen im Control. Das
+ * Aufbereiten und Zuordnen der Daten (prepareStore()) wird vom Speichern
+ * (handleSotre()) getrennt.
+ */
+public interface Savable
 {
-
-  public AbstractJVereinControl(AbstractView view)
-  {
-    super(view);
-  }
-
   /**
-   * Diese Funktion muss implementiert werden und das setzen der Werte im
-   * JVereinDBObject übernehmen. Das Speichern soll in handleStore() erfolgen
+   * Bereitet die Daten zum Speichern vor, es wird jedoch noch nicht
+   * gespeichert.
    * 
    * @throws RemoteException
    * @throws ApplicationException
    */
-  public abstract void fill() throws RemoteException, ApplicationException;
+  public void prepareStore() throws RemoteException, ApplicationException;
+
+  /**
+   * Speichert die vorbereiteten Daten in der DB. Ruft vorher prepareStotre()
+   * auf.
+   * 
+   * @throws ApplicationException
+   */
+  public void handleStore() throws ApplicationException;
 }

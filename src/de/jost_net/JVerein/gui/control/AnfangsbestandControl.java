@@ -40,6 +40,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class AnfangsbestandControl extends FilterControl
+    implements Savable
 {
 
   private TablePart anfangsbestandList;
@@ -106,7 +107,7 @@ public class AnfangsbestandControl extends FilterControl
   }
 
   @Override
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     Anfangsbestand a = getAnfangsbestand();
     DBIterator<Konto> konten = Einstellungen.getDBService()
@@ -135,7 +136,7 @@ public class AnfangsbestandControl extends FilterControl
   {
     try
     {
-      fill();
+      prepareStore();
       Anfangsbestand a = getAnfangsbestand();
       a.store();
       GUI.getStatusBar().setSuccessText("Anfangsbestand gespeichert");

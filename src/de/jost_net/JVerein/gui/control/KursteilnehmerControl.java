@@ -68,6 +68,7 @@ import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class KursteilnehmerControl extends FilterControl
+    implements Savable
 {
 
   private PersonenartInput personenart;
@@ -109,7 +110,6 @@ public class KursteilnehmerControl extends FilterControl
   private Kursteilnehmer ktn;
 
   private TablePart part;
-
 
   public KursteilnehmerControl(AbstractView view)
   {
@@ -454,7 +454,7 @@ public class KursteilnehmerControl extends FilterControl
   }
 
   @Override
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     Kursteilnehmer k = getKursteilnehmer();
     String p = (String) getPersonenart().getValue();
@@ -499,7 +499,7 @@ public class KursteilnehmerControl extends FilterControl
   {
     try
     {
-      fill();
+      prepareStore();
       Kursteilnehmer k = getKursteilnehmer();
       k.store();
       GUI.getStatusBar().setSuccessText("Kursteilnehmer gespeichert");

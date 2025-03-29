@@ -486,9 +486,4 @@ public class LastschriftControl extends FilterControl
     geschlecht.setEnabled(false);
     return geschlecht;
   }
-
-  @Override
-  public void fill() throws RemoteException
-  {
-  }
 }

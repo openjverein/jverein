@@ -26,7 +26,7 @@ import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
 import de.jost_net.JVerein.gui.action.FormularfeldAction;
 import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
 import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
-import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.FormularControl;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.Action;
@@ -98,7 +98,7 @@ public class FormularDetailView extends AbstractJVereinView
   }
 
   @Override
-  protected AbstractJVereinControl getControl()
+  protected Savable getControl()
   {
     return control;
   }

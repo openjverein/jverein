@@ -49,6 +49,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class AbrechnungslaufControl extends FilterControl
+    implements Savable
 {
 
   private Abrechnungslauf abrl;
@@ -317,7 +318,7 @@ public class AbrechnungslaufControl extends FilterControl
   }
 
   @Override
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     // Es kann nur die Bemerkung verändert werden
     Abrechnungslauf al = getAbrechnungslaeufe();
@@ -328,7 +329,7 @@ public class AbrechnungslaufControl extends FilterControl
   {
     try
     {
-      fill();
+      prepareStore();
       Abrechnungslauf al = getAbrechnungslaeufe();
 
       al.store();

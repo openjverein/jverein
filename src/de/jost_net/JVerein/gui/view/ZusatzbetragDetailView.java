@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
-import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.willuhn.jameica.gui.Action;
@@ -61,7 +61,7 @@ public class ZusatzbetragDetailView extends AbstractJVereinView
   }
 
   @Override
-  protected AbstractJVereinControl getControl()
+  protected Savable getControl()
   {
     return control;
   }

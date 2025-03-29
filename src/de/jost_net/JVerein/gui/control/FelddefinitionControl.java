@@ -33,6 +33,7 @@ import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
@@ -44,7 +45,8 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FelddefinitionControl extends AbstractJVereinControl
+public class FelddefinitionControl extends AbstractControl
+    implements Savable
 {
 
   private TablePart felddefinitionList;
@@ -123,7 +125,7 @@ public class FelddefinitionControl extends AbstractJVereinControl
   }
 
   @Override
-  public void fill() throws RemoteException, ApplicationException
+  public void prepareStore() throws RemoteException, ApplicationException
   {
     Felddefinition f = getFelddefinition();
     Datentyp d = (Datentyp) getDatentyp().getValue();
@@ -140,7 +142,7 @@ public class FelddefinitionControl extends AbstractJVereinControl
   {
     try
     {
-      fill();
+      prepareStore();
       Felddefinition f = getFelddefinition();
       f.store();
       GUI.getStatusBar().setSuccessText("Felddefinition gespeichert");

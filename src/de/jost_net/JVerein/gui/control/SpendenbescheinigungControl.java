@@ -100,6 +100,7 @@ import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class SpendenbescheinigungControl extends DruckMailControl
+    implements Savable
 {
 
   // Spendenbescheinigung View
@@ -467,7 +468,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
   }
 
   @Override
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     Spendenbescheinigung spb = getSpendenbescheinigung();
     Spendenart spa = (Spendenart) getSpendenart().getValue();
@@ -499,7 +500,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
   {
     try
     {
-      fill();
+      prepareStore();
       Spendenbescheinigung spb = getSpendenbescheinigung();
       spb.store();
 

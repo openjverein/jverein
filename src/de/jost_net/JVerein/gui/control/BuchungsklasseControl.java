@@ -25,6 +25,7 @@ import de.jost_net.JVerein.gui.view.BuchungsklasseDetailView;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -36,7 +37,8 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsklasseControl extends AbstractJVereinControl
+public class BuchungsklasseControl extends AbstractControl
+    implements Savable
 {
   private de.willuhn.jameica.system.Settings settings;
 
@@ -90,7 +92,7 @@ public class BuchungsklasseControl extends AbstractJVereinControl
   }
 
   @Override
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     Buchungsklasse b = getBuchungsklasse();
     b.setNummer(((Integer) getNummer(false).getValue()).intValue());
@@ -104,7 +106,7 @@ public class BuchungsklasseControl extends AbstractJVereinControl
   {
     try
     {
-      fill();
+      prepareStore();
       Buchungsklasse b = getBuchungsklasse();
       b.store();
       GUI.getStatusBar().setSuccessText("Buchungsklasse gespeichert");

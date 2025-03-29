@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.willuhn.jameica.gui.Action;
@@ -113,7 +113,7 @@ public class KursteilnehmerDetailView extends AbstractJVereinView
   }
 
   @Override
-  protected AbstractJVereinControl getControl()
+  protected Savable getControl()
   {
     return control;
   }

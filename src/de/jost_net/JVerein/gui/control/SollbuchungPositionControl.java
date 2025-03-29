@@ -33,6 +33,7 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -43,7 +44,8 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SollbuchungPositionControl extends AbstractJVereinControl
+public class SollbuchungPositionControl extends AbstractControl
+    implements Savable
 {
 
   private DateInput datum;
@@ -195,7 +197,7 @@ public class SollbuchungPositionControl extends AbstractJVereinControl
   }
 
   @Override
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     SollbuchungPosition pos = getPosition();
     pos.setDatum((Date) getDatum().getValue());
@@ -223,22 +225,30 @@ public class SollbuchungPositionControl extends AbstractJVereinControl
     }
   }
 
-  public void handleStore() throws RemoteException, ApplicationException
+  public void handleStore() throws ApplicationException
   {
-    fill();
-    SollbuchungPosition pos = getPosition();
-    pos.store();
-    // Betrag in Sollbuchung neu berechnen
-    Double betrag = 0.0;
-    Sollbuchung sollb = pos.getSollbuchung();
-    ArrayList<SollbuchungPosition> sollbpList = sollb
-        .getSollbuchungPositionList();
-    for (SollbuchungPosition sollp : sollbpList)
+    try
     {
-      betrag += sollp.getBetrag();
+      prepareStore();
+      SollbuchungPosition pos = getPosition();
+      pos.store();
+      // Betrag in Sollbuchung neu berechnen
+      Double betrag = 0.0;
+      Sollbuchung sollb = pos.getSollbuchung();
+      ArrayList<SollbuchungPosition> sollbpList = sollb
+          .getSollbuchungPositionList();
+      for (SollbuchungPosition sollp : sollbpList)
+      {
+        betrag += sollp.getBetrag();
+      }
+      sollb.setBetrag(betrag);
+      sollb.store();
     }
-    sollb.setBetrag(betrag);
-    sollb.store();
+    catch (RemoteException re)
+    {
+      Logger.error(re.getMessage(), re);
+      throw new ApplicationException("Fehler beim Speichern", re);
+    }
   }
 
 }

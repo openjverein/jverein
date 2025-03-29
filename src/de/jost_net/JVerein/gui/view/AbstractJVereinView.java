@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -36,7 +36,7 @@ public abstract class AbstractJVereinView extends AbstractView
    * 
    * @return AbstractJVereinControl das Control
    */
-  protected abstract AbstractJVereinControl getControl();
+  protected abstract Savable getControl();
 
   @Override
   public void unbind() throws OperationCanceledException
@@ -46,7 +46,7 @@ public abstract class AbstractJVereinView extends AbstractView
       boolean error = false;
       try
       {
-        getControl().fill();
+        getControl().prepareStore();
       }
       catch (RemoteException | ApplicationException e)
       {

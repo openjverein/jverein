@@ -26,6 +26,7 @@ import de.jost_net.JVerein.gui.view.EigenschaftGruppeDetailView;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -37,7 +38,8 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftGruppeControl extends AbstractJVereinControl
+public class EigenschaftGruppeControl extends AbstractControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -100,7 +102,7 @@ public class EigenschaftGruppeControl extends AbstractJVereinControl
   }
 
   @Override
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     EigenschaftGruppe eg = getEigenschaftGruppe();
     eg.setBezeichnung((String) getBezeichnung().getValue());
@@ -115,7 +117,7 @@ public class EigenschaftGruppeControl extends AbstractJVereinControl
   {
     try
     {
-      fill();
+      prepareStore();
       EigenschaftGruppe eg = getEigenschaftGruppe();
 
       eg.store();

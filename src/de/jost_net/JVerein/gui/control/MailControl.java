@@ -58,7 +58,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class MailControl extends FilterControl implements IMailControl
+public class MailControl extends FilterControl
+    implements IMailControl, Savable
 {
 
   private AutoUpdateTablePart empfaenger;
@@ -540,11 +541,17 @@ public class MailControl extends FilterControl implements IMailControl
   }
 
   @Override
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     Mail m = getMail();
     m.setBetreff(getBetreffString());
     m.setTxt(getTxtString());
+  }
+
+  @Override
+  public void handleStore()
+  {
+    handleStore(false);
   }
 
   /**
@@ -557,7 +564,7 @@ public class MailControl extends FilterControl implements IMailControl
   {
     try
     {
-      fill();
+      prepareStore();
       Mail m = getMail();
       m.setBearbeitung(new Timestamp(new Date().getTime()));
       if (mitversand)

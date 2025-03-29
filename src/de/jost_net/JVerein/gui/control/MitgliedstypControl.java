@@ -24,6 +24,7 @@ import de.jost_net.JVerein.gui.menu.MitgliedstypMenu;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -34,7 +35,8 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedstypControl extends AbstractJVereinControl
+public class MitgliedstypControl extends AbstractControl
+    implements Savable
 {
   private de.willuhn.jameica.system.Settings settings;
 
@@ -85,7 +87,7 @@ public class MitgliedstypControl extends AbstractJVereinControl
   }
 
   @Override
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     Mitgliedstyp mt = getMitgliedstyp();
     mt.setBezeichnung((String) getBezeichnung().getValue());
@@ -99,7 +101,7 @@ public class MitgliedstypControl extends AbstractJVereinControl
   {
     try
     {
-      fill();
+      prepareStore();
       Mitgliedstyp mt = getMitgliedstyp();
       try
       {

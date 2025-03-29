@@ -82,6 +82,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class SollbuchungControl extends DruckMailControl
+    implements Savable
 {
   public enum DIFFERENZ
   {
@@ -317,7 +318,7 @@ public class SollbuchungControl extends DruckMailControl
   }
 
   @Override
-  public void fill() throws RemoteException, ApplicationException
+  public void prepareStore() throws RemoteException, ApplicationException
   {
     Sollbuchung sollb = getSollbuchung();
     sollb.setZahlerId(getSelectedZahlerId());
@@ -328,11 +329,11 @@ public class SollbuchungControl extends DruckMailControl
     sollb.setZweck1((String) getZweck1().getValue());
   }
 
-  public boolean handleStore()
+  public void handleStore()
   {
     try
     {
-      fill();
+      prepareStore();
       Sollbuchung sollb = getSollbuchung();
       if (sollb.isNewObject())
       {
@@ -351,7 +352,6 @@ public class SollbuchungControl extends DruckMailControl
             "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
       sollb.store();
       GUI.getStatusBar().setSuccessText("Sollbuchung gespeichert");
-      return true;
     }
     catch (ApplicationException e)
     {
@@ -363,7 +363,6 @@ public class SollbuchungControl extends DruckMailControl
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
-    return false;
   }
 
   public Part getMitgliedskontoTree(Mitglied mitglied) throws RemoteException

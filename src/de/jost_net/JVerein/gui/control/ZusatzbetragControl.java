@@ -55,6 +55,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
+import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -72,7 +73,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class ZusatzbetragControl extends AbstractJVereinControl
+public class ZusatzbetragControl extends AbstractControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -183,7 +185,7 @@ public class ZusatzbetragControl extends AbstractJVereinControl
   }
 
   @Override
-  public void fill() throws RemoteException, ApplicationException
+  public void prepareStore() throws RemoteException, ApplicationException
   {
     Zusatzbetrag z = getZusatzbetrag();
     z.setFaelligkeit((Date) getZusatzbetragPart().getFaelligkeit().getValue());
@@ -207,7 +209,7 @@ public class ZusatzbetragControl extends AbstractJVereinControl
   {
     try
     {
-      fill();
+      prepareStore();
       Zusatzbetrag z = getZusatzbetrag();
       if (z.isNewObject())
       {

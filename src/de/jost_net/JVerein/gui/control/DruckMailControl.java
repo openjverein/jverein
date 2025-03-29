@@ -11,7 +11,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.util.ApplicationException;
 
 public abstract class DruckMailControl extends FilterControl implements IMailControl
 {
@@ -221,10 +220,5 @@ public abstract class DruckMailControl extends FilterControl implements IMailCon
           (String) getTxt().getValue());
     }
     saveFilterSettings();
-  }
-  
-  @Override
-  public void fill() throws RemoteException, ApplicationException
-  {
   }
 }

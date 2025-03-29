@@ -43,6 +43,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class WiedervorlageControl extends FilterControl
+    implements Savable
 {
 
   private DateInput datum = null;
@@ -169,7 +170,7 @@ public class WiedervorlageControl extends FilterControl
   }
 
   @Override
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     Wiedervorlage w = getWiedervorlage();
     w.setDatum((Date) getDatum(false).getValue());
@@ -181,7 +182,7 @@ public class WiedervorlageControl extends FilterControl
   {
     try
     {
-      fill();
+      prepareStore();
       Wiedervorlage w = getWiedervorlage();
       if (w.isNewObject())
       {

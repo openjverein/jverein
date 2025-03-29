@@ -152,6 +152,7 @@ import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class MitgliedControl extends FilterControl
+    implements Savable
 {
 
   private TablePart part;
@@ -2221,7 +2222,7 @@ public class MitgliedControl extends FilterControl
   }
 
   @Override
-  public void fill() throws RemoteException, ApplicationException
+  public void prepareStore() throws RemoteException, ApplicationException
   {
     Mitglied m = getMitglied();
 
@@ -2415,7 +2416,7 @@ public class MitgliedControl extends FilterControl
   {
     try
     {
-      fill();
+      prepareStore();
       Mitglied m = getMitglied();
       // Mitgleidstyp ist in der DB als Long, wird jedoch sonst als Integer
       // verwendet, daher können wir ihn nicht in fill() setzen, sonst wird der

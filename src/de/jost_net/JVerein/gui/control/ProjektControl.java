@@ -39,6 +39,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class ProjektControl extends FilterControl
+    implements Savable
 {
 
   private TablePart projektList;
@@ -114,7 +115,7 @@ public class ProjektControl extends FilterControl
     return endeDatum;
   }
 
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     Projekt p = getProjekt();
     p.setBezeichnung((String) getBezeichnung().getValue());
@@ -129,7 +130,7 @@ public class ProjektControl extends FilterControl
   {
     try
     {
-      fill();
+      prepareStore();
       Projekt p = getProjekt();
 
       try

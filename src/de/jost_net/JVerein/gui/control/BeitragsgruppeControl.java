@@ -46,6 +46,7 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.util.VonBis;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -62,7 +63,8 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BeitragsgruppeControl extends AbstractJVereinControl
+public class BeitragsgruppeControl extends AbstractControl
+    implements Savable
 {
   private Input[] alterstaffel;
   
@@ -389,7 +391,7 @@ public class BeitragsgruppeControl extends AbstractJVereinControl
   }
 
   @Override
-  public void fill() throws RemoteException, ApplicationException
+  public void prepareStore() throws RemoteException, ApplicationException
   {
     Beitragsgruppe b = getBeitragsgruppe();
     b.setBezeichnung((String) getBezeichnung(false).getValue());
@@ -419,7 +421,7 @@ public class BeitragsgruppeControl extends AbstractJVereinControl
   {
     try
     {
-      fill();
+      prepareStore();
       Beitragsgruppe b = getBeitragsgruppe();
       // Die Beitragsgruppe in die DB schreiben damit sie evtl für Altersstaffel
       // verfügbar ist

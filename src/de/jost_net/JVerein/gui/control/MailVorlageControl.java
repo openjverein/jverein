@@ -23,6 +23,7 @@ import de.jost_net.JVerein.gui.menu.MailVorlageMenu;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -32,7 +33,8 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailVorlageControl extends AbstractJVereinControl implements IMailControl
+public class MailVorlageControl extends AbstractControl
+    implements Savable, IMailControl
 {
 
   private TablePart mailvorlageList;
@@ -99,7 +101,7 @@ public class MailVorlageControl extends AbstractJVereinControl implements IMailC
   }
 
   @Override
-  public void fill() throws RemoteException, ApplicationException
+  public void prepareStore() throws RemoteException, ApplicationException
   {
     MailVorlage mv = getMailVorlage();
     String betreff = (String) getBetreff(false).getValue();
@@ -124,7 +126,7 @@ public class MailVorlageControl extends AbstractJVereinControl implements IMailC
   {
     try
     {
-      fill();
+      prepareStore();
       MailVorlage mv = getMailVorlage();
       mv.store();
       GUI.getStatusBar().setSuccessText("MailVorlage gespeichert");

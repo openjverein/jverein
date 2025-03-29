@@ -81,6 +81,7 @@ import de.willuhn.util.ApplicationException;
 //import de.jost_net.JVerein.keys.ArtBuchungsart;
 
 public class KontoControl extends FilterControl
+    implements Savable
 {
 
   private TablePart kontenList;
@@ -243,7 +244,7 @@ public class KontoControl extends FilterControl
   }
 
   @Override
-  public void fill() throws RemoteException, ApplicationException
+  public void prepareStore() throws RemoteException, ApplicationException
   {
     Konto k = getKonto();
     k.setNummer((String) getNummer().getValue());
@@ -292,7 +293,7 @@ public class KontoControl extends FilterControl
   {
     try
     {
-      fill();
+      prepareStore();
 
       DBService service = Einstellungen.getDBService();
       String sql = "SELECT DISTINCT konto.id from konto "

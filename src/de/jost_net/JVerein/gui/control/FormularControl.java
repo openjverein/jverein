@@ -48,6 +48,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FormularControl extends FormularPartControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -188,7 +189,7 @@ public class FormularControl extends FormularPartControl
   }
 
   @Override
-  public void fill() throws RemoteException
+  public void prepareStore() throws RemoteException
   {
     Formular f = getFormular();
     f.setBezeichnung((String) getBezeichnung(true).getValue());
@@ -214,7 +215,7 @@ public class FormularControl extends FormularPartControl
   {
     try
     {
-      fill();
+      prepareStore();
       Formular f = getFormular();
       f.setZaehlerToFormlink((int) getZaehler().getValue());
       String dat = (String) getDatei().getValue();

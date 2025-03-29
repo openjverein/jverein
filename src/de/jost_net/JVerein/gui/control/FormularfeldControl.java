@@ -45,6 +45,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FormularfeldControl extends FormularPartControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -355,7 +356,7 @@ public class FormularfeldControl extends FormularPartControl
   }
 
   @Override
-  public void fill() throws RemoteException, ApplicationException
+  public void prepareStore() throws RemoteException, ApplicationException
   {
     try
     {
@@ -385,7 +386,7 @@ public class FormularfeldControl extends FormularPartControl
   {
     try
     {
-      fill();
+      prepareStore();
       Formularfeld f = getFormularfeld();
       f.store();
       GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
