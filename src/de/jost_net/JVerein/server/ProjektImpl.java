@@ -22,11 +22,10 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class ProjektImpl extends AbstractDBObject implements Projekt
+public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
 {
 
   private static final long serialVersionUID = 1L;
@@ -183,5 +182,4 @@ public class ProjektImpl extends AbstractDBObject implements Projekt
     }
     return d;
   }
-
 }

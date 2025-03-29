@@ -114,6 +114,14 @@ public class ProjektControl extends FilterControl
     return endeDatum;
   }
 
+  public void fill() throws RemoteException
+  {
+    Projekt p = getProjekt();
+    p.setBezeichnung((String) getBezeichnung().getValue());
+    p.setStartDatum((Date) getStartDatum().getValue());
+    p.setEndeDatum((Date) getEndeDatum().getValue());
+  }
+
   /**
    * This method stores the project using the current values.
    */
@@ -121,10 +129,8 @@ public class ProjektControl extends FilterControl
   {
     try
     {
+      fill();
       Projekt p = getProjekt();
-      p.setBezeichnung((String) getBezeichnung().getValue());
-      p.setStartDatum( (Date) getStartDatum().getValue() );
-      p.setEndeDatum( (Date) getEndeDatum().getValue() );
 
       try
       {

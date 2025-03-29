@@ -242,6 +242,49 @@ public class KontoControl extends FilterControl
     return hibiscusid;
   }
 
+  @Override
+  public void fill() throws RemoteException, ApplicationException
+  {
+    Konto k = getKonto();
+    k.setNummer((String) getNummer().getValue());
+    k.setBezeichnung((String) getBezeichnung().getValue());
+    k.setEroeffnung((Date) getEroeffnung().getValue());
+    k.setAufloesung((Date) getAufloesung().getValue());
+    k.setBuchungsartId(getSelectedBuchungsArtId());
+    k.setKommentar((String) getKommentar().getValue());
+    k.setKontoArt((Kontoart) getKontoArt().getValue());
+    if (getHibiscusId().getValue() == null)
+    {
+      k.setHibiscusId(-1);
+    }
+    else
+    {
+      de.willuhn.jameica.hbci.rmi.Konto hkto = (de.willuhn.jameica.hbci.rmi.Konto) getHibiscusId()
+          .getValue();
+      k.setHibiscusId(Integer.parseInt(hkto.getID()));
+    }
+    k.setAnlagenartId(getSelectedAnlagenartId());
+    k.setBuchungsklasseId(getSelectedBuchungsklasseId());
+    k.setAfaartId(getSelectedAfaartId());
+    k.setBetrag((Double) getBetrag().getValue());
+    k.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
+    k.setAnschaffung((Date) getAnschaffung().getValue());
+    k.setAfaStart((Double) getAfaStart().getValue());
+    k.setAfaDauer((Double) getAfaDauer().getValue());
+    k.setAfaRestwert((Double) getAfaRestwert().getValue());
+    if (getAfaMode().getValue() == null)
+      k.setAfaMode(null);
+    else
+    {
+      k.setAfaMode(
+          Integer.valueOf(((AfaMode) getAfaMode().getValue()).getKey()));
+    }
+    if (anlagenzweck != null)
+    {
+      k.setAnlagenzweck((Anlagenzweck) getAnlagenzweck().getValue());
+    }
+  }
+
   /**
    * This method stores the project using the current values.
    */
@@ -249,65 +292,31 @@ public class KontoControl extends FilterControl
   {
     try
     {
-      Konto k = getKonto();
-      k.setNummer((String) getNummer().getValue());
-      k.setBezeichnung((String) getBezeichnung().getValue());
-      k.setEroeffnung((Date) getEroeffnung().getValue());
-      k.setAufloesung((Date) getAufloesung().getValue());
-      k.setBuchungsartId(getSelectedBuchungsArtId());
-      k.setKommentar((String) getKommentar().getValue());
-      k.setKontoArt((Kontoart) getKontoArt().getValue());
-      if (getHibiscusId().getValue() == null)
-      {
-        k.setHibiscusId(-1);
-      }
-      else
-      {
-        de.willuhn.jameica.hbci.rmi.Konto hkto = (de.willuhn.jameica.hbci.rmi.Konto) getHibiscusId()
-            .getValue();
-        k.setHibiscusId(Integer.parseInt(hkto.getID()));
-      }
-      k.setAnlagenartId(getSelectedAnlagenartId());
-      k.setBuchungsklasseId(getSelectedBuchungsklasseId());
-      k.setAfaartId(getSelectedAfaartId());
-      k.setBetrag((Double) getBetrag().getValue());
-      k.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
-      k.setAnschaffung((Date) getAnschaffung().getValue());
-      k.setAfaStart((Double) getAfaStart().getValue());
-      k.setAfaDauer((Double) getAfaDauer().getValue());
-      k.setAfaRestwert((Double) getAfaRestwert().getValue());
-      if (getAfaMode().getValue() == null)
-        k.setAfaMode(null);
-      else
-      {
-        k.setAfaMode(Integer.valueOf(((AfaMode) getAfaMode().getValue()).getKey()));
-      }
-      if (anlagenzweck != null)
-      {
-        k.setAnlagenzweck((Anlagenzweck) getAnlagenzweck().getValue());
-      }
+      fill();
+
       DBService service = Einstellungen.getDBService();
       String sql = "SELECT DISTINCT konto.id from konto "
           + "WHERE (kontoart = ?) ";
       boolean exist = (boolean) service.execute(sql,
           new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
-      {
-        @Override
-        public Object extract(ResultSet rs)
-            throws RemoteException, SQLException
-        {
-          if (rs.next())
           {
-            return true;
-          }
-          return false;
-        }
-      });
+            @Override
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
+            {
+              if (rs.next())
+              {
+                return true;
+              }
+              return false;
+            }
+          });
       if (!exist && getKonto().getKontoArt() == Kontoart.ANLAGE)
       {
         SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
         d.setTitle("Erstes Anlagenkonto");
-        d.setText("Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
+        d.setText(
+            "Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
         try
         {
           d.open();
@@ -317,6 +326,7 @@ public class KontoControl extends FilterControl
           Logger.error("Fehler", e);
         }
       }
+      Konto k = getKonto();
       k.store();
       GUI.getStatusBar().setSuccessText("Konto gespeichert");
     }

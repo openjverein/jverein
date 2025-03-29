@@ -18,9 +18,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Eigenschaft extends DBObject
+public interface Eigenschaft extends JVereinDBObject
 {
   public String getBezeichnung() throws RemoteException;
 
@@ -28,9 +26,9 @@ public interface Eigenschaft extends DBObject
 
   public EigenschaftGruppe getEigenschaftGruppe() throws RemoteException;
 
-  public int getEigenschaftGruppeId() throws RemoteException;
+  public long getEigenschaftGruppeId() throws RemoteException;
 
-  public void setEigenschaftGruppe(Integer eigenschaftgruppe)
+  public void setEigenschaftGruppe(Long eigenschaftgruppe)
       throws RemoteException;
 
 }

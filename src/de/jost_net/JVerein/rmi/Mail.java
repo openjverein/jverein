@@ -20,9 +20,7 @@ import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.TreeSet;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Mail extends DBObject
+public interface Mail extends JVereinDBObject
 {
   public TreeSet<MailEmpfaenger> getEmpfaenger() throws RemoteException;
 

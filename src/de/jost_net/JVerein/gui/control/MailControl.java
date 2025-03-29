@@ -539,6 +539,14 @@ public class MailControl extends FilterControl implements IMailControl
     Application.getController().start(t);
   }
 
+  @Override
+  public void fill() throws RemoteException
+  {
+    Mail m = getMail();
+    m.setBetreff(getBetreffString());
+    m.setTxt(getTxtString());
+  }
+
   /**
    * Speichert die Mail in der DB.
    *
@@ -549,9 +557,8 @@ public class MailControl extends FilterControl implements IMailControl
   {
     try
     {
+      fill();
       Mail m = getMail();
-      m.setBetreff(getBetreffString());
-      m.setTxt(getTxtString());
       m.setBearbeitung(new Timestamp(new Date().getTime()));
       if (mitversand)
       {

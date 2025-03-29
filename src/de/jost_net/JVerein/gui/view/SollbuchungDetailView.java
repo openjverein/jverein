@@ -23,8 +23,8 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -34,15 +34,16 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class SollbuchungDetailView extends AbstractView
+public class SollbuchungDetailView extends AbstractJVereinView
 {
+  private SollbuchungControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Sollbuchung");
 
-    final SollbuchungControl control = new SollbuchungControl(this);
+    control = new SollbuchungControl(this);
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
     LabelGroup group = new LabelGroup(scrolled.getComposite(), "Sollbuchung");
@@ -100,5 +101,11 @@ public class SollbuchungDetailView extends AbstractView
     buttons.addButton(save);
 
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

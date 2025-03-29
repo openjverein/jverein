@@ -18,8 +18,8 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.KontoControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -27,15 +27,16 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class KontoDetailView extends AbstractView
+public class KontoDetailView extends AbstractJVereinView
 {
+  private KontoControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Konto");
 
-    final KontoControl control = new KontoControl(this);
+    control = new KontoControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Konto");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
@@ -92,5 +93,11 @@ public class KontoDetailView extends AbstractView
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

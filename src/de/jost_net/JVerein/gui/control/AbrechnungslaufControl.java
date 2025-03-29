@@ -316,23 +316,28 @@ public class AbrechnungslaufControl extends FilterControl
     return statistiklastschriften;
   }
 
-  public void handleStore()
+  @Override
+  public void fill() throws RemoteException
   {
     // Es kann nur die Bemerkung verändert werden
+    Abrechnungslauf al = getAbrechnungslaeufe();
+    al.setBemerkung((String) getBemerkung().getValue());
+  }
+
+  public void handleStore()
+  {
     try
     {
+      fill();
       Abrechnungslauf al = getAbrechnungslaeufe();
-      al.setBemerkung((String) getBemerkung().getValue());
-      try
-      {
-        al.store();
-        GUI.getStatusBar()
-            .setSuccessText("Bemerkung zum Abrechnungslauf gespeichert");
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
+
+      al.store();
+      GUI.getStatusBar()
+          .setSuccessText("Bemerkung zum Abrechnungslauf gespeichert");
+    }
+    catch (ApplicationException e)
+    {
+      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
@@ -419,5 +424,4 @@ public class AbrechnungslaufControl extends FilterControl
       Logger.error("Fehler", e1);
     }
   }
-
 }

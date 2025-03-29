@@ -20,9 +20,8 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 
-public interface Beitragsgruppe extends DBObject
+public interface Beitragsgruppe extends JVereinDBObject
 {
   public String getBezeichnung() throws RemoteException;
 

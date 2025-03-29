@@ -453,43 +453,54 @@ public class KursteilnehmerControl extends FilterControl
     return b;
   }
 
+  @Override
+  public void fill() throws RemoteException
+  {
+    Kursteilnehmer k = getKursteilnehmer();
+    String p = (String) getPersonenart().getValue();
+    p = p.substring(0, 1);
+    k.setPersonenart(p);
+    k.setAnrede((String) getAnrede().getValue());
+    k.setTitel((String) getTitel().getValue());
+    k.setName((String) getName().getValue());
+    k.setVorname((String) getVorname().getValue());
+    k.setStrasse((String) getStrasse().getValue());
+    k.setAdressierungszuatz((String) getAdressierungszusatz().getValue());
+    k.setPlz((String) getPLZ().getValue());
+    k.setOrt((String) getOrt().getValue());
+    k.setStaat(getStaat().getValue() == null ? ""
+        : ((Staat) getStaat().getValue()).getKey());
+    k.setEmail((String) getEmail().getValue());
+    k.setVZweck1((String) getVZweck1().getValue());
+    k.setMandatDatum((Date) getMandatDatum().getValue());
+    String ib = (String) getIBAN().getValue();
+    if (ib == null)
+      k.setIban(null);
+    else
+      k.setIban(ib.toUpperCase().replace(" ", ""));
+    k.setBic((String) getBIC().getValue());
+    k.setBetrag((Double) getBetrag().getValue());
+    if (getGeburtsdatum() != null)
+    {
+      k.setGeburtsdatum((Date) getGeburtsdatum().getValue());
+    }
+    if (getGeschlecht() != null)
+    {
+      k.setGeschlecht((String) getGeschlecht().getValue());
+    }
+
+    if (k.getID() == null)
+    {
+      k.setEingabedatum();
+    }
+  }
+
   public void handleStore() throws ApplicationException
   {
     try
     {
+      fill();
       Kursteilnehmer k = getKursteilnehmer();
-      String p = (String) getPersonenart().getValue();
-      p = p.substring(0, 1);
-      k.setPersonenart(p);
-      k.setAnrede((String) getAnrede().getValue());
-      k.setTitel((String) getTitel().getValue());
-      k.setName((String) getName().getValue());
-      k.setVorname((String) getVorname().getValue());
-      k.setStrasse((String) getStrasse().getValue());
-      k.setAdressierungszuatz((String) getAdressierungszusatz().getValue());
-      k.setPlz((String) getPLZ().getValue());
-      k.setOrt((String) getOrt().getValue());
-      k.setStaat(getStaat().getValue() == null ? ""
-          : ((Staat) getStaat().getValue()).getKey());
-      k.setEmail((String) getEmail().getValue());
-      k.setVZweck1((String) getVZweck1().getValue());
-      k.setMandatDatum((Date) getMandatDatum().getValue());
-      String ib = (String) getIBAN().getValue();
-      if (ib == null)
-        k.setIban(null);
-      else
-        k.setIban(ib.toUpperCase().replace(" ", ""));
-      k.setBic((String) getBIC().getValue());
-      k.setBetrag((Double) getBetrag().getValue());
-      if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
-      {
-        k.setGeburtsdatum((Date) getGeburtsdatum().getValue());
-        k.setGeschlecht((String) getGeschlecht().getValue());
-      }
-      if (k.getID() == null)
-      {
-        k.setEingabedatum();
-      }
       k.store();
       GUI.getStatusBar().setSuccessText("Kursteilnehmer gespeichert");
     }

@@ -18,9 +18,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface MailVorlage extends DBObject
+public interface MailVorlage extends JVereinDBObject
 {
   public String getBetreff() throws RemoteException;
 

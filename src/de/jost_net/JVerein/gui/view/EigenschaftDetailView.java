@@ -17,22 +17,23 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.EigenschaftControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class EigenschaftDetailView extends AbstractView
+public class EigenschaftDetailView extends AbstractJVereinView
 {
+  private EigenschaftControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Eigenschaft");
 
-    final EigenschaftControl control = new EigenschaftControl(this);
+    control = new EigenschaftControl(this);
 
     LabelGroup grEigenschaft = new LabelGroup(getParent(), "Eigenschaft");
     grEigenschaft.addLabelPair("Bezeichnung", control.getBezeichnung());
@@ -51,5 +52,11 @@ public class EigenschaftDetailView extends AbstractView
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

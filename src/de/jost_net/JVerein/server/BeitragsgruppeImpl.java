@@ -26,12 +26,12 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BeitragsgruppeImpl extends AbstractDBObject implements
+public class BeitragsgruppeImpl extends AbstractJVereinDBObject
+    implements
     Beitragsgruppe
 {
 

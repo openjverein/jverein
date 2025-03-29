@@ -20,11 +20,11 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.rmi.Lehrgangsart;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangsartImpl extends AbstractDBObject implements Lehrgangsart
+public class LehrgangsartImpl extends AbstractJVereinDBObject
+    implements Lehrgangsart
 {
 
   private static final long serialVersionUID = 380278347818535726L;

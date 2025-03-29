@@ -17,8 +17,8 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.AbstractJVereinControl;
 import de.jost_net.JVerein.gui.control.LastschriftControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -26,15 +26,16 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class LastschriftDetailView extends AbstractView
+public class LastschriftDetailView extends AbstractJVereinView
 {
+  private LastschriftControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Lastschrift");
 
-    final LastschriftControl control = new LastschriftControl(this);
+    control = new LastschriftControl(this);
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 
@@ -68,5 +69,11 @@ public class LastschriftDetailView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LASTSCHRIFT, false, "question-circle.png");
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected AbstractJVereinControl getControl()
+  {
+    return control;
   }
 }

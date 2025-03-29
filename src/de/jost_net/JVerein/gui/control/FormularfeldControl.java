@@ -172,7 +172,8 @@ public class FormularfeldControl extends FormularPartControl
     return formular;
   }
 
-  public SelectInput getName() throws Exception
+  public SelectInput getName()
+      throws RemoteException, NoSuchFieldException, SecurityException
   {
     if (name != null)
     {
@@ -353,12 +354,8 @@ public class FormularfeldControl extends FormularPartControl
     return fontsize;
   }
 
-  /**
-   * This method stores the project using the current values.
-   * 
-   * @throws ApplicationException
-   */
-  public void handleStore() throws ApplicationException
+  @Override
+  public void fill() throws RemoteException, ApplicationException
   {
     try
     {
@@ -370,6 +367,26 @@ public class FormularfeldControl extends FormularPartControl
       f.setY((Double) getY().getValue());
       f.setFont((String) getFont().getValue());
       f.setFontsize((Integer) getFontsize().getValue());
+    }
+    catch (RemoteException e)
+    {
+      throw new RemoteException(e.getMessage());
+    }
+    catch (Exception e)
+    {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
+   * This method stores the project using the current values.
+   */
+  public void handleStore() throws ApplicationException
+  {
+    try
+    {
+      fill();
+      Formularfeld f = getFormularfeld();
       f.store();
       GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
     }

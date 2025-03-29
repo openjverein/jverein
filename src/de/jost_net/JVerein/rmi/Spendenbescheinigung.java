@@ -20,9 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Spendenbescheinigung extends DBObject
+public interface Spendenbescheinigung extends JVereinDBObject
 {
   public int getSpendenart() throws RemoteException;
 

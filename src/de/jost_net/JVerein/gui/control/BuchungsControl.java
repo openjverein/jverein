@@ -87,7 +87,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -122,7 +121,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class BuchungsControl extends AbstractControl
+public class BuchungsControl extends AbstractJVereinControl
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -299,7 +298,13 @@ public class BuchungsControl extends AbstractControl
     return buchung;
   }
 
-  public void fillBuchung(Buchung b) throws ApplicationException, RemoteException
+  @Override
+  public void fill() throws RemoteException, ApplicationException
+  {
+    fill((Buchung) getCurrentObject());
+  }
+
+  public void fill(Buchung b) throws ApplicationException, RemoteException
   { 
     b.setBuchungsartId(getSelectedBuchungsArtId());
     b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
@@ -1046,7 +1051,7 @@ public class BuchungsControl extends AbstractControl
     try
     {
       Buchung b = getBuchung();
-      fillBuchung(b);
+      fill(b);
 
       if (b.getSpeicherung())
       {
@@ -1062,7 +1067,7 @@ public class BuchungsControl extends AbstractControl
         if (b.getSplitTyp() == SplitbuchungTyp.SPLIT && b_art.getSteuersatz() > 0)
         {
           Buchung b_steuer = getDependentBuchungen().get(0);     
-          fillBuchung(b_steuer);
+          fill(b_steuer);
 
           BigDecimal steuer = new BigDecimal(
             Double.toString(b.getBetrag() * b_art.getSteuersatz() / 100))
