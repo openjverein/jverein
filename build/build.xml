@@ -17,14 +17,14 @@
     <resolver:resolve failonmissingattachments="true">
       <resolver:files dir="lib"
                       scopes="compile,runtime"
-                      layout="{artifactId}-{version}.{extension}" />
+                      layout="{artifactId}.{extension}" />
     </resolver:resolve>
     <!-- Download test dependencies for Eclipse -->
     <mkdir dir="lib.test" />
     <resolver:resolve failonmissingattachments="true">
       <resolver:files dir="lib.test"
                       scopes="test"
-                      layout="{artifactId}-{version}.{extension}" />
+                      layout="{artifactId}.{extension}" />
     </resolver:resolve>
   </target>
 
