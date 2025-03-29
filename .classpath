@@ -20,7 +20,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/joda-time.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/snakeyaml.jar"/>
 	<classpathentry exported="true" kind="lib" path="/jameica/lib/swt/win64/swt.jar" sourcepath="/jameica/lib.src/swt/linux/swt.src.zip"/>
-	<classpathentry exported="true" kind="lib" path="lib.testk/junit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib.test/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javase.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/core.jar"/>
 	<classpathentry exported="true" kind="lib" path="/jameica/lib/de_willuhn_ds/de_willuhn_ds.jar"/>
