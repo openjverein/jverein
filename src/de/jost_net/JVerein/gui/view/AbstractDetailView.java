@@ -62,7 +62,7 @@ public abstract class AbstractDetailView extends AbstractView
       {
         YesNoDialog dialog = new YesNoDialog(AbstractDialog.POSITION_CENTER);
         dialog.setTitle("Nicht gespeichert");
-        dialog.setText("Der Eintrag wurd nicht gespeichert,\n"
+        dialog.setText("Der Eintrag wurde nicht gespeichert,\n"
             + " soll die View wirklich verlassen werden?");
         if (!(Boolean) dialog.open())
         {
