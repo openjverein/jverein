@@ -49,7 +49,7 @@ public class AbstractSaldoList extends TablePart
 
   protected Date datumbis = null;
 
-  protected boolean summe;
+  protected boolean umbuchung;
 
   protected static double LIMIT = 0.005;
 
@@ -109,12 +109,12 @@ public class AbstractSaldoList extends TablePart
   };
 
   public AbstractSaldoList(Action action, Date datumvon, Date datumbis,
-      boolean summe)
+      boolean umbuchung)
   {
     super(action);
     this.datumvon = datumvon;
     this.datumbis = datumbis;
-    this.summe = summe;
+    this.umbuchung = umbuchung;
   }
 
   public Part getSaldoList() throws ApplicationException
@@ -143,7 +143,7 @@ public class AbstractSaldoList extends TablePart
         saldoList.addColumn("Ausgaben", "ausgaben",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
-        if (summe)
+        if (umbuchung)
         {
         saldoList.addColumn("Umbuchungen", "umbuchungen",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
