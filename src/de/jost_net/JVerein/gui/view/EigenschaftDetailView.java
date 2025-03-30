@@ -24,7 +24,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class EigenschaftDetailView extends AbstractJVereinView
+public class EigenschaftDetailView extends AbstractDetailView
 {
   private EigenschaftControl control;
 

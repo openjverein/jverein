@@ -28,7 +28,7 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsartDetailView extends AbstractJVereinView
+public class BuchungsartDetailView extends AbstractDetailView
 {
   private BuchungsartControl control;
 

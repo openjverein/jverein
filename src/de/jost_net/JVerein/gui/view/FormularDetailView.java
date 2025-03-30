@@ -36,7 +36,7 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class FormularDetailView extends AbstractJVereinView
+public class FormularDetailView extends AbstractDetailView
 {
   private FormularControl control;
 

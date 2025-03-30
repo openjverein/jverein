@@ -24,7 +24,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class LehrgangDetailView extends AbstractJVereinView
+public class LehrgangDetailView extends AbstractDetailView
 {
   private LehrgangControl control;
 

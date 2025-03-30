@@ -24,7 +24,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class ZusatzfeldDetailView extends AbstractJVereinView
+public class ZusatzfeldDetailView extends AbstractDetailView
 {
 
   private FelddefinitionControl control;

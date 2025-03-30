@@ -32,7 +32,7 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 
 import java.util.Map;
 
-public class MailVorlageDetailView extends AbstractJVereinView
+public class MailVorlageDetailView extends AbstractDetailView
 {
   private MailVorlageControl control;
 

@@ -24,7 +24,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class WiedervorlageDetailView extends AbstractJVereinView
+public class WiedervorlageDetailView extends AbstractDetailView
 {
   private WiedervorlageControl control;
 

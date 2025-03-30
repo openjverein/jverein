@@ -34,7 +34,7 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class SollbuchungDetailView extends AbstractJVereinView
+public class SollbuchungDetailView extends AbstractDetailView
 {
   private SollbuchungControl control;
 

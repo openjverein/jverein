@@ -50,7 +50,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailDetailView extends AbstractJVereinView
+public class MailDetailView extends AbstractDetailView
 {
   private MailControl control;
 

@@ -28,13 +28,13 @@ import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public abstract class AbstractJVereinView extends AbstractView
+public abstract class AbstractDetailView extends AbstractView
 {
 
   /**
    * Diese Funktion muss implementiert werden und den Controller zurückliefern
    * 
-   * @return AbstractJVereinControl das Control
+   * @return Savable das Control
    */
   protected abstract Savable getControl();
 
@@ -51,13 +51,13 @@ public abstract class AbstractJVereinView extends AbstractView
       catch (RemoteException | ApplicationException e)
       {
         error = true;
-        Logger.error("Fehler bei unbind fill", e);
+        Logger.error("Fehler bei unbind prepareStore", e);
       }
       JVereinDBObject o = (JVereinDBObject) getCurrentObject();
 
-      // Wenn beim fill() eine Exception geworfen wird, ist es warscheinlich,
-      // dass etwas ungültiges eingegeben wurde. Also wurde etwas verändert und
-      // wir fragen auch nach.
+      // Wenn beim prepareStore() eine Exception geworfen wird, ist es
+      // warscheinlich, dass etwas ungültiges eingegeben wurde. Also wurde etwas
+      // verändert und wir fragen auch nach.
       if (o.isChanged() || error)
       {
         YesNoDialog dialog = new YesNoDialog(AbstractDialog.POSITION_CENTER);

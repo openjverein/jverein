@@ -26,7 +26,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class ZusatzbetragDetailView extends AbstractJVereinView
+public class ZusatzbetragDetailView extends AbstractDetailView
 {
 
   private ZusatzbetragControl control;

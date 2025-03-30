@@ -29,7 +29,7 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.InfoPanel;
 
-public class SplitbuchungDetailView extends AbstractJVereinView
+public class SplitbuchungDetailView extends AbstractDetailView
 {
   private BuchungsControl control;
 

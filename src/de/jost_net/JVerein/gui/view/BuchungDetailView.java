@@ -31,7 +31,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class BuchungDetailView extends AbstractJVereinView
+public class BuchungDetailView extends AbstractDetailView
 {
   private BuchungsControl control;
 

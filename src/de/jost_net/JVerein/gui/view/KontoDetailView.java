@@ -27,7 +27,7 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class KontoDetailView extends AbstractJVereinView
+public class KontoDetailView extends AbstractDetailView
 {
   private KontoControl control;
 

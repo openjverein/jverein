@@ -63,7 +63,7 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public abstract class AbstractMitgliedDetailView extends AbstractJVereinView
+public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 {
 
   // Statische Variable, die den zuletzt ausgewählten Tab speichert.

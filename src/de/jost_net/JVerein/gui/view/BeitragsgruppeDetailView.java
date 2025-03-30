@@ -29,7 +29,7 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Container;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class BeitragsgruppeDetailView extends AbstractJVereinView
+public class BeitragsgruppeDetailView extends AbstractDetailView
 {
 
   private BeitragsgruppeControl control;

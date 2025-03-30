@@ -24,7 +24,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class AnfangsbestandDetailView extends AbstractJVereinView
+public class AnfangsbestandDetailView extends AbstractDetailView
 {
   private AnfangsbestandControl control;
 

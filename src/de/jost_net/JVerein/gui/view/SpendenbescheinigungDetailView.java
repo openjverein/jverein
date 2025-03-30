@@ -29,7 +29,7 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class SpendenbescheinigungDetailView extends AbstractJVereinView
+public class SpendenbescheinigungDetailView extends AbstractDetailView
 {
   private SpendenbescheinigungControl control;
 

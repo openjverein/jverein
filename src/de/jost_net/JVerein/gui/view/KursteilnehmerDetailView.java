@@ -31,7 +31,7 @@ import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
 
-public class KursteilnehmerDetailView extends AbstractJVereinView
+public class KursteilnehmerDetailView extends AbstractDetailView
 {
   private KursteilnehmerControl control;
 

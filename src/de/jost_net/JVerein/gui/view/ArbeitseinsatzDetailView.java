@@ -24,7 +24,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class ArbeitseinsatzDetailView extends AbstractJVereinView
+public class ArbeitseinsatzDetailView extends AbstractDetailView
 {
   private ArbeitseinsatzControl control;
 
