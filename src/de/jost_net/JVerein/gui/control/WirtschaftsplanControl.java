@@ -52,10 +52,13 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class WirtschaftsplanControl extends AbstractControl
@@ -261,11 +264,12 @@ public class WirtschaftsplanControl extends AbstractControl
             break;
           case "soll":
             try {
-              item.setSoll(Double.parseDouble(newValue.replace(",", ".")));
+              NumberFormat nf = NumberFormat.getInstance(Locale.GERMANY);
+              item.setSoll(nf.parse(newValue).doubleValue());
             }
-            catch (NumberFormatException e)
+            catch (NumberFormatException | ParseException e)
             {
-              GUI.getStatusBar().setErrorText("Bitte gebe eine gültige Zahl ein!");
+              GUI.getStatusBar().setErrorText("Bitte gib eine gültige Zahl im deutschen Format ein!");
               throw new ApplicationException("Keine Zahl eingegeben");
             }
             break;
