@@ -108,7 +108,14 @@ public class WirtschaftsplanNode implements GenericObjectNode
             }
 
             double soll = resultSet.getDouble(BETRAG_COL);
-            nodes.get(resultSet.getString(ID_COL)).setSoll(soll);
+            String id = resultSet.getString(ID_COL);
+            //Falls die Buchungsklasse vom Standard abweicht, ist noch keine Node vorhanden
+            if (!nodes.containsKey(id))
+            {
+              Buchungsart buchungsart = service.createObject(Buchungsart.class, id);
+              nodes.put(buchungsart.getID(), new WirtschaftsplanNode(this, buchungsart, art, wirtschaftsplan));
+            }
+            nodes.get(id).setSoll(soll);
           }
 
           return nodes;
@@ -147,6 +154,12 @@ public class WirtschaftsplanNode implements GenericObjectNode
             }
 
             double ist = resultSet.getDouble(BETRAG_COL);
+            //Falls die Buchungsklasse vom Standard abweicht, ist noch keine Node vorhanden
+            if (!nodes.containsKey(key))
+            {
+              Buchungsart buchungsart = service.createObject(Buchungsart.class, key);
+              nodes.put(buchungsart.getID(), new WirtschaftsplanNode(this, buchungsart, art, wirtschaftsplan));
+            }
             nodes.get(key).setIst(ist);
           }
 
