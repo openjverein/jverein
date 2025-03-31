@@ -26,6 +26,7 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -46,6 +47,10 @@ public class RechnungDialog extends AbstractDialog<Boolean>
   private LabelInput status = null;
 
   private boolean fortfahren = false;
+
+  private boolean sollbuchungsdatum;
+
+  private CheckboxInput sollbuchungsdatumInput;
 
   public RechnungDialog()
   {
@@ -79,6 +84,11 @@ public class RechnungDialog extends AbstractDialog<Boolean>
     return datum;
   }
 
+  public boolean getSollbuchungsdatum()
+  {
+    return sollbuchungsdatum;
+  }
+
   @Override
   protected void paint(Composite parent) throws Exception
   {
@@ -93,6 +103,12 @@ public class RechnungDialog extends AbstractDialog<Boolean>
     datumInput = new DateInput(new Date());
     group.addLabelPair("Datum", datumInput);
 
+    sollbuchungsdatumInput = new CheckboxInput(false);
+    sollbuchungsdatumInput.setName("Datum der Sollbuchung verwenden");
+    sollbuchungsdatumInput.addListener(e -> datumInput
+        .setEnabled(!(boolean) sollbuchungsdatumInput.getValue()));
+    group.addInput(sollbuchungsdatumInput);
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Rechnung(en) erstellen", context -> {
       if (formularInput.getValue() == null)
@@ -101,7 +117,8 @@ public class RechnungDialog extends AbstractDialog<Boolean>
         status.setColor(Color.ERROR);
         return;
       }
-      if (datumInput.getValue() == null)
+      if (datumInput.getValue() == null
+          && !(boolean) sollbuchungsdatumInput.getValue())
       {
         status.setValue("Bitte Datum auswählen");
         status.setColor(Color.ERROR);
@@ -109,6 +126,7 @@ public class RechnungDialog extends AbstractDialog<Boolean>
       }
       formular = (Formular) formularInput.getValue();
       datum = (Date) datumInput.getValue();
+      sollbuchungsdatum = (boolean) sollbuchungsdatumInput.getValue();
       fortfahren = true;
       close();
     }, null, false, "ok.png");
