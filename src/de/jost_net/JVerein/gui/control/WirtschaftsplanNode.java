@@ -59,7 +59,6 @@ public class WirtschaftsplanNode implements GenericObjectNode
 
   private WirtschaftsplanNode parent;
 
-  @SuppressWarnings("FieldMayBeFinal")
   private List<WirtschaftsplanNode> children;
 
   public WirtschaftsplanNode(Buchungsklasse buchungsklasse, int art,
