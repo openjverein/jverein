@@ -89,7 +89,7 @@ public class DokumentationUtil
       + "zusatzbetrage-importieren";
   
   
-  // Buchführung
+  // BuchfÃ¼hrung
   public static final String ANFANGSBESTAENDE = PRE + FUNKTIONEN + BUCHF + "anfangsbestand";
 
   public static final String BUCHUNGEN = PRE + FUNKTIONEN + BUCHF + "buchungen";
@@ -120,6 +120,9 @@ public class DokumentationUtil
   public static final String MITTELVERWENDUNG = PRE + FUNKTIONEN + BUCHF + "mittelverwendung";
 
   public static final String WIRTSCHAFTSPLANUNG = PRE + FUNKTIONEN + BUCHF + "wirtschaftsplanung";
+  
+  public static final String MITTELVERWENDUNGSALDO = PRE + FUNKTIONEN + BUCHF
+      + "mittelverwendungsaldo";
 
 
   // Abrechnung
@@ -211,7 +214,7 @@ public class DokumentationUtil
   public static final String ADRESSTYPEN = PRE + FUNKTIONEN + ADMIN + ADMMITGLIEDER + "mitgliedstypen";
   
   
-  // Einstellungen Buchführung
+  // Einstellungen BuchfÃ¼hrung
   public static final String BUCHUNGSART = PRE + FUNKTIONEN + ADMIN + ADMBUCHF + "buchungsart.html";
 
   public static final String BUCHUNGSKLASSEN = PRE + FUNKTIONEN + ADMIN + ADMBUCHF + "buchungsklasse";

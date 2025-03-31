@@ -1,27 +1,50 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns:resolver="antlib:org.apache.maven.resolver.ant" basedir=".." default="all" name="All">
+  <property name="build.dir" value="build" />
 
-<project basedir=".." default="all" name="All">
+  <taskdef uri="antlib:org.apache.maven.resolver.ant" resource="org/apache/maven/resolver/ant/antlib.xml">
+    <classpath>
+      <fileset dir="build" includes="maven-resolver-ant-tasks-*uber.jar" />
+    </classpath>
+  </taskdef>
 
-  <target name="init" description="inits the build">
+  <target name="resolve-dependencies" description="get dependencies with maven">
+    <resolver:pom file="pom.xml" id="pom" />
+    <resolver:resolve failonmissingattachments="true">
+      <resolver:path refid="cp" classpath="compile" />
+    </resolver:resolve>
+    <!-- Download dependencies into lib dir to enable current workflow of testing the plugin -->
+    <resolver:resolve failonmissingattachments="true">
+      <resolver:files dir="lib"
+                      scopes="compile,runtime"
+                      layout="{artifactId}.{extension}" />
+    </resolver:resolve>
+    <!-- Download test dependencies for Eclipse -->
+    <mkdir dir="lib.test" />
+    <resolver:resolve failonmissingattachments="true">
+      <resolver:files dir="lib.test"
+                      scopes="test"
+                      layout="{artifactId}.{extension}" />
+    </resolver:resolve>
+  </target>
 
-    <property environment="env" />
-    <property name="build.dir" value="build" />
+  <target name="init" description="inits the build" depends="resolve-dependencies">
     <buildnumber file="${build.dir}/BUILD" />
-    <xmlproperty file="plugin.xml" collapseattributes="true" />
-
     <tstamp>
       <format property="build.timestamp" pattern="yyyyMMdd" />
     </tstamp>
-
+    <xmlproperty file="plugin.xml" collapseattributes="true" />
     <loadproperties srcfile="${build.dir}/build.properties" />
+
 
     <echo message="VERSION: ${plugin.version}" level="info" />
     <echo message="BUILD  : ${build.number}" level="info" />
     <echo message="JAVA   : ${java.version}" level="info" />
 
     <path id="compilepath">
+      <path refid="cp" />
       <fileset dir="${lib.dir}">
-        <include name="**/*.jar" />
+        <include name="nc.jar" />
       </fileset>
       <fileset dir="../hibiscus/lib">
         <include name="**/*.jar" />
@@ -52,7 +75,7 @@
     </path>
   </target>
 
-  <target name="compile" depends="init, clean">
+  <target name="compile" depends="init">
     <mkdir dir="${class.dir}" />
     <javac debug="true" includeantruntime="false" debuglevel="lines,vars,source" release="${define.java.version}"
            encoding="${define.encoding}" deprecation="true" destdir="${class.dir}" srcdir="${src.dir}">
@@ -140,8 +163,15 @@
   </target>
 
   <target name="clean" description="Cleanup">
+    <loadproperties srcfile="${build.dir}/build.properties" />
     <delete dir="${project.tmp}" />
     <delete dir="${class.dir}" />
+    <delete includeemptydirs="true">
+      <fileset dir="${lib.dir}">
+        <exclude name="nc.jar" />
+      </fileset>
+    </delete>
+    <delete dir="lib.test" />
   </target>
 
   <target name="lib">
@@ -149,7 +179,7 @@
     <copy file="${project.zipdir}/${define.jarfilename}" tofile="releases/jverein-lib.jar" />
   </target>
 
-  <target name="all" depends="init,jar,javadoc,src,clean" description="Build an official openjverein release">
+  <target name="all" depends="init,jar,javadoc,src" description="Build an official openjverein release">
     <echo message="SELECTED_VERSION=${plugin.version}" />
     <echo message="SELECTED_PATH=${project.release}/${project.zipfilename}" />
     <echo message="SELECTED_FILENAME=${project.zipfilename}" />

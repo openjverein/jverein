@@ -20,14 +20,32 @@ Das Handbuch ist im Repository https://github.com/openjverein/jverein-Book. Der 
 Für die OpenJVerein-Entwicklung werden benötigt
 
 - Eclipse/IntelliJ IDEA
-- Java 11 (JDK)
+- Java 17+ (JDK)
 
-Es wird Java 11 (keine höhere Version) benötigt, damit die Kompatibilität zu Jameica gewährleistet ist und keine APIs verwendet werden, die in späteren Java Versionen eingeführt wurden.
+Es wird Java 17 oder eine höhere Version benötigt, damit die Kompatibilität zu Jameica gewährleistet ist.
 
 # Build und Test
 Build und Test sind hier beschrieben: https://www.willuhn.de/wiki/doku.php?id=develop:eclipse
 
 # Einrichtung der IDE
+Um alle externen Abhängigkeiten bereitzustellen, muss initial das Ant-Build-Script mit dem Parameter `resolve-dependencies` ausgeführt 
+werden. Dieses lädt die benötigten Bibliotheken herunter und kopiert sie in das Verzeichnis `lib`.
+
+```shell
+ant --file build/build.xml resolve-dependencies
+```
+
+Sowohl IntelliJ als auch Eclipse enthalten eine Unterstützung für Ant-Build-Scripts, die es ermöglicht, das 
+Build-Script über die IDE auszuführen.
+
+- Eclipse:
+  - siehe [Running Ant Buildfiles](https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftasks-ant-running.htm)
+  und im Schritt 3 `resolve-dependencies` auswählen.
+  - Alternativ über die [Ant View](https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Freference%2Fref-antview.htm) die
+  build.xml hinzufügen, danach resolve-dependencies anklicken und auf den grünen Play-Button klicken.
+- IntelliJ:
+  - Plugin wie unter [Getting started with Ant](https://www.jetbrains.com/help/idea/ant.html) beschrieben, installieren und wie in der dort verlinkten früheren 
+    Dokumentation beschrieben, benutzen.
 ## Eclipse 
 Die Einrichtung von Eclipse ist hier: https://www.willuhn.de/wiki/doku.php?id=develop:eclipse und hier: https://www.willuhn.de/wiki/doku.php?id=develop:jameica:faq beschrieben.
 
