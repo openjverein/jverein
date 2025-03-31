@@ -24,6 +24,8 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.messaging.QueryMessage;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -39,7 +41,7 @@ public abstract class AbstractDetailView extends AbstractView
   protected abstract Savable getControl();
 
   @Override
-  public void unbind() throws OperationCanceledException
+  public void unbind() throws OperationCanceledException, ApplicationException
   {
     try
     {
@@ -63,7 +65,7 @@ public abstract class AbstractDetailView extends AbstractView
         YesNoDialog dialog = new YesNoDialog(AbstractDialog.POSITION_CENTER);
         dialog.setTitle("Nicht gespeichert");
         dialog.setText("Der Eintrag wurde nicht gespeichert,\n"
-            + " soll die View wirklich verlassen werden?");
+            + "soll die View wirklich verlassen werden?");
         if (!(Boolean) dialog.open())
         {
           throw new OperationCanceledException();
@@ -72,6 +74,11 @@ public abstract class AbstractDetailView extends AbstractView
     }
     catch (OperationCanceledException oce)
     {
+      // Wir schicken ein Message damit der Eintrag in der History erhalten
+      // bleibt
+      Application.getMessagingFactory()
+          .getMessagingQueue("jameica.gui.view.unbind.fail")
+          .sendSyncMessage(new QueryMessage());
       throw new OperationCanceledException(oce);
     }
     catch (Exception e)
