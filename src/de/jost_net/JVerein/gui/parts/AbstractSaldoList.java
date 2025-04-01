@@ -95,6 +95,7 @@ public class AbstractSaldoList extends TablePart
       return Double.valueOf(rs.getDouble(1));
     }
   };
+
   ResultSetExtractor rsi = new ResultSetExtractor()
   {
     @Override
@@ -209,19 +210,35 @@ public class AbstractSaldoList extends TablePart
         new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.GESAMTSALDOFOOTER,
             "Saldo aller Buchungsklassen ", suEinnahmen, suAusgaben,
             suUmbuchungen));
+
+    // Buchungen ohne Buchungsart
+    String sqlOhneBuchungsart = "SELECT sum(buchung.betrag) FROM buchung, konto "
+        + "WHERE datum >= ? AND datum <= ? AND buchung.konto = konto.id "
+        + "AND konto.kontoart < ? AND buchung.buchungsart is null";
+    Double ohneBuchungsart = (Double) service.execute(sqlOhneBuchungsart,
+        new Object[] { datumvon, datumbis, Kontoart.LIMIT.getKey() }, rsd);
+
+    if (ohneBuchungsart >= 0.01d || ohneBuchungsart <= -0.01d)
+    {
+      zeile.add(new BuchungsklasseSaldoZeile(
+          BuchungsklasseSaldoZeile.GESAMTGEWINNVERLUST,
+          "Saldo Buchungen ohne Buchungsart ", ohneBuchungsart));
+    }
+
     zeile.add(new BuchungsklasseSaldoZeile(
         BuchungsklasseSaldoZeile.GESAMTGEWINNVERLUST, "Gesamtsaldo ",
-        suEinnahmen + suAusgaben + suUmbuchungen));
+        suEinnahmen + suAusgaben + suUmbuchungen + ohneBuchungsart));
 
     // Gesamtübersicht Steuern ausgeben
     getSteuerUebersicht(zeile);
 
-    // Buchungen ohne Buchungsart
-    String sql = "select count(*) from buchung " + "where datum >= ? and datum <= ?  "
-        + "and buchung.buchungsart is null";
+    // Anzahl Buchungen ohne Buchungsart
+    String sql = "SELECT count(*) FROM buchung, konto "
+        + "WHERE datum >= ? AND datum <= ? AND buchung.konto = konto.id "
+        + "AND konto.kontoart < ? AND buchung.buchungsart is null";
 
     Integer anzahl = (Integer) service.execute(sql,
-        new Object[] { datumvon, datumbis }, rsi);
+        new Object[] { datumvon, datumbis, Kontoart.LIMIT.getKey() }, rsi);
     if (anzahl > 0)
     {
       zeile.add(new BuchungsklasseSaldoZeile(
