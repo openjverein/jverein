@@ -264,7 +264,7 @@ public class WirtschaftsplanControl extends AbstractControl
             break;
           case "soll":
             try {
-              NumberFormat nf = NumberFormat.getInstance(Locale.GERMANY);
+              NumberFormat nf = NumberFormat.getInstance(Locale.getDefault());
               item.setSoll(nf.parse(newValue).doubleValue());
             }
             catch (NumberFormatException | ParseException e)
@@ -281,7 +281,7 @@ public class WirtschaftsplanControl extends AbstractControl
         node.setSoll(item.getSoll());
 
         WirtschaftsplanNode parent = (WirtschaftsplanNode) node.getParent();
-        reloadSoll(parent, art);
+        reloadSoll(parent);
       }
       catch (RemoteException e)
       {
@@ -308,7 +308,7 @@ public class WirtschaftsplanControl extends AbstractControl
     return uebersicht;
   }
 
-  public void reloadSoll(WirtschaftsplanNode parent, int art)
+  public void reloadSoll(WirtschaftsplanNode parent)
       throws RemoteException, ApplicationException
   {
     if (parent.getType() == WirtschaftsplanNode.Type.BUCHUNGSKLASSE)

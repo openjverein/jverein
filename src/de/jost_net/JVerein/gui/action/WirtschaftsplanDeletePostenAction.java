@@ -27,13 +27,10 @@ import java.rmi.RemoteException;
 public class WirtschaftsplanDeletePostenAction implements Action
 {
   private final WirtschaftsplanControl control;
-  private final int art;
 
-  public WirtschaftsplanDeletePostenAction(WirtschaftsplanControl control,
-      int art)
+  public WirtschaftsplanDeletePostenAction(WirtschaftsplanControl control)
   {
     this.control = control;
-    this.art = art;
   }
 
   @SuppressWarnings("rawtypes")
@@ -54,7 +51,7 @@ public class WirtschaftsplanDeletePostenAction implements Action
       {
         case POSTEN:
           ((WirtschaftsplanNode) node.getParent()).removeChild(node);
-          control.reloadSoll((WirtschaftsplanNode) node.getParent(), art);
+          control.reloadSoll((WirtschaftsplanNode) node.getParent());
           break;
         case BUCHUNGSART:
           artIterator = node.getChildren();
@@ -69,7 +66,7 @@ public class WirtschaftsplanDeletePostenAction implements Action
             ((WirtschaftsplanNode) node.getParent()).removeChild(node);
           }
 
-          control.reloadSoll(node, art);
+          control.reloadSoll(node);
           break;
         case BUCHUNGSKLASSE:
           GenericIterator klasseIterator = node.getChildren();
@@ -90,7 +87,7 @@ public class WirtschaftsplanDeletePostenAction implements Action
                   currentNode);
             }
           }
-          control.reloadSoll(node, art);
+          control.reloadSoll(node);
           break;
         case UNBEKANNT:
           throw new ApplicationException("Fehler beim Löschen der Posten");

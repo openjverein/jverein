@@ -27,13 +27,10 @@ import de.willuhn.util.ApplicationException;
 public class WirtschaftsplanAddPostenAction implements Action
 {
   private final WirtschaftsplanControl control;
-  private final int art;
 
-  public WirtschaftsplanAddPostenAction(WirtschaftsplanControl control,
-      int art)
+  public WirtschaftsplanAddPostenAction(WirtschaftsplanControl control)
   {
     this.control = control;
-    this.art = art;
   }
 
   @Override
@@ -58,7 +55,7 @@ public class WirtschaftsplanAddPostenAction implements Action
 
       node.addChild(new WirtschaftsplanNode(node, item));
 
-      control.reloadSoll(node, art);
+      control.reloadSoll(node);
     }
     catch (OperationCanceledException ignored) {}
     catch (Exception e)

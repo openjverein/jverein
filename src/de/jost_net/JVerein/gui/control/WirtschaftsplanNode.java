@@ -191,26 +191,19 @@ public class WirtschaftsplanNode implements GenericObjectNode
       return;
     }
 
-    String sql = "SELECT wirtschaftsplanitem.id " +
-        "FROM wirtschaftsplanitem, buchungsart " +
-        "WHERE wirtschaftsplanitem.buchungsart = buchungsart.id " +
-        "AND wirtschaftsplanitem.buchungsart = ? " +
-        "AND wirtschaftsplanitem.buchungsklasse = ? " +
-        "AND buchungsart.art = ? " +
-        "AND wirtschaftsplanitem.wirtschaftsplan = ?";
+    DBIterator<WirtschaftsplanItem> iterator = service.createList(WirtschaftsplanItem.class);
+    iterator.join("buchungsart");
+    iterator.addFilter("wirtschaftsplanitem.buchungsart = buchungsart.id");
+    iterator.addFilter("wirtschaftsplanitem.buchungsart = ?", buchungsart.getID());
+    iterator.addFilter("wirtschaftsplanitem.buchungsklasse = ?", parent.getBuchungsklasse().getID());
+    iterator.addFilter("buchungsart.art = ?", art);
+    iterator.addFilter("wirtschaftsplanitem.wirtschaftsplan = ?", wirtschaftsplan.getID());
 
-    service.execute(sql,
-        new Object[] { buchungsart.getID(), parent.getBuchungsklasse().getID(),
-            art, wirtschaftsplan.getID() }, resultSet -> {
-          while (resultSet.next())
-          {
-            children.add(new WirtschaftsplanNode(this,
-                service.createObject(WirtschaftsplanItem.class,
-                    resultSet.getString(1))));
-          }
-
-          return children;
-        });
+    while (iterator.hasNext())
+    {
+      WirtschaftsplanItem item = iterator.next();
+      children.add(new WirtschaftsplanNode(this, item));
+    }
   }
 
   public WirtschaftsplanNode(WirtschaftsplanNode parent,
