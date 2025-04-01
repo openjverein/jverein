@@ -37,7 +37,7 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 /**
  * Hilfs-Objekt
  */
-public class SaldoZeile implements GenericObject
+public class KontoSaldoZeile implements GenericObject
 {
 
   private Konto konto;
@@ -58,7 +58,7 @@ public class SaldoZeile implements GenericObject
   
   private Date bis = null;
 
-  public SaldoZeile(Konto konto, Double anfangsbestand, Double einnahmen,
+  public KontoSaldoZeile(Konto konto, Double anfangsbestand, Double einnahmen,
       Double ausgaben, Double umbuchungen, Double endbestand)
   {
     this.konto = konto;
@@ -69,7 +69,7 @@ public class SaldoZeile implements GenericObject
     this.endbestand = endbestand;
   }
 
-  public SaldoZeile(Date von, Date bis, Konto konto) throws RemoteException
+  public KontoSaldoZeile(Date von, Date bis, Konto konto) throws RemoteException
   {
     this.von = von;
     this.bis = bis;
@@ -77,7 +77,7 @@ public class SaldoZeile implements GenericObject
     saldoZeile();
   }
   
-  public SaldoZeile(Geschaeftsjahr gj, Konto konto) throws RemoteException
+  public KontoSaldoZeile(Geschaeftsjahr gj, Konto konto) throws RemoteException
   {
     this.von = gj.getBeginnGeschaeftsjahr();
     this.bis = gj.getEndeGeschaeftsjahr();
@@ -231,7 +231,7 @@ public class SaldoZeile implements GenericObject
   @Override
   public boolean equals(GenericObject arg0) throws RemoteException
   {
-    if (arg0 == null || !(arg0 instanceof SaldoZeile))
+    if (arg0 == null || !(arg0 instanceof KontoSaldoZeile))
     {
       return false;
     }

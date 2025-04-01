@@ -126,7 +126,7 @@ public class AbstractSaldoList extends TablePart
 
       if (saldoList == null)
       {
-        saldoList = new TablePart(zeile, null)
+        saldoList = new SaldoListTablePart(zeile, null)
         {
           @Override
           protected void orderBy(int index)
@@ -151,7 +151,8 @@ public class AbstractSaldoList extends TablePart
         }
         saldoList.addColumn("Anzahl", "anzahlbuchungen");
         saldoList.setRememberColWidths(true);
-        saldoList.removeFeature(FeatureSummary.class);
+        saldoList.setMulti(true);
+        saldoList.addFeature(new FeatureSummary());
       }
       else
       {

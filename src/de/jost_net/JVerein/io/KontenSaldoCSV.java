@@ -56,7 +56,7 @@ public class KontenSaldoCSV
     return processors;
   }
 
-  public KontenSaldoCSV(ArrayList<SaldoZeile> zeile,
+  public KontenSaldoCSV(ArrayList<KontoSaldoZeile> zeile,
       final File file, Date datumvon, Date datumbis) throws ApplicationException
   {
     ICsvMapWriter writer = null;
@@ -76,7 +76,7 @@ public class KontenSaldoCSV
       csvzeile.put(header[0], subtitle);
       writer.write(csvzeile, header, processors);
 
-      for (SaldoZeile sz : zeile)
+      for (KontoSaldoZeile sz : zeile)
       {
         csvzeile = new HashMap<>();
 

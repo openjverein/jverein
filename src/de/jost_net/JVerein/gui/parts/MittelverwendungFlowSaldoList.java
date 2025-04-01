@@ -61,7 +61,6 @@ public class MittelverwendungFlowSaldoList extends AbstractSaldoList
     buchungsartenIt.setOrder("order by nummer");
     suBukEinnahmen = Double.valueOf(0);
     suBukAusgaben = Double.valueOf(0);
-    suBukUmbuchungen = Double.valueOf(0);
     suBukNetto.clear();
     suBukSteuer.clear();
 
@@ -114,7 +113,6 @@ public class MittelverwendungFlowSaldoList extends AbstractSaldoList
             rsd);
         suBukEinnahmen += einnahmen;
         suBukAusgaben += ausgaben;
-        umbuchungen = Double.valueOf(0);
       }
       else
       {
@@ -168,7 +166,6 @@ public class MittelverwendungFlowSaldoList extends AbstractSaldoList
               rsd);
           suBukEinnahmen += einnahmen;
           suBukAusgaben += ausgaben;
-          umbuchungen = Double.valueOf(0);
         }
         else
         {
@@ -215,23 +212,19 @@ public class MittelverwendungFlowSaldoList extends AbstractSaldoList
               rsd);
           suBukEinnahmen += einnahmen;
           suBukAusgaben += ausgaben;
-          umbuchungen = Double.valueOf(0);
         }
       }
 
       if (Math.abs(einnahmen) >= LIMIT || Math.abs(ausgaben) >= LIMIT
-          || Math.abs(umbuchungen) >= LIMIT
           || !Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
       {
         zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.DETAIL,
-            buchungsart, einnahmen, ausgaben, umbuchungen));
+            buchungsart, einnahmen, ausgaben));
       }
     }
     suEinnahmen += suBukEinnahmen;
     suAusgaben += suBukAusgaben;
-    suUmbuchungen += suBukUmbuchungen;
     if (Math.abs(suBukEinnahmen) < LIMIT && Math.abs(suBukAusgaben) < LIMIT
-        && Math.abs(suBukUmbuchungen) < LIMIT
         && Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
     {
       zeile.remove(zeile.size() - 1);
@@ -240,12 +233,10 @@ public class MittelverwendungFlowSaldoList extends AbstractSaldoList
 
     zeile.add(
         new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.SALDOFOOTER,
-            "Salden - " + bezeichnung, suBukEinnahmen,
-            suBukAusgaben, suBukUmbuchungen));
+            "Salden - " + bezeichnung, suBukEinnahmen, suBukAusgaben));
     zeile.add(new BuchungsklasseSaldoZeile(
         BuchungsklasseSaldoZeile.SALDOGEWINNVERLUST,
-        "Zufluss/Abfluss - " + bezeichnung,
-        suBukEinnahmen + suBukAusgaben + suBukUmbuchungen));
+        "Zufluss/Abfluss - " + bezeichnung, suBukEinnahmen + suBukAusgaben));
   }
 
   private String getSummenKontoSql() throws RemoteException

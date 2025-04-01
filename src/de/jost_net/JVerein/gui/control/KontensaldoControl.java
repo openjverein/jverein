@@ -28,7 +28,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.parts.KontensaldoList;
 import de.jost_net.JVerein.io.KontenSaldoCSV;
 import de.jost_net.JVerein.io.KontenSaldoPDF;
-import de.jost_net.JVerein.io.SaldoZeile;
+import de.jost_net.JVerein.io.KontoSaldoZeile;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
@@ -111,10 +111,10 @@ public class KontensaldoControl extends SaldoControl
       else
       {
         saldoList.setVonBis(getDatumvon().getDate(), getDatumbis().getDate());
-        ArrayList<SaldoZeile> zeile = saldoList.
+        ArrayList<KontoSaldoZeile> zeile = saldoList.
             getInfo(Einstellungen.getEinstellung().getSummenAnlagenkonto());
         saldoList.removeAll();
-        for (SaldoZeile sz : zeile)
+        for (KontoSaldoZeile sz : zeile)
         {
           saldoList.addItem(sz);
         }
@@ -131,7 +131,7 @@ public class KontensaldoControl extends SaldoControl
   {
     try
     {
-      ArrayList<SaldoZeile> zeile = saldoList.
+      ArrayList<KontoSaldoZeile> zeile = saldoList.
           getInfo(Einstellungen.getEinstellung().getSummenAnlagenkonto());
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
@@ -167,7 +167,7 @@ public class KontensaldoControl extends SaldoControl
     }
   }
 
-  private void auswertungSaldo(final ArrayList<SaldoZeile> zeile,
+  private void auswertungSaldo(final ArrayList<KontoSaldoZeile> zeile,
       final File file, final Date datumvon, final Date datumbis,
       final String type)
   {

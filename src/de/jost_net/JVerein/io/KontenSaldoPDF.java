@@ -32,7 +32,7 @@ import de.willuhn.util.ApplicationException;
 public class KontenSaldoPDF
 {
 
-  public KontenSaldoPDF(ArrayList<SaldoZeile> zeile, final File file,
+  public KontenSaldoPDF(ArrayList<KontoSaldoZeile> zeile, final File file,
       final Date datumvon, final Date datumbis) throws ApplicationException
   {
     try
@@ -61,7 +61,7 @@ public class KontenSaldoPDF
           BaseColor.LIGHT_GRAY);
       reporter.createHeader();
 
-      for (SaldoZeile sz : zeile)
+      for (KontoSaldoZeile sz : zeile)
       {
         reporter.addColumn((String) sz.getAttribute("kontonummer"),
             Element.ALIGN_LEFT);
