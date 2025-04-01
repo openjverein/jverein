@@ -218,7 +218,7 @@ public class AbstractSaldoList extends TablePart
     Double ohneBuchungsart = (Double) service.execute(sqlOhneBuchungsart,
         new Object[] { datumvon, datumbis, Kontoart.LIMIT.getKey() }, rsd);
 
-    if (ohneBuchungsart >= 0.01d || ohneBuchungsart <= -0.01d)
+    if (Math.abs(ohneBuchungsart) >= 0.01d)
     {
       zeile.add(new BuchungsklasseSaldoZeile(
           BuchungsklasseSaldoZeile.GESAMTGEWINNVERLUST,
@@ -229,7 +229,7 @@ public class AbstractSaldoList extends TablePart
         BuchungsklasseSaldoZeile.GESAMTGEWINNVERLUST, "Gesamtsaldo ",
         suEinnahmen + suAusgaben + suUmbuchungen + ohneBuchungsart));
 
-    // Gesamtübersicht Steuern ausgeben
+    // GesamtÃ¼bersicht Steuern ausgeben
     getSteuerUebersicht(zeile);
 
     // Anzahl Buchungen ohne Buchungsart
