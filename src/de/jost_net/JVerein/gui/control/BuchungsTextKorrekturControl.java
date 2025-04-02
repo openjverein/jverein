@@ -14,10 +14,10 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package com.schlevoigt.JVerein.gui.control;
+package de.jost_net.JVerein.gui.control;
 
-import com.schlevoigt.JVerein.Queries.BuchungsKorrekturQuery;
-import com.schlevoigt.JVerein.util.Misc;
+import de.jost_net.JVerein.Queries.BuchungsKorrekturQuery;
+import de.jost_net.JVerein.util.BuchungsZweckKorrektur;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.gui.action.BuchungAction;
@@ -75,7 +75,7 @@ public class BuchungsTextKorrekturControl extends AbstractControl
         {
           return null;
         }
-        return Misc.getBuchungsZweckKorrektur(value.toString(), false);
+        return BuchungsZweckKorrektur.getBuchungsZweckKorrektur(value.toString(), false);
       });
       buchungsList.addColumn("Verwendungszweck alt", "zweck", value -> {
         if (value == null)
@@ -139,7 +139,7 @@ public class BuchungsTextKorrekturControl extends AbstractControl
           continue;
         }
         String zweck = b.getZweck();
-        zweck = Misc.getBuchungsZweckKorrektur(zweck, true);
+        zweck = BuchungsZweckKorrektur.getBuchungsZweckKorrektur(zweck, true);
         b.setZweck(zweck);
         b.store();
         count++;

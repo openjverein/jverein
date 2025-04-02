@@ -14,7 +14,7 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package com.schlevoigt.JVerein.Queries;
+package de.jost_net.JVerein.Queries;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchung;
