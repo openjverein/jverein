@@ -16,30 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.TableItem;
-
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.BuchungMessage;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
@@ -48,6 +26,7 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.JVerein.gui.formatter.KontoFormatter;
 import de.jost_net.JVerein.gui.formatter.MitgliedskontoFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
@@ -61,11 +40,11 @@ import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.SplitbuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.gui.util.AfaUtil;
+import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.io.BuchungAuswertungCSV;
 import de.jost_net.JVerein.io.BuchungAuswertungPDF;
 import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
@@ -121,6 +100,27 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.TableItem;
+
+import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 public class BuchungsControl extends AbstractControl
 {
@@ -1251,27 +1251,7 @@ public class BuchungsControl extends AbstractControl
           return SplitbuchungTyp.get(typ).substring(0, 1);
         }
       });
-      buchungsList.addColumn("Konto", "konto", new Formatter()
-      {
-
-        @Override
-        public String format(Object o)
-        {
-          Konto k = (Konto) o;
-          if (k != null)
-          {
-            try
-            {
-              return k.getBezeichnung();
-            }
-            catch (RemoteException e)
-            {
-              Logger.error("Fehler", e);
-            }
-          }
-          return "";
-        }
-      });
+      buchungsList.addColumn("Konto", "konto", new KontoFormatter());
       buchungsList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 

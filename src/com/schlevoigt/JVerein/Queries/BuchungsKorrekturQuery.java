@@ -3,22 +3,18 @@
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
- *
+ * <p>
  *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
  *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
  *  the GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ * <p>
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
 package com.schlevoigt.JVerein.Queries;
-
-import java.rmi.RemoteException;
-import java.util.Date;
-import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -27,47 +23,48 @@ import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 
-public class BuchungsKorrekturQuery {
+import java.rmi.RemoteException;
+import java.util.Date;
+import java.util.List;
 
-	private List<Buchung> ergebnis;
+public class BuchungsKorrekturQuery
+{
 
-	public BuchungsKorrekturQuery() {
-	}
+  private List<Buchung> ergebnis;
 
-	@SuppressWarnings("unchecked")
-	public List<Buchung> get() throws RemoteException {
-		final DBService service = Einstellungen.getDBService();
+  public BuchungsKorrekturQuery()
+  {
+  }
 
-		DBIterator<Jahresabschluss> it1 = service.createList(Jahresabschluss.class);
-		it1.setOrder("ORDER BY bis DESC");
-		Date bis = null;
-		if(it1.hasNext())
-		  bis =  ((Jahresabschluss) it1.next()).getBis();
+  @SuppressWarnings("unchecked")
+  public List<Buchung> get() throws RemoteException
+  {
+    final DBService service = Einstellungen.getDBService();
 
-		DBIterator<Buchung> it = service.createList(Buchung.class);
-		if(bis != null)
-		  it.addFilter("datum > ?", new java.sql.Date(bis.getTime()));
-		Object[] keys = { "%EREF%", "%KREF%", "%MREF%", "%CRED%",
-		    "%DBET%", "%SVWZ%", "%ABWA%","%IBAN+%","%IBAN:%", "%BIC%"};
-		it.addFilter("(upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ?)", keys);
+    DBIterator<Jahresabschluss> jahresabschlussDBIterator = service.createList(Jahresabschluss.class);
+    jahresabschlussDBIterator.setOrder("ORDER BY bis DESC");
+    Date bis = null;
+    if (jahresabschlussDBIterator.hasNext())
+      bis = jahresabschlussDBIterator.next().getBis();
 
-		it.setOrder("ORDER BY datum");
+    DBIterator<Buchung> buchungDBIterator = service.createList(Buchung.class);
+    if (bis != null)
+      buchungDBIterator.addFilter("datum > ?", new java.sql.Date(bis.getTime()));
+    Object[] keys = { "%EREF%", "%KREF%", "%MREF%", "%CRED%", "%DBET%",
+        "%SVWZ%", "%ABWA%", "%IBAN+%", "%IBAN:%", "%BIC%" };
+    buchungDBIterator.addFilter(
+        "(upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ?)",
+        keys);
 
-		this.ergebnis = it != null ? PseudoIterator.asList(it) : null;
-		return ergebnis;
-	}
+    buchungDBIterator.setOrder("ORDER BY datum");
 
-	public int getSize() {
-		return ergebnis.size();
-	}
+    this.ergebnis = PseudoIterator.asList(buchungDBIterator);
+    return ergebnis;
+  }
+
+  public int getSize()
+  {
+    return ergebnis.size();
+  }
 
 }
