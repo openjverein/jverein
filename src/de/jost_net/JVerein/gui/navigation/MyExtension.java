@@ -271,9 +271,12 @@ public class MyExtension implements Extension
       auswertung = new MyItem(auswertung, "Auswertungen", null);
       auswertung.addChild(new MyItem(auswertung, "Mitglieder",
           new StartViewAction(AuswertungMitgliedView.class), "receipt.png"));
-      auswertung.addChild(new MyItem(auswertung, "Nicht-Mitglieder",
-          new StartViewAction(AuswertungNichtMitgliedView.class),
-          "receipt.png"));
+      if (Einstellungen.getEinstellung().getZusatzadressen())
+      {
+        auswertung.addChild(new MyItem(auswertung, "Nicht-Mitglieder",
+            new StartViewAction(AuswertungNichtMitgliedView.class),
+            "receipt.png"));
+      }
       auswertung.addChild(new MyItem(auswertung, "Jubiläen",
           new StartViewAction(JubilaeenView.class), "receipt.png"));
       if (Einstellungen.getEinstellung().getKursteilnehmer())
