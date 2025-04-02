@@ -60,6 +60,16 @@ public class WirtschaftsplanImpl extends AbstractDBObject
   }
 
   @Override
+  public String getBezeichung() throws RemoteException {
+    return (String) getAttribute("bezeichnung");
+  }
+
+  @Override
+  public void setBezeichnung(String bezeichnung) throws RemoteException {
+    setAttribute("bezeichnung", bezeichnung);
+  }
+
+  @Override
   public Date getDatumVon() throws RemoteException
   {
     return (Date) getAttribute("datum_von");

@@ -22,6 +22,10 @@ public interface Wirtschaftsplan extends DBObject
 {
   void setId(String id) throws RemoteException;
 
+  String getBezeichung() throws RemoteException;
+
+  void setBezeichnung(String bezeichnung) throws RemoteException;
+
   Date getDatumVon() throws RemoteException;
 
   void setDatumVon(Date date) throws RemoteException;

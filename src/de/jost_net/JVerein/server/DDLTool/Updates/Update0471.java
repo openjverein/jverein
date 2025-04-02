@@ -42,6 +42,8 @@ public class Update0471 extends AbstractDDLUpdate
     wirtschaftsplan.add(id);
     wirtschaftsplan.setPrimaryKey(id);
     wirtschaftsplan.add(
+            new Column("bezeichnung", COLTYPE.VARCHAR, 200, null, false, false));
+    wirtschaftsplan.add(
         new Column("datum_von", COLTYPE.DATE, 10, null, true, false));
     wirtschaftsplan.add(
         new Column("datum_bis", COLTYPE.DATE, 10, null, true, false));

@@ -23,6 +23,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
@@ -35,6 +36,8 @@ import java.util.List;
 public class WirtschaftsplanUebersichtPart implements Part
 {
   private final WirtschaftsplanControl control;
+
+  private TextInput bezeichnung;
 
   private DateInput bis;
 
@@ -53,6 +56,9 @@ public class WirtschaftsplanUebersichtPart implements Part
   public void paint(Composite parent) throws RemoteException
   {
     LabelGroup uebersicht = new LabelGroup(parent, "Übersicht");
+
+    bezeichnung = new TextInput(control.getWirtschaftsplan().getBezeichung());
+    uebersicht.addLabelPair("Bezeichnung", bezeichnung);
 
     ColumnLayout columns = new ColumnLayout(uebersicht.getComposite(), 2);
 
@@ -123,6 +129,11 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     this.sollEinnahme.setValue(sollEinnahmen);
     this.sollAusgaben.setValue(sollAusgaben);
+  }
+
+  public TextInput getBezeichnung()
+  {
+    return bezeichnung;
   }
 
   public DateInput getBis()

@@ -100,6 +100,7 @@ public class WirtschaftsplanControl extends AbstractControl
     DateFormatter dateFormatter = new DateFormatter(new JVDateFormatTTMMJJJJ());
 
     wirtschaftsplaene.addColumn("ID", "id");
+    wirtschaftsplaene.addColumn("Bezeichnung", "bezeichnung");
     wirtschaftsplaene.addColumn("Von", "datum_von", dateFormatter);
     wirtschaftsplaene.addColumn("Bis", "datum_bis", dateFormatter);
     wirtschaftsplaene.addColumn("Einnahmen Soll", "planEinnahme", formatter);
@@ -364,6 +365,7 @@ public class WirtschaftsplanControl extends AbstractControl
 
       checkDate();
 
+      wirtschaftsplan.setBezeichnung((String) uebersicht.getBezeichnung().getValue());
       Date von = (Date) uebersicht.getVon().getValue();
       Date bis = (Date) uebersicht.getBis().getValue();
       wirtschaftsplan.setDatumBis(bis);
