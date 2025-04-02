@@ -53,7 +53,16 @@ public class BuchungsKorrekturQuery
     Object[] keys = { "%EREF%", "%KREF%", "%MREF%", "%CRED%", "%DBET%",
         "%SVWZ%", "%ABWA%", "%IBAN+%", "%IBAN:%", "%BIC%" };
     buchungDBIterator.addFilter(
-        "(upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ? or " + "upper(zweck) like ?)",
+        "(upper(zweck) like ? or "
+            + "upper(zweck) like ? or "
+            + "upper(zweck) like ? or "
+            + "upper(zweck) like ? or "
+            + "upper(zweck) like ? or "
+            + "upper(zweck) like ? or "
+            + "upper(zweck) like ? or "
+            + "upper(zweck) like ? or "
+            + "upper(zweck) like ? or "
+            + "upper(zweck) like ?)",
         keys);
 
     buchungDBIterator.setOrder("ORDER BY datum");
