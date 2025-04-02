@@ -347,6 +347,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput mittelverwendung;
 
+  private CheckboxInput projekte;
+
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
    */
@@ -2176,6 +2178,17 @@ public class EinstellungControl extends AbstractControl
     return mittelverwendung;
   }
 
+  public CheckboxInput getProjekte() throws RemoteException
+  {
+    if (projekte != null)
+    {
+      return projekte;
+    }
+    projekte = new CheckboxInput(
+        Einstellungen.getEinstellung().getProjekteAnzeigen());
+    return projekte;
+  }
+
   public void handleStoreAllgemein()
   {
     try
@@ -2267,6 +2280,7 @@ public class EinstellungControl extends AbstractControl
         e.setAfaInJahresabschluss(true);
       e.setMitgliedsnummerAnzeigen((Boolean) nummeranzeigen.getValue());
       e.setMittelverwendung((Boolean) mittelverwendung.getValue());
+      e.setProjekteAnzeigen((Boolean) projekte.getValue());
 
       e.store();
       Einstellungen.setEinstellung(e);

@@ -227,8 +227,11 @@ public class MyExtension implements Extension
           new StartViewAction(BuchungsklasseSaldoView.class),
           "emblem-documents.png"));
       // Projekte
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
-          new StartViewAction(ProjektSaldoView.class), "screwdriver.png"));
+      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
+            new StartViewAction(ProjektSaldoView.class), "screwdriver.png"));
+      }
       // Anlagen
       if (anlagenkonto)
       {
@@ -423,9 +426,12 @@ public class MyExtension implements Extension
       einstellungenbuchfuehrung
           .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Import",
               new KontenrahmenImportAction(), "file-import.png"));
-      einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-          "Projekte", new StartViewAction(ProjektListeView.class),
-          "screwdriver.png"));
+      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
+            "Projekte", new StartViewAction(ProjektListeView.class),
+            "screwdriver.png"));
+      }
       administration.addChild(einstellungenbuchfuehrung);
       
       NavigationItem einstellungenerweitert = null;
