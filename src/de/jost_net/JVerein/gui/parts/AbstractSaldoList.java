@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.BuchungsklasseSaldoZeile;
+import de.jost_net.JVerein.io.ISaldoZeile;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -194,7 +195,7 @@ public class AbstractSaldoList extends TablePart
     {
       buchungsklasse = (Buchungsklasse) buchungsklassenIt.next();
       zeile.add(new BuchungsklasseSaldoZeile(
-          BuchungsklasseSaldoZeile.HEADER, buchungsklasse));
+          ISaldoZeile.HEADER, buchungsklasse));
       createBuchungsklasse(buchungsklasse, zeile);
     }
     
@@ -203,15 +204,15 @@ public class AbstractSaldoList extends TablePart
         .createObject(Buchungsklasse.class, null);
     b.setBezeichnung("Nicht zugeordnet");
     zeile.add(
-        new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.HEADER, b));
+        new BuchungsklasseSaldoZeile(ISaldoZeile.HEADER, b));
     createBuchungsklasse(null, zeile);
 
     zeile.add(
-        new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.GESAMTSALDOFOOTER,
+        new BuchungsklasseSaldoZeile(ISaldoZeile.GESAMTSALDOFOOTER,
             "Saldo aller Buchungsklassen ", suEinnahmen, suAusgaben,
             suUmbuchungen));
     zeile.add(new BuchungsklasseSaldoZeile(
-        BuchungsklasseSaldoZeile.GESAMTGEWINNVERLUST, "Gesamtsaldo ",
+        ISaldoZeile.GESAMTGEWINNVERLUST, "Gesamtsaldo ",
         suEinnahmen + suAusgaben + suUmbuchungen));
 
     // Gesamtübersicht Steuern ausgeben
@@ -226,12 +227,12 @@ public class AbstractSaldoList extends TablePart
     if (anzahl > 0)
     {
       zeile.add(new BuchungsklasseSaldoZeile(
-          BuchungsklasseSaldoZeile.NICHTZUGEORDNETEBUCHUNGEN,
+          ISaldoZeile.NICHTZUGEORDNETEBUCHUNGEN,
           "Anzahl Buchungen ohne Buchungsart", anzahl));
     }
     
     // Leerzeile am Ende wegen Scrollbar
-    zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.UNDEFINED, ""));
+    zeile.add(new BuchungsklasseSaldoZeile(ISaldoZeile.UNDEFINED, ""));
     return zeile;
   }
 

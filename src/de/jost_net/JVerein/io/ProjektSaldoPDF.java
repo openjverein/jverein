@@ -96,7 +96,7 @@ public class ProjektSaldoPDF
             reporter.addColumn((Double) pz.getAttribute("umbuchungen"));
             break;
           }
-          case ProjektSaldoZeile.GESAMTSALDOGEWINNVERLUST:
+          case ProjektSaldoZeile.GESAMTGEWINNVERLUST:
           {
             reporter.addColumn(
                       (String) pz.getAttribute("projektbezeichnung"),

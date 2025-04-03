@@ -22,6 +22,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.BuchungsklasseSaldoZeile;
+import de.jost_net.JVerein.io.ISaldoZeile;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -218,7 +219,7 @@ public class MittelverwendungFlowSaldoList extends AbstractSaldoList
       if (Math.abs(einnahmen) >= LIMIT || Math.abs(ausgaben) >= LIMIT
           || !Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
       {
-        zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.DETAIL,
+        zeile.add(new BuchungsklasseSaldoZeile(ISaldoZeile.DETAIL,
             buchungsart, einnahmen, ausgaben));
       }
     }
@@ -232,10 +233,10 @@ public class MittelverwendungFlowSaldoList extends AbstractSaldoList
     }
 
     zeile.add(
-        new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.SALDOFOOTER,
+        new BuchungsklasseSaldoZeile(ISaldoZeile.SALDOFOOTER,
             "Salden - " + bezeichnung, suBukEinnahmen, suBukAusgaben));
     zeile.add(new BuchungsklasseSaldoZeile(
-        BuchungsklasseSaldoZeile.SALDOGEWINNVERLUST,
+        ISaldoZeile.SALDOGEWINNVERLUST,
         "Zufluss/Abfluss - " + bezeichnung, suBukEinnahmen + suBukAusgaben));
   }
 

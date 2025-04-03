@@ -21,11 +21,13 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.io.ISaldoZeile;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
+import de.willuhn.util.ApplicationException;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.gui.parts.table.Feature.Event;
 
@@ -70,7 +72,7 @@ public class SaldoListTablePart extends TablePart
       try
       {
         Object o = getSelection();
-        if (o != null && o instanceof GenericObject[])
+        if (o != null && o instanceof ISaldoZeile[])
         {
           boolean hasAnfangsbestand = false;
           boolean hasEinnahmen = false;
@@ -117,6 +119,11 @@ public class SaldoListTablePart extends TablePart
           // Felder ohne Wert (null) werden nicht ausgegeben
           for (int i = 0; i < zeilen.length; i++)
           {
+            ISaldoZeile zeile = (ISaldoZeile) zeilen[i];
+            if (zeile.getStatus() != ISaldoZeile.DETAIL)
+            {
+              throw new ApplicationException(zeile.getMessage());
+            }
             try
             {
               if (hasAnfangsbestand)
@@ -265,6 +272,10 @@ public class SaldoListTablePart extends TablePart
       catch (RemoteException re)
       {
         // nichts tun
+      }
+      catch (ApplicationException ae)
+      {
+        summaryString = ae.getMessage();
       }
       ctx.addon.put(FeatureSummary.CTX_KEY_TEXT, summaryString);
     }

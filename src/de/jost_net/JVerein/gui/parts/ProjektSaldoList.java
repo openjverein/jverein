@@ -210,7 +210,7 @@ public class ProjektSaldoList extends TablePart implements Part
     zeile.add(new ProjektSaldoZeile(ProjektSaldoZeile.HEADER, "Alle Projekte"));
     zeile.add(new ProjektSaldoZeile(ProjektSaldoZeile.GESAMTSALDOFOOTER,
         "Saldo alle Projekte", suEinnahmen, suAusgaben, suUmbuchungen));
-    zeile.add(new ProjektSaldoZeile(ProjektSaldoZeile.GESAMTSALDOGEWINNVERLUST,
+    zeile.add(new ProjektSaldoZeile(ProjektSaldoZeile.GESAMTGEWINNVERLUST,
         "Gewinn/Verlust alle Projekte",
         suEinnahmen + suAusgaben + suUmbuchungen));
 

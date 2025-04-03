@@ -37,7 +37,7 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 /**
  * Hilfs-Objekt
  */
-public class KontoSaldoZeile implements GenericObject
+public class KontoSaldoZeile implements ISaldoZeile
 {
 
   private Konto konto;
@@ -58,9 +58,13 @@ public class KontoSaldoZeile implements GenericObject
   
   private Date bis = null;
 
-  public KontoSaldoZeile(Konto konto, Double anfangsbestand, Double einnahmen,
+  private int status = UNDEFINED;
+
+  public KontoSaldoZeile(int status, Konto konto, Double anfangsbestand,
+      Double einnahmen,
       Double ausgaben, Double umbuchungen, Double endbestand)
   {
+    this.status = status;
     this.konto = konto;
     this.anfangsbestand = anfangsbestand;
     this.einnahmen = einnahmen;
@@ -69,23 +73,27 @@ public class KontoSaldoZeile implements GenericObject
     this.endbestand = endbestand;
   }
 
-  public KontoSaldoZeile(Date von, Date bis, Konto konto) throws RemoteException
+  public KontoSaldoZeile(int status, Date von, Date bis, Konto konto)
+      throws RemoteException
   {
+    this.status = status;
     this.von = von;
     this.bis = bis;
     this.konto = konto;
     saldoZeile();
   }
   
-  public KontoSaldoZeile(Geschaeftsjahr gj, Konto konto) throws RemoteException
+  public KontoSaldoZeile(int status, Geschaeftsjahr gj, Konto konto)
+      throws RemoteException
   {
+    this.status = status;
     this.von = gj.getBeginnGeschaeftsjahr();
     this.bis = gj.getEndeGeschaeftsjahr();
     this.konto = konto;
     saldoZeile();
   }
   
-  public void saldoZeile() throws RemoteException
+  private void saldoZeile() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     Date vonRange = null;
@@ -165,6 +173,18 @@ public class KontoSaldoZeile implements GenericObject
 
     anfangsbestand = 0.0d;
     bemerkung += "kein Anfangsbestand vorhanden  ";
+  }
+
+  @Override
+  public int getStatus()
+  {
+    return status;
+  }
+
+  @Override
+  public String getMessage()
+  {
+    return "Summen werden nur für Konto Zeilen berechnet!";
   }
 
   @Override

@@ -23,6 +23,7 @@ import java.util.Date;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.io.ISaldoZeile;
 import de.jost_net.JVerein.io.KontoSaldoZeile;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Konto;
@@ -141,7 +142,7 @@ public class KontensaldoList extends TablePart implements Part
       while (konten.hasNext())
       {
         konto = konten.next();
-        sz = new KontoSaldoZeile(von, bis, konto);
+        sz = new KontoSaldoZeile(ISaldoZeile.DETAIL, von, bis, konto);
         if (summensaldo && konto.getKontoArt() == Kontoart.ANLAGE)
         {
           sanfangsbestand += (Double) sz.getAttribute("anfangsbestand");
@@ -170,18 +171,21 @@ public class KontensaldoList extends TablePart implements Part
       k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
       k.setNummer("");
       k.setBezeichnung("Summe Anlagenkonten");
-      zeile.add(new KontoSaldoZeile(k, sanfangsbestand, seinnahmen, sausgaben,
+      zeile.add(new KontoSaldoZeile(ISaldoZeile.DETAIL, k, sanfangsbestand,
+          seinnahmen, sausgaben,
           sumbuchungen, sendbestand));
     }
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
     k.setNummer("");
     k.setBezeichnung("Summe aller Konten");
-    zeile.add(new KontoSaldoZeile(k, anfangsbestand + sanfangsbestand, einnahmen + seinnahmen, 
+    zeile.add(new KontoSaldoZeile(ISaldoZeile.GESAMTSALDOFOOTER, k,
+        anfangsbestand + sanfangsbestand, einnahmen + seinnahmen,
         ausgaben + sausgaben, umbuchungen + sumbuchungen, endbestand + sendbestand));
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
     k.setNummer("");
     k.setBezeichnung("Überschuss/Verlust(-)");
-    zeile.add(new KontoSaldoZeile(k, null, null, null, null, jahressaldo));
+    zeile.add(new KontoSaldoZeile(ISaldoZeile.GESAMTGEWINNVERLUST, k, null,
+        null, null, null, jahressaldo));
     
     // Konten ohne Berücksichtigung im Saldo
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
@@ -195,17 +199,19 @@ public class KontensaldoList extends TablePart implements Part
       k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
       k.setNummer("");
       k.setBezeichnung("");
-      zeile.add(new KontoSaldoZeile(k, null, null, null, null, null));
+      zeile.add(new KontoSaldoZeile(ISaldoZeile.UNDEFINED, k, null, null, null,
+          null, null));
       // Überschrift
       k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
       k.setNummer("");
       k.setBezeichnung("Konten ohne Berücksichtigung im Saldo:");
-      zeile.add(new KontoSaldoZeile(k, null, null, null, null, null));
+      zeile.add(new KontoSaldoZeile(ISaldoZeile.UNDEFINED, k, null, null, null,
+          null, null));
       // Jetzt die Konten
       while (konten.hasNext())
       {
         konto = konten.next();
-        sz = new KontoSaldoZeile(von, bis, konto);
+        sz = new KontoSaldoZeile(ISaldoZeile.DETAIL, von, bis, konto);
         zeile.add(sz);
       }
     }
@@ -214,7 +220,8 @@ public class KontensaldoList extends TablePart implements Part
     k = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
     k.setNummer("");
     k.setBezeichnung("");
-    zeile.add(new KontoSaldoZeile(k, null, null, null, null, null));
+    zeile.add(new KontoSaldoZeile(ISaldoZeile.UNDEFINED, k, null, null, null,
+        null, null));
     return zeile;
   }
 

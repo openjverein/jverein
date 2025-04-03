@@ -25,7 +25,7 @@ import de.willuhn.datasource.GenericObject;
 /**
  * Hilfs-Objekt
  */
-public class ProjektSaldoZeile implements GenericObject
+public class ProjektSaldoZeile implements ISaldoZeile
 {
 
   private Projekt projekt;
@@ -39,22 +39,6 @@ public class ProjektSaldoZeile implements GenericObject
   private Double einnahmen;
 
   private Double ausgaben;
-  
-  public static final int UNDEFINED = 0;
-
-  public static final int HEADER = 1;
-
-  public static final int DETAIL = 2;
-
-  public static final int SALDOFOOTER = 3;
-
-  public static final int SALDOGEWINNVERLUST = 4;
-
-  public static final int GESAMTSALDOFOOTER = 5;
-
-  public static final int GESAMTSALDOGEWINNVERLUST = 6;
-
-  public static final int NICHTZUGEORDNETEBUCHUNGEN = 7;
 
   private int status = UNDEFINED;
 
@@ -115,9 +99,16 @@ public class ProjektSaldoZeile implements GenericObject
     this.ausgaben = null;
   }
 
+  @Override
   public int getStatus()
   {
     return status;
+  }
+
+  @Override
+  public String getMessage()
+  {
+    return "Summen werden nur für Zeilen mit Buchungsart berechnet!";
   }
 
   @Override

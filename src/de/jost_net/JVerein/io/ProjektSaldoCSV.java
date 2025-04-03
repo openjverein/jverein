@@ -113,7 +113,7 @@ public class ProjektSaldoCSV
             break;
           }
           case ProjektSaldoZeile.SALDOGEWINNVERLUST:
-          case ProjektSaldoZeile.GESAMTSALDOGEWINNVERLUST:
+          case ProjektSaldoZeile.GESAMTGEWINNVERLUST:
           {
             csvzeile.put(header[0],
                 (String) pz.getAttribute("projektbezeichnung"));
