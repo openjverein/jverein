@@ -55,7 +55,7 @@ public class ViewVerlassenDialog
       close();
     }, null, true, "document-save.png");
 
-    buttons.addButton("ohne Speichern Verlassen", context -> {
+    buttons.addButton("Ohne Speichern verlassen", context -> {
       data = VERLASSEN;
       close();
     }, null, false, "edit-undo.png");
