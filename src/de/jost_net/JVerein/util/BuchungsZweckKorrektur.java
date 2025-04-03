@@ -40,9 +40,7 @@ public class BuchungsZweckKorrektur
           VerwendungszweckUtil.getTag(t, Tag.SVWZ));
       if (!withRealLineBreak)
       {
-        s = s.replaceAll("\r\n", "|");
-        s = s.replaceAll("\r", "|");
-        s = s.replaceAll("\n", "|");
+        s = s.replaceAll("(\\r\\n|\\r|\\n)", "|");
       }
       return s;
     }
@@ -53,7 +51,7 @@ public class BuchungsZweckKorrektur
   }
 
   // Dummy Klasse um die Methode "VerwendungszweckUtil.getTag(t, Tag.SVWZ)"
-  // verwenden zu können
+  // verwenden zu kÃ¶nnen
   private static final class Verwendungszweck implements Transfer
   {
     String zweck;
