@@ -27,7 +27,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
@@ -101,25 +100,22 @@ public class BuchungsklasseControl extends AbstractControl
 
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
       prepareStore();
       Buchungsklasse b = getBuchungsklasse();
       b.store();
-      GUI.getStatusBar().setSuccessText("Buchungsklasse gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern der Buchungsklasse";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

@@ -33,7 +33,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -193,7 +192,7 @@ public class LehrgangControl extends FilterControl
     l.setErgebnis((String) getErgebnis().getValue());
   }
 
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
@@ -213,17 +212,12 @@ public class LehrgangControl extends FilterControl
       }
 
       l.store();
-      GUI.getStatusBar().setSuccessText("Lehrgang gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern des Lehrgangs";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

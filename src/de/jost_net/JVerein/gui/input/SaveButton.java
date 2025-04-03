@@ -14,40 +14,39 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
+package de.jost_net.JVerein.gui.input;
+
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.input.SaveButton;
-import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
-import de.jost_net.JVerein.gui.parts.ArbeitseinsatzPart;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.util.ApplicationException;
 
-public class ArbeitseinsatzDetailView extends AbstractDetailView
+/**
+ * Fertig konfigurierter Speichern Button
+ */
+public class SaveButton extends Button
 {
-  private ArbeitseinsatzControl control;
-
-  @Override
-  public void bind() throws Exception
+  /**
+   * Erstellt den Speichern Button
+   * 
+   * @param control
+   *          Das control
+   */
+  public SaveButton(Savable control)
   {
-    GUI.getView().setTitle("Arbeitseinsatz");
-
-    control = new ArbeitseinsatzControl(this);
-
-    ArbeitseinsatzPart part = control.getPart();
-    part.paint(getParent());
-
-    ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
-    buttons.addButton(new SaveButton(control));
-    buttons.paint(this.getParent());
+    super("Speichern", context -> {
+      try
+      {
+        control.handleStore();
+        GUI.getStatusBar().setSuccessText("Gespeichert");
+      }
+      catch (ApplicationException ae)
+      {
+        GUI.getStatusBar()
+            .setErrorText(ae.getMessage());
+      }
+    }, null, true, "document-save.png");
   }
 
-  @Override
-  protected Savable getControl()
-  {
-    return control;
-  }
 }

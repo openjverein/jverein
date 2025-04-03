@@ -25,7 +25,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
-import de.willuhn.jameica.gui.Action;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -89,14 +89,7 @@ public class SollbuchungDetailView extends AbstractDetailView
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
 
-    Button save = new Button("Speichern", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
+    Button save = new SaveButton(control);
     save.setEnabled(!hasRechnung);
     buttons.addButton(save);
 

@@ -288,8 +288,10 @@ public class KontoControl extends FilterControl
 
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
@@ -329,19 +331,13 @@ public class KontoControl extends FilterControl
       }
       Konto k = getKonto();
       k.store();
-      GUI.getStatusBar().setSuccessText("Konto gespeichert");
+
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern des Kontos";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
-    }
-    catch (ApplicationException e)
-    {
-      String fehler = "Fehler bei speichern des Kontos";
-      Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
     }
   }
 

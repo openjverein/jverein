@@ -329,7 +329,7 @@ public class SollbuchungControl extends DruckMailControl
     sollb.setZweck1((String) getZweck1().getValue());
   }
 
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
@@ -351,17 +351,12 @@ public class SollbuchungControl extends DruckMailControl
         throw new ApplicationException(
             "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
       sollb.store();
-      GUI.getStatusBar().setSuccessText("Sollbuchung gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler beim speichern der Sollbuchung";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

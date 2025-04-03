@@ -35,7 +35,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -138,25 +137,19 @@ public class FelddefinitionControl extends AbstractControl
     f.setLaenge(i.intValue());
   }
 
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
       prepareStore();
       Felddefinition f = getFelddefinition();
       f.store();
-      GUI.getStatusBar().setSuccessText("Felddefinition gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler bei speichern der Felddefinition: "
-          + e.getLocalizedMessage();
+      String fehler = "Fehler bei speichern der Felddefinition";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

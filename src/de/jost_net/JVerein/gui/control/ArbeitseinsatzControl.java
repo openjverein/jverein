@@ -147,24 +147,19 @@ public class ArbeitseinsatzControl extends FilterControl
     ae.setBemerkung((String) part.getBemerkung().getValue());
   }
 
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
       prepareStore();
       Arbeitseinsatz ae = getArbeitseinsatz();
       ae.store();
-      GUI.getStatusBar().setSuccessText("Arbeitseinsatz gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern des Arbeitseinsatzes";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

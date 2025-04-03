@@ -27,9 +27,9 @@ import de.jost_net.JVerein.gui.action.FormularfeldAction;
 import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
 import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
 import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.control.FormularControl;
 import de.jost_net.JVerein.rmi.Formular;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -85,15 +85,7 @@ public class FormularDetailView extends AbstractDetailView
     buttons.addButton("Anzeigen", new FormularAnzeigeAction(),
         getCurrentObject(), false, "edit-copy.png");
 
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
   }
 

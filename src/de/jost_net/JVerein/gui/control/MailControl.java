@@ -376,20 +376,6 @@ public class MailControl extends FilterControl
     return b;
   }
 
-  public Button getMailSpeichernButton()
-  {
-    Button b = new Button("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        handleStore(false);
-      }
-    }, null, true, "document-save.png");
-    return b;
-  }
-
   @Override
   public String getBetreffString() throws RemoteException
   {
@@ -549,7 +535,7 @@ public class MailControl extends FilterControl
   }
 
   @Override
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     handleStore(false);
   }
@@ -558,9 +544,10 @@ public class MailControl extends FilterControl
    * Speichert die Mail in der DB.
    *
    * @param mitversand
-   *     wenn true, wird Spalte Versand auf aktuelles Datum gesetzt.
+   *          wenn true, wird Spalte Versand auf aktuelles Datum gesetzt.
+   * @throws ApplicationException
    */
-  public void handleStore(boolean mitversand)
+  public void handleStore(boolean mitversand) throws ApplicationException
   {
     try
     {
@@ -607,17 +594,12 @@ public class MailControl extends FilterControl
           ma.delete();
         }
       }
-      GUI.getStatusBar().setSuccessText("Mail gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler bei speichern der Mail: " + e.getLocalizedMessage();
+      String fehler = "Fehler bei speichern der Mail";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
 
   }

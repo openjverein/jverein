@@ -35,7 +35,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -325,7 +324,7 @@ public class AbrechnungslaufControl extends FilterControl
     al.setBemerkung((String) getBemerkung().getValue());
   }
 
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
@@ -333,18 +332,12 @@ public class AbrechnungslaufControl extends FilterControl
       Abrechnungslauf al = getAbrechnungslaeufe();
 
       al.store();
-      GUI.getStatusBar()
-          .setSuccessText("Bemerkung zum Abrechnungslauf gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler beim Speichern des Abrechnungslaufs";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

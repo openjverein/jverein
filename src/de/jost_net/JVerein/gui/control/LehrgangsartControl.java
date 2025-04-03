@@ -29,7 +29,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -146,26 +145,22 @@ public class LehrgangsartControl extends AbstractControl
 
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
       prepareStore();
       Lehrgangsart l = getLehrgangsart();
       l.store();
-      GUI.getStatusBar().setSuccessText("Lehrgangsart gespeichert");
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler beim Speichern der Lehrgangsart";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
-    }
-    catch (ApplicationException e)
-    {
-      Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(e.getMessage());
+      throw new ApplicationException(fehler, e);
     }
   }
 

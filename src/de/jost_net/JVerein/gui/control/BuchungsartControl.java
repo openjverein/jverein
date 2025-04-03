@@ -487,17 +487,12 @@ public class BuchungsartControl extends FilterControl
       prepareStore();
       Buchungsart b = getBuchungsart();
       b.store();
-      GUI.getStatusBar().setSuccessText("Buchungsart gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern der Buchungsart";
       Logger.error(fehler, e);
-      throw new ApplicationException(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

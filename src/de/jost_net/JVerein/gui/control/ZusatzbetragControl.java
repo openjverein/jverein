@@ -205,7 +205,7 @@ public class ZusatzbetragControl extends AbstractControl
         (Zahlungsweg) getZusatzbetragPart().getZahlungsweg().getValue());
   }
 
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
@@ -243,17 +243,12 @@ public class ZusatzbetragControl extends AbstractControl
         zv.setZahlungsweg(z.getZahlungsweg());
         zv.store();
       }
-      GUI.getStatusBar().setSuccessText("Zusatzbetrag gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern des Zusatzbetrages";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

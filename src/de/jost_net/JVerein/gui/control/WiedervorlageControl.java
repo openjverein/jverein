@@ -178,7 +178,7 @@ public class WiedervorlageControl extends FilterControl
     w.setErledigung((Date) getErledigung().getValue());
   }
 
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
@@ -197,17 +197,12 @@ public class WiedervorlageControl extends FilterControl
         }
       }
       w.store();
-      GUI.getStatusBar().setSuccessText("Wiedervorlage gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern der Wiedervorlage";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
   

@@ -502,7 +502,6 @@ public class KursteilnehmerControl extends FilterControl
       prepareStore();
       Kursteilnehmer k = getKursteilnehmer();
       k.store();
-      GUI.getStatusBar().setSuccessText("Kursteilnehmer gespeichert");
     }
     catch (RemoteException e)
     {

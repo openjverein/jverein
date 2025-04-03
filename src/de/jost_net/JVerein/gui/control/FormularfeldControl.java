@@ -35,7 +35,6 @@ import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
@@ -389,17 +388,12 @@ public class FormularfeldControl extends FormularPartControl
       prepareStore();
       Formularfeld f = getFormularfeld();
       f.store();
-      GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler beim Speichern des Formularfeldes";
       Logger.error(fehler, e);
-      throw new ApplicationException(fehler);
-    }
-    catch (Exception e)
-    {
-      throw new ApplicationException(e);
+      throw new ApplicationException(fehler, e);
     }
   }
 

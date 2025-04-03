@@ -19,11 +19,13 @@ package de.jost_net.JVerein.gui.view;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.gui.dialogs.ViewVerlassenDialog;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.messaging.Message;
+import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -62,30 +64,81 @@ public abstract class AbstractDetailView extends AbstractView
       // verändert und wir fragen auch nach.
       if (o.isChanged() || error)
       {
-        YesNoDialog dialog = new YesNoDialog(AbstractDialog.POSITION_CENTER);
-        dialog.setTitle("Nicht gespeichert");
-        dialog.setText("Der Eintrag wurde nicht gespeichert,\n"
-            + "soll die View wirklich verlassen werden?");
-        if (!(Boolean) dialog.open())
+        ViewVerlassenDialog dialog = new ViewVerlassenDialog(
+            AbstractDialog.POSITION_CENTER);
+
+        switch (dialog.open())
         {
-          throw new OperationCanceledException();
+          case ViewVerlassenDialog.SPEICHERN:
+            try
+            {
+              getControl().handleStore();
+            }
+            catch (ApplicationException e)
+            {
+              // Wir schicken ein Message damit der Eintrag in der History
+              // erhalten bleibt
+              Application.getMessagingFactory()
+                  .getMessagingQueue("jameica.gui.view.unbind.fail")
+                  .sendSyncMessage(new QueryMessage());
+              GUI.getStatusBar().setErrorText(e.getMessage());
+              throw new OperationCanceledException(e);
+            }
+            // Einen MessageConsumer anhängen, damit die Erfolgsmeldung nach dem
+            // Laden der neuen View angezeigt wird.
+            Application.getMessagingFactory()
+                .getMessagingQueue("jameica.gui.view.bind")
+                .registerMessageConsumer(new SaveMessageConsumer());
+            break;
+          case ViewVerlassenDialog.VERLASSEN:
+            break;
+          case ViewVerlassenDialog.ABBRECHEN:
+            throw new OperationCanceledException();
         }
       }
     }
-    catch (OperationCanceledException oce)
+    catch (OperationCanceledException e)
     {
       // Wir schicken ein Message damit der Eintrag in der History erhalten
       // bleibt
       Application.getMessagingFactory()
           .getMessagingQueue("jameica.gui.view.unbind.fail")
           .sendSyncMessage(new QueryMessage());
-      throw new OperationCanceledException(oce);
+      throw new OperationCanceledException(e);
     }
     catch (Exception e)
     {
       String fehler = "Feler beim testen auf Änderungen: ";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler + e.getMessage());
+    }
+  }
+
+  private class SaveMessageConsumer implements MessageConsumer
+  {
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Class[] getExpectedMessageTypes()
+    {
+      return null;
+    }
+
+    @Override
+    public void handleMessage(Message message) throws Exception
+    {
+      GUI.getStatusBar().setSuccessText("Gespeichert");
+
+      // MessageConsumer wieder entfernen
+      Application.getMessagingFactory()
+          .getMessagingQueue("jameica.gui.view.bind")
+          .unRegisterMessageConsumer(this);
+    }
+
+    @Override
+    public boolean autoRegister()
+    {
+      return false;
     }
   }
 }

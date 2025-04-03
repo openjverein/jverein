@@ -36,6 +36,7 @@ import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.util.JameicaUtil;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
@@ -197,7 +198,7 @@ public class MailDetailView extends AbstractDetailView
     buttons.addButton(
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
-    buttons.addButton(control.getMailSpeichernButton());
+    buttons.addButton(new SaveButton(control));
     buttons.addButton(control.getMailReSendButton());
     buttons.addButton(control.getMailSendButton());
     buttons.paint(this.getParent());

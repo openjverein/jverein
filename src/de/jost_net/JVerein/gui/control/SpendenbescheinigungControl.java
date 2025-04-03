@@ -493,28 +493,25 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spb.setUnterlagenWertermittlung(
         (Boolean) getUnterlagenWertermittlung().getValue());
   }
+  
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
       prepareStore();
       Spendenbescheinigung spb = getSpendenbescheinigung();
       spb.store();
-
-      GUI.getStatusBar().setSuccessText("Spendenbescheinigung gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei Speichern der Spendenbescheinigung";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

@@ -2577,16 +2577,6 @@ public class MitgliedControl extends FilterControl
           }
         }
       }
-      String successtext = "";
-      if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
-      {
-        successtext = "Mitglied gespeichert";
-      }
-      else
-      {
-        successtext = "Nicht-Mitglied gespeichert";
-      }
-      GUI.getStatusBar().setSuccessText(successtext);
     }
     catch (RemoteException e)
     {

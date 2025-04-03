@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -35,7 +34,6 @@ import de.jost_net.JVerein.server.FormularImpl;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.IntegerInput;
@@ -210,8 +208,10 @@ public class FormularControl extends FormularPartControl
 
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
@@ -229,28 +229,12 @@ public class FormularControl extends FormularPartControl
       }
 
       f.store();
-      GUI.getStatusBar().setSuccessText("Formular gespeichert");
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler beim Speichern des Formulares";
-      Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
-    }
-    catch (ApplicationException e)
-    {
-      Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(e.getMessage());
-    }
-    catch (FileNotFoundException e)
-    {
-      Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText("Datei nicht gefunden");
     }
     catch (IOException e)
     {
-      Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText("Ein-/Ausgabe-Fehler");
+      String fehler = "Fehler beim Speichern des Formulares";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler, e);
     }
   }
 

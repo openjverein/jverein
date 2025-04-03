@@ -27,7 +27,6 @@ import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -131,25 +130,22 @@ public class AnfangsbestandControl extends FilterControl
 
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
       prepareStore();
       Anfangsbestand a = getAnfangsbestand();
       a.store();
-      GUI.getStatusBar().setSuccessText("Anfangsbestand gespeichert");
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern des Anfangsbestandes";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
+      throw new ApplicationException(fehler, e);
     }
   }
 

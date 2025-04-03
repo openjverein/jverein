@@ -26,7 +26,6 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -122,25 +121,19 @@ public class MailVorlageControl extends AbstractControl
     mv.setTxt((String) getTxt().getValue());
   }
 
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
       prepareStore();
       MailVorlage mv = getMailVorlage();
       mv.store();
-      GUI.getStatusBar().setSuccessText("MailVorlage gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler bei speichern der MailVorlage: "
-          + e.getLocalizedMessage();
+      String fehler = "Fehler bei speichern der MailVorlage";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 
