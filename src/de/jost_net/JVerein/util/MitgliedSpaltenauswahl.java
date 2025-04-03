@@ -42,6 +42,14 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
   public MitgliedSpaltenauswahl()
   {
     super("mitglied");
+    add("Status", "status", false, new Formatter()
+    {
+      @Override
+      public String format(Object o)
+      {
+        return (Boolean) o ? "\u2705" : "\u2757";
+      }
+    }, Column.ALIGN_LEFT, true);
     add("Mitgliedsnummer", "idint", false, true);
     try
     {

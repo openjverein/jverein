@@ -2253,4 +2253,17 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("nummeranzeigen", nummeranzeigen);
   }
+
+  @Override
+  public boolean getProjekteAnzeigen() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("projekteanzeigen"));
+  }
+
+  @Override
+  public void setProjekteAnzeigen(boolean projekteanzeigen)
+      throws RemoteException
+  {
+    setAttribute("projekteanzeigen", projekteanzeigen);
+  }
 }

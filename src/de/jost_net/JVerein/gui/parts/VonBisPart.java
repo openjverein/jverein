@@ -29,7 +29,6 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
@@ -56,30 +55,24 @@ public class VonBisPart implements Part
   @Override
   public void paint(Composite parent) throws RemoteException
   {
-    SimpleContainer group = new SimpleContainer(parent, false, 2);
-    
-    LabelGroup zgroup = new LabelGroup(group.getComposite(), "Aktuell angezeigter Zeitraum");
-    ColumnLayout cl1 = new ColumnLayout(zgroup.getComposite(), 2);
-    SimpleContainer left1 = new SimpleContainer(cl1.getComposite());
-    left1.addLabelPair("Von", control.getDatumvon());
     if (!suchen)
     {
-      SimpleContainer right1 = new SimpleContainer(cl1.getComposite());
-      right1.addLabelPair("Bis", control.getDatumbis());
+      LabelGroup group = new LabelGroup(parent, "Aktuell angezeigter Zeitraum");
+      SimpleContainer left = new SimpleContainer(group.getComposite(), true, 4);
+      left.addLabelPair("Von", control.getDatumvon());
+      left.addLabelPair("Bis", control.getDatumbis());
     }
     else
     {
-      left1.addLabelPair("Bis", control.getDatumbis());
-    }
-
-    if (suchen)
-    {
-      LabelGroup sgroup = new LabelGroup(group.getComposite(), "Suchen");
-      ColumnLayout cl2 = new ColumnLayout(sgroup.getComposite(), 2);
-      SimpleContainer left2 = new SimpleContainer(cl2.getComposite());
-      left2.addLabelPair("Von", control.getSuchDatumvon());
-      SimpleContainer right2 = new SimpleContainer(cl2.getComposite());
-      right2.addLabelPair("Bis", control.getSuchDatumbis());
+      LabelGroup group = new LabelGroup(parent,
+          "Aktuell angezeigter Zeitraum und Suchen");
+      SimpleContainer left = new SimpleContainer(group.getComposite());
+      left.addLabelPair("Von", control.getDatumvon());
+      left.addLabelPair("Bis", control.getDatumbis());
+      left.addLabelPair("Geschäftsjahr", control.getGeschaeftsjahr());
+      SimpleContainer right = new SimpleContainer(group.getComposite());
+      right.addLabelPair("Von", control.getSuchDatumvon());
+      right.addLabelPair("Bis", control.getSuchDatumbis());
       ButtonArea buttons = new ButtonArea();
 
       Button zurueck = new Button("", new Action()
@@ -174,7 +167,7 @@ public class VonBisPart implements Part
         }
       }, null, true, "search.png");
       buttons.addButton(suchen);
-      sgroup.addButtonArea(buttons);
+      right.addButtonArea(buttons);
     }
   }
   

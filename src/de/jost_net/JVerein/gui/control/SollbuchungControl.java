@@ -335,18 +335,12 @@ public class SollbuchungControl extends DruckMailControl
     {
       prepareStore();
       Sollbuchung sollb = getSollbuchung();
-      if (sollb.isNewObject())
-      {
-        if (getMitglied().getValue() != null)
-        {
-          sollb.setMitglied((Mitglied) getMitglied().getValue());
-        }
-        else
-        {
-          throw new ApplicationException("Bitte Mitglied eingeben");
-        }
-      }
 
+      if (getZahler().getValue() == null)
+      {
+        throw new ApplicationException("Bitte Zahler eingeben");
+      }
+      sollb.setMitglied((Mitglied) getMitglied().getValue());
       if (sollb.getRechnung() != null)
         throw new ApplicationException(
             "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
@@ -420,6 +414,7 @@ public class SollbuchungControl extends DruckMailControl
         }
       }
     };
+    mitgliedskontoTree.setMulti(true);
     mitgliedskontoTree.addColumn("Name, Vorname", "name");
     mitgliedskontoTree.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -872,7 +867,7 @@ public class SollbuchungControl extends DruckMailControl
     if (zahler instanceof SelectInput)
     {
       ((SelectInput) zahler).setPleaseChoose("Bitte auswählen");
-      if (getSollbuchung().getMitglied() == null)
+      if (getSollbuchung().getZahler() == null)
       {
         ((SelectInput) zahler).setPreselected(null);
       }
@@ -917,8 +912,7 @@ public class SollbuchungControl extends DruckMailControl
       try
       {
         Mitglied m = (Mitglied) getMitglied().getValue();
-        Mitglied z = (Mitglied) getZahler().getValue();
-        if (m != null && z == null)
+        if (m != null)
         {
           getZahler().setValue(m.getZahler());
         }

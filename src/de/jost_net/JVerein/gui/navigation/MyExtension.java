@@ -79,6 +79,7 @@ import de.jost_net.JVerein.gui.view.MigrationView;
 import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.gui.view.MitgliedstypListeView;
 import de.jost_net.JVerein.gui.view.MittelverwendungReportView;
+import de.jost_net.JVerein.gui.view.MittelverwendungSaldoView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedListeView;
 import de.jost_net.JVerein.gui.view.PreNotificationMailView;
 import de.jost_net.JVerein.gui.view.ProjektListeView;
@@ -226,8 +227,11 @@ public class MyExtension implements Extension
           new StartViewAction(BuchungsklasseSaldoView.class),
           "emblem-documents.png"));
       // Projekte
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
-          new StartViewAction(ProjektSaldoView.class), "screwdriver.png"));
+      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
+            new StartViewAction(ProjektSaldoView.class), "screwdriver.png"));
+      }
       // Anlagen
       if (anlagenkonto)
       {
@@ -243,6 +247,9 @@ public class MyExtension implements Extension
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendung",
             new StartViewAction(MittelverwendungReportView.class),
+            "gnome-session-switch.png"));
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendungsaldo",
+            new StartViewAction(MittelverwendungSaldoView.class),
             "gnome-session-switch.png"));
       }
       // Jahresabschluss
@@ -264,9 +271,12 @@ public class MyExtension implements Extension
       auswertung = new MyItem(auswertung, "Auswertungen", null);
       auswertung.addChild(new MyItem(auswertung, "Mitglieder",
           new StartViewAction(AuswertungMitgliedView.class), "receipt.png"));
-      auswertung.addChild(new MyItem(auswertung, "Nicht-Mitglieder",
-          new StartViewAction(AuswertungNichtMitgliedView.class),
-          "receipt.png"));
+      if (Einstellungen.getEinstellung().getZusatzadressen())
+      {
+        auswertung.addChild(new MyItem(auswertung, "Nicht-Mitglieder",
+            new StartViewAction(AuswertungNichtMitgliedView.class),
+            "receipt.png"));
+      }
       auswertung.addChild(new MyItem(auswertung, "Jubiläen",
           new StartViewAction(JubilaeenView.class), "receipt.png"));
       if (Einstellungen.getEinstellung().getKursteilnehmer())
@@ -419,9 +429,12 @@ public class MyExtension implements Extension
       einstellungenbuchfuehrung
           .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Import",
               new KontenrahmenImportAction(), "file-import.png"));
-      einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-          "Projekte", new StartViewAction(ProjektListeView.class),
-          "screwdriver.png"));
+      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
+            "Projekte", new StartViewAction(ProjektListeView.class),
+            "screwdriver.png"));
+      }
       administration.addChild(einstellungenbuchfuehrung);
       
       NavigationItem einstellungenerweitert = null;

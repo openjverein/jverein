@@ -93,6 +93,10 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   {
     try
     {
+      if (getMitglied() == null)
+      {
+        throw new ApplicationException("Bitte Mitglied eingeben");
+      }
       if (getDatum() == null)
       {
         throw new ApplicationException("Datum fehlt");

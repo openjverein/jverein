@@ -21,6 +21,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.BuchungImportAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.BuchungsuebernahmeAction;
@@ -67,7 +68,10 @@ public class BuchungListeView extends AbstractView
 
     left.addLabelPair("Konto", control.getSuchKonto());
     left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
-    left.addLabelPair("Projekt", control.getSuchProjekt());
+    if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+    {
+      left.addLabelPair("Projekt", control.getSuchProjekt());
+    }
     left.addLabelPair("Splitbuchung", control.getSuchSplibuchung());
 
     center.addLabelPair("Betrag", control.getSuchBetrag());

@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
@@ -96,8 +97,18 @@ public class BuchungMenu extends ContextMenu
       addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
           new BuchungSollbuchungZuordnungAction(), "view-refresh.png"));
     }
-    addItem(new CheckedContextMenuItem("Projekt zuordnen",
-        new BuchungProjektZuordnungAction(), "view-refresh.png"));
+    try
+    {
+      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        addItem(new CheckedContextMenuItem("Projekt zuordnen",
+            new BuchungProjektZuordnungAction(), "view-refresh.png"));
+      }
+    }
+    catch (RemoteException e)
+    {
+      // Dann nicht anzeigen
+    }
     if (geldkonto)
       addItem(new CheckedContextMenuItem("Kontoauszug zuordnen",
           new BuchungKontoauszugZuordnungAction(), "view-refresh.png"));

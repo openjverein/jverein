@@ -1382,7 +1382,10 @@ public class BuchungsControl extends AbstractControl
         buchungsList.addColumn(new Column(Buchung.SOLLBUCHUNG, "Mitglied",
           new SollbuchungFormatter(), false, Column.ALIGN_AUTO,
           Column.SORT_BY_DISPLAY));
-      buchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
+      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        buchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
+      }
       buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
       buchungsList.setMulti(true);
       buchungsList.setContextMenu(new BuchungMenu(this));
@@ -1462,7 +1465,11 @@ public class BuchungsControl extends AbstractControl
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       splitbuchungsList.addColumn("Mitglied", Buchung.SOLLBUCHUNG,
           new SollbuchungFormatter());
-      splitbuchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
+      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        splitbuchungsList.addColumn("Projekt", "projekt",
+            new ProjektFormatter());
+      }
       splitbuchungsList.setContextMenu(new SplitBuchungMenu(this));
       splitbuchungsList.setRememberColWidths(true);
       splitbuchungsList.addFeature(new FeatureSummary());
