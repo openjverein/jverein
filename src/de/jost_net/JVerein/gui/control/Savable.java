@@ -43,4 +43,16 @@ public interface Savable
    * @throws ApplicationException
    */
   public void handleStore() throws ApplicationException;
+
+  /**
+   * Diese Funktion kann implementiert werden, um selbst zu testen, ob der
+   * Eintrag geändert wurde. In diesem Fall muss true zurückgegeben werden.
+   * 
+   * @return true wenn der Eintrag geändert wurde
+   * @throws RemoteException
+   */
+  public default boolean hasChanged() throws RemoteException
+  {
+    return false;
+  }
 }

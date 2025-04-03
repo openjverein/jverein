@@ -321,6 +321,8 @@ public class MitgliedControl extends FilterControl
   // Zeitstempel merken, wann der Letzte refresh ausgeführt wurde.
   private long lastrefresh = 0;
 
+  private String eigenschaftenHash;
+
   public MitgliedControl(AbstractView view)
   {
     super(view);
@@ -1590,6 +1592,8 @@ public class MitgliedControl extends FilterControl
       {
         zusatzfelder[i].setName(fd.getName());
       }
+      // Zur initialisierung der Überwachung der Änderungen
+      zusatzfelder[i].hasChanged();
       i++;
     }
     return zusatzfelder;
@@ -2218,7 +2222,38 @@ public class MitgliedControl extends FilterControl
     eigenschaftenTree
         .addSelectionListener(new EigenschaftListener());
     eigenschaftenTree.setFormatter(new EigenschaftTreeFormatter());
+
+    eigenschaftenHash = createEigenschaftenHash();
+
     return eigenschaftenTree;
+  }
+
+  /**
+   * Zur überwachung der Änderungen einen Hash erzeugen
+   * 
+   * @throws RemoteException
+   */
+  private String createEigenschaftenHash() throws RemoteException
+  {
+    String hash = "";
+    if(eigenschaftenTree != null)
+    {
+
+      // for (Object o :
+      // ((EigenschaftenNode)eigenschaftenTree.getItems().get(0)).getCheckedNodes())
+      for (Object o : eigenschaftenTree.getItems())
+      {
+        EigenschaftenNode node = (EigenschaftenNode) o;
+        for (EigenschaftenNode n : node.getCheckedNodes())
+        {
+          if (n.getEigenschaft() != null)
+          {
+            hash += n.getEigenschaft().getID();
+          }
+        }
+      }
+    }
+    return hash;
   }
 
   @Override
@@ -2226,6 +2261,7 @@ public class MitgliedControl extends FilterControl
   {
     Mitglied m = getMitglied();
 
+    // Eigenschaften testen
     if (eigenschaftenTree != null)
     {
       // liefert nur denRoot
@@ -2336,7 +2372,7 @@ public class MitgliedControl extends FilterControl
     m.setBic((String) getBic().getValue());
     String ib = (String) getIban().getValue();
     if (ib == null)
-      m.setIban(null);
+      m.setIban("");
     else
       m.setIban(ib.toUpperCase().replace(" ", ""));
     m.setEintritt((Date) getEintritt().getValue());
@@ -2486,6 +2522,7 @@ public class MitgliedControl extends FilterControl
           eig.setMitglied(getMitglied().getID());
           eig.store();
         }
+        eigenschaftenHash = createEigenschaftenHash();
       }
 
       if (zusatzfelder != null)
@@ -2550,6 +2587,8 @@ public class MitgliedControl extends FilterControl
               break;
           }
           zf.store();
+          // Den neuen Wert in der Änderungsüberwachung speichern
+          ti.hasChanged();
         }
       }
       if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen()
@@ -3040,6 +3079,62 @@ public class MitgliedControl extends FilterControl
     }
   }
   
+  @Override
+  public boolean hasChanged() throws RemoteException
+  {
+    // Zusatzfelder testen
+    for (Input i : zusatzfelder)
+    {
+      if (i.hasChanged())
+      {
+        // Da blöderweise bei hasChanged() immer der alte Wert gesetzt wird,
+        // müssen wir hier einmal einen falschen wert setzen, hasChanged()
+        // ausführen und dann wieder zurücksetzen. Sonst wird beim nächsten
+        // Aufruf von hasChanged keine Änderung erkannt.
+        Object value = i.getValue();
+        i.setValue(null);
+        i.hasChanged();
+        i.setValue(value);
+        return true;
+      }
+    }
+
+    // Eigenschaften testen
+    if (!createEigenschaftenHash().equals(eigenschaftenHash))
+    {
+      return true;
+    }
+
+    // Sekundäre Beitragsgruppen testen
+    Mitglied m = getMitglied();
+    if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen()
+        && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+    {
+      // Schritt 1: Die selektierten sekundären Beitragsgruppe prüfen, ob sie
+      // bereits gespeichert sind. Ggfls. speichern.
+      @SuppressWarnings("rawtypes")
+      List items = sekundaerebeitragsgruppe.getItems();
+      for (Object o1 : items)
+      {
+        SekundaereBeitragsgruppe sb = (SekundaereBeitragsgruppe) o1;
+        if (sb.isNewObject())
+        {
+          return true;
+        }
+      }
+      // Schritt 2: Die sekundären Beitragsgruppe in der Liste, die nicht mehr
+      // selektiert sind, müssen gelöscht werden.
+      for (SekundaereBeitragsgruppe sb : listeSeB)
+      {
+        if (!sb.isNewObject() && !items.contains(sb))
+        {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   public void saveAusgabeSettings() throws RemoteException
   {
     

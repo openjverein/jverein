@@ -62,7 +62,7 @@ public abstract class AbstractDetailView extends AbstractView
       // Wenn beim prepareStore() eine Exception geworfen wird, ist es
       // warscheinlich, dass etwas ungültiges eingegeben wurde. Also wurde etwas
       // verändert und wir fragen auch nach.
-      if (o.isChanged() || error)
+      if (o.isChanged() || error || getControl().hasChanged())
       {
         ViewVerlassenDialog dialog = new ViewVerlassenDialog(
             AbstractDialog.POSITION_CENTER);
