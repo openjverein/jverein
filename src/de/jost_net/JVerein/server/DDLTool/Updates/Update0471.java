@@ -15,6 +15,7 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
+import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
@@ -22,6 +23,8 @@ import java.sql.Connection;
 
 public class Update0471 extends AbstractDDLUpdate
 {
+  protected DBService service;
+
   public Update0471(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
@@ -31,6 +34,10 @@ public class Update0471 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute(addColumn("einstellung",
-        new Column("projekteanzeigen", COLTYPE.BOOLEAN, 0, "1", false, false)));
+        new Column("projekteanzeigen", COLTYPE.BOOLEAN, 0, "0", false, false)));
+    
+    execute("UPDATE einstellung SET projekteanzeigen = CASE "
+        + "WHEN EXISTS (SELECT 1 FROM projekt) THEN 1 ELSE 0 "
+        + "END;");
   }
 }
