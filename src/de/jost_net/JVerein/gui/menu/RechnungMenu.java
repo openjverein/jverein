@@ -28,13 +28,13 @@ import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 /**
- * Kontext-Menu zu den Spendenbescheinigungen.
+ * Kontext-Menu zu den Rechnungen.
  */
 public class RechnungMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Spendenbescheinigungen.
+   * Erzeugt ein Kontext-Menu fuer die Liste der Rechnungen.
    */
   public RechnungMenu()
   {

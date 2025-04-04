@@ -201,10 +201,15 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedVCardQRCodeAction(), "qr-code.png"));
     addItem(new CheckedContextMenuItem("Kontoauszug", new KontoauszugAction(),
         "file-invoice.png"));
-    addItem(new CheckedSingleContextMenuItem("Geldspendenbescheinigung",
-        new SpendenbescheinigungAction(Spendenart.GELDSPENDE), "file-invoice.png"));
-    addItem(new CheckedSingleContextMenuItem("Sachspendenbescheinigung",
-        new SpendenbescheinigungAction(Spendenart.SACHSPENDE), "file-invoice.png"));
+    if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+    {
+      addItem(new CheckedSingleContextMenuItem("Geldspendenbescheinigung",
+          new SpendenbescheinigungAction(Spendenart.GELDSPENDE),
+          "file-invoice.png"));
+      addItem(new CheckedSingleContextMenuItem("Sachspendenbescheinigung",
+          new SpendenbescheinigungAction(Spendenart.SACHSPENDE),
+          "file-invoice.png"));
+    }
     addItem(new CheckedContextMenuItem("Personalbogen",
         new PersonalbogenAction(), "file-invoice.png"));
     addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift",

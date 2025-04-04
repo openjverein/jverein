@@ -175,9 +175,12 @@ public class MyExtension implements Extension
           new StartViewAction(SollbuchungListeView.class), "calculator.png"));
       mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
           new StartViewAction(RechnungListeView.class), "file-invoice.png"));
-      mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
-          new StartViewAction(SpendenbescheinigungListeView.class),
-          "file-invoice.png"));
+      if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+      {
+        mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
+            new StartViewAction(SpendenbescheinigungListeView.class),
+            "file-invoice.png"));
+      }
       if (Einstellungen.getEinstellung().getZusatzbetrag())
       {
         mitglieder.addChild(new MyItem(mitglieder, "Zusatzbeträge",
@@ -313,9 +316,12 @@ public class MyExtension implements Extension
       mail.addChild(new MyItem(mail, "Pre-Notification",
           new StartViewAction(PreNotificationMailView.class),
           "document-print.png"));
-      mail.addChild(new MyItem(mail, "Spendenbescheinigungen",
-          new StartViewAction(SpendenbescheinigungMailView.class),
-          "document-print.png"));
+      if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+      {
+        mail.addChild(new MyItem(mail, "Spendenbescheinigungen",
+            new StartViewAction(SpendenbescheinigungMailView.class),
+            "document-print.png"));
+      }
       mail.addChild(
           new MyItem(mail, "Mails",
               new StartViewAction(MailListeView.class),
@@ -355,11 +361,14 @@ public class MyExtension implements Extension
           .addChild(new MyItem(administrationEinstellungen, "Dateinamen",
               new StartViewAction(EinstellungenDateinamenView.class),
               "wrench.png"));
-      administrationEinstellungen.addChild(
-          new MyItem(administrationEinstellungen, "Spendenbescheinigungen",
-              new StartViewAction(
-                  EinstellungenSpendenbescheinigungenView.class),
-              "wrench.png"));
+      if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+      {
+        administrationEinstellungen.addChild(
+            new MyItem(administrationEinstellungen, "Spendenbescheinigungen",
+                new StartViewAction(
+                    EinstellungenSpendenbescheinigungenView.class),
+                "wrench.png"));
+      }
       administrationEinstellungen.addChild(new MyItem(
           administrationEinstellungen, "Buchführung",
           new StartViewAction(EinstellungenBuchfuehrungView.class),
