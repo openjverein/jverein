@@ -64,7 +64,7 @@ public class ProjektSaldoList extends TablePart implements Part
 
       if (saldoList == null)
       {
-        saldoList = new TablePart(zeile, null)
+        saldoList = new SaldoListTablePart(zeile, null)
         {
           @Override
           protected void orderBy(int index)
@@ -88,7 +88,8 @@ public class ProjektSaldoList extends TablePart implements Part
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_LEFT);
         saldoList.setRememberColWidths(true);
-        saldoList.removeFeature(FeatureSummary.class);
+        saldoList.setMulti(true);
+        saldoList.addFeature(new FeatureSummary());
       }
       else
       {
@@ -209,7 +210,7 @@ public class ProjektSaldoList extends TablePart implements Part
     zeile.add(new ProjektSaldoZeile(ProjektSaldoZeile.HEADER, "Alle Projekte"));
     zeile.add(new ProjektSaldoZeile(ProjektSaldoZeile.GESAMTSALDOFOOTER,
         "Saldo alle Projekte", suEinnahmen, suAusgaben, suUmbuchungen));
-    zeile.add(new ProjektSaldoZeile(ProjektSaldoZeile.GESAMTSALDOGEWINNVERLUST,
+    zeile.add(new ProjektSaldoZeile(ProjektSaldoZeile.GESAMTGEWINNVERLUST,
         "Gewinn/Verlust alle Projekte",
         suEinnahmen + suAusgaben + suUmbuchungen));
 

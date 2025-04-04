@@ -25,7 +25,7 @@ import de.willuhn.datasource.GenericObject;
 /**
  * Hilfs-Objekt
  */
-public class BuchungsklasseSaldoZeile implements GenericObject
+public class BuchungsklasseSaldoZeile implements ISaldoZeile
 {
 
   private Buchungsklasse buchungsklasse;
@@ -43,26 +43,6 @@ public class BuchungsklasseSaldoZeile implements GenericObject
   private Double ausgaben;
 
   private Integer anzahlbuchungen;
-
-  public static final int UNDEFINED = 0;
-
-  public static final int HEADER = 1;
-
-  public static final int DETAIL = 2;
-
-  public static final int SALDOFOOTER = 3;
-
-  public static final int SALDOGEWINNVERLUST = 4;
-
-  public static final int GESAMTSALDOFOOTER = 5;
-
-  public static final int GESAMTGEWINNVERLUST = 6;
-
-  public static final int STEUERHEADER = 7;
-
-  public static final int STEUER = 8;
-
-  public static final int NICHTZUGEORDNETEBUCHUNGEN = 9;
 
   private int status = UNDEFINED;
 
@@ -91,6 +71,19 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     this.ausgaben = Double.valueOf(ausgaben);
   }
 
+  public BuchungsklasseSaldoZeile(int status, Buchungsart buchungsart,
+      Double einnahmen, Double ausgaben)
+  {
+    this.status = status;
+    this.buchungsklasse = null;
+    this.buchungsart = buchungsart;
+    this.text = null;
+    this.text_buchungsart = null;
+    this.umbuchungen = null;
+    this.einnahmen = Double.valueOf(einnahmen);
+    this.ausgaben = Double.valueOf(ausgaben);
+  }
+
   public BuchungsklasseSaldoZeile(int status, String text, Double einnahmen,
       Double ausgaben, Double umbuchungen)
   {
@@ -100,6 +93,19 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     this.text = text;
     this.text_buchungsart = null;
     this.umbuchungen = Double.valueOf(umbuchungen);
+    this.einnahmen = Double.valueOf(einnahmen);
+    this.ausgaben = Double.valueOf(ausgaben);
+  }
+
+  public BuchungsklasseSaldoZeile(int status, String text, Double einnahmen,
+      Double ausgaben)
+  {
+    this.status = status;
+    this.buchungsklasse = null;
+    this.buchungsart = null;
+    this.text = text;
+    this.text_buchungsart = null;
+    this.umbuchungen = null;
     this.einnahmen = Double.valueOf(einnahmen);
     this.ausgaben = Double.valueOf(ausgaben);
   }
@@ -159,9 +165,16 @@ public class BuchungsklasseSaldoZeile implements GenericObject
     this.anzahlbuchungen = null;
   }
 
+  @Override
   public int getStatus()
   {
     return status;
+  }
+
+  @Override
+  public String getMessage()
+  {
+    return "Summen werden nur für Zeilen mit Buchungsart berechnet!";
   }
 
   @Override
@@ -211,7 +224,7 @@ public class BuchungsklasseSaldoZeile implements GenericObject
   public String[] getAttributeNames()
   {
     return new String[] { "buchungsklassenbezeichnung",
-        "buchungsartbezeichnung", "anfangsbestand", "einnahmen", "ausgaben",
+        "buchungsartbezeichnung", "einnahmen", "ausgaben",
         "umbuchungen", "anzahlbuchungen" };
   }
 

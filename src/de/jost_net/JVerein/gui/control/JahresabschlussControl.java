@@ -29,7 +29,7 @@ import de.jost_net.JVerein.gui.parts.KontensaldoList;
 import de.jost_net.JVerein.gui.parts.MittelverwendungFlowList;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.gui.view.JahresabschlussDetailView;
-import de.jost_net.JVerein.io.SaldoZeile;
+import de.jost_net.JVerein.io.KontoSaldoZeile;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -315,8 +315,8 @@ public class JahresabschlussControl extends AbstractControl
       {
         KontensaldoList jsl = new KontensaldoList(null,
             new Geschaeftsjahr(ja.getVon()));
-        ArrayList<SaldoZeile> zeilen = jsl.getInfo(false);
-        for (SaldoZeile z : zeilen)
+        ArrayList<KontoSaldoZeile> zeilen = jsl.getInfo(false);
+        for (KontoSaldoZeile z : zeilen)
         {
           String ktonr = (String) z.getAttribute("kontonummer");
           if (ktonr.length() > 0)

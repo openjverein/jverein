@@ -22,6 +22,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.BuchungsklasseSaldoZeile;
+import de.jost_net.JVerein.io.ISaldoZeile;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -218,7 +219,7 @@ public class BuchungsklasseSaldoList extends AbstractSaldoList
           || Math.abs(umbuchungen) >= LIMIT
           || !Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
       {
-        zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.DETAIL,
+        zeile.add(new BuchungsklasseSaldoZeile(ISaldoZeile.DETAIL,
             buchungsart, einnahmen, ausgaben, umbuchungen));
       }
     }
@@ -234,11 +235,11 @@ public class BuchungsklasseSaldoList extends AbstractSaldoList
     }
 
     zeile.add(
-        new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.SALDOFOOTER,
+        new BuchungsklasseSaldoZeile(ISaldoZeile.SALDOFOOTER,
             "Salden - " + bezeichnung, suBukEinnahmen,
             suBukAusgaben, suBukUmbuchungen));
     zeile.add(new BuchungsklasseSaldoZeile(
-        BuchungsklasseSaldoZeile.SALDOGEWINNVERLUST,
+        ISaldoZeile.SALDOGEWINNVERLUST,
         "Gewinn/Verlust - " + bezeichnung,
         suBukEinnahmen + suBukAusgaben + suBukUmbuchungen));
 
@@ -263,7 +264,7 @@ public class BuchungsklasseSaldoList extends AbstractSaldoList
       if (first_row)
       {
         zeile.add(new BuchungsklasseSaldoZeile(
-            BuchungsklasseSaldoZeile.STEUERHEADER,
+            ISaldoZeile.STEUERHEADER,
             "Steuern " + bezeichnung, string_steuersatz,
             suBukNetto.get(steuersatz), suBukSteuer.get(steuersatz)));
         first_row = false;
@@ -271,7 +272,7 @@ public class BuchungsklasseSaldoList extends AbstractSaldoList
       else
       {
         zeile.add(new BuchungsklasseSaldoZeile(
-            BuchungsklasseSaldoZeile.STEUER, "", string_steuersatz,
+            ISaldoZeile.STEUER, "", string_steuersatz,
             suBukNetto.get(steuersatz), suBukSteuer.get(steuersatz)));
       }
 
@@ -307,14 +308,14 @@ public class BuchungsklasseSaldoList extends AbstractSaldoList
       if (first_row)
       {
         zeile.add(
-            new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.STEUERHEADER,
+            new BuchungsklasseSaldoZeile(ISaldoZeile.STEUERHEADER,
                 "Gesamtübersicht Steuern", string_steuersatz,
                 suNetto.get(steuersatz), suSteuer.get(steuersatz)));
         first_row = false;
       }
       else
       {
-        zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.STEUER,
+        zeile.add(new BuchungsklasseSaldoZeile(ISaldoZeile.STEUER,
             "", string_steuersatz, suNetto.get(steuersatz),
             suSteuer.get(steuersatz)));
       }

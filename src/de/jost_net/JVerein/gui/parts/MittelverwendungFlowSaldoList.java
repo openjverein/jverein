@@ -22,6 +22,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.BuchungsklasseSaldoZeile;
+import de.jost_net.JVerein.io.ISaldoZeile;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -61,7 +62,6 @@ public class MittelverwendungFlowSaldoList extends AbstractSaldoList
     buchungsartenIt.setOrder("order by nummer");
     suBukEinnahmen = Double.valueOf(0);
     suBukAusgaben = Double.valueOf(0);
-    suBukUmbuchungen = Double.valueOf(0);
     suBukNetto.clear();
     suBukSteuer.clear();
 
@@ -114,7 +114,6 @@ public class MittelverwendungFlowSaldoList extends AbstractSaldoList
             rsd);
         suBukEinnahmen += einnahmen;
         suBukAusgaben += ausgaben;
-        umbuchungen = Double.valueOf(0);
       }
       else
       {
@@ -168,7 +167,6 @@ public class MittelverwendungFlowSaldoList extends AbstractSaldoList
               rsd);
           suBukEinnahmen += einnahmen;
           suBukAusgaben += ausgaben;
-          umbuchungen = Double.valueOf(0);
         }
         else
         {
@@ -215,23 +213,19 @@ public class MittelverwendungFlowSaldoList extends AbstractSaldoList
               rsd);
           suBukEinnahmen += einnahmen;
           suBukAusgaben += ausgaben;
-          umbuchungen = Double.valueOf(0);
         }
       }
 
       if (Math.abs(einnahmen) >= LIMIT || Math.abs(ausgaben) >= LIMIT
-          || Math.abs(umbuchungen) >= LIMIT
           || !Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
       {
-        zeile.add(new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.DETAIL,
-            buchungsart, einnahmen, ausgaben, umbuchungen));
+        zeile.add(new BuchungsklasseSaldoZeile(ISaldoZeile.DETAIL,
+            buchungsart, einnahmen, ausgaben));
       }
     }
     suEinnahmen += suBukEinnahmen;
     suAusgaben += suBukAusgaben;
-    suUmbuchungen += suBukUmbuchungen;
     if (Math.abs(suBukEinnahmen) < LIMIT && Math.abs(suBukAusgaben) < LIMIT
-        && Math.abs(suBukUmbuchungen) < LIMIT
         && Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
     {
       zeile.remove(zeile.size() - 1);
@@ -239,13 +233,11 @@ public class MittelverwendungFlowSaldoList extends AbstractSaldoList
     }
 
     zeile.add(
-        new BuchungsklasseSaldoZeile(BuchungsklasseSaldoZeile.SALDOFOOTER,
-            "Salden - " + bezeichnung, suBukEinnahmen,
-            suBukAusgaben, suBukUmbuchungen));
+        new BuchungsklasseSaldoZeile(ISaldoZeile.SALDOFOOTER,
+            "Salden - " + bezeichnung, suBukEinnahmen, suBukAusgaben));
     zeile.add(new BuchungsklasseSaldoZeile(
-        BuchungsklasseSaldoZeile.SALDOGEWINNVERLUST,
-        "Zufluss/Abfluss - " + bezeichnung,
-        suBukEinnahmen + suBukAusgaben + suBukUmbuchungen));
+        ISaldoZeile.SALDOGEWINNVERLUST,
+        "Zufluss/Abfluss - " + bezeichnung, suBukEinnahmen + suBukAusgaben));
   }
 
   private String getSummenKontoSql() throws RemoteException
