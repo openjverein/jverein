@@ -40,8 +40,10 @@ public class Update0472 extends AbstractDDLUpdate
     execute("update buchungsart set regularexp = 0 where regularexp is null");
 
     // Spendenbescheinigung
-    execute("update spendenbeschein set ersatzaufwendungen = 0 where ersatzaufwendungen is null");
-    execute("update spendenbeschein set unterlagenwertermittlung = 0 where unterlagenwertermittlung is null");
+    execute(
+        "update spendenbescheinigung set ersatzaufwendungen = 0 where ersatzaufwendungen is null");
+    execute(
+        "update spendenbescheinigung set unterlagenwertermittlung = 0 where unterlagenwertermittlung is null");
 
     // Konto
     execute("update konto set kommentar = '' where kommentar is null");

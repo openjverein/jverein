@@ -1592,8 +1592,8 @@ public class MitgliedControl extends FilterControl
       {
         zusatzfelder[i].setName(fd.getName());
       }
-      // Zur initialisierung der Überwachung der Änderungen
-      zusatzfelder[i].hasChanged();
+      // Alten wert speichern
+      zusatzfelder[i].setData("old", zusatzfelder[i].getValue());
       i++;
     }
     return zusatzfelder;
@@ -2366,7 +2366,6 @@ public class MitgliedControl extends FilterControl
     {
       m.setZahlungstermin(zt.getKey());
     }
-    m.setMandatID((String) getMandatID().getValue());
     m.setMandatDatum((Date) getMandatDatum().getValue());
     m.setMandatVersion((Integer) getMandatVersion().getValue());
     m.setBic((String) getBic().getValue());
@@ -2454,6 +2453,7 @@ public class MitgliedControl extends FilterControl
     {
       prepareStore();
       Mitglied m = getMitglied();
+      m.setMandatID((String) getMandatID().getValue());
       // Mitgleidstyp ist in der DB als Long, wird jedoch sonst als Integer
       // verwendet, daher können wir ihn nicht in fill() setzen, sonst wird der
       // Eintrag immer als geändert erkannt.
@@ -2587,8 +2587,8 @@ public class MitgliedControl extends FilterControl
               break;
           }
           zf.store();
-          // Den neuen Wert in der Änderungsüberwachung speichern
-          ti.hasChanged();
+          // Den neuen Wert in "old" speichern
+          ti.setData("old", ti.getValue());
         }
       }
       if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen()
@@ -3085,16 +3085,8 @@ public class MitgliedControl extends FilterControl
     // Zusatzfelder testen
     for (Input i : zusatzfelder)
     {
-      if (i.hasChanged())
+      if (i.getValue() != null && !i.getValue().equals(i.getData("old")))
       {
-        // Da blöderweise bei hasChanged() immer der alte Wert gesetzt wird,
-        // müssen wir hier einmal einen falschen wert setzen, hasChanged()
-        // ausführen und dann wieder zurücksetzen. Sonst wird beim nächsten
-        // Aufruf von hasChanged keine Änderung erkannt.
-        Object value = i.getValue();
-        i.setValue(null);
-        i.hasChanged();
-        i.setValue(value);
         return true;
       }
     }
