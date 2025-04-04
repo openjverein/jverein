@@ -486,5 +486,4 @@ public class LastschriftControl extends FilterControl
     geschlecht.setEnabled(false);
     return geschlecht;
   }
-
 }

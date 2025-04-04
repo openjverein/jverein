@@ -23,9 +23,9 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
-import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -34,15 +34,16 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class SollbuchungDetailView extends AbstractView
+public class SollbuchungDetailView extends AbstractDetailView
 {
+  private SollbuchungControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Sollbuchung");
 
-    final SollbuchungControl control = new SollbuchungControl(this);
+    control = new SollbuchungControl(this);
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
     LabelGroup group = new LabelGroup(scrolled.getComposite(), "Sollbuchung");
@@ -88,17 +89,16 @@ public class SollbuchungDetailView extends AbstractView
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
 
-    Button save = new Button("Speichern", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
+    Button save = new SaveButton(control);
     save.setEnabled(!hasRechnung);
     buttons.addButton(save);
 
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }

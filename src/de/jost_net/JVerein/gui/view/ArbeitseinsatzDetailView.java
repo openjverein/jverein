@@ -17,22 +17,23 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzPart;
-import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class ArbeitseinsatzDetailView extends AbstractView
+public class ArbeitseinsatzDetailView extends AbstractDetailView
 {
+  private ArbeitseinsatzControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Arbeitseinsatz");
 
-    final ArbeitseinsatzControl control = new ArbeitseinsatzControl(this);
+    control = new ArbeitseinsatzControl(this);
 
     ArbeitseinsatzPart part = control.getPart();
     part.paint(getParent());
@@ -40,14 +41,13 @@ public class ArbeitseinsatzDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }

@@ -26,14 +26,14 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailVorlageControl extends AbstractControl implements IMailControl
+public class MailVorlageControl extends AbstractControl
+    implements Savable, IMailControl
 {
 
   private TablePart mailvorlageList;
@@ -99,38 +99,41 @@ public class MailVorlageControl extends AbstractControl implements IMailControl
     return (String) txt.getValue();
   }
 
-  public void handleStore()
+  @Override
+  public void prepareStore() throws RemoteException, ApplicationException
+  {
+    MailVorlage mv = getMailVorlage();
+    String betreff = (String) getBetreff(false).getValue();
+    if (betreff == null || betreff.isEmpty())
+    {
+      throw new ApplicationException("Bitte Betreff eingeben!");
+    }
+    DBIterator<MailVorlage> vorlagen = Einstellungen.getDBService()
+        .createList(MailVorlage.class);
+    vorlagen.addFilter("betreff = ?", betreff);
+    if (vorlagen.hasNext() && mv.isNewObject())
+    {
+      throw new ApplicationException(
+          "Es existiert bereits eine Vorlage mit diesem Betreff!");
+    }
+
+    mv.setBetreff(betreff);
+    mv.setTxt((String) getTxt().getValue());
+  }
+
+  public void handleStore() throws ApplicationException
   {
     try
     {
-      String betreff = (String) getBetreff(false).getValue();
-      if (betreff == null || betreff.isEmpty())
-      {
-        throw new ApplicationException("Bitte Betreff eingeben!");
-      }
+      prepareStore();
       MailVorlage mv = getMailVorlage();
-      DBIterator<MailVorlage> vorlagen = Einstellungen.getDBService()
-          .createList(MailVorlage.class);
-      vorlagen.addFilter("betreff = ?", betreff);
-      if (vorlagen.hasNext() && mv.isNewObject())
-      {
-        throw new ApplicationException(
-            "Es existiert bereits eine Vorlage mit diesem Betreff!");
-      }
-      mv.setBetreff(betreff);
-      mv.setTxt((String) getTxt().getValue());
       mv.store();
-      GUI.getStatusBar().setSuccessText("MailVorlage gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler bei speichern der MailVorlage: " + e.getLocalizedMessage();
+      String fehler = "Fehler bei speichern der MailVorlage";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

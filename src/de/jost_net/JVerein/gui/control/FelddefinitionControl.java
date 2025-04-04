@@ -35,7 +35,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -46,6 +45,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FelddefinitionControl extends AbstractControl
+    implements Savable
 {
 
   private TablePart felddefinitionList;
@@ -123,32 +123,33 @@ public class FelddefinitionControl extends AbstractControl
     return laenge;
   }
 
-  public void handleStore()
+  @Override
+  public void prepareStore() throws RemoteException, ApplicationException
+  {
+    Felddefinition f = getFelddefinition();
+    Datentyp d = (Datentyp) getDatentyp().getValue();
+    konvertiereTyp(true, f, d);
+    konvertiereTyp(false, f, d);
+    f.setName((String) getName(true).getValue());
+    f.setLabel((String) getLabel().getValue());
+    f.setDatentyp(d.getKey());
+    Integer i = (Integer) getLaenge().getValue();
+    f.setLaenge(i.intValue());
+  }
+
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       Felddefinition f = getFelddefinition();
-      Datentyp d = (Datentyp) getDatentyp().getValue();
-      konvertiereTyp(true, f, d);
-      konvertiereTyp(false, f, d);
-      f.setName((String) getName(true).getValue());
-      f.setLabel((String) getLabel().getValue());
-      f.setDatentyp(d.getKey());
-      Integer i = (Integer) getLaenge().getValue();
-      f.setLaenge(i.intValue());
       f.store();
-      GUI.getStatusBar().setSuccessText("Felddefinition gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler bei speichern der Felddefinition: "
-          + e.getLocalizedMessage();
+      String fehler = "Fehler bei speichern der Felddefinition";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

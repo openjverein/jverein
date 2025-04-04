@@ -12,7 +12,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 
-public class DruckMailControl extends FilterControl implements IMailControl
+public abstract class DruckMailControl extends FilterControl implements IMailControl
 {
   public DruckMailControl(AbstractView view)
   {
@@ -221,5 +221,4 @@ public class DruckMailControl extends FilterControl implements IMailControl
     }
     saveFilterSettings();
   }
-  
 }

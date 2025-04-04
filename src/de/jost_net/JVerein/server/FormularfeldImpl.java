@@ -22,11 +22,11 @@ import org.eclipse.swt.SWT;
 
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FormularfeldImpl extends AbstractDBObject implements Formularfeld
+public class FormularfeldImpl extends AbstractJVereinDBObject
+    implements Formularfeld
 {
 
   private static final long serialVersionUID = -5754574029501014426L;

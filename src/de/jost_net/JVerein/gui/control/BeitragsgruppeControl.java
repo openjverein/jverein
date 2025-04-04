@@ -48,7 +48,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.formatter.TableFormatter;
@@ -64,6 +63,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class BeitragsgruppeControl extends AbstractControl
+    implements Savable
 {
   private Input[] alterstaffel;
   
@@ -389,31 +389,41 @@ public class BeitragsgruppeControl extends AbstractControl
     return notiz;
   }
 
-  public void handleStore()
+  @Override
+  public void prepareStore() throws RemoteException, ApplicationException
+  {
+    Beitragsgruppe b = getBeitragsgruppe();
+    b.setBezeichnung((String) getBezeichnung(false).getValue());
+    if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen())
+    {
+      b.setSekundaer((Boolean) sekundaer.getValue());
+    }
+    else
+    {
+      b.setSekundaer(false);
+    }
+    ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
+
+    b.setBeitragsArt(ba.getKey());
+    b.setBuchungsart((Buchungsart) getBuchungsart().getValue());
+    b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
+    Double d = (Double) getArbeitseinsatzStunden().getValue();
+    b.setArbeitseinsatzStunden(d.doubleValue());
+    d = (Double) getArbeitseinsatzBetrag().getValue();
+    b.setArbeitseinsatzBetrag(d.doubleValue());
+    b.setNotiz((String) getNotiz().getValue());
+    // Beträge fehlen hier noch, sind bei handleStore() im switch mit den
+    // Alterstufen
+  }
+
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       Beitragsgruppe b = getBeitragsgruppe();
-      b.setBezeichnung((String) getBezeichnung(false).getValue());
-      if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen())
-      {
-        b.setSekundaer((Boolean) sekundaer.getValue());
-      }
-      else
-      {
-        b.setSekundaer(false);
-      }
-      ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
-
-      b.setBeitragsArt(ba.getKey());
-      b.setBuchungsart((Buchungsart) getBuchungsart().getValue());
-      b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
-      Double d = (Double) getArbeitseinsatzStunden().getValue();
-      b.setArbeitseinsatzStunden(d.doubleValue());
-      d = (Double) getArbeitseinsatzBetrag().getValue();
-      b.setArbeitseinsatzBetrag(d.doubleValue());
-      b.setNotiz((String) getNotiz().getValue());
-      //Die Beitragsgruppe in die DB schreiben damit sie evtl für Altersstaffel verfügbar ist
+      // Die Beitragsgruppe in die DB schreiben damit sie evtl für Altersstaffel
+      // verfügbar ist
       b.setHasAltersstaffel(false);
       b.store();
       
@@ -462,17 +472,12 @@ public class BeitragsgruppeControl extends AbstractControl
           break;
       }
       b.store();
-      GUI.getStatusBar().setSuccessText("Beitragsgruppe gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern der Beitragsgruppe";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

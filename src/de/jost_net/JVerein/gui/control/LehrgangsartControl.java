@@ -29,7 +29,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -40,6 +39,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class LehrgangsartControl extends AbstractControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -133,31 +133,34 @@ public class LehrgangsartControl extends AbstractControl
     return veranstalter;
   }
 
+  @Override
+  public void prepareStore() throws RemoteException
+  {
+    Lehrgangsart l = getLehrgangsart();
+    l.setBezeichnung((String) getBezeichnung(false).getValue());
+    l.setVon((Date) getVon().getValue());
+    l.setBis((Date) getBis().getValue());
+    l.setVeranstalter((String) getVeranstalter().getValue());
+  }
+
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       Lehrgangsart l = getLehrgangsart();
-      l.setBezeichnung((String) getBezeichnung(false).getValue());
-      l.setVon((Date) getVon().getValue());
-      l.setBis((Date) getBis().getValue());
-      l.setVeranstalter((String) getVeranstalter().getValue());
       l.store();
-      GUI.getStatusBar().setSuccessText("Lehrgangsart gespeichert");
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler beim Speichern der Lehrgangsart";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
-    }
-    catch (ApplicationException e)
-    {
-      Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(e.getMessage());
+      throw new ApplicationException(fehler, e);
     }
   }
 

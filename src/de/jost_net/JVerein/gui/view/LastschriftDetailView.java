@@ -28,13 +28,14 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class LastschriftDetailView extends AbstractView
 {
+  private LastschriftControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Lastschrift");
 
-    final LastschriftControl control = new LastschriftControl(this);
+    control = new LastschriftControl(this);
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 

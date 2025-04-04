@@ -123,6 +123,7 @@ import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class BuchungsControl extends AbstractControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -299,7 +300,13 @@ public class BuchungsControl extends AbstractControl
     return buchung;
   }
 
-  public void fillBuchung(Buchung b) throws ApplicationException, RemoteException
+  @Override
+  public void prepareStore() throws RemoteException, ApplicationException
+  {
+    fill((Buchung) getCurrentObject());
+  }
+
+  public void fill(Buchung b) throws ApplicationException, RemoteException
   { 
     b.setBuchungsartId(getSelectedBuchungsArtId());
     b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
@@ -1041,12 +1048,12 @@ public class BuchungsControl extends AbstractControl
     return b;
   }
 
-  private void handleStore() throws ApplicationException
+  public void handleStore() throws ApplicationException
   {
     try
     {
       Buchung b = getBuchung();
-      fillBuchung(b);
+      fill(b);
 
       if (b.getSpeicherung())
       {
@@ -1062,7 +1069,7 @@ public class BuchungsControl extends AbstractControl
         if (b.getSplitTyp() == SplitbuchungTyp.SPLIT && b_art.getSteuersatz() > 0)
         {
           Buchung b_steuer = getDependentBuchungen().get(0);     
-          fillBuchung(b_steuer);
+          fill(b_steuer);
 
           BigDecimal steuer = new BigDecimal(
             Double.toString(b.getBetrag() * b_art.getSteuersatz() / 100))

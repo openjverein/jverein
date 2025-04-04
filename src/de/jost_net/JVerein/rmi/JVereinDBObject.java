@@ -14,22 +14,24 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
+
 package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-public interface EigenschaftGruppe extends JVereinDBObject
+import de.willuhn.datasource.rmi.DBObject;
+
+/**
+ * Basis-Interface fuer alle DB-Klassen in JVerein.
+ */
+public interface JVereinDBObject extends DBObject
 {
-  public String getBezeichnung() throws RemoteException;
-
-  public void setBezeichnung(String bezeichnung) throws RemoteException;
-
-  public void setPflicht(Boolean pflicht) throws RemoteException;
-
-  public Boolean getPflicht() throws RemoteException;
-
-  public void setMax1(Boolean max1) throws RemoteException;
-
-  public Boolean getMax1() throws RemoteException;
-
+  /**
+   * Prueft, ob das Objekt seit dem Laden geaendert wurde. Da hasChanged
+   * protected ist, muss der Aufruf über diese Funktion erfolgen
+   * 
+   * @return true, wenn es geaendert wurde.
+   * @throws RemoteException
+   */
+  public boolean isChanged() throws RemoteException;
 }

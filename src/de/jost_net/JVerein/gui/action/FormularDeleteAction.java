@@ -86,7 +86,7 @@ public class FormularDeleteAction implements Action
         return;
       }
       // Do not delete a form if it is linked to another
-      Integer formlink = f.getFormlink();
+      Long formlink = f.getFormlink();
       if (formlink > 0)
       {
         Formular fo = (Formular) Einstellungen.getDBService().createObject(

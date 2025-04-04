@@ -33,14 +33,15 @@ import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.action.MailVorschauAction;
 import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.util.JameicaUtil;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedImpl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -50,15 +51,16 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailDetailView extends AbstractView
+public class MailDetailView extends AbstractDetailView
 {
+  private MailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Mail");
 
-    final MailControl control = new MailControl(this);
+    control = new MailControl(this);
 
     Composite comp = new Composite(this.getParent(), SWT.NONE);
     comp.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -196,9 +198,15 @@ public class MailDetailView extends AbstractView
     buttons.addButton(
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
-    buttons.addButton(control.getMailSpeichernButton());
+    buttons.addButton(new SaveButton(control));
     buttons.addButton(control.getMailReSendButton());
     buttons.addButton(control.getMailSendButton());
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }

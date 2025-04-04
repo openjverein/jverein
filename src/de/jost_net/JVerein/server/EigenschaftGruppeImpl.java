@@ -19,11 +19,11 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftGruppeImpl extends AbstractDBObject implements
+public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
+    implements
     EigenschaftGruppe
 {
 

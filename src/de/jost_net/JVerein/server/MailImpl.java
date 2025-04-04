@@ -23,11 +23,10 @@ import java.util.TreeSet;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailImpl extends AbstractDBObject implements Mail
+public class MailImpl extends AbstractJVereinDBObject implements Mail
 {
 
   private static final long serialVersionUID = 1L;

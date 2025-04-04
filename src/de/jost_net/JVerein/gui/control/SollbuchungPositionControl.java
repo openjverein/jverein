@@ -45,6 +45,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class SollbuchungPositionControl extends AbstractControl
+    implements Savable
 {
 
   private DateInput datum;
@@ -195,7 +196,8 @@ public class SollbuchungPositionControl extends AbstractControl
     return steuersatz;
   }
 
-  public void handleStore() throws ApplicationException, RemoteException
+  @Override
+  public void prepareStore() throws RemoteException
   {
     SollbuchungPosition pos = getPosition();
     pos.setDatum((Date) getDatum().getValue());
@@ -221,18 +223,32 @@ public class SollbuchungPositionControl extends AbstractControl
     {
       pos.setBuchungsklasseId(null);
     }
-    pos.store();
-    // Betrag in Sollbuchung neu berechnen
-    Double betrag = 0.0;
-    Sollbuchung sollb = pos.getSollbuchung();
-    ArrayList<SollbuchungPosition> sollbpList = sollb
-        .getSollbuchungPositionList();
-    for (SollbuchungPosition sollp : sollbpList)
+  }
+
+  public void handleStore() throws ApplicationException
+  {
+    try
     {
-      betrag += sollp.getBetrag();
+      prepareStore();
+      SollbuchungPosition pos = getPosition();
+      pos.store();
+      // Betrag in Sollbuchung neu berechnen
+      Double betrag = 0.0;
+      Sollbuchung sollb = pos.getSollbuchung();
+      ArrayList<SollbuchungPosition> sollbpList = sollb
+          .getSollbuchungPositionList();
+      for (SollbuchungPosition sollp : sollbpList)
+      {
+        betrag += sollp.getBetrag();
+      }
+      sollb.setBetrag(betrag);
+      sollb.store();
     }
-    sollb.setBetrag(betrag);
-    sollb.store();
+    catch (RemoteException re)
+    {
+      Logger.error(re.getMessage(), re);
+      throw new ApplicationException("Fehler beim Speichern", re);
+    }
   }
 
 }

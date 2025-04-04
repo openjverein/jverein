@@ -35,7 +35,6 @@ import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
@@ -45,6 +44,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FormularfeldControl extends FormularPartControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -172,7 +172,8 @@ public class FormularfeldControl extends FormularPartControl
     return formular;
   }
 
-  public SelectInput getName() throws Exception
+  public SelectInput getName()
+      throws RemoteException, NoSuchFieldException, SecurityException
   {
     if (name != null)
     {
@@ -353,12 +354,8 @@ public class FormularfeldControl extends FormularPartControl
     return fontsize;
   }
 
-  /**
-   * This method stores the project using the current values.
-   * 
-   * @throws ApplicationException
-   */
-  public void handleStore() throws ApplicationException
+  @Override
+  public void prepareStore() throws RemoteException, ApplicationException
   {
     try
     {
@@ -370,18 +367,33 @@ public class FormularfeldControl extends FormularPartControl
       f.setY((Double) getY().getValue());
       f.setFont((String) getFont().getValue());
       f.setFontsize((Integer) getFontsize().getValue());
+    }
+    catch (RemoteException e)
+    {
+      throw new RemoteException(e.getMessage());
+    }
+    catch (Exception e)
+    {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
+   * This method stores the project using the current values.
+   */
+  public void handleStore() throws ApplicationException
+  {
+    try
+    {
+      prepareStore();
+      Formularfeld f = getFormularfeld();
       f.store();
-      GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler beim Speichern des Formularfeldes";
       Logger.error(fehler, e);
-      throw new ApplicationException(fehler);
-    }
-    catch (Exception e)
-    {
-      throw new ApplicationException(e);
+      throw new ApplicationException(fehler, e);
     }
   }
 
