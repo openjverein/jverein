@@ -20,7 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import com.schlevoigt.JVerein.util.Misc;
+import de.jost_net.JVerein.util.BuchungsZweckKorrektur;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.BuchungUebernahmeProtokollDialog;
@@ -175,7 +175,7 @@ public class Buchungsuebernahme
         // Beautify zweck
         if (Einstellungen.getEinstellung().getAutomatischeBuchungskorrekturHibiscus())
         {
-          zweck = Misc.getBuchungsZweckKorrektur(zweck, true);
+          zweck = BuchungsZweckKorrektur.getBuchungsZweckKorrektur(zweck, true);
         }
         if (zweck != null && zweck.length() > 500)
         {
