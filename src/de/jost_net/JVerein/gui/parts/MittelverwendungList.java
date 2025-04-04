@@ -52,6 +52,19 @@ public class MittelverwendungList
     }
   };
 
+  ResultSetExtractor rsi = new ResultSetExtractor()
+  {
+    @Override
+    public Object extract(ResultSet rs) throws SQLException
+    {
+      if (!rs.next())
+      {
+        return Integer.valueOf(0);
+      }
+      return Integer.valueOf(rs.getInt(1));
+    }
+  };
+
   ResultSetExtractor rsmap = new ResultSetExtractor()
   {
     @Override
