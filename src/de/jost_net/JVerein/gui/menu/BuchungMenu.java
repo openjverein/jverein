@@ -87,9 +87,19 @@ public class BuchungMenu extends ContextMenu
               new MitgliedDetailAction(), "user-friends.png"));
       addItem(new SingleGegenBuchungItem("Neues Anlagenkonto", new AnlagenkontoNeuAction(),
           "document-new.png"));
-      addItem(new SpendenbescheinigungMenuItem("Geldspendenbescheinigung",
-          new SpendenbescheinigungAction(Spendenart.GELDSPENDE),
-          "file-invoice.png"));
+      try
+      {
+        if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+        {
+          addItem(new SpendenbescheinigungMenuItem("Geldspendenbescheinigung",
+              new SpendenbescheinigungAction(Spendenart.GELDSPENDE),
+              "file-invoice.png"));
+        }
+      }
+      catch (RemoteException e)
+      {
+        // Dann nicht anzeigen
+      }
     }
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(), "view-refresh.png"));

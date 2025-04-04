@@ -38,8 +38,7 @@ public class EinstellungenAnzeigeView extends AbstractView
 
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
-    // Allgemeine Einstellung zu Navigation
-    cont.addText("Einstellung Mitgliederverwaltung", false);
+    // Allgemeine Einstellung zu Anzeige
     ColumnLayout cols1 = new ColumnLayout(cont.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cols1.getComposite());
 
@@ -70,6 +69,8 @@ public class EinstellungenAnzeigeView extends AbstractView
     left.addLabelPair("Mittelverwendung anzeigen *",
         control.getMittelverwendung());
     left.addLabelPair("Projekte anzeigen *", control.getProjekte());
+    left.addLabelPair("Spendenbescheinigungen anzeigen *",
+        control.getSpendenbescheinigungen());
 
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
     right.addLabelPair("Lesefelder anzeigen *", control.getUseLesefelder());
