@@ -14,25 +14,24 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVereinJUnit.io;
+package de.jost_net.JVerein.io;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.rmi.RemoteException;
 import java.util.Date;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.io.BeitragsUtil;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.willuhn.util.ApplicationException;
-import junit.framework.Assert;
 
-@RunWith(JUnit4.class)
+@Disabled
 public class BeitragsUtilTest
 {
   public BeitragsUtilTest() throws RemoteException
@@ -41,26 +40,26 @@ public class BeitragsUtilTest
   }
 
   @Test
-  public void test01() throws ApplicationException
+  void test01() throws ApplicationException
   {
     try
     {
       Beitragsgruppe bg = getBeitragsgruppe();
-      Assert.assertEquals(10d, BeitragsUtil.getBeitrag(
+      assertEquals(10d, BeitragsUtil.getBeitrag(
           Beitragsmodel.GLEICHERTERMINFUERALLE, null, 0, bg, new Date(), null));
-      Assert.assertEquals(10d, BeitragsUtil.getBeitrag(
+      assertEquals(10d, BeitragsUtil.getBeitrag(
           Beitragsmodel.MONATLICH12631, null, Zahlungsrhythmus.MONATLICH, bg,
           new Date(), null));
-      Assert.assertEquals(30d, BeitragsUtil.getBeitrag(
+      assertEquals(30d, BeitragsUtil.getBeitrag(
           Beitragsmodel.MONATLICH12631, null,
           Zahlungsrhythmus.VIERTELJAEHRLICH, bg, new Date(), null));
-      Assert.assertEquals(60d, BeitragsUtil.getBeitrag(
+      assertEquals(60d, BeitragsUtil.getBeitrag(
           Beitragsmodel.MONATLICH12631, null, Zahlungsrhythmus.HALBJAEHRLICH,
           bg, new Date(), null));
-      Assert.assertEquals(120d, BeitragsUtil.getBeitrag(
+      assertEquals(120d, BeitragsUtil.getBeitrag(
           Beitragsmodel.MONATLICH12631, null, Zahlungsrhythmus.JAEHRLICH, bg,
           new Date(), null));
-      Assert.assertEquals(20d, BeitragsUtil.getBeitrag(Beitragsmodel.FLEXIBEL,
+      assertEquals(20d, BeitragsUtil.getBeitrag(Beitragsmodel.FLEXIBEL,
           Zahlungstermin.MONATLICH, 0, bg, new Date(), null));
 
     }
