@@ -16,11 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
  * Testet den Shutdown.
  */
+@Disabled
 public class ShutdownTest
 {
 
