@@ -101,7 +101,7 @@
 
 <target name="test" depends="test-compile" description="Run test suite">
   <mkdir dir="${release-test.dir}" />
-  <junitlauncher>
+  <junitlauncher printsummary="true">
     <classpath refid="test-cp" />
       <!-- the test classes themselves -->
     <classpath  refid="test-compilepath"/>
