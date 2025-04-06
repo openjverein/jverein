@@ -16,13 +16,21 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.io.BeitragsUtil;
 import de.jost_net.JVerein.io.VelocityTool;
+import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Eigenschaft;
+import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -36,13 +44,6 @@ import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 public class MitgliedMap
 {
@@ -71,8 +72,8 @@ public class MitgliedMap
     }
     map.put(MitgliedVar.ADRESSIERUNGSZUSATZ.getName(),
         StringTool.toNotNullString(mitglied.getAdressierungszusatz()));
-    map.put(MitgliedVar.ADRESSTYP.getName(),
-        StringTool.toNotNullString(mitglied.getAdresstyp().getID()));
+    map.put(MitgliedVar.MITGLIEDSTYP.getName(),
+        StringTool.toNotNullString(mitglied.getMitgliedstyp().getID()));
     map.put(MitgliedVar.ANREDE.getName(),
         StringTool.toNotNullString(mitglied.getAnrede()));
     map.put(MitgliedVar.ANREDE_FOERMLICH.getName(),
@@ -297,6 +298,17 @@ public class MitgliedMap
         val = "X";
       }
       map.put("mitglied_eigenschaft_" + eig.getBezeichnung(), val);
+    }
+
+    DBIterator<EigenschaftGruppe> eigenschaftGruppeIt = Einstellungen
+        .getDBService()
+        .createList(EigenschaftGruppe.class);
+    while (eigenschaftGruppeIt.hasNext())
+    {
+      EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
+
+      String key = "eigenschaften_" + eg.getBezeichnung();
+      map.put("mitglied_" + key, mitglied.getAttribute(key));
     }
 
     for (String varname : mitglied.getVariablen().keySet())

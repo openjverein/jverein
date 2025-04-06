@@ -635,5 +635,20 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public boolean getSplitPositionZweck() throws RemoteException;
 
-  public void setSplitPositionZweck(boolean split) throws RemoteException;;
+  public void setSplitPositionZweck(boolean split) throws RemoteException;
+
+  public boolean getGeprueftSynchronisieren() throws RemoteException;
+
+  public void setGeprueftSynchronisieren(boolean geprueftsynchonisieren)
+      throws RemoteException;
+
+  public boolean getMitgliedsnummerAnzeigen() throws RemoteException;
+
+  public void setMitgliedsnummerAnzeigen(boolean nummeranzeigen)
+      throws RemoteException;
+
+  public boolean getProjekteAnzeigen() throws RemoteException;
+
+  public void setProjekteAnzeigen(boolean projekteanzeigen)
+      throws RemoteException;
 }

@@ -18,14 +18,13 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -35,17 +34,10 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Mitgliedskonto zuordnen.
+ * Sollbuchung zuordnen.
  */
 public class BuchungSollbuchungZuordnungAction implements Action
 {
-  private BuchungsControl control;
-
-  public BuchungSollbuchungZuordnungAction(BuchungsControl control)
-  {
-    this.control = control;
-  }
-
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
@@ -76,19 +68,19 @@ public class BuchungSollbuchungZuordnungAction implements Action
       }
       SollbuchungAuswahlDialog mkaz = new SollbuchungAuswahlDialog(b[0]);
       Object open = mkaz.open();
-      Mitgliedskonto mk = null;
+      Sollbuchung sollb = null;
 
       if (!mkaz.getAbort())
       {
-        if (open instanceof Mitgliedskonto)
+        if (open instanceof Sollbuchung)
         {
-          mk = (Mitgliedskonto) open;
+          sollb = (Sollbuchung) open;
         }
         else if (open instanceof Mitglied)
         {
           Mitglied m = (Mitglied) open;
-          mk = (Mitgliedskonto) Einstellungen.getDBService().createObject(
-              Mitgliedskonto.class, null);
+          sollb = (Sollbuchung) Einstellungen.getDBService().createObject(
+              Sollbuchung.class, null);
 
           Double betrag = 0d;
           for (Buchung buchung : b)
@@ -96,13 +88,13 @@ public class BuchungSollbuchungZuordnungAction implements Action
             betrag += buchung.getBetrag();
           }
 
-          mk.setBetrag(betrag);
-          mk.setDatum(b[0].getDatum());
-          mk.setMitglied(m);
-          mk.setZahlerId(m.getZahlerID());
-          mk.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
-          mk.setZweck1(b[0].getZweck());
-          mk.store();
+          sollb.setBetrag(betrag);
+          sollb.setDatum(b[0].getDatum());
+          sollb.setMitglied(m);
+          sollb.setZahlerId(m.getZahlerID());
+          sollb.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+          sollb.setZweck1(b[0].getZweck());
+          sollb.store();
 
           for (Buchung buchung : b)
           {
@@ -119,12 +111,12 @@ public class BuchungSollbuchungZuordnungAction implements Action
             }
             sbp.setDatum(buchung.getDatum());
             sbp.setZweck(buchung.getZweck());
-            sbp.setSollbuchung(mk.getID());
+            sbp.setSollbuchung(sollb.getID());
             sbp.store();
           }
         }
 
-        if (open instanceof Mitgliedskonto[])
+        if (open instanceof Sollbuchung[])
         {
           if (b.length > 1)
           {
@@ -140,14 +132,14 @@ public class BuchungSollbuchungZuordnungAction implements Action
           }
 
           b[0].transactionBegin();
-          Mitgliedskonto[] mks = (Mitgliedskonto[]) open;
-          mk = mks[0];
+          Sollbuchung[] sollbs = (Sollbuchung[]) open;
+          sollb = sollbs[0];
           Buchung buchung = b[0];
 
           double summe = 0d;
-          for (Mitgliedskonto m : mks)
+          for (Sollbuchung s : sollbs)
           {
-            summe += m.getBetrag();
+            summe += s.getBetrag();
           }
           if (buchung.getBetrag() != summe)
           {
@@ -164,7 +156,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
           }
           try
           {
-            for (Mitgliedskonto m : mks)
+            for (Sollbuchung s : sollbs)
             {
               if (buchung == null)
               {
@@ -187,7 +179,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
                 SplitbuchungsContainer.add(buchung);
                 SplitbuchungsContainer.store();
               }
-              buchung = SplitbuchungsContainer.autoSplit(buchung, m, true);
+              buchung = SplitbuchungsContainer.autoSplit(buchung, s, true);
             }
             b[0].transactionCommit();
           }
@@ -203,20 +195,19 @@ public class BuchungSollbuchungZuordnungAction implements Action
         {
           if (b.length == 1)
           {
-            SplitbuchungsContainer.autoSplit(b[0], mk, false);
+            SplitbuchungsContainer.autoSplit(b[0], sollb, false);
           }
           else
           {
             for (Buchung buchung : b)
             {
-              buchung.setMitgliedskonto(mk);
+              buchung.setSollbuchung(sollb);
               buchung.store();
             }
           }
         }
-        control.getBuchungsList();
 
-        if (mk == null)
+        if (sollb == null)
         {
           GUI.getStatusBar().setSuccessText("Sollbuchung gelöscht");
         } 

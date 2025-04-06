@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.FormularfeldView;
+import de.jost_net.JVerein.gui.view.FormularfeldDetailView;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.willuhn.jameica.gui.Action;
@@ -73,6 +73,13 @@ public class FormularfeldAction implements Action
             "Fehler bei der Erzeugung eines neuen Formularfeldes", e);
       }
     }
-    GUI.startView(FormularfeldView.class.getName(), ff);
+    // Wenn CurrentObject und View von aktueller und nächster View gleich
+    // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
+    // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
+    if (GUI.getCurrentView().getClass().equals(FormularfeldDetailView.class))
+    {
+      GUI.getCurrentView().setCurrentObject(ff);
+    }
+    GUI.startView(FormularfeldDetailView.class, ff);
   }
 }

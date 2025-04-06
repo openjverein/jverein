@@ -28,6 +28,11 @@ import de.willuhn.util.ApplicationException;
 
 public interface Mitglied extends DBObject, ILastschrift
 {
+  public static final String TABLE_NAME = "mitglied";
+
+  public static final String PRIMARY_ATTRIBUTE = "namevorname";
+
+  public static final String MITGLIEDSTYP = "adresstyp";
 
   public void setExterneMitgliedsnummer(String extnr) throws RemoteException;
 
@@ -35,9 +40,9 @@ public interface Mitglied extends DBObject, ILastschrift
 
   public void setID(String id) throws RemoteException;
 
-  public void setAdresstyp(Integer adresstyp) throws RemoteException;
+  public void setMitgliedstyp(Integer mitgliedstyp) throws RemoteException;
 
-  public Adresstyp getAdresstyp() throws RemoteException;
+  public Mitgliedstyp getMitgliedstyp() throws RemoteException;
 
   public void setPersonenart(String personenart) throws RemoteException;
 
@@ -249,4 +254,7 @@ public interface Mitglied extends DBObject, ILastschrift
 
   public boolean checkSEPA() throws RemoteException, ApplicationException;
 
+  public String getMandatID() throws RemoteException;
+
+  public void setMandatID(String mandatid) throws RemoteException;
 }

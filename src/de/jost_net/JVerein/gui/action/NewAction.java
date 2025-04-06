@@ -31,11 +31,20 @@ public class NewAction implements Action
 
   private Class<? extends DBObject> objectClass;
 
+  private boolean noHistory = false;
+
   public NewAction(Class<? extends AbstractView> viewClass,
       Class<? extends DBObject> objectClass)
   {
+    this(viewClass, objectClass, false);
+  }
+
+  public NewAction(Class<? extends AbstractView> viewClass,
+      Class<? extends DBObject> objectClass, boolean noHistory)
+  {
     this.viewClass = viewClass;
     this.objectClass = objectClass;
+    this.noHistory = noHistory;
   }
 
   @Override
@@ -45,6 +54,17 @@ public class NewAction implements Action
     {
       DBObject object = Einstellungen.getDBService().createObject(objectClass,
           null);
+      if (noHistory)
+      {
+        // Wenn CurrentObject und View von aktueller und nächster View gleich
+        // sind, wird die aktuelle View nicht in die History aufgenommen.
+        // Dadurch führt der Zurückbutton auch bei "Speichern und neu" zur Liste
+        // zurück.
+        if (GUI.getCurrentView().getClass().equals(viewClass))
+        {
+          GUI.getCurrentView().setCurrentObject(object);
+        }
+      }
       GUI.startView(viewClass, object);
     }
     catch (RemoteException e)

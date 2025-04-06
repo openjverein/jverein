@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.WiedervorlageView;
+import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.willuhn.jameica.gui.Action;
@@ -68,6 +68,6 @@ public class WiedervorlageAction implements Action
             "Fehler bei der Erzeugung einer neuen Wiedervorlage", e);
       }
     }
-    GUI.startView(WiedervorlageView.class.getName(), w);
+    GUI.startView(WiedervorlageDetailView.class.getName(), w);
   }
 }

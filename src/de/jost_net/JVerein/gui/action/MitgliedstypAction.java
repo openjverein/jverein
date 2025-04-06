@@ -19,8 +19,8 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.MitgliedstypView;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.gui.view.MitgliedstypDetailView;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -30,14 +30,14 @@ public class MitgliedstypAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Adresstyp at = null;
+    Mitgliedstyp mt = null;
 
-    if (context != null && (context instanceof Adresstyp))
+    if (context != null && (context instanceof Mitgliedstyp))
     {
-      at = (Adresstyp) context;
+      mt = (Mitgliedstyp) context;
       try
       {
-        if (at.getJVereinid() > 0)
+        if (mt.getJVereinid() > 0)
         {
           throw new ApplicationException(
               "Dieser Mitgliedstyp ist reserviert und darf durch den Benutzer nicht verändert werden.");
@@ -52,8 +52,8 @@ public class MitgliedstypAction implements Action
     {
       try
       {
-        at = (Adresstyp) Einstellungen.getDBService().createObject(
-            Adresstyp.class, null);
+        mt = (Mitgliedstyp) Einstellungen.getDBService().createObject(
+            Mitgliedstyp.class, null);
       }
       catch (RemoteException e)
       {
@@ -61,6 +61,6 @@ public class MitgliedstypAction implements Action
             "Fehler bei der Erzeugung eines neuen Mitgliedstypen", e);
       }
     }
-    GUI.startView(MitgliedstypView.class.getName(), at);
+    GUI.startView(MitgliedstypDetailView.class.getName(), mt);
   }
 }

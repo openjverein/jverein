@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Properties;
@@ -32,6 +33,7 @@ import javax.activation.DataSource;
 import javax.activation.MimetypesFileTypeMap;
 import javax.mail.Folder;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Store;
@@ -45,6 +47,7 @@ import de.jost_net.JVerein.rmi.MailAnhang;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Level;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class MailSender
 {
@@ -219,118 +222,180 @@ public class MailSender
     this.session = Session.getInstance(props);
   }
 
-  // Send to a single recipient
+  /**
+   * 
+   * @param email
+   *          Empfänger Adresse
+   * @param subject
+   *          Betreff
+   * @param text
+   *          Nachrittext
+   * @param anhang
+   *          Anhänge als TreeSet
+   * @throws MessagingException
+   *           wird beim Fehler beim Mailvorbereiten oder Versand geworfen
+   * @throws ApplicationException
+   *           wird bei Fehlern bei Speichern per IMAP geworfen
+   */
   public void sendMail(String email, String subject, String text,
-      TreeSet<MailAnhang> anhang) throws Exception
+      TreeSet<MailAnhang> anhang)
+      throws MessagingException, ApplicationException
   {
     String[] emailList = new String[1];
     emailList[0] = email;
     sendMail(emailList, subject, text, anhang);
   }
 
-  // //Send to multiple recipients
-
+  /**
+   * 
+   * @param emailadresses
+   *          Empfänger Adresse als Array
+   * @param subject
+   *          Betreff
+   * @param text
+   *          Nachrittext
+   * @param anhang
+   *          Anhänge als TreeSet
+   * @throws MessagingException
+   *           wird beim Fehler beim Mailvorbereiten oder Versand geworfen
+   * @throws ApplicationException
+   *           wird bei Fehlern bei Speichern per IMAP geworfen
+   */
   public void sendMail(String[] emailadresses, String subject, String text,
-      TreeSet<MailAnhang> anhang) throws Exception
+      TreeSet<MailAnhang> anhang)
+      throws MessagingException, ApplicationException
   {
     Message msg = new MimeMessage(session);
-    /*
-     * msg.addHeader("Disposition-Notification-To", smtp_from_address);
-     * msg.addHeader("Return-Receipt-To", smtp_from_address);
-     */
-    InternetAddress addressFrom = new InternetAddress(smtp_from_address,
-        smtp_from_anzeigename);
-    msg.setFrom(addressFrom);
-
-    InternetAddress[] addressTo = new InternetAddress[emailadresses.length];
-
-    for (int i = 0; i < emailadresses.length; i++)
+    try
     {
-      addressTo[i] = new InternetAddress(emailadresses[i]);
+      /*
+       * msg.addHeader("Disposition-Notification-To", smtp_from_address);
+       * msg.addHeader("Return-Receipt-To", smtp_from_address);
+       */
+      InternetAddress addressFrom = new InternetAddress(smtp_from_address,
+          smtp_from_anzeigename);
+      msg.setFrom(addressFrom);
+
+      InternetAddress[] addressTo = new InternetAddress[emailadresses.length];
+
+      for (int i = 0; i < emailadresses.length; i++)
+      {
+        addressTo[i] = new InternetAddress(emailadresses[i]);
+      }
+
+      msg.setRecipients(Message.RecipientType.TO, addressTo);
+      if (bcc_address != null && !bcc_address.trim().isEmpty())
+      {
+        msg.setRecipient(Message.RecipientType.BCC,
+            new InternetAddress(bcc_address.trim()));
+      }
+      if (cc_address != null && !cc_address.trim().isEmpty())
+      {
+        msg.setRecipient(Message.RecipientType.CC,
+            new InternetAddress(cc_address.trim()));
+      }
+      msg.setSubject(subject);
+
+      // Man koennte dies auch per Checkbox im Formular abfragen
+      boolean html = text.toLowerCase().contains("<html");
+
+      MimeBodyPart messageBodyPart = new MimeBodyPart();
+      messageBodyPart.addHeader("Content-Encoding", UTF_8);
+      Multipart multipart = new MimeMultipart("mixed");
+
+      // Fill the message
+      if (html)
+      {
+        messageBodyPart.setText(text, UTF_8, "html");
+
+        Multipart alternativeMessagesMultipart = new MimeMultipart(
+            "alternative");
+
+        MimeBodyPart altMessageBodyPart = new MimeBodyPart();
+        altMessageBodyPart.addHeader("Content-Encoding", UTF_8);
+        altMessageBodyPart.setText(
+            "Um diese Email richtig darstellen zu können, erlauben Sie bitte in Ihrem Emailprogramm die Darstellung von HTML-Emails.\n"
+                + text.replaceAll(
+                    "(?s)<\\s*?(script|Script|SCRIPT).*?>.*?</\\s*?(script|Script|SCRIPT)\\s*?>",
+                    "")
+                    .replaceAll(
+                        "(?s)<\\s*?(style|Style|STYLE).*?>.*?</\\s*?(style|Style|STYLE)\\s*?>",
+                        "")
+                    .replaceAll("<.*?>", "").replaceAll("\\n{4,}", "\n\n\n")
+                    .replaceAll("\\t", ""),
+            UTF_8);
+
+        alternativeMessagesMultipart.addBodyPart(altMessageBodyPart);
+        alternativeMessagesMultipart.addBodyPart(messageBodyPart);
+
+        MimeBodyPart alternativeMessagesBodyPart = new MimeBodyPart();
+        alternativeMessagesBodyPart.setContent(alternativeMessagesMultipart);
+        multipart.addBodyPart(alternativeMessagesBodyPart);
+      }
+      else
+      {
+        messageBodyPart.setText(text, UTF_8);
+        multipart.addBodyPart(messageBodyPart);
+      }
+
+      for (MailAnhang ma : anhang)
+      {
+        messageBodyPart = new MimeBodyPart();
+
+        messageBodyPart
+            .setDataHandler(new DataHandler(new ByteArrayDataSource(ma)));
+        messageBodyPart.setFileName(ma.getDateiname());
+        multipart.addBodyPart(messageBodyPart);
+      }
+      // Put parts in message
+      msg.setContent(multipart);
+
+      // need to set "sent" date explicitly
+      msg.setSentDate(new Date());
+    }
+    catch (RemoteException | MessagingException
+        | UnsupportedEncodingException e)
+    {
+      throw new MessagingException(
+          "Fehler beim Vorbereiten der Email: " + e.getMessage());
     }
 
-    msg.setRecipients(Message.RecipientType.TO, addressTo);
-    if (bcc_address != null && !bcc_address.trim().isEmpty())
+    try
     {
-      msg.setRecipient(Message.RecipientType.BCC, new InternetAddress(
-          bcc_address.trim()));
+      Transport.send(msg, smtp_auth_user, smtp_auth_pwd);
     }
-    if (cc_address != null && !cc_address.trim().isEmpty())
+    catch (MessagingException e)
     {
-      msg.setRecipient(Message.RecipientType.CC,
-          new InternetAddress(cc_address.trim()));
-    }
-    msg.setSubject(subject);
-
-    // Man koennte dies auch per Checkbox im Formular abfragen
-    boolean html = text.toLowerCase().contains("<html");
-
-    MimeBodyPart messageBodyPart = new MimeBodyPart();
-    messageBodyPart.addHeader("Content-Encoding", UTF_8);
-    Multipart multipart = new MimeMultipart("mixed");
-
-    // Fill the message
-    if (html)
-    {
-      messageBodyPart.setText(text, UTF_8, "html");
-
-      Multipart alternativeMessagesMultipart = new MimeMultipart("alternative");
-
-      MimeBodyPart altMessageBodyPart = new MimeBodyPart();
-      altMessageBodyPart.addHeader("Content-Encoding", UTF_8);
-      altMessageBodyPart
-          .setText(
-              "Um diese Email richtig darstellen zu können, erlauben Sie bitte in Ihrem Emailprogramm die Darstellung von HTML-Emails.\n"
-                  + text
-                      .replaceAll(
-                          "(?s)<\\s*?(script|Script|SCRIPT).*?>.*?</\\s*?(script|Script|SCRIPT)\\s*?>",
-                          "")
-                      .replaceAll(
-                          "(?s)<\\s*?(style|Style|STYLE).*?>.*?</\\s*?(style|Style|STYLE)\\s*?>",
-                          "").replaceAll("<.*?>", "")
-                      .replaceAll("\\n{4,}", "\n\n\n").replaceAll("\\t", ""),
-                      UTF_8);
-
-      alternativeMessagesMultipart.addBodyPart(altMessageBodyPart);
-      alternativeMessagesMultipart.addBodyPart(messageBodyPart);
-
-      MimeBodyPart alternativeMessagesBodyPart = new MimeBodyPart();
-      alternativeMessagesBodyPart.setContent(alternativeMessagesMultipart);
-      multipart.addBodyPart(alternativeMessagesBodyPart);
-    }
-    else
-    {
-      messageBodyPart.setText(text, UTF_8);
-      multipart.addBodyPart(messageBodyPart);
+      throw new MessagingException(
+          "Fehler beim Senden der Email: " + e.getMessage());
     }
 
-    for (MailAnhang ma : anhang)
+    try
     {
-      messageBodyPart = new MimeBodyPart();
-
-      messageBodyPart.setDataHandler(new DataHandler(
-          new ByteArrayDataSource(ma)));
-      messageBodyPart.setFileName(ma.getDateiname());
-      multipart.addBodyPart(messageBodyPart);
+      // Copy to IMAP sent folder
+      if (imapCopyData != null)
+      {
+        Store store = session.getStore();
+        store.connect(imapCopyData.getImap_auth_user(),
+            imapCopyData.getImap_auth_pwd());
+        Folder folder = store.getFolder(imapCopyData.getImap_sent_folder());
+        folder.appendMessages(new Message[] { msg });
+        store.close();
+      }
     }
-    // Put parts in message
-    msg.setContent(multipart);
-
-    // need to set "sent" date explicitly
-    msg.setSentDate(new Date());
-
-    Transport.send(msg, smtp_auth_user, smtp_auth_pwd);
-
-    // Copy to IMAP sent folder
-    if (imapCopyData != null)
+    catch (MessagingException e)
     {
-      Store store = session.getStore();
-      store.connect(imapCopyData.getImap_auth_user(), imapCopyData.getImap_auth_pwd());
-      Folder folder = store.getFolder(imapCopyData.getImap_sent_folder());
-      folder.appendMessages(new Message[] { msg });
-      store.close();
+      throw new ApplicationException(
+          "Fehler beim Speichern der Email per IMAP: " + e.getMessage());
     }
-    Thread.sleep(verzoegerung);
+    try
+    {
+      Thread.sleep(verzoegerung);
+    }
+    catch (InterruptedException e)
+    {
+      throw new ApplicationException("Abgebrochen: " + e.getMessage());
+    }
   }
 
   private static class ByteArrayDataSource implements DataSource

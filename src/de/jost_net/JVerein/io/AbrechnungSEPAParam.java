@@ -87,6 +87,8 @@ public class AbrechnungSEPAParam
   
   private String text = "";
 
+  public Date voneingabedatum;
+
   public AbrechnungSEPAParam(AbrechnungSEPAControl ac, File sepafileRCUR, SepaVersion sepaVersion, String pdffileRCUR)
       throws ApplicationException, RemoteException
   {
@@ -98,6 +100,7 @@ public class AbrechnungSEPAParam
     abbuchungsausgabe = (Abrechnungsausgabe) ac.getAbbuchungsausgabe()
         .getValue();
     vondatum = (Date) ac.getVondatum().getValue();
+    voneingabedatum = (Date) ac.getVonEingabedatum().getValue();
     bisdatum = (Date) ac.getBisdatum().getValue();
     verwendungszweck = (String) ac.getZahlungsgrund().getValue();
     zusatzbetraege = (Boolean) ac.getZusatzbetrag().getValue();

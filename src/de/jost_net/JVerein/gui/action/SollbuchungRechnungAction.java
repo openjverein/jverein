@@ -20,8 +20,8 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.gui.view.RechnungView;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.gui.view.RechnungDetailView;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -40,7 +40,7 @@ public class SollbuchungRechnungAction implements Action
         try
         {
           context = Einstellungen.getDBService()
-              .createObject(Mitgliedskonto.class, mkn.getID());
+              .createObject(Sollbuchung.class, mkn.getID());
         }
         catch (RemoteException e)
         {
@@ -48,17 +48,17 @@ public class SollbuchungRechnungAction implements Action
         }
       }
     }
-    if (context instanceof Mitgliedskonto)
+    if (context instanceof Sollbuchung)
     {
-      Mitgliedskonto mk = (Mitgliedskonto) context;
+      Sollbuchung sollb = (Sollbuchung) context;
       try
       {
-        if (mk.getRechnung() == null)
+        if (sollb.getRechnung() == null)
         {
           throw new ApplicationException(
               "Keine Rechnung zu ausgewählter Sollbuchung vorhanden!");
         }
-        GUI.startView(RechnungView.class.getName(), mk.getRechnung());
+        GUI.startView(RechnungDetailView.class.getName(), sollb.getRechnung());
       }
       catch (RemoteException e)
       {

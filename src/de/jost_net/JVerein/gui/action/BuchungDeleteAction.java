@@ -18,8 +18,6 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Messaging.BuchungMessage;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
@@ -28,7 +26,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -39,12 +36,9 @@ public class BuchungDeleteAction implements Action
 {
   private boolean splitbuchung;
 
-  private BuchungsControl control;
-
-  public BuchungDeleteAction(BuchungsControl control, boolean splitbuchung)
+  public BuchungDeleteAction(boolean splitbuchung)
   {
     this.splitbuchung = splitbuchung;
-    this.control = control;
   }
 
   @Override
@@ -153,15 +147,12 @@ public class BuchungDeleteAction implements Action
             bu.getSpendenbescheinigung().delete();
           bu.delete();
           count++;
-          control.getBuchungsList();
         }
         else if (splitbuchung)
         {
           if (bu.getDependencyId() == -1)
           {
             bu.setDelete(true);
-            Application.getMessagingFactory()
-                .sendMessage(new BuchungMessage(bu));
             count++;
           }
           else
@@ -171,8 +162,6 @@ public class BuchungDeleteAction implements Action
               if (buchung_tmp.getDependencyId() == bu.getDependencyId())
               {
                 buchung_tmp.setDelete(true);
-                Application.getMessagingFactory()
-                    .sendMessage(new BuchungMessage(buchung_tmp));
                 count++;
               }
             }

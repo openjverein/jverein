@@ -30,6 +30,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Projekt;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -81,10 +82,12 @@ public class BuchungQuery
 
   private SplitFilter split;
 
+  private boolean ungeprueft;
+
   public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
       Buchungsart buchungsart, Projekt projekt, String text, String betrag,
       Boolean hasMitglied, String mitglied, boolean geldkonto,
-      SplitFilter split)
+      SplitFilter split, boolean ungeprueft)
   {
     this.datumvon = datumvon;
     this.datumbis = datumbis;
@@ -97,6 +100,7 @@ public class BuchungQuery
     this.geldkonto = geldkonto;
     this.mitglied = mitglied;
     this.split = split;
+    this.ungeprueft = ungeprueft;
   }
   
   public String getOrder(String value) {
@@ -168,10 +172,10 @@ public class BuchungQuery
     if (mitglied != null && !mitglied.isEmpty())
     {
       String mitgliedsuche = "%" + mitglied.toLowerCase() + "%";
-      it.join("mitgliedskonto");
-      it.addFilter("mitgliedskonto.id = mitgliedskonto");
+      it.join(Sollbuchung.TABLE_NAME);
+      it.addFilter(Sollbuchung.TABLE_NAME_ID + " = " + Buchung.SOLLBUCHUNG);
       it.join("mitglied");
-      it.addFilter("mitglied.id = mitgliedskonto.mitglied");
+      it.addFilter("mitglied.id = " + Sollbuchung.T_MITGLIED);
       it.addFilter("(lower(mitglied.name) like ? or lower(mitglied.vorname) like ?)",
           new Object[] { mitgliedsuche, mitgliedsuche });
     }
@@ -208,11 +212,11 @@ public class BuchungQuery
     {
       if (hasMitglied)
       {
-        it.addFilter("mitgliedskonto is not null");
+        it.addFilter(Buchung.SOLLBUCHUNG + " is not null");
       }
       else
       {
-        it.addFilter("mitgliedskonto is null");
+        it.addFilter(Buchung.SOLLBUCHUNG + " is null");
       }
     }
 
@@ -240,6 +244,11 @@ public class BuchungQuery
         break;
       default:
         break;
+    }
+
+    if (ungeprueft)
+    {
+      it.addFilter("(geprueft = 0 or geprueft is null)");
     }
 
     if (betrag != null && betrag.length() > 0)

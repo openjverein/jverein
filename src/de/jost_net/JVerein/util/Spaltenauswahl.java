@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
@@ -44,28 +45,29 @@ public abstract class Spaltenauswahl
   }
 
   public void add(String spaltenbezeichnung, String spaltenname,
-      boolean defaultvalue, boolean nurMitglied)
+      boolean defaultvalue, boolean auchNichtMitglied)
   {
     spalten.add(new Spalte(spaltenbezeichnung, spaltenname,
         settings.getBoolean(tabelle + "." + spaltenname, defaultvalue),
-        nurMitglied));
+        auchNichtMitglied));
   }
 
   public void add(String spaltenbezeichnung, String spaltenname,
-      boolean defaultvalue, Formatter formatter, int align, boolean nurMitglied)
+      boolean defaultvalue, Formatter formatter, int align, boolean auchNichtMitglied)
   {
     spalten.add(new Spalte(spaltenbezeichnung, spaltenname,
         settings.getBoolean(tabelle + "." + spaltenname, defaultvalue),
-        formatter, align, nurMitglied));
+        formatter, align, auchNichtMitglied));
   }
 
-  public void setColumns(TablePart part, int adresstyp)
+  public void setColumns(TablePart part, int mitgliedstyp)
   {
     for (Spalte spalte : spalten)
     {
       if (spalte.isChecked())
       {
-        if ((adresstyp == 1) || adresstyp != 1 && spalte.isNurAdressen())
+        if (mitgliedstyp == Mitgliedstyp.MITGLIED
+            || spalte.isAuchNichtMitglied())
         {
           part.addColumn(spalte.getSpaltenbezeichnung(),
               spalte.getSpaltenname(), spalte.getFormatter());

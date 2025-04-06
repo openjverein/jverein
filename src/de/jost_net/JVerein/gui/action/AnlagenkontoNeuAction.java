@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.dialogs.AnlagenkontoNeuDialog;
-import de.jost_net.JVerein.gui.view.KontoView;
+import de.jost_net.JVerein.gui.view.KontoDetailView;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
@@ -71,7 +71,7 @@ public class AnlagenkontoNeuAction implements Action
         bu.setKommentar(buchung.getKommentar());
         bu.store();
         DBTransaction.commit();
-        GUI.startView(new KontoView(), konto);
+        GUI.startView(new KontoDetailView(), konto);
       }
       DBTransaction.rollback();
     }

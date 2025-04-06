@@ -73,7 +73,7 @@ public class SplitBuchungDeleteAction implements Action
       }
       else
       {
-        BuchungDeleteAction action = new BuchungDeleteAction(control, true);
+        BuchungDeleteAction action = new BuchungDeleteAction(true);
         action.handleAction(context);
       }
       control.refreshSplitbuchungen();

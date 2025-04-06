@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.rmi.Adresstyp;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
@@ -36,31 +36,31 @@ public class MitgliedstypDeleteAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof Adresstyp))
+    if (context == null || !(context instanceof Mitgliedstyp))
     {
       throw new ApplicationException("Kein Mitgliedstyp ausgewählt");
     }
     try
     {
-      Adresstyp at = (Adresstyp) context;
-      if (at.getJVereinid() > 0)
+      Mitgliedstyp mt = (Mitgliedstyp) context;
+      if (mt.getJVereinid() > 0)
       {
         throw new ApplicationException(
             "Dieser Mitgliedstyp darf nicht gelöscht werden");
       }
-      if (at.isNewObject())
+      if (mt.isNewObject())
       {
         return;
       }
       DBIterator<Mitglied> it = Einstellungen.getDBService()
           .createList(Mitglied.class);
-      it.addFilter("adresstyp = ?", new Object[] { at.getID() });
+      it.addFilter(Mitglied.MITGLIEDSTYP + " = ?", new Object[] { mt.getID() });
       it.setLimit(1);
       if (it.hasNext())
       {
         throw new ApplicationException(String.format(
             "Mitgliedstyp '%s' kann nicht gelöscht werden. Es existieren Nicht-Mitglieder dieses Typs.",
-            at.getBezeichnung()));
+            mt.getBezeichnung()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Mitgliedstyp löschen");
@@ -77,7 +77,7 @@ public class MitgliedstypDeleteAction implements Action
         return;
       }
 
-      at.delete();
+      mt.delete();
       GUI.getStatusBar().setSuccessText("Mitgliedstyp gelöscht.");
     }
     catch (RemoteException e)
