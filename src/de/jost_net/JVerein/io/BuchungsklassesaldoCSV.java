@@ -40,33 +40,54 @@ import de.willuhn.util.ApplicationException;
 public class BuchungsklassesaldoCSV
 {
 
-  private static CellProcessor[] getProcessors()
+  private static CellProcessor[] getProcessors(boolean umbuchung)
   {
-
-    final CellProcessor[] processors = new CellProcessor[] { new NotNull(), // BuchungsArt/Klasse,
-                                                                            // Summe
-        // new Optional(new FmtNumber(Einstellungen.DECIMALFORMAT)), //
-        // Einnahmen
-        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Einnahmen
-        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Ausgaben
-        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)) // Umbuchung
-    };
-
-    return processors;
+    if (umbuchung)
+    {
+      final CellProcessor[] processors = new CellProcessor[] { new NotNull(), // BuchungsArt/Klasse,
+                                                                              // Summe
+          // new Optional(new FmtNumber(Einstellungen.DECIMALFORMAT)), //
+          // Einnahmen
+          new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Einnahmen
+          new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Ausgaben
+          new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)) // Umbuchung
+      };
+      return processors;
+    }
+    else
+    {
+      final CellProcessor[] processors = new CellProcessor[] { new NotNull(), // BuchungsArt/Klasse,
+          // Summe
+          // new Optional(new FmtNumber(Einstellungen.DECIMALFORMAT)), //
+          // Einnahmen
+          new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Einnahmen
+          new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Ausgaben
+      };
+      return processors;
+    }
   }
 
   public BuchungsklassesaldoCSV(ArrayList<BuchungsklasseSaldoZeile> zeile,
-      final File file, Date datumvon, Date datumbis) throws ApplicationException
+      final File file, Date datumvon, Date datumbis, boolean umbuchung)
+      throws ApplicationException
   {
     ICsvMapWriter writer = null;
     try
     {
       writer = new CsvMapWriter(new FileWriter(file),
           CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
-      final CellProcessor[] processors = getProcessors();
+      final CellProcessor[] processors = getProcessors(umbuchung);
       Map<String, Object> csvzeile = new HashMap<>();
-
-      String[] header = { "Buchungsart", "Einnahmen", "Ausgaben", "Umbuchung" };
+      String[] header;
+      if (umbuchung)
+      {
+        header = new String[] { "Buchungsart", "Einnahmen", "Ausgaben",
+            "Umbuchung" };
+      }
+      else
+      {
+        header = new String[] { "Buchungsart", "Einnahmen", "Ausgaben" };
+      }
       writer.writeHeader(header);
 
       String subtitle = new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
@@ -91,7 +112,10 @@ public class BuchungsklassesaldoCSV
                 (String) bkz.getAttribute("buchungsartbezeichnung"));
             csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
             csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
+            if (umbuchung)
+            {
+              csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
+            }
             break;
           }
           case BuchungsklasseSaldoZeile.SALDOFOOTER:
@@ -100,7 +124,10 @@ public class BuchungsklassesaldoCSV
                 (String) bkz.getAttribute("buchungsklassenbezeichnung"));
             csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
             csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
+            if (umbuchung)
+            {
+              csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
+            }
             break;
           }
           case BuchungsklasseSaldoZeile.GESAMTSALDOFOOTER:
@@ -109,7 +136,10 @@ public class BuchungsklassesaldoCSV
                 (String) bkz.getAttribute("buchungsklassenbezeichnung"));
             csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
             csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
+            if (umbuchung)
+            {
+              csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
+            }
             break;
           }
           case BuchungsklasseSaldoZeile.GESAMTGEWINNVERLUST:

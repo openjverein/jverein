@@ -50,7 +50,8 @@ import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
@@ -290,7 +291,8 @@ public class PersonalbogenAction implements Action
       kommunikation += "Email: " + m.getEmail();
     }
     rpt.addColumn(kommunikation, Element.ALIGN_LEFT);
-    if (m.getAdresstyp().getID().equals("1"))
+    if (m.getMitgliedstyp().getID()
+        .equals(String.valueOf(Mitgliedstyp.MITGLIED)))
     {
       rpt.addColumn("Eintritt", Element.ALIGN_LEFT);
       rpt.addColumn(m.getEintritt(), Element.ALIGN_LEFT);
@@ -437,11 +439,11 @@ public class PersonalbogenAction implements Action
   private void generiereMitgliedskonto(Reporter rpt, Mitglied m)
       throws RemoteException, DocumentException
   {
-    DBIterator<Mitgliedskonto> it = Einstellungen.getDBService()
-        .createList(Mitgliedskonto.class);
-    it.addFilter("mitglied = ?", new Object[] { m.getID() });
-    it.setOrder("order by datum desc");
-    if (it.size() > 0)
+    DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
+        .createList(Sollbuchung.class);
+    sollbIt.addFilter(Sollbuchung.MITGLIED + " = ?", new Object[] { m.getID() });
+    sollbIt.setOrder("order by " + Sollbuchung.DATUM + " desc");
+    if (sollbIt.size() > 0)
     {
       rpt.add(new Paragraph("Mitgliedskonto", Reporter.getFreeSans(12)));
       rpt.addHeaderColumn("Text", Element.ALIGN_LEFT, 12, BaseColor.LIGHT_GRAY);
@@ -454,17 +456,18 @@ public class PersonalbogenAction implements Action
       rpt.addHeaderColumn("Betrag", Element.ALIGN_LEFT, 30,
           BaseColor.LIGHT_GRAY);
       rpt.createHeader();
-      while (it.hasNext())
+      while (sollbIt.hasNext())
       {
-        Mitgliedskonto mk = it.next();
+        Sollbuchung sollb = sollbIt.next();
         rpt.addColumn("Soll", Element.ALIGN_LEFT);
-        rpt.addColumn(mk.getDatum(), Element.ALIGN_LEFT);
-        rpt.addColumn(mk.getZweck1(), Element.ALIGN_LEFT);
-        rpt.addColumn(Zahlungsweg.get(mk.getZahlungsweg()), Element.ALIGN_LEFT);
-        rpt.addColumn(mk.getBetrag());
+        rpt.addColumn(sollb.getDatum(), Element.ALIGN_LEFT);
+        rpt.addColumn(sollb.getZweck1(), Element.ALIGN_LEFT);
+        rpt.addColumn(Zahlungsweg.get(sollb.getZahlungsweg()), Element.ALIGN_LEFT);
+        rpt.addColumn(sollb.getBetrag());
         DBIterator<Buchung> it2 = Einstellungen.getDBService()
             .createList(Buchung.class);
-        it2.addFilter("mitgliedskonto = ?", new Object[] { mk.getID() });
+        it2.addFilter(Buchung.SOLLBUCHUNG + " = ?",
+            new Object[] { sollb.getID() });
         it2.setOrder("order by datum desc");
         while (it2.hasNext())
         {

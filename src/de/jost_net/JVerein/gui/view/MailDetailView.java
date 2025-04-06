@@ -29,6 +29,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.action.MailVorschauAction;
 import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
@@ -192,6 +193,9 @@ public class MailDetailView extends AbstractView
     buttons.addButton(
         new Button("Vorschau", new MailVorschauAction(control), m, false,
             "edit-copy.png"));
+    buttons.addButton(
+        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+            control, false, "document-new.png"));
     buttons.addButton(control.getMailSpeichernButton());
     buttons.addButton(control.getMailReSendButton());
     buttons.addButton(control.getMailSendButton());

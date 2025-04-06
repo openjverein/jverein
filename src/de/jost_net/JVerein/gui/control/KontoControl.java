@@ -36,7 +36,7 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
-import de.jost_net.JVerein.gui.view.KontoView;
+import de.jost_net.JVerein.gui.view.KontoDetailView;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Anlagenzweck;
@@ -336,7 +336,8 @@ public class KontoControl extends FilterControl
 
   public Part getKontenList() throws RemoteException
   {
-    kontenList = new TablePart(getKonten(), new EditAction(KontoView.class));
+    kontenList = new TablePart(getKonten(),
+        new EditAction(KontoDetailView.class));
     kontenList.addColumn("Nummer", "nummer");
     kontenList.addColumn("Bezeichnung", "bezeichnung");
     kontenList.addColumn("Kontoart", "kontoart", new Formatter()

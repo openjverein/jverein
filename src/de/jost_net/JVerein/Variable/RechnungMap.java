@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -104,9 +105,9 @@ public class RechnungMap
     map.put(RechnungVar.MK_BETRAG.getName(), betrag.toArray());
 
     Double ist = 0d;
-    if (re.getMitgliedskonto() != null)
+    if (re.getSollbuchung() != null)
     {
-      ist = re.getMitgliedskonto().getIstSumme();
+      ist = re.getSollbuchung().getIstSumme();
     }
     map.put(RechnungVar.IST.getName(), ist);
     map.put(RechnungVar.MK_SUMME_OFFEN.getName(), summe - ist);
@@ -186,6 +187,55 @@ public class RechnungMap
     }
     map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(), zahlungsweg);
 
+    return map;
+  }
+
+  public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
+  {
+    Map<String, Object> map = null;
+    if (inMap == null)
+    {
+      map = new HashMap<>();
+    }
+    else
+    {
+      map = inMap;
+    }
+
+    map.put(RechnungVar.ZAHLUNGSGRUND.getName(), "Zahlungsgrund");
+    map.put(RechnungVar.BUCHUNGSDATUM.getName(), "01.01.2025");
+    map.put(RechnungVar.NETTOBETRAG.getName(), "20");
+    map.put(RechnungVar.STEUERSATZ.getName(), "19");
+    map.put(RechnungVar.STEUERBETRAG.getName(), "3,80");
+    map.put(RechnungVar.BETRAG.getName(), "23,80");
+    map.put(RechnungVar.IST.getName(), "10");
+    map.put(RechnungVar.STAND.getName(), "-13,80");
+    map.put(RechnungVar.SUMME_OFFEN.getName(), "13,80");
+    map.put(RechnungVar.QRCODE_INTRO.getName(), "QRCode Intro");
+    map.put(RechnungVar.DATUM.getName(), "10.01.2025");
+    map.put(RechnungVar.NUMMER.getName(), "Nummer");
+    map.put(RechnungVar.ANREDE.getName(), "Herrn");
+    map.put(RechnungVar.TITEL.getName(), "Dr. Dr.");
+    map.put(RechnungVar.NAME.getName(), "Wichtig");
+    map.put(RechnungVar.VORNAME.getName(), "Willi");
+    map.put(RechnungVar.STRASSE.getName(), "Bahnhofstr. 22");
+    map.put(RechnungVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei Müller");
+    map.put(RechnungVar.PLZ.getName(), "12345");
+    map.put(RechnungVar.ORT.getName(), "Testenhausen");
+    map.put(RechnungVar.STAAT.getName(), "Deutschland");
+    map.put(RechnungVar.GESCHLECHT.getName(), GeschlechtInput.MAENNLICH);
+    map.put(RechnungVar.ANREDE_DU.getName(), "Hallo Willi,");
+    map.put(RechnungVar.ANREDE_FOERMLICH.getName(),
+        "Sehr geehrter Herr Dr. Dr. Wichtig,");
+    map.put(RechnungVar.PERSONENART.getName(), "n");
+    map.put(RechnungVar.MANDATID.getName(), "12345");
+    map.put(RechnungVar.MANDATDATUM.getName(), "01.01.2024");
+    map.put(RechnungVar.BIC.getName(), "XXXXXXXXXXX");
+    map.put(RechnungVar.IBAN.getName(), "DE89370400440532013000");
+    map.put(RechnungVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
+    map.put(RechnungVar.EMPFAENGER.getName(),
+        "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
+    map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(), "Überweisung");
     return map;
   }
 }

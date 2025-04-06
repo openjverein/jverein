@@ -33,7 +33,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailVorlageControl extends AbstractControl
+public class MailVorlageControl extends AbstractControl implements IMailControl
 {
 
   private TablePart mailvorlageList;
@@ -75,6 +75,7 @@ public class MailVorlageControl extends AbstractControl
     return betreff;
   }
 
+  @Override
   public String getBetreffString()
   {
     return (String) betreff.getValue();
@@ -92,6 +93,7 @@ public class MailVorlageControl extends AbstractControl
     return txt;
   }
 
+  @Override
   public String getTxtString()
   {
     return (String) txt.getValue();

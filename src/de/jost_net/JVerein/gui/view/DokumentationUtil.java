@@ -24,7 +24,7 @@ public class DokumentationUtil
   
   //private static final String ALLGEMEIN = "allgemein/";
   
-  private static final String FUNKTIONEN = "v3.0.x/";
+  private static final String FUNKTIONEN = "v3.1.x/";
   
   private static final String ADMIN = "administration/";
   
@@ -82,6 +82,9 @@ public class DokumentationUtil
 
   public static final String ZUSATZBETRAEGE = PRE + FUNKTIONEN + MITGLIEDER  + "zusatzbetrage";
 
+  public static final String ZUSATZBETRAEGE_VORLAGE = PRE + FUNKTIONEN
+      + MITGLIEDER + "zusatzbetragevorlage";
+
   public static final String ZUSATZBETRAEGEIMPORT = PRE + FUNKTIONEN + MITGLIEDER 
       + "zusatzbetrage-importieren";
   
@@ -115,6 +118,9 @@ public class DokumentationUtil
   public static final String ANLAGENLISTE = PRE + FUNKTIONEN + BUCHF + "anlagenverzeichnis";
   
   public static final String MITTELVERWENDUNG = PRE + FUNKTIONEN + BUCHF + "mittelverwendung";
+
+  public static final String MITTELVERWENDUNGSALDO = PRE + FUNKTIONEN + BUCHF
+      + "mittelverwendungsaldo";
 
 
   // Abrechnung

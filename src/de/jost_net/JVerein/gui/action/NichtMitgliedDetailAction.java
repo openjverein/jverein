@@ -20,7 +20,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -38,10 +38,10 @@ public class NichtMitgliedDetailAction implements Action
       {
         m = (Mitglied) context;
       }
-      else if (context != null && (context instanceof Mitgliedskonto))
+      else if (context != null && (context instanceof Sollbuchung))
       {
-        Mitgliedskonto mk = (Mitgliedskonto) context;
-        m = mk.getMitglied();
+        Sollbuchung sollb = (Sollbuchung) context;
+        m = sollb.getMitglied();
       }
       else
       {
@@ -73,6 +73,13 @@ public class NichtMitgliedDetailAction implements Action
       throw new ApplicationException(
           "Fehler bei der Erzeugung eines neuen Nicht-Mitglied", e);
     }
-    GUI.startView(new NichtMitgliedDetailView(), m);
+    // Wenn CurrentObject und View von aktueller und nächster View gleich
+    // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
+    // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
+    if (GUI.getCurrentView().getClass().equals(NichtMitgliedDetailView.class))
+    {
+      GUI.getCurrentView().setCurrentObject(m);
+    }
+    GUI.startView(NichtMitgliedDetailView.class, m);
   }
 }

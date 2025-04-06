@@ -30,8 +30,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import javax.mail.SendFailedException;
-
+import javax.mail.MessagingException;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 
@@ -66,7 +65,7 @@ public class ZipMailer
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
-        try
+        try (ZipFile zip = new ZipFile(zipfile))
         {
           MailSender sender = new MailSender(
               Einstellungen.getEinstellung().getSmtpServer(),
@@ -88,7 +87,6 @@ public class ZipMailer
           monitor.setPercentComplete(0);
           int sentCount = 0;
 
-          ZipFile zip = new ZipFile(zipfile);
           int zae = 0;
           int size = zip.size();
           for (@SuppressWarnings("rawtypes")
@@ -145,8 +143,18 @@ public class ZipMailer
               monitor.log("Versende an " + mail);
               try
               {
-            	sender.sendMail(mail, wtext1.getBuffer().toString(),
-                  wtext2.getBuffer().toString(), anhang);
+                try
+                {
+                  sender.sendMail(mail, wtext1.getBuffer().toString(),
+                      wtext2.getBuffer().toString(), anhang);
+                }
+                // Wenn eine ApplicationException geworfen wurde, wurde die
+                // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
+                catch (ApplicationException ae)
+                {
+                  Logger.error("Fehler: ", ae);
+                  monitor.log(mail + " - " + ae.getMessage());
+                }
                 sentCount++;
                       
                 Mail ml = (Mail) Einstellungen.getDBService()
@@ -169,10 +177,10 @@ public class ZipMailer
                   ma.store();
                 }
               }
-              catch (SendFailedException e1)
+              catch (MessagingException me)
               {
                 monitor.log("Versand fehlgeschlagen: " + mail);
-                Logger.error("Fehler beim Mailversand: " + e1);
+                Logger.error("Fehler beim Mailversand: " + me);
               }
             } // Ende von if
             zae++;

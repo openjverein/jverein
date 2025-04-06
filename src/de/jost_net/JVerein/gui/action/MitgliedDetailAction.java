@@ -25,7 +25,8 @@ import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
@@ -65,10 +66,10 @@ public class MitgliedDetailAction implements Action
       {
         mitglied = (Mitglied) context;
       }
-      else if (context instanceof Mitgliedskonto)
+      else if (context instanceof Sollbuchung)
       {
-        Mitgliedskonto mk = (Mitgliedskonto) context;
-        mitglied = mk.getMitglied();
+        Sollbuchung s = (Sollbuchung) context;
+        mitglied = s.getMitglied();
       }
       else if (context instanceof Wiedervorlage)
       {
@@ -100,8 +101,8 @@ public class MitgliedDetailAction implements Action
         Spendenbescheinigung s = (Spendenbescheinigung) context;
         mitglied = s.getMitglied();
       }
-      else if ((context instanceof Buchung ) && ((Buchung) context).getMitgliedskonto() != null ) {
-        mitglied = ((Buchung) context).getMitgliedskonto().getMitglied();
+      else if ((context instanceof Buchung ) && ((Buchung) context).getSollbuchung() != null ) {
+        mitglied = ((Buchung) context).getSollbuchung().getMitglied();
       }
       else
       {
@@ -123,7 +124,18 @@ public class MitgliedDetailAction implements Action
           mitglied.setPersonenart("n");
         }
       }
-      if (mitglied.getAdresstyp() == null || mitglied.getAdresstyp().getID().equals("1"))
+      // Wenn CurrentObject und View von aktueller und nächster View gleich
+      // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
+      // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
+      if (GUI.getCurrentView().getClass().equals(MitgliedDetailView.class)
+          || GUI.getCurrentView().getClass()
+              .equals(NichtMitgliedDetailView.class))
+      {
+        GUI.getCurrentView().setCurrentObject(mitglied);
+      }
+      GUI.getCurrentView().setCurrentObject(mitglied);
+      if (mitglied.getMitgliedstyp() == null || mitglied.getMitgliedstyp()
+          .getID().equals(String.valueOf(Mitgliedstyp.MITGLIED)))
       {
         GUI.startView(new MitgliedDetailView(), mitglied);
       }

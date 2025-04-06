@@ -20,6 +20,7 @@ package de.jost_net.JVerein.gui.dialogs;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.KontoFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -53,7 +54,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
   {
     super(AbstractDialog.POSITION_CENTER);
     super.setSize(650, 400);
-    this.setTitle("Buchungsübernahme Hibiscus->JVerein");
+    this.setTitle("BuchungsÃ¼bernahme Hibiscus->JVerein");
     this.buchungen = buchungen;
     this.fehlerbuchung = fehlerbuchung;
     this.exception = exeption;
@@ -62,7 +63,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    // LabelGroup group = new LabelGroup(parent, "Übernommene Buchungen");
+    // LabelGroup group = new LabelGroup(parent, "Ãœbernommene Buchungen");
 
     final TablePart bu = new TablePart(buchungen, null);
     bu.addColumn("Nr", "id-int");
@@ -90,6 +91,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
     });
     bu.addColumn("Betrag", "betrag", new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT));
+    bu.addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
     bu.setRememberColWidths(true);
     bu.setRememberOrder(true);
     bu.paint(parent);

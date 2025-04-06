@@ -453,7 +453,7 @@ public class KursteilnehmerControl extends FilterControl
     return b;
   }
 
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
@@ -478,7 +478,7 @@ public class KursteilnehmerControl extends FilterControl
       if (ib == null)
         k.setIban(null);
       else
-        k.setIban(ib.toUpperCase().replace(" ",""));
+        k.setIban(ib.toUpperCase().replace(" ", ""));
       k.setBic((String) getBIC().getValue());
       k.setBetrag((Double) getBetrag().getValue());
       if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
@@ -493,15 +493,11 @@ public class KursteilnehmerControl extends FilterControl
       k.store();
       GUI.getStatusBar().setSuccessText("Kursteilnehmer gespeichert");
     }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
-    }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei Speichern des Kursteilnehmers";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler);
     }
   }
 

@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.BuchungView;
+import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -42,7 +42,7 @@ public class SplitbuchungNeuAction implements Action
       buch.setDatum(master.getDatum());
       buch.setKommentar(master.getKommentar());
       buch.setKonto(master.getKonto());
-      buch.setMitgliedskonto(master.getMitgliedskonto());
+      buch.setSollbuchung(master.getSollbuchung());
       buch.setName(master.getName());
       buch.setProjekt(master.getProjekt());
       buch.setSplitId(Long.valueOf(master.getID()));
@@ -53,7 +53,15 @@ public class SplitbuchungNeuAction implements Action
       buch.setSpeicherung(false);
       buch.setSplitTyp(SplitbuchungTyp.SPLIT);
       buch.setBetrag(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT).doubleValue() - SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT).doubleValue());
-      GUI.startView(BuchungView.class, buch);
+
+      // Wenn CurrentObject und View von aktueller und nächster View gleich
+      // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
+      // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
+      if (GUI.getCurrentView().getClass().equals(BuchungDetailView.class))
+      {
+        GUI.getCurrentView().setCurrentObject(buch);
+      }
+      GUI.startView(BuchungDetailView.class, buch);
     }
     catch (RemoteException e)
     {

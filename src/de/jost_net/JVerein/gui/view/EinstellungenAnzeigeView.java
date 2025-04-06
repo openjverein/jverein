@@ -50,25 +50,26 @@ public class EinstellungenAnzeigeView extends AbstractView
     left.addLabelPair("Sterbedatum", control.getSterbedatum());
     left.addLabelPair("Kommunikationsdaten anzeigen",
         control.getKommunikationsdaten());
-    left.addLabelPair("Sekundäre Beitragsgruppen anzeigen" + "*",
+    left.addLabelPair("Sekundäre Beitragsgruppen anzeigen *",
         control.getSekundaereBeitragsgruppen());
-    left.addLabelPair("Zusatzbeträge anzeigen" + "*",
+    left.addLabelPair("Zusatzbeträge anzeigen *",
         control.getZusatzbetrag());
     left.addLabelPair("Zusatzbeträge auch für Ausgetretene *",
         control.getZusatzbetragAusgetretene());
     left.addLabelPair("Vermerke anzeigen", control.getVermerke());
-    left.addLabelPair("Wiedervorlage anzeigen" + "*",
+    left.addLabelPair("Wiedervorlage anzeigen *",
         control.getWiedervorlage());
-    left.addLabelPair("Kursteilnehmer anzeigen" + "*",
+    left.addLabelPair("Kursteilnehmer anzeigen *",
         control.getKursteilnehmer());
     left.addLabelPair("Kursteilnehmer Geburtsdatum und Geschlecht Pflichtfeld",
         control.getKursteilnehmerGebGesPflicht());
-    left.addLabelPair("Lehrgänge anzeigen" + "*", control.getLehrgaenge());
+    left.addLabelPair("Lehrgänge anzeigen *", control.getLehrgaenge());
     left.addLabelPair("Juristische Personen erlaubt",
         control.getJuristischePersonen());
     left.addLabelPair("Mitgliedsfoto *", control.getMitgliedfoto());
-    left.addLabelPair("Mittelverwendung anzeigen" + "*",
+    left.addLabelPair("Mittelverwendung anzeigen *",
         control.getMittelverwendung());
+    left.addLabelPair("Projekte anzeigen *", control.getProjekte());
 
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
     right.addLabelPair("Lesefelder anzeigen *", control.getUseLesefelder());
@@ -81,7 +82,10 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getIndividuelleBeitraege());
     right.addLabelPair("Externe Mitgliedsnummer",
         control.getExterneMitgliedsnummer());
-    right.addLabelPair("Summen Anlagenkonto in Kontensaldo", control.getSummenAnlagenkonto());
+    right.addLabelPair("(Externe) Mitgliedsnummer bei Namen anzeigen",
+        control.getMitgliedsnummerAnzeigen());
+    right.addLabelPair("Summen Anlagenkonto in Kontensaldo",
+        control.getSummenAnlagenkonto());
     right.addLabelPair("Basis für Berechnung des Alters",
         control.getAltersModel());
     // Einstellung zum Buchungsdialog
@@ -90,8 +94,8 @@ public class EinstellungenAnzeigeView extends AbstractView
     right.addLabelPair("Mitglied Auswahl", control.getMitgliedAuswahl());
     right.addLabelPair("Ort der Abschreibung", control.getAfaOrt());
 
-    right.addHeadline("* " + "Änderung erfordert Neustart");
     cont.addSeparator();
+    cont.addHeadline("* " + "Änderung erfordert Neustart");
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_ANZEIGE, false, "question-circle.png");

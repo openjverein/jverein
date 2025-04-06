@@ -58,6 +58,8 @@ import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.input.SelectNoScrollInput;
 import de.jost_net.JVerein.gui.input.SpinnerNoScrollInput;
+import de.jost_net.JVerein.gui.input.VollzahlerInput;
+import de.jost_net.JVerein.gui.input.VollzahlerSearchInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.menu.FamilienbeitragMenu;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
@@ -73,7 +75,7 @@ import de.jost_net.JVerein.gui.view.AbstractMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.AuswertungVorlagenCsvView;
 import de.jost_net.JVerein.gui.view.IAuswertung;
 import de.jost_net.JVerein.gui.view.MitgliedNextBGruppeView;
-import de.jost_net.JVerein.gui.view.MitgliederSuchProfilView;
+import de.jost_net.JVerein.gui.view.MitgliedSuchProfilListeView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.MitgliedAdressbuchExport;
 import de.jost_net.JVerein.io.MitgliedAdresslistePDF;
@@ -82,11 +84,11 @@ import de.jost_net.JVerein.io.MitgliedAuswertungPDF;
 import de.jost_net.JVerein.io.MitgliederStatistik;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Adresstyp;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Eigenschaft;
@@ -98,12 +100,12 @@ import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.server.EigenschaftenNode;
-import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTIMESTAMP;
@@ -123,6 +125,7 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.formatter.TreeFormatter;
+import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -153,7 +156,7 @@ public class MitgliedControl extends FilterControl
 
   private TablePart part;
 
-  private SelectNoScrollInput adresstyp;
+  private SelectNoScrollInput mitgliedstyp;
 
   private TextInput externemitgliedsnummer;
 
@@ -253,7 +256,7 @@ public class MitgliedControl extends FilterControl
 
   private TreePart familienbeitragtree;
 
-  private SelectNoScrollInput zahler;
+  private AbstractInput zahler;
 
   private DateInput austritt = null;
 
@@ -339,19 +342,20 @@ public class MitgliedControl extends FilterControl
     this.mitglied = mitglied;
   }
 
-  public SelectNoScrollInput getAdresstyp() throws RemoteException
+  public SelectNoScrollInput getMitgliedstyp() throws RemoteException
   {
-    if (adresstyp != null)
+    if (mitgliedstyp != null)
     {
-      return adresstyp;
+      return mitgliedstyp;
     }
-    DBIterator<Adresstyp> at = Einstellungen.getDBService()
-        .createList(Adresstyp.class);
-    at.addFilter("jvereinid != 1 or jvereinid is null");
-    at.setOrder("order by bezeichnung");
-    adresstyp = new SelectNoScrollInput(at != null ? PseudoIterator.asList(at) : null, getMitglied().getAdresstyp());
-    adresstyp.setName("Mitgliedstyp");
-    return adresstyp;
+    DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
+        .createList(Mitgliedstyp.class);
+    mtIt.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
+        + " OR " + Mitgliedstyp.JVEREINID + " IS NULL");
+    mtIt.setOrder("order by " + Mitgliedstyp.BEZEICHNUNG);
+    mitgliedstyp = new SelectNoScrollInput(mtIt != null ? PseudoIterator.asList(mtIt) : null, getMitglied().getMitgliedstyp());
+    mitgliedstyp.setName("Mitgliedstyp");
+    return mitgliedstyp;
   }
 
   public TextInput getExterneMitgliedsnummer() throws RemoteException
@@ -634,12 +638,14 @@ public class MitgliedControl extends FilterControl
           {
             if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
             {
+              mandatid.setMandatory(false);
               mandatdatum.setMandatory(false);
               mandatversion.setMandatory(false);
               iban.setMandatory(false);
             }
             else
             {
+              mandatid.setMandatory(true);
               mandatdatum.setMandatory(true);
               mandatversion.setMandatory(true);
               iban.setMandatory(true);
@@ -767,7 +773,20 @@ public class MitgliedControl extends FilterControl
     }
     mandatid = new TextInput(getMitglied().getMandatID());
     mandatid.setName("Mandats-ID");
-    mandatid.disable();
+    if (((Zahlungsweg) getZahlungsweg().getValue())
+        .getKey() != Zahlungsweg.BASISLASTSCHRIFT)
+    {
+      mandatid.setMandatory(false);
+    }
+    else
+    {
+      mandatid.setMandatory(true);
+    }
+    if (Einstellungen.getEinstellung()
+        .getSepaMandatIdSource() != SepaMandatIdSource.INDIVIDUELL)
+    {
+      mandatid.disable();
+    }
     return mandatid;
   }
 
@@ -1149,30 +1168,14 @@ public class MitgliedControl extends FilterControl
               famverb.setBeitragsgruppe(bg);
             }
           }
-          else if (bg != null
-              && bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-          {
-            boolean ist_neu = getMitglied().getID() == null;
-            // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
-            if (!ist_neu)
-            {
-              getZukuenftigeBeitraegeView().setVisible(true);
-            }
-            getMitglied().setVollZahlerID(null);
-            if (zahler != null)
-            {
-              zahler.setValue(Einstellungen.getDBService()
-                  .createObject(Mitglied.class, ""));
-              zahler.setEnabled(false);
-            }
-          }
           else
           {
             getMitglied().setVollZahlerID(null);
-            if (zahler != null)
+            disableZahler();
+            // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
+            if (getMitglied().getID() != null)
             {
-              zahler.setPreselected(null);
-              zahler.setEnabled(false);
+              getZukuenftigeBeitraegeView().setVisible(true);
             }
           }
           refreshFamilienangehoerigeTable();
@@ -1186,6 +1189,22 @@ public class MitgliedControl extends FilterControl
       }
     });
     return beitragsgruppe;
+  }
+
+  private void disableZahler()
+  {
+    if (zahler != null)
+    {
+      if (zahler instanceof SelectNoScrollInput)
+      {
+        ((SelectNoScrollInput) zahler).setPreselected(null);
+      }
+      else if (zahler instanceof VollzahlerSearchInput)
+      {
+        ((VollzahlerSearchInput) zahler).setValue("Zum Suchen tippen");
+      }
+      zahler.setEnabled(false);
+    }
   }
 
   public MitgliedSekundaereBeitragsgruppePart getMitgliedSekundaereBeitragsgruppeView()
@@ -1322,53 +1341,15 @@ public class MitgliedControl extends FilterControl
       // Dies ist nötig, wenn Zahler ausgeblendet wurde und daher der
       // Parent vom GC disposed wurde.
     }
+    zahler = new VollzahlerInput().getMitgliedInput(zahler, getMitglied(),
+        Einstellungen.getEinstellung().getMitgliedAuswahl());
 
-    StringBuffer cond = new StringBuffer();
-
-    // Beitragsgruppen ermitteln, die Zahler für andere Mitglieder sind
-    DBIterator<Beitragsgruppe> bg = Einstellungen.getDBService()
-        .createList(Beitragsgruppe.class);
-    bg.addFilter("beitragsart != ?", ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
-    while (bg.hasNext())
-    {
-      if (cond.length() > 0)
-      {
-        cond.append(" OR ");
-      }
-      Beitragsgruppe beitragsgruppe = bg.next();
-      cond.append("beitragsgruppe = ");
-      cond.append(beitragsgruppe.getID());
-    }
-    DBIterator<Mitglied> zhl = Einstellungen.getDBService()
-        .createList(Mitglied.class);
-    zhl.addFilter("(" + cond.toString() + ")");
-    if(getMitglied().getID() != null)
-      zhl.addFilter("id != ?",getMitglied().getID());
-    MitgliedUtils.setNurAktive(zhl);
-    MitgliedUtils.setMitglied(zhl);
-    zhl.setOrder("ORDER BY name, vorname");
-
-    String suche = "";
-    if (getMitglied().getVollZahlerID() != null)
-    {
-      suche = getMitglied().getVollZahlerID().toString();
-    }
-    Mitglied zahlmitglied = (Mitglied) Einstellungen.getDBService()
-        .createObject(Mitglied.class, suche);
-
-    zahler = new SelectNoScrollInput(zhl != null ? PseudoIterator.asList(zhl) : null, zahlmitglied);
-    zahler.setAttribute("namevorname");
-    zahler.setPleaseChoose("Bitte auswählen");
     zahler.addListener(new Listener()
     {
 
       @Override
       public void handleEvent(Event event)
       {
-        if (event.type != SWT.Selection)
-        {
-          return;
-        }
         try
         {
           Mitglied m = (Mitglied) zahler.getValue();
@@ -1392,15 +1373,15 @@ public class MitgliedControl extends FilterControl
     if (getBeitragsgruppe(true) != null
         && getBeitragsgruppe(true).getValue() != null
         && ((Beitragsgruppe) getBeitragsgruppe(true).getValue()).getBeitragsArt() 
-             == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+        == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
     {
       zahler.setEnabled(true);
     }
     else
     {
-      zahler.setPreselected(getMitglied());
-      zahler.setEnabled(false);
+      disableZahler();
     }
+
     return zahler;
   }
 
@@ -2089,7 +2070,7 @@ public class MitgliedControl extends FilterControl
         {
           throw new ApplicationException(e);
         }
-        GUI.startView(MitgliederSuchProfilView.class.getName(), settings);
+        GUI.startView(MitgliedSuchProfilListeView.class.getName(), settings);
       }
     }, null, true, "user-check.png"); // "true" defines this button as the
                                       // default button
@@ -2239,7 +2220,7 @@ public class MitgliedControl extends FilterControl
     return eigenschaftenTree;
   }
 
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
@@ -2308,20 +2289,20 @@ public class MitgliedControl extends FilterControl
 
       }
 
-      if (adresstyp != null)
+      if (mitgliedstyp != null)
       {
-        Adresstyp at = (Adresstyp) getAdresstyp().getValue();
-        m.setAdresstyp(Integer.valueOf(at.getID()));
+        Mitgliedstyp mt = (Mitgliedstyp) getMitgliedstyp().getValue();
+        m.setMitgliedstyp(Integer.valueOf(mt.getID()));
       }
       else
       {
-        m.setAdresstyp(1);
+        m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
       }
       m.setAdressierungszusatz((String) getAdressierungszusatz().getValue());
       m.setAustritt((Date) getAustritt().getValue());
       m.setAnrede((String) getAnrede().getValue());
       GenericObject o = (GenericObject) getBeitragsgruppe(true).getValue();
-      if (adresstyp == null)
+      if (mitgliedstyp == null)
       {
         try
         {
@@ -2358,6 +2339,7 @@ public class MitgliedControl extends FilterControl
       {
         m.setZahlungstermin(zt.getKey());
       }
+      m.setMandatID((String) getMandatID().getValue());
       m.setMandatDatum((Date) getMandatDatum().getValue());
       m.setMandatVersion((Integer) getMandatVersion().getValue());
       m.setBic((String) getBic().getValue());
@@ -2439,7 +2421,8 @@ public class MitgliedControl extends FilterControl
       m.setLetzteAenderung();
       m.store();
 
-      boolean ist_mitglied = m.getAdresstyp().getJVereinid() == 1;
+      boolean ist_mitglied = m.getMitgliedstyp()
+          .getJVereinid() == Mitgliedstyp.MITGLIED;
       if (Einstellungen.getEinstellung().getMitgliedfoto() && ist_mitglied)
       {
         Mitgliedfoto f = null;
@@ -2583,7 +2566,7 @@ public class MitgliedControl extends FilterControl
         }
       }
       String successtext = "";
-      if (m.getAdresstyp().getJVereinid() == 1)
+      if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
       {
         successtext = "Mitglied gespeichert";
       }
@@ -2593,15 +2576,11 @@ public class MitgliedControl extends FilterControl
       }
       GUI.getStatusBar().setSuccessText(successtext);
     }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
-    }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei Speichern des Mitgliedes";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler);
     }
   }
 
@@ -2767,13 +2746,13 @@ public class MitgliedControl extends FilterControl
       sort = (String) getSortierung().getValue();
     }
     ArrayList<Mitglied> list = null;
-    Adresstyp atyp = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
-    if (atyp == null)
+    Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
+    if (mt == null)
     {
       GUI.getStatusBar().setErrorText("Bitte Mitgliedstyp auswählen");
       return;
     }
-    list = new MitgliedQuery(this).get(Integer.parseInt(atyp.getID()), sort);
+    list = new MitgliedQuery(this).get(Integer.parseInt(mt.getID()), sort);
     try
     {
       String dateinamensort = "";
@@ -3029,10 +3008,10 @@ public class MitgliedControl extends FilterControl
     {
       try
       {
-        Adresstyp at = (Adresstyp) getSuchAdresstyp(Mitgliedstyp.NICHTMITGLIED).getValue();
-        if (at != null)
+        Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
+        if (mt != null)
         {
-          refreshMitgliedTable(Integer.parseInt(at.getID()));
+          refreshMitgliedTable(Integer.parseInt(mt.getID()));
         }
         else
         {

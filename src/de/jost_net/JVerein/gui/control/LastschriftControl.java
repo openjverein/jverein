@@ -29,6 +29,8 @@ import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.LastschriftMenu;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.rmi.Lastschrift;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -168,11 +170,13 @@ public class LastschriftControl extends FilterControl
         lastschriften.addFilter("mitglied.id = lastschrift.mitglied");
         if (tmpArt.equalsIgnoreCase("Mitglied"))
         {
-          lastschriften.addFilter("(adresstyp = 1)");
+          lastschriften
+              .addFilter(Mitglied.MITGLIEDSTYP + " = " + Mitgliedstyp.MITGLIED);
         }
         else if (tmpArt.equalsIgnoreCase("Nicht-Mitglied"))
         {
-          lastschriften.addFilter("(adresstyp > 1)");
+          lastschriften
+              .addFilter(Mitglied.MITGLIEDSTYP + " > " + Mitgliedstyp.MITGLIED);
         }
       }
     }
@@ -256,7 +260,8 @@ public class LastschriftControl extends FilterControl
     String text = "";
     if (getLastschrift().getKursteilnehmer() != null)
       text = "Kursteilnehmer";
-    else if (getLastschrift().getMitglied().getAdresstyp().getJVereinid() == 1)
+    else if (getLastschrift().getMitglied().getMitgliedstyp()
+        .getJVereinid() == Mitgliedstyp.MITGLIED)
       text = "Mitglied";
     else
       text = "Nicht-Mitglied";

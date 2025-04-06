@@ -25,6 +25,17 @@ import de.willuhn.util.ApplicationException;
 
 public interface Buchung extends DBObject
 {
+  public static final String TABLE_NAME = "buchung";
+
+  public static final String TABLE_NAME_ID = "buchung.id";
+
+  public static final String PRIMARY_ATTRIBUTE = "id";
+
+  public static final String SOLLBUCHUNG = "mitgliedskonto";
+
+  public static final String T_SOLLBUCHUNG = TABLE_NAME + "." + SOLLBUCHUNG;
+
+
   public void setID(String id) throws RemoteException;
 
   public Integer getUmsatzid() throws RemoteException;
@@ -105,14 +116,14 @@ public interface Buchung extends DBObject
 
   public void setAbrechnungslauf(Long abrechnungslauf) throws RemoteException;
 
-  public Mitgliedskonto getMitgliedskonto() throws RemoteException;
+  public Sollbuchung getSollbuchung() throws RemoteException;
 
-  public Long getMitgliedskontoID() throws RemoteException;
+  public Long getSollbuchungID() throws RemoteException;
 
-  public void setMitgliedskonto(Mitgliedskonto mitgliedskonto)
+  public void setSollbuchung(Sollbuchung sollbuchung)
       throws RemoteException;
 
-  public void setMitgliedskontoID(Long mitgliedskonto) throws RemoteException;
+  public void setSollbuchungID(Long sollbuchungID) throws RemoteException;
 
   public Projekt getProjekt() throws RemoteException;
 
@@ -167,5 +178,9 @@ public interface Buchung extends DBObject
   public void plausi() throws RemoteException, ApplicationException;
   
   public void store(boolean check) throws RemoteException, ApplicationException;
+
+  public Boolean getGeprueft() throws RemoteException;
+
+  public void setGeprueft(Boolean geprueft) throws RemoteException;
 
 }

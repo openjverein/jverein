@@ -43,6 +43,7 @@ import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -78,11 +79,11 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedInZwischenablageKopierenAction(), "edit-copy.png"));
     addItem(new CheckedContextMenuItem("Eigenschaften",
         new MitgliedEigenschaftZuordnungAction(), "document-properties.png"));
-    addItem(new CheckedContextMenuItem("Zusatzbeträge zuweisen",
-        new MitgliedZusatzbetraegeZuordnungAction(), "coins.png"));
+    addItem(new CheckedContextMenuItem("Zusatzbetrag zuordnen",
+        new MitgliedZusatzbetraegeZuordnungAction(), "euro-sign.png"));
     if (Einstellungen.getEinstellung().getArbeitseinsatz() && !(detailaction instanceof NichtMitgliedDetailAction))
     {
-      addItem(new CheckedContextMenuItem("Arbeitseinsätze zuweisen",
+      addItem(new CheckedContextMenuItem("Arbeitseinsatz zuordnen",
           new MitgliedArbeitseinsatzZuordnungAction(), "screwdriver.png"));
     }
     if (detailaction instanceof NichtMitgliedDetailAction)
@@ -110,7 +111,7 @@ public class MitgliedMenu extends ContextMenu
             {
               Logger.error("Fehler", e);
             }
-            m.setAdresstyp(1);
+            m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
             m.setEingabedatum();
             GUI.startView(MitgliedDetailView.class.getName(), m);
           }
@@ -146,7 +147,7 @@ public class MitgliedMenu extends ContextMenu
             {
               Logger.error("Fehler", e);
             }
-            m.setAdresstyp(2);
+            m.setMitgliedstyp(Mitgliedstyp.SPENDER);
             m.setEingabedatum();
             m.setBeitragsgruppe(null);
             m.setExterneMitgliedsnummer(null);

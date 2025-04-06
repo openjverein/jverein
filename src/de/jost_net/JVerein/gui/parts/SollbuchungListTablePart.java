@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.rmi.Mitgliedskonto;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -63,10 +63,10 @@ public class SollbuchungListTablePart extends TablePart
         summary = new String(l.size() + " Datensätze");
         for (int i = 0; i < l.size(); i++)
         {
-          Mitgliedskonto b = (Mitgliedskonto) l.get(i);
-          if (b.getBetrag() != null)
+          Sollbuchung sollb = (Sollbuchung) l.get(i);
+          if (sollb.getBetrag() != null)
           {
-            sumBetrag += b.getBetrag();
+            sumBetrag += sollb.getBetrag();
           }
         }
         summary += " / " + "Gesamtbetrag:" + " "

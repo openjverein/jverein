@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -33,6 +34,8 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SEPALandInput;
 import de.jost_net.JVerein.gui.input.SEPALandObject;
+import de.jost_net.JVerein.io.MailSender;
+import de.jost_net.JVerein.io.MailSender.IMAPCopyData;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.AfaOrt;
 import de.jost_net.JVerein.keys.Altermodel;
@@ -45,6 +48,7 @@ import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.server.EinstellungImpl;
 import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
 import de.jost_net.OBanToo.SEPA.Land.SEPALaender;
@@ -339,7 +343,11 @@ public class EinstellungControl extends AbstractControl
 
   private TextInput beitragaltersstufen;
   
+  private CheckboxInput nummeranzeigen;
+
   private CheckboxInput mittelverwendung;
+
+  private CheckboxInput projekte;
 
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
@@ -353,6 +361,8 @@ public class EinstellungControl extends AbstractControl
   private DialogInput verrechnungskonto;
 
   private CheckboxInput splitpositionzweck;
+
+  private CheckboxInput geprueftsynchronisieren;
 
   public EinstellungControl(AbstractView view)
   {
@@ -860,6 +870,19 @@ public class EinstellungControl extends AbstractControl
     return splitpositionzweck;
   }
 
+  public CheckboxInput getGeprueftSynchronisieren() throws RemoteException
+  {
+    if (geprueftsynchronisieren != null)
+    {
+      return geprueftsynchronisieren;
+    }
+    geprueftsynchronisieren = new CheckboxInput(
+        Einstellungen.getEinstellung().getGeprueftSynchronisieren());
+    geprueftsynchronisieren
+        .setName("Geprüft Markierung mit Hibiscus synchronisieren");
+    return geprueftsynchronisieren;
+  }
+
   public CheckboxInput getFreieBuchungsklasse() throws RemoteException 
   {
     if (freiebuchungsklasse != null) 
@@ -1203,6 +1226,49 @@ public class EinstellungControl extends AbstractControl
     listener.handleEvent(null); // einmal initial ausloesen
 
     return mailverzoegerung;
+  }
+
+  public void testMail()
+  {
+    IMAPCopyData imapCopyData;
+    try
+    {
+      imapCopyData = new IMAPCopyData(
+          (Boolean) getCopyToImapFolder().getValue(),
+          (String) getImapAuthUser().getValue(),
+          (String) getImapAuthPwd().getValue(),
+          (String) getImapHost().getValue(),
+          Integer.toString((Integer) getImapPort().getValue()),
+          (Boolean) getImap_ssl().getValue(),
+          (Boolean) getImap_starttls().getValue(),
+          (String) getImapSentFolder().getValue());
+
+      MailSender sender = new MailSender((String) getSmtpServer().getValue(),
+          Integer.toString((Integer) getSmtpPort().getValue()),
+          (String) getSmtpAuthUser().getValue(),
+          (String) getSmtpAuthPwd().getValue(),
+          (String) getSmtpFromAddress().getValue(),
+          (String) getSmtpFromAnzeigename().getValue(),
+          (String) getAlwaysBccTo().getValue(),
+          (String) getAlwaysCcTo().getValue(),
+          (Boolean) getSmtpSsl().getValue(),
+          (Boolean) getSmtpStarttls().getValue(),
+          (Integer) getMailVerzoegerung().getValue(), imapCopyData);
+
+      String email = (String) getSmtpFromAddress().getValue();
+
+      sender.sendMail(email, "Test",
+          "Testnachricht"
+              + Einstellungen.getEinstellung().getMailSignatur(true),
+          new TreeSet<MailAnhang>());
+      GUI.getStatusBar().setSuccessText(
+          "Testmail versendet an: " + email);
+    }
+    catch (Exception e)
+    {
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim senden der Testmail: " + e.getMessage());
+    }
   }
 
   public TextInput getAlwaysBccTo() throws RemoteException
@@ -2090,6 +2156,17 @@ public class EinstellungControl extends AbstractControl
     return afaort;
   }
 
+  public CheckboxInput getMitgliedsnummerAnzeigen() throws RemoteException
+  {
+    if (nummeranzeigen != null)
+    {
+      return nummeranzeigen;
+    }
+    nummeranzeigen = new CheckboxInput(
+        Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen());
+    return nummeranzeigen;
+  }
+
   public CheckboxInput getMittelverwendung() throws RemoteException
   {
     if (mittelverwendung != null)
@@ -2099,6 +2176,17 @@ public class EinstellungControl extends AbstractControl
     mittelverwendung = new CheckboxInput(
         Einstellungen.getEinstellung().getMittelverwendung());
     return mittelverwendung;
+  }
+
+  public CheckboxInput getProjekte() throws RemoteException
+  {
+    if (projekte != null)
+    {
+      return projekte;
+    }
+    projekte = new CheckboxInput(
+        Einstellungen.getEinstellung().getProjekteAnzeigen());
+    return projekte;
   }
 
   public void handleStoreAllgemein()
@@ -2190,7 +2278,9 @@ public class EinstellungControl extends AbstractControl
         e.setAfaInJahresabschluss(false);
       else
         e.setAfaInJahresabschluss(true);
+      e.setMitgliedsnummerAnzeigen((Boolean) nummeranzeigen.getValue());
       e.setMittelverwendung((Boolean) mittelverwendung.getValue());
+      e.setProjekteAnzeigen((Boolean) projekte.getValue());
 
       e.store();
       Einstellungen.setEinstellung(e);
@@ -2372,6 +2462,8 @@ public class EinstellungControl extends AbstractControl
       e.setOptiert((Boolean) getOptiert().getValue());
       e.setBuchungsklasseInBuchung((Boolean) getFreieBuchungsklasse().getValue());
       e.setSplitPositionZweck((Boolean) getSplitPositionZweck().getValue());
+      e.setGeprueftSynchronisieren(
+          (Boolean) getGeprueftSynchronisieren().getValue());
       e.store();
       Einstellungen.setEinstellung(e);
 

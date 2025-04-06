@@ -42,6 +42,7 @@ import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class FormularfeldControl extends FormularPartControl
 {
@@ -354,8 +355,10 @@ public class FormularfeldControl extends FormularPartControl
 
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
@@ -368,19 +371,17 @@ public class FormularfeldControl extends FormularPartControl
       f.setFont((String) getFont().getValue());
       f.setFontsize((Integer) getFontsize().getValue());
       f.store();
-      if (GUI.hasPreviousView())
-        GUI.startPreviousView();
       GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler beim Speichern des Formularfeldes";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler);
     }
     catch (Exception e)
     {
-      GUI.getStatusBar().setErrorText(e.getMessage());
+      throw new ApplicationException(e);
     }
   }
 
