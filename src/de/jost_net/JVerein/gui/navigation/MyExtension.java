@@ -173,8 +173,11 @@ public class MyExtension implements Extension
       
       mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new StartViewAction(SollbuchungListeView.class), "calculator.png"));
-      mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
-          new StartViewAction(RechnungListeView.class), "file-invoice.png"));
+      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      {
+        mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
+            new StartViewAction(RechnungListeView.class), "file-invoice.png"));
+      }
       if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
       {
         mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
@@ -303,10 +306,13 @@ public class MyExtension implements Extension
 
       NavigationItem mail = null;
       mail = new MyItem(mail, "Druck & Mail", null);
-      mail.addChild(new MyItem(mail, "Rechnungen",
-          new StartViewAction(RechnungMailView.class), "document-print.png"));
-      mail.addChild(new MyItem(mail, "Mahnungen",
-          new StartViewAction(MahnungMailView.class), "document-print.png"));
+      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      {
+        mail.addChild(new MyItem(mail, "Rechnungen",
+            new StartViewAction(RechnungMailView.class), "document-print.png"));
+        mail.addChild(new MyItem(mail, "Mahnungen",
+            new StartViewAction(MahnungMailView.class), "document-print.png"));
+      }
       mail.addChild(new MyItem(mail, "Kontoauszüge",
           new StartViewAction(KontoauszugMailView.class),
           "document-print.png"));
@@ -373,10 +379,13 @@ public class MyExtension implements Extension
           administrationEinstellungen, "Buchführung",
           new StartViewAction(EinstellungenBuchfuehrungView.class),
           "wrench.png"));
-      administrationEinstellungen
-          .addChild(new MyItem(administrationEinstellungen, "Rechnungen",
-              new StartViewAction(EinstellungenRechnungenView.class),
-              "wrench.png"));
+      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      {
+        administrationEinstellungen
+            .addChild(new MyItem(administrationEinstellungen, "Rechnungen",
+                new StartViewAction(EinstellungenRechnungenView.class),
+                "wrench.png"));
+      }
       administrationEinstellungen
           .addChild(new MyItem(administrationEinstellungen, "Mail",
               new StartViewAction(EinstellungenMailView.class), "wrench.png"));

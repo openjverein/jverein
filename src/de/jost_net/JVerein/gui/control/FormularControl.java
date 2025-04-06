@@ -119,6 +119,17 @@ public class FormularControl extends FormularPartControl
         list.remove(FormularArt.SAMMELSPENDENBESCHEINIGUNG);
       }
     }
+    if (!Einstellungen.getEinstellung().getRechnungenAnzeigen())
+    {
+      if (aktuelleFormularArt != FormularArt.RECHNUNG)
+      {
+        list.remove(FormularArt.RECHNUNG);
+      }
+      if (aktuelleFormularArt != FormularArt.MAHNUNG)
+      {
+        list.remove(FormularArt.MAHNUNG);
+      }
+    }
     art = new SelectInput(list, aktuelleFormularArt);
     return art;
   }

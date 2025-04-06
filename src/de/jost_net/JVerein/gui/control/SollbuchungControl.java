@@ -470,7 +470,10 @@ public class SollbuchungControl extends DruckMailControl
       });
       sollbuchungenList.addColumn("Zahlungseingang", Sollbuchung.ISTSUMME,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      sollbuchungenList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
+      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      {
+        sollbuchungenList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
+      }
       sollbuchungenList.setContextMenu(menu);
       sollbuchungenList.setRememberColWidths(true);
       sollbuchungenList.setRememberOrder(true);

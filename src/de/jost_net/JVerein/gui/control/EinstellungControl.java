@@ -351,6 +351,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput spendenbescheinigungen;
 
+  private CheckboxInput rechnungen;
+
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
    */
@@ -2202,6 +2204,17 @@ public class EinstellungControl extends AbstractControl
     return spendenbescheinigungen;
   }
 
+  public CheckboxInput getRechnungen() throws RemoteException
+  {
+    if (rechnungen != null)
+    {
+      return rechnungen;
+    }
+    rechnungen = new CheckboxInput(
+        Einstellungen.getEinstellung().getRechnungenAnzeigen());
+    return rechnungen;
+  }
+
   public void handleStoreAllgemein()
   {
     try
@@ -2296,6 +2309,7 @@ public class EinstellungControl extends AbstractControl
       e.setProjekteAnzeigen((Boolean) projekte.getValue());
       e.setSpendenbescheinigungenAnzeigen(
           (Boolean) spendenbescheinigungen.getValue());
+      e.setRechnungenAnzeigen((Boolean) rechnungen.getValue());
 
       e.store();
       Einstellungen.setEinstellung(e);

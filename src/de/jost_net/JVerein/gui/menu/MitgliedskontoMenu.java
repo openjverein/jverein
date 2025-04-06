@@ -54,12 +54,22 @@ public class MitgliedskontoMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
         new SollbuchungLoeschenAction(), "user-trash-full.png"));
-    addItem(new MitRechnungItem("Rechnung anzeigen",
-        new SollbuchungRechnungAction(), "file-invoice.png"));
-    addItem(new OhneRechnungItem("Rechnung(en) erstellen",
-        new RechnungNeuAction(), "file-invoice.png"));
-    addItem(new MultiItem("Gesamtrechnung erstellen",
-        new GesamtrechnungNeuAction(), "file-invoice.png"));
+    try
+    {
+      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      {
+        addItem(new MitRechnungItem("Rechnung anzeigen",
+            new SollbuchungRechnungAction(), "file-invoice.png"));
+        addItem(new OhneRechnungItem("Rechnung(en) erstellen",
+            new RechnungNeuAction(), "file-invoice.png"));
+        addItem(new MultiItem("Gesamtrechnung erstellen",
+            new GesamtrechnungNeuAction(), "file-invoice.png"));
+      }
+    }
+    catch (RemoteException e)
+    {
+      // Dann nicht anzeigen
+    }
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SollMitIstItem("Istbuchung bearbeiten",
         new IstbuchungEditAction(), "text-x-generic.png"));

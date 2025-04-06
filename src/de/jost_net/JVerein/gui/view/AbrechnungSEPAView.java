@@ -74,11 +74,14 @@ public class AbrechnungSEPAView extends AbstractView
     rigth.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
     rigth.addLabelPair("Abbuchungsausgabe", control.getAbbuchungsausgabe());
     
-    rigth.addHeadline("Rechnungen");
-    rigth.addLabelPair("Rechnung(en) erstellen²", control.getRechnung());
-    rigth.addLabelPair("Rechnung Formular", control.getRechnungFormular());
-    rigth.addLabelPair("Rechnung Text", control.getRechnungstext());
-    rigth.addLabelPair("Rechnung Datum", control.getRechnungsdatum());
+    if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+    {
+      rigth.addHeadline("Rechnungen");
+      rigth.addLabelPair("Rechnung(en) erstellen²", control.getRechnung());
+      rigth.addLabelPair("Rechnung Formular", control.getRechnungFormular());
+      rigth.addLabelPair("Rechnung Text", control.getRechnungstext());
+      rigth.addLabelPair("Rechnung Datum", control.getRechnungsdatum());
+    }
 
     group.addSeparator();
     group.addText(
