@@ -18,9 +18,14 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+
+import org.eclipse.swt.widgets.Composite;
+
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.formatter.KontoFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
@@ -33,9 +38,7 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
-import org.eclipse.swt.widgets.Composite;
-
-import java.util.ArrayList;
+import de.willuhn.logging.Logger;
 
 /**
  * Ein Dialog, ueber den man ein Konto auswaehlen kann.
@@ -66,7 +69,27 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
 
     final TablePart bu = new TablePart(buchungen, null);
     bu.addColumn("Nr", "id-int");
-    bu.addColumn("Konto", "konto", new KontoFormatter());
+    bu.addColumn("Konto", "konto", new Formatter()
+    {
+
+      @Override
+      public String format(Object o)
+      {
+        Konto k = (Konto) o;
+        if (k != null)
+        {
+          try
+          {
+            return k.getBezeichnung();
+          }
+          catch (RemoteException e)
+          {
+            Logger.error("Fehler", e);
+          }
+        }
+        return "";
+      }
+    });
     bu.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     bu.addColumn("Name", "name");
