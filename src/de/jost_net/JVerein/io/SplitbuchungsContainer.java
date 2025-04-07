@@ -62,7 +62,9 @@ public class SplitbuchungsContainer
     else
     {
       buchungen = bl;
-      text = String.format("Es werden %s Splitbuchungen erzeugt.", anzahl);
+      text = String.format(
+          "Es werden %s Splitbuchungen erzeugt.\nGeänderte Zwecke oder Kommentare in Splitpositionen werden bei allen Buchungen übernommen.",
+          anzahl);
     }
     initiate(bl[0]);
   }
