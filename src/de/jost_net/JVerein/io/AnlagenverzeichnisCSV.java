@@ -31,12 +31,14 @@ import org.supercsv.io.ICsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.AnlagenlisteControl;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AnlagenverzeichnisCSV
+public class AnlagenverzeichnisCSV implements ISaldoExport
 {
 
   private static CellProcessor[] getProcessors()
@@ -59,8 +61,9 @@ public class AnlagenverzeichnisCSV
     return processors;
   }
 
-  public AnlagenverzeichnisCSV(ArrayList<AnlagenlisteZeile> zeile,
-      final File file, Date datumvon, Date datumbis) throws ApplicationException
+  @Override
+  public void export(ArrayList<PseudoDBObject> zeilen, File file, Date datumvon,
+      Date datumbis, String titel) throws ApplicationException
   {
     ICsvMapWriter writer = null;
     try
@@ -80,62 +83,72 @@ public class AnlagenverzeichnisCSV
       csvzeile.put(header[0], subtitle);
       writer.write(csvzeile, header, processors);
 
-      for (AnlagenlisteZeile akz : zeile)
+      for (PseudoDBObject akz : zeilen)
       {
         csvzeile = new HashMap<>();
-        switch (akz.getStatus())
+        switch ((Integer) akz.getAttribute(AnlagenlisteControl.ART))
         {
-          case AnlagenlisteZeile.HEADER:
+          case AnlagenlisteControl.ART_HEADER:
           {
             csvzeile.put(header[0],
-                (String) akz.getAttribute("buchungsklassenbezeichnung"));
+                (String) akz.getAttribute(AnlagenlisteControl.GRUPPE));
             break;
           }
-          case AnlagenlisteZeile.HEADER2:
+          case AnlagenlisteControl.ART_DETAIL:
+          {
+            csvzeile.put(header[1],
+                (String) akz.getAttribute(AnlagenlisteControl.GRUPPE));
+            csvzeile.put(header[2],
+                (Integer) akz.getAttribute(AnlagenlisteControl.NUTZUNGSDAUER));
+            csvzeile.put(header[3],
+                (String) akz.getAttribute(AnlagenlisteControl.AFAART));
+            csvzeile.put(header[4],
+                (Date) akz.getAttribute(AnlagenlisteControl.ANSCHAFFUNG_DATUM));
+            csvzeile.put(header[5],
+                (Double) akz.getAttribute(AnlagenlisteControl.BETRAG));
+            csvzeile.put(header[6],
+                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT));
+            csvzeile.put(header[7],
+                (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
+            csvzeile.put(header[8],
+                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG));
+            csvzeile.put(header[9],
+                (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
+            csvzeile.put(header[10],
+                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT));
+            break;
+          }
+          case AnlagenlisteControl.ART_SALDOFOOTER:
           {
             csvzeile.put(header[0],
-                (String) akz.getAttribute("buchungsartbezeichnung"));
+                (String) akz.getAttribute(AnlagenlisteControl.GRUPPE));
+            csvzeile.put(header[6],
+                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT));
+            csvzeile.put(header[7],
+                (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
+            csvzeile.put(header[8],
+                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG));
+            csvzeile.put(header[9],
+                (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
+            csvzeile.put(header[10],
+                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT));
             break;
           }
-          case AnlagenlisteZeile.DETAIL:
-          {
-            csvzeile.put(header[1], (String) akz.getAttribute("bezeichnung"));
-            csvzeile.put(header[2], (Integer) akz.getAttribute("nutzungsdauer"));
-            csvzeile.put(header[3],(String) akz.getAttribute("afaartbezeichnung"));
-            csvzeile.put(header[4], (Date) akz.getAttribute("anschaffung"));
-            csvzeile.put(header[5], (Double) akz.getAttribute("kosten"));
-            csvzeile.put(header[6], (Double) akz.getAttribute("startwert"));
-            csvzeile.put(header[7], (Double) akz.getAttribute("zugang"));
-            csvzeile.put(header[8], (Double) akz.getAttribute("abschreibung"));
-            csvzeile.put(header[9], (Double) akz.getAttribute("abgang"));
-            csvzeile.put(header[10], (Double) akz.getAttribute("endwert"));
-            break;
-          }
-          case AnlagenlisteZeile.SALDOFOOTER:
+          case AnlagenlisteControl.ART_GESAMTSALDOFOOTER:
           {
             csvzeile.put(header[0],
-                (String) akz.getAttribute("buchungsklassenbezeichnung"));
-            csvzeile.put(header[6], (Double) akz.getAttribute("startwert"));
-            csvzeile.put(header[7], (Double) akz.getAttribute("zugang"));
-            csvzeile.put(header[8], (Double) akz.getAttribute("abschreibung"));
-            csvzeile.put(header[9], (Double) akz.getAttribute("abgang"));
-            csvzeile.put(header[10], (Double) akz.getAttribute("endwert"));
+                (String) akz.getAttribute(AnlagenlisteControl.GRUPPE));
+            csvzeile.put(header[6],
+                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT));
+            csvzeile.put(header[7],
+                (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
+            csvzeile.put(header[8],
+                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG));
+            csvzeile.put(header[9],
+                (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
+            csvzeile.put(header[10],
+                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT));
             break;
-          }
-          case AnlagenlisteZeile.GESAMTSALDOFOOTER:
-          {
-            csvzeile.put(header[0],
-                (String) akz.getAttribute("buchungsklassenbezeichnung"));
-            csvzeile.put(header[6], (Double) akz.getAttribute("startwert"));
-            csvzeile.put(header[7], (Double) akz.getAttribute("zugang"));
-            csvzeile.put(header[8], (Double) akz.getAttribute("abschreibung"));
-            csvzeile.put(header[9], (Double) akz.getAttribute("abgang"));
-            csvzeile.put(header[10], (Double) akz.getAttribute("endwert"));
-            break;
-          }
-          case AnlagenlisteZeile.UNDEFINED:
-          {
-            continue;
           }
         }
 
@@ -166,7 +179,5 @@ public class AnlagenverzeichnisCSV
         }
       }
     }
-
   }
-
 }
