@@ -19,28 +19,28 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
+
+import org.apache.commons.lang.time.DateUtils;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
-import de.jost_net.JVerein.gui.parts.KontensaldoList;
 import de.jost_net.JVerein.gui.parts.MittelverwendungFlowList;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.gui.view.JahresabschlussDetailView;
-import de.jost_net.JVerein.io.SaldoZeile;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -54,18 +54,12 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class JahresabschlussControl extends AbstractControl
+public class JahresabschlussControl extends KontensaldoControl
 {
 
   private de.willuhn.jameica.system.Settings settings;
 
   private TablePart jahresabschlussList;
-
-  private Part jahresabschlusssaldoList;
-
-  private DateInput von;
-
-  private DateInput bis;
 
   private DateInput datum;
 
@@ -81,11 +75,16 @@ public class JahresabschlussControl extends AbstractControl
 
   private DecimalInput zwanghafteweitergabe;
 
-  public JahresabschlussControl(AbstractView view)
+  private DateLabel datumvon;
+
+  private DateLabel datumbis;
+
+  public JahresabschlussControl(AbstractView view) throws RemoteException
   {
     super(view);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
+    summensaldo = false;
   }
 
   public Jahresabschluss getJahresabschluss()
@@ -100,7 +99,7 @@ public class JahresabschlussControl extends AbstractControl
         && jahresabschluss.isNewObject())
     {
       MittelverwendungFlowList list = new MittelverwendungFlowList(
-          (Date) getVon().getValue(), (Date) getBis().getValue());
+          getDatumvon().getDate(), getDatumbis().getDate());
       list.getInfo();
       jahresabschluss.setVerwendungsrueckstand(list.getRueckstandVorjahrNeu());
       jahresabschluss
@@ -109,57 +108,85 @@ public class JahresabschlussControl extends AbstractControl
     return jahresabschluss;
   }
 
-  public DateInput getVon() throws RemoteException, ParseException
+  @Override
+  public DateLabel getDatumvon()
   {
-    if (von != null)
+    if (datumvon != null)
     {
-      return von;
+      return datumvon;
     }
-    von = new DateInput(getJahresabschluss().getVon());
-    von.setEnabled(false);
-    if (getJahresabschluss().isNewObject())
+    Date d = new Date();
+    try
     {
-      von.setValue(computeVonDatum());
+      if (getJahresabschluss().isNewObject())
+      {
+        d = computeVonDatum();
+      }
+      else
+      {
+        d = getJahresabschluss().getVon();
+      }
     }
-    return von;
+    catch (ParseException | RemoteException e)
+    {
+      Logger.error("Fehler beim setzen des Startdatums", e);
+    }
+    datumvon = new DateLabel(d);
+    datumvon.disable();
+    return datumvon;
   }
 
   private Date computeVonDatum() throws RemoteException, ParseException
   {
+    // Datum des Letzten Jahresabschlusses + 1
     DBIterator<Jahresabschluss> it = Einstellungen.getDBService()
         .createList(Jahresabschluss.class);
     it.setOrder("ORDER BY bis DESC");
+    it.setLimit(1);
     if (it.hasNext())
     {
       Jahresabschluss ja = it.next();
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(ja.getBis());
-      cal.add(Calendar.DAY_OF_MONTH, 1);
-      return cal.getTime();
+      return DateUtils.addDays(ja.getBis(), 1);
     }
+
+    // Geschäftsjahres-Beging aus Datum der ersten Buchung bestimmen, wenn noch
+    // kein Jahresabschluss existiert.
     DBIterator<Buchung> itbu = Einstellungen.getDBService()
         .createList(Buchung.class);
     itbu.setOrder("ORDER BY datum");
+    itbu.setLimit(1);
     if (itbu.hasNext())
     {
       Buchung b = itbu.next();
       Geschaeftsjahr gj = new Geschaeftsjahr(b.getDatum());
       return gj.getBeginnGeschaeftsjahr();
     }
+
+    // Wenn es noch keine Buchungen gibt, nehmen wir den Beginn des aktuellen
+    // Geschäftsjahres.
     Geschaeftsjahr gj = new Geschaeftsjahr(new Date());
     return gj.getBeginnGeschaeftsjahr();
   }
 
-  public DateInput getBis() throws RemoteException, ParseException
+  @Override
+  public DateLabel getDatumbis()
   {
-    if (bis != null)
+    if (datumbis != null)
     {
-      return bis;
+      return datumbis;
     }
-    Geschaeftsjahr gj = new Geschaeftsjahr((Date) von.getValue());
-    bis = new DateInput(gj.getEndeGeschaeftsjahr());
-    bis.setEnabled(false);
-    return bis;
+    Date d = new Date();
+    try
+    {
+      Geschaeftsjahr gj = new Geschaeftsjahr(getDatumvon().getDate());
+      d = gj.getEndeGeschaeftsjahr();
+    }
+    catch (ParseException | RemoteException e)
+    {
+      Logger.error("Fehler beim setzen des Enddatums", e);
+    }
+    datumbis = new DateLabel(d);
+    return datumbis;
   }
 
   public DateInput getDatum() throws RemoteException, ParseException
@@ -212,28 +239,6 @@ public class JahresabschlussControl extends AbstractControl
     afaberechnung.setName("Erzeuge Abschreibungen");
     afaberechnung.setEnabled(getJahresabschluss().isNewObject());
     return afaberechnung;
-  }
-
-  public Part getJahresabschlussSaldo() throws RemoteException
-  {
-    if (jahresabschlusssaldoList != null)
-    {
-      return jahresabschlusssaldoList;
-    }
-    try
-    {
-      jahresabschlusssaldoList = new KontensaldoList(null,
-          new Geschaeftsjahr((Date) getVon().getValue())).getSaldoList();
-    }
-    catch (ApplicationException e)
-    {
-      throw new RemoteException(e.getMessage());
-    }
-    catch (ParseException e)
-    {
-      throw new RemoteException(e.getMessage());
-    }
-    return jahresabschlusssaldoList;
   }
 
   public DecimalInput getVerwendungsrueckstand()
@@ -293,8 +298,8 @@ public class JahresabschlussControl extends AbstractControl
     try
     {
       Jahresabschluss ja = getJahresabschluss();
-      ja.setVon((Date) getVon().getValue());
-      ja.setBis((Date) getBis().getValue());
+      ja.setVon(getDatumvon().getDate());
+      ja.setBis(getDatumbis().getDate());
       ja.setDatum((Date) getDatum().getValue());
       ja.setName((String) getName().getValue());
       ja.store();
@@ -313,10 +318,8 @@ public class JahresabschlussControl extends AbstractControl
       }
       if ((Boolean) getAnfangsbestaende().getValue())
       {
-        KontensaldoList jsl = new KontensaldoList(null,
-            new Geschaeftsjahr(ja.getVon()));
-        ArrayList<SaldoZeile> zeilen = jsl.getInfo(false);
-        for (SaldoZeile z : zeilen)
+        ArrayList<PseudoDBObject> zeilen = getList();
+        for (PseudoDBObject z : zeilen)
         {
           String ktonr = (String) z.getAttribute("kontonummer");
           if (ktonr.length() > 0)
@@ -390,21 +393,23 @@ public class JahresabschlussControl extends AbstractControl
     jahresabschlussList.sort();
   }
 
+  /**
+   * Infotext bei Fehlenden Angaben bestimmen.
+   * 
+   * @return
+   */
   public String getInfo()
   {
     String text = "";
     try
     {
-      Date vongj = (Date) getVon().getValue();
-      Date bisgj = (Date) getBis().getValue();
+      Date vongj = getDatumvon().getDate();
+      Date bisgj = getDatumbis().getDate();
       DBService service = Einstellungen.getDBService();
       DBIterator<Konto> kontenIt = service.createList(Konto.class);
-      kontenIt.addFilter("kontoart = ?",
-          new Object[] { Kontoart.ANLAGE.getKey() });
-      kontenIt.addFilter("(eroeffnung IS NULL OR eroeffnung <= ?)",
-          new Object[] { new java.sql.Date(bisgj.getTime()) });
-      kontenIt.addFilter("(aufloesung IS NULL OR aufloesung >= ?)",
-          new Object[] { new java.sql.Date(vongj.getTime()) });
+      kontenIt.addFilter("kontoart = ?", Kontoart.ANLAGE.getKey());
+      kontenIt.addFilter("(eroeffnung IS NULL OR eroeffnung <= ?)", bisgj);
+      kontenIt.addFilter("(aufloesung IS NULL OR aufloesung >= ?)", vongj);
       while (kontenIt.hasNext())
       {
         Konto konto = (Konto) kontenIt.next();
@@ -421,22 +426,23 @@ public class JahresabschlussControl extends AbstractControl
         else if (konto.getAnschaffung().after(Datum.addTage(vongj, -1))
             && konto.getAnschaffung().before(Datum.addTage(bisgj, 1)))
         {
+          ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+              "buchung");
           Double betrag = 0d;
-          DBService service2 = Einstellungen.getDBService();
-          DBIterator<Buchung> buchungenIt = service2.createList(Buchung.class);
-          buchungenIt.join("buchungsart");
-          buchungenIt.addFilter("buchungsart.id = buchung.buchungsart");
-          buchungenIt.addFilter("konto = ?", new Object[] { konto.getID() });
-          buchungenIt.addFilter("buchungsart.abschreibung = FALSE");
-          buchungenIt.addFilter("datum <= ?",
-              new Object[] { new java.sql.Date(bisgj.getTime()) });
-          while (buchungenIt.hasNext())
+          it.join("buchungsart");
+          it.addFilter("buchungsart.id = buchung.buchungsart");
+          it.addFilter("konto = ?", konto.getID());
+          it.addFilter("buchungsart.abschreibung = FALSE");
+          it.addFilter("datum <= ?", bisgj.getTime());
+          it.addColumn("sum(buchung.betrag) as summe");
+          PseudoDBObject o = it.next();
+          if (o != null)
           {
-            betrag += ((Buchung) buchungenIt.next()).getBetrag();
+            betrag = ((Number) o.getAttribute("summe")).doubleValue();
           }
           if (Math.abs(betrag - konto.getBetrag()) > Double.MIN_NORMAL)
           {
-            text = text + "Für das Anlagenkonto mit der Nummer "
+            text += "Für das Anlagenkonto mit der Nummer "
                 + konto.getNummer() + " stimmt die Summe der Buchungen ("
                 + betrag + ") nicht mit den Anschaffungskosten ("
                 + konto.getBetrag()

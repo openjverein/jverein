@@ -192,6 +192,12 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     }
     if (Einstellungen.getEinstellung().getSteuerInBuchung())
     {
+      if (getSteuer() != null
+          && !getKonto().getKontoArt().equals(Kontoart.GELD))
+      {
+        throw new ApplicationException(
+            "Steuer ist nur bei Buchungen auf Geldkonten möglich.");
+      }
       if (getSteuer() != null && getBuchungsart() != null
           && getSteuer().getBuchungsart().getArt() != getBuchungsart().getArt())
       {

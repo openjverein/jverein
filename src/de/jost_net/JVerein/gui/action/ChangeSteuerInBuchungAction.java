@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import org.eclipse.swt.SWT;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -50,11 +51,14 @@ public class ChangeSteuerInBuchungAction implements Action
         {
           try
           {
+            // Nur Buchungen auf Geldkonten können Steuern haben
             String sql = "update buchung "
                 + "set steuer = (select buchungsart.steuer from buchungsart "
                 + "where buchung.buchungsart = buchungsart.id) "
                 + "where exists (select id from buchungsart where buchungsart.id = buchung.buchungsart "
-                + "and steuer is not null)"
+                + "and steuer is not null) "
+                + "and exists (select id from konto where konto.id = buchung.konto and konot.kontoart = "
+                + Kontoart.GELD + ") "
                 + "and buchungsart is not null and steuer is null";
 
             int anzahlBuchungen = Einstellungen.getDBService()

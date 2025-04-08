@@ -1323,7 +1323,7 @@ public class BuchungsControl extends AbstractControl
           new BuchungsartFormatter());
       buchungsList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      if (Einstellungen.getEinstellung().getOptiert())
+      if (Einstellungen.getEinstellung().getOptiert() && geldkonto)
       {
         buchungsList.addColumn("Netto", "netto",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
