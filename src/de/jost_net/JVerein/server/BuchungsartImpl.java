@@ -18,11 +18,11 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.db.AbstractDBObject;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -67,9 +67,22 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
       {
         throw new ApplicationException("Nummer nicht gültig");
       }
-      if (getSteuersatz() > 0 && getSteuerBuchungsart() == null)
+      if (getSteuer() != null
+          && getSteuer().getBuchungsart().getArt() != getArt())
       {
-        throw new ApplicationException("Bitte Steuer Buchungsart auswählen.");
+        switch (getArt())
+        {
+          case ArtBuchungsart.AUSGABE:
+            throw new ApplicationException(
+                "Umsatzsteuer statt Vorsteuer gewählt.");
+          case ArtBuchungsart.EINNAHME:
+            throw new ApplicationException(
+                "Vorsteuer statt Umsatzsteuer gewählt.");
+          // Umbuchung ist bei Anlagebuchungen möglich,
+          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
+          case ArtBuchungsart.UMBUCHUNG:
+            break;
+        }
       }
     }
     catch (RemoteException e)
@@ -90,6 +103,30 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   protected Class<?> getForeignObject(String arg0)
   {
     return null;
+  }
+
+  @Override
+  public Steuer getSteuer() throws RemoteException
+  {
+    Object l = (Object) super.getAttribute("steuer");
+    if (l == null)
+    {
+      return null;
+    }
+
+    if (l instanceof Steuer)
+    {
+      return (Steuer) l;
+    }
+
+    Cache cache = Cache.get(Steuer.class, true);
+    return (Steuer) cache.get(l);
+  }
+
+  @Override
+  public void setSteuer(Steuer steuer) throws RemoteException
+  {
+    super.setAttribute("steuer", steuer);
   }
 
   @Override
@@ -191,23 +228,6 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   }
 
   @Override
-  public double getSteuersatz() throws RemoteException
-  {
-    Double i = (Double) getAttribute("steuersatz");
-    if (i == null)
-    {
-      return 0;
-    }
-    return i.doubleValue();
-  }
-
-  @Override
-  public void setSteuersatz(double steuersatz) throws RemoteException
-  {
-    setAttribute("steuersatz", steuersatz);
-  }
-
-  @Override
   public String getSuchbegriff() throws RemoteException
   {
     String s = (String) getAttribute("suchbegriff");
@@ -239,27 +259,6 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   public void setSuchbegriff(String suchbegriff) throws RemoteException
   {
     setAttribute("suchbegriff", suchbegriff);
-  }
-
-  @Override
-  public Buchungsart getSteuerBuchungsart() throws RemoteException
-  {
-    Long id = (Long) getAttribute("steuer_buchungsart");
-    if (id == null) {
-      return null;
-    }
-    else {
-      DBIterator<Buchungsart> steuer_buchungsart = Einstellungen.getDBService()
-        .createList(Buchungsart.class);
-        steuer_buchungsart.addFilter("ID = " + id);
-      return steuer_buchungsart.next();
-    }
-  }
-
-  @Override
-  public void setSteuerBuchungsart(Long steuer_buchungsart) throws RemoteException
-  {
-    setAttribute("steuer_buchungsart", steuer_buchungsart);
   }
   
   @Override
@@ -313,13 +312,13 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
       stb.append(getBezeichnung());
       return stb.toString();
     }
-    else if (fieldName.equals("steuerbuchungsart"))
-    {
-      return getSteuerBuchungsart();
-    }
     else if (fieldName.equals("buchungsklasse"))
     {
       return getBuchungsklasse();
+    }
+    else if (fieldName.equals("steuer"))
+    {
+      return getSteuer();
     }
     else
     {

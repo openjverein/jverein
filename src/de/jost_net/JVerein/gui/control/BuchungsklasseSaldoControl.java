@@ -289,8 +289,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     final boolean klasseInBuchung = Einstellungen.getEinstellung()
         .getBuchungsklasseInBuchung();
 
-    // TODO Einstellung Steuer in Buchung
-    final boolean steuerInBuchung = false;
+    final boolean steuerInBuchung = Einstellungen.getEinstellung()
+        .getSteuerInBuchung();
 
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
         "buchungsart", (JVereinDBService) Einstellungen.getDBService());

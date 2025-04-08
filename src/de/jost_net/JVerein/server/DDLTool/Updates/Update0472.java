@@ -42,6 +42,7 @@ public class Update0472 extends AbstractDDLUpdate
 
     Column buchungsart = new Column("buchungsart", COLTYPE.BIGINT, 10, null,
         true, false);
+    t.add(new Column("aktiv", COLTYPE.BOOLEAN, 1, "1", true, false));
     t.add(buchungsart);
 
     execute(createTable(t));
@@ -77,5 +78,10 @@ public class Update0472 extends AbstractDDLUpdate
 
     execute(this.createForeignKey("fkBuchungSteuer", "buchung", "steuer",
         "steuer", "id", "RESTRICT", "RESTRICT"));
+
+    // Spalte in einstellung
+    steuer = new Column("steuerinbuchung", COLTYPE.BOOLEAN, 1, "0", true,
+        false);
+    execute(addColumn("einstellung", steuer));
   }
 }

@@ -183,4 +183,10 @@ public interface Buchung extends DBObject
 
   public void setGeprueft(Boolean geprueft) throws RemoteException;
 
+  public Double getNetto() throws RemoteException;
+
+  public Steuer getSteuer() throws RemoteException;
+
+  public void setSteuer(Steuer steuer) throws RemoteException;
+
 }

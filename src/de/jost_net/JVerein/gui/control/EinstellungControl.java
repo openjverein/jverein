@@ -364,6 +364,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput geprueftsynchronisieren;
 
+  private CheckboxInput steuerInBuchung;
+
   public EinstellungControl(AbstractView view)
   {
     super(view);
@@ -857,6 +859,18 @@ public class EinstellungControl extends AbstractControl
     return optiert;
   }
   
+  public CheckboxInput getSteuerInBuchung() throws RemoteException
+  {
+    if (steuerInBuchung != null)
+    {
+      return steuerInBuchung;
+    }
+    steuerInBuchung = new CheckboxInput(
+        Einstellungen.getEinstellung().getSteuerInBuchung());
+    steuerInBuchung.setName("Steuer individuell pro Buchung setzen");
+    return steuerInBuchung;
+  }
+
   public CheckboxInput getSplitPositionZweck() throws RemoteException
   {
     if (splitpositionzweck != null)
@@ -2460,6 +2474,7 @@ public class EinstellungControl extends AbstractControl
       e.setAfaRestwert((Double) afarestwert.getValue());
       e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());
       e.setOptiert((Boolean) getOptiert().getValue());
+      e.setSteuerInBuchung((Boolean) getSteuerInBuchung().getValue());
       e.setBuchungsklasseInBuchung((Boolean) getFreieBuchungsklasse().getValue());
       e.setSplitPositionZweck((Boolean) getSplitPositionZweck().getValue());
       e.setGeprueftSynchronisieren(

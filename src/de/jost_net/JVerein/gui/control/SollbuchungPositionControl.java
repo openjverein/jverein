@@ -205,12 +205,12 @@ public class SollbuchungPositionControl extends AbstractControl
     {
       Buchungsart ba = (Buchungsart) getBuchungsart().getValue();
       pos.setBuchungsartId(Long.parseLong(ba.getID()));
-      pos.setSteuersatz(ba.getSteuersatz());
+      pos.setSteuer(ba.getSteuer());
     }
     else
     {
       pos.setBuchungsartId(null);
-      pos.setSteuersatz(0.0);
+      pos.setSteuer(null);
     }
     if (getBuchungsklasse().getValue() != null)
     {

@@ -17,8 +17,6 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.io.File;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -67,9 +65,7 @@ import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
-import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
-import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -80,6 +76,7 @@ import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
@@ -187,8 +184,6 @@ public class BuchungsControl extends AbstractControl
 
   private Buchung buchung;
 
-  private ArrayList<Buchung> dependent_buchungen;
-
   private Button sammelueberweisungButton;
 
   private BuchungQuery query;
@@ -265,6 +260,8 @@ public class BuchungsControl extends AbstractControl
   private SelectInput suchsplitbuchung;
 
   private CheckboxInput ungeprueft;
+
+  private SelectInput steuer;
   
   private enum RANGE
   {
@@ -327,53 +324,10 @@ public class BuchungsControl extends AbstractControl
     b.setArt((String) getArt().getValue());
     b.setVerzicht((Boolean) getVerzicht().getValue());
     b.setKommentar((String) getKommentar().getValue());
-  }
-
-  public ArrayList<Buchung> getDependentBuchungen() throws RemoteException
-  {
-    if (dependent_buchungen != null)
+    if (getSteuer() != null)
     {
-      return dependent_buchungen;
+      b.setSteuer((Steuer) getSteuer().getValue());
     }
-    boolean isSteuerBuchung = false;
-    // Falls noch nichts erzeugt wurde, neue Liste erzeugen und DependencyId setzen!
-    dependent_buchungen = new ArrayList<Buchung>();
-    if (getBuchung().getDependencyId() == -1)
-    {
-      Buchung new_dependent_buchung = (Buchung) Einstellungen.getDBService()
-          .createObject(Buchung.class, null);
-      getBuchung().setDependencyId(SplitbuchungsContainer.getNewDependencyId());
-      new_dependent_buchung.setDependencyId(getBuchung().getDependencyId());
-      dependent_buchungen.add(new_dependent_buchung);
-    }
-    // Falls DependencyId vorhanden ist, alle anderen Elemente mit gleicher Id raussuchen
-    // Ein Container wird nicht für die Steuerbuchungen generiert, sonst werden zugehörige
-    // Buchungen gelöscht
-    else
-    {
-      int pos_b = SplitbuchungsContainer.get().indexOf(getBuchung());
-      Double buchungBetrag = Math.abs(getBuchung().getBetrag());
-      for (Buchung b_tmp : SplitbuchungsContainer.get())
-      {
-        if (b_tmp.getDependencyId() == getBuchung().getDependencyId() && 
-            SplitbuchungsContainer.get().indexOf(b_tmp) != pos_b)
-        {
-          if (Math.abs(b_tmp.getBetrag()) > buchungBetrag)
-          {
-            // Das ist eine Steuerbuchung
-            isSteuerBuchung = true;
-            dependent_buchungen = new ArrayList<Buchung>();
-            break;
-          }
-          dependent_buchungen.add(b_tmp);
-        }
-      }
-    }
-    if (dependent_buchungen.size() == 0 && !isSteuerBuchung)
-    {
-      throw new RemoteException("Buchungen mit Id " + getBuchung().getDependencyId() + " konnten nicht gefunden werden!");
-    }
-    return dependent_buchungen;
   }
 
   public Input getID() throws RemoteException
@@ -680,6 +634,19 @@ public class BuchungsControl extends AbstractControl
         }
       }
     });
+    buchungsart.addListener(e -> {
+      if (steuer != null && buchungsart.getValue() != null)
+      {
+        try
+        {
+          steuer.setValue(((Buchungsart) buchungsart.getValue()).getSteuer());
+        }
+        catch (RemoteException e1)
+        {
+          Logger.error("Fehler", e1);
+        }
+      }
+    });
     return buchungsart;
   }
   
@@ -894,6 +861,37 @@ public class BuchungsControl extends AbstractControl
     return suchbuchungsart;
   }
 
+  public SelectInput getSteuer() throws RemoteException
+  {
+    if (steuer != null)
+    {
+      return steuer;
+    }
+    DBIterator<Steuer> it = Einstellungen.getDBService()
+        .createList(Steuer.class);
+    String steuerId = "0";
+    if (getBuchung().getSteuer() != null)
+    {
+      steuerId = getBuchung().getSteuer().getID();
+    }
+    String steuerBuchunsartId = "0";
+    if (getBuchung().getBuchungsart() != null
+        && getBuchung().getBuchungsart().getSteuer() != null)
+    {
+      steuerBuchunsartId = getBuchung().getBuchungsart().getSteuer().getID();
+    }
+    it.addFilter("aktiv = true or id = ? or id = ?", steuerId,
+        steuerBuchunsartId);
+
+    steuer = new SelectInput(PseudoIterator.asList(it),
+        getBuchung().getSteuer());
+
+    steuer.setAttribute("name");
+    steuer.setPleaseChoose("keine Steuer");
+
+    return steuer;
+  }
+
   public DateInput getVondatum()
   {
     if (vondatum != null)
@@ -1057,56 +1055,6 @@ public class BuchungsControl extends AbstractControl
       else
       {
         b.plausi();
-        Buchungsart b_art = b.getBuchungsart();
-        // Keine Steuer Buchungen erzeugen beim Speichern einer Haupt- bzw. Gegenbuchung
-        if (b.getSplitTyp() == SplitbuchungTyp.SPLIT && b_art.getSteuersatz() > 0)
-        {
-          Buchung b_steuer = getDependentBuchungen().get(0);     
-          fillBuchung(b_steuer);
-
-          BigDecimal steuer = new BigDecimal(
-            Double.toString(b.getBetrag() * b_art.getSteuersatz() / 100))
-            .setScale(2, RoundingMode.HALF_UP);
-          String zweck_postfix = " - " + SteuersatzBuchungsart.get(b_art.getSteuersatz());
-          switch (b_art.getArt()) {
-            case ArtBuchungsart.AUSGABE:
-              zweck_postfix += " VSt.";
-              break;
-            case ArtBuchungsart.EINNAHME:
-              zweck_postfix += " MwSt.";
-              break;
-            default:
-              zweck_postfix += " USt.";
-              break;
-          }
-          
-          b_steuer.setSollbuchungID(b.getSollbuchungID());
-          b_steuer.setBuchungsartId(Long.valueOf(b_art.getSteuerBuchungsart().getID()));
-          b_steuer.setBuchungsklasseId(b_art.getBuchungsklasseId());
-          b_steuer.setBetrag(steuer.doubleValue());
-          b_steuer.setZweck(b.getZweck() + zweck_postfix);
-          b_steuer.setSplitId(b.getSplitId());
-          b_steuer.setSplitTyp(SplitbuchungTyp.SPLIT);
-          
-          SplitbuchungsContainer.add(b);
-          SplitbuchungsContainer.add(b_steuer);
-        }
-        else
-        {
-          // Falls vorher abhängige Buchungen erzeugt wurden, nun dies aber durch ändern der Buchungsart o.ä. aufgehoben wird, 
-          // alle abhängigen Buchungen löschen und Abhängigkeit resetten
-          if (b.getDependencyId() != -1 && getDependentBuchungen().size() > 0)
-          {
-            for (Buchung b_tmp : getDependentBuchungen()) {
-              b_tmp.setDependencyId(-1);
-              b_tmp.setDelete(true);
-            }
-            b.setDependencyId(-1);
-          }
-          SplitbuchungsContainer.add(b);
-        }
-       
-        refreshSplitbuchungen();
         GUI.getStatusBar().setSuccessText("Buchung übernommen");
       }
     }
@@ -1371,6 +1319,29 @@ public class BuchungsControl extends AbstractControl
           new BuchungsartFormatter());
       buchungsList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      if (Einstellungen.getEinstellung().getOptiert())
+      {
+        buchungsList.addColumn("Netto", "netto",
+            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        if (Einstellungen.getEinstellung().getSteuerInBuchung())
+        {
+          buchungsList.addColumn("Steuer", "steuer", o -> {
+            if (o == null)
+            {
+              return "";
+            }
+            try
+            {
+              return ((Steuer) o).getName();
+            }
+            catch (RemoteException e)
+            {
+              Logger.error("Fehler", e);
+            }
+            return "";
+          }, false, Column.ALIGN_RIGHT);
+        }
+      }
       if (geldkonto)
         buchungsList.addColumn(new Column(Buchung.SOLLBUCHUNG, "Mitglied",
           new SollbuchungFormatter(), false, Column.ALIGN_AUTO,
@@ -1456,6 +1427,29 @@ public class BuchungsControl extends AbstractControl
           new BuchungsartFormatter());
       splitbuchungsList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      if (Einstellungen.getEinstellung().getOptiert())
+      {
+        splitbuchungsList.addColumn("Netto", "netto",
+            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+        if (Einstellungen.getEinstellung().getSteuerInBuchung())
+        {
+          splitbuchungsList.addColumn("Steuer", "steuer", o -> {
+            if (o == null)
+            {
+              return "";
+            }
+            try
+            {
+              return ((Steuer) o).getName();
+            }
+            catch (RemoteException e)
+            {
+              Logger.error("Fehler", e);
+            }
+            return "";
+          }, false, Column.ALIGN_RIGHT);
+        }
+      }
       splitbuchungsList.addColumn("Mitglied", Buchung.SOLLBUCHUNG,
           new SollbuchungFormatter());
       if (Einstellungen.getEinstellung().getProjekteAnzeigen())
