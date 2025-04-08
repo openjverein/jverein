@@ -16,227 +16,380 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Date;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
-
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.parts.AbstractSaldoList;
-import de.jost_net.JVerein.gui.parts.BuchungsklasseSaldoList;
-import de.jost_net.JVerein.gui.parts.MittelverwendungFlowSaldoList;
-import de.jost_net.JVerein.gui.view.BuchungsklasseSaldoView;
-import de.jost_net.JVerein.gui.view.MittelverwendungSaldoView;
-import de.jost_net.JVerein.io.BuchungsklasseSaldoZeile;
 import de.jost_net.JVerein.io.BuchungsklassesaldoCSV;
 import de.jost_net.JVerein.io.BuchungsklassesaldoPDF;
-import de.jost_net.JVerein.util.Dateiname;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.io.ISaldoExport;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.rmi.JVereinDBService;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
-import de.willuhn.jameica.system.Settings;
+import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
+import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
-public class BuchungsklasseSaldoControl extends SaldoControl
+public class BuchungsklasseSaldoControl extends AbstractSaldoControl
 {
+  /**
+   * Die Art der Buchung: Einnahme (0), Ausgabe (1), Umbuchung (2)
+   */
+  protected static final String ARTBUCHUNGSART = "art";
 
-  private AbstractSaldoList saldoList;
+  /**
+   * Die Summe, bei optiernenden Vereinen die Nettosumme + Steuern auf der
+   * Steuerbuchungsart
+   */
+  protected static final String SUMME = "summe";
 
-  private boolean umbuchung = true;
+  /**
+   * Anzahl Buchungen
+   */
+  public static final String ANZAHL = "anzahl";
 
-  final static String AuswertungPDF = "PDF";
+  /**
+   * true wenn Steuern verwendet werden sollen
+   */
+  protected boolean mitSteuer;
 
-  final static String AuswertungCSV = "CSV";
+  private TablePart saldoList;
 
-  public BuchungsklasseSaldoControl(AbstractView view)
+  protected boolean mitUmbuchung;
+
+  public BuchungsklasseSaldoControl(AbstractView view) throws RemoteException
   {
     super(view);
+    mitSteuer = Einstellungen.getEinstellung().getOptiert();
+    mitUmbuchung = true;
   }
 
-  public Button getStartAuswertungButton()
-  {
-    Button b = new Button("PDF", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        starteAuswertung(AuswertungPDF);
-      }
-    }, null, false, "file-pdf.png");
-    // button
-    return b;
-  }
-
-  public Button getStartAuswertungCSVButton()
-  {
-    Button b = new Button("CSV", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        starteAuswertung(AuswertungCSV);
-      }
-    }, null, false, "xsd.png");
-    // button
-    return b;
-  }
-
-  public void handleStore()
-  {
-    //
-  }
-
-  public Part getSaldoList() throws ApplicationException
+  @Override
+  public TablePart getSaldoList() throws ApplicationException
   {
     try
     {
-      if (getDatumvon().getDate() != null)
+      if (saldoList != null)
       {
-        settings.setAttribute("von",
-            new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
-        settings.setAttribute("bis",
-            new JVDateFormatTTMMJJJJ().format(getDatumbis().getDate()));
+        return saldoList;
       }
-
-      if (saldoList == null)
+      saldoList = new TablePart(getList(), null)
       {
-        if (view instanceof BuchungsklasseSaldoView)
+        // Sortieren verhindern
+        @Override
+        protected void orderBy(int index)
         {
-          saldoList = new BuchungsklasseSaldoList(null, datumvon.getDate(),
-              datumbis.getDate());
+          return;
         }
-        else if (view instanceof MittelverwendungSaldoView)
-        {
-          saldoList = new MittelverwendungFlowSaldoList(null, datumvon.getDate(),
-              datumbis.getDate());
-        }
-      }
-      else
-      {
-        settings.setAttribute("von",
-            new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
-
-        saldoList.setDatumvon(datumvon.getDate());
-        saldoList.setDatumbis(datumbis.getDate());
-        ArrayList<BuchungsklasseSaldoZeile> zeile = saldoList.getInfo();
-        saldoList.removeAll();
-        for (BuchungsklasseSaldoZeile sz : zeile)
-        {
-          saldoList.addItem(sz);
-        }
-      }
+      };
+      saldoList.addColumn("Buchungsklasse", GRUPPE, null,
+          false);
+      saldoList.addColumn("Buchungsart", BUCHUNGSART);
+      saldoList.addColumn("Einnahmen", EINNAHMEN,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      saldoList.addColumn("Ausgaben", AUSGABEN,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      saldoList.addColumn("Umbuchungen", UMBUCHUNGEN,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      saldoList.addColumn("Anzahl", ANZAHL);
+      saldoList.setRememberColWidths(true);
+      saldoList.removeFeature(FeatureSummary.class);
+      return saldoList;
     }
     catch (RemoteException e)
     {
       throw new ApplicationException(
           String.format("Fehler aufgetreten %s", e.getMessage()));
     }
-    return saldoList.getSaldoList();
   }
 
-  // THL pdf cvs umschalter
-  private void starteAuswertung(String type) throws ApplicationException
+  @Override
+  public ArrayList<PseudoDBObject> getList() throws RemoteException
   {
-    try
+    ExtendedDBIterator<PseudoDBObject> it = getIterator();
+
+    ArrayList<PseudoDBObject> zeilen = new ArrayList<>();
+
+    String klasseAlt = null;
+
+    // Summen der Buchungsklasse
+    Double einnahmenSumme = 0d;
+    Double ausgabenSumme = 0d;
+    Double umbuchungenSumme = 0d;
+
+    // Summen aller Buchungsklassen
+    Double einnahmenGesamt = 0d;
+    Double ausgabenGesamt = 0d;
+    Double umbuchungenGesamt = 0d;
+
+    while (it.hasNext())
     {
-      String title = "-";
-      if (view instanceof BuchungsklasseSaldoView)
+      PseudoDBObject o = it.next();
+
+      String klasse = (String) o.getAttribute(BUCHUNGSKLASSE);
+      if (klasse == null)
       {
-        title = "Buchungsklassen-Saldo";
-        umbuchung = true;
+        klasse = "Nicht zugeordnet";
       }
-      else if (view instanceof MittelverwendungSaldoView)
+      // Die Art der Buchungsart: Einnahme, Ausgabe, Umbuchung
+      Integer art = ((Number) o.getAttribute(ARTBUCHUNGSART)).intValue();
+      Double summe = ((Number) o.getAttribute(SUMME)).doubleValue();
+
+      // Wenn es "einnahmen" oder "ausgaben" spalten gibt, nehmen wir die Werte
+      // direkt.
+      Double einnahmen = o.getAttribute(EINNAHMEN) == null ? null
+          : ((Number) o.getAttribute(EINNAHMEN)).doubleValue();
+      Double ausgaben = o.getAttribute(AUSGABEN) == null ? null
+          : ((Number) o.getAttribute(AUSGABEN)).doubleValue();
+
+      // Vor neuer Klasse Saldo der letzten anzeigen.
+      if (!klasse.equals(klasseAlt) && klasseAlt != null)
       {
-        title = "Mittelverwendung-Saldo";
-        umbuchung = false;
-      }
-      ArrayList<BuchungsklasseSaldoZeile> zeile = saldoList.getInfo();
+        PseudoDBObject saldo = new PseudoDBObject();
+        saldo.setAttribute(ART, ART_SALDOFOOTER);
+        saldo.setAttribute(GRUPPE, "Saldo " + klasseAlt);
+        saldo.setAttribute(EINNAHMEN, einnahmenSumme);
+        saldo.setAttribute(AUSGABEN, ausgabenSumme);
+        saldo.setAttribute(UMBUCHUNGEN, umbuchungenSumme);
+        zeilen.add(saldo);
 
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-      //
-      Settings settings = new Settings(this.getClass());
-      //
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
+        PseudoDBObject saldogv = new PseudoDBObject();
+        saldogv.setAttribute(ART, ART_SALDOGEWINNVERLUST);
+        saldogv.setAttribute(GRUPPE, "Gewinn/Verlust " + klasseAlt);
+        saldogv.setAttribute(EINNAHMEN,
+            einnahmenSumme + ausgabenSumme + umbuchungenSumme);
+        zeilen.add(saldogv);
+
+        einnahmenSumme = 0d;
+        ausgabenSumme = 0d;
+        umbuchungenSumme = 0d;
+      }
+
+      Double umbuchungen = 0d;
+      switch (art)
       {
-        fd.setFilterPath(path);
+        case ArtBuchungsart.EINNAHME:
+          if (einnahmen == null)
+          {
+            einnahmen = summe;
+            o.setAttribute(EINNAHMEN, einnahmen);
+          }
+          einnahmenSumme += einnahmen;
+          einnahmenGesamt += einnahmen;
+          break;
+        case ArtBuchungsart.AUSGABE:
+          if (ausgaben == null)
+          {
+            ausgaben = summe;
+            o.setAttribute(AUSGABEN, ausgaben);
+          }
+          ausgabenSumme += ausgaben;
+          ausgabenGesamt += ausgaben;
+          break;
+        case ArtBuchungsart.UMBUCHUNG:
+          umbuchungen = summe;
+          umbuchungenSumme += umbuchungen;
+          umbuchungenGesamt += umbuchungen;
+          o.setAttribute(UMBUCHUNGEN, umbuchungen);
+          break;
       }
-      fd.setFileName(new Dateiname(title, "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), type).get());
 
-      final String s = fd.open();
-
-      if (s == null || s.length() == 0)
+      // Bei neuer Klasse Kopfzeile anzeigen.
+      if (!klasse.equals(klasseAlt))
       {
-        return;
+        PseudoDBObject head = new PseudoDBObject();
+        head.setAttribute(ART, ART_HEADER);
+        head.setAttribute(GRUPPE, klasse);
+        zeilen.add(head);
+        klasseAlt = klasse;
       }
-
-      final File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
-
-      auswertungSaldo(zeile, file, getDatumvon().getDate(),
-          getDatumbis().getDate(), type, title);
+      // Die Detailzeile wie sie aus dem iterator kommt azeigen.
+      o.setAttribute(ART, ART_DETAIL);
+      zeilen.add(o);
     }
-    catch (RemoteException e)
+
+    // Am Ende noch Saldo der letzten Klasse.
+    // (Nur wenn auch Buchungsklassen existieren)
+    if (klasseAlt != null)
     {
-      throw new ApplicationException(
-          String.format("Fehler beim Aufbau des Reports: %s", e.getMessage()));
+      PseudoDBObject saldo = new PseudoDBObject();
+      saldo.setAttribute(ART, ART_SALDOFOOTER);
+      saldo.setAttribute(GRUPPE, "Saldo " + klasseAlt);
+      saldo.setAttribute(EINNAHMEN, einnahmenSumme);
+      saldo.setAttribute(AUSGABEN, ausgabenSumme);
+      saldo.setAttribute(UMBUCHUNGEN, umbuchungenSumme);
+      zeilen.add(saldo);
+
+      PseudoDBObject saldogv = new PseudoDBObject();
+      saldogv.setAttribute(ART, ART_SALDOGEWINNVERLUST);
+      saldogv.setAttribute(GRUPPE, "Gewinn/Verlust " + klasseAlt);
+      saldogv.setAttribute(EINNAHMEN,
+          einnahmenSumme + ausgabenSumme + umbuchungenSumme);
+      zeilen.add(saldogv);
     }
+
+    PseudoDBObject saldo = new PseudoDBObject();
+    saldo.setAttribute(ART, ART_GESAMTSALDOFOOTER);
+    saldo.setAttribute(GRUPPE, "Gesamt Saldo");
+    saldo.setAttribute(EINNAHMEN, einnahmenGesamt);
+    saldo.setAttribute(AUSGABEN, ausgabenGesamt);
+    saldo.setAttribute(UMBUCHUNGEN, umbuchungenGesamt);
+    zeilen.add(saldo);
+
+    PseudoDBObject saldogv = new PseudoDBObject();
+    saldogv.setAttribute(ART, ART_GESAMTGEWINNVERLUST);
+    saldogv.setAttribute(GRUPPE, "Gesamt Gewinn/Verlust");
+    saldogv.setAttribute(EINNAHMEN,
+        einnahmenGesamt + ausgabenGesamt + umbuchungenGesamt);
+    zeilen.add(saldogv);
+
+    // Ggf. die Anzahl nicht zugeordneter Buchungen anzeigen.
+    // (Geht nicht mit im oberen Query, da MySQL und H2 kein FULL JOIN
+    // unterstützen)
+    ExtendedDBIterator<PseudoDBObject> anzahlIt = new ExtendedDBIterator<>(
+        "buchung", (JVereinDBService) Einstellungen.getDBService());
+    anzahlIt.addColumn("count(*) AS anzahl");
+    anzahlIt.addFilter("buchungsart IS NULL");
+    anzahlIt.addFilter("datum >= ?", getDatumvon().getDate());
+    anzahlIt.addFilter("datum <= ?", getDatumbis().getDate());
+
+    PseudoDBObject oAnz = anzahlIt.next();
+    Integer anzahl = ((Number) oAnz.getAttribute("anzahl")).intValue();
+    if (anzahl > 0)
+    {
+      PseudoDBObject ohneBuchungsart = new PseudoDBObject();
+      ohneBuchungsart.setAttribute(ART,
+          AbstractSaldoControl.ART_NICHTZUGEORDNETEBUCHUNGEN);
+      ohneBuchungsart.setAttribute(GRUPPE, "Anzahl Buchungen ohne Buchungsart");
+      ohneBuchungsart.setAttribute(ANZAHL, anzahl);
+      zeilen.add(ohneBuchungsart);
+    }
+    return zeilen;
   }
 
-  private void auswertungSaldo(final ArrayList<BuchungsklasseSaldoZeile> zeile,
-      final File file, final Date datumvon, final Date datumbis,
-      final String type, String title)
+  /**
+   * Holt den Iterator, auf dessen Basis die Salodliste erstellt wird.
+   * 
+   * @return der Iterator
+   * @throws RemoteException
+   */
+  protected ExtendedDBIterator<PseudoDBObject> getIterator()
+      throws RemoteException
   {
-    BackgroundTask t = new BackgroundTask()
+    final boolean unterdrueckung = Einstellungen.getEinstellung()
+        .getUnterdrueckungOhneBuchung();
+
+    final boolean klasseInBuchung = Einstellungen.getEinstellung()
+        .getBuchungsklasseInBuchung();
+
+    // TODO Einstellung Steuer in Buchung
+    final boolean steuerInBuchung = false;
+
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+        "buchungsart", (JVereinDBService) Einstellungen.getDBService());
+    it.addColumn("buchungsklasse.bezeichnung as " + BUCHUNGSKLASSE);
+    it.addColumn("buchungsart.bezeichnung as " + BUCHUNGSART);
+    it.addColumn("buchungsart.art as " + ARTBUCHUNGSART);
+    it.addColumn("COUNT(buchung.id) as " + ANZAHL);
+
+    if (mitSteuer)
     {
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
-      {
-        try
-        {
-          if (type.equals(AuswertungCSV))
-          {
-            new BuchungsklassesaldoCSV(zeile, file, datumvon, datumbis, umbuchung);
-          }
-          else if (type.equals(AuswertungPDF))
-          {
-            new BuchungsklassesaldoPDF(zeile, file, datumvon, datumbis, title,
-                umbuchung);
-          }
-          GUI.getCurrentView().reload();
-        }
-        catch (ApplicationException ae)
-        {
-          GUI.getStatusBar().setErrorText(ae.getMessage());
-          throw ae;
-        }
-      }
+      // Nettobetrag berechnen und steuerbetrag der Steuerbuchungsart
+      // hinzurechnen
+      it.addColumn(
+          "COALESCE(SUM(CAST(buchung.betrag * 100 / (100 + COALESCE(steuer.satz,0)) AS DECIMAL(10,2))),0)"
+              + " + COALESCE(st.steuerbetrag,0) AS " + SUMME);
+    }
+    else
+    {
+      it.addColumn("SUM(buchung.betrag) AS " + SUMME);
+    }
 
-      @Override
-      public void interrupt()
-      {
-        //
-      }
+    it.leftJoin("buchung",
+        "buchung.buchungsart = buchungsart.id AND datum >= ? AND datum <= ?",
+        getDatumvon().getDate(), getDatumbis().getDate());
+    it.leftJoin("konto", "buchung.konto = konto.id and konto.kontoart < ?",
+        Kontoart.LIMIT.getKey());
+    if (steuerInBuchung)
+    {
+      it.leftJoin("steuer", "steuer.id = buchung.steuer");
+    }
+    else
+    {
+      it.leftJoin("steuer", "steuer.id = buchungsart.steuer");
+    }
+    if (klasseInBuchung)
+    {
+      it.leftJoin("buchungsklasse",
+          "buchungsklasse.id = buchung.buchungsklasse");
+    }
+    else
+    {
+      it.leftJoin("buchungsklasse",
+          "buchungsklasse.id = buchungsart.buchungsklasse ");
+    }
+    it.addGroupBy("buchungsart.buchungsklasse");
+    it.addGroupBy("buchungsart.id");
+    // Ggf. Buchungsarten ausblenden
+    if (unterdrueckung)
+    {
+      it.addHaving("ABS(" + SUMME + ") >= 0.01");
+    }
+    it.setOrder(
+        "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC ");
 
-      @Override
-      public boolean isInterrupted()
+    // Für die Steuerbträge auf der Steuerbuchungsart machen wir ein Subselect
+    if (mitSteuer)
+    {
+      String subselect = "(SELECT buchungsart.id, "
+          + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag "
+          + " FROM buchung"
+          + " JOIN konto on buchung.konto = konto.id and konto.kontoart < ? ";
+
+      // Wenn die Steuer in der Buchung steht, können wir sie direkt nehmen,
+      // sonst müssen wir den Umweg über die Buchungsart nehmen.
+      if (steuerInBuchung)
       {
-        return false;
+        subselect += " JOIN steuer ON steuer.id = buchung.steuer ";
       }
-    };
-    Application.getController().start(t);
+      else
+      {
+        subselect += " JOIN buchungsart AS buchungbuchungsart ON buchung.buchungsart = buchungbuchungsart.id "
+            + " JOIN steuer ON steuer.id = buchungbuchungsart.steuer ";
+      }
+      subselect += " JOIN buchungsart ON steuer.buchungsart = buchungsart.id "
+          + " WHERE datum >= ? and datum <= ? "
+          + " GROUP BY buchungsart.id) AS st ";
+      it.leftJoin(subselect, "st.id = buchungsart.id ", Kontoart.LIMIT.getKey(),
+          getDatumvon().getDate(), getDatumbis().getDate());
+    }
+    return it;
   }
 
+  @Override
+  protected String getAuswertungTitle()
+  {
+    return "Buchungsklassen-Saldo";
+  }
+
+  @Override
+  protected ISaldoExport getAuswertung(String type) throws ApplicationException
+  {
+    switch (type)
+    {
+      case AuswertungCSV:
+        return new BuchungsklassesaldoCSV(mitUmbuchung);
+      case AuswertungPDF:
+        return new BuchungsklassesaldoPDF(mitUmbuchung);
+      default:
+        throw new ApplicationException("Ausgabetyp nicht implementiert");
+    }
+  }
 }

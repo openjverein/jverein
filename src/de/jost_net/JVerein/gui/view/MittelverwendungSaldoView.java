@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.BuchungsklasseSaldoControl;
+import de.jost_net.JVerein.gui.control.MittelverwendungFlowSaldoControl;
 import de.jost_net.JVerein.gui.parts.QuickAccessPart;
 import de.jost_net.JVerein.gui.parts.VonBisPart;
 import de.willuhn.jameica.gui.AbstractView;
@@ -32,7 +32,7 @@ public class MittelverwendungSaldoView extends AbstractView
   {
     GUI.getView().setTitle("Mittelverwendungsaldo");
 
-    final BuchungsklasseSaldoControl control = new BuchungsklasseSaldoControl(
+    final MittelverwendungFlowSaldoControl control = new MittelverwendungFlowSaldoControl(
         this);
   
     VonBisPart vpart = new VonBisPart(control, true);
@@ -48,7 +48,7 @@ public class MittelverwendungSaldoView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITTELVERWENDUNGSALDO, false, "question-circle.png");
     buttons.addButton(control.getStartAuswertungCSVButton());
-    buttons.addButton(control.getStartAuswertungButton());
+    buttons.addButton(control.getStartAuswertungPDFButton());
     buttons.paint(this.getParent());
   }
 }
