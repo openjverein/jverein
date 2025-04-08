@@ -54,6 +54,6 @@ public class Update0472 extends AbstractDDLUpdate
     execute("update mitglied set ktoipersonenart = 'J' where ktoipersonenart = 'j'");
     execute("update mitglied set ktoipersonenart = 'N' where ktoipersonenart = 'n'");
     execute("update mitglied set mandatid = '' where mandatid is null");
-    execute("update mitglied set ktoistaat = '' where ktoistaat is null");
+    execute("update mitglied set staat = '' where staat is null");
   }
 }

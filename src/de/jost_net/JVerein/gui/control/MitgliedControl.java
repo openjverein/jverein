@@ -3083,11 +3083,14 @@ public class MitgliedControl extends FilterControl
   public boolean hasChanged() throws RemoteException
   {
     // Zusatzfelder testen
-    for (Input i : zusatzfelder)
+    if (zusatzfelder != null)
     {
-      if (i.getValue() != null && !i.getValue().equals(i.getData("old")))
+      for (Input i : zusatzfelder)
       {
-        return true;
+        if (i.getValue() != null && !i.getValue().equals(i.getData("old")))
+        {
+          return true;
+        }
       }
     }
 
