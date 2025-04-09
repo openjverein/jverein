@@ -62,9 +62,9 @@ public class BuchungMenu extends ContextMenu
     boolean geldkonto = control.getGeldkonto();
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new BuchungAction(false), "text-x-generic.png"));
-    addItem(new GeprueftBuchungItem("als \"geprüft\" markieren",
+    addItem(new GeprueftBuchungItem("Als \"geprüft\" markieren",
         new BuchungGeprueftAction(true), "emblem-default.png", false));
-    addItem(new GeprueftBuchungItem("als \"ungeprüft\" markieren",
+    addItem(new GeprueftBuchungItem("Als \"ungeprüft\" markieren",
         new BuchungGeprueftAction(false), "edit-undo.png", true));
     addItem(new SingleBuchungItem("Duplizieren", new BuchungDuplizierenAction(),
         "edit-copy.png"));

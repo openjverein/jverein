@@ -254,7 +254,7 @@ public class MyExtension implements Extension
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendung",
             new StartViewAction(MittelverwendungReportView.class),
             "gnome-session-switch.png"));
-        buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendungsaldo",
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendungssaldo",
             new StartViewAction(MittelverwendungSaldoView.class),
             "gnome-session-switch.png"));
       }
