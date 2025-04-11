@@ -1167,6 +1167,10 @@ public class BuchungsControl extends AbstractControl
   {
     try
     {
+      if (!Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        return null;
+      }
       Projekt projekt = (Projekt) getProjekt().getValue();
       if (null == projekt)
         return null;
