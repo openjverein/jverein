@@ -79,17 +79,17 @@ public class Update0472 extends AbstractDDLUpdate
     execute(this.createForeignKey("fkBuchungSteuer", "buchung", "steuer",
         "steuer", "id", "RESTRICT", "RESTRICT"));
 
-    // Spalte steuer in sollbuchungsposition
+    // Spalte steuer in sollbuchungposition
     steuer = new Column("steuer", COLTYPE.BIGINT, 0, null, false, false);
-    execute(addColumn("sollbuchungsposition", steuer));
+    execute(addColumn("sollbuchungposition", steuer));
 
-    // Index und ForeignKey in sollbuchungsposition
-    idx = new Index("ixSollbuchungspositionSteuer", false);
+    // Index und ForeignKey in sollbuchungposition
+    idx = new Index("ixSollbuchungpositionSteuer", false);
     idx.add(steuer);
-    execute(idx.getCreateIndex("sollbuchungsposition"));
+    execute(idx.getCreateIndex("sollbuchungposition"));
 
-    execute(this.createForeignKey("fkSollbuchungspositionSteuer",
-        "sollbuchungsposition", "steuer", "steuer", "id", "RESTRICT",
+    execute(this.createForeignKey("fkSollbuchungpositionSteuer",
+        "sollbuchungposition", "steuer", "steuer", "id", "RESTRICT",
         "RESTRICT"));
 
     // Spalte in einstellung

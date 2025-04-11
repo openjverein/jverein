@@ -31,6 +31,7 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class BuchungsklasseSaldoControl extends AbstractSaldoControl
@@ -138,7 +139,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         klasse = "Nicht zugeordnet";
       }
       // Die Art der Buchungsart: Einnahme, Ausgabe, Umbuchung
-      Integer art = ((Number) o.getAttribute(ARTBUCHUNGSART)).intValue();
+      Integer art = o.getAttribute(ARTBUCHUNGSART) == null ? -1
+          : ((Number) o.getAttribute(ARTBUCHUNGSART)).intValue();
       Double summe = ((Number) o.getAttribute(SUMME)).doubleValue();
 
       // Wenn es "einnahmen" oder "ausgaben" spalten gibt, nehmen wir die Werte
@@ -197,6 +199,9 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           umbuchungenSumme += umbuchungen;
           umbuchungenGesamt += umbuchungen;
           o.setAttribute(UMBUCHUNGEN, umbuchungen);
+          break;
+        default:
+          Logger.warn("Buchungsart Art nicht definiert");
           break;
       }
 
@@ -260,7 +265,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     anzahlIt.addFilter("datum <= ?", getDatumbis().getDate());
 
     PseudoDBObject oAnz = anzahlIt.next();
-    Integer anzahl = ((Number) oAnz.getAttribute("anzahl")).intValue();
+    Integer anzahl = oAnz.getAttribute("anzahl") == null ? 0
+        : ((Number) oAnz.getAttribute("anzahl")).intValue();
     if (anzahl > 0)
     {
       PseudoDBObject ohneBuchungsart = new PseudoDBObject();
@@ -328,13 +334,14 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     {
       it.leftJoin("buchungsklasse",
           "buchungsklasse.id = buchung.buchungsklasse");
+      it.addGroupBy("buchung.buchungsklasse");
     }
     else
     {
       it.leftJoin("buchungsklasse",
           "buchungsklasse.id = buchungsart.buchungsklasse ");
+      it.addGroupBy("buchungsart.buchungsklasse");
     }
-    it.addGroupBy("buchungsart.buchungsklasse");
     it.addGroupBy("buchungsart.id");
     // Ggf. Buchungsarten ausblenden
     if (unterdrueckung)
