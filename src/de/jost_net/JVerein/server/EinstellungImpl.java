@@ -2108,6 +2108,11 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   @Override
   public boolean getSteuerInBuchung() throws RemoteException
   {
+    // Nur bei Optierenden Vereinen möglich
+    if (!getOptiert())
+    {
+      return false;
+    }
     return Util.getBoolean(getAttribute("steuerinbuchung"));
   }
 

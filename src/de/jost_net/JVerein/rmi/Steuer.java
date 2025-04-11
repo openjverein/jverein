@@ -32,7 +32,7 @@ public interface Steuer extends DBObject
 
   public Buchungsart getBuchungsart() throws RemoteException;
 
-  public void setBuchungsart(Buchungsart buchungsart) throws RemoteException;
+  public void setBuchungsartId(Long buchungsart) throws RemoteException;
 
   public void setAktiv(boolean aktiv) throws RemoteException;
 

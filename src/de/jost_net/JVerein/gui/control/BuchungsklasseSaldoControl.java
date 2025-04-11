@@ -24,7 +24,6 @@ import de.jost_net.JVerein.io.BuchungsklassesaldoPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
-import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.jameica.gui.AbstractView;
@@ -254,7 +253,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     // (Geht nicht mit im oberen Query, da MySQL und H2 kein FULL JOIN
     // unterstützen)
     ExtendedDBIterator<PseudoDBObject> anzahlIt = new ExtendedDBIterator<>(
-        "buchung", (JVereinDBService) Einstellungen.getDBService());
+        "buchung");
     anzahlIt.addColumn("count(*) AS anzahl");
     anzahlIt.addFilter("buchungsart IS NULL");
     anzahlIt.addFilter("datum >= ?", getDatumvon().getDate());
@@ -293,7 +292,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         .getSteuerInBuchung();
 
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
-        "buchungsart", (JVereinDBService) Einstellungen.getDBService());
+        "buchungsart");
     it.addColumn("buchungsklasse.bezeichnung as " + BUCHUNGSKLASSE);
     it.addColumn("buchungsart.bezeichnung as " + BUCHUNGSART);
     it.addColumn("buchungsart.art as " + ARTBUCHUNGSART);

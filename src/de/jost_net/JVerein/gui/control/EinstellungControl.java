@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.ChangeSteuerInBuchungAction;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
@@ -856,6 +857,16 @@ public class EinstellungControl extends AbstractControl
     }
     optiert = new CheckboxInput(Einstellungen.getEinstellung().getOptiert());
     optiert.setName("Umsatzsteueroption");
+    optiert.addListener(e -> {
+      try
+      {
+        getSteuerInBuchung().setEnabled((boolean) optiert.getValue());
+      }
+      catch (RemoteException e1)
+      {
+        Logger.error("Fehler beim Optiert-Listener", e1);
+      }
+    });
     return optiert;
   }
   
@@ -868,6 +879,11 @@ public class EinstellungControl extends AbstractControl
     steuerInBuchung = new CheckboxInput(
         Einstellungen.getEinstellung().getSteuerInBuchung());
     steuerInBuchung.setName("Steuer individuell pro Buchung setzen");
+    steuerInBuchung
+        .addListener(e -> new ChangeSteuerInBuchungAction()
+            .handleAction(steuerInBuchung));
+
+    steuerInBuchung.setEnabled((boolean) getOptiert().getValue());
     return steuerInBuchung;
   }
 

@@ -189,21 +189,31 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
             + "geändert werden da eine Spendenbescheinigung zugeordnet ist!");
       }
     }
-    if (getSteuer() != null && getBuchungsart() != null
-        && getSteuer().getBuchungsart().getArt() != getBuchungsart().getArt())
+    if (Einstellungen.getEinstellung().getSteuerInBuchung())
     {
-      switch (getBuchungsart().getArt())
+      if (getSteuer() != null && getBuchungsart() != null
+          && getSteuer().getBuchungsart().getArt() != getBuchungsart().getArt())
       {
-        case ArtBuchungsart.AUSGABE:
-          throw new ApplicationException(
-              "Umsatzsteuer statt Vorsteuer gewählt.");
-        case ArtBuchungsart.EINNAHME:
-          throw new ApplicationException(
-              "Vorsteuer statt Umsatzsteuer gewählt.");
-        // Umbuchung ist bei Anlagebuchungen möglich,
-        // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
-        case ArtBuchungsart.UMBUCHUNG:
-          break;
+        switch (getBuchungsart().getArt())
+        {
+          case ArtBuchungsart.AUSGABE:
+            throw new ApplicationException(
+                "Umsatzsteuer statt Vorsteuer gewählt.");
+          case ArtBuchungsart.EINNAHME:
+            throw new ApplicationException(
+                "Vorsteuer statt Umsatzsteuer gewählt.");
+          // Umbuchung ist bei Anlagebuchungen möglich,
+          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
+          case ArtBuchungsart.UMBUCHUNG:
+            break;
+        }
+      }
+      if (getSteuer() != null && getBuchungsart() != null
+          && (getBuchungsart().getSpende()
+              || getBuchungsart().getAbschreibung()))
+      {
+        throw new ApplicationException(
+            "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
       }
     }
   }
@@ -618,24 +628,6 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   }
 
   @Override
-  public int getDependencyId() throws RemoteException
-  {
-    Integer dependencyid = (Integer) getAttribute("dependencyid");
-    if (dependencyid == null) {
-      return -1;
-    }
-    else {
-      return dependencyid.intValue();
-    }
-  }
-
-  @Override
-  public void setDependencyId(int dependencyid) throws RemoteException
-  {
-    setAttribute("dependencyid", dependencyid);
-  }
-
-  @Override
   public Steuer getSteuer() throws RemoteException
   {
     Object l = (Object) super.getAttribute("steuer");
@@ -657,6 +649,12 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
   public void setSteuer(Steuer steuer) throws RemoteException
   {
     super.setAttribute("steuer", steuer);
+  }
+
+  @Override
+  public void setSteuerId(Long id) throws RemoteException
+  {
+    super.setAttribute("steuer", id);
   }
 
   @Override

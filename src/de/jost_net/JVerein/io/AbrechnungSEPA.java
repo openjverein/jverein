@@ -1037,10 +1037,11 @@ public class AbrechnungSEPA
         .createObject(SollbuchungPosition.class, null);
     sp.setBetrag(zahler.getBetrag().doubleValue());
     sp.setBuchungsartId(zahler.getBuchungsartId());
-    // wir nehmen immer die Steuer der Buchungsart, auch wenn Steuer-in-Buchung
-    // aktiviert ist. (Ggf. könnte man zukünftig auch die Steuer in der
-    // Beitragsgruppe und Zusatzbetrag definieren, und diese hier verwenden)
-    if (zahler.getBuchungsartId() != null)
+    // TODO Wir nehmen die Steuer der Buchungsart. Ggf. könnte man zukünftig
+    // auch die Steuer in der Beitragsgruppe und Zusatzbetrag definieren, und
+    // diese hier verwenden.
+    if (zahler.getBuchungsartId() != null
+        && Einstellungen.getEinstellung().getSteuerInBuchung())
     {
       sp.setSteuer(sp.getBuchungsart().getSteuer());
     }

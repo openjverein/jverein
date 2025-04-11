@@ -27,12 +27,14 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
-import de.jost_net.JVerein.keys.SteuersatzBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -57,7 +59,7 @@ public class SollbuchungPositionControl extends AbstractControl
 
   private SelectInput buchungsklasse;
 
-  private SelectInput steuersatz;
+  private SelectInput steuer;
 
   private SollbuchungPosition position = null;
 
@@ -176,27 +178,30 @@ public class SollbuchungPositionControl extends AbstractControl
     return buchungsklasse;
   }
 
-  public SelectInput getSteuersatz() throws RemoteException
+  public SelectInput getSteuer() throws RemoteException
   {
-    if (steuersatz != null)
+    if (steuer != null)
     {
-      return steuersatz;
+      return steuer;
     }
-    if (getPosition().getSteuersatz() == null)
-    {
-      steuersatz = new SelectInput(SteuersatzBuchungsart.getArray(),
-          new SteuersatzBuchungsart(0));
-    }
-    else
-    {
-      steuersatz = new SelectInput(SteuersatzBuchungsart.getArray(),
-          new SteuersatzBuchungsart(getPosition().getSteuersatz()));
-    }
-    return steuersatz;
+    DBIterator<Steuer> it = Einstellungen.getDBService()
+        .createList(Steuer.class);
+    it.addFilter("aktiv = true or id = ?",
+        (getPosition().getSteuer() == null ? 0
+            : getPosition().getSteuer().getID()));
+    steuer = new SelectInput(PseudoIterator.asList(it),
+        getPosition().getSteuer());
+
+    steuer.setAttribute("name");
+    steuer.setPleaseChoose("keine Steuer");
+
+    return steuer;
   }
 
   public void handleStore() throws ApplicationException, RemoteException
   {
+    boolean steuerInBuchung = Einstellungen.getEinstellung()
+        .getSteuerInBuchung();
     SollbuchungPosition pos = getPosition();
     pos.setDatum((Date) getDatum().getValue());
     pos.setZweck((String) getZweck().getValue());
@@ -205,12 +210,18 @@ public class SollbuchungPositionControl extends AbstractControl
     {
       Buchungsart ba = (Buchungsart) getBuchungsart().getValue();
       pos.setBuchungsartId(Long.parseLong(ba.getID()));
-      pos.setSteuer(ba.getSteuer());
+      if (!steuerInBuchung)
+      {
+        pos.setSteuer(ba.getSteuer());
+      }
     }
     else
     {
       pos.setBuchungsartId(null);
-      pos.setSteuer(null);
+      if (!steuerInBuchung)
+      {
+        pos.setSteuer(null);
+      }
     }
     if (getBuchungsklasse().getValue() != null)
     {
@@ -220,6 +231,10 @@ public class SollbuchungPositionControl extends AbstractControl
     else
     {
       pos.setBuchungsklasseId(null);
+    }
+    if (steuerInBuchung)
+    {
+      pos.setSteuer((Steuer) getSteuer().getValue());
     }
     pos.store();
     // Betrag in Sollbuchung neu berechnen

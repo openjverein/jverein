@@ -18,9 +18,11 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
@@ -49,7 +51,7 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
     //
   }
@@ -84,6 +86,11 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
             break;
         }
       }
+      if (getSteuer() != null && (getSpende() || getAbschreibung()))
+      {
+        throw new ApplicationException(
+            "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
+      }
     }
     catch (RemoteException e)
     {
@@ -97,6 +104,51 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   protected void updateCheck() throws ApplicationException
   {
     insertCheck();
+    try
+    {
+      if (hasChanged("steuer")
+          && !Einstellungen.getEinstellung().getSteuerInBuchung())
+      {
+
+        // Prüfen ob es abgeschlossene Buchungen mit der Buchungsart gibt
+        ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+            "buchung");
+        it.addColumn("buchung.id");
+        it.setLimit(1);
+
+        it.join("jahresabschluss",
+            "jahresabschluss.von <= buchung.datum and jahresabschluss.bis >= buchung.datum");
+
+        it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
+        it.addFilter("buchungsart.id = ?", getID());
+        if (it.hasNext())
+        {
+          throw new ApplicationException(
+              "Steuer kann nicht geändert werden, es gibt abgeschlossene Buchungen mit dieser Buchungsart.");
+        }
+
+        // Prüfen ob es eine Rechnung mit dieser Buchungsart gibt
+        it = new ExtendedDBIterator<>("sollbuchung");
+        it.addColumn("sollbuchung.id");
+        it.setLimit(1);
+
+        it.join("sollbuchungsposition",
+            "sollbuchungsposition.sollbuchung = " + Sollbuchung.TABLE_NAME_ID);
+        it.addFilter("rechnung is not null");
+        it.join("buchungsart",
+            "buchungsart.id = sollbuchungsposition.buchungsart");
+        it.addFilter("buchungsart.id = ?", getID());
+        if (it.hasNext())
+        {
+          throw new ApplicationException(
+              "Steuer kann nicht geändert werden, es existieren Rechnungen mit dieser Buchungsart.");
+        }
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim Update Check", e);
+    }
   }
 
   @Override

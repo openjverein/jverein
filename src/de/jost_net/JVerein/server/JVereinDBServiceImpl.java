@@ -73,12 +73,6 @@ public class JVereinDBServiceImpl extends DBServiceImpl implements
   }
 
   @Override
-  protected Connection getConnection() throws RemoteException
-  {
-    return super.getConnection();
-  }
-
-  @Override
   public String getName()
   {
     return "Datenbank-Service für JVerein";

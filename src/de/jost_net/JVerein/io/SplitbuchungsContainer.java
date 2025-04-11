@@ -42,8 +42,6 @@ public class SplitbuchungsContainer
 {
   private static ArrayList<Buchung> splitbuchungen = null;
 
-  private static int dependencyid = 0;
-
   private static Buchung[] buchungen = null;
 
   private static int anzahl = 0;
@@ -80,7 +78,7 @@ public class SplitbuchungsContainer
       throws RemoteException, ApplicationException
   {
     splitbuchungen = new ArrayList<>();
-    dependencyid = 0;
+
     // Wenn eine gesplittete Buchung aufgerufen wird, wird die Hauptbuchung
     // gelesen
     if (b.getSplitId() != null)
@@ -107,7 +105,6 @@ public class SplitbuchungsContainer
     {
       Buchung buchung = (Buchung) it.next();
       SplitbuchungsContainer.add(buchung);
-      dependencyid = Math.max(dependencyid, buchung.getDependencyId());
     }
   }
 
@@ -280,11 +277,6 @@ public class SplitbuchungsContainer
     }
   }
 
-  public static int getNewDependencyId()
-  {
-    return ++dependencyid;
-  }
-
   public static String getText()
   {
     return text;
@@ -332,7 +324,6 @@ public class SplitbuchungsContainer
     buch.setSplitId(Long.valueOf(master.getID()));
     buch.setUmsatzid(master.getUmsatzid());
     buch.setZweck(origin.getZweck());
-    buch.setDependencyId(origin.getDependencyId());
     buch.setSplitTyp(SplitbuchungTyp.SPLIT);
     return buch;
   }
@@ -365,6 +356,8 @@ public class SplitbuchungsContainer
 
     HashMap<String, Double> splitMap = new HashMap<>();
     HashMap<String, String> splitZweckMap = new HashMap<>();
+    boolean steuerInBuchung = Einstellungen.getEinstellung()
+        .getSteuerInBuchung();
     ArrayList<SollbuchungPosition> spArray = sollb.getSollbuchungPositionList();
     try
     {
@@ -376,9 +369,17 @@ public class SplitbuchungsContainer
           throw new ApplicationException(
               "Es haben nicht alle Sollbuchungspositionen eine Buchungsart.");
         }
+        // Key in der Form BuchungsartId-BuchungsklasseId#SteuerId (Steuer nur
+        // wenn steuerInBuchung gesetzt ist)
         String key = sp.getBuchungsartId() + "-"
             + (sp.getBuchungsklasseId() != null ? sp.getBuchungsklasseId()
-                : "");
+                : "")
+            + "#";
+        if (steuerInBuchung)
+        {
+          key += (sp.getSteuer() != null ? sp.getSteuer().getID() : "");
+        }
+
         Double betrag = splitMap.getOrDefault(key, 0d);
         if (sp.getBetrag().doubleValue() == 0)
         {
@@ -496,11 +497,18 @@ public class SplitbuchungsContainer
           String buchungsart = entry.getKey().substring(0,
               entry.getKey().indexOf("-"));
           splitBuchung.setBuchungsartId(Long.parseLong(buchungsart));
-          String buchungsklasse = entry.getKey()
+          String tmpKey = entry.getKey()
               .substring(entry.getKey().indexOf("-") + 1);
+          String buchungsklasse = tmpKey.substring(0, tmpKey.indexOf("#"));
+          String steuer = tmpKey.substring(tmpKey.indexOf("#"));
+
           if (buchungsklasse.length() > 0)
           {
             splitBuchung.setBuchungsklasseId(Long.parseLong(buchungsklasse));
+          }
+          if (steuer.length() > 0)
+          {
+            splitBuchung.setSteuerId(Long.parseLong(steuer));
           }
           splitBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
           splitBuchung.setSplitId(Long.parseLong(getMaster().getID()));
@@ -547,7 +555,7 @@ public class SplitbuchungsContainer
     if (!splitten)
     {
       // Wenn kein automatisches Spliten möglich ist nur Buchungsart,
-      // Buchungsklasse und Sollbuchung zuweisen
+      // Buchungsklasse, Steuer und Sollbuchung zuweisen
       if (spArray.get(0).getBuchungsartId() != null)
       {
         buchung.setBuchungsartId(spArray.get(0).getBuchungsartId());
@@ -555,6 +563,10 @@ public class SplitbuchungsContainer
       if (spArray.get(0).getBuchungsklasseId() != null)
       {
         buchung.setBuchungsklasseId(spArray.get(0).getBuchungsklasseId());
+      }
+      if (steuerInBuchung && spArray.get(0).getSteuer() != null)
+      {
+        buchung.setSteuer(spArray.get(0).getSteuer());
       }
       buchung.setSollbuchung(sollb);
       buchung.store();

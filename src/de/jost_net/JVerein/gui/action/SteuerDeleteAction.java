@@ -17,50 +17,71 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.io.SplitbuchungsContainer;
-import de.jost_net.JVerein.rmi.Buchung;
+
+import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Loeschen einer Buchung.
+ * Löschen einer Steuer.
  */
-public class SplitBuchungDeleteAction implements Action
+public class SteuerDeleteAction implements Action
 {
-  private BuchungsControl control;
-
-  public SplitBuchungDeleteAction(BuchungsControl control)
-  {
-    this.control = control;
-  }
-
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof Buchung))
+    Steuer[] steuern = null;
+    if (context == null)
     {
-      throw new ApplicationException("Keine Buchung ausgewählt");
+      throw new ApplicationException("Keine Steuer ausgewählt");
+    }
+    else if (context instanceof Buchungsart)
+    {
+      steuern = new Steuer[] { (Steuer) context };
+    }
+    else if (context instanceof Buchungsart[])
+    {
+      steuern = (Steuer[]) context;
+    }
+    else
+    {
+      return;
     }
     try
     {
-      Buchung bu = (Buchung) context;
-      if (((Buchung) context).isNewObject())
+      String mehrzahl = steuern.length > 1 ? "n" : "";
+      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+      d.setTitle("Steuer" + mehrzahl + " löschen");
+      d.setText(
+          "Wollen Sie diese Steuer" + mehrzahl + " wirklich löschen?");
+      try
       {
-        SplitbuchungsContainer.get().remove(bu);
+        Boolean choice = (Boolean) d.open();
+        if (!choice.booleanValue())
+          return;
       }
-      else
+      catch (Exception e)
       {
-        BuchungDeleteAction action = new BuchungDeleteAction(true);
-        action.handleAction(context);
+        Logger.error("Fehler beim Löschen der Steuer", e);
+        return;
       }
-      control.refreshSplitbuchungen();
+
+      for (Steuer s : steuern)
+      {
+        if (s.isNewObject())
+          continue;
+        s.delete();
+      }
+      GUI.getStatusBar()
+          .setSuccessText("Steuer" + mehrzahl + " gelöscht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Buchung.";
+      String fehler = "Die Steuer wird bereits benutzt und kann nicht gelöscht werden";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

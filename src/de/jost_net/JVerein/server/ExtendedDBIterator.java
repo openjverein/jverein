@@ -1,17 +1,12 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.jost_net.JVerein.rmi.JVereinDBService;
+import de.jost_net.JVerein.Einstellungen;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.logging.Logger;
 
 /**
  * Hilfsiterator um Benutzerdefiniert SQL Listen zu Holen. Hier können auch
@@ -26,8 +21,6 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
 {
 
   private String table;
-
-  private Connection conn = null;
 
   private T object = null;
 
@@ -68,15 +61,12 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
    * 
    * @param table
    *          die Haupttabelle
-   * @param service
-   *          der JVereinDBService
    * @throws RemoteException
    */
-  public ExtendedDBIterator(String table, JVereinDBService service)
+  public ExtendedDBIterator(String table)
       throws RemoteException
   {
     this.table = table;
-    this.conn = ((JVereinDBServiceImpl) service).getConnection();
   }
 
   /**
@@ -380,65 +370,21 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
     if (this.initialized)
       return; // allready initialzed
 
-    PreparedStatement stmt = null;
-    String sql = null;
-    ResultSet rs = null;
-    try
-    {
-      sql = prepareSQL();
-      // sql = "SELECT st.steuerbetrag FROM buchungsart "
-      // + "LEFT JOIN (SELECT buchungsart.id,buchungsart.bezeichnung AS
-      // steuerbetrag "
-      // + "FROM buchungsart GROUP BY buchungsart.id) AS st ON st.id =
-      // buchungsart.id";
+    // Die Parameter in der richtigen Reihenfolge hinzufügen
+    params.addAll(joinParams);
+    params.addAll(whereParams);
+    params.addAll(havingParams);
 
-      stmt = conn.prepareStatement(sql);
-
-      // Die Parameter in der richtigen Reihenfolge hinzufügen
-      params.addAll(joinParams);
-      params.addAll(whereParams);
-      params.addAll(havingParams);
-
-      for (int i = 0; i < params.size(); ++i)
-      {
-        Object p = params.get(i);
-        if (p == null)
-          stmt.setNull((i + 1), Types.OTHER);
-        else
-          stmt.setObject((i + 1), p);
-      }
-
-      Logger.debug("executing sql query: " + stmt);
-
-      rs = stmt.executeQuery();
+    Einstellungen.getDBService().execute(prepareSQL(), params.toArray(), rs -> {
       while (rs.next())
       {
         PseudoDBObject o = new PseudoDBObject();
         o.fillData(rs);
         list.add((T) o);
       }
-      this.initialized = true;
-    }
-    catch (Exception e)
-    {
-      String s = stmt == null ? null : stmt.toString();
-      throw new RemoteException(
-          "unable to init iterator. " + (s != null ? ("statement: " + s) : ""),
-          e);
-    }
-    finally
-    {
-      try
-      {
-        if (rs != null)
-          rs.close();
-        if (stmt != null)
-          stmt.close();
-      }
-      catch (Exception ignore)
-      {
-      }
-    }
+      return null;
+    });
+    this.initialized = true;
   }
 
   /**

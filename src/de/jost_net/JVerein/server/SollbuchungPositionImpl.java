@@ -19,6 +19,8 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -68,6 +70,33 @@ public class SollbuchungPositionImpl extends AbstractDBObject
     {
       throw new ApplicationException("Bitte Verwendungszweck eingeben");
     }
+    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    {
+      if (getSteuer() != null && getBuchungsart() != null
+          && getSteuer().getBuchungsart().getArt() != getBuchungsart().getArt())
+      {
+        switch (getBuchungsart().getArt())
+        {
+          case ArtBuchungsart.AUSGABE:
+            throw new ApplicationException(
+                "Umsatzsteuer statt Vorsteuer gewählt.");
+          case ArtBuchungsart.EINNAHME:
+            throw new ApplicationException(
+                "Vorsteuer statt Umsatzsteuer gewählt.");
+          // Umbuchung ist bei Anlagebuchungen möglich,
+          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
+          case ArtBuchungsart.UMBUCHUNG:
+            break;
+        }
+      }
+      if (getSteuer() != null && getBuchungsart() != null
+          && (getBuchungsart().getSpende()
+              || getBuchungsart().getAbschreibung()))
+      {
+        throw new ApplicationException(
+            "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
+      }
+    }
   }
 
   @Override
@@ -115,7 +144,7 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   {
     if (getSteuer() == null)
     {
-      return null;
+      return 0d;
     }
     return getSteuer().getSatz();
   }
@@ -153,6 +182,21 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   @Override
   public Steuer getSteuer() throws RemoteException
   {
+    // Nur wenn Steuer in Buchung aktiviert ist, nehemen wir dies, sonst aus der
+    // Buchungsart.
+    if (!Einstellungen.getEinstellung().getOptiert())
+    {
+      return null;
+    }
+    if (!Einstellungen.getEinstellung().getSteuerInBuchung())
+    {
+      if (getBuchungsart() == null)
+      {
+        return null;
+      }
+      return getBuchungsart().getSteuer();
+    }
+
     Object o = super.getAttribute("steuer");
     if (o == null)
       return null;
@@ -275,6 +319,10 @@ public class SollbuchungPositionImpl extends AbstractDBObject
     else if ("steuerbetrag".equals(fieldName))
     {
       return getSteuerbetrag();
+    }
+    else if ("steuer".equals(fieldName))
+    {
+      return getSteuer();
     }
     return super.getAttribute(fieldName);
   }

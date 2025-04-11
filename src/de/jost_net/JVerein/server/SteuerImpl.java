@@ -18,8 +18,10 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
@@ -78,7 +80,7 @@ public class SteuerImpl extends AbstractDBObject implements Steuer
   }
 
   @Override
-  public void setBuchungsart(Buchungsart buchungsart) throws RemoteException
+  public void setBuchungsartId(Long buchungsart) throws RemoteException
   {
     setAttribute("buchungsart", buchungsart);
   }
@@ -105,6 +107,71 @@ public class SteuerImpl extends AbstractDBObject implements Steuer
   protected void updateCheck() throws ApplicationException
   {
     insertCheck();
+    if (hasChanged("satz") || hasChanged("buchungsart"))
+    {
+      deleteCheck();
+    }
+  }
+
+  @Override
+  protected void deleteCheck() throws ApplicationException
+  {
+    try
+    {
+      boolean steuerInBuchung = Einstellungen.getEinstellung()
+          .getSteuerInBuchung();
+
+      // Prüfen ob es abgeschlossene Buchungen mit der Steuer gibt
+      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+          "buchung");
+      it.addColumn("buchung.id");
+      it.setLimit(1);
+
+      it.join("jahresabschluss",
+          "jahresabschluss.von <= buchung.datum and jahresabschluss.bis >= buchung.datum");
+      if (steuerInBuchung)
+      {
+        it.addFilter("buchung.steuer = ?", getID());
+      }
+      else
+      {
+        it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
+        it.addFilter("buchungsart.steuer = ?", getID());
+      }
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Steuer kann nicht geändert/gelöscht werden, es gibt abgeschlossene Buchungen mit dieser Steuer.");
+      }
+
+      // Prüfen ob es eine Rechnung mit dieser Steuer gibt
+      it = new ExtendedDBIterator<>(Sollbuchung.TABLE_NAME);
+      it.addColumn(Sollbuchung.TABLE_NAME_ID);
+      it.setLimit(1);
+
+      it.join("sollbuchungposition",
+          "sollbuchungposition.sollbuchung = " + Sollbuchung.TABLE_NAME_ID);
+      it.addFilter("rechnung is not null");
+      if (steuerInBuchung)
+      {
+        it.addFilter("sollbuchungposition.steuer = ?", getID());
+      }
+      else
+      {
+        it.join("buchungsart",
+            "buchungsart.id = sollbuchungposition.buchungsart");
+        it.addFilter("buchungsart.steuer = ?", getID());
+      }
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Steuer kann nicht geändert/gelöscht werden, es existieren Rechnungen mit dieser Steuer.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim delete Check", e);
+    }
   }
 
   @Override
