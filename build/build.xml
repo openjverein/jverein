@@ -99,18 +99,18 @@
     </javac>
   </target>
 
-<target name="test" depends="test-compile" description="Run test suite">
-  <mkdir dir="${release-test.dir}" />
-  <junitlauncher printsummary="true">
-    <classpath refid="test-cp" />
-      <!-- the test classes themselves -->
-    <classpath  refid="test-compilepath"/>
-    <testclasses outputdir="${release-test.dir}">
-      <fileset dir="${class-test.dir}"/>
-      <listener type="legacy-brief" sendSysOut="true"/>
-      <listener type="legacy-xml" sendSysErr="true" sendSysOut="true"/>
-    </testclasses>
-  </junitlauncher>
+  <target name="test" depends="test-compile" description="Run test suite">
+    <mkdir dir="${release-test.dir}" />
+    <junitlauncher printsummary="true">
+      <classpath refid="test-cp" />
+        <!-- the test classes themselves -->
+      <classpath  refid="test-compilepath"/>
+      <testclasses outputdir="${release-test.dir}">
+        <fileset dir="${class-test.dir}"/>
+        <listener type="legacy-brief" sendSysOut="true"/>
+        <listener type="legacy-xml" sendSysErr="true" sendSysOut="true"/>
+      </testclasses>
+    </junitlauncher>
 </target>
 
   <target name="jar" depends="test" description="Generates the jar file">
@@ -161,7 +161,7 @@
   </target>
 
 
-  <target name="src" description="Build an source package, depends compile target to make sure, the code has no errors">
+  <target name="src" description="Build a source package, depends compile target to make sure, the code has no errors">
     <mkdir dir="${project.release}" />
     <mkdir dir="${project.tmp}/${plugin.name}" />
     <copy todir="${project.tmp}/${plugin.name}">
@@ -200,17 +200,17 @@
     <copy file="${project.zipdir}/${define.jarfilename}" tofile="releases/jverein-lib.jar" />
   </target>
 
-  <target name="all" depends="jar,javadoc,src" description="Build an official openjverein release">
+  <target name="all" depends="jar,javadoc,src" description="Build a official openjverein release">
     <echo message="SELECTED_VERSION=${plugin.version}" />
     <echo message="SELECTED_PATH=${project.release}/${project.zipfilename}" />
     <echo message="SELECTED_FILENAME=${project.zipfilename}" />
   </target>
 
-  <target name="fast" depends="jar,src" description="Build an development release">
+  <target name="fast" depends="jar,src" description="Build a development release">
     <move file="${project.release}/${project.zipfilename}" tofile="${project.release}/${project.zipfilename}" />
   </target>
 
-  <target name="nightly" depends="jar,javadoc,src" description="Build an nightly release">
+  <target name="nightly" depends="jar,javadoc,src" description="Build a nightly release">
     <mkdir dir="${project.release.nightly}" />
 
     <copy file="${project.release}/${project.zipfilename}"
