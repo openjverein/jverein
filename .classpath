@@ -15,47 +15,7 @@
 	<classpathentry kind="lib" path="lib/nc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.mail.jar"/>
 	<classpathentry kind="lib" path="lib/bsh-core.jar"/>
-	<classpathentry kind="lib" path="lib.test/apiguardian-api.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib.test/junit-jupiter.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib.test/junit-jupiter-api.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib.test/junit-jupiter-engine.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib.test/junit-jupiter-params.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib.test/junit-platform-commons.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib.test/junit-platform-engine.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib.test/junit-platform-launcher.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib.test/opentest4j.jar">
+    <classpathentry kind="lib" path="lib.test" including="*.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 		</attributes>
