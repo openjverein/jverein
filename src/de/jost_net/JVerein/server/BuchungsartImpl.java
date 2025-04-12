@@ -128,15 +128,15 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
         }
 
         // Prüfen ob es eine Rechnung mit dieser Buchungsart gibt
-        it = new ExtendedDBIterator<>("sollbuchung");
-        it.addColumn("sollbuchung.id");
+        it = new ExtendedDBIterator<>(Sollbuchung.TABLE_NAME);
+        it.addColumn(Sollbuchung.TABLE_NAME_ID);
         it.setLimit(1);
 
-        it.join("sollbuchungsposition",
-            "sollbuchungsposition.sollbuchung = " + Sollbuchung.TABLE_NAME_ID);
+        it.join("sollbuchungposition",
+            "sollbuchungposition.sollbuchung = " + Sollbuchung.TABLE_NAME_ID);
         it.addFilter("rechnung is not null");
         it.join("buchungsart",
-            "buchungsart.id = sollbuchungsposition.buchungsart");
+            "buchungsart.id = sollbuchungposition.buchungsart");
         it.addFilter("buchungsart.id = ?", getID());
         if (it.hasNext())
         {
