@@ -16,10 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.BuchungsartDeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.SteuerDeleteAction;
-import de.jost_net.JVerein.gui.view.BuchungsartDetailView;
 import de.jost_net.JVerein.gui.view.SteuerDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -30,7 +28,6 @@ import de.willuhn.jameica.gui.parts.ContextMenu;
  */
 public class SteuerMenue extends ContextMenu
 {
-
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Steuern.
    */

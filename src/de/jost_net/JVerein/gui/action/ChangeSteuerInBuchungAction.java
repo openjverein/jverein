@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 
 import org.eclipse.swt.SWT;
 
@@ -52,16 +51,23 @@ public class ChangeSteuerInBuchungAction implements Action
           try
           {
             String sql = "update buchung join buchungsart on buchungsart.id = buchung.buchungsart "
-                + "set buchung.steuer = buchungsart.steuer";
+                + "set buchung.steuer = buchungsart.steuer "
+                + "where buchung.steuer is null";
 
-            execute(sql);
+            int anzahlBuchungen = Einstellungen.getDBService()
+                .executeUpdate(sql, null);
 
             sql = "update sollbuchungposition join buchungsart on buchungsart.id = sollbuchungposition.buchungsart "
-                + "set sollbuchungposition.steuer = buchungsart.steuer";
+                + "set sollbuchungposition.steuer = buchungsart.steuer"
+                + "where sollbuchungposition.steuer is null";
 
-            execute(sql);
+            int anzahlSollbuchungpositionen = Einstellungen.getDBService()
+                .executeUpdate(sql, null);
+
             GUI.getStatusBar()
-                .setSuccessText("Steuer in Buchungen gespeichert");
+                .setSuccessText("Steuer in " + anzahlBuchungen
+                    + " Buchungen und " + anzahlSollbuchungpositionen
+                    + " Sollbuchungpositionen gespeichert");
           }
           catch (RemoteException re)
           {
@@ -76,25 +82,6 @@ public class ChangeSteuerInBuchungAction implements Action
         String fehler = "Fehler beim öffnen des Steuer-In-Buchung Dialogs";
         Logger.error(fehler, ex);
         GUI.getStatusBar().setErrorText(fehler);
-      }
-    }
-  }
-
-  private void execute(String sql) throws RemoteException
-  {
-    try
-    {
-      Einstellungen.getDBService().execute(sql, null, null);
-    }
-    catch (RemoteException re)
-    {
-      // ignorieren wir.
-      // Blöderweise haben wir keinen Zugriff auf
-      // excuteUpdate(), und bei execute() kommt bei einem Update Query
-      // eine SQL Exception.
-      if (!(re.getCause() instanceof SQLException))
-      {
-        throw new RemoteException(re.getMessage(), re);
       }
     }
   }

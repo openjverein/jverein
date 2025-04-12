@@ -29,8 +29,8 @@ import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Einstellung;
+import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.rmi.HBCIDBService;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
@@ -45,7 +45,7 @@ import de.willuhn.logging.Logger;
 public class Einstellungen
 {
 
-  private static DBService db;
+  private static JVereinDBService db;
 
   private static Einstellung einstellung;
 
@@ -152,7 +152,7 @@ public class Einstellungen
    * @return db service.
    * @throws RemoteException
    */
-  public static DBService getDBService() throws RemoteException
+  public static JVereinDBService getDBService() throws RemoteException
   {
     if (db != null)
       return db;
@@ -164,7 +164,7 @@ public class Einstellungen
       // client, the factory returns the remote dbService from the
       // Jameica server.
       // The name and class of the service is defined in plugin.xml
-      db = (DBService) Application.getServiceFactory()
+      db = (JVereinDBService) Application.getServiceFactory()
           .lookup(JVereinPlugin.class, "database");
       return db;
     }
