@@ -193,10 +193,20 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           ausgabenGesamt += ausgaben;
           break;
         case ArtBuchungsart.UMBUCHUNG:
-          umbuchungen = summe;
-          umbuchungenSumme += umbuchungen;
-          umbuchungenGesamt += umbuchungen;
-          o.setAttribute(UMBUCHUNGEN, umbuchungen);
+          if (einnahmen == null && ausgaben == null)
+          {
+            umbuchungen = summe;
+            umbuchungenSumme += umbuchungen;
+            umbuchungenGesamt += umbuchungen;
+            o.setAttribute(UMBUCHUNGEN, umbuchungen);
+          }
+          else
+          {
+            einnahmenSumme += einnahmen;
+            einnahmenGesamt += einnahmen;
+            ausgabenSumme += ausgaben;
+            ausgabenGesamt += ausgaben;
+          }
           break;
       }
 
@@ -352,7 +362,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     // Ggf. Buchungsarten ausblenden
     if (unterdrueckung)
     {
-      it.addHaving("ABS(" + SUMME + ") >= 0.01");
+      it.addHaving("anzahl > 0");
     }
     it.setOrder(
         "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC ");
