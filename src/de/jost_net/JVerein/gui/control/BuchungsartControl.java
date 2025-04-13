@@ -332,7 +332,10 @@ public class BuchungsartControl extends FilterControl
       }
       b.setSpende((Boolean) spende.getValue());
       b.setAbschreibung((Boolean) abschreibung.getValue());
-      b.setSteuer((Steuer) steuer.getValue());
+      if (steuer != null)
+      {
+        b.setSteuer((Steuer) steuer.getValue());
+      }
       StatusBuchungsart st = (StatusBuchungsart) getStatus().getValue();
       b.setStatus(st.getKey());
       b.setSuchbegriff((String) getSuchbegriff().getValue());

@@ -234,43 +234,51 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       zeilen.add(saldogv);
     }
 
+    zeilen.add(new PseudoDBObject());
+
     PseudoDBObject saldo = new PseudoDBObject();
     saldo.setAttribute(ART, ART_GESAMTSALDOFOOTER);
-    saldo.setAttribute(GRUPPE, "Gesamt Saldo");
+    saldo.setAttribute(GRUPPE, "Saldo aller Buchungsklassen");
     saldo.setAttribute(EINNAHMEN, einnahmenGesamt);
     saldo.setAttribute(AUSGABEN, ausgabenGesamt);
     saldo.setAttribute(UMBUCHUNGEN, umbuchungenGesamt);
     zeilen.add(saldo);
 
-    PseudoDBObject saldogv = new PseudoDBObject();
-    saldogv.setAttribute(ART, ART_GESAMTGEWINNVERLUST);
-    saldogv.setAttribute(GRUPPE, "Gesamt Gewinn/Verlust");
-    saldogv.setAttribute(EINNAHMEN,
-        einnahmenGesamt + ausgabenGesamt + umbuchungenGesamt);
-    zeilen.add(saldogv);
-
-    // Ggf. die Anzahl nicht zugeordneter Buchungen anzeigen.
+    // Ggf. die Anzahl und Summe nicht zugeordneter Buchungen anzeigen.
     // (Geht nicht mit im oberen Query, da MySQL und H2 kein FULL JOIN
     // unterstützen)
-    ExtendedDBIterator<PseudoDBObject> anzahlIt = new ExtendedDBIterator<>(
+    ExtendedDBIterator<PseudoDBObject> ohneBaIt = new ExtendedDBIterator<>(
         "buchung");
-    anzahlIt.addColumn("count(*) AS anzahl");
-    anzahlIt.addFilter("buchungsart IS NULL");
-    anzahlIt.addFilter("datum >= ?", getDatumvon().getDate());
-    anzahlIt.addFilter("datum <= ?", getDatumbis().getDate());
+    ohneBaIt.addColumn("count(*) AS anzahl");
+    ohneBaIt.addColumn("sum(buchung.betrag) AS summe");
+    ohneBaIt.addFilter("buchungsart IS NULL");
+    ohneBaIt.addFilter("datum >= ?", getDatumvon().getDate());
+    ohneBaIt.addFilter("datum <= ?", getDatumbis().getDate());
 
-    PseudoDBObject oAnz = anzahlIt.next();
+    PseudoDBObject oAnz = ohneBaIt.next();
     Integer anzahl = oAnz.getAttribute("anzahl") == null ? 0
         : ((Number) oAnz.getAttribute("anzahl")).intValue();
+    Double summeOhneBuchungsart = oAnz.getAttribute("summe") == null ? 0
+        : ((Number) oAnz.getAttribute("summe")).doubleValue();
     if (anzahl > 0)
     {
       PseudoDBObject ohneBuchungsart = new PseudoDBObject();
       ohneBuchungsart.setAttribute(ART,
           AbstractSaldoControl.ART_NICHTZUGEORDNETEBUCHUNGEN);
-      ohneBuchungsart.setAttribute(GRUPPE, "Anzahl Buchungen ohne Buchungsart");
+      ohneBuchungsart.setAttribute(GRUPPE, "Saldo Buchungen ohne Buchungsart");
+      ohneBuchungsart.setAttribute(EINNAHMEN, summeOhneBuchungsart);
       ohneBuchungsart.setAttribute(ANZAHL, anzahl);
       zeilen.add(ohneBuchungsart);
     }
+
+    PseudoDBObject saldogv = new PseudoDBObject();
+    saldogv.setAttribute(ART, ART_GESAMTGEWINNVERLUST);
+    saldogv.setAttribute(GRUPPE, "Gesamt Gewinn/Verlust");
+    saldogv.setAttribute(EINNAHMEN,
+        einnahmenGesamt + ausgabenGesamt + umbuchungenGesamt
+            + summeOhneBuchungsart);
+    zeilen.add(saldogv);
+
     return zeilen;
   }
 
