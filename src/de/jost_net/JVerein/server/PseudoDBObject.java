@@ -44,7 +44,7 @@ public class PseudoDBObject extends AbstractDBObject implements DBObject
     int columnCount = metadata.getColumnCount();
     for (int i = 1; i <= columnCount; i++)
     {
-      setAttribute(metadata.getColumnLabel(i), rs.getObject(i));
+      setAttribute(metadata.getColumnLabel(i).toLowerCase(), rs.getObject(i));
     }
   }
 
@@ -56,7 +56,7 @@ public class PseudoDBObject extends AbstractDBObject implements DBObject
     if (fieldName == null)
       return null;
 
-    return properties.get(fieldName);
+    return properties.get(fieldName.toLowerCase());
   }
 
   /**

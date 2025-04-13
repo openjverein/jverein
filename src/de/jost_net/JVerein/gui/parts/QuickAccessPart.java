@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.SaldoControl;
 import de.jost_net.JVerein.util.Datum;
 import de.willuhn.jameica.gui.Action;
@@ -93,7 +94,14 @@ public class QuickAccessPart implements Part
           control.getDatumvon().setDate(genYearStartDate(geschaeftsjahr));
           control.getDatumbis().setDate(genYearEndDate(geschaeftsjahr));
           control.getGeschaeftsjahr().setValue(geschaeftsjahr.toString());
-          control.getSaldoList();
+          if (control instanceof AbstractSaldoControl)
+          {
+            ((AbstractSaldoControl) control).reloadList();
+          }
+          else
+          {
+            control.getSaldoList();
+          }
         }
         catch (RemoteException e)
         {
@@ -216,7 +224,14 @@ public class QuickAccessPart implements Part
           control.getGeschaeftsjahr().setValue(geschaeftsjahr.toString());
         }
 
-        control.getSaldoList();
+        if (control instanceof AbstractSaldoControl)
+        {
+          ((AbstractSaldoControl) control).reloadList();
+        }
+        else
+        {
+          control.getSaldoList();
+        }
       }
       catch (RemoteException e)
       {

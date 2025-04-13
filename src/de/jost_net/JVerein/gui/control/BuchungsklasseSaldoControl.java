@@ -317,13 +317,16 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         getDatumvon().getDate(), getDatumbis().getDate());
     it.leftJoin("konto", "buchung.konto = konto.id and konto.kontoart < ?",
         Kontoart.LIMIT.getKey());
-    if (steuerInBuchung)
+    if (mitSteuer)
     {
-      it.leftJoin("steuer", "steuer.id = buchung.steuer");
-    }
-    else
-    {
-      it.leftJoin("steuer", "steuer.id = buchungsart.steuer");
+      if (steuerInBuchung)
+      {
+        it.leftJoin("steuer", "steuer.id = buchung.steuer");
+      }
+      else
+      {
+        it.leftJoin("steuer", "steuer.id = buchungsart.steuer");
+      }
     }
     if (klasseInBuchung)
     {

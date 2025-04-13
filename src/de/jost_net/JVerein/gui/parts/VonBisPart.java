@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 import org.eclipse.swt.widgets.Composite;
 
+import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.SaldoControl;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
@@ -185,7 +186,14 @@ public class VonBisPart implements Part
     {
       control.getGeschaeftsjahr().setValue("");
     }
-    control.getSaldoList();
+    if (control instanceof AbstractSaldoControl)
+    {
+      ((AbstractSaldoControl) control).reloadList();
+    }
+    else
+    {
+      control.getSaldoList();
+    }
   }
 
   private void checkDate() throws ApplicationException
