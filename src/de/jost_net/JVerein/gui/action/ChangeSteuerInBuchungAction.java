@@ -50,23 +50,29 @@ public class ChangeSteuerInBuchungAction implements Action
         {
           try
           {
-            String sql = "update buchung join buchungsart on buchungsart.id = buchung.buchungsart "
-                + "set buchung.steuer = buchungsart.steuer "
-                + "where buchung.steuer is null";
+            String sql = "update buchung "
+                + "set steuer = (select buchungsart.steuer from buchungsart "
+                + "where buchung.buchungsart = buchungsart.id) "
+                + "where exists (select id from buchungsart where buchungsart.id = buchung.buchungsart "
+                + "and steuer is not null)"
+                + "and buchungsart is not null and steuer is null";
 
             int anzahlBuchungen = Einstellungen.getDBService()
                 .executeUpdate(sql, null);
 
-            sql = "update sollbuchungposition join buchungsart on buchungsart.id = sollbuchungposition.buchungsart "
-                + "set sollbuchungposition.steuer = buchungsart.steuer"
-                + "where sollbuchungposition.steuer is null";
-
-            int anzahlSollbuchungpositionen = Einstellungen.getDBService()
-                .executeUpdate(sql, null);
+            sql = "update sollbuchungposition "
+                + "set steuer = (select buchungsart.steuer from buchungsart "
+                + "where sollbuchungposition.buchungsart = buchungsart.id) "
+                + "where exists (select id from buchungsart where buchungsart.id = sollbuchungposition.buchungsart "
+                + "and steuer is not null)"
+                + "and buchungsart is not null and steuer is null";
+            
+             int anzahlSollbuchungpositionen = Einstellungen.getDBService()
+             .executeUpdate(sql, null);
 
             GUI.getStatusBar()
                 .setSuccessText("Steuer in " + anzahlBuchungen
-                    + " Buchungen und " + anzahlSollbuchungpositionen
+                    + " Buchungen und "  + anzahlSollbuchungpositionen
                     + " Sollbuchungpositionen gespeichert");
           }
           catch (RemoteException re)
