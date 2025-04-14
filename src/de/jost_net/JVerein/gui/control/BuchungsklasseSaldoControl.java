@@ -154,9 +154,18 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         PseudoDBObject saldo = new PseudoDBObject();
         saldo.setAttribute(ART, ART_SALDOFOOTER);
         saldo.setAttribute(GRUPPE, "Saldo " + klasseAlt);
-        saldo.setAttribute(EINNAHMEN, einnahmenSumme);
-        saldo.setAttribute(AUSGABEN, ausgabenSumme);
-        saldo.setAttribute(UMBUCHUNGEN, umbuchungenSumme);
+        if (Math.abs(einnahmenSumme) >= 0.01d)
+        {
+          saldo.setAttribute(EINNAHMEN, einnahmenSumme);
+        }
+        if (Math.abs(umbuchungenSumme) >= 0.01d)
+        {
+          saldo.setAttribute(AUSGABEN, umbuchungenSumme);
+        }
+        if (Math.abs(umbuchungenSumme) >= 0.01d)
+        {
+          saldo.setAttribute(UMBUCHUNGEN, umbuchungenSumme);
+        }
         zeilen.add(saldo);
 
         PseudoDBObject saldogv = new PseudoDBObject();
@@ -237,9 +246,18 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       PseudoDBObject saldo = new PseudoDBObject();
       saldo.setAttribute(ART, ART_SALDOFOOTER);
       saldo.setAttribute(GRUPPE, "Saldo " + klasseAlt);
-      saldo.setAttribute(EINNAHMEN, einnahmenSumme);
-      saldo.setAttribute(AUSGABEN, ausgabenSumme);
-      saldo.setAttribute(UMBUCHUNGEN, umbuchungenSumme);
+      if (Math.abs(einnahmenSumme) >= 0.01d)
+      {
+        saldo.setAttribute(EINNAHMEN, einnahmenSumme);
+      }
+      if (Math.abs(umbuchungenSumme) >= 0.01d)
+      {
+        saldo.setAttribute(AUSGABEN, umbuchungenSumme);
+      }
+      if (Math.abs(umbuchungenSumme) >= 0.01d)
+      {
+        saldo.setAttribute(UMBUCHUNGEN, umbuchungenSumme);
+      }
       zeilen.add(saldo);
 
       PseudoDBObject saldogv = new PseudoDBObject();
