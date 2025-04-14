@@ -176,8 +176,11 @@ public class SteuerControl extends AbstractControl
       Steuer s = getSteuer();
       s.setName((String) getName().getValue());
       s.setSatz((Double) getSatz().getValue());
-      s.setBuchungsartId(
-          Long.parseLong(((Buchungsart) getBuchungsart().getValue()).getID()));
+      if (getBuchungsart().getValue() != null)
+      {
+        s.setBuchungsartId(Long
+            .parseLong(((Buchungsart) getBuchungsart().getValue()).getID()));
+      }
       s.setAktiv((Boolean) getAktiv().getValue());
       s.store();
     }

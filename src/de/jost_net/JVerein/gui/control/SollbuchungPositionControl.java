@@ -193,7 +193,7 @@ public class SollbuchungPositionControl extends AbstractControl
         getPosition().getSteuer());
 
     steuer.setAttribute("name");
-    steuer.setPleaseChoose("keine Steuer");
+    steuer.setPleaseChoose("Keine Steuer");
 
     return steuer;
   }

@@ -887,7 +887,7 @@ public class BuchungsControl extends AbstractControl
         getBuchung().getSteuer());
 
     steuer.setAttribute("name");
-    steuer.setPleaseChoose("keine Steuer");
+    steuer.setPleaseChoose("Keine Steuer");
 
     return steuer;
   }

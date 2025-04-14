@@ -42,7 +42,7 @@ public class ChangeSteuerInBuchungAction implements Action
       // TODO ist der Text verständlich?
       dialog.setText("Soll die Steuer aus den Buchungsarten in die\n"
           + "Buchungen und Sollbuchungspositionen übernommen werden?\n"
-          + "Das wir für alle bisherigen Buchungen und Sollbuchungspositionen gemacht,\n"
+          + "Das wird für alle bisherigen Buchungen und Sollbuchungspositionen gemacht,\n"
           + "so dass die bisherige Steuer erhalten bleibt.");
       try
       {

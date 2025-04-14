@@ -183,6 +183,10 @@ public class SteuerImpl extends AbstractDBObject implements Steuer
       {
         throw new ApplicationException("Bitte Name eingeben");
       }
+      if (getSatz() == null)
+      {
+        throw new ApplicationException("Bitte Steuersatz eingeben");
+      }
       if (getSatz() < 0)
       {
         throw new ApplicationException("Steuersatz nicht gültig");
