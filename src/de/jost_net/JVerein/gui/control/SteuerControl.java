@@ -22,6 +22,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.menu.SteuerMenue;
 import de.jost_net.JVerein.gui.view.SteuerDetailView;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -83,6 +84,7 @@ public class SteuerControl extends AbstractControl
           Column.ALIGN_RIGHT);
       steuerList.addColumn("Buchungsart", "buchungsart");
       steuerList.addColumn("Aktiv", "aktiv", new JaNeinFormatter());
+      steuerList.setContextMenu(new SteuerMenue());
       steuerList.setRememberColWidths(true);
       steuerList.removeFeature(FeatureSummary.class);
       return steuerList;

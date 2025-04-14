@@ -38,11 +38,11 @@ public class ChangeSteuerInBuchungAction implements Action
     if ((boolean) input.getValue())
     {
       YesNoDialog dialog = new YesNoDialog(SWT.CENTER);
-      dialog.setTitle("Migration Steur in Buchung");
+      dialog.setTitle("Migration Steuer in Buchung");
       // TODO ist der Text verständlich?
       dialog.setText("Soll die Steuer aus den Buchungsarten in die\n"
           + "Buchungen und Sollbuchungspositionen übernommen werden?\n"
-          + "Das wir für alle bisherigen Buchungen und Sollbuchungspositionen gemacht,\n "
+          + "Das wir für alle bisherigen Buchungen und Sollbuchungspositionen gemacht,\n"
           + "so dass die bisherige Steuer erhalten bleibt.");
       try
       {

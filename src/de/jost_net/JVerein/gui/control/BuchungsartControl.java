@@ -219,7 +219,7 @@ public class BuchungsartControl extends FilterControl
         getBuchungsart().getSteuer());
 
     steuer.setAttribute("name");
-    steuer.setPleaseChoose("keine Steuer");
+    steuer.setPleaseChoose("Keine Steuer");
 
     // Disable steuer for type spende
     if (getBuchungsart().getSpende()) 

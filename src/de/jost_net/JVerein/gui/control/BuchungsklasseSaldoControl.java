@@ -221,6 +221,12 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       }
       // Die Detailzeile wie sie aus dem iterator kommt azeigen.
       o.setAttribute(ART, ART_DETAIL);
+
+      // Anzahl null blenden wir aus
+      if (((Number) o.getAttribute(ANZAHL)).equals(0))
+      {
+        o.setAttribute(ANZAHL, null);
+      }
       zeilen.add(o);
     }
 
@@ -362,7 +368,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     // Ggf. Buchungsarten ausblenden
     if (unterdrueckung)
     {
-      it.addHaving("anzahl > 0");
+      it.addHaving("anzahl > 0 OR abs(" + SUMME + ") >= 0.01");
     }
     it.setOrder(
         "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC ");
