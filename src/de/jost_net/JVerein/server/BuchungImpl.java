@@ -28,6 +28,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.BuchungVar;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.BuchungDokument;
@@ -666,6 +667,11 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
       return brutto;
     }
 
+    // Bei Anlagekonten gibt es nur Brutto Beträeg
+    if (getKonto() != null && getKonto().getKontoArt().equals(Kontoart.ANLAGE))
+    {
+      return brutto;
+    }
     Steuer steuer = null;
     if (Einstellungen.getEinstellung().getSteuerInBuchung())
     {

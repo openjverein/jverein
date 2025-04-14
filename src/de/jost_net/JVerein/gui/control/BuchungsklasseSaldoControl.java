@@ -346,8 +346,12 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       // Nettobetrag berechnen und steuerbetrag der Steuerbuchungsart
       // hinzurechnen
       it.addColumn(
-          "COALESCE(SUM(CAST(buchung.betrag * 100 / (100 + COALESCE(steuer.satz,0)) AS DECIMAL(10,2))),0)"
-              + " + COALESCE(st.steuerbetrag,0) AS " + SUMME);
+          "COALESCE(SUM(CAST(buchung.betrag * 100 / (100 + "
+              // Anlagenkonto immer Bruttobeträge
+              + "CASE WHEN konto.kontoart = ? THEN 0 ELSE COALESCE(steuer.satz,0) END"
+              + ") AS DECIMAL(10,2))),0)" + " + COALESCE(st.steuerbetrag,0) AS "
+              + SUMME,
+          Kontoart.ANLAGE.getKey());
     }
     else
     {
@@ -397,7 +401,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       String subselect = "(SELECT buchungsart.id, "
           + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag "
           + " FROM buchung"
-          + " JOIN konto on buchung.konto = konto.id and konto.kontoart < ? ";
+          // Keine Steuer bei Anlagekonten
+          + " JOIN konto on buchung.konto = konto.id and konto.kontoart < ? and konto.kontoart != ?";
 
       // Wenn die Steuer in der Buchung steht, können wir sie direkt nehmen,
       // sonst müssen wir den Umweg über die Buchungsart nehmen.
@@ -414,7 +419,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           + " WHERE datum >= ? and datum <= ? "
           + " GROUP BY buchungsart.id) AS st ";
       it.leftJoin(subselect, "st.id = buchungsart.id ", Kontoart.LIMIT.getKey(),
-          getDatumvon().getDate(), getDatumbis().getDate());
+          Kontoart.ANLAGE.getKey(), getDatumvon().getDate(),
+          getDatumbis().getDate());
     }
     return it;
   }
