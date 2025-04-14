@@ -30,7 +30,7 @@ public class MittelverwendungSaldoView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Mittelverwendungsaldo");
+    GUI.getView().setTitle("Mittelverwendungssaldo");
 
     final MittelverwendungFlowSaldoControl control = new MittelverwendungFlowSaldoControl(
         this);

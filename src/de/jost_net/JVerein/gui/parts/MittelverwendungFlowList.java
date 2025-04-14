@@ -328,6 +328,69 @@ public class MittelverwendungFlowList extends MittelverwendungList
     addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
         zwanghafteWeitergabeNeu, null, BLANK);
 
+    // Anzahl Buchungen ohne Buchungsart auf Konten im Saldo
+    sql = "SELECT count(*) FROM buchung, konto "
+        + "WHERE datum >= ? AND datum <= ? AND buchung.konto = konto.id "
+        + "AND konto.kontoart < ? AND buchung.buchungsart is null";
+    Integer anzahlUnter = (Integer) service.execute(sql,
+        new Object[] { datumvon, datumbis, Kontoart.LIMIT.getKey() }, rsi);
+    // Anzahl Buchungen ohne Buchungsart bei Rücklagen und Vermögen
+    sql = "SELECT count(*) FROM buchung, konto "
+        + "WHERE datum >= ? AND datum <= ? AND buchung.konto = konto.id "
+        + "AND konto.kontoart >= ? AND konto.kontoart <= ? "
+        + "AND buchung.buchungsart is null";
+    Integer anzahlUeber = (Integer) service.execute(sql,
+        new Object[] { datumvon, datumbis,
+            Kontoart.RUECKLAGE_ZWECK_GEBUNDEN.getKey(),
+            Kontoart.RUECKLAGE_SONSTIG.getKey() },
+        rsi);
+
+    if (anzahlUnter > 0 || anzahlUeber > 0)
+    {
+      // Leerzeile
+      zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.LEERZEILE,
+          null, null, null, null, BLANK));
+    }
+
+    if (anzahlUnter > 0)
+    {
+      // Buchungen ohne Buchungsart auf Konten im Saldo
+      sql = "SELECT sum(buchung.betrag) FROM buchung, konto "
+          + "WHERE datum >= ? AND datum <= ? AND buchung.konto = konto.id "
+          + "AND konto.kontoart < ? AND buchung.buchungsart is null";
+      Double ohneBuchungsartUnter = (Double) service.execute(sql,
+          new Object[] { datumvon, datumbis, Kontoart.LIMIT.getKey() }, rsd);
+
+      bezeichnung = "Anzahl Buchungen ohne Buchungsart: " + anzahlUnter;
+      addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung, null,
+          null, BLANK);
+      bezeichnung = BLANKS + "Summe der Buchungen ohne Buchungsart: ";
+      addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
+          0d, ohneBuchungsartUnter, BLANK);
+    }
+
+    if (anzahlUeber > 0)
+    {
+      // Buchungen ohne Buchungsart bei Rücklagen und Vermögen
+      sql = "SELECT sum(buchung.betrag) FROM buchung, konto "
+          + "WHERE datum >= ? AND datum <= ? AND buchung.konto = konto.id "
+          + "AND konto.kontoart >= ? AND konto.kontoart <= ? "
+          + "AND buchung.buchungsart is null";
+      Double ohneBuchungsartUeber = (Double) service.execute(sql,
+          new Object[] { datumvon, datumbis,
+              Kontoart.RUECKLAGE_ZWECK_GEBUNDEN.getKey(),
+              Kontoart.RUECKLAGE_SONSTIG.getKey() },
+          rsd);
+      bezeichnung = "Anzahl Buchungen ohne Buchungsart bei Rücklagen und Vermögen: "
+          + anzahlUeber;
+      addZeile(zeilen, MittelverwendungZeile.EINNAHME, pos++, bezeichnung,
+          null, null, BLANK);
+      bezeichnung = BLANKS
+          + "Summe der Buchungen ohne Buchungsart bei Rücklagen und Vermögen: ";
+      addZeile(zeilen, MittelverwendungZeile.SUMME, pos++, bezeichnung,
+          0d, ohneBuchungsartUeber, BLANK);
+    }
+
     // Leerzeile am Ende wegen Scrollbar
     zeilen.add(new MittelverwendungZeile(MittelverwendungZeile.UNDEFINED, null,
         null, null, null, BLANK));

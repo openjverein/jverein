@@ -60,7 +60,9 @@ public class SplitbuchungsContainer
     else
     {
       buchungen = bl;
-      text = String.format("Es werden %s Splitbuchungen erzeugt.", anzahl);
+      text = String.format(
+          "Es werden %s Splitbuchungen erzeugt.\nGeänderte Zwecke oder Kommentare in Splitpositionen werden bei allen Buchungen übernommen.",
+          anzahl);
     }
     initiate(bl[0]);
   }
@@ -255,6 +257,30 @@ public class SplitbuchungsContainer
       Buchung master = null;
       Buchung gegen = null;
       Buchung split = null;
+      HashMap<Buchung, Boolean> zweckeVonHauptbuchung = new HashMap<>();
+      HashMap<Buchung, Boolean> kommentareVonHauptbuchung = new HashMap<>();
+      Boolean zweckVonHauptbuchung = false;
+      Boolean kommentarVonHauptbuchung = false;
+      for (Buchung b : get())
+      {
+        zweckVonHauptbuchung = false;
+        kommentarVonHauptbuchung = false;
+        if (!b.isToDelete() && (b.getSplitTyp() == SplitbuchungTyp.SPLIT))
+        {
+          if (buchungen[0].getZweck() != null
+              && buchungen[0].getZweck().equals(b.getZweck()))
+          {
+            zweckVonHauptbuchung = true;
+          }
+          zweckeVonHauptbuchung.put(b, zweckVonHauptbuchung);
+          if (buchungen[0].getKommentar() != null
+              && buchungen[0].getKommentar().equals(b.getKommentar()))
+          {
+            kommentarVonHauptbuchung = true;
+          }
+          kommentareVonHauptbuchung.put(b, kommentarVonHauptbuchung);
+        }
+      }
       for (int i = 1; i < anzahl; i++)
       {
         master = buchungen[i];
@@ -267,7 +293,8 @@ public class SplitbuchungsContainer
         {
           if (!b.isToDelete() && (b.getSplitTyp() == SplitbuchungTyp.SPLIT))
           {
-            split = getSplitbuchung(master, b);
+            split = getSplitbuchung(master, b, zweckeVonHauptbuchung,
+                kommentareVonHauptbuchung);
             split.store();
           }
         }
@@ -301,11 +328,14 @@ public class SplitbuchungsContainer
     buch.setSplitId(Long.valueOf(b.getID()));
     buch.setUmsatzid(b.getUmsatzid());
     buch.setZweck(b.getZweck());
+    buch.setIban(b.getIban());
     buch.setSplitTyp(SplitbuchungTyp.GEGEN);
     return buch;
   }
 
-  private static Buchung getSplitbuchung(Buchung master, Buchung origin)
+  private static Buchung getSplitbuchung(Buchung master, Buchung origin,
+      HashMap<Buchung, Boolean> zweckeVonHauptbuchung,
+      HashMap<Buchung, Boolean> kommentareVonHauptbuchung)
       throws RemoteException
   {
     Buchung buch = (Buchung) Einstellungen.getDBService()
@@ -316,14 +346,29 @@ public class SplitbuchungsContainer
     buch.setBuchungsartId(origin.getBuchungsartId());
     buch.setBuchungsklasseId(origin.getBuchungsklasseId());
     buch.setDatum(master.getDatum());
-    buch.setKommentar(origin.getKommentar());
+    if (kommentareVonHauptbuchung.get(origin) == true)
+    {
+      buch.setKommentar(master.getKommentar());
+    }
+    else
+    {
+      buch.setKommentar(origin.getKommentar());
+    }
     buch.setKonto(master.getKonto());
     buch.setSollbuchungID(master.getSollbuchungID());
     buch.setName(master.getName());
     buch.setProjekt(master.getProjekt());
     buch.setSplitId(Long.valueOf(master.getID()));
     buch.setUmsatzid(master.getUmsatzid());
-    buch.setZweck(origin.getZweck());
+    if (zweckeVonHauptbuchung.get(origin) == true)
+    {
+      buch.setZweck(master.getZweck());
+    }
+    else
+    {
+      buch.setZweck(origin.getZweck());
+    }
+    buch.setIban(master.getIban());
     buch.setSplitTyp(SplitbuchungTyp.SPLIT);
     return buch;
   }
