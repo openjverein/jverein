@@ -158,9 +158,9 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         {
           saldo.setAttribute(EINNAHMEN, einnahmenSumme);
         }
-        if (Math.abs(umbuchungenSumme) >= 0.01d)
+        if (Math.abs(ausgabenSumme) >= 0.01d)
         {
-          saldo.setAttribute(AUSGABEN, umbuchungenSumme);
+          saldo.setAttribute(AUSGABEN, ausgabenSumme);
         }
         if (Math.abs(umbuchungenSumme) >= 0.01d)
         {
@@ -250,9 +250,9 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       {
         saldo.setAttribute(EINNAHMEN, einnahmenSumme);
       }
-      if (Math.abs(umbuchungenSumme) >= 0.01d)
+      if (Math.abs(ausgabenSumme) >= 0.01d)
       {
-        saldo.setAttribute(AUSGABEN, umbuchungenSumme);
+        saldo.setAttribute(AUSGABEN, ausgabenSumme);
       }
       if (Math.abs(umbuchungenSumme) >= 0.01d)
       {
