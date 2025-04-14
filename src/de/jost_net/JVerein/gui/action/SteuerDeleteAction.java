@@ -18,7 +18,6 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -39,11 +38,11 @@ public class SteuerDeleteAction implements Action
     {
       throw new ApplicationException("Keine Steuer ausgewählt");
     }
-    else if (context instanceof Buchungsart)
+    else if (context instanceof Steuer)
     {
       steuern = new Steuer[] { (Steuer) context };
     }
-    else if (context instanceof Buchungsart[])
+    else if (context instanceof Steuer[])
     {
       steuern = (Steuer[]) context;
     }
