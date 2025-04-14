@@ -78,10 +78,6 @@
           <groupId>com.beust</groupId>
           <artifactId>jcommander</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>com.github.jai-imageio</groupId>
-          <artifactId>jai-imageio-core</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
