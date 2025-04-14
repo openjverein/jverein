@@ -54,19 +54,17 @@ public abstract class AbstractSaldoControl extends AbstractControl
   public static final String ART = "art";
 
   /**
-   * Summe der Einnahmen. Wenn sie nicht vom Iterator geliefert wird, wird sie
-   * aus brutto und der ARTBUCHUNGSART bestimmt.
+   * Summe der Einnahmen.
    */
   public static final String EINNAHMEN = "einnahmen";
 
   /**
-   * Summe der Ausgaben. Wenn sie nicht vom Iterator geliefert wird, wird sie
-   * aus BRUTTO und der ARTBUCHUNGSART bestimmt.
+   * Summe der Ausgaben.
    */
   public static final String AUSGABEN = "ausgaben";
 
   /**
-   * Summe der Umbuchungen, wird aus BRUTTO und der ARTBUCHUNGSART bestimmt.
+   * Summe der Umbuchungen.
    */
   public static final String UMBUCHUNGEN = "umbuchungen";
 
@@ -76,7 +74,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
   public static final String BUCHUNGSKLASSE = "buchungsklasse";
 
   /**
-   * Die Buchungsart aus der DB. Wird für die zweite Spalte verwendet
+   * Die Buchungsart aus der DB.
    */
   public static final String BUCHUNGSART = "buchungsart";
 
