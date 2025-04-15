@@ -678,6 +678,13 @@ public class BuchungImpl extends AbstractDBObject implements Buchung
     {
       return brutto;
     }
+    // Alte Steuerbuchungen mit dependencyid lassen wir so bestehen, hier wird
+    // kein Netto berechnet
+    if (getAttribute("dependencyid") != null
+        && (Integer) getAttribute("dependencyid") != -1)
+    {
+      return brutto;
+    }
     Steuer steuer = null;
     if (Einstellungen.getEinstellung().getSteuerInBuchung())
     {

@@ -117,26 +117,33 @@ public class KontensaldoControl extends AbstractSaldoControl
     {
       // Bei Umbuchungen vom Geldkonto den Steueranteil nicht bei den
       // Umbuchungen sondern bei den Einnahmen/Ausgaben aufführen.
+      // Alte Steuerbuchungen mit dependencyid berücksichtigen wir dabei nicht
       it.addColumn(
           "sum(case when buchungsart.art = ? then buchung.betrag else 0 end "
-              + "- case when konto.kontoart = ? and buchungsart.art = ? then "
-              + "CAST(buchung.betrag * COALESCE(steuer.satz,0) / (100 + COALESCE(steuer.satz,0)) AS DECIMAL(10,2)) ELSE 0  END) as "
+              + "- case when (dependencyid is null or dependencyid = -1)"
+              + " and konto.kontoart = ? and buchungsart.art = ? then "
+              + "CAST(buchung.betrag * COALESCE(steuer.satz,0) / (100 + COALESCE(steuer.satz,0))"
+              + " AS DECIMAL(10,2)) ELSE 0 END) as "
               + UMBUCHUNGEN,
           ArtBuchungsart.UMBUCHUNG, Kontoart.GELD.getKey(),
           ArtBuchungsart.UMBUCHUNG);
 
       it.addColumn(
           "sum(case when buchungsart.art = ? then buchung.betrag else 0 end "
-              + "+ case when konto.kontoart = ? and buchungsart.art = ? and buchung.betrag > 0 then "
-              + "CAST(buchung.betrag * COALESCE(steuer.satz,0) / (100 + COALESCE(steuer.satz,0)) AS DECIMAL(10,2)) ELSE 0  END) as "
+              + "+ case when (dependencyid is null or dependencyid = -1)"
+              + " and konto.kontoart = ? and buchungsart.art = ? and buchung.betrag > 0 then "
+              + "CAST(buchung.betrag * COALESCE(steuer.satz,0) / (100 + COALESCE(steuer.satz,0))"
+              + " AS DECIMAL(10,2)) ELSE 0 END) as "
               + EINNAHMEN,
           ArtBuchungsart.EINNAHME, Kontoart.GELD.getKey(),
           ArtBuchungsart.UMBUCHUNG);
 
       it.addColumn(
           "sum(case when buchungsart.art = ? then buchung.betrag else 0 end"
-              + "+ case when konto.kontoart = ? and buchungsart.art = ? and buchung.betrag < 0 then "
-              + "CAST(buchung.betrag * COALESCE(steuer.satz,0) / (100 + COALESCE(steuer.satz,0)) AS DECIMAL(10,2)) ELSE 0  END) as "
+              + "+ case when (dependencyid is null or dependencyid = -1)"
+              + " and konto.kontoart = ? and buchungsart.art = ? and buchung.betrag < 0 then "
+              + "CAST(buchung.betrag * COALESCE(steuer.satz,0) / (100 + COALESCE(steuer.satz,0))"
+              + " AS DECIMAL(10,2)) ELSE 0 END) as "
               + AUSGABEN,
           ArtBuchungsart.AUSGABE, Kontoart.GELD.getKey(),
           ArtBuchungsart.UMBUCHUNG);
@@ -195,8 +202,6 @@ public class KontensaldoControl extends AbstractSaldoControl
 
     return it;
   }
-
-
 
   @Override
   public ArrayList<PseudoDBObject> getList() throws RemoteException
@@ -335,8 +340,7 @@ public class KontensaldoControl extends AbstractSaldoControl
     if (zeilenUeberLimit.size() > 0)
     {
       // Leerzeile als Trenner
-      PseudoDBObject leer = new PseudoDBObject();
-      zeilen.add(leer);
+      zeilen.add(new PseudoDBObject());
 
       // Konten ohne Berücksichtigung im Saldo
       PseudoDBObject ohne = new PseudoDBObject();

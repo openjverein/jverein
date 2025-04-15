@@ -347,8 +347,10 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       // hinzurechnen
       it.addColumn(
           "COALESCE(SUM(CAST(buchung.betrag * 100 / (100 + "
-              // Anlagenkonto immer Bruttobeträge
-              + "CASE WHEN konto.kontoart = ? THEN 0 ELSE COALESCE(steuer.satz,0) END"
+              // Anlagenkonto immer Bruttobeträge.
+              // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
+              // Netto zu berehnen.
+              + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
               + ") AS DECIMAL(10,2))),0)" + " + COALESCE(st.steuerbetrag,0) AS "
               + SUMME,
           Kontoart.ANLAGE.getKey());
@@ -417,6 +419,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       }
       subselect += " JOIN buchungsart ON steuer.buchungsart = buchungsart.id "
           + " WHERE datum >= ? and datum <= ? "
+          // Keine Steuer bei alten Steuerbuchungen mit dependencyid
+          + " AND buchung.dependencyid is null or  buchung.dependencyid = -1"
           + " GROUP BY buchungsart.id) AS st ";
       it.leftJoin(subselect, "st.id = buchungsart.id ", Kontoart.LIMIT.getKey(),
           Kontoart.ANLAGE.getKey(), getDatumvon().getDate(),
