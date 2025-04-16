@@ -160,7 +160,8 @@ public class KontoImpl extends AbstractDBObject implements Konto
    * @param konto
    *          id des Kontos
    * @param datum
-   * @return dibt den Kontostand zum angegebenen Zeitpunkt zurück
+   * @return dibt den Kontostand am anfang des angegebenen Tages zurück, also
+   *         ohne die Buchungen des angegebenen Tages
    * @throws RemoteException
    */
   public static Double getSaldo(Integer konto, Date datum)
@@ -185,7 +186,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
           "buchung");
       summeIt.addColumn("sum(betrag) as summe");
       summeIt.addFilter("datum >= ?", a.getDatum());
-      summeIt.addFilter("datum <= ?", DateUtils.addDays(datum, -1));
+      summeIt.addFilter("datum < ?", datum);
       summeIt.addFilter("konto = ?", konto);
 
       Double summe = 0d;

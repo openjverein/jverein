@@ -18,6 +18,9 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+
+import org.apache.commons.lang.time.DateUtils;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.AnlagenverzeichnisCSV;
 import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
@@ -216,7 +219,8 @@ public class AnlagenlisteControl extends AbstractSaldoControl
       Double abgang = o.getDouble(ABGANG);
 
       Double startwert = KontoImpl.getSaldo(konto, getDatumvon().getDate());
-      Double endwert = KontoImpl.getSaldo(konto, getDatumbis().getDate());
+      Double endwert = KontoImpl.getSaldo(konto,
+          DateUtils.addDays(getDatumbis().getDate(), 1));
 
       // Summen Berechnen
 

@@ -321,22 +321,23 @@ public class JahresabschlussControl extends KontensaldoControl
         ArrayList<PseudoDBObject> zeilen = getList();
         for (PseudoDBObject z : zeilen)
         {
-          String ktonr = (String) z.getAttribute("kontonummer");
-          if (ktonr.length() > 0)
+          String ktonr = (String) z.getAttribute(KONTO_NUMMER);
+          if (ktonr != null && ktonr.length() > 0)
           {
-            Double endbestand = (Double) z.getAttribute("endbestand");
+            Double endbestand = (Double) z.getAttribute(ENDBESTAND);
             Anfangsbestand anf = (Anfangsbestand) Einstellungen.getDBService()
                 .createObject(Anfangsbestand.class, null);
-            Konto konto = (Konto) z.getAttribute("konto");
+            String konto = z.getInteger(KONTO_ID).toString();
             anf.setBetrag(endbestand);
             anf.setDatum(Datum.addTage(ja.getBis(), 1));
-            anf.setKonto(konto);
+            anf.setKontoId(konto);
             anf.store();
           }
         }
       }
       GUI.getStatusBar().setSuccessText("Jahresabschluss gespeichert");
     }
+
     catch (RemoteException e)
     {
       String fehler = "Fehler beim speichern des Jahresabschlusses";
@@ -380,19 +381,6 @@ public class JahresabschlussControl extends KontensaldoControl
     return jahresabschlussList;
   }
 
-  public void refreshTable() throws RemoteException
-  {
-    jahresabschlussList.removeAll();
-    DBIterator<Jahresabschluss> jahresabschluesse = Einstellungen.getDBService()
-        .createList(Jahresabschluss.class);
-    jahresabschluesse.setOrder("ORDER BY von desc");
-    while (jahresabschluesse.hasNext())
-    {
-      jahresabschlussList.addItem(jahresabschluesse.next());
-    }
-    jahresabschlussList.sort();
-  }
-
   /**
    * Infotext bei Fehlenden Angaben bestimmen.
    * 
@@ -429,11 +417,10 @@ public class JahresabschlussControl extends KontensaldoControl
           ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
               "buchung");
           Double betrag = 0d;
-          it.join("buchungsart");
-          it.addFilter("buchungsart.id = buchung.buchungsart");
+          it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
           it.addFilter("konto = ?", konto.getID());
           it.addFilter("buchungsart.abschreibung = FALSE");
-          it.addFilter("datum <= ?", bisgj.getTime());
+          it.addFilter("datum <= ?", bisgj);
           it.addColumn("sum(buchung.betrag) as summe");
           PseudoDBObject o = it.next();
           if (o != null)
