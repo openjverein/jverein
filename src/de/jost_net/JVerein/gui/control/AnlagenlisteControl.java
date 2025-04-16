@@ -128,7 +128,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   protected ExtendedDBIterator<PseudoDBObject> getIterator()
       throws RemoteException
   {
-    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("buchung");
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("konto");
 
     it.addColumn("buchungsart.bezeichnung AS " + BUCHUNGSART);
     it.addColumn("buchungsklasse.bezeichnung AS " + BUCHUNGSKLASSE);
@@ -149,8 +149,8 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         "SUM(case when buchungsart.abschreibung = FALSE AND buchung.betrag < 0 then buchung.betrag ELSE 0 END) AS "
             + ABGANG);
 
-    it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
-    it.join("konto", "konto.id = buchung.konto");
+    it.leftJoin("buchung", "konto.id = buchung.konto");
+    it.join("buchungsart", "buchungsart.id = konto.anlagenart");
     it.leftJoin("buchungsklasse", "buchungsklasse.id = konto.anlagenklasse");
     it.leftJoin("buchungsart as afaart", "afaart.id = konto.afaart");
 
@@ -159,8 +159,10 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         getDatumbis().getDate());
     it.addFilter("konto.aufloesung is null or konto.aufloesung >= ?",
         getDatumvon().getDate());
-    it.addFilter("buchung.datum >= ?", getDatumvon().getDate());
-    it.addFilter("buchung.datum <= ?", getDatumbis().getDate());
+    it.addFilter("buchung.datum is null or buchung.datum >= ?",
+        getDatumvon().getDate());
+    it.addFilter("buchung.datum is null or buchung.datum <= ?",
+        getDatumbis().getDate());
 
     it.addGroupBy("konto.id");
     it.addGroupBy("konto.anlagenart");
@@ -206,12 +208,11 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         klasse = "Nicht zugeordnet";
       }
       String buchungsart = (String) o.getAttribute(BUCHUNGSART);
-      Integer konto = ((Number) o.getAttribute(KONTO_ID)).intValue();
+      Integer konto = o.getInteger(KONTO_ID);
 
-      Double zugang = ((Number) o.getAttribute(ZUGANG)).doubleValue();
-      Double abschreibung = ((Number) o.getAttribute(ABSCHREIBUNG))
-          .doubleValue();
-      Double abgang = ((Number) o.getAttribute(ABGANG)).doubleValue();
+      Double zugang = o.getDouble(ZUGANG);
+      Double abschreibung = o.getDouble(ABSCHREIBUNG);
+      Double abgang = o.getDouble(ABGANG);
 
       Double startwert = KontoImpl.getSaldo(konto, getDatumvon().getDate());
       Double endwert = KontoImpl.getSaldo(konto, getDatumbis().getDate());
@@ -278,6 +279,8 @@ public class AnlagenlisteControl extends AbstractSaldoControl
 
       // Die Detailzeile wie sie aus dem iterator kommt azeigen.
       o.setAttribute(ART, ART_DETAIL);
+      o.setAttribute(STARTWERT, startwert);
+      o.setAttribute(ENDWERT, endwert);
       zeilen.add(o);
     }
 

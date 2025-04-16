@@ -99,7 +99,7 @@ public class Update0474 extends AbstractDDLUpdate
 
     // Steuer für bestehende Steuersätze erstellen
     execute("INSERT INTO steuer (NAME, satz, buchungsart,aktiv) SELECT"
-        + " concat(case art when 0 then 'Umsatzsteur ' when 1 then 'Vorsteuer ' when 2 then 'Steuer ' END, steuersatz , '%'),"
+        + " concat(case art when 0 then 'Umsatzsteuer ' when 1 then 'Vorsteuer ' when 2 then 'Steuer ' END, steuersatz , '%'),"
         + " steuersatz,steuer_buchungsart,1 FROM buchungsart"
         + " where steuersatz > 0 AND steuer_buchungsart IS NOT NULL "
         + "GROUP BY steuersatz,steuer_buchungsart");

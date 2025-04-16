@@ -194,7 +194,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
         PseudoDBObject o = summeIt.next();
         if (o.getAttribute("summe") != null)
         {
-          summe = ((Number) o.getAttribute("summe")).doubleValue();
+          summe = o.getDouble("summe");
         }
       }
 
@@ -227,7 +227,7 @@ public class KontoImpl extends AbstractDBObject implements Konto
       PseudoDBObject o = summeIt.next();
       if (o.getAttribute("summe") != null)
       {
-        summe = ((Number) o.getAttribute("summe")).doubleValue();
+        summe = o.getDouble("summe");
       }
       return a.getBetrag() - summe;
     }

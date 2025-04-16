@@ -438,7 +438,7 @@ public class JahresabschlussControl extends KontensaldoControl
           PseudoDBObject o = it.next();
           if (o != null)
           {
-            betrag = ((Number) o.getAttribute("summe")).doubleValue();
+            betrag = o.getDouble("summe");
           }
           if (Math.abs(betrag - konto.getBetrag()) > Double.MIN_NORMAL)
           {

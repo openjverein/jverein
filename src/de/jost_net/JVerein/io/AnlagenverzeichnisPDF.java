@@ -93,7 +93,7 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
                 (String) akz.getAttribute(AnlagenlisteControl.AFAART),
                 Element.ALIGN_LEFT);
             reporter.addColumn(
-                (Date) akz.getAttribute(AnlagenlisteControl.AFAART),
+                (Date) akz.getAttribute(AnlagenlisteControl.ANSCHAFFUNG_DATUM),
                 Element.ALIGN_RIGHT);
             reporter.addColumn(
                 (Double) akz.getAttribute(AnlagenlisteControl.BETRAG));

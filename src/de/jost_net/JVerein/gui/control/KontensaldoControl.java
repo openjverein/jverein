@@ -111,7 +111,7 @@ public class KontensaldoControl extends AbstractSaldoControl
   protected ExtendedDBIterator<PseudoDBObject> getIterator()
       throws RemoteException
   {
-    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("buchung");
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("konto");
     boolean mitSteuer = Einstellungen.getEinstellung().getOptiert();
     if (mitSteuer)
     {
@@ -172,8 +172,8 @@ public class KontensaldoControl extends AbstractSaldoControl
     it.addColumn("konto.bezeichnung as " + GRUPPE);
     it.addColumn("konto.nummer as " + KONTO_NUMMER);
 
+    it.leftJoin("buchung", "buchung.konto = konto.id");
     it.leftJoin("buchungsart", "buchung.buchungsart = buchungsart.id");
-    it.leftJoin("konto", "buchung.konto = konto.id");
 
     if (mitSteuer)
     {
@@ -187,8 +187,10 @@ public class KontensaldoControl extends AbstractSaldoControl
       }
     }
 
-    it.addFilter("buchung.datum >= ?", getDatumvon().getDate());
-    it.addFilter("buchung.datum <= ?", getDatumbis().getDate());
+    it.addFilter("buchung.datum is null or buchung.datum >= ?",
+        getDatumvon().getDate());
+    it.addFilter("buchung.datum is null or buchung.datum <= ?",
+        getDatumbis().getDate());
 
     // Nur aktive Konten
     it.addFilter("(konto.aufloesung is null or konto.aufloesung >= ?)",
@@ -229,8 +231,8 @@ public class KontensaldoControl extends AbstractSaldoControl
     while (it.hasNext())
     {
       PseudoDBObject o = it.next();
-      Integer kontoart = ((Number) o.getAttribute(KONTOART)).intValue();
-      Integer konto = ((Number) o.getAttribute(KONTO_ID)).intValue();
+      Integer kontoart = o.getInteger(KONTOART);
+      Integer konto = o.getInteger(KONTO_ID);
 
       Double anfangsbestand = KontoImpl.getSaldo(konto,
           getDatumvon().getDate());
@@ -248,13 +250,12 @@ public class KontensaldoControl extends AbstractSaldoControl
       {
         o.setAttribute(ANFANGSBESTAND, anfangsbestand);
 
-        Double einnahmen = ((Number) o.getAttribute(EINNAHMEN)).doubleValue();
-        Double ausgaben = ((Number) o.getAttribute(AUSGABEN)).doubleValue();
-        Double umbuchungen = ((Number) o.getAttribute(UMBUCHUNGEN))
-            .doubleValue();
-        Double ohneBuchungsart = ((Number) o.getAttribute(OHNE_BUCHUNGSART))
-            .doubleValue();
-        if (Math.abs(ohneBuchungsart) >= 0.01d && anfangsbestand != null)
+        Double einnahmen = o.getDouble(EINNAHMEN);
+        Double ausgaben = o.getDouble(AUSGABEN);
+        Double umbuchungen = o.getDouble(UMBUCHUNGEN);
+        Double ohneBuchungsart = o.getDouble(OHNE_BUCHUNGSART);
+        if (ohneBuchungsart != null && Math.abs(ohneBuchungsart) >= 0.01d
+            && anfangsbestand != null)
         {
           o.setAttribute(BEMERKUNG,
               "Summe Buchungen ohne Buchungsart: "
@@ -263,7 +264,7 @@ public class KontensaldoControl extends AbstractSaldoControl
                   + " ");
         }
         Double endbestand = anfangsbestand + einnahmen + ausgaben + umbuchungen
-            + ohneBuchungsart;
+            + (ohneBuchungsart == null ? 0 : ohneBuchungsart);
         o.setAttribute(ENDBESTAND, endbestand);
 
         // Die Art des Eintrags ist hier immer "Detail" (Wird für die Summen in

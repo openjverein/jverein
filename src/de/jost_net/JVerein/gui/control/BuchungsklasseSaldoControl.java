@@ -138,15 +138,13 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         klasse = "Nicht zugeordnet";
       }
       // Die Art der Buchungsart: Einnahme, Ausgabe, Umbuchung
-      Integer art = ((Number) o.getAttribute(ARTBUCHUNGSART)).intValue();
-      Double summe = ((Number) o.getAttribute(SUMME)).doubleValue();
+      Integer art = o.getInteger(ARTBUCHUNGSART);
+      Double summe = o.getDouble(SUMME);
 
       // Wenn es "einnahmen" oder "ausgaben" spalten gibt, nehmen wir die Werte
       // direkt.
-      Double einnahmen = o.getAttribute(EINNAHMEN) == null ? null
-          : ((Number) o.getAttribute(EINNAHMEN)).doubleValue();
-      Double ausgaben = o.getAttribute(AUSGABEN) == null ? null
-          : ((Number) o.getAttribute(AUSGABEN)).doubleValue();
+      Double einnahmen = o.getDouble(EINNAHMEN);
+      Double ausgaben = o.getDouble(AUSGABEN);
 
       // Vor neuer Klasse Saldo der letzten anzeigen.
       if (!klasse.equals(klasseAlt) && klasseAlt != null)
@@ -232,7 +230,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       o.setAttribute(ART, ART_DETAIL);
 
       // Anzahl null blenden wir aus
-      if (((Number) o.getAttribute(ANZAHL)).equals(0))
+      if (o.getInteger(ANZAHL).equals(0))
       {
         o.setAttribute(ANZAHL, null);
       }
@@ -291,9 +289,9 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
 
     PseudoDBObject oAnz = ohneBaIt.next();
     Integer anzahl = oAnz.getAttribute("anzahl") == null ? 0
-        : ((Number) oAnz.getAttribute("anzahl")).intValue();
+        : oAnz.getInteger("anzahl");
     Double summeOhneBuchungsart = oAnz.getAttribute("summe") == null ? 0
-        : ((Number) oAnz.getAttribute("summe")).doubleValue();
+        : oAnz.getDouble("summe");
     if (anzahl > 0)
     {
       PseudoDBObject ohneBuchungsart = new PseudoDBObject();

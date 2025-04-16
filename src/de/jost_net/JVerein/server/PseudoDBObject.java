@@ -11,12 +11,9 @@ import de.willuhn.datasource.rmi.DBObject;
 
 /**
  * Hilfsobjekt für den ExtendedDBIterator. Dieses Object enthält alle geholten
- * Attribute. diese können mittels <code>getAttribute("name")</code> geholt
- * werden. Dabei wir ein Object mit dem Tp aus der Datenbenk zurückgegeben. Da
- * je nach System auch BigDecimal oder Long dabei sein können, empfiehlt es sich
- * die Zahlen mittels
- * <code>((Number) it.getAttribute("anzahl")).intValue()</code> oder
- * <code>((Number) it.getAttribute("betrag")).doubleValue()</code> zu holen.
+ * Attribute. diese können mittels <code>getAttribute("name")</code>,
+ * <code>getDouble("name")</code> oder <code>getInteger("name")</code> geholt
+ * werden.
  */
 public class PseudoDBObject extends AbstractDBObject implements DBObject
 {
@@ -57,6 +54,40 @@ public class PseudoDBObject extends AbstractDBObject implements DBObject
       return null;
 
     return properties.get(fieldName.toLowerCase());
+  }
+
+  /**
+   * Lifert den Double Wert des Attributs
+   * 
+   * @param fieldName
+   *          das Attribut
+   * @return der Wert
+   * @throws RemoteException
+   */
+  public Double getDouble(String fieldName) throws RemoteException
+  {
+    if (getAttribute(fieldName) == null)
+    {
+      return null;
+    }
+    return ((Number) getAttribute(fieldName)).doubleValue();
+  }
+
+  /**
+   * Lifert den Double Wert des Attributs
+   * 
+   * @param fieldName
+   *          das Attribut
+   * @return der Wert
+   * @throws RemoteException
+   */
+  public Integer getInteger(String fieldName) throws RemoteException
+  {
+    if (getAttribute(fieldName) == null)
+    {
+      return null;
+    }
+    return ((Number) getAttribute(fieldName)).intValue();
   }
 
   /**
