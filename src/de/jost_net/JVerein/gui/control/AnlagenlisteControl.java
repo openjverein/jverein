@@ -140,16 +140,21 @@ public class AnlagenlisteControl extends AbstractSaldoControl
     it.addColumn("konto.betrag AS " + BETRAG);
 
     it.addColumn(
-        "SUM(case when buchungsart.abschreibung = TRUE then buchung.betrag ELSE 0 END) AS "
+        "SUM(case when buchungbuchungsart.abschreibung then buchung.betrag ELSE 0 END) AS "
             + ABSCHREIBUNG);
     it.addColumn(
-        "SUM(case when buchungsart.abschreibung = FALSE AND buchung.betrag > 0 then buchung.betrag ELSE 0 END) AS "
+        "SUM(case when !buchungbuchungsart.abschreibung AND buchung.betrag > 0 then buchung.betrag ELSE 0 END) AS "
             + ZUGANG);
     it.addColumn(
-        "SUM(case when buchungsart.abschreibung = FALSE AND buchung.betrag < 0 then buchung.betrag ELSE 0 END) AS "
+        "SUM(case when !buchungbuchungsart.abschreibung AND buchung.betrag < 0 then buchung.betrag ELSE 0 END) AS "
             + ABGANG);
 
-    it.leftJoin("buchung", "konto.id = buchung.konto");
+    it.leftJoin("buchung",
+        "konto.id = buchung.konto AND buchung.datum >= ? AND buchung.datum <= ?",
+        getDatumvon().getDate(), getDatumbis().getDate());
+    it.leftJoin("buchungsart as buchungbuchungsart",
+        "buchungbuchungsart.id = buchung.buchungsart");
+
     it.join("buchungsart", "buchungsart.id = konto.anlagenart");
     it.leftJoin("buchungsklasse", "buchungsklasse.id = konto.anlagenklasse");
     it.leftJoin("buchungsart as afaart", "afaart.id = konto.afaart");
@@ -159,10 +164,6 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         getDatumbis().getDate());
     it.addFilter("konto.aufloesung is null or konto.aufloesung >= ?",
         getDatumvon().getDate());
-    it.addFilter("buchung.datum is null or buchung.datum >= ?",
-        getDatumvon().getDate());
-    it.addFilter("buchung.datum is null or buchung.datum <= ?",
-        getDatumbis().getDate());
 
     it.addGroupBy("konto.id");
     it.addGroupBy("konto.anlagenart");

@@ -172,7 +172,9 @@ public class KontensaldoControl extends AbstractSaldoControl
     it.addColumn("konto.bezeichnung as " + GRUPPE);
     it.addColumn("konto.nummer as " + KONTO_NUMMER);
 
-    it.leftJoin("buchung", "buchung.konto = konto.id");
+    it.leftJoin("buchung",
+        "buchung.konto = konto.id AND buchung.datum >= ? AND buchung.datum <= ?",
+        getDatumvon().getDate(), getDatumbis().getDate());
     it.leftJoin("buchungsart", "buchung.buchungsart = buchungsart.id");
 
     if (mitSteuer)
@@ -187,11 +189,6 @@ public class KontensaldoControl extends AbstractSaldoControl
       }
     }
 
-    it.addFilter("buchung.datum is null or buchung.datum >= ?",
-        getDatumvon().getDate());
-    it.addFilter("buchung.datum is null or buchung.datum <= ?",
-        getDatumbis().getDate());
-
     // Nur aktive Konten
     it.addFilter("(konto.aufloesung is null or konto.aufloesung >= ?)",
         getDatumvon().getDate());
@@ -199,6 +196,7 @@ public class KontensaldoControl extends AbstractSaldoControl
         getDatumbis().getDate());
 
     it.addGroupBy("konto.id");
+    // it.addGroupBy("konto.kontoart");
 
     it.setOrder("ORDER BY konto.bezeichnung");
 
