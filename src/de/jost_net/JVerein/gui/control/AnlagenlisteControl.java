@@ -140,13 +140,13 @@ public class AnlagenlisteControl extends AbstractSaldoControl
     it.addColumn("konto.betrag AS " + BETRAG);
 
     it.addColumn(
-        "SUM(case when buchungbuchungsart.abschreibung then buchung.betrag ELSE 0 END) AS "
+        "SUM(case when buchungbuchungsart.abschreibung = TRUE then buchung.betrag ELSE 0 END) AS "
             + ABSCHREIBUNG);
     it.addColumn(
-        "SUM(case when !buchungbuchungsart.abschreibung AND buchung.betrag > 0 then buchung.betrag ELSE 0 END) AS "
+        "SUM(case when buchungbuchungsart.abschreibung = FALSE AND buchung.betrag > 0 then buchung.betrag ELSE 0 END) AS "
             + ZUGANG);
     it.addColumn(
-        "SUM(case when !buchungbuchungsart.abschreibung AND buchung.betrag < 0 then buchung.betrag ELSE 0 END) AS "
+        "SUM(case when buchungbuchungsart.abschreibung = FALSE AND buchung.betrag < 0 then buchung.betrag ELSE 0 END) AS "
             + ABGANG);
 
     it.leftJoin("buchung",
