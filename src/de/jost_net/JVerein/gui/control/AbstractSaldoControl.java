@@ -109,7 +109,9 @@ public abstract class AbstractSaldoControl extends SaldoControl
 
   public static final int ART_GESAMTGEWINNVERLUST = 6;
 
-  public static final int ART_NICHTZUGEORDNETEBUCHUNGEN = 9;
+  public static final int ART_NICHTZUGEORDNETEBUCHUNGEN = 7;
+
+  public static final int ART_LEERZEILE = 8;
 
   final static String AuswertungPDF = "PDF";
 

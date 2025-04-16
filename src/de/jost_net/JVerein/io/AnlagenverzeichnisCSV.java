@@ -97,7 +97,7 @@ public class AnlagenverzeichnisCSV implements ISaldoExport
           case AnlagenlisteControl.ART_DETAIL:
           {
             csvzeile.put(header[1],
-                (String) akz.getAttribute(AnlagenlisteControl.GRUPPE));
+                (String) akz.getAttribute(AnlagenlisteControl.KONTO));
             csvzeile.put(header[2],
                 (Integer) akz.getAttribute(AnlagenlisteControl.NUTZUNGSDAUER));
             csvzeile.put(header[3],

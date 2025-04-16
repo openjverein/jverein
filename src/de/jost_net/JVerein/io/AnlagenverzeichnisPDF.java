@@ -84,11 +84,12 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
           case AnlagenlisteControl.ART_DETAIL:
           {
             reporter.addColumn(
-                (String) akz.getAttribute(AnlagenlisteControl.GRUPPE),
+                (String) akz.getAttribute(AnlagenlisteControl.KONTO),
                 Element.ALIGN_LEFT);
             Integer tmp = (Integer) akz
                 .getAttribute(AnlagenlisteControl.NUTZUNGSDAUER);
-              reporter.addColumn(tmp.toString(), Element.ALIGN_RIGHT);
+            reporter.addColumn(tmp == null ? "" : tmp.toString(),
+                Element.ALIGN_RIGHT);
             reporter.addColumn(
                 (String) akz.getAttribute(AnlagenlisteControl.AFAART),
                 Element.ALIGN_LEFT);
