@@ -268,7 +268,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
 
     PseudoDBObject o = new PseudoDBObject();
     o.setAttribute(ART, ART_LEERZEILE);
-    zeilen.add(new PseudoDBObject());
+    zeilen.add(o);
 
     PseudoDBObject saldo = new PseudoDBObject();
     saldo.setAttribute(ART, ART_GESAMTSALDOFOOTER);

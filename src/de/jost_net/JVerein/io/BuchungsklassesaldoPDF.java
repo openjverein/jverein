@@ -59,7 +59,7 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
 
       for (PseudoDBObject bkz : zeile)
       {
-        switch ((Integer) bkz.getAttribute(AbstractSaldoControl.ART))
+        switch (bkz.getInteger(AbstractSaldoControl.ART))
         {
           case AbstractSaldoControl.ART_HEADER:
           {
@@ -73,14 +73,12 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.BUCHUNGSART),
                 Element.ALIGN_LEFT);
-            reporter.addColumn(
-                (Double) bkz.getAttribute(AbstractSaldoControl.EINNAHMEN));
-            reporter.addColumn(
-                (Double) bkz.getAttribute(AbstractSaldoControl.AUSGABEN));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN));
             if (umbuchung)
             {
-              reporter.addColumn(
-                  (Double) bkz.getAttribute(AbstractSaldoControl.UMBUCHUNGEN));
+              reporter
+                  .addColumn(bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
             }
             break;
           }
@@ -89,14 +87,12 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_RIGHT);
-            reporter.addColumn(
-                (Double) bkz.getAttribute(AbstractSaldoControl.EINNAHMEN));
-            reporter.addColumn(
-                (Double) bkz.getAttribute(AbstractSaldoControl.AUSGABEN));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN));
             if (umbuchung)
             {
-              reporter.addColumn(
-                  (Double) bkz.getAttribute(AbstractSaldoControl.UMBUCHUNGEN));
+              reporter
+                  .addColumn(bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
             }
             break;
           }
@@ -106,14 +102,12 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_RIGHT);
-            reporter.addColumn(
-                (Double) bkz.getAttribute(AbstractSaldoControl.EINNAHMEN));
-            reporter.addColumn(
-                (Double) bkz.getAttribute(AbstractSaldoControl.AUSGABEN));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN));
             if (umbuchung)
             {
-              reporter.addColumn(
-                  (Double) bkz.getAttribute(AbstractSaldoControl.UMBUCHUNGEN));
+              reporter
+                  .addColumn(bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
             }
             break;
           }
@@ -123,8 +117,7 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_RIGHT);
-            reporter.addColumn(
-                (Double) bkz.getAttribute(AbstractSaldoControl.EINNAHMEN));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
             reporter.addColumn("", Element.ALIGN_LEFT, 2);
             break;
           }
@@ -133,8 +126,8 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_LEFT);
-            reporter.addColumn(
-                (Integer) bkz.getAttribute(BuchungsklasseSaldoControl.ANZAHL));
+            reporter
+                .addColumn(bkz.getInteger(BuchungsklasseSaldoControl.ANZAHL));
             reporter.addColumn("", Element.ALIGN_LEFT, 2);
             break;
           }
