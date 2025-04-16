@@ -64,4 +64,6 @@ public interface Buchungsart extends DBObject
 
   public void setSteuer(Steuer steuer) throws RemoteException;
 
+  public void setSteuerId(Integer id) throws RemoteException;
+
 }

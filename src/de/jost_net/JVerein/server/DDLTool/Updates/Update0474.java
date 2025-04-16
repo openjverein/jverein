@@ -96,5 +96,17 @@ public class Update0474 extends AbstractDDLUpdate
     steuer = new Column("steuerinbuchung", COLTYPE.BOOLEAN, 1, "0", true,
         false);
     execute(addColumn("einstellung", steuer));
+
+    // Steuer für bestehende Steuersätze erstellen
+    execute("INSERT INTO steuer (NAME, satz, buchungsart,aktiv) SELECT"
+        + " concat(case art when 0 then 'Umsatzsteur ' when 1 then 'Vorsteuer ' when 2 then 'Steuer ' END, steuersatz , '%'),"
+        + " steuersatz,steuer_buchungsart,1 FROM buchungsart"
+        + " where steuersatz > 0 AND steuer_buchungsart IS NOT NULL "
+        + "GROUP BY steuersatz,steuer_buchungsart");
+
+    // Die erstellte Steuer der Buchungsart zuweisen
+    execute("UPDATE buchungsart SET steuer = "
+        + "(SELECT id FROM steuer WHERE steuer.buchungsart = buchungsart.steuer_buchungsart AND steuer.satz = buchungsart.steuersatz) "
+        + "WHERE steuer IS null");
   }
 }

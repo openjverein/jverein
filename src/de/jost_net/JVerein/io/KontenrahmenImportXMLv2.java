@@ -22,8 +22,11 @@ import java.util.Enumeration;
 import java.util.HashMap;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -75,79 +78,110 @@ public class KontenrahmenImportXMLv2 implements Importer
       throw new ApplicationException("Version fehlt in Datei");
     }
 
-    // Element "buchungsklassen" holen
-    IXMLElement buchungsklassen = root.getFirstChildNamed("buchungsklassen");
-    @SuppressWarnings("rawtypes")
-    Enumeration enubu = buchungsklassen.enumerateChildren();
-    while (enubu.hasMoreElements())
+    try
     {
-      IXMLElement element = (IXMLElement) enubu.nextElement();
-      Buchungsklasse bukl = (Buchungsklasse) Einstellungen.getDBService()
-          .createObject(Buchungsklasse.class, null);
-      bukl.setBezeichnung(element.getAttribute("bezeichnung", ""));
-      bukl.setNummer(element.getAttribute("nummer", 0));
-      bukl.store();
-    }
+      // Element "buchungsklassen" holen
+      IXMLElement buchungsklassen = root.getFirstChildNamed("buchungsklassen");
+      @SuppressWarnings("rawtypes")
+      Enumeration enubu = buchungsklassen.enumerateChildren();
+      while (enubu.hasMoreElements())
+      {
+        IXMLElement element = (IXMLElement) enubu.nextElement();
+        Buchungsklasse bukl = (Buchungsklasse) Einstellungen.getDBService()
+            .createObject(Buchungsklasse.class, null);
+        bukl.setBezeichnung(element.getAttribute("bezeichnung", ""));
+        bukl.setNummer(element.getAttribute("nummer", 0));
+        bukl.store();
+      }
+      HashMap<Double, HashMap<String, Integer>> steuerMap = new HashMap<>();
+      DBTransaction.starten();
 
-    // Element "buchungsklassen" holen
-    IXMLElement buchungsarten = root.getFirstChildNamed("buchungsarten");
-    @SuppressWarnings("rawtypes")
-    Enumeration enubua = buchungsarten.enumerateChildren();
-    HashMap<String, Double> mapsatz = new HashMap<String, Double>();
-    HashMap<String, String> mapst = new HashMap<String, String>();
-    while (enubua.hasMoreElements())
-    {
-      IXMLElement buaelement = (IXMLElement) enubua.nextElement();
-      Buchungsart buchungsart = (Buchungsart) Einstellungen.getDBService()
-          .createObject(Buchungsart.class, null);
-      buchungsart.setArt(buaelement.getAttribute("art", 0));
-      buchungsart.setBezeichnung(buaelement.getAttribute("bezeichnung", ""));
-      buchungsart.setNummer(buaelement.getAttribute("nummer", 0));
-      String spende = buaelement.getAttribute("spende", "false");
-      if (spende.equalsIgnoreCase("true"))
-        buchungsart.setSpende(true);
-      else
-        buchungsart.setSpende(false);
-      String buklanr = buaelement.getAttribute("buchungsklasse", "");
-      if (buklanr != null && !buklanr.isEmpty())
+      // Element "buchungsklassen" holen
+      IXMLElement buchungsarten = root.getFirstChildNamed("buchungsarten");
+      @SuppressWarnings("rawtypes")
+      Enumeration enubua = buchungsarten.enumerateChildren();
+      while (enubua.hasMoreElements())
       {
-        DBIterator<Buchungsklasse> bklait = Einstellungen.getDBService()
-            .createList(Buchungsklasse.class);
-        bklait.addFilter("nummer = ?", buklanr);
-        Buchungsklasse bkla = bklait.next();
-        buchungsart.setBuchungsklasseId(Long.valueOf(bkla.getID()));
-      }
-      buchungsart.setStatus(buaelement.getAttribute("status", 0));
-      String abschreibung = buaelement.getAttribute("abschreibung", "false");
-      if (abschreibung.equalsIgnoreCase("true"))
-        buchungsart.setAbschreibung(true);
-      else
-        buchungsart.setAbschreibung(false);
-      buchungsart.store();
-      Double steuersatz = Double.valueOf(buaelement.getAttribute("steuersatz", "0.00"));
-      if (steuersatz != 0)
-      {
-        mapsatz.put(buchungsart.getID(), steuersatz);
-        String start = buaelement.getAttribute("steuer_buchungsart", "");
-        mapst.put(buchungsart.getID(), start);
+        IXMLElement buaelement = (IXMLElement) enubua.nextElement();
+        Buchungsart buchungsart = (Buchungsart) Einstellungen.getDBService()
+            .createObject(Buchungsart.class, null);
+        buchungsart.setArt(buaelement.getAttribute("art", 0));
+        buchungsart.setBezeichnung(buaelement.getAttribute("bezeichnung", ""));
+        buchungsart.setNummer(buaelement.getAttribute("nummer", 0));
+        String spende = buaelement.getAttribute("spende", "false");
+        if (spende.equalsIgnoreCase("true"))
+          buchungsart.setSpende(true);
+        else
+          buchungsart.setSpende(false);
+        String buklanr = buaelement.getAttribute("buchungsklasse", "");
+        if (buklanr != null && !buklanr.isEmpty())
+        {
+          DBIterator<Buchungsklasse> bklait = Einstellungen.getDBService()
+              .createList(Buchungsklasse.class);
+          bklait.addFilter("nummer = ?", buklanr);
+          Buchungsklasse bkla = bklait.next();
+          buchungsart.setBuchungsklasseId(Long.valueOf(bkla.getID()));
+        }
+        buchungsart.setStatus(buaelement.getAttribute("status", 0));
+        String abschreibung = buaelement.getAttribute("abschreibung", "false");
+        if (abschreibung.equalsIgnoreCase("true"))
+          buchungsart.setAbschreibung(true);
+        else
+          buchungsart.setAbschreibung(false);
+        buchungsart.store();
+        Double steuersatz = Double
+            .valueOf(buaelement.getAttribute("steuersatz", "0.00"));
+        if (steuersatz != 0)
+        {
+          String steuerBuchungsart = buaelement
+              .getAttribute("steuer_buchungsart", "");
+          HashMap<String, Integer> steuerEntry = steuerMap
+              .getOrDefault(steuersatz, new HashMap<>());
+          if (steuerEntry.get(steuerBuchungsart) != null)
+          {
+            // Bereits erstellte Steuer verwenden
+            buchungsart.setSteuerId(steuerEntry.get(steuerBuchungsart));
+          }
+          else
+          {
+            // Neue Steuer erstellen
+            Steuer steuer = Einstellungen.getDBService()
+                .createObject(Steuer.class, null);
+            steuer.setAktiv(true);
+            steuer.setBuchungsartId(Long.parseLong(buchungsart.getID()));
+            String name = "";
+            switch (buchungsart.getArt())
+            {
+              case ArtBuchungsart.AUSGABE:
+                name = "Vorsteuer ";
+                break;
+              case ArtBuchungsart.EINNAHME:
+                name = "Umsatzsteuer ";
+                break;
+              case ArtBuchungsart.UMBUCHUNG:
+                name = "Steuer ";
+                break;
+            }
+            name += steuersatz + "%";
+            steuer.setName(name);
+            steuer.setSatz(steuersatz);
+            steuer.store();
+            buchungsart.setSteuer(steuer);
+
+            steuerEntry.put(steuerBuchungsart,
+                Integer.parseInt(steuer.getID()));
+            steuerMap.put(steuersatz, steuerEntry);
+          }
+          buchungsart.store();
+        }
       }
     }
-    for (String id : mapsatz.keySet())
+    catch (Exception e)
     {
-      DBIterator<Buchungsart> buait = Einstellungen.getDBService()
-          .createList(Buchungsart.class);
-      buait.addFilter("ID = " + id);
-      Buchungsart bua = buait.next();
-      // TODO hier müssen wir noch die Steuer bestimmen. Evtl. die beim Update
-      // erstellte steuer verwenden?
-      // bua.setSteuersatz(mapsatz.get(id));
-      DBIterator<Buchungsart> stbuait = Einstellungen.getDBService()
-          .createList(Buchungsart.class);
-      stbuait.addFilter("nummer = ?", mapst.get(id));
-      Buchungsart stbua = stbuait.next();
-      // bua.setSteuerBuchungsart(Long.parseLong(stbua.getID()));
-      bua.store();
+      DBTransaction.rollback();
+      throw new ApplicationException("Fehler beim Import: " + e.getMessage());
     }
+    DBTransaction.commit();
   }
 
   @Override

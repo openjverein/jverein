@@ -87,6 +87,7 @@ public class SteuerControl extends AbstractControl
       steuerList.setContextMenu(new SteuerMenue());
       steuerList.setRememberColWidths(true);
       steuerList.removeFeature(FeatureSummary.class);
+      steuerList.setMulti(true);
       return steuerList;
     }
     catch (RemoteException e)

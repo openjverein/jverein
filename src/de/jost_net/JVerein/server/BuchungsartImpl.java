@@ -182,6 +182,12 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   }
 
   @Override
+  public void setSteuerId(Integer id) throws RemoteException
+  {
+    super.setAttribute("steuer", id);
+  }
+
+  @Override
   public String getBezeichnung() throws RemoteException
   {
     return (String) getAttribute("bezeichnung");

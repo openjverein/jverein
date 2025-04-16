@@ -193,12 +193,12 @@ public class SteuerImpl extends AbstractDBObject implements Steuer
       }
       if (getBuchungsart() == null)
       {
-        throw new ApplicationException("Bitte Buchungsart auswählen.");
+        throw new ApplicationException("Bitte Steuer-Buchungsart auswählen.");
       }
       if (getBuchungsart().getArt() == ArtBuchungsart.UMBUCHUNG)
       {
         throw new ApplicationException(
-            "Buchungsart mit Art Umbuchung ist nicht möglich.");
+            "Steuer-Buchungsart mit Art Umbuchung ist nicht möglich.");
       }
     }
     catch (RemoteException e)
