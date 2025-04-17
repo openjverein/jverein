@@ -572,6 +572,11 @@ public class BuchungsControl extends AbstractControl
             getBuchungsklasse().setValue(
                 sbpList.get(0).getBuchungsklasse());
           }
+          if (getSteuer() != null && getSteuer().getValue() == null
+              && sbpList.size() > 0)
+          {
+            getSteuer().setValue(sbpList.get(0).getSteuer());
+          }
         }
       }
       catch (RemoteException e)
