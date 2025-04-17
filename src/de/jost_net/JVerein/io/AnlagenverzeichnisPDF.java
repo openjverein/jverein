@@ -41,26 +41,29 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
   {
     try
     {
-      boolean hasZugang = true;
-      boolean hasAbgang = true;
+      boolean hasZugang = false;
+      boolean hasAbgang = false;
       int anzahlSpalten = 10;
       for (PseudoDBObject alz : zeilen)
       {
-        if ((Integer) alz
-            .getAttribute(
-                AnlagenlisteControl.ART) == AnlagenlisteControl.ART_GESAMTSALDOFOOTER)
-        {
-          if (alz.getAttribute(AnlagenlisteControl.ZUGANG) == null)
+        if (alz.getAttribute(AnlagenlisteControl.ZUGANG) != null
+            && Math.abs(alz.getDouble(AnlagenlisteControl.ZUGANG)) >= 0.01d)
           {
-            hasZugang = false;
-            anzahlSpalten--;
+            hasZugang = true;
           }
-          if (alz.getAttribute(AnlagenlisteControl.ABGANG) == null)
+          if (alz.getAttribute(AnlagenlisteControl.ABGANG) != null
+              && Math.abs(alz.getDouble(AnlagenlisteControl.ABGANG)) >= 0.01d)
           {
-            hasAbgang = false;
-            anzahlSpalten--;
+            hasAbgang = true;
           }
-        }
+      }
+      if (!hasAbgang)
+      {
+        anzahlSpalten--;
+      }
+      if (!hasZugang)
+      {
+        anzahlSpalten--;
       }
       
       FileOutputStream fos = new FileOutputStream(file);
@@ -78,7 +81,8 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
           {
             reporter.addColumn(
                 (String) akz.getAttribute(AnlagenlisteControl.GRUPPE),
-                Element.ALIGN_LEFT, new BaseColor(220, 220, 220), anzahlSpalten);
+                Element.ALIGN_LEFT, new BaseColor(220, 220, 220),
+                anzahlSpalten);
             break;
           }
           case AnlagenlisteControl.ART_DETAIL:
@@ -100,15 +104,18 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
                 (Double) akz.getAttribute(AnlagenlisteControl.BETRAG));
             reporter.addColumn(
                 (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT));
-            reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
-
+            if (hasZugang)
+            {
+              reporter.addColumn(
+                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
+            }
             reporter.addColumn(
                 (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG));
-
-            reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
-
+            if (hasAbgang)
+            {
+              reporter.addColumn(
+                  (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
+            }
             reporter.addColumn(
                 (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT));
             break;
@@ -120,12 +127,18 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
                 Element.ALIGN_RIGHT, 5);
             reporter.addColumn(
                 (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT));
-            reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
+            if (hasZugang)
+            {
+              reporter.addColumn(
+                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
+            }
             reporter.addColumn(
                 (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG));
-            reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
+            if (hasAbgang)
+            {
+              reporter.addColumn(
+                  (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
+            }
             reporter.addColumn(
                 (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT));
             break;
@@ -138,12 +151,18 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
                 Element.ALIGN_RIGHT, 5);
             reporter.addColumn(
                 (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT));
-            reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
+            if (hasZugang)
+            {
+              reporter.addColumn(
+                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
+            }
             reporter.addColumn(
                 (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG));
-            reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
+            if (hasAbgang)
+            {
+              reporter.addColumn(
+                  (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
+            }
             reporter.addColumn(
                 (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT));
             break;
@@ -188,13 +207,17 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
     reporter.addHeaderColumn("Buchwert Beginn GJ", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
     if (hasZugang)
+    {
       reporter.addHeaderColumn("Zugang", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
+    }
     reporter.addHeaderColumn("Abschreibung", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
     if (hasAbgang)
+    {
       reporter.addHeaderColumn("Abgang", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
+    }
     reporter.addHeaderColumn("Buchwert Ende GJ", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
     reporter.createHeader();

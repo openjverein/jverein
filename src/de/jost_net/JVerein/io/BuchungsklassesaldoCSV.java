@@ -176,7 +176,8 @@ public class BuchungsklassesaldoCSV implements ISaldoExport
             csvzeile.put(header[0],
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE));
             csvzeile.put(header[1],
-                (Integer) bkz.getAttribute(BuchungsklasseSaldoControl.ANZAHL));
+                (Integer) bkz
+                    .getAttribute(BuchungsklasseSaldoControl.EINNAHMEN));
             break;
           }
           default:
