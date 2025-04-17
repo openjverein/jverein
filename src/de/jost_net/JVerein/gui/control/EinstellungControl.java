@@ -861,7 +861,7 @@ public class EinstellungControl extends AbstractControl
       return optiert;
     }
     optiert = new CheckboxInput(Einstellungen.getEinstellung().getOptiert());
-    optiert.setName("Umsatzsteueroption");
+    optiert.setName("Umsatzsteueroption (Neustart erforderlich)");
     optiert.addListener(e -> {
       try
       {
@@ -883,7 +883,8 @@ public class EinstellungControl extends AbstractControl
     }
     steuerInBuchung = new CheckboxInput(
         Einstellungen.getEinstellung().getSteuerInBuchung());
-    steuerInBuchung.setName("Steuer individuell pro Buchung setzen");
+    steuerInBuchung.setName(
+        "Steuer individuell pro Buchung setzen");
 
     steuerInBuchung.setEnabled((boolean) getOptiert().getValue());
     return steuerInBuchung;
