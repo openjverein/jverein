@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.ChangeSteuerInBuchungAction;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
@@ -51,12 +50,14 @@ import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.server.EinstellungImpl;
+import de.jost_net.JVerein.util.SteuerUtil;
 import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
 import de.jost_net.OBanToo.SEPA.Land.SEPALaender;
 import de.jost_net.OBanToo.SEPA.Land.SEPALand;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -883,9 +884,6 @@ public class EinstellungControl extends AbstractControl
     steuerInBuchung = new CheckboxInput(
         Einstellungen.getEinstellung().getSteuerInBuchung());
     steuerInBuchung.setName("Steuer individuell pro Buchung setzen");
-    steuerInBuchung
-        .addListener(e -> new ChangeSteuerInBuchungAction()
-            .handleAction(steuerInBuchung));
 
     steuerInBuchung.setEnabled((boolean) getOptiert().getValue());
     return steuerInBuchung;
@@ -2506,6 +2504,36 @@ public class EinstellungControl extends AbstractControl
     try
     {
       Einstellung e = Einstellungen.getEinstellung();
+      
+      String successText = "";
+
+      // ggf. Steuer in buchungen übernehmen
+      if (!e.getSteuerInBuchung() && (Boolean) getSteuerInBuchung().getValue())
+      {
+        YesNoDialog dialog = new YesNoDialog(SWT.CENTER);
+        dialog.setTitle("Migration Steuer in Buchung");
+
+        dialog.setText("Soll die Steuer aus den Buchungsarten in die\n"
+            + "Buchungen und Sollbuchungspositionen übernommen werden?\n"
+            + "Das wird für alle bisherigen Buchungen und Sollbuchungspositionen gemacht,\n"
+            + "so dass die bisherige Steuer erhalten bleibt.");
+        try
+        {
+          if ((boolean) dialog.open())
+          {
+            int anzahl = SteuerUtil.setSteuerToBuchung();
+            successText = "Steuer in " + anzahl
+                + " Buchungen und Sollbuchungspositionen übernommen. ";
+          }
+        }
+        catch (Exception ex)
+        {
+          String fehler = "Fehler beim Steuer-In-Buchung Daialog";
+          Logger.error(fehler, ex);
+          throw new ApplicationException(fehler);
+        }
+      }
+      
       e.setID();
       e.setBeginnGeschaeftsjahr((String) beginngeschaeftsjahr.getValue());
       e.setAutoBuchunguebernahme((Boolean) autobuchunguebernahme.getValue());
@@ -2527,7 +2555,8 @@ public class EinstellungControl extends AbstractControl
       e.store();
       Einstellungen.setEinstellung(e);
 
-      GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
+      GUI.getStatusBar()
+          .setSuccessText(successText + "Einstellungen gespeichert");
     }
     catch (RemoteException e)
     {
