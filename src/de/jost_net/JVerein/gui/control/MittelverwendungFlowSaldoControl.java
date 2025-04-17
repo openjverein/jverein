@@ -17,68 +17,21 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
-import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
-import de.willuhn.util.ApplicationException;
 
 public class MittelverwendungFlowSaldoControl extends BuchungsklasseSaldoControl
 {
-  private TablePart saldoList;
-
   public MittelverwendungFlowSaldoControl(AbstractView view)
       throws RemoteException
   {
     super(view);
     mitSteuer = false;
     mitUmbuchung = false;
-  }
-
-  @Override
-  public TablePart getSaldoList() throws ApplicationException
-  {
-    try
-    {
-      if (saldoList != null)
-      {
-        return saldoList;
-      }
-      saldoList = new TablePart(getList(), null)
-      {
-        // Sortieren verhindern
-        @Override
-        protected void orderBy(int index)
-        {
-          return;
-        }
-      };
-      saldoList.addColumn("Buchungsklasse", GRUPPE, null,
-          false);
-      saldoList.addColumn("Buchungsart", BUCHUNGSART);
-      saldoList.addColumn("Einnahmen", EINNAHMEN,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Ausgaben", AUSGABEN,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Anzahl", ANZAHL);
-      saldoList.setRememberColWidths(true);
-      saldoList.removeFeature(FeatureSummary.class);
-      return saldoList;
-    }
-    catch (RemoteException e)
-    {
-      throw new ApplicationException(
-          String.format("Fehler aufgetreten %s", e.getMessage()));
-    }
   }
 
   @Override

@@ -52,19 +52,28 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   public static final String ANZAHL = "anzahl";
 
   /**
-   * true wenn Steuern verwendet werden sollen
+   * true wenn Steuern verwendet werden sollen. Default wie in Einstellungen
+   * "Optiert" gesetzt.
    */
   protected boolean mitSteuer;
 
+  /**
+   * Die Bezeichnung der Gruppen-Spalte: "Buchungsklasse", "Projekt". Default
+   * "Buchungsklasse"
+   */
+  protected String gruppenBezeichnung = "Buchnugsklasse";
+
   private TablePart saldoList;
 
-  protected boolean mitUmbuchung;
+  /**
+   * Sollen Umbuchungen mit augegeben werden? Default true.
+   */
+  protected boolean mitUmbuchung = true;
 
   public BuchungsklasseSaldoControl(AbstractView view) throws RemoteException
   {
     super(view);
     mitSteuer = Einstellungen.getEinstellung().getOptiert();
-    mitUmbuchung = true;
   }
 
   @Override
@@ -85,7 +94,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           return;
         }
       };
-      saldoList.addColumn("Buchungsklasse", GRUPPE, null,
+      saldoList.addColumn(gruppenBezeichnung, GRUPPE, null,
           false);
       saldoList.addColumn("Buchungsart", BUCHUNGSART);
       saldoList.addColumn("Einnahmen", EINNAHMEN,
@@ -94,9 +103,12 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       saldoList.addColumn("Ausgaben", AUSGABEN,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
-      saldoList.addColumn("Umbuchungen", UMBUCHUNGEN,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
+      if (mitUmbuchung)
+      {
+        saldoList.addColumn("Umbuchungen", UMBUCHUNGEN,
+            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+            Column.ALIGN_RIGHT);
+      }
       saldoList.addColumn("Anzahl", ANZAHL);
       saldoList.setRememberColWidths(true);
       saldoList.removeFeature(FeatureSummary.class);
@@ -118,12 +130,12 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
 
     String klasseAlt = null;
 
-    // Summen der Buchungsklasse
+    // Summen der Buchungsklasse/Projekt
     Double einnahmenSumme = 0d;
     Double ausgabenSumme = 0d;
     Double umbuchungenSumme = 0d;
 
-    // Summen aller Buchungsklassen
+    // Summen aller Buchungsklassen/Projekte
     Double einnahmenGesamt = 0d;
     Double ausgabenGesamt = 0d;
     Double umbuchungenGesamt = 0d;
@@ -272,7 +284,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
 
     PseudoDBObject saldo = new PseudoDBObject();
     saldo.setAttribute(ART, ART_GESAMTSALDOFOOTER);
-    saldo.setAttribute(GRUPPE, "Saldo aller Buchungsklassen");
+    saldo.setAttribute(GRUPPE, "Gesamt Saldo");
     saldo.setAttribute(EINNAHMEN, einnahmenGesamt);
     saldo.setAttribute(AUSGABEN, ausgabenGesamt);
     saldo.setAttribute(UMBUCHUNGEN, umbuchungenGesamt);
