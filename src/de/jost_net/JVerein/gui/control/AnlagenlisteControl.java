@@ -219,8 +219,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
       Double abgang = o.getDouble(ABGANG);
 
       Double startwert = KontoImpl.getSaldo(konto, getDatumvon().getDate());
-      Double endwert = KontoImpl.getSaldo(konto,
-          DateUtils.addDays(getDatumbis().getDate(), 1));
+      Double endwert = startwert + zugang + abschreibung + abgang;
 
       // Summen Berechnen
 
