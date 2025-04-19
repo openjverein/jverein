@@ -432,7 +432,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       subselect += " JOIN buchungsart ON steuer.buchungsart = buchungsart.id "
           + " WHERE datum >= ? and datum <= ? "
           // Keine Steuer bei alten Steuerbuchungen mit dependencyid
-          + " AND buchung.dependencyid is null or  buchung.dependencyid = -1"
+          + " AND (buchung.dependencyid is null or  buchung.dependencyid = -1)"
           + " GROUP BY buchungsart.id) AS st ";
       it.leftJoin(subselect, "st.id = buchungsart.id ", Kontoart.LIMIT.getKey(),
           Kontoart.ANLAGE.getKey(), getDatumvon().getDate(),
