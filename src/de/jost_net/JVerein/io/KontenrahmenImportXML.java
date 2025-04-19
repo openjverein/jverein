@@ -82,7 +82,7 @@ public class KontenrahmenImportXML implements Importer
     @SuppressWarnings("rawtypes")
     Enumeration enubu = buchungsklassen.enumerateChildren();
     HashMap<Double, HashMap<String, Integer>> steuerMap = new HashMap<>();
-    HashMap<String, String> buchungsartIdMap = new HashMap<>();
+    HashMap<Integer, String> buchungsartIdMap = new HashMap<>();
 
     DBTransaction.starten();
     try
@@ -122,16 +122,14 @@ public class KontenrahmenImportXML implements Importer
           else
             buchungsart.setAbschreibung(false);
           buchungsart.store();
-          buchungsartIdMap.put(buaelement.getAttribute("id", "0"),
+          buchungsartIdMap.put(buaelement.getAttribute("nummer", 0),
               buchungsart.getID());
         }
       }
 
-      enubu = buchungsklassen.enumerateChildren();
-
       // Wir durchlaufen das ganze nochmal und erstellen die Steuern und
       // ordnen diese zu.
-
+      enubu = buchungsklassen.enumerateChildren();
       while (enubu.hasMoreElements())
       {
         IXMLElement element = (IXMLElement) enubu.nextElement();
@@ -145,7 +143,13 @@ public class KontenrahmenImportXML implements Importer
           Double steuersatz = Double
               .valueOf(buaelement.getAttribute("steuersatz", "0.00"));
           if (steuersatz != 0)
-        {
+          {
+            // Die bereits ertellte Buchungsart zu diesem Eintrag holen
+            DBIterator<Buchungsart> buait = Einstellungen.getDBService()
+                .createList(Buchungsart.class);
+            buait.addFilter("nummer = ?", buaelement.getAttribute("nummer", 0));
+            Buchungsart buchungsart = buait.next();
+
             String steuerBuchungsart = buaelement
                 .getAttribute("steuer_buchungsart", "");
             HashMap<String, Integer> steuerEntry = steuerMap
@@ -153,19 +157,25 @@ public class KontenrahmenImportXML implements Importer
             if (steuerEntry.get(steuerBuchungsart) != null)
             {
               // Bereits erstellte Steuer verwenden
-              // TODO erstemal in Map setzen da evtl noch nicht erstellt
               buchungsart.setSteuerId(steuerEntry.get(steuerBuchungsart));
             }
             else
-          {
+            {
               // Neue Steuer erstellen
               Steuer steuer = Einstellungen.getDBService()
                   .createObject(Steuer.class, null);
               steuer.setAktiv(true);
-              steuer.setBuchungsartId(Long.parseLong(buchungsart.getID()));
+
+              // Die Stuer-Buchungsart holen
+              DBIterator<Buchungsart> stbuait = Einstellungen.getDBService()
+                  .createList(Buchungsart.class);
+              stbuait.addFilter("nummer = ?", steuerBuchungsart);
+              Buchungsart stBuchungsart = buait.next();
+
+              steuer.setBuchungsartId(Long.parseLong(stBuchungsart.getID()));
               String name = "";
               switch (buchungsart.getArt())
-            {
+              {
                 case ArtBuchungsart.AUSGABE:
                   name = "Vorsteuer ";
                   break;
@@ -175,7 +185,7 @@ public class KontenrahmenImportXML implements Importer
                 case ArtBuchungsart.UMBUCHUNG:
                   name = "Steuer ";
                   break;
-            }
+              }
               name += steuersatz + "%";
               steuer.setName(name);
               steuer.setSatz(steuersatz);
@@ -185,10 +195,10 @@ public class KontenrahmenImportXML implements Importer
               steuerEntry.put(steuerBuchungsart,
                   Integer.parseInt(steuer.getID()));
               steuerMap.put(steuersatz, steuerEntry);
-          }
+            }
             buchungsart.store();
+          }
         }
-      }
     }
 
   }
