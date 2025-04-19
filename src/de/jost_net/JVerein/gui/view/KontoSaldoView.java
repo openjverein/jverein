@@ -48,7 +48,7 @@ public class KontoSaldoView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.JAHRESSALDO, false, "question-circle.png");
     buttons.addButton(control.getStartAuswertungCSVButton());
-    buttons.addButton(control.getStartAuswertungButton());
+    buttons.addButton(control.getStartAuswertungPDFButton());
     buttons.paint(this.getParent());
   }
 }

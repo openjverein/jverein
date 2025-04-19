@@ -72,4 +72,16 @@ public interface JVereinDBService extends DBService
    */
   public String getSQLTimestamp(String content) throws RemoteException;
 
+  /**
+   * Fuehrt ein SQL-Update-Statement aus und gibt die anzahl geänderter Zeilen
+   * zurück. Für Updates und Inserts, also alle Queries die keine Abfragen sind.
+   * 
+   * @param sql
+   *          das Statement.
+   * @param params
+   *          die Parameter zur Erzeugung des PreparedStatements.
+   * @return die anzahl geänderter Zeilen.
+   * @throws RemoteException
+   */
+  public int executeUpdate(String sql, Object[] params) throws RemoteException;
 }

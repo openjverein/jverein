@@ -48,7 +48,7 @@ public class BuchungsklasseSaldoView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGSKLASSENSALDO, false, "question-circle.png");
     buttons.addButton(control.getStartAuswertungCSVButton());
-    buttons.addButton(control.getStartAuswertungButton());
+    buttons.addButton(control.getStartAuswertungPDFButton());
     buttons.paint(this.getParent());
   }
 }

@@ -19,10 +19,12 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.db.AbstractDBObject;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -49,7 +51,7 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
     //
   }
@@ -67,9 +69,27 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
       {
         throw new ApplicationException("Nummer nicht gültig");
       }
-      if (getSteuersatz() > 0 && getSteuerBuchungsart() == null)
+      if (getSteuer() != null
+          && getSteuer().getBuchungsart().getArt() != getArt())
       {
-        throw new ApplicationException("Bitte Steuer Buchungsart auswählen.");
+        switch (getArt())
+        {
+          case ArtBuchungsart.AUSGABE:
+            throw new ApplicationException(
+                "Umsatzsteuer statt Vorsteuer gewählt.");
+          case ArtBuchungsart.EINNAHME:
+            throw new ApplicationException(
+                "Vorsteuer statt Umsatzsteuer gewählt.");
+          // Umbuchung ist bei Anlagebuchungen möglich,
+          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
+          case ArtBuchungsart.UMBUCHUNG:
+            break;
+        }
+      }
+      if (getSteuer() != null && (getSpende() || getAbschreibung()))
+      {
+        throw new ApplicationException(
+            "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
       }
     }
     catch (RemoteException e)
@@ -84,12 +104,87 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   protected void updateCheck() throws ApplicationException
   {
     insertCheck();
+    try
+    {
+      if (hasChanged("steuer")
+          && !Einstellungen.getEinstellung().getSteuerInBuchung())
+      {
+
+        // Prüfen ob es abgeschlossene Buchungen mit der Buchungsart gibt
+        ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+            "buchung");
+        it.addColumn("buchung.id");
+        it.setLimit(1);
+
+        it.join("jahresabschluss",
+            "jahresabschluss.von <= buchung.datum and jahresabschluss.bis >= buchung.datum");
+
+        it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
+        it.addFilter("buchungsart.id = ?", getID());
+        if (it.hasNext())
+        {
+          throw new ApplicationException(
+              "Steuer kann nicht geändert werden, es gibt abgeschlossene Buchungen mit dieser Buchungsart.");
+        }
+
+        // Prüfen ob es eine Rechnung mit dieser Buchungsart gibt
+        it = new ExtendedDBIterator<>(Sollbuchung.TABLE_NAME);
+        it.addColumn(Sollbuchung.TABLE_NAME_ID);
+        it.setLimit(1);
+
+        it.join("sollbuchungposition",
+            "sollbuchungposition.sollbuchung = " + Sollbuchung.TABLE_NAME_ID);
+        it.addFilter("rechnung is not null");
+        it.join("buchungsart",
+            "buchungsart.id = sollbuchungposition.buchungsart");
+        it.addFilter("buchungsart.id = ?", getID());
+        if (it.hasNext())
+        {
+          throw new ApplicationException(
+              "Steuer kann nicht geändert werden, es existieren Rechnungen mit dieser Buchungsart.");
+        }
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim Update Check", e);
+    }
   }
 
   @Override
   protected Class<?> getForeignObject(String arg0)
   {
     return null;
+  }
+
+  @Override
+  public Steuer getSteuer() throws RemoteException
+  {
+    Object l = (Object) super.getAttribute("steuer");
+    if (l == null)
+    {
+      return null;
+    }
+
+    if (l instanceof Steuer)
+    {
+      return (Steuer) l;
+    }
+
+    Cache cache = Cache.get(Steuer.class, true);
+    return (Steuer) cache.get(l);
+  }
+
+  @Override
+  public void setSteuer(Steuer steuer) throws RemoteException
+  {
+    super.setAttribute("steuer", steuer);
+  }
+
+  @Override
+  public void setSteuerId(Integer id) throws RemoteException
+  {
+    super.setAttribute("steuer", id);
   }
 
   @Override
@@ -191,23 +286,6 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   }
 
   @Override
-  public double getSteuersatz() throws RemoteException
-  {
-    Double i = (Double) getAttribute("steuersatz");
-    if (i == null)
-    {
-      return 0;
-    }
-    return i.doubleValue();
-  }
-
-  @Override
-  public void setSteuersatz(double steuersatz) throws RemoteException
-  {
-    setAttribute("steuersatz", steuersatz);
-  }
-
-  @Override
   public String getSuchbegriff() throws RemoteException
   {
     String s = (String) getAttribute("suchbegriff");
@@ -239,27 +317,6 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
   public void setSuchbegriff(String suchbegriff) throws RemoteException
   {
     setAttribute("suchbegriff", suchbegriff);
-  }
-
-  @Override
-  public Buchungsart getSteuerBuchungsart() throws RemoteException
-  {
-    Long id = (Long) getAttribute("steuer_buchungsart");
-    if (id == null) {
-      return null;
-    }
-    else {
-      DBIterator<Buchungsart> steuer_buchungsart = Einstellungen.getDBService()
-        .createList(Buchungsart.class);
-        steuer_buchungsart.addFilter("ID = " + id);
-      return steuer_buchungsart.next();
-    }
-  }
-
-  @Override
-  public void setSteuerBuchungsart(Long steuer_buchungsart) throws RemoteException
-  {
-    setAttribute("steuer_buchungsart", steuer_buchungsart);
   }
   
   @Override
@@ -313,13 +370,13 @@ public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
       stb.append(getBezeichnung());
       return stb.toString();
     }
-    else if (fieldName.equals("steuerbuchungsart"))
-    {
-      return getSteuerBuchungsart();
-    }
     else if (fieldName.equals("buchungsklasse"))
     {
       return getBuchungsklasse();
+    }
+    else if (fieldName.equals("steuer"))
+    {
+      return getSteuer();
     }
     else
     {

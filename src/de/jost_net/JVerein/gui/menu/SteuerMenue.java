@@ -14,31 +14,28 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
+package de.jost_net.JVerein.gui.menu;
 
-import java.rmi.RemoteException;
-import java.util.Date;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.action.SteuerDeleteAction;
+import de.jost_net.JVerein.gui.view.SteuerDetailView;
+import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
+import de.willuhn.jameica.gui.parts.ContextMenu;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Anfangsbestand extends DBObject
+/**
+ * Kontext-Menu zu den Steuern.
+ */
+public class SteuerMenue extends ContextMenu
 {
-  public Konto getKonto() throws RemoteException;
-
-  public String getKontoText() throws RemoteException;
-
-  public void setKonto(Konto konto) throws RemoteException;
-
-  public void setKontoId(String id) throws RemoteException;
-
-  public Date getDatum() throws RemoteException;
-
-  public void setDatum(Date datum) throws RemoteException;
-
-  public void setBetrag(double betrag) throws RemoteException;
-
-  public double getBetrag() throws RemoteException;
-
-  public Jahresabschluss getJahresabschluss() throws RemoteException;
-
+  /**
+   * Erzeugt ein Kontext-Menu fuer die Liste der Steuern.
+   */
+  public SteuerMenue()
+  {
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(SteuerDetailView.class), "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("Löschen", new SteuerDeleteAction(),
+        "user-trash-full.png"));
+  }
 }

@@ -14,31 +14,20 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
+package de.jost_net.JVerein.io;
 
-import java.rmi.RemoteException;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 
-import de.willuhn.datasource.rmi.DBObject;
+import de.jost_net.JVerein.server.PseudoDBObject;
+import de.willuhn.util.ApplicationException;
 
-public interface Anfangsbestand extends DBObject
+/**
+ * Interface für den Export der Salden
+ */
+public interface ISaldoExport
 {
-  public Konto getKonto() throws RemoteException;
-
-  public String getKontoText() throws RemoteException;
-
-  public void setKonto(Konto konto) throws RemoteException;
-
-  public void setKontoId(String id) throws RemoteException;
-
-  public Date getDatum() throws RemoteException;
-
-  public void setDatum(Date datum) throws RemoteException;
-
-  public void setBetrag(double betrag) throws RemoteException;
-
-  public double getBetrag() throws RemoteException;
-
-  public Jahresabschluss getJahresabschluss() throws RemoteException;
-
+  public void export(ArrayList<PseudoDBObject> zeilen, File file, Date von,
+      Date bis, String titel) throws ApplicationException;
 }

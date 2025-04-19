@@ -63,7 +63,7 @@ public class RechnungMap
     ArrayList<Double> steuerbetrag = new ArrayList<>();
     ArrayList<Double> betrag = new ArrayList<>();
 
-    DecimalFormat format = new DecimalFormat("0");
+    DecimalFormat format = new DecimalFormat("0.##");
     CurrencyFormatter formatter = new CurrencyFormatter("%", format);
     double summe = 0;
     for (SollbuchungPosition sp : re.getSollbuchungPositionList())

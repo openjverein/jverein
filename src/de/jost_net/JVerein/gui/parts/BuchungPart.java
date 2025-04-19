@@ -83,6 +83,10 @@ public class BuchungPart implements Part
 
     grBuchungsinfos.addHeadline("Buchungsinfos");
     grBuchungsinfos.addLabelPair("Buchungsart", control.getBuchungsart());
+    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    {
+      grBuchungsinfos.addLabelPair("Steuer", control.getSteuer());
+    }
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
     {
       grBuchungsinfos.addLabelPair("Buchungsklasse", control.getBuchungsklasse());

@@ -25,11 +25,13 @@ import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.logging.Logger;
 
@@ -41,6 +43,7 @@ public class BuchungListPart extends BuchungListTablePart
   }
 
   public BuchungListPart(List<Buchung> list, Action action, ContextMenu menu)
+      throws RemoteException
   {
     super(list, action);
 
@@ -90,6 +93,24 @@ public class BuchungListPart extends BuchungListTablePart
     addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
     addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    {
+      addColumn("Steuer", "steuer", o -> {
+        if (o == null)
+        {
+          return "";
+        }
+        try
+        {
+          return ((Steuer) o).getName();
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return "";
+      }, false, Column.ALIGN_RIGHT);
+    }
     addColumn("Mitglied", Buchung.SOLLBUCHUNG, new SollbuchungFormatter());
     addColumn("Ersatz für Aufwendungen", "verzicht", new JaNeinFormatter());
     setContextMenu(menu);

@@ -17,39 +17,36 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.ProjektSaldoControl;
+import de.jost_net.JVerein.gui.control.SteuerControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.jost_net.JVerein.gui.parts.QuickAccessPart;
-import de.jost_net.JVerein.gui.parts.VonBisPart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class ProjektSaldoView extends AbstractView
+public class SteuerDetailView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Projektsaldo");
+    GUI.getView().setTitle("Steuer");
+    final SteuerControl control = new SteuerControl(this);
 
-    final ProjektSaldoControl control = new ProjektSaldoControl(this);
-    
-    VonBisPart vpart = new VonBisPart(control, true);
-    vpart.paint(this.getParent());
-    
-    QuickAccessPart qpart = new QuickAccessPart(control, true);
-    qpart.paint(this.getParent());
-
-    LabelGroup group = new LabelGroup(getParent(), "Saldo", true);
-    group.addPart(control.getSaldoList());
+    LabelGroup group = new LabelGroup(getParent(), "Steuer");
+    group.addLabelPair("Name", control.getName());
+    group.addLabelPair("Satz", control.getSatz());
+    group.addLabelPair("Buchungsart", control.getBuchungsart());
+    group.addLabelPair("Aktiv", control.getAktiv());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.PROJEKTSALDO, false, "question-circle.png");
-    buttons.addButton(control.getStartAuswertungCSVButton());
-    buttons.addButton(control.getStartAuswertungPDFButton());
-    buttons.paint(this.getParent());
+        DokumentationUtil.STEUER, false, "question-circle.png");
+    buttons.addButton("Speichern", e -> {
+      control.handleStore();
+      GUI.getStatusBar().setSuccessText("Steuer gespeichert");
+    }, null, true,
+        "document-save.png");
+    buttons.paint(getParent());
   }
 
 }

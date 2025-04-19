@@ -50,6 +50,7 @@ public class AnlagenkontoNeuAction implements Action
 
       if (konto != null && !konto.isNewObject())
       {
+        // Anfangsbestand von 0 für das Anlagegut erstellen.
         Anfangsbestand anf = (Anfangsbestand) Einstellungen.getDBService().createObject(
             Anfangsbestand.class, null);
         anf.setKonto(konto);
@@ -57,11 +58,14 @@ public class AnlagenkontoNeuAction implements Action
         anf.setBetrag(0d);
         anf.store();
         
+        // Buchung auf das Anlagenkonto erstellen, betrag = -betrag der
+        // Ausgangsbuchung.
         Buchung bu = (Buchung) Einstellungen.getDBService().
             createObject(Buchung.class, null);
         bu.setKonto(konto);
         bu.setName(buchung.getName());
-        bu.setBetrag(-buchung.getBetrag());
+        // Als Betrag müssen wir den Nettobetrag nehmen.
+        bu.setBetrag(-buchung.getNetto());
         bu.setZweck(buchung.getZweck());
         bu.setDatum(buchung.getDatum());
         if (buchung.getBuchungsart() != null)

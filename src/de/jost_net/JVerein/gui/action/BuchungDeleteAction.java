@@ -18,7 +18,6 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -150,22 +149,8 @@ public class BuchungDeleteAction implements Action
         }
         else if (splitbuchung)
         {
-          if (bu.getDependencyId() == -1)
-          {
-            bu.setDelete(true);
-            count++;
-          }
-          else
-          {
-            for (Buchung buchung_tmp : SplitbuchungsContainer.get())
-            {
-              if (buchung_tmp.getDependencyId() == bu.getDependencyId())
-              {
-                buchung_tmp.setDelete(true);
-                count++;
-              }
-            }
-          }
+          bu.setDelete(true);
+          count++;
         }
       }
       if (count > 0)

@@ -17,28 +17,24 @@
 package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 
 import de.willuhn.datasource.rmi.DBObject;
 
-public interface Anfangsbestand extends DBObject
+public interface Steuer extends DBObject
 {
-  public Konto getKonto() throws RemoteException;
+  public String getName() throws RemoteException;
 
-  public String getKontoText() throws RemoteException;
+  public void setName(String name) throws RemoteException;
 
-  public void setKonto(Konto konto) throws RemoteException;
+  public Double getSatz() throws RemoteException;
 
-  public void setKontoId(String id) throws RemoteException;
+  public void setSatz(Double satz) throws RemoteException;
 
-  public Date getDatum() throws RemoteException;
+  public Buchungsart getBuchungsart() throws RemoteException;
 
-  public void setDatum(Date datum) throws RemoteException;
+  public void setBuchungsartId(Long buchungsart) throws RemoteException;
 
-  public void setBetrag(double betrag) throws RemoteException;
+  public void setAktiv(boolean aktiv) throws RemoteException;
 
-  public double getBetrag() throws RemoteException;
-
-  public Jahresabschluss getJahresabschluss() throws RemoteException;
-
+  public boolean getAktiv() throws RemoteException;
 }
