@@ -40,7 +40,7 @@ public class KontenSaldoPDF implements ISaldoExport
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeile, final File file,
-      final Date datumvon, final Date datumbis, String titel)
+      final Date datumvon, final Date datumbis)
       throws ApplicationException
   {
     try

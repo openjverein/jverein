@@ -25,7 +25,6 @@ import java.util.Date;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
-import de.jost_net.JVerein.gui.control.SaldoControl;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.parts.Button;
@@ -36,7 +35,7 @@ import de.willuhn.util.ApplicationException;
 
 public class VonBisPart implements Part
 {
-  private SaldoControl control;
+  private AbstractSaldoControl control;
   
   private boolean suchen = false;
   
@@ -47,7 +46,7 @@ public class VonBisPart implements Part
     MONAT, TAG
   }
   
-  public VonBisPart(SaldoControl control, boolean suchen)
+  public VonBisPart(AbstractSaldoControl control, boolean suchen)
   {
     this.control = control;
     this.suchen = suchen;
@@ -186,14 +185,7 @@ public class VonBisPart implements Part
     {
       control.getGeschaeftsjahr().setValue("");
     }
-    if (control instanceof AbstractSaldoControl)
-    {
-      ((AbstractSaldoControl) control).reloadList();
-    }
-    else
-    {
-      control.getSaldoList();
-    }
+    control.reloadList();
   }
 
   private void checkDate() throws ApplicationException

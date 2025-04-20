@@ -55,10 +55,10 @@ public class MittelverwendungReportView extends AbstractView
     // Die verschiedenen Tabs
     TabGroup mittelverwendungFlow = new TabGroup(folder,
         "Mittelverwendungsreport (Zufluss-basiert)", true, 1);
-    control.getFlowTable().paint(mittelverwendungFlow.getComposite());
+    control.getMittelverwendungFlowTable().paint(mittelverwendungFlow.getComposite());
     TabGroup mittelverwendungSaldo = new TabGroup(folder,
         "Mittelverwendungsreport (Saldo-basiert)", true, 1);
-    control.getSaldoTable().paint(mittelverwendungSaldo.getComposite());
+    control.getMittelverwendungSaldoTable().paint(mittelverwendungSaldo.getComposite());
 
     // Aktiver zuletzt ausgewählter Tab.
     if (tabindex != -1)
@@ -86,8 +86,8 @@ public class MittelverwendungReportView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITTELVERWENDUNG, false, "question-circle.png");
     buttons.addButton(control.getConfigButton());
-    buttons.addButton(control.getCSVExportButton());
-    buttons.addButton(control.getPDFExportButton());
+    buttons.addButton(control.getStartAuswertungCSVButton());
+    buttons.addButton(control.getStartAuswertungPDFButton());
     buttons.paint(this.getParent());
   }
 }

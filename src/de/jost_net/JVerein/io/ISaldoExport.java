@@ -29,5 +29,5 @@ import de.willuhn.util.ApplicationException;
 public interface ISaldoExport
 {
   public void export(ArrayList<PseudoDBObject> zeilen, File file, Date von,
-      Date bis, String titel) throws ApplicationException;
+      Date bis) throws ApplicationException;
 }

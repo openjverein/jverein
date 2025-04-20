@@ -64,7 +64,7 @@ public class KontenSaldoCSV implements ISaldoExport
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeile, final File file,
-      Date datumvon, Date datumbis, String titel) throws ApplicationException
+      Date datumvon, Date datumbis) throws ApplicationException
   {
     ICsvMapWriter writer = null;
     try

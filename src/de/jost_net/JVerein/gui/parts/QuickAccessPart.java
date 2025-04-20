@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
-import de.jost_net.JVerein.gui.control.SaldoControl;
 import de.jost_net.JVerein.util.Datum;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
@@ -36,7 +35,7 @@ import de.willuhn.util.ApplicationException;
 
 public class QuickAccessPart implements Part
 {
-  private SaldoControl control;
+  private AbstractSaldoControl control;
   
   private int anzahlButtons = 10;
   
@@ -50,7 +49,8 @@ public class QuickAccessPart implements Part
   
   private ArrayList<Button> buttons = new ArrayList<Button>();
 
-  public QuickAccessPart(SaldoControl control, boolean additionalButtons)
+  public QuickAccessPart(AbstractSaldoControl control,
+      boolean additionalButtons)
   {
     this.control = control;
     this.additionalButtons = additionalButtons;
@@ -94,14 +94,7 @@ public class QuickAccessPart implements Part
           control.getDatumvon().setDate(genYearStartDate(geschaeftsjahr));
           control.getDatumbis().setDate(genYearEndDate(geschaeftsjahr));
           control.getGeschaeftsjahr().setValue(geschaeftsjahr.toString());
-          if (control instanceof AbstractSaldoControl)
-          {
-            ((AbstractSaldoControl) control).reloadList();
-          }
-          else
-          {
-            control.getSaldoList();
-          }
+          control.reloadList();
         }
         catch (RemoteException e)
         {
@@ -174,7 +167,7 @@ public class QuickAccessPart implements Part
   private class QuickAccessAction implements Action
   {
 
-    private SaldoControl control;
+    private AbstractSaldoControl control;
 
     private Integer offset;
     
@@ -182,14 +175,13 @@ public class QuickAccessPart implements Part
 
     private Date bis;
 
-    QuickAccessAction(SaldoControl control, Integer offset)
+    QuickAccessAction(AbstractSaldoControl control, Integer offset)
     {
       this.control = control;
       this.offset = offset;
     }
     
-
-    QuickAccessAction(SaldoControl control, Date von, Date bis)
+    QuickAccessAction(AbstractSaldoControl control, Date von, Date bis)
     {
       this.control = control;
       this.von = von;
@@ -224,14 +216,7 @@ public class QuickAccessPart implements Part
           control.getGeschaeftsjahr().setValue(geschaeftsjahr.toString());
         }
 
-        if (control instanceof AbstractSaldoControl)
-        {
-          ((AbstractSaldoControl) control).reloadList();
-        }
-        else
-        {
-          control.getSaldoList();
-        }
+        control.reloadList();
       }
       catch (RemoteException e)
       {

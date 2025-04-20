@@ -38,14 +38,17 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
 
   private boolean umbuchung;
 
-  public BuchungsklassesaldoPDF(boolean umbuchung)
+  private String title;
+
+  public BuchungsklassesaldoPDF(boolean umbuchung, String title)
   {
     this.umbuchung = umbuchung;
+    this.title = title;
   }
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeile,
-      final File file, Date datumvon, Date datumbis, String title)
+      final File file, Date datumvon, Date datumbis)
       throws ApplicationException
   {
     try

@@ -26,7 +26,6 @@ import org.apache.commons.lang.time.DateUtils;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
-import de.jost_net.JVerein.gui.parts.MittelverwendungFlowList;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.gui.view.JahresabschlussDetailView;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -98,12 +97,13 @@ public class JahresabschlussControl extends KontensaldoControl
     if (Einstellungen.getEinstellung().getMittelverwendung()
         && jahresabschluss.isNewObject())
     {
-      MittelverwendungFlowList list = new MittelverwendungFlowList(
-          getDatumvon().getDate(), getDatumbis().getDate());
-      list.getInfo();
-      jahresabschluss.setVerwendungsrueckstand(list.getRueckstandVorjahrNeu());
+      MittelverwendungControl mvcontrol = new MittelverwendungControl(null);
+      mvcontrol.getMittelverwendungFlowList(getDatumvon().getDate(),
+          getDatumbis().getDate());
       jahresabschluss
-          .setZwanghafteWeitergabe(list.getZwanghafteWeitergabeNeu());
+          .setVerwendungsrueckstand(mvcontrol.getRueckstandVorjahrNeu());
+      jahresabschluss
+          .setZwanghafteWeitergabe(mvcontrol.getZwanghafteWeitergabeNeu());
     }
     return jahresabschluss;
   }
@@ -309,11 +309,10 @@ public class JahresabschlussControl extends KontensaldoControl
       }
       if (Einstellungen.getEinstellung().getMittelverwendung())
       {
-        MittelverwendungFlowList list = new MittelverwendungFlowList(
-            ja.getVon(), ja.getBis());
-        list.getInfo();
-        ja.setVerwendungsrueckstand(list.getRueckstandVorjahrNeu());
-        ja.setZwanghafteWeitergabe(list.getZwanghafteWeitergabeNeu());
+        MittelverwendungControl mvcontrol = new MittelverwendungControl(null);
+        mvcontrol.getMittelverwendungFlowList(ja.getVon(), ja.getBis());
+        ja.setVerwendungsrueckstand(mvcontrol.getRueckstandVorjahrNeu());
+        ja.setZwanghafteWeitergabe(mvcontrol.getZwanghafteWeitergabeNeu());
         ja.store();
       }
       if ((Boolean) getAnfangsbestaende().getValue())

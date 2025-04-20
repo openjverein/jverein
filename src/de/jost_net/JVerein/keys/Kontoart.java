@@ -22,8 +22,8 @@ public enum Kontoart
   // Ids unter dem Limit werden regulär im Buchungsklassensaldo und Kontensaldo
   // berücksichtigt.
   // Ids über dem Limit werden in beiden Salden ignoriert.
-  GELD(1, "Geldkonto"),
-  ANLAGE(2, "Anlagenkonto"),
+  GELD(1, "Geldkonto", "Geldvermögen"),
+  ANLAGE(2, "Anlagenkonto", "Anlagevermögen"),
   SCHULDEN(3, "Fremdkapital"),
   LIMIT(100, "-- Limit --"),
   RUECKLAGE_ZWECK_GEBUNDEN(101, "Zweckgebundene Rücklage nach § 62 Abs. 1 Nr. 1 AO"),
@@ -39,11 +39,19 @@ public enum Kontoart
   private final String text;
 
   private final int key;
+
+  private String textVermoegen;
   
   Kontoart(int key, String text)
   {
+    this(key, text, text);
+  }
+
+  Kontoart(int key, String text, String textVermoegen)
+  {
     this.key = key;
     this.text = text;
+    this.textVermoegen = textVermoegen;
   }
 
   public int getKey()
@@ -54,6 +62,11 @@ public enum Kontoart
   public String getText()
   {
     return text;
+  }
+
+  public String getTextVermoegen()
+  {
+    return textVermoegen;
   }
 
   public static Kontoart getByKey(int key)

@@ -32,6 +32,7 @@ import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -45,7 +46,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public abstract class AbstractSaldoControl extends SaldoControl
+public abstract class AbstractSaldoControl extends AbstractControl
 {
   /**
    * Die Art des Eintrags: Header, Detail, Footer (siehe Konstanten)
@@ -152,7 +153,7 @@ public abstract class AbstractSaldoControl extends SaldoControl
   {
     try
     {
-      // Daten in Einstellungen Seichern
+      // Daten in Einstellungen Speichern
       if (getDatumvon().getDate() != null)
       {
         settings.setAttribute("von",
@@ -239,7 +240,7 @@ public abstract class AbstractSaldoControl extends SaldoControl
         {
           ISaldoExport export = getAuswertung(type);
           export.export(zeile, file, getDatumvon().getDate(),
-              getDatumbis().getDate(), title);
+              getDatumbis().getDate());
 
         }
 
@@ -412,32 +413,30 @@ public abstract class AbstractSaldoControl extends SaldoControl
     return 0;
   }
 
-  // TODO nach der vollständigen Umstellung auf AbstractSaldoControl muss das
-  // auskommentiert werden
-  // /**
-  // * Textinput mit formatiertem Datum.
-  // */
-  // public class DateLabel extends TextInput
-  // {
-  // private Date d;
-  //
-  // DateLabel(Date date)
-  // {
-  // super("");
-  // setDate(date);
-  // }
-  //
-  // public void setDate(Date date)
-  // {
-  // d = date;
-  // JVDateFormatTTMMJJJJ df = new JVDateFormatTTMMJJJJ();
-  // String dstring = d == null ? "" : df.format(d);
-  // super.setValue(dstring);
-  // }
-  //
-  // public Date getDate()
-  // {
-  // return d;
-  // }
-  // }
+  /**
+   * Textinput mit formatiertem Datum.
+   */
+  public class DateLabel extends TextInput
+  {
+    private Date d;
+
+    DateLabel(Date date)
+    {
+      super("");
+      setDate(date);
+    }
+
+    public void setDate(Date date)
+    {
+      d = date;
+      JVDateFormatTTMMJJJJ df = new JVDateFormatTTMMJJJJ();
+      String dstring = d == null ? "" : df.format(d);
+      super.setValue(dstring);
+    }
+
+    public Date getDate()
+    {
+      return d;
+    }
+  }
 }

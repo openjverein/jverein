@@ -121,8 +121,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException(
-          String.format("Fehler aufgetreten %s", e.getMessage()));
+      throw new ApplicationException("Fehler aufgetreten " + e.getMessage());
     }
   }
 
@@ -465,7 +464,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       case AuswertungCSV:
         return new BuchungsklassesaldoCSV(mitUmbuchung);
       case AuswertungPDF:
-        return new BuchungsklassesaldoPDF(mitUmbuchung);
+        return new BuchungsklassesaldoPDF(mitUmbuchung, getAuswertungTitle());
       default:
         throw new ApplicationException("Ausgabetyp nicht implementiert");
     }
