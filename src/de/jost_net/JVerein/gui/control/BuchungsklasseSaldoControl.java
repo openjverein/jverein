@@ -60,7 +60,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   /**
    * Soll "Buchungen ohne Buchungsart" mit ausgegeben werden? Default true
    */
-  protected boolean mitOhneBcuhungsart;
+  protected boolean mitOhneBuchungsart;
 
   /**
    * Die Bezeichnung der Gruppen-Spalte: "Buchungsklasse", "Projekt". Default
@@ -296,7 +296,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     zeilen.add(saldo);
 
     Double summeOhneBuchungsart = 0d;
-    if (mitOhneBcuhungsart)
+    if (mitOhneBuchungsart)
     {
       // Ggf. die Anzahl und Summe nicht zugeordneter Buchungen anzeigen.
       // (Geht nicht mit im oberen Query, da MySQL und H2 kein FULL JOIN

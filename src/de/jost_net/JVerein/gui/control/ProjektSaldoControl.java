@@ -27,7 +27,7 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
   {
     super(view);
     gruppenBezeichnung = "Projekt";
-    mitOhneBcuhungsart = false;
+    mitOhneBuchungsart = false;
   }
 
   @Override

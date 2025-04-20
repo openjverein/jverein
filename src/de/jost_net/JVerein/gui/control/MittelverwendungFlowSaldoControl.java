@@ -30,7 +30,6 @@ public class MittelverwendungFlowSaldoControl extends BuchungsklasseSaldoControl
       throws RemoteException
   {
     super(view);
-    mitSteuer = false;
     mitUmbuchung = false;
   }
 
@@ -43,26 +42,58 @@ public class MittelverwendungFlowSaldoControl extends BuchungsklasseSaldoControl
 
     // Bei der Mittelverwendung verwenden wir nur Geldkonten und zweckfremde
     // Anlagen.
-    // Die Umbuchungen der Schulden und zweckgebundenen Anlagen ziehen wir von
-    // den Einnahmen bzw. Ausgaben ab.
     it.addFilter(
         "(buchungsart.art != ? AND (konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?)))"
-            + "OR (buchungsart.art = ? AND (konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?)))",
+            + "OR (buchungsart.art = ? AND (konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?))) "
+            + "OR st.steuerbetrag is not null",
         ArtBuchungsart.UMBUCHUNG, Kontoart.GELD.getKey(),
         Kontoart.ANLAGE.getKey(), Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey(),
         ArtBuchungsart.UMBUCHUNG, Kontoart.SCHULDEN.getKey(),
         Kontoart.ANLAGE.getKey(), Anlagenzweck.NUTZUNGSGEBUNDEN.getKey());
 
-    // Damit wir die Umbuchungen mit in die Einnahmen und Ausgaben Spalten
-    // aufnehmen können, müsen wir hier die Beträge berechnen.
-    it.addColumn("SUM(CASE WHEN buchungsart.art = ? AND buchung.betrag > 0"
-        + " THEN -buchung.betrag WHEN buchungsart.art != ? THEN 0 ELSE buchung.betrag END) AS "
-        + AUSGABEN,
-        ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.AUSGABE);
-    it.addColumn("SUM(CASE WHEN buchungsart.art = ? AND buchung.betrag < 0"
-        + " THEN -buchung.betrag WHEN buchungsart.art != ? THEN 0 ELSE buchung.betrag END) AS "
-        + EINNAHMEN,
-        ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.EINNAHME);
+    // Die Umbuchungen der Schulden und zweckgebundenen Anlagen ziehen wir von
+    // den Einnahmen bzw. Ausgaben ab.
+    if (mitSteuer)
+    {
+      // Nettobetrag berechnen und steuerbetrag der Steuerbuchungsart
+      // hinzurechnen
+      it.addColumn("COALESCE(SUM("
+          + "(CASE WHEN buchungsart.art = ? AND buchung.betrag > 0 "
+          + "THEN -1 WHEN buchungsart.art != ? THEN 0 ELSE 1 END) * "
+          + "CAST(buchung.betrag * 100 / (100 + "
+          // Anlagenkonto immer Bruttobeträge.
+          // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
+          // Netto zu berehnen.
+          + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
+          + ") AS DECIMAL(10,2))),0) "
+          + "+ CASE WHEN buchungsart.art = ? THEN COALESCE(st.steuerbetrag,0) ELSE 0 END AS "
+          + AUSGABEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.AUSGABE,
+          Kontoart.ANLAGE.getKey(), ArtBuchungsart.AUSGABE);
+
+      it.addColumn("COALESCE(SUM("
+          + "(CASE WHEN buchungsart.art = ? AND buchung.betrag < 0 "
+          + "THEN -1 WHEN buchungsart.art != ? THEN 0 ELSE 1 END) * "
+          + "CAST(buchung.betrag * 100 / (100 + "
+          // Anlagenkonto immer Bruttobeträge.
+          // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
+          // Netto zu berehnen.
+          + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
+          + ") AS DECIMAL(10,2))),0) "
+          + "+ CASE WHEN buchungsart.art = ? THEN COALESCE(st.steuerbetrag,0) ELSE 0 END AS "
+          + EINNAHMEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.EINNAHME,
+          Kontoart.ANLAGE.getKey(), ArtBuchungsart.EINNAHME);
+    }
+    else
+    {
+      it.addColumn("SUM(CASE WHEN buchungsart.art = ? AND buchung.betrag > 0"
+          + " THEN -buchung.betrag WHEN buchungsart.art != ? THEN 0 ELSE buchung.betrag END) AS "
+          + AUSGABEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.AUSGABE);
+
+      it.addColumn("SUM(CASE WHEN buchungsart.art = ? AND buchung.betrag < 0"
+          + " THEN -buchung.betrag WHEN buchungsart.art != ? THEN 0 ELSE buchung.betrag END) AS "
+          + EINNAHMEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.EINNAHME);
+    }
+
     return it;
   }
 
