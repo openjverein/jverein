@@ -82,7 +82,6 @@ public class KontenrahmenImportXML implements Importer
     @SuppressWarnings("rawtypes")
     Enumeration enubu = buchungsklassen.enumerateChildren();
     HashMap<Double, HashMap<String, Integer>> steuerMap = new HashMap<>();
-    HashMap<Integer, String> buchungsartIdMap = new HashMap<>();
 
     DBTransaction.starten();
     try
@@ -122,8 +121,6 @@ public class KontenrahmenImportXML implements Importer
           else
             buchungsart.setAbschreibung(false);
           buchungsart.store();
-          buchungsartIdMap.put(buaelement.getAttribute("nummer", 0),
-              buchungsart.getID());
         }
       }
 

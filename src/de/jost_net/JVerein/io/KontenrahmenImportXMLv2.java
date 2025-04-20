@@ -80,6 +80,7 @@ public class KontenrahmenImportXMLv2 implements Importer
 
     try
     {
+      DBTransaction.starten();
       // Element "buchungsklassen" holen
       IXMLElement buchungsklassen = root.getFirstChildNamed("buchungsklassen");
       @SuppressWarnings("rawtypes")
@@ -94,7 +95,6 @@ public class KontenrahmenImportXMLv2 implements Importer
         bukl.store();
       }
       HashMap<Double, HashMap<String, Integer>> steuerMap = new HashMap<>();
-      DBTransaction.starten();
 
       // Element "buchungsklassen" holen
       IXMLElement buchungsarten = root.getFirstChildNamed("buchungsarten");
@@ -129,52 +129,6 @@ public class KontenrahmenImportXMLv2 implements Importer
         else
           buchungsart.setAbschreibung(false);
         buchungsart.store();
-
-        Double steuersatz = Double
-            .valueOf(buaelement.getAttribute("steuersatz", "0.00"));
-        if (steuersatz != 0)
-        {
-          String steuerBuchungsart = buaelement
-              .getAttribute("steuer_buchungsart", "");
-          HashMap<String, Integer> steuerEntry = steuerMap
-              .getOrDefault(steuersatz, new HashMap<>());
-          if (steuerEntry.get(steuerBuchungsart) != null)
-          {
-            // Bereits erstellte Steuer verwenden
-            buchungsart.setSteuerId(steuerEntry.get(steuerBuchungsart));
-          }
-          else
-          {
-            // Neue Steuer erstellen
-            Steuer steuer = Einstellungen.getDBService()
-                .createObject(Steuer.class, null);
-            steuer.setAktiv(true);
-            steuer.setBuchungsartId(Long.parseLong(buchungsart.getID()));
-            String name = "";
-            switch (buchungsart.getArt())
-            {
-              case ArtBuchungsart.AUSGABE:
-                name = "Vorsteuer ";
-                break;
-              case ArtBuchungsart.EINNAHME:
-                name = "Umsatzsteuer ";
-                break;
-              case ArtBuchungsart.UMBUCHUNG:
-                name = "Steuer ";
-                break;
-            }
-            name += steuersatz + "%";
-            steuer.setName(name);
-            steuer.setSatz(steuersatz);
-            steuer.store();
-            buchungsart.setSteuer(steuer);
-
-            steuerEntry.put(steuerBuchungsart,
-                Integer.parseInt(steuer.getID()));
-            steuerMap.put(steuersatz, steuerEntry);
-          }
-          buchungsart.store();
-        }
       }
 
       // Wir durchlaufen das ganze nochmal und erstellen die Steuern und

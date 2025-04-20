@@ -19,8 +19,6 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-import org.apache.commons.lang.time.DateUtils;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.AnlagenverzeichnisCSV;
 import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
