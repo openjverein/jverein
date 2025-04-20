@@ -58,6 +58,11 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   protected boolean mitSteuer;
 
   /**
+   * Soll "Buchungen ohne Buchungsart" mit ausgegeben werden? Default true
+   */
+  protected boolean mitOhneBcuhungsart;
+
+  /**
    * Die Bezeichnung der Gruppen-Spalte: "Buchungsklasse", "Projekt". Default
    * "Buchungsklasse"
    */
@@ -290,31 +295,36 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     saldo.setAttribute(UMBUCHUNGEN, umbuchungenGesamt);
     zeilen.add(saldo);
 
-    // Ggf. die Anzahl und Summe nicht zugeordneter Buchungen anzeigen.
-    // (Geht nicht mit im oberen Query, da MySQL und H2 kein FULL JOIN
-    // unterstützen)
-    ExtendedDBIterator<PseudoDBObject> ohneBaIt = new ExtendedDBIterator<>(
-        "buchung");
-    ohneBaIt.addColumn("count(*) AS anzahl");
-    ohneBaIt.addColumn("sum(buchung.betrag) AS summe");
-    ohneBaIt.addFilter("buchungsart IS NULL");
-    ohneBaIt.addFilter("datum >= ?", getDatumvon().getDate());
-    ohneBaIt.addFilter("datum <= ?", getDatumbis().getDate());
-
-    PseudoDBObject oAnz = ohneBaIt.next();
-    Integer anzahl = oAnz.getAttribute("anzahl") == null ? 0
-        : oAnz.getInteger("anzahl");
-    Double summeOhneBuchungsart = oAnz.getAttribute("summe") == null ? 0
-        : oAnz.getDouble("summe");
-    if (anzahl > 0)
+    Double summeOhneBuchungsart = 0d;
+    if (mitOhneBcuhungsart)
     {
-      PseudoDBObject ohneBuchungsart = new PseudoDBObject();
-      ohneBuchungsart.setAttribute(ART,
-          AbstractSaldoControl.ART_NICHTZUGEORDNETEBUCHUNGEN);
-      ohneBuchungsart.setAttribute(GRUPPE, "Saldo Buchungen ohne Buchungsart");
-      ohneBuchungsart.setAttribute(EINNAHMEN, summeOhneBuchungsart);
-      ohneBuchungsart.setAttribute(ANZAHL, anzahl);
-      zeilen.add(ohneBuchungsart);
+      // Ggf. die Anzahl und Summe nicht zugeordneter Buchungen anzeigen.
+      // (Geht nicht mit im oberen Query, da MySQL und H2 kein FULL JOIN
+      // unterstützen)
+      ExtendedDBIterator<PseudoDBObject> ohneBaIt = new ExtendedDBIterator<>(
+          "buchung");
+      ohneBaIt.addColumn("count(*) AS anzahl");
+      ohneBaIt.addColumn("sum(buchung.betrag) AS summe");
+      ohneBaIt.addFilter("buchungsart IS NULL");
+      ohneBaIt.addFilter("datum >= ?", getDatumvon().getDate());
+      ohneBaIt.addFilter("datum <= ?", getDatumbis().getDate());
+
+      PseudoDBObject oAnz = ohneBaIt.next();
+      Integer anzahl = oAnz.getAttribute("anzahl") == null ? 0
+          : oAnz.getInteger("anzahl");
+      summeOhneBuchungsart = oAnz.getAttribute("summe") == null ? 0
+          : oAnz.getDouble("summe");
+      if (anzahl > 0)
+      {
+        PseudoDBObject ohneBuchungsart = new PseudoDBObject();
+        ohneBuchungsart.setAttribute(ART,
+            AbstractSaldoControl.ART_NICHTZUGEORDNETEBUCHUNGEN);
+        ohneBuchungsart.setAttribute(GRUPPE,
+            "Saldo Buchungen ohne Buchungsart");
+        ohneBuchungsart.setAttribute(EINNAHMEN, summeOhneBuchungsart);
+        ohneBuchungsart.setAttribute(ANZAHL, anzahl);
+        zeilen.add(ohneBuchungsart);
+      }
     }
 
     PseudoDBObject saldogv = new PseudoDBObject();
