@@ -70,7 +70,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
 
   public static final String KOMMENTAR = "kommentar";
 
-  public static final String BETRAG = "betragFeld";
+  public static final String BETRAG = "betragfeld";
 
   private static final String ZWECK = "zweck";
 
@@ -558,13 +558,17 @@ public class MittelverwendungControl extends AbstractSaldoControl
     ruecklageIt.addColumn("buchung.betrag as " + BETRAG);
     ruecklageIt.addColumn("konto.kontoart as " + KONTOART);
     ruecklageIt.addColumn("buchungsart.art as " + ART);
+
     ruecklageIt.join("konto", "buchung.konto = konto.id");
     ruecklageIt.join("buchungsart", "buchung.buchungsart = buchungsart.id");
+
     ruecklageIt.addFilter("buchung.datum >= ?", datumvon);
     ruecklageIt.addFilter("buchung.datum <= ?", datumbis);
     ruecklageIt.addFilter("konto.kontoart > ?", Kontoart.LIMIT.getKey());
+
     ruecklageIt.addGroupBy("konto.kontoart");
     ruecklageIt.addGroupBy("buchungsart.art");
+
     ruecklageIt.setOrder("ORDER BY konto.kontoart,buchungsart.art");
 
     if (Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
