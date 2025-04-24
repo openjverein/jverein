@@ -208,7 +208,15 @@ public class Kontoauszug
     MitgliedskontoNode node = new MitgliedskontoNode(m, (Date) control.getDatumvon().getValue(), 
         (Date) control.getDatumbis().getValue());
     
-    if (diff == DIFFERENZ.FEHLBETRAG && node.getIst() >= node.getSoll())
+    Double limit = Double.valueOf(0d);
+    if (control.isDoubleAuswAktiv()
+        && control.getDoubleAusw().getValue() != null)
+    {
+      // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
+      limit = Math.abs((Double) control.getDoubleAusw().getValue());
+    }
+
+    if (diff == DIFFERENZ.FEHLBETRAG && node.getIst() >= node.getSoll() - limit)
     {
       return false;
     }

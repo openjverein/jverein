@@ -63,6 +63,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.TreeFormatter;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -166,6 +167,8 @@ public class FilterControl extends AbstractControl
   protected SelectInput suchbuchungsartart = null;
 
   protected SelectInput suchkontoart = null;
+
+  protected DecimalInput doubleauswahl = null;
 
   private Calendar calendar = Calendar.getInstance();
 
@@ -1089,6 +1092,31 @@ public class FilterControl extends AbstractControl
     return integerausw != null;
   }
   
+  public DecimalInput getDoubleAusw()
+  {
+    if (doubleauswahl != null)
+    {
+      return doubleauswahl;
+    }
+    String tmp = settings.getString(settingsprefix + "doubleauswahl", "");
+    if (tmp != null && !tmp.isEmpty())
+    {
+      doubleauswahl = new DecimalInput(Double.parseDouble(tmp),
+          Einstellungen.DECIMALFORMAT);
+    }
+    else
+    {
+      doubleauswahl = new DecimalInput(Einstellungen.DECIMALFORMAT);
+    }
+    doubleauswahl.setName("Auswahl");
+    return doubleauswahl;
+  }
+
+  public boolean isDoubleAuswAktiv()
+  {
+    return doubleauswahl != null;
+  }
+
   public SelectInput getSuchSpendenart()
   {
     if (suchspendenart != null)
@@ -1354,6 +1382,8 @@ public class FilterControl extends AbstractControl
           suchbuchungsartart.setValue(null);
         if (suchkontoart != null)
           suchkontoart.setValue(null);
+        if (doubleauswahl != null)
+          doubleauswahl.setValue(null);
         refresh();
       }
     }, null, false, "eraser.png");
@@ -1742,6 +1772,19 @@ public class FilterControl extends AbstractControl
       }
     }
     
+    if (doubleauswahl != null)
+    {
+      Double tmp = (Double) doubleauswahl.getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute(settingsprefix + "doubleauswahl", tmp);
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "doubleauswahl", "");
+      }
+    }
+
     if (suchspendenart != null )
     {
       SuchSpendenart ss = (SuchSpendenart) suchspendenart.getValue();
