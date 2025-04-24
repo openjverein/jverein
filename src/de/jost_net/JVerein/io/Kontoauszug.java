@@ -274,7 +274,14 @@ public class Kontoauszug
     rpt.addColumn(Zahlungsweg.get((Integer) node.getAttribute("zahlungsweg")),
         Element.ALIGN_LEFT);
     rpt.addColumn((Double) node.getAttribute("soll"));
-    rpt.addColumn((Double) node.getAttribute("ist"));
+    if (node.getType() != MitgliedskontoNode.SOLL)
+    {
+      rpt.addColumn((Double) node.getAttribute("ist"));
+    }
+    else
+    {
+      rpt.addColumn((Double) null);
+    }
     rpt.addColumn((Double) node.getAttribute("differenz"));
   }
 
