@@ -1242,7 +1242,9 @@ public class EinstellungControl extends AbstractControl
           (String) getImapAuthUser().getValue(),
           (String) getImapAuthPwd().getValue(),
           (String) getImapHost().getValue(),
-          Integer.toString((Integer) getImapPort().getValue()),
+          getImapPort().getValue() != null
+              ? Integer.toString((Integer) getImapPort().getValue())
+              : "",
           (Boolean) getImap_ssl().getValue(),
           (Boolean) getImap_starttls().getValue(),
           (String) getImapSentFolder().getValue());
@@ -1272,6 +1274,7 @@ public class EinstellungControl extends AbstractControl
     {
       GUI.getStatusBar()
           .setErrorText("Fehler beim senden der Testmail: " + e.getMessage());
+      Logger.error("Fehler beim senden der Testmail", e);
     }
   }
 
