@@ -70,7 +70,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
 
   public static final String KOMMENTAR = "kommentar";
 
-  public static final String BETRAG = "betrag";
+  public static final String BETRAG = "betragFeld";
 
   private static final String ZWECK = "zweck";
 
@@ -623,6 +623,11 @@ public class MittelverwendungControl extends AbstractSaldoControl
     zeilen.add(rueckstand);
 
     // Berechnung der Mittelverwendung
+    rueckstandVorVorjahr = (rueckstandVorVorjahr == null) ? 0.0
+        : rueckstandVorVorjahr;
+    zwanghafteWeitergabeVorjahr = (zwanghafteWeitergabeVorjahr == null) ? 0.0
+        : zwanghafteWeitergabeVorjahr;
+
     Double ausgaben = Math.max(verwendung - summeEntRuecklagen, 0);
     Double rueckstandVorjahr = Math.max(
         vorhandeneMittel - rueckstandVorVorjahr - zwanghafteWeitergabeVorjahr,
@@ -757,7 +762,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
       String kontoklasse = (String) o.getAttribute(BUCHUNGSKLASSE);
       if (kontoklasse == null)
       {
-        kontoklasse = "nicht zugeordnet";
+        kontoklasse = "Nicht zugeordnet";
       }
 
       // Bei bei Konten unter dem Limit vor neuer Kontoart Summe ausgeben.

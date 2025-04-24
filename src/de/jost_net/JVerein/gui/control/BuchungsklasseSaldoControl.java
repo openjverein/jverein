@@ -60,7 +60,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   /**
    * Soll "Buchungen ohne Buchungsart" mit ausgegeben werden? Default true
    */
-  protected boolean mitOhneBuchungsart;
+  protected boolean mitOhneBuchungsart = true;
 
   /**
    * Die Bezeichnung der Gruppen-Spalte: "Buchungsklasse", "Projekt". Default

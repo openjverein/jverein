@@ -186,6 +186,7 @@ public class JahresabschlussControl extends KontensaldoControl
       Logger.error("Fehler beim setzen des Enddatums", e);
     }
     datumbis = new DateLabel(d);
+    datumbis.disable();
     return datumbis;
   }
 
