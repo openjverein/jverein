@@ -42,10 +42,14 @@ public class MittelverwendungFlowSaldoControl extends BuchungsklasseSaldoControl
 
     // Bei der Mittelverwendung verwenden wir nur Geldkonten und zweckfremde
     // Anlagen.
-    it.addFilter(
-        "(buchungsart.art != ? AND (konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?)))"
-            + "OR (buchungsart.art = ? AND (konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?))) "
-            + "OR st.steuerbetrag is not null",
+    String filter = "(buchungsart.art != ? AND (konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?)))"
+        + "OR (buchungsart.art = ? AND (konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?))) ";
+
+    if (mitSteuer)
+    {
+      filter += "OR st.steuerbetrag is not null";
+    }
+    it.addFilter(filter,
         ArtBuchungsart.UMBUCHUNG, Kontoart.GELD.getKey(),
         Kontoart.ANLAGE.getKey(), Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey(),
         ArtBuchungsart.UMBUCHUNG, Kontoart.SCHULDEN.getKey(),

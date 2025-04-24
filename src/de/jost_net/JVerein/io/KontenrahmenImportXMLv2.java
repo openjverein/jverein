@@ -164,11 +164,11 @@ public class KontenrahmenImportXMLv2 implements Importer
                 .createObject(Steuer.class, null);
             steuer.setAktiv(true);
 
-            // Die Stuer-Buchungsart holen
+            // Die Steuer-Buchungsart holen
             DBIterator<Buchungsart> stbuait = Einstellungen.getDBService()
                 .createList(Buchungsart.class);
             stbuait.addFilter("nummer = ?", steuerBuchungsart);
-            Buchungsart stBuchungsart = buait.next();
+            Buchungsart stBuchungsart = stbuait.next();
 
             steuer.setBuchungsartId(Long.parseLong(stBuchungsart.getID()));
             String name = "";

@@ -372,7 +372,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
               // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
               // Netto zu berehnen.
               + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
-              + ") AS DECIMAL(10,2))),0)" + " + COALESCE(st.steuerbetrag,0) AS "
+              + ") AS DECIMAL(10,2))),0) + COALESCE(SUM(st.steuerbetrag),0) AS "
               + SUMME,
           Kontoart.ANLAGE.getKey());
     }
@@ -422,7 +422,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     if (mitSteuer)
     {
       String subselect = "(SELECT buchungsart.id, "
-          + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag "
+          + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag, "
+          + "buchung.projekt "
           + " FROM buchung"
           // Keine Steuer bei Anlagekonten
           + " JOIN konto on buchung.konto = konto.id and konto.kontoart < ? and konto.kontoart != ?";
@@ -442,7 +443,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           + " WHERE datum >= ? and datum <= ? "
           // Keine Steuer bei alten Steuerbuchungen mit dependencyid
           + " AND (buchung.dependencyid is null or  buchung.dependencyid = -1)"
-          + " GROUP BY buchungsart.id) AS st ";
+          + " GROUP BY buchungsart.id, buchung.projekt) AS st ";
       it.leftJoin(subselect, "st.id = buchungsart.id ", Kontoart.LIMIT.getKey(),
           Kontoart.ANLAGE.getKey(), getDatumvon().getDate(),
           getDatumbis().getDate());
