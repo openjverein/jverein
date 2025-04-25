@@ -220,7 +220,8 @@ public class Kontoauszug
     {
       return false;
     }
-    if (diff == DIFFERENZ.UEBERZAHLUNG && node.getSoll() >= node.getIst())
+    if (diff == DIFFERENZ.UEBERZAHLUNG
+        && node.getSoll() >= node.getIst() - limit)
     {
       return false;
     }

@@ -897,7 +897,7 @@ public class FilterControl extends AbstractControl
   {
     differenz = new SelectInput(DIFFERENZ.values(), defaultvalue);
     differenz.setName("Differenz");
-    differenz.addListener(new FilterListener());
+    differenz.addListener(new DifferenzListener());
     return differenz;
   }
   
@@ -1109,6 +1109,21 @@ public class FilterControl extends AbstractControl
       doubleauswahl = new DecimalInput(Einstellungen.DECIMALFORMAT);
     }
     doubleauswahl.setName("Auswahl");
+
+    // Falls der Input in Zusammenhang mit Differenz benutzt wird
+    if (differenz != null && differenz.getValue() != null)
+    {
+      DIFFERENZ diff = (DIFFERENZ) differenz.getValue();
+      if (diff == DIFFERENZ.FEHLBETRAG || diff == DIFFERENZ.UEBERZAHLUNG)
+      {
+        doubleauswahl.enable();
+      }
+      else
+      {
+        doubleauswahl.setValue(null);
+        doubleauswahl.disable();
+      }
+    }
     return doubleauswahl;
   }
 
@@ -1439,6 +1454,37 @@ public class FilterControl extends AbstractControl
     }
   }
   
+  public class DifferenzListener implements Listener
+  {
+
+    DifferenzListener()
+    {
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      DIFFERENZ diff = (DIFFERENZ) getDifferenz().getValue();
+      if (doubleauswahl != null && diff != null)
+      {
+        if (diff == DIFFERENZ.FEHLBETRAG || diff == DIFFERENZ.UEBERZAHLUNG)
+        {
+          doubleauswahl.enable();
+        }
+        else
+        {
+          doubleauswahl.setValue(null);
+          doubleauswahl.disable();
+        }
+      }
+      refresh();
+    }
+  }
+
   static class EigenschaftListener implements Listener
   {
 

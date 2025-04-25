@@ -53,7 +53,7 @@ public class SollbuchungListeView extends AbstractView
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addInput(control.getDifferenz());
-    middle.addLabelPair("Min. Fehlbetrag", control.getDoubleAusw());
+    middle.addLabelPair("Differenz Limit", control.getDoubleAusw());
     middle.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());

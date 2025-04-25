@@ -60,7 +60,7 @@ public class KontoauszugMailView extends AbstractView
       SimpleContainer middle = new SimpleContainer(cl.getComposite());
       middle.addInput(control.getMailauswahl());
       middle.addInput(control.getDifferenz());
-      middle.addLabelPair("Min. Fehlbetrag", control.getDoubleAusw());
+      middle.addLabelPair("Differenz Limit", control.getDoubleAusw());
 
       SimpleContainer right = new SimpleContainer(cl.getComposite());
       right.addInput(control.getDatumvon());

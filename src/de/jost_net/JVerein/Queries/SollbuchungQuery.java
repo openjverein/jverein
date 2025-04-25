@@ -376,13 +376,14 @@ public class SollbuchungQuery
           " HAVING SUM(buchung.betrag) < " + Sollbuchung.T_BETRAG + " - "
               + limit.toString()
           + " OR (SUM(buchung.betrag) IS NULL AND " + Sollbuchung.T_BETRAG
-              + " - " + limit.toString() + " > 0)");
+              + " > " + limit.toString() + ")");
     }
     if (DIFFERENZ.UEBERZAHLUNG == diff)
     {
-      sql.append(" HAVING SUM(buchung.betrag) > " + Sollbuchung.T_BETRAG
+      sql.append(" HAVING SUM(buchung.betrag) > " + Sollbuchung.T_BETRAG + " + "
+          + limit.toString()
           + " OR (SUM(buchung.betrag) IS NULL AND " + Sollbuchung.T_BETRAG
-          + " < 0)");
+          + " + " + limit.toString() + " < 0)");
     }
 
     List<Long> ids = (List<Long>) service.execute(sql.toString(), param.toArray(),
