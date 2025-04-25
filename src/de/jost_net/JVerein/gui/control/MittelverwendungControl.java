@@ -421,8 +421,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     it.addColumn(
         "SUM(COALESCE(CASE WHEN konto.kontoart >= ? AND konto.kontoart <= ? then 1 ELSE -1 END * anfangsbestand.betrag,0)) as "
             + BETRAG,
-        Kontoart.RUECKLAGE_ZWECK_GEBUNDEN.getKey(),
-        Kontoart.RUECKLAGE_SONSTIG.getKey());
+        Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
     it.join("konto", "anfangsbestand.konto = konto.id");
     it.addFilter("anfangsbestand.datum = ?", datumvon);
     it.addFilter(
@@ -566,9 +565,9 @@ public class MittelverwendungControl extends AbstractSaldoControl
     ruecklageIt.addFilter("buchung.datum >= ?", datumvon);
     ruecklageIt.addFilter("buchung.datum <= ?", datumbis);
     ruecklageIt.addFilter("konto.kontoart >= ?",
-        Kontoart.RUECKLAGE_ZWECK_GEBUNDEN.getKey());
+        Kontoart.LIMIT.getKey());
     ruecklageIt.addFilter("konto.kontoart <= ?",
-        Kontoart.RUECKLAGE_SONSTIG.getKey());
+        Kontoart.LIMIT_RUECKLAGE.getKey());
 
     ruecklageIt.addGroupBy("konto.kontoart");
     ruecklageIt.addGroupBy("buchungsart.art");
