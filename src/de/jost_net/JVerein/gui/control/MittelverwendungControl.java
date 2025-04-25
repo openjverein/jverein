@@ -419,9 +419,10 @@ public class MittelverwendungControl extends AbstractSaldoControl
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
         "anfangsbestand");
     it.addColumn(
-        "SUM(COALESCE(CASE WHEN konto.kontoart < ? then 1 ELSE -1 END * anfangsbestand.betrag,0)) as "
+        "SUM(COALESCE(CASE WHEN konto.kontoart >= ? AND konto.kontoart <= ? then 1 ELSE -1 END * anfangsbestand.betrag,0)) as "
             + BETRAG,
-        Kontoart.LIMIT.getKey());
+        Kontoart.RUECKLAGE_ZWECK_GEBUNDEN.getKey(),
+        Kontoart.RUECKLAGE_SONSTIG.getKey());
     it.join("konto", "anfangsbestand.konto = konto.id");
     it.addFilter("anfangsbestand.datum = ?", datumvon);
     it.addFilter(
@@ -564,7 +565,10 @@ public class MittelverwendungControl extends AbstractSaldoControl
 
     ruecklageIt.addFilter("buchung.datum >= ?", datumvon);
     ruecklageIt.addFilter("buchung.datum <= ?", datumbis);
-    ruecklageIt.addFilter("konto.kontoart > ?", Kontoart.LIMIT.getKey());
+    ruecklageIt.addFilter("konto.kontoart >= ?",
+        Kontoart.RUECKLAGE_ZWECK_GEBUNDEN.getKey());
+    ruecklageIt.addFilter("konto.kontoart <= ?",
+        Kontoart.RUECKLAGE_SONSTIG.getKey());
 
     ruecklageIt.addGroupBy("konto.kontoart");
     ruecklageIt.addGroupBy("buchungsart.art");
@@ -967,6 +971,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
 
     // nach Konto gruppieren
     it.addGroupBy("konto.id");
+    it.addGroupBy("konto.kontoart");
 
     // nach Kontenart und Anlagenklasse sortieren
     it.setOrder("ORDER BY konto.kontoart, konto.anlagenklasse, konto.nummer");
