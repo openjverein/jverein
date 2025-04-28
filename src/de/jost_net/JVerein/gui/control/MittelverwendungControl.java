@@ -577,7 +577,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
 
     if (Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
     {
-      ruecklageIt.addHaving("abs(" + BETRAG + ") > 0.01");
+      ruecklageIt.addHaving("abs(" + BETRAG + ") >= 0.01");
     }
 
     Double summeZuRuecklagen = 0d;
@@ -810,7 +810,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
             "Liste der zeitnahen Verwendung entzogenen Mittel:");
         zeilen.add(headMittel);
 
-        if (summeAnlagenGebunden > 0.01d)
+        if (Math.abs(summeAnlagenGebunden) >= 0.01d)
         {
           PseudoDBObject mittel = new PseudoDBObject();
           mittel.setAttribute(ART, ART_SALDOFOOTER);
@@ -818,7 +818,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
           mittel.setAttribute(SUMME, summeAnlagenGebunden);
           zeilen.add(mittel);
         }
-        if (summeFremdkapital > 0.01d)
+        if (Math.abs(summeFremdkapital) >= 0.01d)
         {
           PseudoDBObject mittel = new PseudoDBObject();
           mittel.setAttribute(ART, ART_SALDOFOOTER);
@@ -914,7 +914,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
       }
     }
 
-    if (summeFremdkapital > 0.01d)
+    if (Math.abs(summeFremdkapital) >= 0.01d)
     {
       PseudoDBObject mittel = new PseudoDBObject();
       mittel.setAttribute(ART, ART_SALDOFOOTER);
