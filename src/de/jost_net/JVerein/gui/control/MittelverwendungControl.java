@@ -419,15 +419,16 @@ public class MittelverwendungControl extends AbstractSaldoControl
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
         "anfangsbestand");
     it.addColumn(
-        "SUM(COALESCE(CASE WHEN konto.kontoart >= ? AND konto.kontoart <= ? then 1 ELSE -1 END * anfangsbestand.betrag,0)) as "
+        "SUM(COALESCE(CASE WHEN konto.kontoart > ? THEN -1 ELSE 1 END * anfangsbestand.betrag,0)) as "
             + BETRAG,
-        Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
+        Kontoart.LIMIT.getKey());
     it.join("konto", "anfangsbestand.konto = konto.id");
     it.addFilter("anfangsbestand.datum = ?", datumvon);
     it.addFilter(
-        "konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?) OR konto.kontoart > ?",
+        "konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?) OR (konto.kontoart > ? AND konto.kontoart < ?)",
         Kontoart.GELD.getKey(), Kontoart.ANLAGE.getKey(),
-        Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey(), Kontoart.LIMIT.getKey());
+        Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey(), Kontoart.LIMIT.getKey(),
+        Kontoart.LIMIT_RUECKLAGE.getKey());
 
     PseudoDBObject anfangsbestand = it.next();
     anfangsbestand.setAttribute(NR, pos++);
@@ -835,7 +836,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
       {
         PseudoDBObject saldo = new PseudoDBObject();
         saldo.setAttribute(ART, ART_SALDOFOOTER);
-        saldo.setAttribute(GRUPPE, "Summe Rücklagen " + kontoklasse);
+        saldo.setAttribute(GRUPPE, "Summe Rücklagen " + kontoklasseAlt);
         saldo.setAttribute(SUMME, summeAnlageklasse);
         zeilen.add(saldo);
 
@@ -887,6 +888,13 @@ public class MittelverwendungControl extends AbstractSaldoControl
       // Bei AnlagenSummenKonto nicht anzeigen
       if (!anlagenSummenkonto || kontoart != Kontoart.ANLAGE.getKey())
       {
+        // Vom Kommentar nur die erste Zeile
+        String kommentar = (String) o.getAttribute(KOMMENTAR);
+        if (kommentar.contains("\n"))
+        {
+          kommentar = kommentar.substring(0, kommentar.indexOf("\n"));
+          o.setAttribute(KOMMENTAR, kommentar);
+        }
         o.setAttribute(ART, ART_DETAIL);
         zeilen.add(o);
       }
@@ -904,6 +912,15 @@ public class MittelverwendungControl extends AbstractSaldoControl
       {
         summeFremdkapital += o.getDouble(BETRAG);
       }
+    }
+
+    if (summeFremdkapital > 0.01d)
+    {
+      PseudoDBObject mittel = new PseudoDBObject();
+      mittel.setAttribute(ART, ART_SALDOFOOTER);
+      mittel.setAttribute(GRUPPE, "Fremdkapital");
+      mittel.setAttribute(SUMME, summeFremdkapital);
+      zeilen.add(mittel);
     }
 
     // Gesamt-Salden anzeigen
@@ -944,9 +961,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     it.addColumn("konto.kontoart as " + KONTOART);
     it.addColumn("konto.bezeichnung as " + BEZEICHNUNG);
     // Nur die erste Zeile des Kommentars
-    it.addColumn(
-        "case when locate('\\n',konto.kommentar) > 0 then left(konto.kommentar,locate('\\n',konto.kommentar)-1) ELSE konto.kommentar END as "
-        + KOMMENTAR);
+    it.addColumn("konto.kommentar as " + KOMMENTAR);
     it.addColumn("buchungsklasse.bezeichnung as " + BUCHUNGSKLASSE);
     it.addColumn("konto.zweck as " + ZWECK);
     it.addColumn(
@@ -967,6 +982,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
         getDatumvon().getDate());
     it.addFilter("konto.eroeffnung IS NULL OR konto.eroeffnung <= ?",
         getDatumbis().getDate());
+    it.addFilter("konto.kontoart < ?", Kontoart.LIMIT_RUECKLAGE.getKey());
 
     // nach Konto gruppieren
     it.addGroupBy("konto.id");

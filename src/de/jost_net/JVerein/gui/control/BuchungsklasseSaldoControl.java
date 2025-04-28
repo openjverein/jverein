@@ -24,6 +24,7 @@ import de.jost_net.JVerein.io.BuchungsklassesaldoPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.jameica.gui.AbstractView;
@@ -361,6 +362,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     it.addColumn("buchungsart.bezeichnung as " + BUCHUNGSART);
     it.addColumn("buchungsart.art as " + ARTBUCHUNGSART);
     it.addColumn("COUNT(buchung.id) as " + ANZAHL);
+    it.addColumn("buchungsart.status");
 
     if (mitSteuer)
     {
@@ -384,7 +386,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     it.leftJoin("buchung",
         "buchung.buchungsart = buchungsart.id AND datum >= ? AND datum <= ?",
         getDatumvon().getDate(), getDatumbis().getDate());
-    it.leftJoin("konto", "buchung.konto = konto.id and konto.kontoart < ?",
+    it.leftJoin("konto", "buchung.konto = konto.id");
+    it.addFilter("konto.kontoart is null OR konto.kontoart < ?",
         Kontoart.LIMIT.getKey());
     if (mitSteuer)
     {
@@ -414,6 +417,12 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     if (unterdrueckung)
     {
       it.addHaving("anzahl > 0 OR abs(" + SUMME + ") >= 0.01");
+    }
+    else
+    {
+      it.addHaving(
+          "anzahl > 0 OR abs(" + SUMME + ") >= 0.01 OR buchungsart.status != ?",
+          StatusBuchungsart.INACTIVE);
     }
     it.setOrder(
         "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC ");
