@@ -556,7 +556,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     // Rücklagen
     ExtendedDBIterator<PseudoDBObject> ruecklageIt = new ExtendedDBIterator<>(
         "buchung");
-    ruecklageIt.addColumn("buchung.betrag as " + BETRAG);
+    ruecklageIt.addColumn("SUM(buchung.betrag) as " + BETRAG);
     ruecklageIt.addColumn("konto.kontoart as " + KONTOART);
     ruecklageIt.addColumn("buchungsart.art as " + ART);
 
@@ -565,9 +565,9 @@ public class MittelverwendungControl extends AbstractSaldoControl
 
     ruecklageIt.addFilter("buchung.datum >= ?", datumvon);
     ruecklageIt.addFilter("buchung.datum <= ?", datumbis);
-    ruecklageIt.addFilter("konto.kontoart >= ?",
+    ruecklageIt.addFilter("konto.kontoart > ?",
         Kontoart.LIMIT.getKey());
-    ruecklageIt.addFilter("konto.kontoart <= ?",
+    ruecklageIt.addFilter("konto.kontoart < ?",
         Kontoart.LIMIT_RUECKLAGE.getKey());
 
     ruecklageIt.addGroupBy("konto.kontoart");
@@ -582,9 +582,9 @@ public class MittelverwendungControl extends AbstractSaldoControl
 
     Double summeZuRuecklagen = 0d;
     Double summeEntRuecklagen = 0d;
-    while (it.hasNext())
+    while (ruecklageIt.hasNext())
     {
-      PseudoDBObject o = it.next();
+      PseudoDBObject o = ruecklageIt.next();
 
       switch (o.getInteger(ART))
       {
@@ -890,7 +890,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
       {
         // Vom Kommentar nur die erste Zeile
         String kommentar = (String) o.getAttribute(KOMMENTAR);
-        if (kommentar.contains("\n"))
+        if (kommentar != null && kommentar.contains("\n"))
         {
           kommentar = kommentar.substring(0, kommentar.indexOf("\n"));
           o.setAttribute(KOMMENTAR, kommentar);
@@ -912,15 +912,6 @@ public class MittelverwendungControl extends AbstractSaldoControl
       {
         summeFremdkapital += o.getDouble(BETRAG);
       }
-    }
-
-    if (Math.abs(summeFremdkapital) >= 0.01d)
-    {
-      PseudoDBObject mittel = new PseudoDBObject();
-      mittel.setAttribute(ART, ART_SALDOFOOTER);
-      mittel.setAttribute(GRUPPE, "Fremdkapital");
-      mittel.setAttribute(SUMME, summeFremdkapital);
-      zeilen.add(mittel);
     }
 
     // Gesamt-Salden anzeigen

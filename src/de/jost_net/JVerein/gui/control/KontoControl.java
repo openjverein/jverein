@@ -627,6 +627,7 @@ public class KontoControl extends FilterControl
     }
     ArrayList<Kontoart> values = new ArrayList<Kontoart>(Arrays.asList(Kontoart.values()));
     values.remove(Kontoart.LIMIT);
+    values.remove(Kontoart.LIMIT_RUECKLAGE);
     kontoart = new SelectInput(values, art);   
     kontoart.addListener(new Listener()
     {
