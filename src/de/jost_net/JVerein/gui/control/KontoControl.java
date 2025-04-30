@@ -991,6 +991,7 @@ public class KontoControl extends FilterControl
       anlagenzweck.setValue(Anlagenzweck.NUTZUNGSGEBUNDEN);
       anlagenzweck.disable();
     }
+    anlagenzweck.setPleaseChoose("Bitte wählen");
     return anlagenzweck;
   }
 

@@ -57,6 +57,14 @@ public class SpbAdressaufbereitung
       adresse.add(m.getKtoiPlz() + " " + m.getKtoiOrt());
       adresse.add(m.getKtoiStaat());
     }
+    // Alle Zeilen erstmal leer füllen, dait nicht null in der DB steht
+    spb.setZeile1("");
+    spb.setZeile2("");
+    spb.setZeile3("");
+    spb.setZeile4("");
+    spb.setZeile5("");
+    spb.setZeile6("");
+    spb.setZeile7("");
     switch (adresse.size())
     {
       case 7:

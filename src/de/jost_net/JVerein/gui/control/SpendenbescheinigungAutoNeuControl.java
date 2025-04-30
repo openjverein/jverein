@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -185,6 +186,8 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
             spbescheinigung.setSpendedatum(new Date());
             spbescheinigung.setBetrag(0.01);
             spbescheinigung.setAutocreate(Boolean.TRUE);
+            spbescheinigung.setBezeichnungSachzuwendung("");
+            spbescheinigung.setHerkunftSpende(HerkunftSpende.KEINEANGABEN);
             // Loop über die Buchungen eines Mitglieds
             @SuppressWarnings("rawtypes")
             GenericIterator it2 = sp1.getChildren();

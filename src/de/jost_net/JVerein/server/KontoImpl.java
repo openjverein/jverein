@@ -127,6 +127,10 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
         {
           throw new ApplicationException("Bitte Anlagen Buchungsklasse eingeben");
         }
+        if (getAnlagenzweck() == null)
+        {
+          throw new ApplicationException("Bitte Anlagen Zweck auswählen");
+        }
         if (getAfaMode() == null)
         {
           throw new ApplicationException("Bitte Afa Mode eingeben");
