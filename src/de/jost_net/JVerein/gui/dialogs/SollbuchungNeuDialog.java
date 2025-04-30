@@ -78,7 +78,6 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
     SimpleContainer left = new SimpleContainer(cols.getComposite());
     left.addHeadline("Sollbuchung");
     left.addLabelPair("Mitglied", sollbControl.getMitglied());
-    left.addLabelPair("Zahler", sollbControl.getZahler());
     DateInput datumInput = sollbControl.getDatum();
     datumInput.addListener(event -> {
       if (event.type != SWT.Selection && event.type != SWT.FocusOut)
@@ -208,15 +207,6 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
               ((MitgliedSearchInput) mitgliedInput)
                   .setValue("Zum Suchen tippen");
             }
-            Input zahlerInput = sollbControl.getZahler();
-            if (zahlerInput instanceof SelectInput)
-            {
-              ((SelectInput) zahlerInput).setPreselected(null);
-            }
-            else if (zahlerInput instanceof MitgliedSearchInput)
-            {
-              ((MitgliedSearchInput) zahlerInput).setValue("Zum Suchen tippen");
-            }
           }
           catch (Exception e)
           {
@@ -269,6 +259,7 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
         sollbPosControl.getZweck()
             .setValue(sollbControl.getZweck1().getValue());
       }
+      sollbControl.getZahler().setValue(sollbControl.getMitglied().getValue());
       sollbControl.handleStore();
       sollbuchungPosition.setSollbuchung(sollbuchung.getID());
       sollbPosControl.handleStore();

@@ -38,7 +38,6 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.ColumnLayout;
-import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.util.ApplicationException;
@@ -58,9 +57,8 @@ public class BuchungListeView extends AbstractView
     folder.setBackground(Color.BACKGROUND.getSWTColor());
 
     // Erster Tab
-    TabGroup tabAllgemein = new TabGroup(folder, "Suche Buchungen", true, 2);
-    LabelGroup labelgroup1 = new LabelGroup(tabAllgemein.getComposite(), "Filter");
-    ColumnLayout cl = new ColumnLayout(labelgroup1.getComposite(), 3);
+    TabGroup tabAllgemein = new TabGroup(folder, "Filter", true, 2);
+    ColumnLayout cl = new ColumnLayout(tabAllgemein.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     SimpleContainer center = new SimpleContainer(cl.getComposite());
@@ -107,7 +105,7 @@ public class BuchungListeView extends AbstractView
       }
     }, null, true, "search.png");
     buttons1.addButton(suchen);
-    labelgroup1.addButtonArea(buttons1);
+    tabAllgemein.addButtonArea(buttons1);
     zurueck.setToolTipText("Datumsbereich zurück");
     vor.setToolTipText("Datumsbereich vowärts");
 
@@ -115,8 +113,7 @@ public class BuchungListeView extends AbstractView
     final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(
         this, control);
     TabGroup tabKonto = new TabGroup(folder, "Konto Kenndaten", true, 4);
-    LabelGroup labelgroup2 = new LabelGroup(tabKonto.getComposite(), "");
-    ColumnLayout c2 = new ColumnLayout(labelgroup2.getComposite(), 2);
+    ColumnLayout c2 = new ColumnLayout(tabKonto.getComposite(), 2);
     SimpleContainer left2 = new SimpleContainer(c2.getComposite());
     SimpleContainer right2 = new SimpleContainer(c2.getComposite());
     left2.addLabelPair("Konto:", headerControl.getKontoNameInput());

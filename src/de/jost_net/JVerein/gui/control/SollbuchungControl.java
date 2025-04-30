@@ -470,7 +470,10 @@ public class SollbuchungControl extends DruckMailControl
       });
       sollbuchungenList.addColumn("Zahlungseingang", Sollbuchung.ISTSUMME,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      sollbuchungenList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
+      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      {
+        sollbuchungenList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
+      }
       sollbuchungenList.setContextMenu(menu);
       sollbuchungenList.setRememberColWidths(true);
       sollbuchungenList.setRememberOrder(true);
@@ -844,7 +847,6 @@ public class SollbuchungControl extends DruckMailControl
     {
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
           Einstellungen.getEinstellung().getMitgliedAuswahl());
-      mitglied.addListener(new MitgliedListener());
       if (mitglied instanceof SelectInput)
       {
         ((SelectInput) mitglied).setPleaseChoose("Bitte auswählen");
@@ -896,31 +898,6 @@ public class SollbuchungControl extends DruckMailControl
       final String meldung = "Gewählter Zahler kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
-    }
-  }
-
-  public class MitgliedListener implements Listener
-  {
-
-    MitgliedListener()
-    {
-    }
-
-    @Override
-    public void handleEvent(Event event)
-    {
-      try
-      {
-        Mitglied m = (Mitglied) getMitglied().getValue();
-        if (m != null)
-        {
-          getZahler().setValue(m.getZahler());
-        }
-      }
-      catch (RemoteException e)
-      {
-        e.printStackTrace();
-      }
     }
   }
 

@@ -1174,6 +1174,10 @@ public class BuchungsControl extends AbstractControl
   {
     try
     {
+      if (!Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        return null;
+      }
       Projekt projekt = (Projekt) getProjekt().getValue();
       if (null == projekt)
         return null;
@@ -1547,11 +1551,6 @@ public class BuchungsControl extends AbstractControl
           buchungsarten.add(list.next());
         }
       }
-      Buchungsart ohnezuordnung = (Buchungsart) Einstellungen.getDBService()
-          .createObject(Buchungsart.class, null);
-      ohnezuordnung.setBezeichnung("Ohne Zuordnung");
-      ohnezuordnung.setArt(-1);
-      buchungsarten.add(ohnezuordnung);
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");

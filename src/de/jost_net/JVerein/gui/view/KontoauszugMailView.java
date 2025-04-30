@@ -51,17 +51,20 @@ public class KontoauszugMailView extends AbstractView
     
     if (this.getCurrentObject() == null)
     {
-      ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+      ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
       SimpleContainer left = new SimpleContainer(cl.getComposite());
       left.addInput(control.getSuchMitgliedstyp(Mitgliedstypen.ALLE));
       left.addInput(control.getMitgliedStatus());
       left.addInput(control.getBeitragsgruppeAusw());
-      left.addInput(control.getMailauswahl());
+
+      SimpleContainer middle = new SimpleContainer(cl.getComposite());
+      middle.addInput(control.getMailauswahl());
+      middle.addInput(control.getDifferenz());
+      middle.addLabelPair("Differenz Limit", control.getDoubleAusw());
 
       SimpleContainer right = new SimpleContainer(cl.getComposite());
       right.addInput(control.getDatumvon());
       right.addInput(control.getDatumbis());
-      right.addInput(control.getDifferenz());
       right.addInput(control.getStichtag(false));
     }
     else

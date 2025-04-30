@@ -19,6 +19,8 @@ package de.jost_net.JVerein.gui.control;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -102,7 +104,32 @@ public class FormularControl extends FormularPartControl
     {
       return art;
     }
-    art = new SelectInput(FormularArt.values(), getFormular().getArt());
+    FormularArt aktuelleFormularArt = getFormular().getArt();
+    ArrayList<FormularArt> list = new ArrayList<FormularArt>(
+        Arrays.asList(FormularArt.values()));
+    if (!Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+    {
+      if (aktuelleFormularArt != FormularArt.SPENDENBESCHEINIGUNG)
+      {
+        list.remove(FormularArt.SPENDENBESCHEINIGUNG);
+      }
+      if (aktuelleFormularArt != FormularArt.SAMMELSPENDENBESCHEINIGUNG)
+      {
+        list.remove(FormularArt.SAMMELSPENDENBESCHEINIGUNG);
+      }
+    }
+    if (!Einstellungen.getEinstellung().getRechnungenAnzeigen())
+    {
+      if (aktuelleFormularArt != FormularArt.RECHNUNG)
+      {
+        list.remove(FormularArt.RECHNUNG);
+      }
+      if (aktuelleFormularArt != FormularArt.MAHNUNG)
+      {
+        list.remove(FormularArt.MAHNUNG);
+      }
+    }
+    art = new SelectInput(list, aktuelleFormularArt);
     return art;
   }
 

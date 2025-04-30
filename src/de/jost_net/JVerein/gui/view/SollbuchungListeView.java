@@ -44,18 +44,21 @@ public class SollbuchungListeView extends AbstractView
     control.init("sollbuchung.", null, null);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addLabelPair("Zahler", control.getSuchname());
     left.addLabelPair("Mitglied", control.getSuchtext());
-    left.addInput(control.getDifferenz());
-    left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
+    left.addLabelPair("Zahler Mail", control.getMailauswahl());
+
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    middle.addInput(control.getDifferenz());
+    middle.addLabelPair("Differenz Limit", control.getDoubleAusw());
+    middle.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
-    right.addLabelPair("Zahler Mail", control.getMailauswahl());
 
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),

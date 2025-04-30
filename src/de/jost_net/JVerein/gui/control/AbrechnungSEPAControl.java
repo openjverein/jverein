@@ -475,13 +475,14 @@ public class AbrechnungSEPAControl extends AbstractControl
         (Boolean) kompakteabbuchung.getValue());
     settings.setAttribute("sollbuchungenzusammenfassen",
         (Boolean) sollbuchungenzusammenfassen.getValue());
-    settings.setAttribute("rechnung",
-        (Boolean) rechnung.getValue());
-    settings.setAttribute("rechnungstext",
-        (String) rechnungstext.getValue());
-    settings.setAttribute("rechnungsformular",
-        rechnungsformular.getValue() == null ? null
-            : ((Formular) rechnungsformular.getValue()).getID());
+    if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+    {
+      settings.setAttribute("rechnung", (Boolean) rechnung.getValue());
+      settings.setAttribute("rechnungstext", (String) rechnungstext.getValue());
+      settings.setAttribute("rechnungsformular",
+          rechnungsformular.getValue() == null ? null
+              : ((Formular) rechnungsformular.getValue()).getID());
+    }
     settings.setAttribute("sepaprint", (Boolean) sepaprint.getValue());
     Abrechnungsausgabe aa = (Abrechnungsausgabe) this.getAbbuchungsausgabe().getValue();
     settings.setAttribute("abrechnungsausgabe", aa.getKey());

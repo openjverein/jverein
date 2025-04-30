@@ -292,6 +292,12 @@ public class RechnungControl extends DruckMailControl
 
     if (isDifferenzAktiv() && getDifferenz().getValue() != DIFFERENZ.EGAL)
     {
+      Double limit = Double.valueOf(0d);
+      if (isDoubleAuswAktiv() && getDoubleAusw().getValue() != null)
+      {
+        // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
+        limit = Math.abs((Double) getDoubleAusw().getValue());
+      }
       String sql = "SELECT DISTINCT " + Sollbuchung.T_RECHNUNG + ", "
           + Sollbuchung.T_BETRAG + ", " + "sum(buchung.betrag) FROM "
           + Sollbuchung.TABLE_NAME
@@ -301,15 +307,15 @@ public class RechnungControl extends DruckMailControl
           + Sollbuchung.TABLE_NAME_ID;
       if (getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
       {
-        sql += " having sum(buchung.betrag) < " + Sollbuchung.T_BETRAG + " or "
-            + "(sum(buchung.betrag) is null and " + Sollbuchung.T_BETRAG
-            + " > 0) ";
+        sql += " having sum(buchung.betrag) < " + Sollbuchung.T_BETRAG + " - "
+            + limit.toString() + " or (sum(buchung.betrag) is null and "
+            + Sollbuchung.T_BETRAG + " > " + limit.toString() + ")";
       }
       else
       {
-        sql += " having sum(buchung.betrag) > " + Sollbuchung.T_BETRAG + " or "
-            + "(sum(buchung.betrag) is null and " + Sollbuchung.T_BETRAG
-            + " < 0) ";
+        sql += " having sum(buchung.betrag) > " + Sollbuchung.T_BETRAG + " + "
+            + limit.toString() + " or (sum(buchung.betrag) is null and "
+            + Sollbuchung.T_BETRAG + " + " + limit.toString() + " < 0) ";
       }
 
       @SuppressWarnings("unchecked")

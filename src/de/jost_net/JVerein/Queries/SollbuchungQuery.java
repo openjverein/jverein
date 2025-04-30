@@ -363,17 +363,27 @@ public class SollbuchungQuery
     sql.append(
         " GROUP BY " + Sollbuchung.TABLE_NAME_ID + ", " + Sollbuchung.T_BETRAG);
 
+    Double limit = Double.valueOf(0d);
+    if (control.isDoubleAuswAktiv()
+        && control.getDoubleAusw().getValue() != null)
+    {
+      // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
+      limit = Math.abs((Double) control.getDoubleAusw().getValue());
+    }
     if (DIFFERENZ.FEHLBETRAG == diff)
     {
-      sql.append(" HAVING SUM(buchung.betrag) < " + Sollbuchung.T_BETRAG
+      sql.append(
+          " HAVING SUM(buchung.betrag) < " + Sollbuchung.T_BETRAG + " - "
+              + limit.toString()
           + " OR (SUM(buchung.betrag) IS NULL AND " + Sollbuchung.T_BETRAG
-          + " > 0)");
+              + " > " + limit.toString() + ")");
     }
     if (DIFFERENZ.UEBERZAHLUNG == diff)
     {
-      sql.append(" HAVING SUM(buchung.betrag) > " + Sollbuchung.T_BETRAG
+      sql.append(" HAVING SUM(buchung.betrag) > " + Sollbuchung.T_BETRAG + " + "
+          + limit.toString()
           + " OR (SUM(buchung.betrag) IS NULL AND " + Sollbuchung.T_BETRAG
-          + " < 0)");
+          + " + " + limit.toString() + " < 0)");
     }
 
     List<Long> ids = (List<Long>) service.execute(sql.toString(), param.toArray(),

@@ -78,10 +78,6 @@
           <groupId>com.beust</groupId>
           <artifactId>jcommander</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>com.github.jai-imageio</groupId>
-          <artifactId>jai-imageio-core</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -121,7 +117,7 @@
     <dependency>
       <groupId>org.mustangproject</groupId>
       <artifactId>library</artifactId>
-      <version>2.16.3</version>
+      <version>2.16.4</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.xmlgraphics</groupId>

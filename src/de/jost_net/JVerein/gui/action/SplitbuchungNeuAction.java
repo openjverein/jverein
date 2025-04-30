@@ -50,6 +50,7 @@ public class SplitbuchungNeuAction implements Action
       buch.setZweck(master.getZweck());
       buch.setBuchungsartId(master.getBuchungsartId());
       buch.setBuchungsklasseId(master.getBuchungsklasseId());
+      buch.setIban(master.getIban());
       buch.setSpeicherung(false);
       buch.setSplitTyp(SplitbuchungTyp.SPLIT);
       buch.setBetrag(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT).doubleValue() - SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT).doubleValue());

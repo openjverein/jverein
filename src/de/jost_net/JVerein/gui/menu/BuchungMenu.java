@@ -62,9 +62,9 @@ public class BuchungMenu extends ContextMenu
     boolean geldkonto = control.getGeldkonto();
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new BuchungAction(false), "text-x-generic.png"));
-    addItem(new GeprueftBuchungItem("als \"geprüft\" markieren",
+    addItem(new GeprueftBuchungItem("Als \"geprüft\" markieren",
         new BuchungGeprueftAction(true), "emblem-default.png", false));
-    addItem(new GeprueftBuchungItem("als \"ungeprüft\" markieren",
+    addItem(new GeprueftBuchungItem("Als \"ungeprüft\" markieren",
         new BuchungGeprueftAction(false), "edit-undo.png", true));
     addItem(new SingleBuchungItem("Duplizieren", new BuchungDuplizierenAction(),
         "edit-copy.png"));
@@ -87,9 +87,19 @@ public class BuchungMenu extends ContextMenu
               new MitgliedDetailAction(), "user-friends.png"));
       addItem(new SingleGegenBuchungItem("Neues Anlagenkonto", new AnlagenkontoNeuAction(),
           "document-new.png"));
-      addItem(new SpendenbescheinigungMenuItem("Geldspendenbescheinigung",
-          new SpendenbescheinigungAction(Spendenart.GELDSPENDE),
-          "file-invoice.png"));
+      try
+      {
+        if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+        {
+          addItem(new SpendenbescheinigungMenuItem("Geldspendenbescheinigung",
+              new SpendenbescheinigungAction(Spendenart.GELDSPENDE),
+              "file-invoice.png"));
+        }
+      }
+      catch (RemoteException e)
+      {
+        // Dann nicht anzeigen
+      }
     }
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(), "view-refresh.png"));

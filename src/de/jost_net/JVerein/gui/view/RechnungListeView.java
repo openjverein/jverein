@@ -42,13 +42,16 @@ public class RechnungListeView extends AbstractView
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
-    left.addInput(control.getDifferenz());
+    left.addInput(control.getMailauswahl());
     left.addLabelPair("Ohne Abbucher",control.getOhneAbbucher());
+
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    middle.addInput(control.getDifferenz());
+    middle.addLabelPair("Differenz Limit", control.getDoubleAusw());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
-    right.addInput(control.getMailauswahl());
     
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),

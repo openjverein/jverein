@@ -349,6 +349,10 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput projekte;
 
+  private CheckboxInput spendenbescheinigungen;
+
+  private CheckboxInput rechnungen;
+
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
    */
@@ -1238,7 +1242,9 @@ public class EinstellungControl extends AbstractControl
           (String) getImapAuthUser().getValue(),
           (String) getImapAuthPwd().getValue(),
           (String) getImapHost().getValue(),
-          Integer.toString((Integer) getImapPort().getValue()),
+          getImapPort().getValue() != null
+              ? Integer.toString((Integer) getImapPort().getValue())
+              : "",
           (Boolean) getImap_ssl().getValue(),
           (Boolean) getImap_starttls().getValue(),
           (String) getImapSentFolder().getValue());
@@ -1268,6 +1274,7 @@ public class EinstellungControl extends AbstractControl
     {
       GUI.getStatusBar()
           .setErrorText("Fehler beim senden der Testmail: " + e.getMessage());
+      Logger.error("Fehler beim senden der Testmail", e);
     }
   }
 
@@ -2189,6 +2196,28 @@ public class EinstellungControl extends AbstractControl
     return projekte;
   }
 
+  public CheckboxInput getSpendenbescheinigungen() throws RemoteException
+  {
+    if (spendenbescheinigungen != null)
+    {
+      return spendenbescheinigungen;
+    }
+    spendenbescheinigungen = new CheckboxInput(
+        Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen());
+    return spendenbescheinigungen;
+  }
+
+  public CheckboxInput getRechnungen() throws RemoteException
+  {
+    if (rechnungen != null)
+    {
+      return rechnungen;
+    }
+    rechnungen = new CheckboxInput(
+        Einstellungen.getEinstellung().getRechnungenAnzeigen());
+    return rechnungen;
+  }
+
   public void handleStoreAllgemein()
   {
     try
@@ -2281,6 +2310,9 @@ public class EinstellungControl extends AbstractControl
       e.setMitgliedsnummerAnzeigen((Boolean) nummeranzeigen.getValue());
       e.setMittelverwendung((Boolean) mittelverwendung.getValue());
       e.setProjekteAnzeigen((Boolean) projekte.getValue());
+      e.setSpendenbescheinigungenAnzeigen(
+          (Boolean) spendenbescheinigungen.getValue());
+      e.setRechnungenAnzeigen((Boolean) rechnungen.getValue());
 
       e.store();
       Einstellungen.setEinstellung(e);

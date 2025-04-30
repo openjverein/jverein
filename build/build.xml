@@ -16,7 +16,7 @@
     <!-- Download dependencies into lib dir to enable current workflow of testing the plugin -->
     <resolver:resolve failonmissingattachments="true">
       <resolver:files dir="lib"
-                      scopes="compile,runtime"
+                      scopes="compile"
                       layout="{artifactId}.{extension}" />
     </resolver:resolve>
     <!-- Download test dependencies for Eclipse -->
