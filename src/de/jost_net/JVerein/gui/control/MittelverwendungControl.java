@@ -597,8 +597,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
           zeilen.add(o);
           break;
         case ArtBuchungsart.AUSGABE:
-          o.setAttribute(BETRAG, -o.getDouble(BETRAG));
-          summeEntRuecklagen += o.getDouble(BETRAG);
+          summeEntRuecklagen -= o.getDouble(BETRAG);
           o.setAttribute(NR, pos++);
           o.setAttribute(ART, ART_DETAIL);
           o.setAttribute(GRUPPE, "Entnahme "
@@ -850,25 +849,27 @@ public class MittelverwendungControl extends AbstractSaldoControl
       }
 
       // Bei Konten unter dem Limit bei neuer Kontoart Kopfzeile anzeigen.
-      // Bei AnlagenSummenKonto keinen Head anzeigen
       if ((!kontoart.equals(kontoartAlt) || kontoartAlt == null)
-          && kontoart < Kontoart.LIMIT.getKey()
-          && (!anlagenSummenkonto || kontoart != Kontoart.ANLAGE.getKey()))
+          && kontoart < Kontoart.LIMIT.getKey())
       {
-        // Als erstes Header Vermögen anzeigen
-        if (kontoartAlt == null)
+        // Bei AnlagenSummenKonto keinen Head anzeigen
+        if (!anlagenSummenkonto || kontoart != Kontoart.ANLAGE.getKey())
         {
-          PseudoDBObject head = new PseudoDBObject();
-          head.setAttribute(ART, ART_HEADER);
-          head.setAttribute(GRUPPE, "Liste an Vermögen:");
-          zeilen.add(head);
-        }
+          // Als erstes Header Vermögen anzeigen
+          if (kontoartAlt == null)
+          {
+            PseudoDBObject head = new PseudoDBObject();
+            head.setAttribute(ART, ART_HEADER);
+            head.setAttribute(GRUPPE, "Liste an Vermögen:");
+            zeilen.add(head);
+          }
 
-        PseudoDBObject kontoarthead = new PseudoDBObject();
-        kontoarthead.setAttribute(ART, ART_HEADER);
-        kontoarthead.setAttribute(GRUPPE,
-            Kontoart.getByKey(kontoart).getTextVermoegen());
-        zeilen.add(kontoarthead);
+          PseudoDBObject kontoarthead = new PseudoDBObject();
+          kontoarthead.setAttribute(ART, ART_HEADER);
+          kontoarthead.setAttribute(GRUPPE,
+              Kontoart.getByKey(kontoart).getTextVermoegen());
+          zeilen.add(kontoarthead);
+        }
         kontoartAlt = kontoart;
       }
       // Bei Konten über dem Limit nach Klasse gruppieren.
