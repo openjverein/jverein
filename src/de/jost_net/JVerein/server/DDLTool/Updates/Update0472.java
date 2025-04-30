@@ -43,17 +43,52 @@ public class Update0472 extends AbstractDDLUpdate
     execute(
         "update spendenbescheinigung set ersatzaufwendungen = 0 where ersatzaufwendungen is null");
     execute(
-        "update spendenbescheinigung set unterlagenwertermittlung = 0 where unterlagenwertermittlung is null");
+        "update spendenbescheinigung set bezeichnungsachzuwendung = '' where bezeichnungsachzuwendung is null");
+    execute(
+        "update spendenbescheinigung set ersatzaufwendungen = 0 where ersatzaufwendungen is null");
+    execute(
+        "update spendenbescheinigung set herkunftspende = 0 where herkunftspende is null");
+    execute("update spendenbescheinigung set zeile1 = '' where zeile1 is null");
+    execute("update spendenbescheinigung set zeile2 = '' where zeile2 is null");
+    execute("update spendenbescheinigung set zeile3 = '' where zeile3 is null");
+    execute("update spendenbescheinigung set zeile4 = '' where zeile4 is null");
+    execute("update spendenbescheinigung set zeile5 = '' where zeile5 is null");
+    execute("update spendenbescheinigung set zeile6 = '' where zeile6 is null");
+    execute("update spendenbescheinigung set zeile7 = '' where zeile7 is null");
 
     // Konto
     execute("update konto set kommentar = '' where kommentar is null");
     
     // Mitglied
     execute("update mitglied set leitwegid = '' where leitwegid is null");
-    execute("update mitglied set ktoistaat = '' where ktoistaat is null");
     execute("update mitglied set ktoipersonenart = 'J' where ktoipersonenart = 'j'");
     execute("update mitglied set ktoipersonenart = 'N' where ktoipersonenart = 'n'");
     execute("update mitglied set mandatid = '' where mandatid is null");
     execute("update mitglied set staat = '' where staat is null");
+    execute(
+        "update mitglied set adressierungszusatz = '' where adressierungszusatz is null");
+    execute("update mitglied set anrede = '' where anrede is null");
+    execute("update mitglied set email = '' where email is null");
+    execute(
+        "update mitglied set ktoiadressierungszusatz = '' where ktoiadressierungszusatz is null");
+    execute("update mitglied set ktoianrede = '' where ktoianrede is null");
+    execute("update mitglied set ktoiemail = '' where ktoiemail is null");
+    execute("update mitglied set ktoiname = '' where ktoiname is null");
+    execute("update mitglied set ktoiort = '' where ktoiort is null");
+    execute("update mitglied set ktoiplz = '' where ktoiplz is null");
+    execute("update mitglied set ktoistaat = '' where ktoistaat is null");
+    execute("update mitglied set ktoistrasse = '' where ktoistrasse is null");
+    execute("update mitglied set ktoititel = '' where ktoititel is null");
+    execute("update mitglied set ktoivorname = '' where ktoivorname is null");
+    execute(
+        "update mitglied set ktoigeschlecht = '' where ktoigeschlecht is null");
+    execute(
+        "update mitglied set telefondienstlich = '' where telefondienstlich is null");
+    execute(
+        "update mitglied set telefonprivat = '' where telefonprivat is null");
+    execute("update mitglied set handy = '' where handy is null");
+    execute("update mitglied set titel = '' where titel is null");
+    execute("update mitglied set vermerk1 = '' where vermerk1 is null");
+    execute("update mitglied set vermerk2 = '' where vermerk2 is null");
   }
 }
