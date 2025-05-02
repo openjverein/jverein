@@ -71,7 +71,6 @@ public class VollzahlerInput
         zhl.addFilter("(" + cond.toString() + ")");
         if(mitglied.getID() != null)
           zhl.addFilter("id != ?",mitglied.getID());
-        MitgliedUtils.setNurAktive(zhl);
         MitgliedUtils.setMitglied(zhl);
         zhl.setOrder("ORDER BY name, vorname");
         mitgliedInput = new SelectNoScrollInput(zhl != null ? 
