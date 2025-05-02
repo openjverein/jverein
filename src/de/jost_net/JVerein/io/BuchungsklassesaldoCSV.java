@@ -109,7 +109,7 @@ public class BuchungsklassesaldoCSV implements ISaldoExport
       for (PseudoDBObject bkz : zeile)
       {
         csvzeile = new HashMap<>();
-        switch ((Integer) bkz.getAttribute(AbstractSaldoControl.ART))
+        switch (bkz.getInteger(AbstractSaldoControl.ART))
         {
           case AbstractSaldoControl.ART_HEADER:
           {
@@ -122,13 +122,13 @@ public class BuchungsklassesaldoCSV implements ISaldoExport
             csvzeile.put(header[0],
                 (String) bkz.getAttribute(AbstractSaldoControl.BUCHUNGSART));
             csvzeile.put(header[1],
-                (Double) bkz.getAttribute(AbstractSaldoControl.EINNAHMEN));
+                bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
             csvzeile.put(header[2],
-                (Double) bkz.getAttribute(AbstractSaldoControl.AUSGABEN));
+                bkz.getDouble(AbstractSaldoControl.AUSGABEN));
             if (umbuchung)
             {
               csvzeile.put(header[3],
-                  (Double) bkz.getAttribute(AbstractSaldoControl.UMBUCHUNGEN));
+                  bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
             }
             break;
           }
@@ -137,13 +137,13 @@ public class BuchungsklassesaldoCSV implements ISaldoExport
             csvzeile.put(header[0],
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE));
             csvzeile.put(header[1],
-                (Double) bkz.getAttribute(AbstractSaldoControl.EINNAHMEN));
+                bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
             csvzeile.put(header[2],
-                (Double) bkz.getAttribute(AbstractSaldoControl.AUSGABEN));
+                bkz.getDouble(AbstractSaldoControl.AUSGABEN));
             if (umbuchung)
             {
               csvzeile.put(header[3],
-                  (Double) bkz.getAttribute(AbstractSaldoControl.UMBUCHUNGEN));
+                  bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
             }
             break;
           }
@@ -152,13 +152,13 @@ public class BuchungsklassesaldoCSV implements ISaldoExport
             csvzeile.put(header[0],
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE));
             csvzeile.put(header[1],
-                (Double) bkz.getAttribute(AbstractSaldoControl.EINNAHMEN));
+                bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
             csvzeile.put(header[2],
-                (Double) bkz.getAttribute(AbstractSaldoControl.AUSGABEN));
+                bkz.getDouble(AbstractSaldoControl.AUSGABEN));
             if (umbuchung)
             {
               csvzeile.put(header[3],
-                  (Double) bkz.getAttribute(AbstractSaldoControl.UMBUCHUNGEN));
+                  bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
             }
             break;
           }
@@ -168,7 +168,7 @@ public class BuchungsklassesaldoCSV implements ISaldoExport
             csvzeile.put(header[0],
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE));
             csvzeile.put(header[1],
-                (Double) bkz.getAttribute(AbstractSaldoControl.EINNAHMEN));
+                bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
             break;
           }
           case AbstractSaldoControl.ART_NICHTZUGEORDNETEBUCHUNGEN:
@@ -176,8 +176,7 @@ public class BuchungsklassesaldoCSV implements ISaldoExport
             csvzeile.put(header[0],
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE));
             csvzeile.put(header[1],
-                (Integer) bkz
-                    .getAttribute(BuchungsklasseSaldoControl.EINNAHMEN));
+                bkz.getDouble(BuchungsklasseSaldoControl.EINNAHMEN));
             break;
           }
           default:
