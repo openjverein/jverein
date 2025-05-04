@@ -208,11 +208,20 @@ public class Kontoauszug
     MitgliedskontoNode node = new MitgliedskontoNode(m, (Date) control.getDatumvon().getValue(), 
         (Date) control.getDatumbis().getValue());
     
-    if (diff == DIFFERENZ.FEHLBETRAG && node.getIst() >= node.getSoll())
+    Double limit = Double.valueOf(0d);
+    if (control.isDoubleAuswAktiv()
+        && control.getDoubleAusw().getValue() != null)
+    {
+      // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
+      limit = Math.abs((Double) control.getDoubleAusw().getValue());
+    }
+
+    if (diff == DIFFERENZ.FEHLBETRAG && node.getIst() >= node.getSoll() - limit)
     {
       return false;
     }
-    if (diff == DIFFERENZ.UEBERZAHLUNG && node.getSoll() >= node.getIst())
+    if (diff == DIFFERENZ.UEBERZAHLUNG
+        && node.getSoll() >= node.getIst() - limit)
     {
       return false;
     }
@@ -274,7 +283,14 @@ public class Kontoauszug
     rpt.addColumn(Zahlungsweg.get((Integer) node.getAttribute("zahlungsweg")),
         Element.ALIGN_LEFT);
     rpt.addColumn((Double) node.getAttribute("soll"));
-    rpt.addColumn((Double) node.getAttribute("ist"));
+    if (node.getType() != MitgliedskontoNode.SOLL)
+    {
+      rpt.addColumn((Double) node.getAttribute("ist"));
+    }
+    else
+    {
+      rpt.addColumn((Double) null);
+    }
     rpt.addColumn((Double) node.getAttribute("differenz"));
   }
 

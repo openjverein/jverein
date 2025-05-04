@@ -2266,4 +2266,44 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   {
     setAttribute("nummeranzeigen", nummeranzeigen);
   }
+
+  @Override
+  public boolean getProjekteAnzeigen() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("projekteanzeigen"));
+  }
+
+  @Override
+  public void setProjekteAnzeigen(boolean projekteanzeigen)
+      throws RemoteException
+  {
+    setAttribute("projekteanzeigen", projekteanzeigen);
+  }
+
+  @Override
+  public boolean getSpendenbescheinigungenAnzeigen() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("spendenbescheinigungenanzeigen"));
+  }
+
+  @Override
+  public void setSpendenbescheinigungenAnzeigen(
+      boolean spendenbescheinigungenanzeigen) throws RemoteException
+  {
+    setAttribute("spendenbescheinigungenanzeigen",
+        spendenbescheinigungenanzeigen);
+  }
+
+  @Override
+  public boolean getRechnungenAnzeigen() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("rechnungenanzeigen"));
+  }
+
+  @Override
+  public void setRechnungenAnzeigen(boolean rechnungenanzeigen)
+      throws RemoteException
+  {
+    setAttribute("rechnungenanzeigen", rechnungenanzeigen);
+  }
 }

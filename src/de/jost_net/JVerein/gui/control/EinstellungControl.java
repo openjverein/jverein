@@ -16,6 +16,16 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.rmi.RemoteException;
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.TreeSet;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.BICInput;
@@ -65,16 +75,6 @@ import de.willuhn.jameica.security.Wallet;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.kapott.hbci.sepa.SepaVersion;
-
-import java.rmi.RemoteException;
-import java.text.DecimalFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.TreeSet;
 
 public class EinstellungControl extends AbstractControl
 {
@@ -348,6 +348,12 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput nummeranzeigen;
 
   private CheckboxInput mittelverwendung;
+
+  private CheckboxInput projekte;
+
+  private CheckboxInput spendenbescheinigungen;
+
+  private CheckboxInput rechnungen;
 
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
@@ -1249,7 +1255,9 @@ public class EinstellungControl extends AbstractControl
           (String) getImapAuthUser().getValue(),
           (String) getImapAuthPwd().getValue(),
           (String) getImapHost().getValue(),
-          Integer.toString((Integer) getImapPort().getValue()),
+          getImapPort().getValue() != null
+              ? Integer.toString((Integer) getImapPort().getValue())
+              : "",
           (Boolean) getImap_ssl().getValue(),
           (Boolean) getImap_starttls().getValue(),
           (String) getImapSentFolder().getValue());
@@ -1279,6 +1287,7 @@ public class EinstellungControl extends AbstractControl
     {
       GUI.getStatusBar()
           .setErrorText("Fehler beim senden der Testmail: " + e.getMessage());
+      Logger.error("Fehler beim senden der Testmail", e);
     }
   }
 
@@ -2189,6 +2198,39 @@ public class EinstellungControl extends AbstractControl
     return mittelverwendung;
   }
 
+  public CheckboxInput getProjekte() throws RemoteException
+  {
+    if (projekte != null)
+    {
+      return projekte;
+    }
+    projekte = new CheckboxInput(
+        Einstellungen.getEinstellung().getProjekteAnzeigen());
+    return projekte;
+  }
+
+  public CheckboxInput getSpendenbescheinigungen() throws RemoteException
+  {
+    if (spendenbescheinigungen != null)
+    {
+      return spendenbescheinigungen;
+    }
+    spendenbescheinigungen = new CheckboxInput(
+        Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen());
+    return spendenbescheinigungen;
+  }
+
+  public CheckboxInput getRechnungen() throws RemoteException
+  {
+    if (rechnungen != null)
+    {
+      return rechnungen;
+    }
+    rechnungen = new CheckboxInput(
+        Einstellungen.getEinstellung().getRechnungenAnzeigen());
+    return rechnungen;
+  }
+
   public void handleStoreAllgemein()
   {
     try
@@ -2280,6 +2322,10 @@ public class EinstellungControl extends AbstractControl
         e.setAfaInJahresabschluss(true);
       e.setMitgliedsnummerAnzeigen((Boolean) nummeranzeigen.getValue());
       e.setMittelverwendung((Boolean) mittelverwendung.getValue());
+      e.setProjekteAnzeigen((Boolean) projekte.getValue());
+      e.setSpendenbescheinigungenAnzeigen(
+          (Boolean) spendenbescheinigungen.getValue());
+      e.setRechnungenAnzeigen((Boolean) rechnungen.getValue());
       e.setWirtschaftsplanung((Boolean) getWirtschaftsplanung().getValue());
 
       e.store();

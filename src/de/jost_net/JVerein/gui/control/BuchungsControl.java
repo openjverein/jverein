@@ -1167,6 +1167,10 @@ public class BuchungsControl extends AbstractControl
   {
     try
     {
+      if (!Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        return null;
+      }
       Projekt projekt = (Projekt) getProjekt().getValue();
       if (null == projekt)
         return null;
@@ -1375,7 +1379,10 @@ public class BuchungsControl extends AbstractControl
         buchungsList.addColumn(new Column(Buchung.SOLLBUCHUNG, "Mitglied",
           new SollbuchungFormatter(), false, Column.ALIGN_AUTO,
           Column.SORT_BY_DISPLAY));
-      buchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
+      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        buchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
+      }
       buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
       buchungsList.setMulti(true);
       buchungsList.setContextMenu(new BuchungMenu(this));
@@ -1455,7 +1462,11 @@ public class BuchungsControl extends AbstractControl
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       splitbuchungsList.addColumn("Mitglied", Buchung.SOLLBUCHUNG,
           new SollbuchungFormatter());
-      splitbuchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
+      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        splitbuchungsList.addColumn("Projekt", "projekt",
+            new ProjektFormatter());
+      }
       splitbuchungsList.setContextMenu(new SplitBuchungMenu(this));
       splitbuchungsList.setRememberColWidths(true);
       splitbuchungsList.addFeature(new FeatureSummary());
@@ -1533,11 +1544,6 @@ public class BuchungsControl extends AbstractControl
           buchungsarten.add(list.next());
         }
       }
-      Buchungsart ohnezuordnung = (Buchungsart) Einstellungen.getDBService()
-          .createObject(Buchungsart.class, null);
-      ohnezuordnung.setBezeichnung("Ohne Zuordnung");
-      ohnezuordnung.setArt(-1);
-      buchungsarten.add(ohnezuordnung);
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");

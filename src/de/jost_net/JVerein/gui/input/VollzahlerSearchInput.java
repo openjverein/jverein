@@ -65,7 +65,6 @@ public class VollzahlerSearchInput extends SearchInput
       zhl.addFilter("(" + cond.toString() + ")");
       if(mitglied.getID() != null)
         zhl.addFilter("id != ?",mitglied.getID());
-      MitgliedUtils.setNurAktive(zhl);
       MitgliedUtils.setMitglied(zhl);
       if (text != null)
       {

@@ -65,7 +65,10 @@ public class AnlagenbuchungListeView extends AbstractView
 
     left.addLabelPair("Konto", control.getSuchKonto());
     left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
-    left.addLabelPair("Projekt", control.getSuchProjekt());
+    if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+    {
+      left.addLabelPair("Projekt", control.getSuchProjekt());
+    }
     left.addLabelPair("Splitbuchung", control.getSuchSplibuchung());
 
     right.addLabelPair("Datum von", control.getVondatum());

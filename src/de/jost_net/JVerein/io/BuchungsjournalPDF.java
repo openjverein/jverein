@@ -23,7 +23,9 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.BuchungQuery;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -68,8 +70,29 @@ public class BuchungsjournalPDF
         }
         reporter.addColumn(b.getName(), Element.ALIGN_LEFT);
         reporter.addColumn(b.getZweck(), Element.ALIGN_LEFT);
-        reporter.addColumn(b.getBuchungsart() != null ? b.getBuchungsart()
-            .getBezeichnung() : "", Element.ALIGN_LEFT);
+        String buklaString = "-: ";
+        String buaString = "--";
+        if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+        {
+          if (b.getBuchungsklasseId() != null)
+          {
+            buklaString = b.getBuchungsklasse().getNummer() + ": ";
+          }
+        }
+        else
+        {
+          if (b.getBuchungsartId() != null
+              && b.getBuchungsart().getBuchungsklasseId() != null)
+          {
+            buklaString = b.getBuchungsart().getBuchungsklasse().getNummer()
+                + ": ";
+          }
+        }
+        if (b.getBuchungsartId() != null)
+        {
+          buaString = new BuchungsartFormatter().format(b.getBuchungsart());
+        }
+        reporter.addColumn(buklaString + buaString, Element.ALIGN_LEFT);
         reporter.addColumn(b.getBetrag());
         if (b.getBuchungsart() != null)
         {
@@ -158,12 +181,12 @@ public class BuchungsjournalPDF
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Auszug", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Name", Element.ALIGN_CENTER, 100,
+    reporter.addHeaderColumn("Name", Element.ALIGN_CENTER, 90,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Zahlungsgrund", Element.ALIGN_CENTER, 100,
         BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Buchungsart", Element.ALIGN_CENTER, 60,
-        BaseColor.LIGHT_GRAY);
+    reporter.addHeaderColumn("Buchungsklasse Nummer:\nBuchungsart",
+        Element.ALIGN_CENTER, 70, BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 50,
         BaseColor.LIGHT_GRAY);
     reporter.createHeader();

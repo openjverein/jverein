@@ -173,11 +173,17 @@ public class MyExtension implements Extension
       
       mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new StartViewAction(SollbuchungListeView.class), "calculator.png"));
-      mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
-          new StartViewAction(RechnungListeView.class), "file-invoice.png"));
-      mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
-          new StartViewAction(SpendenbescheinigungListeView.class),
-          "file-invoice.png"));
+      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      {
+        mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
+            new StartViewAction(RechnungListeView.class), "file-invoice.png"));
+      }
+      if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+      {
+        mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
+            new StartViewAction(SpendenbescheinigungListeView.class),
+            "file-invoice.png"));
+      }
       if (Einstellungen.getEinstellung().getZusatzbetrag())
       {
         mitglieder.addChild(new MyItem(mitglieder, "Zusatzbeträge",
@@ -227,8 +233,11 @@ public class MyExtension implements Extension
           new StartViewAction(BuchungsklasseSaldoView.class),
           "emblem-documents.png"));
       // Projekte
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
-          new StartViewAction(ProjektSaldoView.class), "screwdriver.png"));
+      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
+            new StartViewAction(ProjektSaldoView.class), "screwdriver.png"));
+      }
       // Anlagen
       if (anlagenkonto)
       {
@@ -245,7 +254,7 @@ public class MyExtension implements Extension
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendung",
             new StartViewAction(MittelverwendungReportView.class),
             "gnome-session-switch.png"));
-        buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendungsaldo",
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendungssaldo",
             new StartViewAction(MittelverwendungSaldoView.class),
             "gnome-session-switch.png"));
       }
@@ -274,9 +283,12 @@ public class MyExtension implements Extension
       auswertung = new MyItem(auswertung, "Auswertungen", null);
       auswertung.addChild(new MyItem(auswertung, "Mitglieder",
           new StartViewAction(AuswertungMitgliedView.class), "receipt.png"));
-      auswertung.addChild(new MyItem(auswertung, "Nicht-Mitglieder",
-          new StartViewAction(AuswertungNichtMitgliedView.class),
-          "receipt.png"));
+      if (Einstellungen.getEinstellung().getZusatzadressen())
+      {
+        auswertung.addChild(new MyItem(auswertung, "Nicht-Mitglieder",
+            new StartViewAction(AuswertungNichtMitgliedView.class),
+            "receipt.png"));
+      }
       auswertung.addChild(new MyItem(auswertung, "Jubiläen",
           new StartViewAction(JubilaeenView.class), "receipt.png"));
       if (Einstellungen.getEinstellung().getKursteilnehmer())
@@ -300,10 +312,13 @@ public class MyExtension implements Extension
 
       NavigationItem mail = null;
       mail = new MyItem(mail, "Druck & Mail", null);
-      mail.addChild(new MyItem(mail, "Rechnungen",
-          new StartViewAction(RechnungMailView.class), "document-print.png"));
-      mail.addChild(new MyItem(mail, "Mahnungen",
-          new StartViewAction(MahnungMailView.class), "document-print.png"));
+      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      {
+        mail.addChild(new MyItem(mail, "Rechnungen",
+            new StartViewAction(RechnungMailView.class), "document-print.png"));
+        mail.addChild(new MyItem(mail, "Mahnungen",
+            new StartViewAction(MahnungMailView.class), "document-print.png"));
+      }
       mail.addChild(new MyItem(mail, "Kontoauszüge",
           new StartViewAction(KontoauszugMailView.class),
           "document-print.png"));
@@ -313,9 +328,12 @@ public class MyExtension implements Extension
       mail.addChild(new MyItem(mail, "Pre-Notification",
           new StartViewAction(PreNotificationMailView.class),
           "document-print.png"));
-      mail.addChild(new MyItem(mail, "Spendenbescheinigungen",
-          new StartViewAction(SpendenbescheinigungMailView.class),
-          "document-print.png"));
+      if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+      {
+        mail.addChild(new MyItem(mail, "Spendenbescheinigungen",
+            new StartViewAction(SpendenbescheinigungMailView.class),
+            "document-print.png"));
+      }
       mail.addChild(
           new MyItem(mail, "Mails",
               new StartViewAction(MailListeView.class),
@@ -355,19 +373,25 @@ public class MyExtension implements Extension
           .addChild(new MyItem(administrationEinstellungen, "Dateinamen",
               new StartViewAction(EinstellungenDateinamenView.class),
               "wrench.png"));
-      administrationEinstellungen.addChild(
-          new MyItem(administrationEinstellungen, "Spendenbescheinigungen",
-              new StartViewAction(
-                  EinstellungenSpendenbescheinigungenView.class),
-              "wrench.png"));
+      if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+      {
+        administrationEinstellungen.addChild(
+            new MyItem(administrationEinstellungen, "Spendenbescheinigungen",
+                new StartViewAction(
+                    EinstellungenSpendenbescheinigungenView.class),
+                "wrench.png"));
+      }
       administrationEinstellungen.addChild(new MyItem(
           administrationEinstellungen, "Buchführung",
           new StartViewAction(EinstellungenBuchfuehrungView.class),
           "wrench.png"));
-      administrationEinstellungen
-          .addChild(new MyItem(administrationEinstellungen, "Rechnungen",
-              new StartViewAction(EinstellungenRechnungenView.class),
-              "wrench.png"));
+      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      {
+        administrationEinstellungen
+            .addChild(new MyItem(administrationEinstellungen, "Rechnungen",
+                new StartViewAction(EinstellungenRechnungenView.class),
+                "wrench.png"));
+      }
       administrationEinstellungen
           .addChild(new MyItem(administrationEinstellungen, "Mail",
               new StartViewAction(EinstellungenMailView.class), "wrench.png"));
@@ -429,9 +453,12 @@ public class MyExtension implements Extension
       einstellungenbuchfuehrung
           .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Import",
               new KontenrahmenImportAction(), "file-import.png"));
-      einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
-          "Projekte", new StartViewAction(ProjektListeView.class),
-          "screwdriver.png"));
+      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      {
+        einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
+            "Projekte", new StartViewAction(ProjektListeView.class),
+            "screwdriver.png"));
+      }
       administration.addChild(einstellungenbuchfuehrung);
       
       NavigationItem einstellungenerweitert = null;

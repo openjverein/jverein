@@ -38,8 +38,7 @@ public class EinstellungenAnzeigeView extends AbstractView
 
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
-    // Allgemeine Einstellung zu Navigation
-    cont.addText("Einstellung Mitgliederverwaltung", false);
+    // Allgemeine Einstellung zu Anzeige
     ColumnLayout cols1 = new ColumnLayout(cont.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cols1.getComposite());
 
@@ -50,25 +49,30 @@ public class EinstellungenAnzeigeView extends AbstractView
     left.addLabelPair("Sterbedatum", control.getSterbedatum());
     left.addLabelPair("Kommunikationsdaten anzeigen",
         control.getKommunikationsdaten());
-    left.addLabelPair("Sekundäre Beitragsgruppen anzeigen" + "*",
+    left.addLabelPair("Sekundäre Beitragsgruppen anzeigen *",
         control.getSekundaereBeitragsgruppen());
-    left.addLabelPair("Zusatzbeträge anzeigen" + "*",
+    left.addLabelPair("Zusatzbeträge anzeigen *",
         control.getZusatzbetrag());
     left.addLabelPair("Zusatzbeträge auch für Ausgetretene *",
         control.getZusatzbetragAusgetretene());
     left.addLabelPair("Vermerke anzeigen", control.getVermerke());
-    left.addLabelPair("Wiedervorlage anzeigen" + "*",
+    left.addLabelPair("Wiedervorlage anzeigen *",
         control.getWiedervorlage());
-    left.addLabelPair("Kursteilnehmer anzeigen" + "*",
+    left.addLabelPair("Kursteilnehmer anzeigen *",
         control.getKursteilnehmer());
     left.addLabelPair("Kursteilnehmer Geburtsdatum und Geschlecht Pflichtfeld",
         control.getKursteilnehmerGebGesPflicht());
-    left.addLabelPair("Lehrgänge anzeigen" + "*", control.getLehrgaenge());
+    left.addLabelPair("Lehrgänge anzeigen *", control.getLehrgaenge());
     left.addLabelPair("Juristische Personen erlaubt",
         control.getJuristischePersonen());
     left.addLabelPair("Mitgliedsfoto *", control.getMitgliedfoto());
-    left.addLabelPair("Mittelverwendung anzeigen" + "*",
+    left.addLabelPair("Mittelverwendung anzeigen *",
         control.getMittelverwendung());
+    left.addLabelPair("Projekte anzeigen *", control.getProjekte());
+    left.addLabelPair("Spendenbescheinigungen anzeigen *",
+        control.getSpendenbescheinigungen());
+    left.addLabelPair("Rechnungen/Mahnungen anzeigen *",
+        control.getRechnungen());
     left.addLabelPair("Wirtschaftsplanung anzeigen" + "*",
         control.getWirtschaftsplanung());
 

@@ -54,12 +54,22 @@ public class SollbuchungMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
-    addItem(new MitRechnungItem("Rechnung anzeigen",
-        new SollbuchungRechnungAction(), "file-invoice.png"));
-    addItem(new OhneRechnungItem("Rechnung(en) erstellen",
-        new RechnungNeuAction(), "file-invoice.png"));
-    addItem(new MultiItem("Gesamtrechnung erstellen",
-        new GesamtrechnungNeuAction(), "file-invoice.png"));
+    try
+    {
+      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      {
+        addItem(new MitRechnungItem("Rechnung anzeigen",
+            new SollbuchungRechnungAction(), "file-invoice.png"));
+        addItem(new OhneRechnungItem("Rechnung(en) erstellen",
+            new RechnungNeuAction(), "file-invoice.png"));
+        addItem(new MultiItem("Gesamtrechnung erstellen",
+            new GesamtrechnungNeuAction(), "file-invoice.png"));
+      }
+    }
+    catch (RemoteException e)
+    {
+      // Dann nicht anzeigen
+    }
   }
 
   private static class SollOhneIstItem extends CheckedContextMenuItem
