@@ -430,7 +430,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     // Für die Steuerbträge auf der Steuerbuchungsart machen wir ein Subselect
     if (mitSteuer)
     {
-      String subselect = "(SELECT buchungsart.id, "
+      String subselect = "(SELECT steuer.buchungsart, "
           + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag, "
           + "buchung.projekt "
           + " FROM buchung"
@@ -445,15 +445,15 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       }
       else
       {
-        subselect += " JOIN buchungsart AS buchungbuchungsart ON buchung.buchungsart = buchungbuchungsart.id "
-            + " JOIN steuer ON steuer.id = buchungbuchungsart.steuer ";
+        subselect += " JOIN buchungsart ON buchung.buchungsart = buchungsart.id "
+            + " JOIN steuer ON steuer.id = buchungsart.steuer ";
       }
-      subselect += " JOIN buchungsart ON steuer.buchungsart = buchungsart.id "
-          + " WHERE datum >= ? and datum <= ? "
+      subselect += " WHERE datum >= ? and datum <= ? "
           // Keine Steuer bei alten Steuerbuchungen mit dependencyid
           + " AND (buchung.dependencyid is null or  buchung.dependencyid = -1)"
-          + " GROUP BY buchungsart.id, buchung.projekt) AS st ";
-      it.leftJoin(subselect, "st.id = buchungsart.id ", Kontoart.LIMIT.getKey(),
+          + " GROUP BY steuer.buchungsart, buchung.projekt) AS st ";
+      it.leftJoin(subselect, "st.buchungsart = buchungsart.id ",
+          Kontoart.LIMIT.getKey(),
           Kontoart.ANLAGE.getKey(), getDatumvon().getDate(),
           getDatumbis().getDate());
     }

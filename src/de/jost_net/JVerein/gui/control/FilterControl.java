@@ -1205,6 +1205,7 @@ public class FilterControl extends AbstractControl
     ArrayList<Kontoart> values = new ArrayList<Kontoart>(
         Arrays.asList(Kontoart.values()));
     values.remove(Kontoart.LIMIT);
+    values.remove(Kontoart.LIMIT_RUECKLAGE);
     String key = settings.getString(settingsprefix + "suchkontoart.key", null);
     if (key != null && !key.isEmpty())
     {
