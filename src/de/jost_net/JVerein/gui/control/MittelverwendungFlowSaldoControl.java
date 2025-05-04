@@ -69,7 +69,7 @@ public class MittelverwendungFlowSaldoControl extends BuchungsklasseSaldoControl
           // Netto zu berehnen.
           + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
           + ") AS DECIMAL(10,2))),0) "
-          + "+ CASE WHEN buchungsart.art = ? THEN COALESCE(st.steuerbetrag,0) ELSE 0 END AS "
+          + "+ CASE WHEN buchungsart.art = ? THEN COALESCE(SUM(st.steuerbetrag),0) ELSE 0 END AS "
           + AUSGABEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.AUSGABE,
           Kontoart.ANLAGE.getKey(), ArtBuchungsart.AUSGABE);
 
@@ -82,7 +82,7 @@ public class MittelverwendungFlowSaldoControl extends BuchungsklasseSaldoControl
           // Netto zu berehnen.
           + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
           + ") AS DECIMAL(10,2))),0) "
-          + "+ CASE WHEN buchungsart.art = ? THEN COALESCE(st.steuerbetrag,0) ELSE 0 END AS "
+          + "+ CASE WHEN buchungsart.art = ? THEN COALESCE(SUM(st.steuerbetrag),0) ELSE 0 END AS "
           + EINNAHMEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.EINNAHME,
           Kontoart.ANLAGE.getKey(), ArtBuchungsart.EINNAHME);
     }
