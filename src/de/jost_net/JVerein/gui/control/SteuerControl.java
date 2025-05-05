@@ -18,6 +18,10 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
+
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
@@ -131,32 +135,39 @@ public class SteuerControl extends AbstractControl
             Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
     buchungsart.setMandatory(true);
     buchungsart.setComment("");
-    buchungsart.addListener(e -> {
-      String comment = "";
-      if (buchungsart.getValue() != null)
+    Listener listener = new Listener()
+    {
+      @Override
+      public void handleEvent(Event e)
       {
-        try
+        String comment = "";
+        if (buchungsart.getValue() != null)
         {
-          switch (((Buchungsart) buchungsart.getValue()).getArt())
+          try
           {
-            case ArtBuchungsart.AUSGABE:
-              comment = "Ausgabe -> Vorsteuer";
-              break;
-            case ArtBuchungsart.EINNAHME:
-              comment = "Einnahme -> Umsatzsteuer";
-              break;
-            case ArtBuchungsart.UMBUCHUNG:
-              comment = "Umbuchung ist Ungültig";
-              break;
+            switch (((Buchungsart) buchungsart.getValue()).getArt())
+            {
+              case ArtBuchungsart.AUSGABE:
+                comment = "Ausgabe -> Vorsteuer";
+                break;
+              case ArtBuchungsart.EINNAHME:
+                comment = "Einnahme -> Umsatzsteuer";
+                break;
+              case ArtBuchungsart.UMBUCHUNG:
+                comment = "Umbuchung ist Ungültig";
+                break;
+            }
+          }
+          catch (RemoteException re)
+          {
+            Logger.error("Fehler", re);
           }
         }
-        catch (RemoteException re)
-        {
-          Logger.error("Fehler", re);
-        }
+        buchungsart.setComment(comment);
       }
-      buchungsart.setComment(comment);
-    });
+    };
+    buchungsart.addListener(listener);
+    listener.handleEvent(null);
     return buchungsart;
   }
 
