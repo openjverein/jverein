@@ -561,7 +561,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     {
       if (fluss.getDouble("steuereinnahme") != null)
       {
-        verwendung += fluss.getDouble("steuereinnahme");
+        zufuehrung += fluss.getDouble("steuereinnahme");
       }
       if (fluss.getDouble("steuerausgabe") != null)
       {
