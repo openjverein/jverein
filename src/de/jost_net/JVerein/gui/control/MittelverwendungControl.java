@@ -539,7 +539,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
       }
       else
       {
-        flussIt.join("steuer", "steuer.id = buchungsart.steuer");
+        flussIt.leftJoin("steuer", "steuer.id = buchungsart.steuer");
       }
     }
 

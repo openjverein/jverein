@@ -24,9 +24,9 @@ import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.jameica.gui.AbstractView;
 
-public class MittelverwendungFlowSaldoControl extends BuchungsklasseSaldoControl
+public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
 {
-  public MittelverwendungFlowSaldoControl(AbstractView view)
+  public MittelverwendungSaldoControl(AbstractView view)
       throws RemoteException
   {
     super(view);

@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.MittelverwendungFlowSaldoControl;
+import de.jost_net.JVerein.gui.control.MittelverwendungSaldoControl;
 import de.jost_net.JVerein.gui.parts.QuickAccessPart;
 import de.jost_net.JVerein.gui.parts.VonBisPart;
 import de.willuhn.jameica.gui.AbstractView;
@@ -32,7 +32,7 @@ public class MittelverwendungSaldoView extends AbstractView
   {
     GUI.getView().setTitle("Mittelverwendungssaldo");
 
-    final MittelverwendungFlowSaldoControl control = new MittelverwendungFlowSaldoControl(
+    final MittelverwendungSaldoControl control = new MittelverwendungSaldoControl(
         this);
   
     VonBisPart vpart = new VonBisPart(control, true);
