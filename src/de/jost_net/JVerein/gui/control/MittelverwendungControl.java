@@ -416,21 +416,21 @@ public class MittelverwendungControl extends AbstractSaldoControl
     // Vorhandene zweckfremde Anlagen sind zu verwenden
     // Nicht der zeitnahen Mittelverwendung unterliegende Mittel (Rücklagen)
     // zum Ende des letzten GJ können abgezogen werden
-    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+    ExtendedDBIterator<PseudoDBObject> anfangsbestandIt = new ExtendedDBIterator<>(
         "anfangsbestand");
-    it.addColumn(
+    anfangsbestandIt.addColumn(
         "SUM(COALESCE(CASE WHEN konto.kontoart > ? THEN -1 ELSE 1 END * anfangsbestand.betrag,0)) as "
             + BETRAG,
         Kontoart.LIMIT.getKey());
-    it.join("konto", "anfangsbestand.konto = konto.id");
-    it.addFilter("anfangsbestand.datum = ?", datumvon);
-    it.addFilter(
+    anfangsbestandIt.join("konto", "anfangsbestand.konto = konto.id");
+    anfangsbestandIt.addFilter("anfangsbestand.datum = ?", datumvon);
+    anfangsbestandIt.addFilter(
         "konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?) OR (konto.kontoart > ? AND konto.kontoart < ?)",
         Kontoart.GELD.getKey(), Kontoart.ANLAGE.getKey(),
         Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey(), Kontoart.LIMIT.getKey(),
         Kontoart.LIMIT_RUECKLAGE.getKey());
 
-    PseudoDBObject anfangsbestand = it.next();
+    PseudoDBObject anfangsbestand = anfangsbestandIt.next();
     anfangsbestand.setAttribute(NR, pos++);
     anfangsbestand.setAttribute(ART, ART_DETAIL);
     anfangsbestand.setAttribute(GRUPPE,
@@ -480,11 +480,15 @@ public class MittelverwendungControl extends AbstractSaldoControl
     // Summe aller Zuflüsse bei Geldkonten und Anlagen (=Sachspenden)
     ExtendedDBIterator<PseudoDBObject> flussIt = new ExtendedDBIterator<>(
         "buchung");
+
+    flussIt.join("konto", "buchung.konto = konto.id");
+    flussIt.join("buchungsart", "buchung.buchungsart = buchungsart.id");
+
     flussIt.addColumn("SUM(COALESCE("
         // Geld und zweckfremde Anlagen EINNAMEN +
         + "CASE WHEN buchungsart.art = ? AND "
         + "(konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?)) THEN buchung.betrag "
-        // Schulden und gebundene Anlagen UMBUCHUNG -
+        // Schulden und gebundene Anlagen UMBUCHUNG < 0 -
         + "WHEN buchungsart.art = ? AND buchung.betrag < 0 AND "
         + "(konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?)) THEN -buchung.betrag "
         + "ELSE 0 END,0)) as " + EINNAHMEN, ArtBuchungsart.EINNAHME,
@@ -498,10 +502,10 @@ public class MittelverwendungControl extends AbstractSaldoControl
     // Tilgung Verbindlichkeiten z.B. Darlehen,
     // Erwerb zweckgebundener Anlagen
     flussIt.addColumn("SUM(COALESCE("
-        // Geld und zweckfremde Anlagen EINNAMEN -
+        // Geld und zweckfremde Anlagen AUSGABEN -
         + "CASE WHEN buchungsart.art = ? AND "
         + "(konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?)) THEN -buchung.betrag "
-        // Schulden und gebundene Anlagen UMBUCHUNG +
+        // Schulden und gebundene Anlagen UMBUCHUNG > 0 +
         + "WHEN buchungsart.art = ? AND buchung.betrag > 0 AND "
         + "(konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?)) THEN buchung.betrag "
         + "ELSE 0 END,0)) as " + AUSGABEN, ArtBuchungsart.AUSGABE,
@@ -510,8 +514,34 @@ public class MittelverwendungControl extends AbstractSaldoControl
         Kontoart.SCHULDEN.getKey(), Kontoart.ANLAGE.getKey(),
         Anlagenzweck.NUTZUNGSGEBUNDEN.getKey());
 
-    flussIt.join("konto", "buchung.konto = konto.id");
-    flussIt.join("buchungsart", "buchung.buchungsart = buchungsart.id");
+    if (Einstellungen.getEinstellung().getOptiert())
+    {
+      // Die Steuer bei Veräußerung von Anlagevermögen mit Steuer
+      // Steuer Einnahmen bei Umbuchungen > 0 auf dem Geldkonto
+      flussIt.addColumn("SUM(COALESCE("
+          + "CASE WHEN buchungsart.art = ? AND konto.kontoart = ? AND buchung.betrag > 0 "
+          + "THEN CAST(-buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2)) ELSE 0 END "
+          + ",0)) AS steuereinnahme",
+          ArtBuchungsart.UMBUCHUNG, Kontoart.GELD.getKey());
+
+      // Die Steuer bei Kauf von Anlagevermögen mit Steuer
+      // Steuer Ausgabe bei Umbuchungen < 0 auf dem Geldkonto
+      flussIt.addColumn("SUM(COALESCE("
+          + "CASE WHEN buchungsart.art = ? AND konto.kontoart = ? AND buchung.betrag < 0 "
+          + "THEN CAST(-buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2)) ELSE 0 END "
+          + ",0)) AS steuerausgabe", ArtBuchungsart.UMBUCHUNG,
+          Kontoart.GELD.getKey());
+
+      // Je nach Einstellung Steuer an Buchungsart oder Buchung hängen
+      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      {
+        flussIt.leftJoin("steuer", "steuer.id = buchung.steuer");
+      }
+      else
+      {
+        flussIt.join("steuer", "steuer.id = buchungsart.steuer");
+      }
+    }
 
     flussIt.addFilter("datum >= ?", datumvon);
     flussIt.addFilter("datum <= ?", datumbis);
@@ -525,6 +555,19 @@ public class MittelverwendungControl extends AbstractSaldoControl
     Double verwendung = fluss.getDouble(AUSGABEN) != null
         ? fluss.getDouble(AUSGABEN)
         : 0d;
+
+    // ggf. Steuern hinzurechnen
+    if (Einstellungen.getEinstellung().getOptiert())
+    {
+      if (fluss.getDouble("steuereinnahme") != null)
+      {
+        verwendung += fluss.getDouble("steuereinnahme");
+      }
+      if (fluss.getDouble("steuerausgabe") != null)
+      {
+        verwendung += fluss.getDouble("steuerausgabe");
+      }
+    }
 
     PseudoDBObject zufluss = new PseudoDBObject();
     zufluss.setAttribute(NR, pos++);
