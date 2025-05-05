@@ -609,8 +609,24 @@ public class PreNotificationControl extends DruckMailControl
   }
 
   private void sendeMail(final ArrayList<Lastschrift> lastschriften, final String betr,
-      final String txt) throws RemoteException
+      String text) throws RemoteException
   {
+    // ggf. Signatur anhängen
+    if (text.toLowerCase().contains("<html")
+        && text.toLowerCase().contains("</body"))
+    {
+      // MailSignatur ohne Separator mit vorangestellten hr in den body einbauen
+      text = text.substring(0, text.toLowerCase().indexOf("</body") - 1);
+      text = text + "<hr />"
+          + Einstellungen.getEinstellung().getMailSignatur(false);
+      text = text + "</body></html>";
+    }
+    else
+    {
+      // MailSignatur mit Separator einfach anhängen
+      text = text + Einstellungen.getEinstellung().getMailSignatur(true);
+    }
+    final String txt = text;
 
     BackgroundTask t = new BackgroundTask()
     {
