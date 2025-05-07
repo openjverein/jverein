@@ -41,13 +41,13 @@ public class Update0474 extends AbstractDDLUpdate
 
     // Spendenbescheinigung
     execute(
-        "update spendenbescheinigung set ersatzaufwendungen = 0 where ersatzaufwendungen is null");
+        "update spendenbescheinigung set unterlagenwertermittlung = 0 where unterlagenwertermittlung is null");
     execute(
         "update spendenbescheinigung set bezeichnungsachzuwendung = '' where bezeichnungsachzuwendung is null");
     execute(
         "update spendenbescheinigung set ersatzaufwendungen = 0 where ersatzaufwendungen is null");
     execute(
-        "update spendenbescheinigung set herkunftspende = 0 where herkunftspende is null");
+        "update spendenbescheinigung set herkunftspende = 3 where herkunftspende is null");
     execute("update spendenbescheinigung set zeile1 = '' where zeile1 is null");
     execute("update spendenbescheinigung set zeile2 = '' where zeile2 is null");
     execute("update spendenbescheinigung set zeile3 = '' where zeile3 is null");

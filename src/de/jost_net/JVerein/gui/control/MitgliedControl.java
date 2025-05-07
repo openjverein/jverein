@@ -2238,9 +2238,6 @@ public class MitgliedControl extends FilterControl
     String hash = "";
     if(eigenschaftenTree != null)
     {
-
-      // for (Object o :
-      // ((EigenschaftenNode)eigenschaftenTree.getItems().get(0)).getCheckedNodes())
       for (Object o : eigenschaftenTree.getItems())
       {
         EigenschaftenNode node = (EigenschaftenNode) o;
@@ -3087,7 +3084,8 @@ public class MitgliedControl extends FilterControl
     {
       for (Input i : zusatzfelder)
       {
-        if (i.getValue() != null && !i.getValue().equals(i.getData("old")))
+        if (i.getValue() != null && i.getData("old") != null
+            && !i.getValue().equals(i.getData("old")))
         {
           return true;
         }

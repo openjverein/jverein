@@ -188,6 +188,7 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
             spbescheinigung.setAutocreate(Boolean.TRUE);
             spbescheinigung.setBezeichnungSachzuwendung("");
             spbescheinigung.setHerkunftSpende(HerkunftSpende.KEINEANGABEN);
+            spbescheinigung.setUnterlagenWertermittlung(false);
             // Loop über die Buchungen eines Mitglieds
             @SuppressWarnings("rawtypes")
             GenericIterator it2 = sp1.getChildren();

@@ -396,7 +396,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   {
     if (mitglied != null)
     {
-      setAttribute("mitglied", Integer.valueOf(mitglied.getID()));
+      setAttribute("mitglied", Long.valueOf(mitglied.getID()));
     }
     else
     {
