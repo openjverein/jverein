@@ -412,8 +412,35 @@ public class BeitragsgruppeControl extends AbstractControl
     d = (Double) getArbeitseinsatzBetrag().getValue();
     b.setArbeitseinsatzBetrag(d.doubleValue());
     b.setNotiz((String) getNotiz().getValue());
-    // Beträge fehlen hier noch, sind bei handleStore() im switch mit den
-    // Alterstufen
+
+    switch (Einstellungen.getEinstellung().getBeitragsmodel())
+    {
+      case GLEICHERTERMINFUERALLE:
+      case MONATLICH12631:
+        if (isAltersstaffel != null && (Boolean) isAltersstaffel.getValue()
+            && alterstaffel != null)
+        {
+          b.setHasAltersstaffel(true);
+        }
+        else
+        {
+          Double betrag = (Double) getBetrag().getValue();
+          b.setBetrag(betrag.doubleValue());
+          b.setHasAltersstaffel(false);
+        }
+        break;
+      case FLEXIBEL:
+        Double d1 = (Double) getBetragMonatlich().getValue();
+        b.setBetragMonatlich(d1.doubleValue());
+        Double d3 = (Double) getBetragVierteljaehrlich().getValue();
+        b.setBetragVierteljaehrlich(d3.doubleValue());
+        Double d6 = (Double) getBetragHalbjaehrlich().getValue();
+        b.setBetragHalbjaehrlich(d6.doubleValue());
+        Double d12 = (Double) getBetragJaehrlich().getValue();
+        b.setBetragJaehrlich(d12.doubleValue());
+        b.setHasAltersstaffel(false);
+        break;
+    }
   }
 
   public void handleStore() throws ApplicationException
@@ -422,56 +449,31 @@ public class BeitragsgruppeControl extends AbstractControl
     {
       prepareStore();
       Beitragsgruppe b = getBeitragsgruppe();
-      // Die Beitragsgruppe in die DB schreiben damit sie evtl für Altersstaffel
-      // verfügbar ist
-      b.setHasAltersstaffel(false);
       b.store();
-      
-      switch (Einstellungen.getEinstellung().getBeitragsmodel())
+
+      if (isAltersstaffel != null && (Boolean) isAltersstaffel.getValue()
+          && alterstaffel != null)
       {
-        case GLEICHERTERMINFUERALLE:
-        case MONATLICH12631:
-          if(isAltersstaffel != null && (Boolean)isAltersstaffel.getValue() && alterstaffel != null)
+        for (Input i : alterstaffel)
+        {
+          Altersstaffel a = null;
+          Double betrag = (Double) i.getValue();
+          a = b.getAltersstaffel((Integer) i.getData("nummer"));
+          if (betrag != null && a != null)
           {
-            for (Input i : alterstaffel)
-            {
-              Altersstaffel a = null;
-              Double betrag = (Double)i.getValue();
-              a = beitrag.getAltersstaffel((Integer)i.getData("nummer"));
-              if(betrag != null && a != null) {
-                a.setBetrag(betrag);
-               }
-              else
-              {
-                a = (Altersstaffel)Einstellungen.getDBService().createObject(Altersstaffel.class, null);
-                a.setBeitragsgruppe(beitrag);
-                a.setBetrag(betrag);
-                a.setNummer((Integer)i.getData("nummer"));
-              }
-              a.store();
-            }
-            b.setHasAltersstaffel(true);
+            a.setBetrag(betrag);
           }
           else
           {
-            Double betrag = (Double) getBetrag().getValue();
-            b.setBetrag(betrag.doubleValue());
-            b.setHasAltersstaffel(false);
+            a = (Altersstaffel) Einstellungen.getDBService()
+                .createObject(Altersstaffel.class, null);
+            a.setBeitragsgruppe(b);
+            a.setBetrag(betrag);
+            a.setNummer((Integer) i.getData("nummer"));
           }
-          break;
-        case FLEXIBEL:
-          Double d1 = (Double) getBetragMonatlich().getValue();
-          b.setBetragMonatlich(d1.doubleValue());
-          Double d3 = (Double) getBetragVierteljaehrlich().getValue();
-          b.setBetragVierteljaehrlich(d3.doubleValue());
-          Double d6 = (Double) getBetragHalbjaehrlich().getValue();
-          b.setBetragHalbjaehrlich(d6.doubleValue());
-          Double d12 = (Double) getBetragJaehrlich().getValue();
-          b.setBetragJaehrlich(d12.doubleValue());
-          b.setHasAltersstaffel(false);
-          break;
+          a.store();
+        }
       }
-      b.store();
     }
     catch (RemoteException e)
     {
