@@ -1060,6 +1060,7 @@ public class BuchungsControl extends AbstractControl
       else
       {
         b.plausi();
+        SplitbuchungsContainer.add(b);
         GUI.getStatusBar().setSuccessText("Buchung übernommen");
       }
     }
