@@ -29,6 +29,7 @@ import de.jost_net.JVerein.io.BeitragsUtil;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Eigenschaft;
@@ -433,9 +434,10 @@ public class MitgliedMap
     map.put(MitgliedVar.VERMERK2.getName(), "Vermerk 2");
     map.put(MitgliedVar.VORNAME.getName(), "Willi");
     map.put(MitgliedVar.VORNAMENAME.getName(), "Willi, Wichtig");
-    map.put(MitgliedVar.ZAHLUNGSRHYTHMUS.getName(), "");
+    map.put(MitgliedVar.ZAHLUNGSRHYTHMUS.getName(),
+        Zahlungsrhythmus.get(Zahlungsrhythmus.HALBJAEHRLICH));
     map.put(MitgliedVar.ZAHLUNGSTERMIN.getName(),
-        Zahlungstermin.HALBJAEHRLICH4);
+        Zahlungstermin.HALBJAEHRLICH4.toString());
     map.put(MitgliedVar.ZAHLUNGSWEG.getName(), "2");
     map.put(MitgliedVar.ZAHLUNGSWEGTEXT.getName(),
         "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
