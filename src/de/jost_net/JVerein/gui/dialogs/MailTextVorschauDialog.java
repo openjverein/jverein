@@ -30,7 +30,6 @@ import de.jost_net.JVerein.gui.control.IMailControl;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.util.EvalMail;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.server.MitgliedImpl;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -145,12 +144,9 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     public void handleEvent(Event event)
     {
       Mitglied m = (Mitglied) mitglied.getValue();
-      if (m == null)
-      {
-        m = MitgliedImpl.getDummy();
-      }
       try
       {
+        // Mitglied (m) NULL ist, dann wird die Dummy geliefert
         map = new MitgliedMap().getMap(m, map);
         em = new EvalMail(map);
         betreff.setValue(em.evalBetreff(betreffString));

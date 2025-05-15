@@ -30,6 +30,7 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -39,6 +40,8 @@ public class EvalMail
 {
 
   VelocityContext context;
+
+  Map<String, Object> map;
 
   public EvalMail(MailEmpfaenger empfaenger) throws RemoteException
   {
@@ -55,7 +58,7 @@ public class EvalMail
       context.put("email", mitglied.getEmail());
       context.put("empf", mitglied);
     }
-    Map<String, Object> map = new MitgliedMap().getMap(mitglied,
+    this.map = new MitgliedMap().getMap(mitglied,
         new AllgemeineMap().getMap(null));
     VarTools.add(context, map);
   }
@@ -66,6 +69,7 @@ public class EvalMail
     context.put("dateformat", new JVDateFormatTTMMJJJJ());
     context.put("decimalformat", Einstellungen.DECIMALFORMAT);
     VarTools.add(context, map);
+    this.map = map;
   }
 
   public String evalBetreff(String betr)
@@ -88,5 +92,10 @@ public class EvalMail
     StringWriter wtext = new StringWriter();
     Velocity.evaluate(context, wtext, "LOG", txt);
     return wtext.getBuffer().toString();
+  }
+
+  public String getMitgliedVar(MitgliedVar var)
+  {
+    return (String) map.get(var.getName());
   }
 }

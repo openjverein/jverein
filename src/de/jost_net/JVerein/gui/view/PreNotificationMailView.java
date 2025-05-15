@@ -35,7 +35,6 @@ import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.PreNotificationControl;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.server.MitgliedImpl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -82,7 +81,7 @@ public class PreNotificationMailView extends AbstractView
     grtabMailPDF.addInput(control.getTxt());
 
     Map<String, Object> map = LastschriftMap.getDummyMap(null);
-    map = new MitgliedMap().getMap(MitgliedImpl.getDummy(), map);
+    map = MitgliedMap.getDummyMap(map);
     map = new AllgemeineMap().getMap(map);
 
     ButtonArea buttons1 = new ButtonArea();

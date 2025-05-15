@@ -39,7 +39,6 @@ import de.jost_net.JVerein.gui.util.JameicaUtil;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.server.MitgliedImpl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -175,12 +174,8 @@ public class MailDetailView extends AbstractView
     buttons.addButton(
         new Button("Mail-Vorlage", new MailVorlageZuweisenAction(), control,
             false, "view-refresh.png"));
-    Mitglied m;
-    if (control.getEmpfaenger().getItems().isEmpty())
-    {
-      m = MitgliedImpl.getDummy();
-    }
-    else
+    Mitglied m = null;
+    if (!control.getEmpfaenger().getItems().isEmpty())
     {
       MailEmpfaenger empfaenger = (MailEmpfaenger) control.getEmpfaenger()
           .getItems().get(0);
