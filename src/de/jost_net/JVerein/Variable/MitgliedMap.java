@@ -434,6 +434,8 @@ public class MitgliedMap
     map.put(MitgliedVar.VERMERK2.getName(), "Vermerk 2");
     map.put(MitgliedVar.VORNAME.getName(), "Willi");
     map.put(MitgliedVar.VORNAMENAME.getName(), "Willi, Wichtig");
+    map.put(MitgliedVar.ZAHLUNGSRHYTMUS.getName(),
+        Zahlungsrhythmus.get(Zahlungsrhythmus.HALBJAEHRLICH));
     map.put(MitgliedVar.ZAHLUNGSRHYTHMUS.getName(),
         Zahlungsrhythmus.get(Zahlungsrhythmus.HALBJAEHRLICH));
     map.put(MitgliedVar.ZAHLUNGSTERMIN.getName(),
