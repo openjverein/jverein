@@ -231,7 +231,7 @@ public class SplitbuchungsContainer
     }
     if (Einstellungen.getEinstellung().getSteuerInBuchung()
         && ((steuer_haupt == null && steuer_gegen != null)
-            || (steuer_haupt != null && steuer_haupt.equals(steuer_gegen))))
+            || (steuer_haupt != null && !steuer_haupt.equals(steuer_gegen))))
     {
       throw new RemoteException(
           "Steuer bei Haupt- und Gegenbuchung müssen identisch sein");
