@@ -31,6 +31,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -199,6 +200,9 @@ public class SplitbuchungsContainer
 
     Buchungsart ba_haupt = null;
     Buchungsart ba_gegen = null;
+    Steuer steuer_haupt = null;
+    Steuer steuer_gegen = null;
+
     for (Buchung b : get())
     {
       if (b.getSplitTyp() == SplitbuchungTyp.HAUPT)
@@ -208,6 +212,7 @@ public class SplitbuchungsContainer
         {
           throw new RemoteException("Buchungsart bei der Hauptbuchung fehlt");
         }
+        steuer_haupt = b.getSteuer();
       }
       if (b.getSplitTyp() == SplitbuchungTyp.GEGEN)
       {
@@ -216,12 +221,20 @@ public class SplitbuchungsContainer
         {
           throw new RemoteException("Buchungsart bei der Gegenbuchung fehlt");
         }
+        steuer_gegen = b.getSteuer();
       }
     }
     if (ba_haupt.getNummer() != ba_gegen.getNummer())
     {
       throw new RemoteException(
           "Buchungsarten bei Haupt- und Gegenbuchung müssen identisch sein");
+    }
+    if (Einstellungen.getEinstellung().getSteuerInBuchung()
+        && ((steuer_haupt == null && steuer_gegen != null)
+            || (steuer_haupt != null && steuer_haupt.equals(steuer_gegen))))
+    {
+      throw new RemoteException(
+          "Steuer bei Haupt- und Gegenbuchung müssen identisch sein");
     }
     try
     {
@@ -330,6 +343,7 @@ public class SplitbuchungsContainer
     buch.setZweck(b.getZweck());
     buch.setIban(b.getIban());
     buch.setSplitTyp(SplitbuchungTyp.GEGEN);
+    buch.setSteuer(b.getSteuer());
     return buch;
   }
 
@@ -545,7 +559,7 @@ public class SplitbuchungsContainer
           String tmpKey = entry.getKey()
               .substring(entry.getKey().indexOf("-") + 1);
           String buchungsklasse = tmpKey.substring(0, tmpKey.indexOf("#"));
-          String steuer = tmpKey.substring(tmpKey.indexOf("#"));
+          String steuer = tmpKey.substring(tmpKey.indexOf("#") + 1);
 
           if (buchungsklasse.length() > 0)
           {
@@ -594,6 +608,9 @@ public class SplitbuchungsContainer
       {
         splitbuchungen.clear();
       }
+      Logger.error(
+          "Fehler beim Autosplit, ordne Buchung Sollbuchung ohne splitten zu.",
+          e);
       GUI.getStatusBar().setErrorText(
           "Fehler beim Autosplit, ordne Buchung Sollbuchung ohne splitten zu.");
     }
