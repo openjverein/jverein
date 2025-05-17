@@ -151,6 +151,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   final static String ExportCSV = "CSV";
 
+  private static Spendenbescheinigung letzteSpendenbescheinigung = null;
+
   public SpendenbescheinigungControl(AbstractView view)
   {
     super(view);
@@ -169,7 +171,15 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       return spendenbescheinigung;
     }
-    spendenbescheinigung = (Spendenbescheinigung) getCurrentObject();
+    try
+    {
+      spendenbescheinigung = (Spendenbescheinigung) getCurrentObject();
+      letzteSpendenbescheinigung = spendenbescheinigung;
+    }
+    catch (ClassCastException ex)
+    {
+      spendenbescheinigung = letzteSpendenbescheinigung;
+    }
     return spendenbescheinigung;
   }
 

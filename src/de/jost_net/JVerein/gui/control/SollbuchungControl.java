@@ -149,7 +149,7 @@ public class SollbuchungControl extends DruckMailControl
 
   private BuchungListPart istbuchungList;
 
-  private static Sollbuchung lastSollbuchung = null;
+  private static Sollbuchung letzteSollbuchung = null;
 
   public SollbuchungControl(AbstractView view)
   {
@@ -175,11 +175,11 @@ public class SollbuchungControl extends DruckMailControl
     try
     {
       sollbuchung = (Sollbuchung) getCurrentObject();
-      lastSollbuchung = sollbuchung;
+      letzteSollbuchung = sollbuchung;
     }
     catch (ClassCastException ex)
     {
-      sollbuchung = lastSollbuchung;
+      sollbuchung = letzteSollbuchung;
     }
     return sollbuchung;
   }
