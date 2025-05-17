@@ -423,7 +423,7 @@ public class JahresabschlussControl extends KontensaldoControl
           it.addFilter("datum <= ?", bisgj);
           it.addColumn("sum(buchung.betrag) as summe");
           PseudoDBObject o = it.next();
-          if (o != null)
+          if (o != null && o.getDouble("summe") != null)
           {
             betrag = o.getDouble("summe");
           }
