@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TreeSet;
 
 import org.apache.velocity.app.Velocity;
@@ -28,7 +29,7 @@ import org.apache.velocity.app.Velocity;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.MailDetailAction;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
-import de.jost_net.JVerein.gui.menu.MailAuswahlMenu;
+import de.jost_net.JVerein.gui.menu.MailEmpfaengerMenu;
 import de.jost_net.JVerein.gui.menu.MailMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.util.EvalMail;
@@ -73,6 +74,8 @@ public class MailControl extends FilterControl implements IMailControl
 
   private Mail mail;
 
+  private static Mail lastmail;
+
   private TablePart mailsList;
 
   public MailControl(AbstractView view)
@@ -88,7 +91,15 @@ public class MailControl extends FilterControl implements IMailControl
     {
       return mail;
     }
-    mail = (Mail) getCurrentObject();
+    try
+    {
+      mail = (Mail) getCurrentObject();
+      lastmail = mail;
+    }
+    catch (ClassCastException ex)
+    {
+      mail = lastmail;
+    }
     return mail;
   }
 
@@ -128,7 +139,7 @@ public class MailControl extends FilterControl implements IMailControl
     empfaenger.addColumn("Name", "name");
     empfaenger.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatDATETIME()));
-    empfaenger.setContextMenu(new MailAuswahlMenu(this));
+    empfaenger.setContextMenu(new MailEmpfaengerMenu(this));
     empfaenger.setMulti(true);
     empfaenger.setRememberOrder(true);
     empfaenger.removeFeature(FeatureSummary.class);
@@ -389,6 +400,7 @@ public class MailControl extends FilterControl implements IMailControl
     return b;
   }
 
+  // IMailControl Interface
   @Override
   public String getBetreffString() throws RemoteException
   {
@@ -399,6 +411,22 @@ public class MailControl extends FilterControl implements IMailControl
   public String getTxtString() throws RemoteException
   {
     return (String) getTxt().getValue();
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public List<Mitglied> getEmpfaengerList() throws RemoteException
+  {
+    if (empfaenger != null)
+    {
+      List<Mitglied> mitglieder = new ArrayList<>();
+      for (MailEmpfaenger e : (List<MailEmpfaenger>) empfaenger.getItems())
+      {
+        mitglieder.add(e.getMitglied());
+      }
+      return mitglieder;
+    }
+    return null;
   }
 
   /**

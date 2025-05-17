@@ -20,49 +20,36 @@ package de.jost_net.JVerein.gui.action;
 import java.util.Map;
 
 import de.jost_net.JVerein.gui.dialogs.ShowVariablesDialog;
-import de.jost_net.JVerein.gui.menu.ShowVariablesMenu;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.system.OperationCanceledException;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class InsertVariableDialogAction implements Action
 {
-  Map<String, Object> map;
+  private Map<String, Object> map;
+
+  private String prependCopyText = "$";
 
   public InsertVariableDialogAction(Map<String, Object> map)
   {
     this.map = map;
   }
 
-  // @SuppressWarnings("unchecked")
-  @Override
-  public void handleAction(Object context)
+  public InsertVariableDialogAction(Map<String, Object> map, boolean prepend)
   {
-    String prependCopyText = "$";
-    try
+    this.map = map;
+    if (!prepend)
     {
-      if (map == null)
-      {
-        throw new ApplicationException("Keine Map übergeben!");
-      }
-      ShowVariablesMenu menu = new ShowVariablesMenu();
-      ShowVariablesDialog d = new ShowVariablesDialog(map, false,
-          prependCopyText, "");
-      menu.setAppendCopyText("");
-      menu.setPrependCopyText(prependCopyText);
-      d.setContextMenu(menu);
-      d.setDoubleClickAction(menu.getCopyToClipboardAction());
-      d.open();
+      this.prependCopyText = "";
     }
-    catch (OperationCanceledException ignored)
+  }
+
+  @Override
+  public void handleAction(Object context) throws ApplicationException
+  {
+    if (map == null)
     {
+      throw new ApplicationException("Keine Map übergeben!");
     }
-    catch (Exception e)
-    {
-      Logger.error("Fehler beim Anzeigen der Variablen.", e);
-      GUI.getStatusBar().setErrorText("Fehler beim Anzeigen der Variablen.");
-    }
+    new ShowVariablesDialog(map, prependCopyText, "");
   }
 }

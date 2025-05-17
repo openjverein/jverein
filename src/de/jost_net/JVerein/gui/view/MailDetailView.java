@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -29,16 +30,14 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
-import de.jost_net.JVerein.gui.action.MailVorschauAction;
-import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
 import de.jost_net.JVerein.gui.util.JameicaUtil;
 import de.jost_net.JVerein.rmi.MailAnhang;
-import de.jost_net.JVerein.rmi.MailEmpfaenger;
-import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -174,20 +173,15 @@ public class MailDetailView extends AbstractView
     buttons.addButton(
         new Button("Mail-Vorlage", new MailVorlageZuweisenAction(), control,
             false, "view-refresh.png"));
-    Mitglied m = null;
-    if (!control.getEmpfaenger().getItems().isEmpty())
-    {
-      MailEmpfaenger empfaenger = (MailEmpfaenger) control.getEmpfaenger()
-          .getItems().get(0);
-      m = empfaenger.getMitglied();
-    }
-    buttons.addButton(
-        new Button("Variablen anzeigen", new OpenInsertVariableDialogAction(),
-            new MitgliedMap().getMap(m, new AllgemeineMap().getMap(null)),
-            false, "bookmark.png"));
-    buttons.addButton(
-        new Button("Vorschau", new MailVorschauAction(control), m, false,
-            "edit-copy.png"));
+
+    Map<String, Object> map = MitgliedMap.getDummyMap(null);
+    map = new AllgemeineMap().getMap(map);
+
+    buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
+        control, false, "bookmark.png");
+    buttons
+        .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
+            control, false, "edit-copy.png"));
     buttons.addButton(
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));

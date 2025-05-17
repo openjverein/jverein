@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -99,8 +99,8 @@ public class LesefeldDetailView extends AbstractView
         null, false, "view-refresh.png");
     buttonArea.addButton(button);
     button = new Button("Variablen anzeigen",
-        new OpenInsertVariableDialogAction(), lesefeldAuswerter, false,
-        "bookmark.png");
+        new InsertVariableDialogAction(lesefeldAuswerter.getMap(), false), null,
+        false, "bookmark.png");
     buttonArea.addButton(button);
     button = new Button("Speichern", new SaveLesefeldAction(), null, false,
         "document-save.png");
