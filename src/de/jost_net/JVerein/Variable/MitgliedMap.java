@@ -493,8 +493,6 @@ public class MitgliedMap
       map.put("mitglied_" + key, "Eigenschaft1, Eigenschaft2");
     }
 
-    // Liste der Variablen
-
     // Füge Lesefelder diesem Mitglied-Objekt hinzu.
     LesefeldAuswerter l = new LesefeldAuswerter();
     l.setLesefelderDefinitionsFromDatabase();
