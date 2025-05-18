@@ -74,8 +74,6 @@ public class MailControl extends FilterControl implements IMailControl
 
   private Mail mail;
 
-  private static Mail lastmail;
-
   private TablePart mailsList;
 
   public MailControl(AbstractView view)
@@ -91,15 +89,7 @@ public class MailControl extends FilterControl implements IMailControl
     {
       return mail;
     }
-    try
-    {
-      mail = (Mail) getCurrentObject();
-      lastmail = mail;
-    }
-    catch (ClassCastException ex)
-    {
-      mail = lastmail;
-    }
+    mail = (Mail) getCurrentObject();
     return mail;
   }
 
