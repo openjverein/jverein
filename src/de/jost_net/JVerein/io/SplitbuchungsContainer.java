@@ -382,6 +382,7 @@ public class SplitbuchungsContainer
     {
       buch.setZweck(origin.getZweck());
     }
+    buch.setSteuer(origin.getSteuer());
     buch.setIban(master.getIban());
     buch.setSplitTyp(SplitbuchungTyp.SPLIT);
     return buch;
