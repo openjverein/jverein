@@ -64,10 +64,10 @@ import de.willuhn.util.ProgressMonitor;
 public class ZipMailer
 {
   /**
-   * Sendet die Mail mit den Dateien aus dem Zi an alle empfnger
+   * Sendet die Mail mit den Dateien aus dem Zip an alle Empfnger
    * 
    * @param zipfile
-   *          das Archiev mit allen PDFs (o.ä.) die an die Mitglieer verschickt
+   *          das Archiv mit allen PDFs (o.ä.) die an die Mitglieder verschickt
    *          werden sollen. Die Dateien darin müssen den Dateinamen in der Form
    *          MITGLIED-ID#ART#ART-ID#MAILADRESSE.pdf haben.
    * @param betreff
@@ -75,7 +75,8 @@ public class ZipMailer
    * @param text
    *          Text der Mail
    * @param dateiname
-   *          Der Dateiname des Anhangs wie er verwendet werden soll
+   *          Der Dateiname des Anhangs wie er verwendet werden soll (kann auch
+   *          Variablen enthalten)
    * @throws RemoteException
    */
   public ZipMailer(final File zipfile, final String betreff, String text,
