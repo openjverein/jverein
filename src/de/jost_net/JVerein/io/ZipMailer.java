@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Enumeration;
@@ -56,8 +57,26 @@ import de.willuhn.util.ProgressMonitor;
  */
 public class ZipMailer
 {
-  public ZipMailer(final File zipfile, final String betreff, final String text, final String dateiname)
+  public ZipMailer(final File zipfile, final String betreff, String text,
+      final String dateiname) throws RemoteException
   {
+    // ggf. Signatur anhängen
+    if (text.toLowerCase().contains("<html")
+        && text.toLowerCase().contains("</body"))
+    {
+      // MailSignatur ohne Separator mit vorangestellten hr in den body einbauen
+      text = text.substring(0, text.toLowerCase().indexOf("</body") - 1);
+      text = text + "<hr />"
+          + Einstellungen.getEinstellung().getMailSignatur(false);
+      text = text + "</body></html>";
+    }
+    else
+    {
+      // MailSignatur mit Separator einfach anh?ngen
+      text = text + Einstellungen.getEinstellung().getMailSignatur(true);
+    }
+    final String txt = text;
+
     BackgroundTask t = new BackgroundTask()
     {
       private boolean cancel = false;
@@ -138,7 +157,7 @@ public class ZipMailer
               Velocity.evaluate(context, wtext1, "LOG", betreff);
 
               StringWriter wtext2 = new StringWriter();
-              Velocity.evaluate(context, wtext2, "LOG", text);
+              Velocity.evaluate(context, wtext2, "LOG", txt);
 
               monitor.log("Versende an " + mail);
               try
@@ -160,7 +179,7 @@ public class ZipMailer
                 Mail ml = (Mail) Einstellungen.getDBService()
                         .createObject(Mail.class, null);
                 ml.setBetreff(betreff);
-                ml.setTxt(text);
+                ml.setTxt(txt);
                 ml.setBearbeitung(new Timestamp(new Date().getTime()));
                 ml.setVersand(new Timestamp(new Date().getTime()));
                 ml.store();

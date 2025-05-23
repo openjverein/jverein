@@ -24,7 +24,6 @@ import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
-import de.jost_net.JVerein.server.MitgliedImpl;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -49,8 +48,8 @@ public class MailVorlageDetailView extends AbstractDetailView
     SimpleContainer t = new SimpleContainer(getParent(), true);
     t.addPart(control.getTxt());
 
-    Map<String, Object> map = new MitgliedMap().getMap(MitgliedImpl.getDummy(),
-        new AllgemeineMap().getMap(null));
+    Map<String, Object> map = MitgliedMap
+        .getDummyMap(new AllgemeineMap().getMap(null));
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

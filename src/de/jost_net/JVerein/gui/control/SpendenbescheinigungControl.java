@@ -886,9 +886,25 @@ public class SpendenbescheinigungControl extends DruckMailControl
     action.handleAction(spba);
   }
   
-  private void sendeMail(final String betr, final String txt,
+  private void sendeMail(final String betr, String text,
       final Spendenbescheinigung[] spba) throws RemoteException
   {
+    // ggf. Signatur anhängen
+    if (text.toLowerCase().contains("<html")
+        && text.toLowerCase().contains("</body"))
+    {
+      // MailSignatur ohne Separator mit vorangestellten hr in den body einbauen
+      text = text.substring(0, text.toLowerCase().indexOf("</body") - 1);
+      text = text + "<hr />"
+          + Einstellungen.getEinstellung().getMailSignatur(false);
+      text = text + "</body></html>";
+    }
+    else
+    {
+      // MailSignatur mit Separator einfach anhängen
+      text = text + Einstellungen.getEinstellung().getMailSignatur(true);
+    }
+    final String txt = text;
 
     BackgroundTask t = new BackgroundTask()
     {

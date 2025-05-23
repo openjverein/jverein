@@ -61,6 +61,12 @@ public class MailVorschauAction implements Action
       new MailVorschauDialog(control, m,
           MailEmpfaengerAuswahlDialog.POSITION_CENTER);
     }
+    // Falls kein Mitglied übergeben wird, dann wird der Dummy angezeigt
+    else if (context == null && control instanceof MailControl)
+    {
+      new MailVorschauDialog(control, null,
+          MailEmpfaengerAuswahlDialog.POSITION_CENTER);
+    }
     else
     {
       String name = "";

@@ -27,7 +27,6 @@ import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.RechnungControl;
-import de.jost_net.JVerein.server.MitgliedImpl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -88,7 +87,7 @@ public class RechnungMailView extends AbstractView
     cont.addLabelPair("Text", control.getTxt());
 
     Map<String, Object> map = RechnungMap.getDummyMap(null);
-    map = new MitgliedMap().getMap(MitgliedImpl.getDummy(), map);
+    map = MitgliedMap.getDummyMap(map);
     map = new AllgemeineMap().getMap(map);
 
     ButtonArea buttons = new ButtonArea();

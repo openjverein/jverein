@@ -31,6 +31,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
+import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.util.EvalMail;
 import de.jost_net.JVerein.gui.formatter.DateiGroesseFormatter;
@@ -100,7 +101,9 @@ public class MailVorschauDialog extends AbstractDialog<Object>
 
     EvalMail em = new EvalMail(empfaenger);
 
-    TextInput empfaenger = new TextInput(this.empfaenger.getEmail());
+    // Email wird aus der Map gelesen. Wenn der Empfänger null ist,
+    // wird die Mail aus der Dummy Map gelesen
+    TextInput empfaenger = new TextInput(em.getMitgliedVar(MitgliedVar.EMAIL));
     empfaenger.setEnabled(false);
     container.addLabelPair("Empfänger", empfaenger);
     String betreffString;

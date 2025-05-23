@@ -12,7 +12,6 @@ import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.FreieFormulareControl;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.server.MitgliedImpl;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -76,8 +75,7 @@ public class FreiesFormularMailView extends AbstractView
     fbuttons.addButton(control.getSpeichernButton());
     group.addButtonArea(fbuttons);
 
-    Map<String, Object> map = new MitgliedMap().getMap(MitgliedImpl.getDummy(),
-        null);
+    Map<String, Object> map = MitgliedMap.getDummyMap(null);
     map = new AllgemeineMap().getMap(map);
 
     ButtonArea buttons = new ButtonArea();
