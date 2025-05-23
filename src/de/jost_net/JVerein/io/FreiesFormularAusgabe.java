@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -26,7 +25,6 @@ import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.Dateiname;
-import de.jost_net.JVerein.util.JVDateFormatJJJJMMTT;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -166,8 +164,7 @@ public class FreiesFormularAusgabe
 
   String getDateiname(Mitglied m) throws RemoteException
   {
-    String filename = m.getID() + "#"
-        + new JVDateFormatJJJJMMTT().format(new Date()) + "#";
+    String filename = m.getID() + "#";
     String email = StringTool.toNotNullString(m.getEmail());
     if (email.length() > 0)
     {

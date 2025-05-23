@@ -40,7 +40,6 @@ import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.util.Dateiname;
-import de.jost_net.JVerein.util.JVDateFormatJJJJMMTT;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -218,8 +217,7 @@ public class Rechnungsausgabe
   String getDateiname(Rechnung re) throws RemoteException
   {
     Mitglied m = re.getMitglied();
-    String filename = m.getID() + "#"
-        + new JVDateFormatJJJJMMTT().format(re.getDatum()) + "#";
+    String filename = m.getID() + "#rechnung#" + re.getID() + "#";
     String email = StringTool.toNotNullString(m.getEmail());
     if (email.length() > 0)
     {

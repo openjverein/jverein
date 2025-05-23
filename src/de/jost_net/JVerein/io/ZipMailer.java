@@ -37,12 +37,18 @@ import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.VarTools;
+import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.Application;
@@ -57,6 +63,21 @@ import de.willuhn.util.ProgressMonitor;
  */
 public class ZipMailer
 {
+  /**
+   * Sendet die Mail mit den Dateien aus dem Zi an alle empfnger
+   * 
+   * @param zipfile
+   *          das Archiev mit allen PDFs (o.ä.) die an die Mitglieer verschickt
+   *          werden sollen. Die Dateien darin müssen den Dateinamen in der Form
+   *          MITGLIED-ID#ART#ART-ID#MAILADRESSE.pdf haben.
+   * @param betreff
+   *          Betreff der Mail
+   * @param text
+   *          Text der Mail
+   * @param dateiname
+   *          Der Dateiname des Anhangs wie er verwendet werden soll
+   * @throws RemoteException
+   */
   public ZipMailer(final File zipfile, final String betreff, String text,
       final String dateiname) throws RemoteException
   {
@@ -122,13 +143,58 @@ public class ZipMailer
             String currentEntry = entry.getName();
             if (currentEntry.indexOf("@") > 0)
             {
+              VelocityContext context = new VelocityContext();
+              context.put("dateformat", new JVDateFormatTTMMJJJJ());
+              context.put("decimalformat", Einstellungen.DECIMALFORMAT);
+              Map<String, Object> map = new AllgemeineMap().getMap(null);
+
               // Entry mit Mail-Adresse
+              // Dateiname muss das Format
+              // MITGLIED-ID#ART#ART-ID#MAILADRESSE.pdf haben
               String id = currentEntry.substring(0, currentEntry.indexOf("#"));
               String mail = currentEntry
                   .substring(currentEntry.lastIndexOf("#") + 1);
-              mail = mail.substring(0, mail.length() - 4);
+              // Endung entfernen
+              mail = mail.substring(0, mail.lastIndexOf("."));
+
+              // Mitglied Map hinzufügen
               Mitglied m = (Mitglied) Einstellungen.getDBService()
                   .createObject(Mitglied.class, id);
+              map = new MitgliedMap().getMap(m, map);
+
+              // Art bestimmen
+              String art = currentEntry.substring(currentEntry.indexOf("#") + 1,
+                  currentEntry.lastIndexOf("#"));
+              if (art.length() > 0)
+              {
+                String artId = art.substring(art.indexOf("#") + 1);
+                art = art.substring(0, art.indexOf("#"));
+
+                switch(art.toLowerCase())
+                {
+                  case "rechnung":
+                    Rechnung re = (Rechnung) Einstellungen.getDBService()
+                        .createObject(Rechnung.class, artId);
+                    map = new RechnungMap().getMap(re, map);
+                    break;
+                  case "spendenbescheinigung":
+                    Spendenbescheinigung spb = (Spendenbescheinigung) Einstellungen
+                        .getDBService()
+                        .createObject(Spendenbescheinigung.class, artId);
+                    map = new SpendenbescheinigungMap().getMap(spb, map);
+                    break;
+                  case "lastschrift":
+                    Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
+                        .createObject(Lastschrift.class, artId);
+                    map = new LastschriftMap().getMap(ls, map);
+                    break;
+                  default:
+                    Logger.error("Zipmailer Map nicht implementiert: " + art);
+                    break;
+                }
+              }
+              VarTools.add(context, map);
+
               MailAnhang ma = (MailAnhang) Einstellungen.getDBService()
                   .createObject(MailAnhang.class, null);
               InputStream in = zip.getInputStream(entry);
@@ -142,16 +208,13 @@ public class ZipMailer
               }
               in.close();
               ma.setAnhang(bos.toByteArray());
-              ma.setDateiname(dateiname);
+
+              StringWriter wdateiname = new StringWriter();
+              Velocity.evaluate(context, wdateiname, "LOG", dateiname);
+
+              ma.setDateiname(wdateiname.toString());
               TreeSet<MailAnhang> anhang = new TreeSet<>();
               anhang.add(ma);
-
-              VelocityContext context = new VelocityContext();
-              context.put("dateformat", new JVDateFormatTTMMJJJJ());
-              context.put("decimalformat", Einstellungen.DECIMALFORMAT);
-              Map<String, Object> map = new MitgliedMap().getMap(m, null);
-              map = new AllgemeineMap().getMap(map);
-              VarTools.add(context, map);
 
               StringWriter wtext1 = new StringWriter();
               Velocity.evaluate(context, wtext1, "LOG", betreff);
