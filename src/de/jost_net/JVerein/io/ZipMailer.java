@@ -69,18 +69,15 @@ public class ZipMailer
    * @param zipfile
    *          das Archiv mit allen PDFs (o.ä.) die an die Mitglieder verschickt
    *          werden sollen. Die Dateien darin müssen den Dateinamen in der Form
-   *          MITGLIED-ID#ART#ART-ID#MAILADRESSE.pdf haben.
+   *          MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf haben.
    * @param betreff
    *          Betreff der Mail
    * @param text
    *          Text der Mail
-   * @param dateiname
-   *          Der Dateiname des Anhangs wie er verwendet werden soll (kann auch
-   *          Variablen enthalten)
    * @throws RemoteException
    */
-  public ZipMailer(final File zipfile, final String betreff, String text,
-      final String dateiname) throws RemoteException
+  public ZipMailer(final File zipfile, final String betreff, String text)
+      throws RemoteException
   {
     // ggf. Signatur anhängen
     if (text.toLowerCase().contains("<html")
@@ -94,7 +91,7 @@ public class ZipMailer
     }
     else
     {
-      // MailSignatur mit Separator einfach anh?ngen
+      // MailSignatur mit Separator einfach anhängen
       text = text + Einstellungen.getEinstellung().getMailSignatur(true);
     }
     final String txt = text;
@@ -149,29 +146,28 @@ public class ZipMailer
               context.put("decimalformat", Einstellungen.DECIMALFORMAT);
               Map<String, Object> map = new AllgemeineMap().getMap(null);
 
-              // Entry mit Mail-Adresse
               // Dateiname muss das Format
-              // MITGLIED-ID#ART#ART-ID#MAILADRESSE.pdf haben
-              String id = currentEntry.substring(0, currentEntry.indexOf("#"));
-              String mail = currentEntry
-                  .substring(currentEntry.lastIndexOf("#") + 1);
-              // Endung entfernen
-              mail = mail.substring(0, mail.lastIndexOf("."));
+              // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf haben
+              String[] teile = currentEntry.split("#", 5);
+
+              if (teile.length != 5)
+              {
+                throw new ApplicationException(
+                    "Ungültiger Dateiname: " + currentEntry);
+              }
+
+              String id = teile[0];
+              String art = teile[1];
+              String artId = teile[2];
+              String mail = teile[3];
+              String dateiname = teile[4];
 
               // Mitglied Map hinzufügen
               Mitglied m = (Mitglied) Einstellungen.getDBService()
                   .createObject(Mitglied.class, id);
               map = new MitgliedMap().getMap(m, map);
 
-              // Art bestimmen
-              String art = currentEntry.substring(currentEntry.indexOf("#") + 1,
-                  currentEntry.lastIndexOf("#"));
-              if (art.length() > 0)
-              {
-                String artId = art.substring(art.indexOf("#") + 1);
-                art = art.substring(0, art.indexOf("#"));
-
-                switch(art.toLowerCase())
+              switch (art.toLowerCase().trim())
                 {
                   case "rechnung":
                     Rechnung re = (Rechnung) Einstellungen.getDBService()
@@ -189,11 +185,13 @@ public class ZipMailer
                         .createObject(Lastschrift.class, artId);
                     map = new LastschriftMap().getMap(ls, map);
                     break;
+                case "":
+                  // Keine Art verwendet
+                  break;
                   default:
                     Logger.error("Zipmailer Map nicht implementiert: " + art);
                     break;
                 }
-              }
               VarTools.add(context, map);
 
               MailAnhang ma = (MailAnhang) Einstellungen.getDBService()

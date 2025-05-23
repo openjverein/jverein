@@ -93,11 +93,11 @@ public class FreiesFormularAusgabe
           {
             continue;
           }
-          File f = File.createTempFile(getDateiname(m), ".pdf");
+          File f = File.createTempFile(getDateiname(m, formular), ".pdf");
           formularaufbereitung = new FormularAufbereitung(f, false, false);
           aufbereitenFormular(m, formularaufbereitung, formular);
           formularaufbereitung.closeFormular();
-          zos.putNextEntry(new ZipEntry(getDateiname(m) + ".pdf"));
+          zos.putNextEntry(new ZipEntry(getDateiname(m, formular) + ".pdf"));
           FileInputStream in = new FileInputStream(f);
           // buffer size
           byte[] b = new byte[1024];
@@ -118,8 +118,7 @@ public class FreiesFormularAusgabe
       case MAIL:
         zos.close();
         new ZipMailer(file, (String) control.getBetreff().getValue(),
-            (String) control.getTxt().getValue(),
-            formular.getBezeichnung() + ".pdf");
+            (String) control.getTxt().getValue());
         break;
     }
 
@@ -162,9 +161,10 @@ public class FreiesFormularAusgabe
     fo.store();
   }
 
-  String getDateiname(Mitglied m) throws RemoteException
+  String getDateiname(Mitglied m, Formular formular) throws RemoteException
   {
-    String filename = m.getID() + "#";
+    // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
+    String filename = m.getID() + "# # #";
     String email = StringTool.toNotNullString(m.getEmail());
     if (email.length() > 0)
     {
@@ -174,7 +174,7 @@ public class FreiesFormularAusgabe
     {
       filename += m.getName() + m.getVorname();
     }
-    return filename;
+    return filename + "#" + formular.getBezeichnung();
   }
 
 }

@@ -164,7 +164,7 @@ public class Kontoauszug
           return;
         }
         new ZipMailer(file, (String) control.getBetreff().getValue(),
-            (String) control.getTxt().getValue(), "Kontoauszug.pdf");
+            (String) control.getTxt().getValue());
         break;
     } 
   }
@@ -302,9 +302,10 @@ public class Kontoauszug
   
   String getDateiname(Mitglied m) throws RemoteException
   {
-    String filename = m.getID() + "#";
+    // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
+    String filename = m.getID() + "# # #";
     String email = StringTool.toNotNullString(m.getEmail());
-    filename += email;
+    filename += email + "#Kontoauszug";
     return filename;
   }
 }

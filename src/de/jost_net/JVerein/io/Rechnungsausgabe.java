@@ -162,7 +162,7 @@ public class Rechnungsausgabe
       case MAIL:
         zos.close();
         new ZipMailer(file, (String) control.getBetreff().getValue(),
-            (String) control.getTxt().getValue(), typ.name() + ".pdf");
+            (String) control.getTxt().getValue());
         break;
     }
   }
@@ -216,6 +216,7 @@ public class Rechnungsausgabe
 
   String getDateiname(Rechnung re) throws RemoteException
   {
+    // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
     Mitglied m = re.getMitglied();
     String filename = m.getID() + "#rechnung#" + re.getID() + "#";
     String email = StringTool.toNotNullString(m.getEmail());
@@ -227,7 +228,7 @@ public class Rechnungsausgabe
     {
       filename += m.getName() + m.getVorname();
     }
-    return filename;
+    return filename + "#" + typ.name();
   }
 
 }
