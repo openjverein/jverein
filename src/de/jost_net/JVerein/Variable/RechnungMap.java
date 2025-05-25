@@ -70,10 +70,10 @@ public class RechnungMap
     {
       buchungDatum.add(sp.getDatum());
       zweck.add(sp.getZweck());
-      nettobetrag.add(Double.valueOf(sp.getNettobetrag()));
+      nettobetrag.add(sp.getNettobetrag());
       steuersatz.add(
-          "(" + formatter.format(Double.valueOf(sp.getSteuersatz())) + ")");
-      steuerbetrag.add(Double.valueOf(sp.getSteuerbetrag()));
+          "(" + formatter.format(sp.getSteuersatz()) + ")");
+      steuerbetrag.add(sp.getSteuerbetrag());
       betrag.add(sp.getBetrag());
       summe += sp.getBetrag();
     }
@@ -109,6 +109,7 @@ public class RechnungMap
     {
       ist = re.getSollbuchung().getIstSumme();
     }
+    map.put(RechnungVar.SUMME.getName(), summe);
     map.put(RechnungVar.IST.getName(), ist);
     map.put(RechnungVar.MK_SUMME_OFFEN.getName(), summe - ist);
     map.put(RechnungVar.SUMME_OFFEN.getName(), summe - ist);
@@ -202,13 +203,8 @@ public class RechnungMap
       map = inMap;
     }
 
-    map.put(RechnungVar.ZAHLUNGSGRUND.getName(), "Zahlungsgrund");
-    map.put(RechnungVar.BUCHUNGSDATUM.getName(), "01.01.2025");
-    map.put(RechnungVar.NETTOBETRAG.getName(), "20");
-    map.put(RechnungVar.STEUERSATZ.getName(), "19");
-    map.put(RechnungVar.STEUERBETRAG.getName(), "3,80");
-    map.put(RechnungVar.BETRAG.getName(), "23,80");
-    map.put(RechnungVar.IST.getName(), "10");
+    map.put(RechnungVar.SUMME.getName(), "23,80");
+    map.put(RechnungVar.IST.getName(), "10,00");
     map.put(RechnungVar.STAND.getName(), "-13,80");
     map.put(RechnungVar.SUMME_OFFEN.getName(), "13,80");
     map.put(RechnungVar.QRCODE_INTRO.getName(), "QRCode Intro");
