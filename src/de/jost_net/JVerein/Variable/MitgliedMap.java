@@ -359,6 +359,7 @@ public class MitgliedMap
   }
 
   public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
+      throws RemoteException
   {
     Map<String, Object> map = null;
     if (inMap == null)
@@ -444,6 +445,60 @@ public class MitgliedMap
     map.put(MitgliedVar.ZAHLUNGSWEGTEXT.getName(),
         "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
     map.put(MitgliedVar.ZAHLERID.getName(), "123456");
+
+    // Liste der Felddefinitionen
+    DBIterator<Felddefinition> itfd = Einstellungen.getDBService()
+        .createList(Felddefinition.class);
+    while (itfd.hasNext())
+    {
+      Felddefinition fd = itfd.next();
+      switch (fd.getDatentyp())
+      {
+        case Datentyp.DATUM:
+          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
+              toDate(("31.12.2024")));
+          break;
+        case Datentyp.JANEIN:
+          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "X");
+          break;
+        case Datentyp.GANZZAHL:
+          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "22");
+          break;
+        case Datentyp.WAEHRUNG:
+          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "3.00");
+          break;
+        case Datentyp.ZEICHENFOLGE:
+          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "abcd");
+          break;
+      }
+    }
+
+    // Liste der Eigenschaften
+    DBIterator<Eigenschaft> iteig = Einstellungen.getDBService()
+        .createList(Eigenschaft.class);
+    while (iteig.hasNext())
+    {
+      Eigenschaft eig = iteig.next();
+      map.put("mitglied_eigenschaft_" + eig.getBezeichnung(), "X");
+    }
+
+    // Liste der Eigenschaften einer Eigenschaftengruppe
+    DBIterator<EigenschaftGruppe> eigenschaftGruppeIt = Einstellungen
+        .getDBService().createList(EigenschaftGruppe.class);
+    while (eigenschaftGruppeIt.hasNext())
+    {
+      EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
+
+      String key = "eigenschaften_" + eg.getBezeichnung();
+      map.put("mitglied_" + key, "Eigenschaft1, Eigenschaft2");
+    }
+
+    // Füge Lesefelder diesem Mitglied-Objekt hinzu.
+    LesefeldAuswerter l = new LesefeldAuswerter();
+    l.setLesefelderDefinitionsFromDatabase();
+    l.setMap(map);
+    map.putAll(l.getLesefelderMap());
+
     return map;
   }
 

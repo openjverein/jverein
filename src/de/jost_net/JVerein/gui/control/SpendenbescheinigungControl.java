@@ -18,30 +18,24 @@ package de.jost_net.JVerein.gui.control;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.StringWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
-import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
@@ -53,9 +47,9 @@ import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportCSV;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportPDF;
+import de.jost_net.JVerein.io.ZipMailer;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -64,9 +58,6 @@ import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.SuchSpendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
-import de.jost_net.JVerein.rmi.Mail;
-import de.jost_net.JVerein.rmi.MailAnhang;
-import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
@@ -887,188 +878,51 @@ public class SpendenbescheinigungControl extends DruckMailControl
   }
   
   private void sendeMail(final String betr, String text,
-      final Spendenbescheinigung[] spba) throws RemoteException
+      final Spendenbescheinigung[] spba) throws IOException
   {
-    // ggf. Signatur anhängen
-    if (text.toLowerCase().contains("<html")
-        && text.toLowerCase().contains("</body"))
+
+    File zip = File.createTempFile("Spendenbescheinigungen", ".zip");
+    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip));
+
+    for (Spendenbescheinigung spb : spba)
     {
-      // MailSignatur ohne Separator mit vorangestellten hr in den body einbauen
-      text = text.substring(0, text.toLowerCase().indexOf("</body") - 1);
-      text = text + "<hr />"
-          + Einstellungen.getEinstellung().getMailSignatur(false);
-      text = text + "</body></html>";
+      Mitglied m = spb.getMitglied();
+      if (m == null || m.getEmail() == null || m.getEmail().isEmpty())
+      {
+        continue;
+      }
+      // PDF wurde bereits erstellt, dieses holen wir und schreiben es in das
+      // ZIP
+      String path = Einstellungen.getEinstellung()
+          .getSpendenbescheinigungverzeichnis();
+      if (path == null || path.length() == 0)
+      {
+        path = settings.getString("lastdir", System.getProperty("user.home"));
+      }
+      settings.setAttribute("lastdir", path);
+      path = path.endsWith(File.separator) ? path : path + File.separator;
+
+      String fileName = new Dateiname(spb.getMitglied(),
+          spb.getSpendedatum(), "Spendenbescheinigung",
+          Einstellungen.getEinstellung().getDateinamenmusterSpende(),
+          "pdf").get();
+
+      // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
+      zos.putNextEntry(new ZipEntry(
+          m.getID() + "#spendenbescheinigung#" + spb.getID() + "#"
+              + m.getEmail() + "#" + fileName));
+      FileInputStream in = new FileInputStream(new File(path + fileName));
+      // buffer size
+      byte[] b = new byte[1024];
+      int count;
+      while ((count = in.read(b)) > 0)
+      {
+        zos.write(b, 0, count);
+      }
+      in.close();
     }
-    else
-    {
-      // MailSignatur mit Separator einfach anhängen
-      text = text + Einstellungen.getEinstellung().getMailSignatur(true);
-    }
-    final String txt = text;
-
-    BackgroundTask t = new BackgroundTask()
-    {
-
-      private boolean cancel = false;
-
-      @Override
-      public void run(ProgressMonitor monitor)
-      {
-        try
-        {
-          MailSender sender = new MailSender(
-              Einstellungen.getEinstellung().getSmtpServer(),
-              Einstellungen.getEinstellung().getSmtpPort(),
-              Einstellungen.getEinstellung().getSmtpAuthUser(),
-              Einstellungen.getEinstellung().getSmtpAuthPwd(),
-              Einstellungen.getEinstellung().getSmtpFromAddress(),
-              Einstellungen.getEinstellung().getSmtpFromAnzeigename(),
-              Einstellungen.getEinstellung().getMailAlwaysBcc(),
-              Einstellungen.getEinstellung().getMailAlwaysCc(),
-              Einstellungen.getEinstellung().getSmtpSsl(),
-              Einstellungen.getEinstellung().getSmtpStarttls(),
-              Einstellungen.getEinstellung().getMailVerzoegerung(),
-              Einstellungen.getImapCopyData());
-
-          Velocity.init();
-          Logger.debug("preparing velocity context");
-          monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
-          monitor.setPercentComplete(0);
-
-          int sentCount = 0;
-          int size = spba.length;
-          for (int i=0; i < size; i++)
-          {
-            if(isInterrupted())
-            {
-              monitor.setStatus(ProgressMonitor.STATUS_ERROR);
-              monitor.setStatusText("Mailversand abgebrochen");
-              monitor.setPercentComplete(100);
-              return;
-            }
-            
-            double proz = (double) i / (double) size * 100d;
-            monitor.setPercentComplete((int) proz);
-            Mitglied m = spba[i].getMitglied();
-            if (m == null || m.getEmail() == null || m.getEmail().isEmpty())
-            {
-              continue;
-            }
-            VelocityContext context = new VelocityContext();
-            context.put("dateformat", new JVDateFormatTTMMJJJJ());
-            context.put("decimalformat", Einstellungen.DECIMALFORMAT);
-            context.put("email", m.getEmail());
-
-            Map<String, Object> map = new SpendenbescheinigungMap()
-                .getMap(spba[i], null);
-            map = new MitgliedMap().getMap(m, map);
-            map = new AllgemeineMap().getMap(map);
-            VarTools.add(context, map);
-
-            StringWriter wtext1 = new StringWriter();
-            Velocity.evaluate(context, wtext1, "LOG", betr);
-
-            StringWriter wtext2 = new StringWriter();
-            Velocity.evaluate(context, wtext2, "LOG", txt);
-
-            try
-            {
-              String path = Einstellungen.getEinstellung()
-                  .getSpendenbescheinigungverzeichnis();
-              if (path == null || path.length() == 0)
-              {
-                path = settings.getString("lastdir", System.getProperty("user.home"));
-              }
-
-              settings.setAttribute("lastdir", path);
-              path = path.endsWith(File.separator) ? path : path + File.separator;
-              TreeSet<MailAnhang> anhang = new TreeSet<MailAnhang>();
-              MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
-                  .createObject(MailAnhang.class, null);
-              String fileName = new Dateiname(m,
-                  spba[i].getSpendedatum(), "Spendenbescheinigung",
-                  Einstellungen.getEinstellung().getDateinamenmusterSpende(),
-                  "pdf").get();
-              anh.setDateiname(fileName);
-              fileName = path + fileName;
-              File file = new File(fileName);
-              FileInputStream fis = new FileInputStream(file);
-              byte[] buffer = new byte[(int) file.length()];
-              fis.read(buffer);
-              anh.setAnhang(buffer);
-              anhang.add(anh);
-              fis.close();
-
-              try
-              {
-                sender.sendMail(m.getEmail(), wtext1.getBuffer().toString(),
-                    wtext2.getBuffer().toString(), anhang);
-              }
-              // Wenn eine ApplicationException geworfen wurde, wurde die
-              // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
-              catch (ApplicationException ae)
-              {
-                Logger.error("Fehler: ", ae);
-                monitor.log(m.getEmail() + " - " + ae.getMessage());
-              }
-              sentCount++;
-
-              // Mail in die Datenbank schreiben
-              Mail mail = (Mail) Einstellungen.getDBService()
-                  .createObject(Mail.class, null);
-              Timestamp ts = new Timestamp(new Date().getTime());
-              mail.setBearbeitung(ts);
-              mail.setBetreff(wtext1.getBuffer().toString());
-              mail.setTxt(wtext2.getBuffer().toString());
-              mail.setVersand(ts);
-              mail.store();
-              MailEmpfaenger empf = (MailEmpfaenger) Einstellungen
-                  .getDBService().createObject(MailEmpfaenger.class, null);
-              empf.setMail(mail);
-              empf.setMitglied(m);
-              empf.setVersand(ts);
-              empf.store();
-              anh.setMail(mail);
-              if (Einstellungen.getEinstellung().getAnhangSpeichern())
-              {
-                anh.store();
-              }
-
-              monitor.log(m.getEmail() + " - versendet");
-            }
-            catch (Exception e)
-            {
-              Logger.error("Fehler beim Mailversand", e);
-              monitor.log(m.getEmail() + " - " + e.getMessage());
-            }
-          }
-          monitor.setPercentComplete(100);
-          monitor.setStatus(ProgressMonitor.STATUS_DONE);
-          monitor.setStatusText(
-              String.format("Anzahl verschickter Mails: %d", sentCount));
-          GUI.getStatusBar().setSuccessText(
-              "Mail" + (sentCount > 1 ? "s" : "") +  " verschickt");
-        }
-        catch (Exception re)
-        {
-          Logger.error("", re);
-          monitor.log(re.getMessage());
-        }
-      }
-
-      @Override
-      public void interrupt()
-      {
-        this.cancel = true;
-      }
-
-      @Override
-      public boolean isInterrupted()
-      {
-        return this.cancel;
-      }
-    };
-    Application.getController().start(t);
+    zos.close();
+    new ZipMailer(zip, (String) betr, text);
   }
   
   public Button getPDFExportButton()

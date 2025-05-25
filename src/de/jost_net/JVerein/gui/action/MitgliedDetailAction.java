@@ -32,6 +32,7 @@ import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Lehrgang;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -103,6 +104,11 @@ public class MitgliedDetailAction implements Action
       }
       else if ((context instanceof Buchung ) && ((Buchung) context).getSollbuchung() != null ) {
         mitglied = ((Buchung) context).getSollbuchung().getMitglied();
+      }
+      else if (context instanceof MailEmpfaenger)
+      {
+        MailEmpfaenger empfaenger = (MailEmpfaenger) context;
+        mitglied = empfaenger.getMitglied();
       }
       else
       {

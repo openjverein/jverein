@@ -18,6 +18,9 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
+import java.util.List;
+
+import de.jost_net.JVerein.rmi.Mitglied;
 
 /**
  * Interface für den zugriff auf Mail Betreff und Text
@@ -34,4 +37,12 @@ public interface IMailControl
    * @return Text der Mail
    */
   public String getTxtString() throws RemoteException;
+
+  /**
+   * @return Liste der Mailempfänger
+   */
+  default List<Mitglied> getEmpfaengerList() throws RemoteException
+  {
+    return null;
+  }
 }

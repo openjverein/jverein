@@ -19,8 +19,8 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
-import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
@@ -55,7 +55,7 @@ public class MailVorlageDetailView extends AbstractDetailView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAILVORLAGE, false, "question-circle.png");
     buttons.addButton("Variablen anzeigen",
-        new OpenInsertVariableDialogAction(), map, false, "bookmark.png");
+        new InsertVariableDialogAction(map), control, false, "bookmark.png");
     buttons
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
             control, false, "edit-copy.png"));
