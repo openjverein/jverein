@@ -238,9 +238,9 @@ public class KontensaldoControl extends AbstractSaldoControl
       // Wenn kein Anfangsbestand vorhanden ist, geben wir nur die Bemerkung aus
       if (anfangsbestand == null)
       {
-        o.setAttribute(EINNAHMEN, "");
-        o.setAttribute(AUSGABEN, "");
-        o.setAttribute(UMBUCHUNGEN, "");
+        o.setAttribute(EINNAHMEN, null);
+        o.setAttribute(AUSGABEN, null);
+        o.setAttribute(UMBUCHUNGEN, null);
         o.setAttribute(BEMERKUNG, "Kein Anfangsbestand vorhanden");
         zeilen.add(o);
       }
