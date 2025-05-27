@@ -82,12 +82,12 @@ public class BuchungQuery
 
   private SplitFilter split;
 
-  private boolean ungeprueft;
+  private Boolean ungeprueft;
 
   public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
       Buchungsart buchungsart, Projekt projekt, String text, String betrag,
       Boolean hasMitglied, String mitglied, boolean geldkonto,
-      SplitFilter split, boolean ungeprueft)
+      SplitFilter split, Boolean ungeprueft)
   {
     this.datumvon = datumvon;
     this.datumbis = datumbis;
@@ -232,21 +232,24 @@ public class BuchungQuery
       }
     }
 
-    switch (split)
+    if (split != null)
     {
-      case SPLIT:
-        it.addFilter("(buchung.splittyp is null or buchung.splittyp = ?)",
-            SplitbuchungTyp.SPLIT);
-        break;
-      case HAUPT:
-        it.addFilter("(buchung.splittyp is null or buchung.splittyp = ?)",
-            SplitbuchungTyp.HAUPT);
-        break;
-      default:
-        break;
+      switch (split)
+      {
+        case SPLIT:
+          it.addFilter("(buchung.splittyp is null or buchung.splittyp = ?)",
+              SplitbuchungTyp.SPLIT);
+          break;
+        case HAUPT:
+          it.addFilter("(buchung.splittyp is null or buchung.splittyp = ?)",
+              SplitbuchungTyp.HAUPT);
+          break;
+        default:
+          break;
+      }
     }
 
-    if (ungeprueft)
+    if (ungeprueft != null && ungeprueft)
     {
       it.addFilter("(geprueft = 0 or geprueft is null)");
     }
@@ -298,7 +301,7 @@ public class BuchungQuery
       }
     }
 
-    if (text.length() > 0)
+    if (text != null && text.length() > 0)
     {
       Long id = 0L;
       try

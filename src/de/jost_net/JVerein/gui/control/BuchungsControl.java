@@ -540,6 +540,11 @@ public class BuchungsControl extends AbstractControl
     return suchtext;
   }
 
+  public boolean isSuchtextAktiv()
+  {
+    return suchtext != null;
+  }
+
   public TextInput getSuchBetrag() throws RemoteException
   {
     if (suchbetrag != null)
@@ -550,6 +555,11 @@ public class BuchungsControl extends AbstractControl
     return suchbetrag;
   }
   
+  public boolean isSuchBetragAktiv()
+  {
+    return suchbetrag != null;
+  }
+
   public TextInput getMitglied()
   {
     if (mitglied != null)
@@ -558,6 +568,11 @@ public class BuchungsControl extends AbstractControl
     }
     mitglied = new TextInput(settings.getString(settingsprefix + "mitglied", ""), 35);
     return mitglied;
+  }
+
+  public boolean isMitgliedAktiv()
+  {
+    return mitglied != null;
   }
 
   public CheckboxInput getVerzicht() throws RemoteException
@@ -741,6 +756,11 @@ public class BuchungsControl extends AbstractControl
     return suchkonto;
   }
 
+  public boolean isSuchKontoAktiv()
+  {
+    return suchkonto != null;
+  }
+
   public Button getSammelueberweisungButton()
   {
     sammelueberweisungButton = new Button("Sammelüberweisung", new Action()
@@ -838,6 +858,11 @@ public class BuchungsControl extends AbstractControl
     return suchprojekt;
   }
 
+  public boolean isSuchProjektAktiv()
+  {
+    return suchprojekt != null;
+  }
+
   public SelectInput getSuchSplibuchung()
   {
     if (suchsplitbuchung != null)
@@ -851,6 +876,11 @@ public class BuchungsControl extends AbstractControl
     suchsplitbuchung.addListener(new FilterListener());
 
     return suchsplitbuchung;
+  }
+
+  public boolean isSuchSplibuchungAktiv()
+  {
+    return suchsplitbuchung != null;
   }
 
   public SelectInput getSuchBuchungsart() throws RemoteException
@@ -897,6 +927,11 @@ public class BuchungsControl extends AbstractControl
     return suchbuchungsart;
   }
 
+  public boolean isSuchBuchungsartAktiv()
+  {
+    return suchbuchungsart != null;
+  }
+
   public DateInput getVondatum()
   {
     if (vondatum != null)
@@ -918,6 +953,11 @@ public class BuchungsControl extends AbstractControl
     this.vondatum.setText("Bitte Anfangsdatum wählen");
     this.vondatum.setMandatory(true);
     return vondatum;
+  }
+
+  public boolean isVondatumAktiv()
+  {
+    return vondatum != null;
   }
 
   public DateInput getBisdatum()
@@ -943,6 +983,11 @@ public class BuchungsControl extends AbstractControl
     return bisdatum;
   }
 
+  public boolean isBisdatumAktiv()
+  {
+    return bisdatum != null;
+  }
+
   public CheckboxInput getUngeprueft()
   {
     if (ungeprueft != null)
@@ -953,6 +998,11 @@ public class BuchungsControl extends AbstractControl
         settings.getBoolean(settingsprefix + "ungeprueft", false));
     ungeprueft.addListener(new FilterListener());
     return ungeprueft;
+  }
+
+  public boolean isUngeprueftAktiv()
+  {
+    return ungeprueft != null;
   }
 
   public Button getStartAuswertungEinzelbuchungenButton()
@@ -1231,14 +1281,23 @@ public class BuchungsControl extends AbstractControl
     params = new TreeMap<>();
 
     // Werte speichern und Parameter füllen
-    Date dv = (Date) getVondatum().getValue();
+    Date dv = null;
+    if (isVondatumAktiv())
+    {
+      dv = (Date) getVondatum().getValue();
+    }
     if (dv == null)
     {
       throw new RemoteException("Bitte Von Datum eingeben!");
     }
     settings.setAttribute(settingsprefix + "vondatum", new JVDateFormatTTMMJJJJ().format(dv));
     params.put("Datum von ", new JVDateFormatTTMMJJJJ().format(dv));
-    Date db = (Date) getBisdatum().getValue();
+
+    Date db = null;
+    if (isBisdatumAktiv())
+    {
+      db = (Date) getBisdatum().getValue();
+    }
     if (db == null)
     {
       throw new RemoteException("Bitte Bis Datum eingeben!");
@@ -1246,30 +1305,41 @@ public class BuchungsControl extends AbstractControl
     settings.setAttribute(settingsprefix + "bisdatum", new JVDateFormatTTMMJJJJ().format(db));
     params.put("Datum bis ", new JVDateFormatTTMMJJJJ().format(db));
     Konto k = null;
-    if (getSuchKonto().getValue() != null)
+    if (isSuchKontoAktiv())
     {
-      k = (Konto) getSuchKonto().getValue();
-      settings.setAttribute(settingsprefix + "suchkontoid", k.getID());
-      params.put("Konto ", k.getBezeichnung());
+      if (getSuchKonto().getValue() != null)
+      {
+        k = (Konto) getSuchKonto().getValue();
+        settings.setAttribute(settingsprefix + "suchkontoid", k.getID());
+        params.put("Konto ", k.getBezeichnung());
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "suchkontoid", "");
+      }
     }
-    else
+    Boolean mvalue = null;
+    if (isSuchMitgliedZugeordnetAktiv()
+        && getSuchMitgliedZugeordnet().getValue() != null)
     {
-      settings.setAttribute(settingsprefix + "suchkontoid", "");
-    }
-    MitgliedZustand m = (MitgliedZustand) getSuchMitgliedZugeordnet()
-        .getValue();
-    if (m != null)
-    {
+      MitgliedZustand m = (MitgliedZustand) getSuchMitgliedZugeordnet()
+          .getValue();
+      mvalue = m.getValue();
       settings.setAttribute(settingsprefix + MITGLIEDZUGEORDNET, m.getText());
       if (!m.getText().equalsIgnoreCase("Beide"))
       {
         params.put("Mitglied zugeordnet? ", m.getText());
       }
     }
-    Buchungsart b = (Buchungsart) getSuchBuchungsart().getValue();
+    Buchungsart b = null;
+    if (isSuchBuchungsartAktiv())
+    {
+      b = (Buchungsart) getSuchBuchungsart().getValue();
+    }
     if (b != null && b.getNummer() != 0)
     {
-      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART, b.getNummer());
+      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART,
+          b.getNummer());
       params.put("Buchungsart ", b.getBezeichnung());
     }
     else
@@ -1277,64 +1347,81 @@ public class BuchungsControl extends AbstractControl
       settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART, -2);
     }
     Projekt p = null;
-    // Projekt kann über die Einstellungen ausgeblendet sein
-    if (projekt != null)
+    if (isSuchProjektAktiv())
     {
-      p = (Projekt) getSuchProjekt().getValue();
-    }
-    if (p != null)
-    {
-      if (p.isNewObject())
+      if (getSuchProjekt().getValue() != null)
       {
-        settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, 0);
+        p = (Projekt) getSuchProjekt().getValue();
+        if (p.isNewObject())
+        {
+          settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, 0);
+        }
+        else
+        {
+          settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT,
+              p.getID());
+        }
+        params.put("Projekt ", p.getBezeichnung());
       }
       else
       {
-        settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT,
-            p.getID());
+        settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, -2);
       }
-      params.put("Projekt ", p.getBezeichnung());
     }
-    else
+    Boolean ungeprueft = null;
+    if (isUngeprueftAktiv())
     {
-      settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, -2);
+      ungeprueft = (Boolean) getUngeprueft().getValue();
+      settings.setAttribute(settingsprefix + "ungeprueft", ungeprueft);
+      if (ungeprueft)
+      {
+        params.put("Nur ungeprüfte ", ungeprueft.toString());
+      }
     }
-    Boolean ungeprueft = (Boolean) getUngeprueft().getValue();
-    settings.setAttribute(settingsprefix + "ungeprueft", ungeprueft);
-    if (ungeprueft)
+    String suchtext = null;
+    if (isSuchtextAktiv())
     {
-      params.put("Nur ungeprüfte ", ungeprueft.toString());
+      suchtext = (String) getSuchtext().getValue();
+      settings.setAttribute(settingsprefix + "suchtext", suchtext);
+      if (suchtext != null && !suchtext.isEmpty())
+      {
+        params.put("Enthaltener Text ", suchtext);
+      }
     }
-    String suchtext = (String) getSuchtext().getValue();
-    settings.setAttribute(settingsprefix + "suchtext", suchtext);
-    if (suchtext != null && !suchtext.isEmpty())
+    String suchbetrag = null;
+    if (isSuchBetragAktiv())
     {
-      params.put("Enthaltener Text ", suchtext);
+      suchbetrag = (String) getSuchBetrag().getValue();
+      settings.setAttribute(settingsprefix + "suchbetrag", suchbetrag);
+      if (suchbetrag != null && !suchbetrag.isEmpty())
+      {
+        params.put("Betrag ", suchbetrag);
+      }
     }
-    String suchbetrag = (String) getSuchBetrag().getValue();
-    settings.setAttribute(settingsprefix + "suchbetrag", suchbetrag);
-    if (suchbetrag != null && !suchbetrag.isEmpty())
+    String mitglied = null;
+    if (isMitgliedAktiv())
     {
-      params.put("Betrag ", suchbetrag);
+      mitglied = (String) getMitglied().getValue();
+      settings.setAttribute(settingsprefix + "mitglied", mitglied);
+      if (mitglied != null && !mitglied.isEmpty())
+      {
+        params.put("Mitglied Name ", mitglied);
+      }
     }
-    String mitglied = (String) getMitglied().getValue();
-    settings.setAttribute(settingsprefix + "mitglied", mitglied);
-    if (mitglied != null && !mitglied.isEmpty())
+    SplitFilter split = null;
+    if (isSuchSplibuchungAktiv())
     {
-      params.put("Mitglied Name ", mitglied);
-    }
-    SplitFilter split = (SplitFilter) getSuchSplibuchung().getValue();
-    settings.setAttribute(settingsprefix + "split", (int) split.getKey());
-    if (split != SplitFilter.ALLE)
-    {
-      params.put("Splitbuchung ", split.getText());
+      split = (SplitFilter) getSuchSplibuchung().getValue();
+      settings.setAttribute(settingsprefix + "split", (int) split.getKey());
+      if (split != SplitFilter.ALLE)
+      {
+        params.put("Splitbuchung ", split.getText());
+      }
     }
 
-    query = new BuchungQuery(dv, db, k, b, p, (String) getSuchtext().getValue(),
-        (String) getSuchBetrag().getValue(), m.getValue(),
-        (String) getMitglied().getValue(), geldkonto,
-        (SplitFilter) getSuchSplibuchung().getValue(),
-        (Boolean) getUngeprueft().getValue());
+    query = new BuchungQuery(dv, db, k, b, p, suchtext,
+        suchbetrag, mvalue, mitglied, geldkonto, split,
+        ungeprueft);
 
     if (buchungsList == null)
     {
@@ -1997,6 +2084,11 @@ public class BuchungsControl extends AbstractControl
     return hasmitglied;
   }
 
+  public boolean isSuchMitgliedZugeordnetAktiv()
+  {
+    return hasmitglied != null;
+  }
+
   public TextInput getIban() throws RemoteException
   {
     if (iban != null)
@@ -2125,29 +2217,59 @@ public class BuchungsControl extends AbstractControl
   {
     try
     {
-      suchbuchungsart.setValue(null);
-      suchprojekt.setValue(null);
-      suchbetrag.setValue("");
-      suchsplitbuchung.setValue(SplitFilter.ALLE);
-      hasmitglied.setValue(hasmitglied.getList().get(2));
+      if (isSuchBuchungsartAktiv())
+      {
+        suchbuchungsart.setValue(null);
+      }
+      if (isSuchProjektAktiv())
+      {
+        suchprojekt.setValue(null);
+      }
+      if (isSuchBetragAktiv())
+      {
+        suchbetrag.setValue("");
+      }
+      if (isSuchSplibuchungAktiv())
+      {
+        suchsplitbuchung.setValue(SplitFilter.ALLE);
+      }
+      if (isSuchMitgliedZugeordnetAktiv())
+      {
+        hasmitglied.setValue(hasmitglied.getList().get(2));
+      }
       Calendar calendar = Calendar.getInstance();
       Integer year = calendar.get(Calendar.YEAR);
-      Date startGJ = Datum.toDate(Einstellungen.getEinstellung()
-          .getBeginnGeschaeftsjahr() + year);
+      Date startGJ = Datum.toDate(
+          Einstellungen.getEinstellung().getBeginnGeschaeftsjahr() + year);
       if (calendar.getTime().before(startGJ))
       {
-        year = year -1;
-        startGJ = Datum.toDate(Einstellungen.getEinstellung()
-            .getBeginnGeschaeftsjahr() + year);
+        year = year - 1;
+        startGJ = Datum.toDate(
+            Einstellungen.getEinstellung().getBeginnGeschaeftsjahr() + year);
       }
-      vondatum.setValue(startGJ);
+      if (isVondatumAktiv())
+      {
+        vondatum.setValue(startGJ);
+      }
       calendar.setTime(startGJ);
       calendar.add(Calendar.YEAR, 1);
       calendar.add(Calendar.DAY_OF_MONTH, -1);
-      bisdatum.setValue(calendar.getTime());
-      ungeprueft.setValue(false);
-      suchtext.setValue("");
-      mitglied.setValue("");
+      if (isBisdatumAktiv())
+      {
+        bisdatum.setValue(calendar.getTime());
+      }
+      if (isUngeprueftAktiv())
+      {
+        ungeprueft.setValue(false);
+      }
+      if (isSuchtextAktiv())
+      {
+        suchtext.setValue("");
+      }
+      if (isMitgliedAktiv())
+      {
+        mitglied.setValue("");
+      }
       refreshBuchungsList();
     }
     catch (Exception ex)
