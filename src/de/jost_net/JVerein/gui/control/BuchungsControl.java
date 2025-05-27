@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
@@ -209,6 +210,8 @@ public class BuchungsControl extends AbstractControl
   
   private boolean geldkonto = true;
   
+  private TreeMap<String, String> params;
+
   public enum Kontenfilter
   {
     GELDKONTO,  // Beinhaltet Rückstellungen
@@ -1225,24 +1228,29 @@ public class BuchungsControl extends AbstractControl
 
   public BuchungListTablePart getBuchungsList() throws RemoteException
   {
-    // Werte speichern
+    params = new TreeMap<>();
+
+    // Werte speichern und Parameter füllen
     Date dv = (Date) getVondatum().getValue();
     if (dv == null)
     {
       throw new RemoteException("Bitte Von Datum eingeben!");
     }
     settings.setAttribute(settingsprefix + "vondatum", new JVDateFormatTTMMJJJJ().format(dv));
+    params.put("Datum von ", new JVDateFormatTTMMJJJJ().format(dv));
     Date db = (Date) getBisdatum().getValue();
     if (db == null)
     {
       throw new RemoteException("Bitte Bis Datum eingeben!");
     }
     settings.setAttribute(settingsprefix + "bisdatum", new JVDateFormatTTMMJJJJ().format(db));
+    params.put("Datum bis ", new JVDateFormatTTMMJJJJ().format(db));
     Konto k = null;
     if (getSuchKonto().getValue() != null)
     {
       k = (Konto) getSuchKonto().getValue();
       settings.setAttribute(settingsprefix + "suchkontoid", k.getID());
+      params.put("Konto ", k.getBezeichnung());
     }
     else
     {
@@ -1253,35 +1261,74 @@ public class BuchungsControl extends AbstractControl
     if (m != null)
     {
       settings.setAttribute(settingsprefix + MITGLIEDZUGEORDNET, m.getText());
+      if (!m.getText().equalsIgnoreCase("Beide"))
+      {
+        params.put("Mitglied zugeordnet? ", m.getText());
+      }
     }
     Buchungsart b = (Buchungsart) getSuchBuchungsart().getValue();
     if (b != null && b.getNummer() != 0)
     {
       settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART, b.getNummer());
+      params.put("Buchungsart ", b.getBezeichnung());
     }
     else
     {
       settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART, -2);
     }
-    Projekt p = (Projekt) getSuchProjekt().getValue();
+    Projekt p = null;
+    // Projekt kann über die Einstellungen ausgeblendet sein
+    if (projekt != null)
+    {
+      p = (Projekt) getSuchProjekt().getValue();
+    }
     if (p != null)
     {
-      if(p.isNewObject())
+      if (p.isNewObject())
+      {
         settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, 0);
+      }
       else
-        settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, p.getID());
+      {
+        settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT,
+            p.getID());
+      }
+      params.put("Projekt ", p.getBezeichnung());
     }
     else
     {
       settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, -2);
     }
-    settings.setAttribute(settingsprefix + "ungeprueft",
-        (Boolean) getUngeprueft().getValue());
-    settings.setAttribute(settingsprefix + "suchtext", (String) getSuchtext().getValue());
-    settings.setAttribute(settingsprefix + "suchbetrag", (String) getSuchBetrag().getValue());
-    settings.setAttribute(settingsprefix + "mitglied", (String) getMitglied().getValue());
-    settings.setAttribute(settingsprefix + "split",
-        (int) ((SplitFilter) getSuchSplibuchung().getValue()).getKey());
+    Boolean ungeprueft = (Boolean) getUngeprueft().getValue();
+    settings.setAttribute(settingsprefix + "ungeprueft", ungeprueft);
+    if (ungeprueft)
+    {
+      params.put("Nur ungeprüfte ", ungeprueft.toString());
+    }
+    String suchtext = (String) getSuchtext().getValue();
+    settings.setAttribute(settingsprefix + "suchtext", suchtext);
+    if (suchtext != null && !suchtext.isEmpty())
+    {
+      params.put("Enthaltener Text ", suchtext);
+    }
+    String suchbetrag = (String) getSuchBetrag().getValue();
+    settings.setAttribute(settingsprefix + "suchbetrag", suchbetrag);
+    if (suchbetrag != null && !suchbetrag.isEmpty())
+    {
+      params.put("Betrag ", suchbetrag);
+    }
+    String mitglied = (String) getMitglied().getValue();
+    settings.setAttribute(settingsprefix + "mitglied", mitglied);
+    if (mitglied != null && !mitglied.isEmpty())
+    {
+      params.put("Mitglied Name ", mitglied);
+    }
+    SplitFilter split = (SplitFilter) getSuchSplibuchung().getValue();
+    settings.setAttribute(settingsprefix + "split", (int) split.getKey());
+    if (split != SplitFilter.ALLE)
+    {
+      params.put("Splitbuchung ", split.getText());
+    }
 
     query = new BuchungQuery(dv, db, k, b, p, (String) getSuchtext().getValue(),
         (String) getSuchBetrag().getValue(), m.getValue(),
@@ -1681,7 +1728,7 @@ public class BuchungsControl extends AbstractControl
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
 
-      auswertungBuchungsjournalPDF(query, file);
+      auswertungBuchungsjournalPDF(query, file, params);
     }
     catch (Exception e)
     {
@@ -1702,7 +1749,8 @@ public class BuchungsControl extends AbstractControl
         try
         {
           GUI.getStatusBar().setSuccessText("Auswertung gestartet");
-          new BuchungAuswertungPDF(buchungsarten, file, query, einzelbuchungen);
+          new BuchungAuswertungPDF(buchungsarten, file, query, einzelbuchungen,
+              params);
         }
         catch (ApplicationException ae)
         {
@@ -1733,7 +1781,7 @@ public class BuchungsControl extends AbstractControl
   }
 
   private void auswertungBuchungsjournalPDF(final BuchungQuery query,
-      final File file)
+      final File file, final TreeMap<String, String> params)
   {
     BackgroundTask t = new BackgroundTask()
     {
@@ -1744,7 +1792,7 @@ public class BuchungsControl extends AbstractControl
       {
         try
         {
-          new BuchungsjournalPDF(query, file);
+          new BuchungsjournalPDF(query, file, params);
           GUI.getCurrentView().reload();
         }
         catch (ApplicationException ae)

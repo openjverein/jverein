@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TreeMap;
 
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
@@ -559,5 +560,22 @@ public class Reporter
   public String notNull(String text)
   {
     return text == null ? "" : text;
+  }
+
+  public void addParams(final TreeMap<String, String> params)
+      throws DocumentException
+  {
+    add(new Paragraph("Parameter", Reporter.getFreeSans(12)));
+
+    addHeaderColumn("Parameter", Element.ALIGN_RIGHT, 100,
+        BaseColor.LIGHT_GRAY);
+    addHeaderColumn("Wert", Element.ALIGN_LEFT, 200, BaseColor.LIGHT_GRAY);
+    createHeader(75f, Element.ALIGN_LEFT);
+    for (String key : params.keySet())
+    {
+      addColumn(key, Element.ALIGN_RIGHT);
+      addColumn(params.get(key), Element.ALIGN_LEFT);
+    }
+    closeTable();
   }
 }

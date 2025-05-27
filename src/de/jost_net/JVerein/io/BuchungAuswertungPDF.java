@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
@@ -57,7 +58,8 @@ public class BuchungAuswertungPDF
   private boolean kontonummer_in_buchungsliste = false;
 
   public BuchungAuswertungPDF(ArrayList<Buchungsart> buchungsarten,
-      final File file, BuchungQuery query, boolean einzel)
+      final File file, BuchungQuery query, boolean einzel,
+      final TreeMap<String, String> params)
       throws ApplicationException
   {
     try
@@ -153,9 +155,11 @@ public class BuchungAuswertungPDF
           reporter.addColumn("Saldo", Element.ALIGN_LEFT);
           reporter.addColumn("", Element.ALIGN_LEFT);
           reporter.addColumn(summeeinnahmen + summeausgaben + summeumbuchungen);
+          reporter.closeTable();
         }
 
       }
+      reporter.addParams(params);
       GUI.getStatusBar().setSuccessText("Auswertung fertig.");
 
       reporter.close();
