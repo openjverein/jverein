@@ -1291,7 +1291,6 @@ public class BuchungsControl extends AbstractControl
       throw new RemoteException("Bitte Von Datum eingeben!");
     }
     settings.setAttribute(settingsprefix + "vondatum", new JVDateFormatTTMMJJJJ().format(dv));
-    params.put("Datum von ", new JVDateFormatTTMMJJJJ().format(dv));
 
     Date db = null;
     if (isBisdatumAktiv())
@@ -1303,7 +1302,7 @@ public class BuchungsControl extends AbstractControl
       throw new RemoteException("Bitte Bis Datum eingeben!");
     }
     settings.setAttribute(settingsprefix + "bisdatum", new JVDateFormatTTMMJJJJ().format(db));
-    params.put("Datum bis ", new JVDateFormatTTMMJJJJ().format(db));
+
     Konto k = null;
     if (isSuchKontoAktiv())
     {
@@ -1311,7 +1310,6 @@ public class BuchungsControl extends AbstractControl
       {
         k = (Konto) getSuchKonto().getValue();
         settings.setAttribute(settingsprefix + "suchkontoid", k.getID());
-        params.put("Konto ", k.getBezeichnung());
       }
       else
       {
@@ -1361,7 +1359,6 @@ public class BuchungsControl extends AbstractControl
           settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT,
               p.getID());
         }
-        params.put("Projekt ", p.getBezeichnung());
       }
       else
       {

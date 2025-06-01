@@ -345,10 +345,6 @@ public class BuchungQuery
       subtitle += ", "
           + String.format("Projekt %s", getProjekt().getBezeichnung());
     }
-    if (getText() != null && getText().length() > 0)
-    {
-      subtitle += ", " + String.format("Text=%s", getText());
-    }
     return subtitle;
   }
 
