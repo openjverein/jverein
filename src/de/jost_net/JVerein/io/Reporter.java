@@ -565,17 +565,20 @@ public class Reporter
   public void addParams(final TreeMap<String, String> params)
       throws DocumentException
   {
-    add(new Paragraph("Filter-Parameter", Reporter.getFreeSans(12)));
-
-    addHeaderColumn("Parameter", Element.ALIGN_RIGHT, 100,
-        BaseColor.LIGHT_GRAY);
-    addHeaderColumn("Wert", Element.ALIGN_LEFT, 200, BaseColor.LIGHT_GRAY);
-    createHeader(75f, Element.ALIGN_LEFT);
-    for (String key : params.keySet())
+    if (!params.keySet().isEmpty())
     {
-      addColumn(key, Element.ALIGN_RIGHT);
-      addColumn(params.get(key), Element.ALIGN_LEFT);
+      add(new Paragraph("Filter-Parameter", Reporter.getFreeSans(12)));
+
+      addHeaderColumn("Parameter", Element.ALIGN_RIGHT, 100,
+          BaseColor.LIGHT_GRAY);
+      addHeaderColumn("Wert", Element.ALIGN_LEFT, 200, BaseColor.LIGHT_GRAY);
+      createHeader(75f, Element.ALIGN_LEFT);
+      for (String key : params.keySet())
+      {
+        addColumn(key, Element.ALIGN_RIGHT);
+        addColumn(params.get(key), Element.ALIGN_LEFT);
+      }
+      closeTable();
     }
-    closeTable();
   }
 }
