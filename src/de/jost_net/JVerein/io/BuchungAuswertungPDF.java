@@ -235,11 +235,15 @@ public class BuchungAuswertungPDF
     {
       buchungsklasseBezeichnung = new BuchungsklasseFormatter().format(bukla);
     }
+    String buchungsartBezeichnung = " - Ohne Zuordnung";
+    if (!bua.getBezeichnung().equalsIgnoreCase("Ohne Zuordnung"))
+    {
+      buchungsartBezeichnung = " - " + new BuchungsartFormatter().format(bua);
+    }
     if (einzel)
     {
       Paragraph pBuchungsart = new Paragraph(
-          buchungsklasseBezeichnung + " - "
-              + new BuchungsartFormatter().format(bua),
+          buchungsklasseBezeichnung + buchungsartBezeichnung,
           Reporter.getFreeSansBold(10));
       reporter.add(pBuchungsart);
     }
