@@ -157,7 +157,10 @@ public class BuchungAuswertungPDF
           reporter.addColumn(summeeinnahmen + summeausgaben + summeumbuchungen);
           reporter.closeTable();
         }
-
+      }
+      else if (!einzel)
+      {
+        reporter.closeTable();
       }
       reporter.addParams(params);
       GUI.getStatusBar().setSuccessText("Auswertung fertig.");
