@@ -91,6 +91,7 @@ public class BuchungAuswertungPDF
         createTableHeaderSumme(reporter);
       }
       boolean nichtLeer = false;
+      int anzahlBuchungsarten = 0;
       DBIterator<Buchungsklasse> buchungsklassen = Einstellungen.getDBService()
           .createList(Buchungsklasse.class);
       buchungsklassen.setOrder("ORDER BY nummer");
@@ -113,6 +114,10 @@ public class BuchungAuswertungPDF
           }
           List<Buchung> liste = getBuchungenEinerBuchungsart(query.get(), bua,
               bukla);
+          if (liste.size() > 0)
+          {
+            anzahlBuchungsarten += 1;
+          }
           nichtLeer = createTableContent(reporter, bua, bukla, liste, einzel)
               || nichtLeer;
         }
@@ -132,19 +137,31 @@ public class BuchungAuswertungPDF
           query.getOrder("ORDER_DATUM_ID");
         }
         List<Buchung> liste = getBuchungenEinerBuchungsart(query.get(), bua);
+        if (liste.size() > 0)
+        {
+          anzahlBuchungsarten += 1;
+        }
         nichtLeer = createTableContent(reporter, bua, null, liste, einzel)
             || nichtLeer;
       }
-      // Buchungen ohne Buchungsarten
-      List<Buchung> liste = getBuchungenOhneBuchungsart(query.get());
+      // Buchungen ohne Buchungsarten, wenn exolizite Buchungsart angegeben ist,
+      // dann nur wenn ohne Buchungsart ausgewählt ist (ID == null)
+      if (query.getBuchungsart() == null || (query.getBuchungsart() != null
+          && query.getBuchungsart().getID() == null))
+      {
+        List<Buchung> liste = getBuchungenOhneBuchungsart(query.get());
+        if (liste.size() > 0)
+        {
+          anzahlBuchungsarten += 1;
+        }
+        Buchungsart bua = (Buchungsart) Einstellungen.getDBService()
+            .createObject(Buchungsart.class, null);
+        bua.setBezeichnung("Ohne Zuordnung");
+        nichtLeer = createTableContent(reporter, bua, null, liste, einzel)
+            || nichtLeer;
+      }
 
-      Buchungsart bua = (Buchungsart) Einstellungen.getDBService()
-          .createObject(Buchungsart.class, null);
-      bua.setBezeichnung("Ohne Zuordnung");
-      nichtLeer = createTableContent(reporter, bua, null, liste, einzel)
-          || nichtLeer;
-
-      if (nichtLeer)
+      if (anzahlBuchungsarten > 1)
       {
         if (einzel)
         {
@@ -177,6 +194,13 @@ public class BuchungAuswertungPDF
         }
       }
       else
+      {
+        if (!einzel && nichtLeer)
+        {
+          reporter.closeTable();
+        }
+      }
+      if (!nichtLeer)
       {
         if (einzel)
         {
