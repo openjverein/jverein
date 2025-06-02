@@ -34,12 +34,12 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 
-public class RechnungMap
+public class RechnungMap extends AbstractMap
 {
 
   public RechnungMap()
   {
-    //
+    super();
   }
 
   @SuppressWarnings("deprecation")
@@ -203,12 +203,12 @@ public class RechnungMap
       map = inMap;
     }
 
-    map.put(RechnungVar.SUMME.getName(), "23,80");
-    map.put(RechnungVar.IST.getName(), "10,00");
-    map.put(RechnungVar.STAND.getName(), "-13,80");
-    map.put(RechnungVar.SUMME_OFFEN.getName(), "13,80");
+    map.put(RechnungVar.SUMME.getName(), Double.valueOf("23.80"));
+    map.put(RechnungVar.IST.getName(), Double.valueOf("10.00"));
+    map.put(RechnungVar.STAND.getName(), Double.valueOf("-13.80"));
+    map.put(RechnungVar.SUMME_OFFEN.getName(), Double.valueOf("13.80"));
     map.put(RechnungVar.QRCODE_INTRO.getName(), "QRCode Intro");
-    map.put(RechnungVar.DATUM.getName(), "10.01.2025");
+    map.put(RechnungVar.DATUM.getName(), toDate("10.01.2025"));
     map.put(RechnungVar.NUMMER.getName(), "Nummer");
     map.put(RechnungVar.ANREDE.getName(), "Herrn");
     map.put(RechnungVar.TITEL.getName(), "Dr. Dr.");
@@ -225,7 +225,7 @@ public class RechnungMap
         "Sehr geehrter Herr Dr. Dr. Wichtig,");
     map.put(RechnungVar.PERSONENART.getName(), "n");
     map.put(RechnungVar.MANDATID.getName(), "12345");
-    map.put(RechnungVar.MANDATDATUM.getName(), "01.01.2024");
+    map.put(RechnungVar.MANDATDATUM.getName(), toDate("01.01.2024"));
     map.put(RechnungVar.BIC.getName(), "XXXXXXXXXXX");
     map.put(RechnungVar.IBAN.getName(), "DE89370400440532013000");
     map.put(RechnungVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");

@@ -1240,7 +1240,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     // Siehe RFC 3676, 4.3. Usenet Signature Convention
     if (separator && !signatur.startsWith("-- \n"))
     {
-      return "-- \n" + signatur;
+      return "\n-- \n" + signatur;
     }
     return signatur;
   }

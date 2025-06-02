@@ -39,7 +39,6 @@ import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.Datum;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
@@ -48,12 +47,12 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedMap
+public class MitgliedMap extends AbstractMap
 {
 
   public MitgliedMap()
   {
-    //
+    super();
   }
 
   public Map<String, Object> getMap(Mitglied m, Map<String, Object> inma)
@@ -381,9 +380,10 @@ public class MitgliedMap
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG.getName(), "50");
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN.getName(), "10");
     map.put(MitgliedVar.BEITRAGSGRUPPE_BEZEICHNUNG.getName(), "Beitrag");
-    map.put(MitgliedVar.BEITRAGSGRUPPE_BETRAG.getName(), "300,00");
+    map.put(MitgliedVar.BEITRAGSGRUPPE_BETRAG.getName(),
+        Double.valueOf("300.00"));
     map.put(MitgliedVar.BEITRAGSGRUPPE_ID.getName(), "1");
-    map.put(MitgliedVar.MANDATDATUM.getName(), "01.01.2024");
+    map.put(MitgliedVar.MANDATDATUM.getName(), toDate("01.01.2024"));
     map.put(MitgliedVar.MANDATID.getName(), "12345");
     map.put(MitgliedVar.BIC.getName(), "BICXXXXXXXX");
     map.put(MitgliedVar.BLZ.getName(), "");
@@ -399,7 +399,8 @@ public class MitgliedMap
     map.put(MitgliedVar.IBAN.getName(), "DE89370400440532013000");
     map.put(MitgliedVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
     map.put(MitgliedVar.ID.getName(), "15");
-    map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), "123.45");
+    map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(),
+        Double.valueOf("123.45"));
     map.put(MitgliedVar.KONTO.getName(), "");
     map.put(MitgliedVar.BANKNAME.getName(), "XY Bank");
     map.put(MitgliedVar.KONTOINHABER.getName(), "Maier, Werner");
@@ -500,20 +501,6 @@ public class MitgliedMap
     map.putAll(l.getLesefelderMap());
 
     return map;
-  }
-
-  private static Date toDate(String datum)
-  {
-    Date d = null;
-
-    try
-    {
-      d = new JVDateFormatTTMMJJJJ().parse(datum);
-    }
-    catch (Exception ignored)
-    {
-    }
-    return d;
   }
 
 }
