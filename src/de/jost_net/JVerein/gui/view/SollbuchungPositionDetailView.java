@@ -64,7 +64,8 @@ public class SollbuchungPositionDetailView extends AbstractView
         try
         {
           control.handleStore();
-          GUI.startPreviousView();
+          GUI.startView(SollbuchungDetailView.class.getName(),
+              control.getPosition().getSollbuchung());
           GUI.getStatusBar().setSuccessText("Sollbuchungsposition gespeichert");
         }
         catch (ApplicationException | RemoteException e)
