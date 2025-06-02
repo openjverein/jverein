@@ -144,8 +144,8 @@ public class BuchungAuswertungPDF
         nichtLeer = createTableContent(reporter, bua, null, liste, einzel)
             || nichtLeer;
       }
-      // Buchungen ohne Buchungsarten, wenn exolizite Buchungsart angegeben ist,
-      // dann nur wenn ohne Buchungsart ausgewählt ist (ID == null)
+      // Buchungen ohne Buchungsarten, wenn explizite Buchungsart angegeben ist,
+      // dann nur wenn auch ohne Buchungsart ausgewählt ist (ID == null)
       if (query.getBuchungsart() == null || (query.getBuchungsart() != null
           && query.getBuchungsart().getID() == null))
       {
@@ -156,7 +156,7 @@ public class BuchungAuswertungPDF
         }
         Buchungsart bua = (Buchungsart) Einstellungen.getDBService()
             .createObject(Buchungsart.class, null);
-        bua.setBezeichnung("Ohne Zuordnung");
+        bua.setBezeichnung("Ohne Buchungsart");
         nichtLeer = createTableContent(reporter, bua, null, liste, einzel)
             || nichtLeer;
       }
@@ -296,8 +296,8 @@ public class BuchungAuswertungPDF
     {
       buchungsklasseBezeichnung = new BuchungsklasseFormatter().format(bukla);
     }
-    String buchungsartBezeichnung = "Ohne Zuordnung";
-    if (!bua.getBezeichnung().equalsIgnoreCase("Ohne Zuordnung"))
+    String buchungsartBezeichnung = "Ohne Buchungsart";
+    if (!bua.getBezeichnung().equalsIgnoreCase("Ohne Buchungsart"))
     {
       buchungsartBezeichnung = new BuchungsartFormatter().format(bua);
     }
