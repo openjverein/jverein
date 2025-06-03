@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -38,11 +37,6 @@ public class EinstellungenDateinamenView extends AbstractView
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
     cont.addLabelPair("Auswertung", control.getDateinamenmuster());
-    if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
-    {
-      cont.addLabelPair("Spendenbescheinigungen",
-          control.getDateinamenmusterSpende());
-    }
     cont.addLabelPair("CSV Vorlagenverzeichnis",
         control.getVorlagenCsvVerzeichnis());
 
