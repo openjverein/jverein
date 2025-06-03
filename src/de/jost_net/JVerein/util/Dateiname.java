@@ -203,40 +203,35 @@ public class Dateiname
       Mitglied mitglied)
   {
     Map<String, Object> map = null;
-    String s = "";
+    String dateiname = "";
     try
     {
       map = new AllgemeineMap().getMap(null);
-      String dateiname;
+      dateiname = ((DateinamenVorlage) Einstellungen.getDBService()
+          .createObject(DateinamenVorlage.class, String.valueOf(typ.getKey())))
+              .getDateiname();
       switch (typ)
       {
         case SPENDENBESCHEINIGUNG:
           map = new SpendenbescheinigungMap().getMap((Spendenbescheinigung) obj,
               map);
-          dateiname = ((DateinamenVorlage) Einstellungen.getDBService()
-              .createObject(DateinamenVorlage.class,
-                  String.valueOf(typ.getKey()))).getDateiname();
-          s = translate(map, dateiname);
           break;
         case SPENDENBESCHEINIGUNG_MITGLIED:
           map = new SpendenbescheinigungMap().getMap((Spendenbescheinigung) obj,
               map);
           map = new MitgliedMap().getMap(mitglied, map);
-          dateiname = ((DateinamenVorlage) Einstellungen.getDBService()
-              .createObject(DateinamenVorlage.class,
-                  String.valueOf(typ.getKey()))).getDateiname();
-          s = translate(map, dateiname);
           break;
         default:
           Logger.error("Dateiname Typ nicht implementiert: " + typ.toString());
-          break;
+          return "";
       }
     }
     catch (Exception e)
     {
       Logger.error("Fehler bei Dateinamen Ersetzung: " + e.getMessage());
+      return "";
     }
-    return s;
+    return translate(map, dateiname);
   }
 
   private static String translate(Map<String, Object> map, String inString)
