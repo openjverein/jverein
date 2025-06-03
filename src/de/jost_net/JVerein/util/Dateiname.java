@@ -16,11 +16,25 @@
  **********************************************************************/
 package de.jost_net.JVerein.util;
 
+import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
+import de.jost_net.JVerein.Variable.VarTools;
+import de.jost_net.JVerein.keys.DateinameTyp;
+import de.jost_net.JVerein.rmi.DateinamenVorlage;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.willuhn.logging.Logger;
 
 /**
  * <p>
@@ -178,5 +192,65 @@ public class Dateiname
       return ret + "." + extension;
     }
     return "";
+  }
+
+  public static String getDateiname(DateinameTyp typ, Object obj)
+  {
+    return getDateiname(typ, obj, null);
+  }
+
+  public static String getDateiname(DateinameTyp typ, Object obj,
+      Mitglied mitglied)
+  {
+    Map<String, Object> map = null;
+    String s = "";
+    try
+    {
+      map = new AllgemeineMap().getMap(null);
+      String dateiname;
+      switch (typ)
+      {
+        case SPENDENBESCHEINIGUNG:
+          map = new SpendenbescheinigungMap().getMap((Spendenbescheinigung) obj,
+              map);
+          dateiname = ((DateinamenVorlage) Einstellungen.getDBService()
+              .createObject(DateinamenVorlage.class,
+                  String.valueOf(typ.getKey()))).getDateiname();
+          s = translate(map, dateiname);
+          break;
+        case SPENDENBESCHEINIGUNG_MITGLIED:
+          map = new SpendenbescheinigungMap().getMap((Spendenbescheinigung) obj,
+              map);
+          map = new MitgliedMap().getMap(mitglied, map);
+          dateiname = ((DateinamenVorlage) Einstellungen.getDBService()
+              .createObject(DateinamenVorlage.class,
+                  String.valueOf(typ.getKey()))).getDateiname();
+          s = translate(map, dateiname);
+          break;
+        default:
+          Logger.error("Dateiname Typ nicht implementiert: " + typ.toString());
+          break;
+      }
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler bei Dateinamen Ersetzung: " + e.getMessage());
+    }
+    return s;
+  }
+
+  private static String translate(Map<String, Object> map, String inString)
+  {
+    Velocity.init();
+    VelocityContext context = new VelocityContext();
+    context.put("dateformat", new JVDateFormatTTMMJJJJ());
+    context.put("decimalformat", Einstellungen.DECIMALFORMAT);
+    VarTools.add(context, map);
+    StringWriter wdateiname = new StringWriter();
+    String in = inString.replaceAll("-\\$", " \\$");
+    Velocity.evaluate(context, wdateiname, "LOG", in);
+    String str = wdateiname.toString();
+    str = str.replaceAll(" ", "-");
+    return str;
   }
 }

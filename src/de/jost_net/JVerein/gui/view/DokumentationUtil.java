@@ -230,6 +230,9 @@ public class DokumentationUtil
   
   public static final String QIFIMPORT = PRE + FUNKTIONEN + ADMIN + ADMERWEITERT + "qif-import";
 
+  public static final String DATEI_NAME = PRE + FUNKTIONEN + ADMIN
+      + ADMERWEITERT + "dateinamen";
+
   // Changelog bei Update
   public static final String CHANGELOG = PRE + FUNKTIONEN + "notes";
 }
