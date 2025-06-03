@@ -234,7 +234,7 @@ public class Dateiname
     return translate(map, dateiname);
   }
 
-  private static String translate(Map<String, Object> map, String inString)
+  public static String translate(Map<String, Object> map, String inString)
   {
     Velocity.init();
     VelocityContext context = new VelocityContext();

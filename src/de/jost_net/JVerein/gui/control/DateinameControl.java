@@ -16,24 +16,19 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.util.Map;
-
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
-import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.DateinameMenu;
 import de.jost_net.JVerein.gui.view.DateinameDetailView;
 import de.jost_net.JVerein.keys.DateinameTyp;
 import de.jost_net.JVerein.rmi.DateinamenVorlage;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.Dateiname;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -106,17 +101,7 @@ public class DateinameControl extends AbstractControl
 
   public String generiereVorschau(String dateiname)
   {
-    Velocity.init();
-    VelocityContext context = new VelocityContext();
-    context.put("dateformat", new JVDateFormatTTMMJJJJ());
-    context.put("decimalformat", Einstellungen.DECIMALFORMAT);
-    VarTools.add(context, getDummyMap());
-    StringWriter wdateiname = new StringWriter();
-    String in = dateiname.replaceAll("-\\$", " \\$");
-    Velocity.evaluate(context, wdateiname, "LOG", in);
-    String s = wdateiname.toString();
-    s = s.replaceAll(" ", "-");
-    return s;
+    return Dateiname.translate(getDummyMap(), dateiname);
   }
 
   public void updateVorschau() throws RemoteException
