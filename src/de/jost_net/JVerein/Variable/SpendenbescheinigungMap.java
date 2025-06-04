@@ -435,11 +435,9 @@ public class SpendenbescheinigungMap extends AbstractMap
         "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
     map.put(SpendenbescheinigungVar.BETRAG.getName(), Double.valueOf("300.00"));
     map.put(SpendenbescheinigungVar.BETRAGINWORTEN.getName(), "dreihundert");
-    map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(),
-        toDate("10.01.2025"));
+    map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(), "10.01.2025");
     map.put(SpendenbescheinigungVar.SPENDEART.getName(), "Geldspende");
-    map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(),
-        toDate("01.01.2025"));
+    map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), "01.01.2025");
     map.put(SpendenbescheinigungVar.SPENDENZEITRAUM.getName(),
         "01.01.2025 bis 01.03.2025");
     map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(), "X");
@@ -451,7 +449,7 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_ART.getName(), "Spende");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_VERZICHT.getName(), "nein");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_BETRAG.getName(),
-        Double.valueOf("300.00"));
+        Double.valueOf("300.00").toString());
     map.put(SpendenbescheinigungVar.BEZEICHNUNGSACHZUWENDUNG.getName(),
         "Waschmaschine");
     map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
@@ -459,8 +457,7 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.UNTERLAGENWERTERMITTUNG.getName(), "X");
     map.put(SpendenbescheinigungVar.FINANZAMT.getName(), "Testhausen");
     map.put(SpendenbescheinigungVar.STEUER_NR.getName(), "14/814/70099");
-    map.put(SpendenbescheinigungVar.DATUM_BESCHEID.getName(),
-        toDate("01.06.2025"));
+    map.put(SpendenbescheinigungVar.DATUM_BESCHEID.getName(), "01.06.2025");
     map.put(SpendenbescheinigungVar.VERANLAGUNGSZEITRAUM.getName(),
         "2022 bis 2024");
     map.put(SpendenbescheinigungVar.ZWECK.getName(), "Spende");
