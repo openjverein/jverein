@@ -240,8 +240,8 @@ public class ZipMailer
                       
                 Mail ml = (Mail) Einstellungen.getDBService()
                         .createObject(Mail.class, null);
-                ml.setBetreff(betreff);
-                ml.setTxt(txt);
+                ml.setBetreff(wtext1.getBuffer().toString());
+                ml.setTxt(wtext2.getBuffer().toString());
                 ml.setBearbeitung(new Timestamp(new Date().getTime()));
                 ml.setVersand(new Timestamp(new Date().getTime()));
                 ml.store();
