@@ -307,15 +307,13 @@ public class RechnungControl extends DruckMailControl
           + Sollbuchung.TABLE_NAME_ID;
       if (getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
       {
-        sql += " having sum(buchung.betrag) < " + Sollbuchung.T_BETRAG + " - "
-            + limit.toString() + " or (sum(buchung.betrag) is null and "
-            + Sollbuchung.T_BETRAG + " > " + limit.toString() + ")";
+        sql += " HAVING CAST(COALESCE(SUM(buchung.betrag),0) AS DECIMAL(10,2)) < "
+            + Sollbuchung.T_BETRAG + " - " + limit.toString();
       }
       else
       {
-        sql += " having sum(buchung.betrag) > " + Sollbuchung.T_BETRAG + " + "
-            + limit.toString() + " or (sum(buchung.betrag) is null and "
-            + Sollbuchung.T_BETRAG + " + " + limit.toString() + " < 0) ";
+        sql += " HAVING CAST(COALESCE(SUM(buchung.betrag),0) AS DECIMAL(10,2)) > "
+            + Sollbuchung.T_BETRAG + " - " + limit.toString();
       }
 
       @SuppressWarnings("unchecked")
