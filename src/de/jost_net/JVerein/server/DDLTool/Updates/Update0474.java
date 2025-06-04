@@ -102,7 +102,7 @@ public class Update0474 extends AbstractDDLUpdate
         + " concat(case art when 0 then 'Umsatzsteuer ' when 1 then 'Vorsteuer ' when 2 then 'Steuer ' END, steuersatz , '%'),"
         + " steuersatz,steuer_buchungsart,1 FROM buchungsart"
         + " where steuersatz > 0 AND steuer_buchungsart IS NOT NULL "
-        + "GROUP BY steuersatz,steuer_buchungsart");
+        + "GROUP BY steuersatz,steuer_buchungsart,art");
 
     // Die erstellte Steuer der Buchungsart zuweisen
     execute("UPDATE buchungsart SET steuer = "
