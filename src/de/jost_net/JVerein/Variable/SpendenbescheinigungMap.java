@@ -450,8 +450,7 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_DATEN.getName(), "Willi");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_ART.getName(), "Spende");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_VERZICHT.getName(), "nein");
-    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_BETRAG.getName(),
-        Double.valueOf("300.00").toString());
+    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_BETRAG.getName(), "300.00");
     map.put(SpendenbescheinigungVar.BEZEICHNUNGSACHZUWENDUNG.getName(),
         "Waschmaschine");
     map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
