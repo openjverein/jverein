@@ -373,17 +373,14 @@ public class SollbuchungQuery
     if (DIFFERENZ.FEHLBETRAG == diff)
     {
       sql.append(
-          " HAVING SUM(buchung.betrag) < " + Sollbuchung.T_BETRAG + " - "
-              + limit.toString()
-          + " OR (SUM(buchung.betrag) IS NULL AND " + Sollbuchung.T_BETRAG
-              + " > " + limit.toString() + ")");
+          " HAVING CAST(COALESCE(SUM(buchung.betrag),0) AS DECIMAL(10,2)) < "
+          + Sollbuchung.T_BETRAG + " - " + limit.toString());
     }
     if (DIFFERENZ.UEBERZAHLUNG == diff)
     {
-      sql.append(" HAVING SUM(buchung.betrag) > " + Sollbuchung.T_BETRAG + " + "
-          + limit.toString()
-          + " OR (SUM(buchung.betrag) IS NULL AND " + Sollbuchung.T_BETRAG
-          + " + " + limit.toString() + " < 0)");
+      sql.append(
+          " HAVING CAST(COALESCE(SUM(buchung.betrag),0) AS DECIMAL(10,2)) > "
+              + Sollbuchung.T_BETRAG + " - " + limit.toString());
     }
 
     List<Long> ids = (List<Long>) service.execute(sql.toString(), param.toArray(),

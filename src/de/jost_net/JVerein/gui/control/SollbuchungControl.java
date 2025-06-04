@@ -164,14 +164,13 @@ public class SollbuchungControl extends DruckMailControl
     sollbuchung = sollb;
   }
 
-  public Sollbuchung getSollbuchung() throws RemoteException
+  public Sollbuchung getSollbuchung()
   {
     if (sollbuchung != null)
     {
       return sollbuchung;
     }
-    sollbuchung = Einstellungen.getDBService().createObject(Sollbuchung.class,
-        ((Sollbuchung) getCurrentObject()).getID());
+    sollbuchung = (Sollbuchung) getCurrentObject();
     return sollbuchung;
   }
 
