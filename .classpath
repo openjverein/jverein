@@ -15,11 +15,6 @@
 	<classpathentry kind="lib" path="lib/nc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.mail.jar"/>
 	<classpathentry kind="lib" path="lib/bsh-core.jar"/>
-    <classpathentry kind="lib" path="lib.test" including="*.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/hibiscus"/>
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
 	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/obantoo-bin-2.1.12.jar"/>
@@ -33,8 +28,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/core.jar"/>
 	<classpathentry exported="true" kind="lib" path="/jameica/lib/de_willuhn_ds/de_willuhn_ds.jar"/>
 	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/super-csv-2.4.0.jar"/>
-	<classpathentry kind="lib" path="/hibiscus/lib/itext-pdfa-5.5.13.4.jar"/>
-	<classpathentry kind="lib" path="/hibiscus/lib/itextpdf-5.5.13.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/freemarker.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsoup.jar"/>
@@ -45,5 +38,10 @@
 	<classpathentry kind="lib" path="lib/jakarta.activation-api.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j.jar"/>
 	<classpathentry kind="lib" path="lib/library.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5">
+		<attributes>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
