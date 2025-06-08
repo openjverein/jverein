@@ -200,7 +200,7 @@
     <copy file="${project.zipdir}/${define.jarfilename}" tofile="releases/jverein-lib.jar" />
   </target>
 
-  <target name="all" depends="jar,javadoc,src" description="Build a official openjverein release">
+  <target name="all" depends="jar,javadoc,src" description="Build an official openjverein release">
     <echo message="SELECTED_VERSION=${plugin.version}" />
     <echo message="SELECTED_PATH=${project.release}/${project.zipfilename}" />
     <echo message="SELECTED_FILENAME=${project.zipfilename}" />
