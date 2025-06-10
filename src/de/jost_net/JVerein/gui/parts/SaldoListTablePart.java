@@ -89,18 +89,18 @@ public class SaldoListTablePart extends TablePart
             PseudoDBObject zeile = (PseudoDBObject) zeilen[i];
             try
             {
-            if (zeile.getInteger(
-                AbstractSaldoControl.ART) != AbstractSaldoControl.ART_DETAIL)
+              if (zeile.getInteger(
+                  AbstractSaldoControl.ART) != AbstractSaldoControl.ART_DETAIL)
+              {
+                throw new ApplicationException(
+                    "Summe kann nur für Detail Zeilen berechnet werden");
+              }
+            }
+            catch (NullPointerException ex)
             {
               throw new ApplicationException(
                   "Summe kann nur für Detail Zeilen berechnet werden");
             }
-          }
-          catch (NullPointerException ex)
-          {
-            throw new ApplicationException(
-                "Summe kann nur für Detail Zeilen berechnet werden");
-          }
             try
             {
               if (anfangsbestand == null)
