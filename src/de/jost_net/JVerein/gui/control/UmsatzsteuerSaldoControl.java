@@ -31,7 +31,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
+
 import de.willuhn.util.ApplicationException;
 
 public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
@@ -45,11 +45,6 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
    * Die Summe
    */
   public static final String SUMME = "summe";
-
-  /**
-   * Anzahl Buchungen
-   */
-  public static final String ANZAHL = "anzahl";
 
   public static final String STEUER = "steuer";
 
@@ -91,7 +86,6 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
           Column.ALIGN_RIGHT);
       saldoList.addColumn("Anzahl", ANZAHL);
       saldoList.setRememberColWidths(true);
-      saldoList.addFeature(new FeatureSummary());
     }
     catch (RemoteException e)
     {
