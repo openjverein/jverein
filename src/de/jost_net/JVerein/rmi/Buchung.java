@@ -146,10 +146,6 @@ public interface Buchung extends JVereinDBObject
 
   public void setSpendenbescheinigungId(Long spendenbescheinigung)
       throws RemoteException;
-        
-  public int getDependencyId() throws RemoteException;
-
-  public void setDependencyId(int dependencyid) throws RemoteException;
 
   public Map<String, Object> getMap(Map<String, Object> map)
       throws RemoteException;
@@ -181,5 +177,13 @@ public interface Buchung extends JVereinDBObject
   public Boolean getGeprueft() throws RemoteException;
 
   public void setGeprueft(Boolean geprueft) throws RemoteException;
+
+  public Double getNetto() throws RemoteException;
+
+  public Steuer getSteuer() throws RemoteException;
+
+  public void setSteuer(Steuer steuer) throws RemoteException;
+
+  public void setSteuerId(Long id) throws RemoteException;
 
 }

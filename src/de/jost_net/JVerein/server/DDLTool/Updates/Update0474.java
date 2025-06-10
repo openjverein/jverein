@@ -16,6 +16,10 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 import java.sql.Connection;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
+
+import de.jost_net.JVerein.server.DDLTool.Column;
+import de.jost_net.JVerein.server.DDLTool.Index;
+import de.jost_net.JVerein.server.DDLTool.Table;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
@@ -29,66 +33,81 @@ public class Update0474 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    // Buchung
-    execute("update buchung set verzicht = 0 where verzicht is null");
-    execute("update buchung set art = '' where art is null");
-    execute("update buchung set iban = '' where iban is null");
-    execute("update buchung set kommentar = '' where kommentar is null");
+    Table t = new Table("steuer");
+    Column pk = new Column("id", COLTYPE.BIGINT, 10, null, true, true);
+    t.add(pk);
+    t.setPrimaryKey(pk);
 
-    // Buchungsart
-    execute("update buchungsart set suchbegriff = '' where suchbegriff is null");
-    execute("update buchungsart set regularexp = 0 where regularexp is null");
+    t.add(new Column("name", COLTYPE.VARCHAR, 50, null, true, false));
+    t.add(new Column("satz", COLTYPE.DOUBLE, 10, null, true, false));
 
-    // Spendenbescheinigung
-    execute(
-        "update spendenbescheinigung set unterlagenwertermittlung = 0 where unterlagenwertermittlung is null");
-    execute(
-        "update spendenbescheinigung set bezeichnungsachzuwendung = '' where bezeichnungsachzuwendung is null");
-    execute(
-        "update spendenbescheinigung set ersatzaufwendungen = 0 where ersatzaufwendungen is null");
-    execute(
-        "update spendenbescheinigung set herkunftspende = 3 where herkunftspende is null");
-    execute("update spendenbescheinigung set zeile1 = '' where zeile1 is null");
-    execute("update spendenbescheinigung set zeile2 = '' where zeile2 is null");
-    execute("update spendenbescheinigung set zeile3 = '' where zeile3 is null");
-    execute("update spendenbescheinigung set zeile4 = '' where zeile4 is null");
-    execute("update spendenbescheinigung set zeile5 = '' where zeile5 is null");
-    execute("update spendenbescheinigung set zeile6 = '' where zeile6 is null");
-    execute("update spendenbescheinigung set zeile7 = '' where zeile7 is null");
+    Column buchungsart = new Column("buchungsart", COLTYPE.BIGINT, 10, null,
+        true, false);
+    t.add(new Column("aktiv", COLTYPE.BOOLEAN, 1, "1", true, false));
+    t.add(buchungsart);
 
-    // Konto
-    execute("update konto set kommentar = '' where kommentar is null");
-    
-    // Mitglied
-    execute("update mitglied set leitwegid = '' where leitwegid is null");
-    execute("update mitglied set ktoipersonenart = 'J' where ktoipersonenart = 'j'");
-    execute("update mitglied set ktoipersonenart = 'N' where ktoipersonenart = 'n'");
-    execute("update mitglied set mandatid = '' where mandatid is null");
-    execute("update mitglied set staat = '' where staat is null");
-    execute(
-        "update mitglied set adressierungszusatz = '' where adressierungszusatz is null");
-    execute("update mitglied set anrede = '' where anrede is null");
-    execute("update mitglied set email = '' where email is null");
-    execute(
-        "update mitglied set ktoiadressierungszusatz = '' where ktoiadressierungszusatz is null");
-    execute("update mitglied set ktoianrede = '' where ktoianrede is null");
-    execute("update mitglied set ktoiemail = '' where ktoiemail is null");
-    execute("update mitglied set ktoiname = '' where ktoiname is null");
-    execute("update mitglied set ktoiort = '' where ktoiort is null");
-    execute("update mitglied set ktoiplz = '' where ktoiplz is null");
-    execute("update mitglied set ktoistaat = '' where ktoistaat is null");
-    execute("update mitglied set ktoistrasse = '' where ktoistrasse is null");
-    execute("update mitglied set ktoititel = '' where ktoititel is null");
-    execute("update mitglied set ktoivorname = '' where ktoivorname is null");
-    execute(
-        "update mitglied set ktoigeschlecht = '' where ktoigeschlecht is null");
-    execute(
-        "update mitglied set telefondienstlich = '' where telefondienstlich is null");
-    execute(
-        "update mitglied set telefonprivat = '' where telefonprivat is null");
-    execute("update mitglied set handy = '' where handy is null");
-    execute("update mitglied set titel = '' where titel is null");
-    execute("update mitglied set vermerk1 = '' where vermerk1 is null");
-    execute("update mitglied set vermerk2 = '' where vermerk2 is null");
+    execute(createTable(t));
+
+    // Indexes und ForeignKeys
+    Index idx = new Index("ixSteuerBuchungsart", false);
+    idx.add(buchungsart);
+    execute(idx.getCreateIndex("steuer"));
+
+    execute(this.createForeignKey("fk_steuerBuchungsart", "steuer",
+        "buchungsart", "buchungsart", "id", "RESTRICT", "RESTRICT"));
+
+    // Spalte steuer in buchungsart
+    Column steuer = new Column("steuer", COLTYPE.BIGINT, 0, null, false, false);
+    execute(addColumn("buchungsart", steuer));
+
+    // Index und ForeignKey in buchungsart
+    idx = new Index("ixBuchungsartSteuer", false);
+    idx.add(steuer);
+    execute(idx.getCreateIndex("buchungsart"));
+
+    execute(this.createForeignKey("fkBuchungsartSteuer", "buchungsart",
+        "steuer", "steuer", "id", "RESTRICT", "RESTRICT"));
+
+    // Spalte steuer in buchung
+    steuer = new Column("steuer", COLTYPE.BIGINT, 0, null, false, false);
+    execute(addColumn("buchung", steuer));
+
+    // Index und ForeignKey in buchung
+    idx = new Index("ixBuchungSteuer", false);
+    idx.add(steuer);
+    execute(idx.getCreateIndex("buchung"));
+
+    execute(this.createForeignKey("fkBuchungSteuer", "buchung", "steuer",
+        "steuer", "id", "RESTRICT", "RESTRICT"));
+
+    // Spalte steuer in sollbuchungposition
+    steuer = new Column("steuer", COLTYPE.BIGINT, 0, null, false, false);
+    execute(addColumn("sollbuchungposition", steuer));
+
+    // Index und ForeignKey in sollbuchungposition
+    idx = new Index("ixSollbuchungpositionSteuer", false);
+    idx.add(steuer);
+    execute(idx.getCreateIndex("sollbuchungposition"));
+
+    execute(this.createForeignKey("fkSollbuchungpositionSteuer",
+        "sollbuchungposition", "steuer", "steuer", "id", "RESTRICT",
+        "RESTRICT"));
+
+    // Spalte in einstellung
+    steuer = new Column("steuerinbuchung", COLTYPE.BOOLEAN, 1, "0", true,
+        false);
+    execute(addColumn("einstellung", steuer));
+
+    // Steuer für bestehende Steuersätze erstellen
+    execute("INSERT INTO steuer (NAME, satz, buchungsart,aktiv) SELECT"
+        + " concat(case art when 0 then 'Umsatzsteuer ' when 1 then 'Vorsteuer ' when 2 then 'Steuer ' END, steuersatz , '%'),"
+        + " steuersatz,steuer_buchungsart,1 FROM buchungsart"
+        + " where steuersatz > 0 AND steuer_buchungsart IS NOT NULL "
+        + "GROUP BY steuersatz,steuer_buchungsart,art");
+
+    // Die erstellte Steuer der Buchungsart zuweisen
+    execute("UPDATE buchungsart SET steuer = "
+        + "(SELECT id FROM steuer WHERE steuer.buchungsart = buchungsart.steuer_buchungsart AND steuer.satz = buchungsart.steuersatz) "
+        + "WHERE steuer IS null");
   }
 }

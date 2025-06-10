@@ -18,7 +18,6 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
@@ -26,58 +25,19 @@ import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
-import de.jost_net.JVerein.gui.view.IAuswertung;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 
-public class MitgliedAdresslistePDF implements IAuswertung
+public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
 {
-
-  private MitgliedControl control;
-
-  private Mitgliedstyp mitgliedstyp;
-
-  private String subtitle = "";
-  
-  String zusatzfeld = null;
-  
-  String zusatzfelder = null;
 
   public MitgliedAdresslistePDF(MitgliedControl control)
   {
-    this.control = control;
-  }
-
-  @Override
-  public void beforeGo() throws RemoteException
-  { 
-    zusatzfeld = control.getAdditionalparamprefix1();
-    zusatzfelder = control.getAdditionalparamprefix2();
-    
-    if (control.isSuchMitgliedstypActive())
-    {
-      mitgliedstyp = (Mitgliedstyp) control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
-    }
-    else
-    {
-      DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
-          .createList(Mitgliedstyp.class);
-      mtIt.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
-      mitgliedstyp = (Mitgliedstyp) mtIt.next();
-    }
-    String ueberschrift = (String) control.getAuswertungUeberschrift()
-        .getValue();
-    if (ueberschrift.length() > 0)
-    {
-      subtitle = ueberschrift;
-    }
+    super(control);
   }
 
   @Override
@@ -142,6 +102,7 @@ public class MitgliedAdresslistePDF implements IAuswertung
       report.add(new Paragraph(String.format("Anzahl %s: %d",
           mitgliedstyp.getBezeichnungPlural(), list.size()), Reporter.getFreeSans(8)));
 
+      report.addParams(params);
       report.close();
       GUI.getStatusBar().setSuccessText(
           String.format("Auswertung fertig. %d Sätze.", list.size()));

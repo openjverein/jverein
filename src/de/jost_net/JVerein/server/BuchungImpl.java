@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,6 +27,8 @@ import java.util.Map;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.BuchungVar;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.BuchungDokument;
@@ -35,6 +39,7 @@ import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -182,6 +187,39 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
         throw new ApplicationException(
             "Buchungsart kann nicht in eine Buchungsart ohne der Eigenschaft Spende "
             + "geändert werden da eine Spendenbescheinigung zugeordnet ist!");
+      }
+    }
+    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    {
+      if (getSteuer() != null
+          && !getKonto().getKontoArt().equals(Kontoart.GELD))
+      {
+        throw new ApplicationException(
+            "Steuer ist nur bei Buchungen auf Geldkonten möglich.");
+      }
+      if (getSteuer() != null && getBuchungsart() != null
+          && getSteuer().getBuchungsart().getArt() != getBuchungsart().getArt())
+      {
+        switch (getBuchungsart().getArt())
+        {
+          case ArtBuchungsart.AUSGABE:
+            throw new ApplicationException(
+                "Umsatzsteuer statt Vorsteuer gewählt.");
+          case ArtBuchungsart.EINNAHME:
+            throw new ApplicationException(
+                "Vorsteuer statt Umsatzsteuer gewählt.");
+          // Umbuchung ist bei Anlagebuchungen möglich,
+          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
+          case ArtBuchungsart.UMBUCHUNG:
+            break;
+        }
+      }
+      if (getSteuer() != null && getBuchungsart() != null
+          && (getBuchungsart().getSpende()
+              || getBuchungsart().getAbschreibung()))
+      {
+        throw new ApplicationException(
+            "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
       }
     }
   }
@@ -596,21 +634,79 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   }
 
   @Override
-  public int getDependencyId() throws RemoteException
+  public Steuer getSteuer() throws RemoteException
   {
-    Integer dependencyid = (Integer) getAttribute("dependencyid");
-    if (dependencyid == null) {
-      return -1;
+    Object l = (Object) super.getAttribute("steuer");
+    if (l == null)
+    {
+      return null;
     }
-    else {
-      return dependencyid.intValue();
+
+    if (l instanceof Steuer)
+    {
+      return (Steuer) l;
     }
+
+    Cache cache = Cache.get(Steuer.class, true);
+    return (Steuer) cache.get(l);
   }
 
   @Override
-  public void setDependencyId(int dependencyid) throws RemoteException
+  public void setSteuer(Steuer steuer) throws RemoteException
   {
-    setAttribute("dependencyid", dependencyid);
+    super.setAttribute("steuer", steuer);
+  }
+
+  @Override
+  public void setSteuerId(Long id) throws RemoteException
+  {
+    super.setAttribute("steuer", id);
+  }
+
+  @Override
+  public Double getNetto() throws RemoteException
+  {
+    Double brutto = (Double) getAttribute("betrag");
+    if (!Einstellungen.getEinstellung().getOptiert())
+    {
+      return brutto;
+    }
+
+    // Bei Anlagekonten gibt es nur Brutto Beträeg
+    if (getKonto() != null && getKonto().getKontoArt().equals(Kontoart.ANLAGE))
+    {
+      return brutto;
+    }
+    // Alte Steuerbuchungen mit dependencyid lassen wir so bestehen, hier wird
+    // kein Netto berechnet
+    if (getAttribute("dependencyid") != null
+        && (Integer) getAttribute("dependencyid") != -1)
+    {
+      return brutto;
+    }
+    Steuer steuer = null;
+    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    {
+      steuer = getSteuer();
+    }
+    else if (getBuchungsart() != null)
+    {
+      steuer = getBuchungsart().getSteuer();
+    }
+    if (steuer == null)
+    {
+      return brutto;
+    }
+    if (steuer.getSatz() == null)
+    {
+      return brutto;
+    }
+    
+    BigDecimal netto = new BigDecimal(brutto).multiply(new BigDecimal(100))
+        .divide(new BigDecimal(100d + steuer.getSatz()), 2,
+            RoundingMode.HALF_UP);
+
+    return netto.doubleValue();
   }
 
   @Override
@@ -721,6 +817,12 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
 
     if (SOLLBUCHUNG.equals(fieldName))
       return getSollbuchung();
+
+    if ("netto".equals(fieldName))
+      return getNetto();
+
+    if ("steuer".equals(fieldName))
+      return getSteuer();
 
     if ("document".equals(fieldName))
     {

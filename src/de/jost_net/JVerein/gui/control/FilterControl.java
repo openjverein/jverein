@@ -170,6 +170,8 @@ public abstract class FilterControl extends AbstractControl
 
   protected DecimalInput doubleauswahl = null;
 
+  protected CheckboxInput checkboxauswahl = null;
+
   private Calendar calendar = Calendar.getInstance();
 
   private enum RANGE
@@ -1132,6 +1134,23 @@ public abstract class FilterControl extends AbstractControl
     return doubleauswahl != null;
   }
 
+  public CheckboxInput getCheckboxAuswahl()
+  {
+    if (checkboxauswahl != null)
+    {
+      return checkboxauswahl;
+    }
+    checkboxauswahl = new CheckboxInput(
+        settings.getBoolean(settingsprefix + "checkboxauswahl", false));
+    checkboxauswahl.addListener(new FilterListener());
+    return checkboxauswahl;
+  }
+
+  public boolean isCheckboxAuswahlAktiv()
+  {
+    return checkboxauswahl != null;
+  }
+
   public SelectInput getSuchSpendenart()
   {
     if (suchspendenart != null)
@@ -1248,6 +1267,7 @@ public abstract class FilterControl extends AbstractControl
     ArrayList<Kontoart> values = new ArrayList<Kontoart>(
         Arrays.asList(Kontoart.values()));
     values.remove(Kontoart.LIMIT);
+    values.remove(Kontoart.LIMIT_RUECKLAGE);
     String key = settings.getString(settingsprefix + "suchkontoart.key", null);
     if (key != null && !key.isEmpty())
     {
@@ -1399,6 +1419,8 @@ public abstract class FilterControl extends AbstractControl
           suchkontoart.setValue(null);
         if (doubleauswahl != null)
           doubleauswahl.setValue(null);
+        if (checkboxauswahl != null)
+          checkboxauswahl.setValue(Boolean.FALSE);
         refresh();
       }
     }, null, false, "eraser.png");
@@ -1888,6 +1910,19 @@ public abstract class FilterControl extends AbstractControl
       else
       {
         settings.setAttribute(settingsprefix + "suchkontoart.key", "");
+      }
+    }
+
+    if (checkboxauswahl != null)
+    {
+      Boolean tmp = (Boolean) checkboxauswahl.getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute(settingsprefix + "checkboxauswahl", tmp);
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "checkboxauswahl", "false");
       }
     }
   }

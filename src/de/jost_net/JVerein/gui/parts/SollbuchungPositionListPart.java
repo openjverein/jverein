@@ -23,12 +23,15 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
+import de.willuhn.logging.Logger;
 
 public class SollbuchungPositionListPart extends TablePart
 {
@@ -50,9 +53,24 @@ public class SollbuchungPositionListPart extends TablePart
     {
       addColumn("Nettobetrag", "nettobetrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      addColumn("Steuersatz", "steuersatz");
-      addColumn("Steuerbetrag", "steuerbetrag",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      {
+        addColumn("Steuer", "steuer", o -> {
+          if (o == null)
+          {
+            return "";
+          }
+          try
+          {
+            return ((Steuer) o).getName();
+          }
+          catch (RemoteException e)
+          {
+            Logger.error("Fehler", e);
+          }
+          return "";
+        }, false, Column.ALIGN_RIGHT);
+      }
     }
     addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())

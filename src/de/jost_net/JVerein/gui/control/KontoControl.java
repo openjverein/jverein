@@ -634,6 +634,7 @@ public class KontoControl extends FilterControl
     }
     ArrayList<Kontoart> values = new ArrayList<Kontoart>(Arrays.asList(Kontoart.values()));
     values.remove(Kontoart.LIMIT);
+    values.remove(Kontoart.LIMIT_RUECKLAGE);
     kontoart = new SelectInput(values, art);   
     kontoart.addListener(new Listener()
     {
@@ -809,10 +810,9 @@ public class KontoControl extends FilterControl
           else
             getAutobutton().setEnabled(true);
         }
-        catch (RemoteException e1)
+        catch (RemoteException re)
         {
-          // TODO Auto-generated catch block
-          e1.printStackTrace();
+          Logger.error("Fehler beim Konto auto button Listener", re);
         }
       }
      });
@@ -956,10 +956,9 @@ public class KontoControl extends FilterControl
             getAfabutton().setEnabled(false);
           }
         }
-        catch (RemoteException e1)
+        catch (RemoteException re)
         {
-          // TODO Auto-generated catch block
-          e1.printStackTrace();
+          Logger.error("Fehler beim Konto autoAfA button Listener", re);
         }
       }
     });
@@ -1141,7 +1140,7 @@ public class KontoControl extends FilterControl
     }
   }
   
-  public Button getAutobutton()
+  public Button getAutobutton() throws RemoteException
   {
     if (autobutton != null)
       return autobutton;
@@ -1156,24 +1155,17 @@ public class KontoControl extends FilterControl
       }
     }, null, true, "view-refresh.png");
 
-    try
+    if (getBetrag().getValue() != null)
+      autobutton.setEnabled(false);
+    if (getKontoArt().getValue() != Kontoart.ANLAGE)
     {
-      if (getBetrag().getValue() != null)
-        autobutton.setEnabled(false);
-      if (getKontoArt().getValue() != Kontoart.ANLAGE)
-      {
-        autobutton.setEnabled(false);
-      }
+      autobutton.setEnabled(false);
     }
-    catch (RemoteException e)
-    {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+
     return autobutton;
   }
   
-  public Button getAfabutton()
+  public Button getAfabutton() throws RemoteException
   {
     if (afabutton != null)
       return afabutton;
@@ -1187,20 +1179,14 @@ public class KontoControl extends FilterControl
         handleAfa();
       }
     }, null, true, "view-refresh.png");
-    try
+
+    if (getKontoArt().getValue() != Kontoart.ANLAGE
+        || getAfaMode().getValue() == null
+        || ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
     {
-      if (getKontoArt().getValue() != Kontoart.ANLAGE ||
-          getAfaMode().getValue() == null ||
-          ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
-      {
-        afabutton.setEnabled(false);
-      }
+      afabutton.setEnabled(false);
     }
-    catch (RemoteException e)
-    {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+
     return afabutton;
   }
   
@@ -1225,6 +1211,7 @@ public class KontoControl extends FilterControl
       while (buchungenIt.hasNext())
       {
         b = (Buchung) buchungenIt.next();
+        // TODO Bei der Anlage müssen wir immer Netto Beträge verwenden?
         betrag += b.getBetrag();
         d = b.getDatum();
       }
@@ -1234,8 +1221,7 @@ public class KontoControl extends FilterControl
     }
     catch (RemoteException e)
     {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.error("Fehler beim automatischen Bestimmen des Anlagenwerts");
     }
   }
   

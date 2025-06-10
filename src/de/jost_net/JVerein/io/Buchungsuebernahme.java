@@ -210,7 +210,12 @@ public class Buchungsuebernahme
           if (match(ba.getSuchbegriff(), suchZweck, ba.getRegexp()))
           {
             b.setBuchungsartId(Long.parseLong(ba.getID()));
+            if (Einstellungen.getEinstellung().getSteuerInBuchung())
+            {
+              b.setSteuer(ba.getSteuer());
+            }
           }
+          break;
         }
         
         b.setDatum(u.getDatum());

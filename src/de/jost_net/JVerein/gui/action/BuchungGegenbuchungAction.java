@@ -20,6 +20,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.dialogs.KontoAuswahlDialog;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -63,7 +64,15 @@ public class BuchungGegenbuchungAction implements Action
             null);
         bu.setKonto(konto);
         bu.setName(b.getName());
-        bu.setBetrag(-b.getBetrag());
+        // Bei Anlagenkonto Netto Betrag verwenden
+        if (konto.getKontoArt().equals(Kontoart.ANLAGE))
+        {
+          bu.setBetrag(-b.getNetto());
+        }
+        else
+        {
+          bu.setBetrag(-b.getBetrag());
+        }
         bu.setZweck(b.getZweck());
         bu.setDatum(b.getDatum());
         if (b.getBuchungsart() != null)

@@ -50,12 +50,14 @@ import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.server.EinstellungImpl;
+import de.jost_net.JVerein.util.SteuerUtil;
 import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
 import de.jost_net.OBanToo.SEPA.Land.SEPALaender;
 import de.jost_net.OBanToo.SEPA.Land.SEPALand;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -367,6 +369,8 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput splitpositionzweck;
 
   private CheckboxInput geprueftsynchronisieren;
+
+  private CheckboxInput steuerInBuchung;
 
   public EinstellungControl(AbstractView view)
   {
@@ -857,10 +861,35 @@ public class EinstellungControl extends AbstractControl
       return optiert;
     }
     optiert = new CheckboxInput(Einstellungen.getEinstellung().getOptiert());
-    optiert.setName("Umsatzsteueroption");
+    optiert.setName("Umsatzsteueroption (Neustart erforderlich)");
+    optiert.addListener(e -> {
+      try
+      {
+        getSteuerInBuchung().setEnabled((boolean) optiert.getValue());
+      }
+      catch (RemoteException e1)
+      {
+        Logger.error("Fehler beim Optiert-Listener", e1);
+      }
+    });
     return optiert;
   }
   
+  public CheckboxInput getSteuerInBuchung() throws RemoteException
+  {
+    if (steuerInBuchung != null)
+    {
+      return steuerInBuchung;
+    }
+    steuerInBuchung = new CheckboxInput(
+        Einstellungen.getEinstellung().getSteuerInBuchung());
+    steuerInBuchung.setName(
+        "Steuer individuell pro Buchung setzen");
+
+    steuerInBuchung.setEnabled((boolean) getOptiert().getValue());
+    return steuerInBuchung;
+  }
+
   public CheckboxInput getSplitPositionZweck() throws RemoteException
   {
     if (splitpositionzweck != null)
@@ -2479,6 +2508,36 @@ public class EinstellungControl extends AbstractControl
     try
     {
       Einstellung e = Einstellungen.getEinstellung();
+      
+      String successText = "";
+
+      // ggf. Steuer in buchungen übernehmen
+      if (!e.getSteuerInBuchung() && (Boolean) getSteuerInBuchung().getValue())
+      {
+        YesNoDialog dialog = new YesNoDialog(SWT.CENTER);
+        dialog.setTitle("Migration Steuer in Buchung");
+
+        dialog.setText("Soll die Steuer aus den Buchungsarten in die\n"
+            + "Buchungen und Sollbuchungspositionen übernommen werden?\n"
+            + "Das wird für alle bisherigen Buchungen und Sollbuchungspositionen gemacht,\n"
+            + "so dass die bisherige Steuer erhalten bleibt.");
+        try
+        {
+          if ((boolean) dialog.open())
+          {
+            int anzahl = SteuerUtil.setSteuerToBuchung();
+            successText = "Steuer in " + anzahl
+                + " Buchungen und Sollbuchungspositionen übernommen. ";
+          }
+        }
+        catch (Exception ex)
+        {
+          String fehler = "Fehler beim Steuer-In-Buchung Daialog";
+          Logger.error(fehler, ex);
+          throw new ApplicationException(fehler);
+        }
+      }
+      
       e.setID();
       e.setBeginnGeschaeftsjahr((String) beginngeschaeftsjahr.getValue());
       e.setAutoBuchunguebernahme((Boolean) autobuchunguebernahme.getValue());
@@ -2492,6 +2551,7 @@ public class EinstellungControl extends AbstractControl
       e.setAfaRestwert((Double) afarestwert.getValue());
       e.setKontonummerInBuchungsliste((Boolean) kontonummer_in_buchungsliste.getValue());
       e.setOptiert((Boolean) getOptiert().getValue());
+      e.setSteuerInBuchung((Boolean) getSteuerInBuchung().getValue());
       e.setBuchungsklasseInBuchung((Boolean) getFreieBuchungsklasse().getValue());
       e.setSplitPositionZweck((Boolean) getSplitPositionZweck().getValue());
       e.setGeprueftSynchronisieren(
@@ -2499,7 +2559,8 @@ public class EinstellungControl extends AbstractControl
       e.store();
       Einstellungen.setEinstellung(e);
 
-      GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
+      GUI.getStatusBar()
+          .setSuccessText(successText + "Einstellungen gespeichert");
     }
     catch (RemoteException e)
     {

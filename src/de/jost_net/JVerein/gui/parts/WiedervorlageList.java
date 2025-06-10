@@ -119,6 +119,23 @@ public class WiedervorlageList extends TablePart implements Part
             new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
       }
     }
+    if (control.isCheckboxAuswahlAktiv()
+        && (Boolean) control.getCheckboxAuswahl().getValue())
+    {
+      wiedervorlagen.addFilter("erledigung IS NULL");
+    }
+    if (control.isEingabedatumvonAktiv()
+        && control.getEingabedatumvon().getValue() != null)
+    {
+      wiedervorlagen.addFilter("erledigung >= ?",
+          new Object[] { (Date) control.getEingabedatumvon().getValue() });
+    }
+    if (control.isEingabedatumbisAktiv()
+        && control.getEingabedatumbis().getValue() != null)
+    {
+      wiedervorlagen.addFilter("erledigung <= ?",
+          new Object[] { (Date) control.getEingabedatumbis().getValue() });
+    }
     wiedervorlagen.setOrder("ORDER BY datum DESC");
     
     return wiedervorlagen;

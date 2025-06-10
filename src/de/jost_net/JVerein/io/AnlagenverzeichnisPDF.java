@@ -25,180 +25,146 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 
+import de.jost_net.JVerein.gui.control.AnlagenlisteControl;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AnlagenverzeichnisPDF
+public class AnlagenverzeichnisPDF implements ISaldoExport
 {
 
-  public AnlagenverzeichnisPDF(ArrayList<AnlagenlisteZeile> zeile,
-      final File file, Date datumvon, Date datumbis) throws ApplicationException
+  @Override
+  public void export(ArrayList<PseudoDBObject> zeilen, File file, Date datumvon,
+      Date datumbis) throws ApplicationException
   {
     try
     {
-      boolean hasZugang = true;
-      boolean hasAbgang = true;
+      boolean hasZugang = false;
+      boolean hasAbgang = false;
       int anzahlSpalten = 10;
-      for (AnlagenlisteZeile alz : zeile)
+      for (PseudoDBObject alz : zeilen)
       {
-        if (alz.getStatus() == AnlagenlisteZeile.GESAMTSALDOFOOTER)
-        {
-          if (alz.getAttribute("zugang") == null)
+        if (alz.getAttribute(AnlagenlisteControl.ZUGANG) != null
+            && Math.abs(alz.getDouble(AnlagenlisteControl.ZUGANG)) >= 0.01d)
           {
-            hasZugang = false;
-            anzahlSpalten--;
+            hasZugang = true;
           }
-          if (alz.getAttribute("abgang") == null)
+          if (alz.getAttribute(AnlagenlisteControl.ABGANG) != null
+              && Math.abs(alz.getDouble(AnlagenlisteControl.ABGANG)) >= 0.01d)
           {
-            hasAbgang = false;
-            anzahlSpalten--;
+            hasAbgang = true;
           }
-        }
+      }
+      if (!hasAbgang)
+      {
+        anzahlSpalten--;
+      }
+      if (!hasZugang)
+      {
+        anzahlSpalten--;
       }
       
       FileOutputStream fos = new FileOutputStream(file);
       String subtitle = "Geschäftsjahr: " + new JVDateFormatTTMMJJJJ().format(datumvon)
           + " - " + new JVDateFormatTTMMJJJJ().format(datumbis);
       Reporter reporter = new Reporter(fos, "Anlagenverzeichnis", subtitle,
-          zeile.size());
+          zeilen.size());
       makeHeader(reporter, anzahlSpalten, hasZugang, hasAbgang);
 
-      for (AnlagenlisteZeile akz : zeile)
+      for (PseudoDBObject akz : zeilen)
       {
-        switch (akz.getStatus())
+        switch ((Integer) akz.getAttribute(AnlagenlisteControl.ART))
         {
-          case AnlagenlisteZeile.HEADER:
+          case AnlagenlisteControl.ART_HEADER:
           {
             reporter.addColumn(
-                (String) akz.getAttribute("buchungsklassenbezeichnung"),
-                Element.ALIGN_LEFT, new BaseColor(220, 220, 220), anzahlSpalten);
+                (String) akz.getAttribute(AnlagenlisteControl.GRUPPE),
+                Element.ALIGN_LEFT, new BaseColor(220, 220, 220),
+                anzahlSpalten);
             break;
           }
-          case AnlagenlisteZeile.HEADER2:
+          case AnlagenlisteControl.ART_DETAIL:
           {
             reporter.addColumn(
-                (String) akz.getAttribute("buchungsartbezeichnung"),
-                Element.ALIGN_LEFT, anzahlSpalten);
-            break;
-          }
-          case AnlagenlisteZeile.DETAIL:
-          {
-            reporter.addColumn(
-                (String) akz.getAttribute("bezeichnung"),
+                (String) akz.getAttribute(AnlagenlisteControl.KONTO),
                 Element.ALIGN_LEFT);
-            if (akz.getAttribute("nutzungsdauer") == null)
-              reporter.addColumn("", Element.ALIGN_LEFT);
-            else
-            {
-              Integer tmp = (Integer) akz.getAttribute("nutzungsdauer");
-              reporter.addColumn(tmp.toString(), Element.ALIGN_RIGHT);
-            }
-            reporter.addColumn((String) akz.getAttribute("afaartbezeichnung"),
-                Element.ALIGN_LEFT);
-            if (akz.getAttribute("anschaffung") == null)
-              reporter.addColumn("", Element.ALIGN_LEFT);
-            else
-              reporter.addColumn((Date) akz.getAttribute("anschaffung"),
+            Integer tmp = (Integer) akz
+                .getAttribute(AnlagenlisteControl.NUTZUNGSDAUER);
+            reporter.addColumn(tmp == null ? "" : tmp.toString(),
                 Element.ALIGN_RIGHT);
-            if (akz.getAttribute("kosten") == null)
-              reporter.addColumn("", Element.ALIGN_LEFT);
-            else
-              reporter.addColumn((Double) akz.getAttribute("kosten"));
-            if (akz.getAttribute("startwert") == null)
-              reporter.addColumn("", Element.ALIGN_LEFT);
-            else
-              reporter.addColumn((Double) akz.getAttribute("startwert"));
+            reporter.addColumn(
+                (String) akz.getAttribute(AnlagenlisteControl.AFAART),
+                Element.ALIGN_LEFT);
+            reporter.addColumn(
+                (Date) akz.getAttribute(AnlagenlisteControl.ANSCHAFFUNG_DATUM),
+                Element.ALIGN_RIGHT);
+            reporter.addColumn(
+                (Double) akz.getAttribute(AnlagenlisteControl.BETRAG));
+            reporter.addColumn(
+                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT));
             if (hasZugang)
             {
-              if (akz.getAttribute("zugang") == null)
-                reporter.addColumn("", Element.ALIGN_LEFT);
-              else
-                reporter.addColumn((Double) akz.getAttribute("zugang"));
+              reporter.addColumn(
+                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
             }
-            if (akz.getAttribute("abschreibung") == null)
-              reporter.addColumn("", Element.ALIGN_LEFT);
-            else
-              reporter.addColumn((Double) akz.getAttribute("abschreibung"));
+            reporter.addColumn(
+                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG));
             if (hasAbgang)
             {
-              if (akz.getAttribute("abgang") == null)
-                reporter.addColumn("", Element.ALIGN_LEFT);
-              else
-                reporter.addColumn((Double) akz.getAttribute("abgang"));
+              reporter.addColumn(
+                  (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
             }
-            if (akz.getAttribute("endwert") == null)
-              reporter.addColumn("", Element.ALIGN_LEFT);
-            else
-              reporter.addColumn((Double) akz.getAttribute("endwert"));
+            reporter.addColumn(
+                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT));
             break;
           }
-          case AnlagenlisteZeile.SALDOFOOTER:
+          case AnlagenlisteControl.ART_SALDOFOOTER:
           {
             reporter.addColumn(
-                (String) akz.getAttribute("buchungsklassenbezeichnung"),
+                (String) akz.getAttribute(AnlagenlisteControl.GRUPPE),
                 Element.ALIGN_RIGHT, 5);
-            if (akz.getAttribute("startwert") == null)
-              reporter.addColumn("", Element.ALIGN_LEFT);
-            else
-              reporter.addColumn((Double) akz.getAttribute("startwert"));
+            reporter.addColumn(
+                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT));
             if (hasZugang)
             {
-              if (akz.getAttribute("zugang") == null)
-                reporter.addColumn("", Element.ALIGN_LEFT);
-              else
-                reporter.addColumn((Double) akz.getAttribute("zugang"));
+              reporter.addColumn(
+                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
             }
-            if (akz.getAttribute("abschreibung") == null)
-              reporter.addColumn("", Element.ALIGN_LEFT);
-            else
-              reporter.addColumn((Double) akz.getAttribute("abschreibung"));
+            reporter.addColumn(
+                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG));
             if (hasAbgang)
             {
-              if (akz.getAttribute("abgang") == null)
-                reporter.addColumn("", Element.ALIGN_LEFT);
-              else
-                reporter.addColumn((Double) akz.getAttribute("abgang"));
+              reporter.addColumn(
+                  (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
             }
-            if (akz.getAttribute("endwert") == null)
-              reporter.addColumn("", Element.ALIGN_LEFT);
-            else
-              reporter.addColumn((Double) akz.getAttribute("endwert"));
+            reporter.addColumn(
+                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT));
             break;
           }
-          case AnlagenlisteZeile.GESAMTSALDOFOOTER:
+          case AnlagenlisteControl.ART_GESAMTSALDOFOOTER:
           {
             reporter.addColumn("Gesamt", Element.ALIGN_LEFT, anzahlSpalten);
             reporter.addColumn(
-                (String) akz.getAttribute("buchungsklassenbezeichnung"),
+                (String) akz.getAttribute(AnlagenlisteControl.GRUPPE),
                 Element.ALIGN_RIGHT, 5);
-            if (akz.getAttribute("startwert") == null)
-              reporter.addColumn("", Element.ALIGN_LEFT);
-            else
-              reporter.addColumn((Double) akz.getAttribute("startwert"));
+            reporter.addColumn(
+                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT));
             if (hasZugang)
             {
-              if (akz.getAttribute("zugang") == null)
-                reporter.addColumn("", Element.ALIGN_LEFT);
-              else
-                reporter.addColumn((Double) akz.getAttribute("zugang"));
+              reporter.addColumn(
+                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
             }
-            if (akz.getAttribute("abschreibung") == null)
-              reporter.addColumn("", Element.ALIGN_LEFT);
-            else
-              reporter.addColumn((Double) akz.getAttribute("abschreibung"));
+            reporter.addColumn(
+                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG));
             if (hasAbgang)
             {
-              if (akz.getAttribute("abgang") == null)
-                reporter.addColumn("", Element.ALIGN_LEFT);
-              else
-                reporter.addColumn((Double) akz.getAttribute("abgang"));
+              reporter.addColumn(
+                  (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
             }
-            if (akz.getAttribute("endwert") == null)
-              reporter.addColumn("", Element.ALIGN_LEFT);
-            else
-              reporter.addColumn((Double) akz.getAttribute("endwert"));
+            reporter.addColumn(
+                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT));
             break;
           }
         }
@@ -241,13 +207,17 @@ public class AnlagenverzeichnisPDF
     reporter.addHeaderColumn("Buchwert Beginn GJ", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
     if (hasZugang)
+    {
       reporter.addHeaderColumn("Zugang", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
+    }
     reporter.addHeaderColumn("Abschreibung", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
     if (hasAbgang)
+    {
       reporter.addHeaderColumn("Abgang", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
+    }
     reporter.addHeaderColumn("Buchwert Ende GJ", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
     reporter.createHeader();

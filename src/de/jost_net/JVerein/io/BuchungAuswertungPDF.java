@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
@@ -57,7 +58,8 @@ public class BuchungAuswertungPDF
   private boolean kontonummer_in_buchungsliste = false;
 
   public BuchungAuswertungPDF(ArrayList<Buchungsart> buchungsarten,
-      final File file, BuchungQuery query, boolean einzel)
+      final File file, BuchungQuery query, boolean einzel,
+      final TreeMap<String, String> params)
       throws ApplicationException
   {
     try
@@ -88,7 +90,8 @@ public class BuchungAuswertungPDF
       {
         createTableHeaderSumme(reporter);
       }
-
+      boolean nichtLeer = false;
+      int anzahlBuchungsarten = 0;
       DBIterator<Buchungsklasse> buchungsklassen = Einstellungen.getDBService()
           .createList(Buchungsklasse.class);
       buchungsklassen.setOrder("ORDER BY nummer");
@@ -97,34 +100,68 @@ public class BuchungAuswertungPDF
         Buchungsklasse bukla = buchungsklassen.next();
         for (Buchungsart bua : buchungsarten)
         {
+          if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+          {
+            if (bua.getBuchungsklasseId() == null
+                || bua.getBuchungsklasse().getNummer() != bukla.getNummer())
+            {
+              continue;
+            }
+          }
           if (einzel)
           {
             query.getOrder("ORDER_DATUM_ID");
           }
           List<Buchung> liste = getBuchungenEinerBuchungsart(query.get(), bua,
               bukla);
-          createTableContent(reporter, bua, bukla, liste, einzel);
+          if (liste.size() > 0)
+          {
+            anzahlBuchungsarten += 1;
+          }
+          nichtLeer = createTableContent(reporter, bua, bukla, liste, einzel)
+              || nichtLeer;
         }
       }
       // Buchungsarten ohne Buchungsklassen
       for (Buchungsart bua : buchungsarten)
       {
+        if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+        {
+          if (bua.getBuchungsklasseId() != null)
+          {
+            continue;
+          }
+        }
         if (einzel)
         {
           query.getOrder("ORDER_DATUM_ID");
         }
         List<Buchung> liste = getBuchungenEinerBuchungsart(query.get(), bua);
-        createTableContent(reporter, bua, null, liste, einzel);
+        if (liste.size() > 0)
+        {
+          anzahlBuchungsarten += 1;
+        }
+        nichtLeer = createTableContent(reporter, bua, null, liste, einzel)
+            || nichtLeer;
       }
-      // Buchungen ohne Buchungsarten
-      List<Buchung> liste = getBuchungenOhneBuchungsart(query.get());
+      // Buchungen ohne Buchungsarten, wenn explizite Buchungsart angegeben ist,
+      // dann nur wenn auch ohne Buchungsart ausgewählt ist (ID == null)
+      if (query.getBuchungsart() == null || (query.getBuchungsart() != null
+          && query.getBuchungsart().getID() == null))
+      {
+        List<Buchung> liste = getBuchungenOhneBuchungsart(query.get());
+        if (liste.size() > 0)
+        {
+          anzahlBuchungsarten += 1;
+        }
+        Buchungsart bua = (Buchungsart) Einstellungen.getDBService()
+            .createObject(Buchungsart.class, null);
+        bua.setBezeichnung("Ohne Buchungsart");
+        nichtLeer = createTableContent(reporter, bua, null, liste, einzel)
+            || nichtLeer;
+      }
 
-      Buchungsart bua = (Buchungsart) Einstellungen.getDBService()
-          .createObject(Buchungsart.class, null);
-      bua.setBezeichnung("Ohne Zuordnung");
-      createTableContent(reporter, bua, null, liste, einzel);
-
-      if (buchungsarten.size() > 1)
+      if (anzahlBuchungsarten > 1)
       {
         if (einzel)
         {
@@ -153,9 +190,40 @@ public class BuchungAuswertungPDF
           reporter.addColumn("Saldo", Element.ALIGN_LEFT);
           reporter.addColumn("", Element.ALIGN_LEFT);
           reporter.addColumn(summeeinnahmen + summeausgaben + summeumbuchungen);
+          reporter.closeTable();
         }
-
       }
+      else
+      {
+        if (!einzel && nichtLeer)
+        {
+          reporter.closeTable();
+        }
+      }
+      if (!nichtLeer)
+      {
+        if (einzel)
+        {
+          createTableHeaderEinzel(reporter);
+          reporter.addColumn("", Element.ALIGN_RIGHT);
+          if (kontonummer_in_buchungsliste)
+            reporter.addColumn("", Element.ALIGN_LEFT);
+          reporter.addColumn("", Element.ALIGN_LEFT);
+          reporter.addColumn("", Element.ALIGN_LEFT);
+          reporter.addColumn("", Element.ALIGN_LEFT);
+          reporter.addColumn("Keine Buchungen", Element.ALIGN_LEFT);
+          reporter.addColumn("", Element.ALIGN_LEFT);
+          reporter.closeTable();
+        }
+        else
+        {
+          reporter.addColumn("", Element.ALIGN_LEFT);
+          reporter.addColumn("Keine Buchungen", Element.ALIGN_LEFT);
+          reporter.addColumn("", Element.ALIGN_LEFT);
+          reporter.closeTable();
+        }
+      }
+      reporter.addParams(params);
       GUI.getStatusBar().setSuccessText("Auswertung fertig.");
 
       reporter.close();
@@ -213,7 +281,7 @@ public class BuchungAuswertungPDF
     reporter.createHeader();
   }
 
-  private void createTableContent(Reporter reporter, Buchungsart bua,
+  private boolean createTableContent(Reporter reporter, Buchungsart bua,
       Buchungsklasse bukla,
       List<Buchung> buchungen, boolean einzel)
       throws RemoteException, DocumentException
@@ -221,18 +289,22 @@ public class BuchungAuswertungPDF
     if (Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung()
         && buchungen.size() == 0)
     {
-      return;
+      return false;
     }
     String buchungsklasseBezeichnung = "Ohne Buchungsklasse";
     if (bukla != null)
     {
       buchungsklasseBezeichnung = new BuchungsklasseFormatter().format(bukla);
     }
+    String buchungsartBezeichnung = "Ohne Buchungsart";
+    if (!bua.getBezeichnung().equalsIgnoreCase("Ohne Buchungsart"))
+    {
+      buchungsartBezeichnung = new BuchungsartFormatter().format(bua);
+    }
     if (einzel)
     {
       Paragraph pBuchungsart = new Paragraph(
-          buchungsklasseBezeichnung + " - "
-              + new BuchungsartFormatter().format(bua),
+          buchungsklasseBezeichnung + " - " + buchungsartBezeichnung,
           Reporter.getFreeSansBold(10));
       reporter.add(pBuchungsart);
     }
@@ -304,14 +376,21 @@ public class BuchungAuswertungPDF
     else
     {
       reporter.addColumn(buchungsklasseBezeichnung, Element.ALIGN_LEFT);
-      reporter.addColumn(new BuchungsartFormatter().format(bua),
-          Element.ALIGN_LEFT);
-      reporter.addColumn(buchungsartSumme);
+      reporter.addColumn(buchungsartBezeichnung, Element.ALIGN_LEFT);
+      if (buchungen.size() == 0)
+      {
+        reporter.addColumn("Keine Buchung", Element.ALIGN_LEFT);
+      }
+      else
+      {
+        reporter.addColumn(buchungsartSumme);
+      }
     }
     if (einzel)
     {
       reporter.closeTable();
     }
+    return true;
   }
 
   private List<Buchung> getBuchungenEinerBuchungsart(List<Buchung> buchungen,
@@ -330,14 +409,6 @@ public class BuchungAuswertungPDF
       {
         if (b.getBuchungsklasseId() == null
             || b.getBuchungsklasse().getNummer() != bukla.getNummer())
-        {
-          continue;
-        }
-      }
-      else
-      {
-        if (bua.getBuchungsklasseId() == null
-            || bua.getBuchungsklasse().getNummer() != bukla.getNummer())
         {
           continue;
         }
@@ -363,13 +434,6 @@ public class BuchungAuswertungPDF
       if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
       {
         if (b.getBuchungsklasseId() != null)
-        {
-          continue;
-        }
-      }
-      else
-      {
-        if (bua.getBuchungsklasseId() != null)
         {
           continue;
         }

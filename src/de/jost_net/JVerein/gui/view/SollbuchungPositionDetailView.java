@@ -50,6 +50,10 @@ public class SollbuchungPositionDetailView extends AbstractDetailView
     {
       group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     }
+    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    {
+      group.addLabelPair("Steuer", control.getSteuer());
+    }
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

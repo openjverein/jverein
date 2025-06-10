@@ -179,6 +179,12 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public void setKontoId(String id) throws RemoteException
+  {
+    setAttribute("konto", id);
+  }
+
+  @Override
   public Date getDatum() throws RemoteException
   {
     return (Date) getAttribute("datum");

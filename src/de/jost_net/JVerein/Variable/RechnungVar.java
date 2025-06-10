@@ -50,6 +50,7 @@ public enum RechnungVar
   STAND("rechnung_stand"), //
   @Deprecated
   MK_SUMME_OFFEN("mitgliedskonto_summe_offen"), //
+  SUMME("rechnung_summe"), //
   SUMME_OFFEN("rechnung_summe_offen"), //
   QRCODE_SUMME("qrcode_summe"), //
   QRCODE_INTRO("qrcode_intro"),

@@ -31,13 +31,19 @@ import org.supercsv.io.ICsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.KontensaldoControl;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class KontenSaldoCSV
+public class KontenSaldoCSV implements ISaldoExport
 {
+
+  public KontenSaldoCSV()
+  {
+  }
 
   private static CellProcessor[] getProcessors()
   {
@@ -56,8 +62,9 @@ public class KontenSaldoCSV
     return processors;
   }
 
-  public KontenSaldoCSV(ArrayList<SaldoZeile> zeile,
-      final File file, Date datumvon, Date datumbis) throws ApplicationException
+  @Override
+  public void export(ArrayList<PseudoDBObject> zeile, final File file,
+      Date datumvon, Date datumbis) throws ApplicationException
   {
     ICsvMapWriter writer = null;
     try
@@ -76,18 +83,26 @@ public class KontenSaldoCSV
       csvzeile.put(header[0], subtitle);
       writer.write(csvzeile, header, processors);
 
-      for (SaldoZeile sz : zeile)
+      for (PseudoDBObject sz : zeile)
       {
         csvzeile = new HashMap<>();
 
-        csvzeile.put(header[0], (String) sz.getAttribute("kontonummer"));
-        csvzeile.put(header[1], (String) sz.getAttribute("kontobezeichnung"));
-        csvzeile.put(header[2], (Double) sz.getAttribute("anfangsbestand"));
-        csvzeile.put(header[3], (Double) sz.getAttribute("einnahmen"));
-        csvzeile.put(header[4], (Double) sz.getAttribute("ausgaben"));
-        csvzeile.put(header[5], (Double) sz.getAttribute("umbuchungen"));
-        csvzeile.put(header[6], (Double) sz.getAttribute("endbestand"));
-        csvzeile.put(header[7], (String) sz.getAttribute("bemerkung"));
+        csvzeile.put(header[0],
+            (String) sz.getAttribute(KontensaldoControl.KONTO_NUMMER));
+        csvzeile.put(header[1],
+            (String) sz.getAttribute(KontensaldoControl.GRUPPE));
+        csvzeile.put(header[2],
+            (Double) sz.getAttribute(KontensaldoControl.ANFANGSBESTAND));
+        csvzeile.put(header[3],
+            (Double) sz.getAttribute(KontensaldoControl.EINNAHMEN));
+        csvzeile.put(header[4],
+            (Double) sz.getAttribute(KontensaldoControl.AUSGABEN));
+        csvzeile.put(header[5],
+            (Double) sz.getAttribute(KontensaldoControl.UMBUCHUNGEN));
+        csvzeile.put(header[6],
+            (Double) sz.getAttribute(KontensaldoControl.ENDBESTAND));
+        csvzeile.put(header[7],
+            (String) sz.getAttribute(KontensaldoControl.BEMERKUNG));
 
         writer.write(csvzeile, header, processors);
       }
@@ -118,5 +133,4 @@ public class KontenSaldoCSV
     }
 
   }
-
 }

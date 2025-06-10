@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -48,20 +47,7 @@ public class SplitBuchungWiederherstellenAction implements Action
     try
     {
       Buchung bu = (Buchung) context;
-      if (bu.getDependencyId() == -1)
-      {
-        bu.setDelete(false);
-      }
-      else
-      {
-        for (Buchung buchung_tmp : SplitbuchungsContainer.get())
-        {
-          if (buchung_tmp.getDependencyId() == bu.getDependencyId())
-          {
-            buchung_tmp.setDelete(false);
-          }
-        }
-      }
+      bu.setDelete(false);
       control.refreshSplitbuchungen();
     }
     catch (RemoteException e)
