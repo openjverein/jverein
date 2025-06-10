@@ -244,26 +244,32 @@ public class BuchungMenu extends ContextMenu
     {
       if (o instanceof Buchung)
       {
-        Buchung b = (Buchung) o;
+        o = new Buchung[] { (Buchung) o };
+      }
+      if (o instanceof Buchung[])
+      {
+
         try
         {
-          if ((b.getSplitId() != null) && (b.getSplitTyp() != SplitbuchungTyp.SPLIT))
+          for (Buchung b : (Buchung[]) o)
           {
-            return false;
+            if ((b.getSplitId() != null)
+                && (b.getSplitTyp() != SplitbuchungTyp.SPLIT))
+            {
+              return false;
+            }
+            if (b.getBuchungsart() != null
+                && b.getBuchungsart().getArt() == ArtBuchungsart.UMBUCHUNG)
+            {
+              return false;
+            }
           }
-          if (b.getBuchungsart() != null)
-          {
-            return b.getBuchungsart().getArt() == ArtBuchungsart.UMBUCHUNG;
-          }
+          return true;
         }
         catch (RemoteException e)
         {
           Logger.error("Fehler", e);
         }
-      }
-      else if (o instanceof Buchung[])
-      {
-        return true;
       }
       return false;
     }
