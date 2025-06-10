@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.BuchungsklassesaldoCSV;
 import de.jost_net.JVerein.io.BuchungsklassesaldoPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
@@ -48,11 +49,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   protected static final String SUMME = "summe";
 
   /**
-   * Anzahl Buchungen
-   */
-  public static final String ANZAHL = "anzahl";
-
-  /**
    * true wenn Steuern verwendet werden sollen. Default wie in Einstellungen
    * "Optiert" gesetzt.
    */
@@ -69,7 +65,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
    */
   protected String gruppenBezeichnung = "Buchnugsklasse";
 
-  private TablePart saldoList;
+  private SaldoListTablePart saldoList;
 
   /**
    * Sollen Umbuchungen mit augegeben werden? Default true.
@@ -91,7 +87,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       {
         return saldoList;
       }
-      saldoList = new TablePart(getList(), null)
+      saldoList = new SaldoListTablePart(getList(), null)
       {
         // Sortieren verhindern
         @Override
@@ -116,8 +112,11 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
             Column.ALIGN_RIGHT);
       }
       saldoList.addColumn("Anzahl", ANZAHL);
+      saldoList.setMulti(true);
       saldoList.setRememberColWidths(true);
-      saldoList.removeFeature(FeatureSummary.class);
+      saldoList.setRememberOrder(true);
+      saldoList.setRememberState(true);
+      saldoList.addFeature(new FeatureSummary());
       return saldoList;
     }
     catch (RemoteException e)
