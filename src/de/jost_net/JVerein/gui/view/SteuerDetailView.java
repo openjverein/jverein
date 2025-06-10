@@ -17,20 +17,22 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SteuerControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class SteuerDetailView extends AbstractView
+public class SteuerDetailView extends AbstractDetailView
 {
+
+  SteuerControl control = null;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Steuer");
-    final SteuerControl control = new SteuerControl(this);
+    control = new SteuerControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Steuer");
     group.addLabelPair("Name", control.getName());
@@ -47,6 +49,12 @@ public class SteuerDetailView extends AbstractView
     }, null, true,
         "document-save.png");
     buttons.paint(getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 
 }
