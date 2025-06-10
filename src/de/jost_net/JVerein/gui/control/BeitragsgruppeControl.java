@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
@@ -39,6 +40,7 @@ import de.jost_net.JVerein.gui.menu.BeitragsgruppeMenu;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeDetailView;
 import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -254,7 +256,8 @@ public class BeitragsgruppeControl extends AbstractControl
     {
       return alterstaffel;
     }
-    String stufen = Einstellungen.getEinstellung().getBeitragAltersstufen();
+    String stufen = (String) Einstellungen
+        .getEinstellung(Property.BEITRAGALTERSSTUFEN);
     if(stufen == null || stufen == "")
       return null;
     AltersgruppenParser ap = new AltersgruppenParser(stufen);
@@ -324,7 +327,7 @@ public class BeitragsgruppeControl extends AbstractControl
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         getBeitragsgruppe().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.addListener(new Listener()
     {
       @Override
@@ -395,7 +398,7 @@ public class BeitragsgruppeControl extends AbstractControl
     {
       Beitragsgruppe b = getBeitragsgruppe();
       b.setBezeichnung((String) getBezeichnung(false).getValue());
-      if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
       {
         b.setSekundaer((Boolean) sekundaer.getValue());
       }
@@ -417,7 +420,9 @@ public class BeitragsgruppeControl extends AbstractControl
       b.setHasAltersstaffel(false);
       b.store();
       
-      switch (Einstellungen.getEinstellung().getBeitragsmodel())
+      switch (Beitragsmodel
+          .getByKey(
+              (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
       {
         case GLEICHERTERMINFUERALLE:
         case MONATLICH12631:
@@ -488,7 +493,8 @@ public class BeitragsgruppeControl extends AbstractControl
     beitragsgruppeList = new TablePart(beitragsgruppen,
         new EditAction(BeitragsgruppeDetailView.class));
     beitragsgruppeList.addColumn("Bezeichnung", "bezeichnung");
-    switch (Einstellungen.getEinstellung().getBeitragsmodel())
+    switch (Beitragsmodel
+        .getByKey((Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
     {
       case GLEICHERTERMINFUERALLE:
       case MONATLICH12631:
@@ -507,7 +513,7 @@ public class BeitragsgruppeControl extends AbstractControl
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
         break;
     }
-    if (Einstellungen.getEinstellung().getArbeitseinsatz())
+    if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
     {
       beitragsgruppeList.addColumn("Arbeitseinsatz-Stunden",
           "arbeitseinsatzstunden",
@@ -516,7 +522,7 @@ public class BeitragsgruppeControl extends AbstractControl
           "arbeitseinsatzbetrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     }
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       beitragsgruppeList.addColumn("Buchungsklasse", "buchungsklasse",
           new BuchungsklasseFormatter());
@@ -547,7 +553,9 @@ public class BeitragsgruppeControl extends AbstractControl
         {
           if (b.getHasAltersstaffel())
           {
-            AltersgruppenParser ap = new AltersgruppenParser(Einstellungen.getEinstellung().getBeitragAltersstufen());
+            AltersgruppenParser ap = new AltersgruppenParser(
+                (String) Einstellungen
+                    .getEinstellung(Property.BEITRAGALTERSSTUFEN));
             String text = "";
             DBIterator<Altersstaffel> it = b.getAltersstaffelIterator();
             while (it.hasNext() && ap.hasNext())

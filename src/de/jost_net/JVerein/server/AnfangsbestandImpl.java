@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
@@ -113,7 +114,8 @@ public class AnfangsbestandImpl extends AbstractDBObject
     try
     {
       Date beginngeschaeftsjahr = new JVDateFormatTTMMJJJJ().parse(
-          Einstellungen.getEinstellung().getBeginnGeschaeftsjahr() + "2009");
+          (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+              + "2009");
       DBIterator<Anfangsbestand> it = Einstellungen.getDBService()
           .createList(Anfangsbestand.class);
       it.addFilter("konto = ?", new Object[] { getKonto().getID() });

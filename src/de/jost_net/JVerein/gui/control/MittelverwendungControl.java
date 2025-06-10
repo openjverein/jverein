@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.commons.lang.time.DateUtils;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.dialogs.MittelverwendungDialog;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.io.MittelverwendungExportCSV;
@@ -514,7 +515,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
         Kontoart.SCHULDEN.getKey(), Kontoart.ANLAGE.getKey(),
         Anlagenzweck.NUTZUNGSGEBUNDEN.getKey());
 
-    if (Einstellungen.getEinstellung().getOptiert())
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       // Die Steuer bei Veräußerung von Anlagevermögen mit Steuer
       // Steuer Einnahmen bei Umbuchungen > 0 auf dem Geldkonto
@@ -533,7 +534,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
           Kontoart.GELD.getKey());
 
       // Je nach Einstellung Steuer an Buchungsart oder Buchung hängen
-      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         flussIt.leftJoin("steuer", "steuer.id = buchung.steuer");
       }
@@ -557,7 +558,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
         : 0d;
 
     // ggf. Steuern hinzurechnen
-    if (Einstellungen.getEinstellung().getOptiert())
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       if (fluss.getDouble("steuereinnahme") != null)
       {
@@ -618,7 +619,8 @@ public class MittelverwendungControl extends AbstractSaldoControl
 
     ruecklageIt.setOrder("ORDER BY konto.kontoart,buchungsart.art");
 
-    if (Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung())
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG))
     {
       ruecklageIt.addHaving("abs(" + BETRAG + ") >= 0.01");
     }
@@ -780,8 +782,8 @@ public class MittelverwendungControl extends AbstractSaldoControl
     ExtendedDBIterator<PseudoDBObject> it = getIterator();
     ArrayList<PseudoDBObject> zeilen = new ArrayList<>();
 
-    Boolean anlagenSummenkonto = Einstellungen.getEinstellung()
-        .getSummenAnlagenkonto();
+    Boolean anlagenSummenkonto = (Boolean) Einstellungen
+        .getEinstellung(Property.SUMMENANLAGENKONTO);
 
     Integer kontoartAlt = null;
     String kontoklasseAlt = null;
@@ -989,8 +991,8 @@ public class MittelverwendungControl extends AbstractSaldoControl
   protected ExtendedDBIterator<PseudoDBObject> getIterator()
       throws RemoteException
   {
-    final boolean unterdrueckung = Einstellungen.getEinstellung()
-        .getUnterdrueckungOhneBuchung();
+    final boolean unterdrueckung = (Boolean) Einstellungen
+        .getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG);
 
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("konto");
     it.addColumn("konto.kontoart as " + KONTOART);

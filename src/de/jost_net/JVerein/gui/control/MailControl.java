@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.MailDetailAction;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailEmpfaengerMenu;
@@ -431,14 +432,14 @@ public class MailControl extends FilterControl implements IMailControl
     {
       // MailSignatur ohne Separator mit vorangestellten hr in den body einbauen
       text = text.substring(0, text.toLowerCase().indexOf("</body") - 1);
-      text = text + "<hr />" + Einstellungen.getEinstellung()
-          .getMailSignatur(false);
+      text = text + "<hr />"
+          + (String) Einstellungen.getEinstellung(Property.MAILSIGNATUR);
       text = text + "</body></html>";
     }
     else
     {
       // MailSignatur mit Separator einfach anh?ngen
-      text = text + Einstellungen.getEinstellung().getMailSignatur(true);
+      text = text + Einstellungen.getMailSignatur(true);
     }
     final String txt = text;
     final String betr = getBetreffString();
@@ -453,17 +454,17 @@ public class MailControl extends FilterControl implements IMailControl
         try
         {
           MailSender sender = new MailSender(
-              Einstellungen.getEinstellung().getSmtpServer(),
-              Einstellungen.getEinstellung().getSmtpPort(),
-              Einstellungen.getEinstellung().getSmtpAuthUser(),
-              Einstellungen.getEinstellung().getSmtpAuthPwd(),
-              Einstellungen.getEinstellung().getSmtpFromAddress(),
-              Einstellungen.getEinstellung().getSmtpFromAnzeigename(),
-              Einstellungen.getEinstellung().getMailAlwaysBcc(),
-              Einstellungen.getEinstellung().getMailAlwaysCc(),
-              Einstellungen.getEinstellung().getSmtpSsl(),
-              Einstellungen.getEinstellung().getSmtpStarttls(),
-              Einstellungen.getEinstellung().getMailVerzoegerung(),
+              (String) Einstellungen.getEinstellung(Property.SMTPSERVER),
+              (String) Einstellungen.getEinstellung(Property.SMTPPORT),
+              (String) Einstellungen.getEinstellung(Property.SMTPAUTHUSER),
+              Einstellungen.getSmtpAuthPwd(),
+              (String) Einstellungen.getEinstellung(Property.SMTPFROMADDRESS),
+              (String) Einstellungen.getEinstellung(Property.SMTPFROMANZEIGENAME),
+              (String) Einstellungen.getEinstellung(Property.MAILALWAYSBCC),
+              (String) Einstellungen.getEinstellung(Property.MAILALWAYSCC),
+              (Boolean) Einstellungen.getEinstellung(Property.SMTPSSL),
+              (Boolean) Einstellungen.getEinstellung(Property.SMTPSTARTTLS),
+              (Integer) Einstellungen.getEinstellung(Property.MAILVERZOEGERUNG),
               Einstellungen.getImapCopyData());
 
           Velocity.init();

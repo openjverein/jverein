@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Datentyp;
@@ -649,7 +650,7 @@ public class Migration
     {
       gebDatum = null;
 
-      if (Einstellungen.getEinstellung().getGeburtsdatumPflicht())
+      if ((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
       {
         throw new ApplicationException(String.format("%s: Geburtsdatum fehlt!",
             Adressaufbereitung.getNameVorname(m)));
@@ -769,7 +770,7 @@ public class Migration
     {
       eintritt = null;
 
-      if (Einstellungen.getEinstellung().getEintrittsdatumPflicht())
+      if ((Boolean) Einstellungen.getEinstellung(Property.EINTRITTSDATUMPFLICHT))
       {
         throw new ApplicationException(String.format(
             "%s: Eintrittsdatum fehlt!", Adressaufbereitung.getNameVorname(m)));
@@ -920,7 +921,7 @@ public class Migration
      * set properties correctly
      */
 
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
     {
       m.setExterneMitgliedsnummer(
           new String(getResultFrom(results, InternalColumns.MITGLIEDSNR)));

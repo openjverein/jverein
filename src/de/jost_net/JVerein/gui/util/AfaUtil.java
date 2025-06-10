@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
@@ -205,7 +206,7 @@ public class AfaUtil
       }
     }
     buchung.setKonto(konto);
-    buchung.setName(Einstellungen.getEinstellung().getName());
+    buchung.setName((String) Einstellungen.getEinstellung(Property.NAME));
     buchung.setDatum(afaBuchungDatum);
     buchung.setBetrag(-betrag);
     buchung.setBuchungsartId(konto.getAfaartId());
@@ -310,7 +311,7 @@ public class AfaUtil
     Buchung buchung = (Buchung) Einstellungen.getDBService().
         createObject(Buchung.class, null);
     buchung.setKonto(konto);
-    buchung.setName(Einstellungen.getEinstellung().getName());
+    buchung.setName((String) Einstellungen.getEinstellung(Property.NAME));
     buchung.setZweck(zweck);
     buchung.setDatum(afaBuchungDatum);
     buchung.setBuchungsartId(konto.getAfaartId());

@@ -226,7 +226,7 @@ public class BackupRestoreAction implements Action
               ((AbstractDBObject) o).insert();
               if(o instanceof Einstellung)
               {
-                Einstellungen.reloadEinstellung();
+                Einstellungen.loadEinstellungen();
               }
             }
             catch (Exception e)

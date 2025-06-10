@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.FormularLinkFormatter;
 import de.jost_net.JVerein.gui.formatter.FormularartFormatter;
@@ -108,7 +109,7 @@ public class FormularControl extends FormularPartControl
     FormularArt aktuelleFormularArt = getFormular().getArt();
     ArrayList<FormularArt> list = new ArrayList<FormularArt>(
         Arrays.asList(FormularArt.values()));
-    if (!Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+    if (!(Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
       if (aktuelleFormularArt != FormularArt.SPENDENBESCHEINIGUNG)
       {
@@ -119,7 +120,7 @@ public class FormularControl extends FormularPartControl
         list.remove(FormularArt.SAMMELSPENDENBESCHEINIGUNG);
       }
     }
-    if (!Einstellungen.getEinstellung().getRechnungenAnzeigen())
+    if (!(Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       if (aktuelleFormularArt != FormularArt.RECHNUNG)
       {

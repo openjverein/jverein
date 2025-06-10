@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.BuchungsklassesaldoCSV;
 import de.jost_net.JVerein.io.BuchungsklassesaldoPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
@@ -75,7 +76,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   public BuchungsklasseSaldoControl(AbstractView view) throws RemoteException
   {
     super(view);
-    mitSteuer = Einstellungen.getEinstellung().getOptiert();
+    mitSteuer = (Boolean) Einstellungen.getEinstellung(Property.OPTIERT);
   }
 
   @Override
@@ -346,14 +347,13 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   protected ExtendedDBIterator<PseudoDBObject> getIterator()
       throws RemoteException
   {
-    final boolean unterdrueckung = Einstellungen.getEinstellung()
-        .getUnterdrueckungOhneBuchung();
+    final boolean unterdrueckung = (Boolean) Einstellungen.getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG);
 
-    final boolean klasseInBuchung = Einstellungen.getEinstellung()
-        .getBuchungsklasseInBuchung();
+    final boolean klasseInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
 
-    final boolean steuerInBuchung = Einstellungen.getEinstellung()
-        .getSteuerInBuchung();
+    final boolean steuerInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.STEUERINBUCHUNG);
 
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
         "buchungsart");

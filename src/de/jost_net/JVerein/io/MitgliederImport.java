@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -280,7 +281,7 @@ public class MitgliederImport implements Importer
 
         try
         {
-          if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
+          if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
           {
             String individuellerBeitrag = results
                 .getString("individuellerbeitrag");
@@ -316,19 +317,19 @@ public class MitgliederImport implements Importer
           }
           else
           {
-            m.setZahlungsweg(Einstellungen.getEinstellung().getZahlungsweg());
+            m.setZahlungsweg((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
           }
         }
         catch (SQLException e)
         {
           // Wenn nicht vorhanden Standartwert aus Einstellungen nehmen
-          m.setZahlungsweg(Einstellungen.getEinstellung().getZahlungsweg());
+          m.setZahlungsweg((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
         }
 
         try
         {
-          if (Einstellungen.getEinstellung()
-              .getBeitragsmodel() == Beitragsmodel.MONATLICH12631)
+          if ((Integer) Einstellungen.getEinstellung(
+              Property.BEITRAGSMODEL) == Beitragsmodel.MONATLICH12631.getKey())
           {
             String zahlungsrhythmus = results.getString("zahlungsrhythmus");
             if (zahlungsrhythmus != null && zahlungsrhythmus.length() != 0)
@@ -375,8 +376,8 @@ public class MitgliederImport implements Importer
 
         try
         {
-          if (Einstellungen.getEinstellung()
-              .getBeitragsmodel() == Beitragsmodel.FLEXIBEL)
+          if ((Integer) Einstellungen.getEinstellung(
+              Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
           {
             String zahlungstermin = results.getString("zahlungstermin");
             if (zahlungstermin != null && zahlungstermin.length() != 0)
@@ -523,7 +524,7 @@ public class MitgliederImport implements Importer
           // Optionaler Parameter
         }
 
-        if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+        if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
         {
           try
           {
@@ -558,14 +559,14 @@ public class MitgliederImport implements Importer
                   "Zeile " + anz + ": Geburtsdatum liegt in der Zukunft");
             m.setGeburtsdatum(Datum.toDate(geburtsdatum));
           }
-          else if (Einstellungen.getEinstellung().getGeburtsdatumPflicht()
+          else if ((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT)
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
             throw new ApplicationException(
                 "Zeile " + anz + ": Geburtsdatum fehlt");
         }
         catch (SQLException e)
         {
-          if (Einstellungen.getEinstellung().getGeburtsdatumPflicht()
+          if ((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT)
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
             throw new ApplicationException("Geburtsdatum fehlt");
         }

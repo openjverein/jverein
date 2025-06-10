@@ -63,6 +63,7 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.MitgliedMap;
@@ -70,7 +71,6 @@ import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -186,8 +186,8 @@ public class FormularAufbereitung
       // Get current counter
       Integer zaehler = formular.getZaehler();
       // Get settings and length of counter
-      Einstellung e = Einstellungen.getEinstellung();
-      Integer zaehlerLaenge = e.getZaehlerLaenge();
+      Integer zaehlerLaenge = (Integer) Einstellungen
+          .getEinstellung(Property.ZAEHLERLAENGE);
 
       for (int i = 1; i <= numOfPages; i++)
       {
@@ -249,15 +249,16 @@ public class FormularAufbereitung
   @SuppressWarnings({ "unchecked", "rawtypes" })
   private Image getPaymentQRCode(Map fieldsMap) throws RemoteException
   {
+    boolean festerText = (Boolean) Einstellungen
+        .getEinstellung(Property.QRCODEFESTERTEXT);
+    boolean rechnungDatum = (Boolean) Einstellungen.getEinstellung(Property.QRCODEDATUM);
+    boolean rechnungNummer = (Boolean) Einstellungen.getEinstellung(Property.QRCODERENU);
+    boolean mitgliedNummer = (Boolean) Einstellungen
+        .getEinstellung(Property.QRCODEMEMBER);
 
-    Einstellung e = Einstellungen.getEinstellung();
-
-    boolean festerText = e.getQRCodeFesterText();
-    boolean rechnungDatum = e.getQRCodeDatum();
-    boolean rechnungNummer = e.getQRCodeReNu();
-    boolean mitgliedNummer = e.getQRCodeMember();
-
-    float sz = mm2point(((Integer) e.getQRCodeSizeInMm()).floatValue());
+    float sz = mm2point(
+        ((Integer) Einstellungen.getEinstellung(Property.QRCODESIZEINMM))
+            .floatValue());
 
     StringBuilder sb = new StringBuilder();
     String verwendungszweck;
@@ -268,13 +269,14 @@ public class FormularAufbereitung
       String zahlungsgruende_raw = getString(
           fieldsMap.get(RechnungVar.ZAHLUNGSGRUND.getName()));
       String[] zahlungsgruende = zahlungsgruende_raw.split("\n");
-      if (zahlungsgruende.length == 1 && e.getQRCodeSnglLine())
+      if (zahlungsgruende.length == 1
+          && (Boolean) Einstellungen.getEinstellung(Property.QRCODESNGLLINE))
       {
         sb.append(zahlungsgruende[0]);
       }
       else
       {
-        sb.append(e.getQRCodeText());
+        sb.append((String) Einstellungen.getEinstellung(Property.QRCODETEXT));
       }
       if (rechnungDatum || rechnungNummer || mitgliedNummer)
       {
@@ -284,7 +286,7 @@ public class FormularAufbereitung
 
     if (rechnungDatum || rechnungNummer)
     {
-      if (e.getQRCodeKuerzen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.QRCODEKUERZEN))
       {
         sb.append("Re. ");
       }
@@ -292,17 +294,17 @@ public class FormularAufbereitung
       {
         sb.append("Rechnung ");
       }
-      if (true == rechnungNummer)
+      if (rechnungNummer)
       {
         sb.append(fieldsMap.get(AllgemeineVar.ZAEHLER.getName()));
-        if (true == rechnungDatum)
+        if (rechnungDatum)
         {
           sb.append(" ");
         }
       }
-      if (true == rechnungDatum)
+      if (rechnungDatum)
       {
-        if (e.getQRCodeKuerzen())
+        if ((Boolean) Einstellungen.getEinstellung(Property.QRCODEKUERZEN))
         {
           sb.append("v. ");
         }
@@ -312,15 +314,15 @@ public class FormularAufbereitung
         }
         sb.append(fieldsMap.get(AllgemeineVar.TAGESDATUM.getName()));
       }
-      if (true == mitgliedNummer)
+      if (mitgliedNummer)
       {
         sb.append(", ");
       }
     }
 
-    if (true == mitgliedNummer)
+    if (mitgliedNummer)
     {
-      if (true == e.getQRCodeKuerzen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.QRCODEKUERZEN))
       {
         sb.append("Mitgl. ");
       }
@@ -329,7 +331,7 @@ public class FormularAufbereitung
         sb.append("Mitglied ");
       }
 
-      if (true == e.getExterneMitgliedsnummer())
+      if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         sb.append(getString(
             fieldsMap.get(MitgliedVar.EXTERNE_MITGLIEDSNUMMER.getName())));
@@ -342,7 +344,7 @@ public class FormularAufbereitung
 
     verwendungszweck = sb.toString();
 
-    infoToMitglied = e.getQRCodeInfoM();
+    infoToMitglied = (String) Einstellungen.getEinstellung(Property.QRCODEINFOM);
     if (null == infoToMitglied)
     {
       infoToMitglied = "";
@@ -353,9 +355,11 @@ public class FormularAufbereitung
     sbEpc.append(EPC_VERSION).append("\n");
     sbEpc.append(EPC_CHARSET_NR).append("\n");
     sbEpc.append(EPC_ID).append("\n");
-    sbEpc.append(e.getBic()).append("\n");
-    sbEpc.append(e.getName()).append("\n");
-    sbEpc.append(e.getIban()).append("\n");
+    sbEpc.append((String) Einstellungen.getEinstellung(Property.BIC)).append("\n");
+    sbEpc.append((String) Einstellungen.getEinstellung(Property.NAME))
+        .append("\n");
+    sbEpc.append((String) Einstellungen.getEinstellung(Property.IBAN))
+        .append("\n");
     sbEpc.append(EPC_EUR);
     Object[] oPosten = (Object[]) fieldsMap
         .get(RechnungVar.BETRAG.getName());
@@ -466,7 +470,7 @@ public class FormularAufbereitung
     {
       com.itextpdf.text.Image i = com.itextpdf.text.Image
           .getInstance((Image) val, Color.BLACK);
-      float sz = mm2point(Einstellungen.getEinstellung().getQRCodeSizeInMm());
+      float sz = mm2point((Integer) Einstellungen.getEinstellung(Property.QRCODESIZEINMM));
       contentByte.addImage(i, sz, 0, 0, sz, x, y);
     }
     else if (val instanceof com.itextpdf.text.Image)
@@ -647,7 +651,6 @@ public class FormularAufbereitung
     }
 
     String sourcePDF = f.getAbsolutePath();
-    Einstellung e = Einstellungen.getEinstellung();
     IZUGFeRDExporter ze = new ZUGFeRDExporterFromPDFA().ignorePDFAErrors()
         .load(sourcePDF).setProducer("JVerein")
         .setCreator(System.getProperty("user.name"));
@@ -663,26 +666,35 @@ public class FormularAufbereitung
         .setNumber(re.getID());
 
     // Rechnungssteller
-    TradeParty sender = new TradeParty(e.getName(),
-        StringTool.toNotNullString(e.getStrasse()),
-        StringTool.toNotNullString(e.getPlz()),
-        StringTool.toNotNullString(e.getOrt()), e.getStaat())
-            .addTaxID(e.getSteuernummer());
-    if (e.getUStID().length() > 0)
-      sender.addVATID(e.getUStID());
+    TradeParty sender = new TradeParty(
+        (String) Einstellungen.getEinstellung(Property.NAME),
+        StringTool.toNotNullString(
+            (String) Einstellungen.getEinstellung(Property.STRASSE)),
+        StringTool
+            .toNotNullString((String) Einstellungen.getEinstellung(Property.PLZ)),
+        StringTool
+            .toNotNullString((String) Einstellungen.getEinstellung(Property.ORT)),
+        (String) Einstellungen.getEinstellung(Property.STAAT)).addTaxID(
+            (String) Einstellungen.getEinstellung(Property.STEUERNUMMER));
+    if (((String) Einstellungen.getEinstellung(Property.USTID)).length() > 0)
+      sender.addVATID((String) Einstellungen.getEinstellung(Property.USTID));
 
     if (re.getZahlungsweg().getKey() == Zahlungsweg.BASISLASTSCHRIFT)
     {
       // Mandat
       sender.addDebitDetails(new DirectDebit(re.getIBAN(), re.getMandatID()));
       // Gläubiger identifikationsnummer
-      invoice.setCreditorReferenceID(e.getGlaeubigerID());
+      invoice.setCreditorReferenceID(
+          (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
     }
     else
     {
       sender.addBankDetails(
-          new BankDetails(StringTool.toNotNullString(e.getIban()),
-              StringTool.toNotNullString(e.getBic())));
+          new BankDetails(
+              StringTool.toNotNullString(
+                  (String) Einstellungen.getEinstellung(Property.IBAN)),
+              StringTool.toNotNullString(
+                  (String) Einstellungen.getEinstellung(Property.BIC))));
     }
     invoice.setSender(sender);
 
@@ -694,7 +706,7 @@ public class FormularAufbereitung
     }
 
     String id = re.getMitglied().getID();
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       id = re.getMitglied().getExterneMitgliedsnummer();
 
     // Rechnungsempfänger
@@ -705,7 +717,7 @@ public class FormularAufbereitung
         StringTool.toNotNullString(re.getPlz()),
         StringTool.toNotNullString(re.getOrt()),
         re.getStaatCode() == null || re.getStaatCode().length() == 0
-            ? e.getStaat()
+            ? (String) Einstellungen.getEinstellung(Property.STAAT)
             : re.getStaatCode())
                 .setID(id)
                 .setContact(new Contact(

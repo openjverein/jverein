@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungAutoNeuControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -41,7 +42,8 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
     InfoPanel   info = new InfoPanel();
     info.setTitle("Info");
     info.setIcon("gtk-info.png");
-    double betrag = Einstellungen.getEinstellung().getSpendenbescheinigungminbetrag();
+    double betrag = (Double) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG);
     if (betrag > 0.01)
     {
       info.setText(String.format(

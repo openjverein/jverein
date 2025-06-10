@@ -30,6 +30,7 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
@@ -360,7 +361,7 @@ public class KursteilnehmerControl extends FilterControl
     this.geburtsdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.geburtsdatum.setTitle("Geburtsdatum");
     this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
-    if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
+    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
     {
       this.geburtsdatum.setMandatory(true);
     }
@@ -376,7 +377,7 @@ public class KursteilnehmerControl extends FilterControl
     geschlecht = new GeschlechtInput(getKursteilnehmer().getGeschlecht());
     geschlecht.setName("Geschlecht");
     geschlecht.setPleaseChoose("Bitte auswählen");
-    if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
+    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
     {
       geschlecht.setMandatory(true);
     }
@@ -481,7 +482,7 @@ public class KursteilnehmerControl extends FilterControl
         k.setIban(ib.toUpperCase().replace(" ", ""));
       k.setBic((String) getBIC().getValue());
       k.setBetrag((Double) getBetrag().getValue());
-      if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
+      if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
       {
         k.setGeburtsdatum((Date) getGeburtsdatum().getValue());
         k.setGeschlecht((String) getGeschlecht().getValue());
@@ -521,7 +522,8 @@ public class KursteilnehmerControl extends FilterControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("kursteilnehmer", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "PDF")
+              .get());
 
       final String s = fd.open();
 

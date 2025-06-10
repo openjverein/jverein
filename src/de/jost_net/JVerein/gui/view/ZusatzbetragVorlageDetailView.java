@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.ZusatzbetragVorlageControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -43,7 +44,7 @@ public class ZusatzbetragVorlageDetailView extends AbstractView
     group.addLabelPair("Buchungstext", control.getBuchungstext());
     group.addLabelPair("Betrag", control.getBetrag());
     group.addLabelPair("Buchungsart", control.getBuchungsart());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     group.addLabelPair("Zahlungsweg", control.getZahlungsweg());
 

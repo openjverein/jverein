@@ -24,6 +24,7 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -303,7 +304,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
       mitglied.setVollZahlerID(null);
       //Bei Zahlung über Vollzahler Zahlungsweg umstellen
       if(mitglied.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
-        mitglied.setZahlungsweg(Einstellungen.getEinstellung().getZahlungsweg());
+        mitglied.setZahlungsweg((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
     }
     mitglied.setBeitragsgruppe(Integer.valueOf(beitragsGruppe.getID()));
     mitglied.store();

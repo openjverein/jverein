@@ -24,6 +24,7 @@ import java.util.Date;
 import org.apache.commons.lang.time.DateUtils;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
 import de.jost_net.JVerein.gui.util.AfaUtil;
@@ -94,7 +95,7 @@ public class JahresabschlussControl extends KontensaldoControl
       return jahresabschluss;
     }
     jahresabschluss = (Jahresabschluss) getCurrentObject();
-    if (Einstellungen.getEinstellung().getMittelverwendung()
+    if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG)
         && jahresabschluss.isNewObject())
     {
       MittelverwendungControl mvcontrol = new MittelverwendungControl(null);
@@ -308,7 +309,7 @@ public class JahresabschlussControl extends KontensaldoControl
       {
         new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
       }
-      if (Einstellungen.getEinstellung().getMittelverwendung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
       {
         MittelverwendungControl mvcontrol = new MittelverwendungControl(null);
         mvcontrol.getMittelverwendungFlowList(ja.getVon(), ja.getBis());

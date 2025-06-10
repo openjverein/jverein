@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.willuhn.jameica.gui.Action;
@@ -53,7 +54,7 @@ public class MitgliedListeView extends AbstractMitgliedListeView
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getMitgliedStatus());
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       left.addInput(control.getSuchExterneMitgliedsnummer());
     else
       left.addInput(control.getSuchMitgliedsnummer());
@@ -61,7 +62,7 @@ public class MitgliedListeView extends AbstractMitgliedListeView
     left.addInput(eigenschaftenInput);
     control.updateEigenschaftenAuswahlTooltip();
     left.addInput(control.getBeitragsgruppeAusw());
-    if (Einstellungen.getEinstellung().hasZusatzfelder())
+    if (Einstellungen.hasZusatzfelder())
     {
       DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
       left.addInput(zusatzfelderInput);

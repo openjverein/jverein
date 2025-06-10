@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.FamilienbeitragNode;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
@@ -114,7 +115,7 @@ public class MitgliedDetailAction implements Action
       {
         mitglied = (Mitglied) Einstellungen.getDBService().createObject(
             Mitglied.class, null);
-        if (Einstellungen.getEinstellung().getJuristischePersonen())
+        if ((Boolean) Einstellungen.getEinstellung(Property.JURISTISCHEPERSONEN))
         {
           PersonenartDialog pad = new PersonenartDialog(
               PersonenartDialog.POSITION_CENTER);

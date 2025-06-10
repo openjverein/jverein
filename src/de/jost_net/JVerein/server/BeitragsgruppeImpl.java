@@ -19,7 +19,9 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -69,7 +71,8 @@ public class BeitragsgruppeImpl extends AbstractDBObject implements
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben");
       }
-      switch (Einstellungen.getEinstellung().getBeitragsmodel())
+      switch (Beitragsmodel.getByKey(
+          (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
       {
         case GLEICHERTERMINFUERALLE:
         case MONATLICH12631:

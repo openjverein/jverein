@@ -19,6 +19,7 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -118,8 +119,8 @@ public class SteuerImpl extends AbstractDBObject implements Steuer
   {
     try
     {
-      boolean steuerInBuchung = Einstellungen.getEinstellung()
-          .getSteuerInBuchung();
+      boolean steuerInBuchung = (Boolean) Einstellungen
+          .getEinstellung(Property.STEUERINBUCHUNG);
 
       // Prüfen ob es abgeschlossene Buchungen mit der Steuer gibt
       ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(

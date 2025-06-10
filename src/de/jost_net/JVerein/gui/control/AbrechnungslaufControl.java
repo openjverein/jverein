@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.AbrechnungsmodusFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
@@ -377,12 +378,12 @@ public class AbrechnungslaufControl extends FilterControl
       abrechnungslaufList.addColumn("Austrittsdatum", "austrittsdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       abrechnungslaufList.addColumn("Zahlungsgrund", "zahlungsgrund");
-      if (Einstellungen.getEinstellung().getZusatzbetrag())
+      if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
       {
         abrechnungslaufList.addColumn("Zusatzbeträge", "zusatzbetraege",
             new JaNeinFormatter());
       }
-      if (Einstellungen.getEinstellung().getKursteilnehmer())
+      if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
       {
         abrechnungslaufList.addColumn("Kursteilnehmer", "kursteilnehmer",
             new JaNeinFormatter());

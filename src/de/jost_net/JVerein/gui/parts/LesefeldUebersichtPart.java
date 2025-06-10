@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
@@ -349,7 +350,7 @@ public class LesefeldUebersichtPart implements Part
     }
 
     mitglied = new MitgliedInput().getMitgliedInput(mitglied, selectedMitglied,
-        Einstellungen.getEinstellung().getMitgliedAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     mitglied.addListener(new MitgliedListener());
     mitglied.setMandatory(true);
     return mitglied;

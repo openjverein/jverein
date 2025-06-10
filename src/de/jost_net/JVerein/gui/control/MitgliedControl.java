@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.FamilienbeitragMessage;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.Variable.MitgliedMap;
@@ -373,7 +374,7 @@ public class MitgliedControl extends FilterControl
 
   private boolean isExterneMitgliedsnummerMandatory() throws RemoteException
   {
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer() == false)
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER) == false)
       return false;
     if (view instanceof AbstractMitgliedDetailView == false)
       return false;
@@ -570,7 +571,7 @@ public class MitgliedControl extends FilterControl
     this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
     zeigeAlter(d);
     this.geburtsdatum
-        .setMandatory(Einstellungen.getEinstellung().getGeburtsdatumPflicht());
+        .setMandatory((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT));
     return geburtsdatum;
   }
 
@@ -622,7 +623,7 @@ public class MitgliedControl extends FilterControl
     else
     {
       zahlungsweg = new SelectNoScrollInput(weg,
-          new Zahlungsweg(Einstellungen.getEinstellung().getZahlungsweg()));
+          new Zahlungsweg((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG)));
     }
     
     zahlungsweg.setName("Zahlungsweg");
@@ -679,7 +680,7 @@ public class MitgliedControl extends FilterControl
     try
     {
       getZahlungsrhythmus().setValue(new Zahlungsrhythmus(
-          Einstellungen.getEinstellung().getZahlungsrhytmus()));
+          (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSRHYTMUS)));
       getMandatID().setValue(null);
       getMandatDatum().setValue(null);
       getMandatVersion().setValue(null);
@@ -737,7 +738,7 @@ public class MitgliedControl extends FilterControl
     {
       zahlungsrhytmus = new SelectNoScrollInput(Zahlungsrhythmus.getArray(),
           new Zahlungsrhythmus(
-              Einstellungen.getEinstellung().getZahlungsrhytmus()));
+              (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSRHYTMUS)));
     }
     zahlungsrhytmus.setName("Zahlungsrhytmus");
     return zahlungsrhytmus;
@@ -782,8 +783,7 @@ public class MitgliedControl extends FilterControl
     {
       mandatid.setMandatory(true);
     }
-    if (Einstellungen.getEinstellung()
-        .getSepaMandatIdSource() != SepaMandatIdSource.INDIVIDUELL)
+    if ((Integer) Einstellungen.getEinstellung(Property.SEPAMANDATIDSOURCE) != SepaMandatIdSource.INDIVIDUELL)
     {
       mandatid.disable();
     }
@@ -1112,7 +1112,7 @@ public class MitgliedControl extends FilterControl
     this.eintritt.setName("Eintrittsdatum");
     this.eintritt.setText("Bitte Eintrittsdatum wählen");
     this.eintritt.setMandatory(
-        Einstellungen.getEinstellung().getEintrittsdatumPflicht());
+        (Boolean) Einstellungen.getEinstellung(Property.EINTRITTSDATUMPFLICHT));
     return eintritt;
   }
 
@@ -1342,7 +1342,7 @@ public class MitgliedControl extends FilterControl
       // Parent vom GC disposed wurde.
     }
     zahler = new VollzahlerInput().getMitgliedInput(zahler, getMitglied(),
-        Einstellungen.getEinstellung().getMitgliedAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
 
     zahler.addListener(new Listener()
     {
@@ -1738,7 +1738,7 @@ public class MitgliedControl extends FilterControl
         return new Zahlungsweg((Integer)o).getText();
       }
     });
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
           new BuchungsklasseFormatter());
@@ -1905,8 +1905,7 @@ public class MitgliedControl extends FilterControl
     // Suche alle *.csv Dateien im vorlagencsvverzeichnis
     String vorlagencsvverzeichnis = "";
     String[] vorlagencsvList = {};
-    vorlagencsvverzeichnis = Einstellungen.getEinstellung()
-        .getVorlagenCsvVerzeichnis();
+    vorlagencsvverzeichnis = (String) Einstellungen.getEinstellung(Property.VORLAGENCSVVERZEICHNIS);
     if (vorlagencsvverzeichnis.length() > 0)
     {
       File verzeichnis = new File(vorlagencsvverzeichnis);
@@ -2008,7 +2007,7 @@ public class MitgliedControl extends FilterControl
           getKtoiPlz().setValue(getPlz().getValue());
           getKtoiOrt().setValue(getOrt().getValue());
           getKtoiEmail().setValue(getEmail().getValue());
-          if (Einstellungen.getEinstellung().getAuslandsadressen())
+          if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
           {
             getKtoiStaat().setValue(getStaat().getValue());
           }
@@ -2318,7 +2317,7 @@ public class MitgliedControl extends FilterControl
           throw new ApplicationException("Beitragsgruppe fehlt");
         }
       }
-      if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
+      if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
         if (getIndividuellerBeitrag().getValue() != null)
         {
@@ -2350,7 +2349,7 @@ public class MitgliedControl extends FilterControl
         m.setIban(ib.toUpperCase().replace(" ",""));
       m.setEintritt((Date) getEintritt().getValue());
       m.setEmail((String) getEmail().getValue());
-      if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+      if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         if (externemitgliedsnummer != null)
         {
@@ -2423,7 +2422,7 @@ public class MitgliedControl extends FilterControl
 
       boolean ist_mitglied = m.getMitgliedstyp()
           .getJVereinid() == Mitgliedstyp.MITGLIED;
-      if (Einstellungen.getEinstellung().getMitgliedfoto() && ist_mitglied)
+      if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO) && ist_mitglied)
       {
         Mitgliedfoto f = null;
         DBIterator<Mitgliedfoto> it = Einstellungen.getDBService()
@@ -2540,7 +2539,7 @@ public class MitgliedControl extends FilterControl
           zf.store();
         }
       }
-      if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen()
+      if ((Boolean) Einstellungen.getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN)
           && ist_mitglied)
       {
         // Schritt 1: Die selektierten sekundären Beitragsgruppe prüfen, ob sie
@@ -2668,7 +2667,7 @@ public class MitgliedControl extends FilterControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("auswertungmitglied", dateinamensort,
-          Einstellungen.getEinstellung().getDateinamenmuster(),
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
           ausw.getDateiendung()).get());
       fd.setFilterExtensions(new String[] { "*." + ausw.getDateiendung() });
 
@@ -2783,7 +2782,7 @@ public class MitgliedControl extends FilterControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("auswertungnichtmitglied", dateinamensort,
-          Einstellungen.getEinstellung().getDateinamenmuster(),
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
           ausw.getDateiendung()).get());
       fd.setFilterExtensions(new String[] { "*." + ausw.getDateiendung() });
 
@@ -2855,7 +2854,8 @@ public class MitgliedControl extends FilterControl
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("statistik", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
+            .get());
 
     String s = fd.open();
 

@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -342,7 +343,7 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   public boolean isOffen(Date datum) throws RemoteException
   {
     if (!getMitglied().isAngemeldet(datum)
-        && !Einstellungen.getEinstellung().getZusatzbetragAusgetretene())
+        && !(Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
     {
       return false;
     }
@@ -367,7 +368,7 @@ public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
   public boolean isAktiv(Date datum) throws RemoteException
   {
     if (!getMitglied().isAngemeldet(datum)
-        && !Einstellungen.getEinstellung().getZusatzbetragAusgetretene())
+        && !(Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
     {
       return false;
     }

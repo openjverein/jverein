@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.SollbuchungPositionControl;
@@ -46,11 +47,11 @@ public class SollbuchungPositionDetailView extends AbstractView
     group.addLabelPair("Zweck", control.getZweck());
     group.addLabelPair("Betrag", control.getBetrag());
     group.addLabelPair("Buchungsart", control.getBuchungsart());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     }
-    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       group.addLabelPair("Steuer", control.getSteuer());
     }

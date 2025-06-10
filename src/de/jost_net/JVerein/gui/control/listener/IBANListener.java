@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
@@ -122,8 +123,7 @@ public class IBANListener implements Listener
     String konto = ib.substring(9, ib.length());
     try
     {
-      IBAN ibankonv = new IBAN(konto, blz, Einstellungen.getEinstellung()
-          .getDefaultLand());
+      IBAN ibankonv = new IBAN(konto, blz, (String) Einstellungen.getEinstellung(Property.DEFAULTLAND));
       iban.setValue(ibankonv.getIBAN());
       bic.setValue(ibankonv.getBIC());
     }

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -79,7 +80,7 @@ public class RechnungMap extends AbstractMap
     }
     if (buchungDatum.size() > 1)
     {
-      if (Einstellungen.getEinstellung().getOptiert())
+      if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
       {
         zweck.add("Rechnungsbetrag inkl. USt.");
       }
@@ -123,11 +124,11 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.MK_IST.getName(), "");
 
     map.put(RechnungVar.QRCODE_INTRO.getName(),
-        Einstellungen.getEinstellung().getQRCodeIntro());
+        (String) Einstellungen.getEinstellung(Property.QRCODEINTRO));
 
     map.put(RechnungVar.DATUM.getName(), re.getDatum());
     map.put(RechnungVar.NUMMER.getName(), StringTool.lpad(re.getID(),
-        Einstellungen.getEinstellung().getZaehlerLaenge(), "0"));
+        (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
 
     map.put(RechnungVar.PERSONENART.getName(), re.getPersonenart());
     map.put(RechnungVar.GESCHLECHT.getName(), re.getGeschlecht());
@@ -159,7 +160,7 @@ public class RechnungMap extends AbstractMap
     {
       case Zahlungsweg.BASISLASTSCHRIFT:
       {
-        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextAbbuchung();
+        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTABBUCHUNG);
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}", re.getBIC());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}", re.getIBAN());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{MANDATID\\}",
@@ -168,13 +169,12 @@ public class RechnungMap extends AbstractMap
       }
       case Zahlungsweg.BARZAHLUNG:
       {
-        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextBar();
+        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR);
         break;
       }
       case Zahlungsweg.ÜBERWEISUNG:
       {
-        zahlungsweg = Einstellungen.getEinstellung()
-            .getRechnungTextUeberweisung();
+        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
         break;
       }
     }

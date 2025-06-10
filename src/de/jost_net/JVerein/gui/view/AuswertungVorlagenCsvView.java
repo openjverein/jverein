@@ -61,6 +61,7 @@ import org.supercsv.io.CsvListWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.AbstractView;
@@ -105,7 +106,7 @@ public class AuswertungVorlagenCsvView extends AbstractView
   {
     try
     {
-      dirName = Einstellungen.getEinstellung().getVorlagenCsvVerzeichnis();
+      dirName = (String) Einstellungen.getEinstellung(Property.VORLAGENCSVVERZEICHNIS);
     }
     catch (RemoteException e)
     {
