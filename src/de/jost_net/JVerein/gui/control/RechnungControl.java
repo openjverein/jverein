@@ -313,7 +313,7 @@ public class RechnungControl extends DruckMailControl
       else
       {
         sql += " HAVING CAST(COALESCE(SUM(buchung.betrag),0) AS DECIMAL(10,2)) > "
-            + Sollbuchung.T_BETRAG + " - " + limit.toString();
+            + Sollbuchung.T_BETRAG + " + " + limit.toString();
       }
 
       @SuppressWarnings("unchecked")

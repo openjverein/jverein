@@ -380,7 +380,7 @@ public class SollbuchungQuery
     {
       sql.append(
           " HAVING CAST(COALESCE(SUM(buchung.betrag),0) AS DECIMAL(10,2)) > "
-              + Sollbuchung.T_BETRAG + " - " + limit.toString());
+              + Sollbuchung.T_BETRAG + " + " + limit.toString());
     }
 
     List<Long> ids = (List<Long>) service.execute(sql.toString(), param.toArray(),
