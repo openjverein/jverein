@@ -29,6 +29,8 @@ public interface Anfangsbestand extends DBObject
 
   public void setKonto(Konto konto) throws RemoteException;
 
+  public void setKontoId(String id) throws RemoteException;
+
   public Date getDatum() throws RemoteException;
 
   public void setDatum(Date datum) throws RemoteException;

@@ -173,6 +173,12 @@ public class CSVBuchungsImport implements Importer
             }
             Buchungsart b1 = (Buchungsart) bit.next();
             bu.setBuchungsartId(Long.valueOf(b1.getID()));
+
+            // Steuer aus Buchungsart setzen
+            if (Einstellungen.getEinstellung().getSteuerInBuchung())
+            {
+              bu.setSteuer(b1.getSteuer());
+            }
           }
           catch (SQLException e)
           {

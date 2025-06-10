@@ -21,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+import org.apache.commons.lang.time.DateUtils;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Anlagenzweck;
@@ -153,6 +155,86 @@ public class KontoImpl extends AbstractDBObject implements Konto
     }
   }
 
+  /**
+   * 
+   * @param konto
+   *          id des Kontos
+   * @param datum
+   * @return dibt den Kontostand am anfang des angegebenen Tages zurück, also
+   *         ohne die Buchungen des angegebenen Tages
+   * @throws RemoteException
+   */
+  public static Double getSaldo(Integer konto, Date datum)
+      throws RemoteException
+  {
+    DBService service = Einstellungen.getDBService();
+
+    // Suchen ob Anfangsstand vor dem Bereich.
+    DBIterator<Anfangsbestand> it = service.createList(Anfangsbestand.class);
+    it.addFilter("konto = ? ", konto);
+    it.addFilter("datum <= ? ", datum);
+    it.setOrder("ORDER BY datum DESC");
+    it.setLimit(1);
+
+    // Anfangsstand vor/an von Datum vorhanden.
+    if (it.hasNext())
+    {
+      Anfangsbestand a = it.next();
+
+      // Anfangsbestand = vorhandener Anfangsbestand + Umsätze bis "bis"
+      ExtendedDBIterator<PseudoDBObject> summeIt = new ExtendedDBIterator<>(
+          "buchung");
+      summeIt.addColumn("sum(betrag) as summe");
+      summeIt.addFilter("datum >= ?", a.getDatum());
+      summeIt.addFilter("datum < ?", datum);
+      summeIt.addFilter("konto = ?", konto);
+
+      Double summe = 0d;
+      if (summeIt.hasNext())
+      {
+        PseudoDBObject o = summeIt.next();
+        if (o.getAttribute("summe") != null)
+        {
+          summe = o.getDouble("summe");
+        }
+      }
+
+      return a.getBetrag() + summe;
+    }
+
+    // Suchen ob Anfangsstand im Suchbereich enthalten ist.
+    it = service.createList(Anfangsbestand.class);
+    it.addFilter("konto = ? ", konto);
+    it.addFilter("datum >= ?", datum);
+    it.setOrder("ORDER BY datum");
+    it.setLimit(1);
+
+    // Anfangsstand ist vorhanden und es gibt keinen Anfangsstand vorher
+    // Dann muß das Konto im Bereich erzeugt worden sein oder es gibt keinen
+    // früheren Anfangsstand. Dann zurückrechnen
+    if (it.hasNext())
+    {
+      Anfangsbestand a = it.next();
+
+      // Anfangsbestand = vorhandener Anfangsbestand - Umsätze davor.
+      ExtendedDBIterator<PseudoDBObject> summeIt = new ExtendedDBIterator<>(
+          "buchung");
+      summeIt.addColumn("sum(betrag) as summe");
+      summeIt.addFilter("datum >= ?", datum);
+      summeIt.addFilter("datum <= ?", DateUtils.addDays(a.getDatum(), -1));
+      summeIt.addFilter("konto = ?", konto);
+
+      Double summe = 0d;
+      PseudoDBObject o = summeIt.next();
+      if (o.getAttribute("summe") != null)
+      {
+        summe = o.getDouble("summe");
+      }
+      return a.getBetrag() - summe;
+    }
+    return null;
+  }
+
   @Override
   protected Class<?> getForeignObject(String arg0)
   {
@@ -230,21 +312,6 @@ public class KontoImpl extends AbstractDBObject implements Konto
     konten.addFilter(
         "(aufloesung is null or aufloesung >= ? )",
         new Object[] { gj.getBeginnGeschaeftsjahr() });
-    konten.setOrder("order by bezeichnung");
-    return konten;
-  }
-  
-  @Override
-  public DBIterator<Konto> getKontenVonBis(Date von, Date bis)
-      throws RemoteException
-  {
-    DBIterator<Konto> konten = Einstellungen.getDBService()
-        .createList(Konto.class);
-    konten.addFilter("(eroeffnung is null or eroeffnung <= ?)",
-        new Object[] { bis });
-    konten.addFilter(
-        "(aufloesung is null or aufloesung >= ? )",
-        new Object[] { von });
     konten.setOrder("order by bezeichnung");
     return konten;
   }

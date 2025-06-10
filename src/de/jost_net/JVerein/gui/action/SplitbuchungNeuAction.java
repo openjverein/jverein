@@ -53,6 +53,7 @@ public class SplitbuchungNeuAction implements Action
       buch.setIban(master.getIban());
       buch.setSpeicherung(false);
       buch.setSplitTyp(SplitbuchungTyp.SPLIT);
+      buch.setSteuer(master.getSteuer());
       buch.setBetrag(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT).doubleValue() - SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT).doubleValue());
 
       // Wenn CurrentObject und View von aktueller und nächster View gleich

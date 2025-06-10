@@ -21,6 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -34,6 +35,7 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Einstellung;
+import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.rmi.Version;
 import de.jost_net.JVerein.util.JVDateFormatJJJJMMTT;
 import de.willuhn.datasource.BeanUtil;
@@ -126,6 +128,30 @@ public class BackupRestoreAction implements Action
         Logger.info("importing backup " + file.getAbsolutePath());
         final ClassLoader loader = Application.getPluginLoader()
             .getPlugin(JVereinPlugin.class).getManifest().getClassLoader();
+
+        // Prüfen ob eine H2 DB verwendet wird, sonst ist es mysql/mariadb
+        boolean h2driver = JVereinDBService.SETTINGS
+            .getString("database.driver", "H2").toLowerCase()
+            .indexOf("h2") >= 0;
+        try
+        {
+          // FOreign Key Check vorübergehend deaktiieren
+          if (h2driver)
+          {
+            Einstellungen.getDBService()
+                .executeUpdate("SET REFERENTIAL_INTEGRITY FALSE", null);
+          }
+          else
+          {
+            Einstellungen.getDBService()
+                .executeUpdate("SET FOREIGN_KEY_CHECKS=0", null);
+          }
+
+        }
+        catch (RemoteException re)
+        {
+
+        }
 
         Reader reader = null;
         try
@@ -234,6 +260,27 @@ public class BackupRestoreAction implements Action
         }
         finally
         {
+          try
+          {
+            // Foreign Key Check wieder aktivieren
+            if (h2driver)
+            {
+              Einstellungen.getDBService()
+                  .executeUpdate("SET REFERENTIAL_INTEGRITY TRUE", null);
+            }
+            else
+            {
+              Einstellungen.getDBService()
+                  .executeUpdate("SET FOREIGN_KEY_CHECKS=1", null);
+            }
+          }
+          catch (RemoteException re)
+          {
+            String text = "Fehler beim re-aktivieren des Freign Key Checks";
+            monitor.setStatus(ProgressMonitor.STATUS_ERROR);
+            monitor.setStatusText(text);
+            Logger.error(text);
+          }
           if (reader != null)
           {
             try

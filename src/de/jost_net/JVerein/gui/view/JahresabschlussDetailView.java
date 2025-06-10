@@ -61,8 +61,8 @@ public class JahresabschlussDetailView extends AbstractView
     }
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Von", control.getVon());
-    left.addLabelPair("Bis", control.getBis());
+    left.addLabelPair("Von", control.getDatumvon());
+    left.addLabelPair("Bis", control.getDatumbis());
     left.addLabelPair("", control.getAnfangsbestaende());
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
@@ -82,7 +82,7 @@ public class JahresabschlussDetailView extends AbstractView
           control.getZwanghafteWeitergabe());
     }
 
-    control.getJahresabschlussSaldo().paint(this.getParent());
+    control.getSaldoList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

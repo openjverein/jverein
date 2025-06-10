@@ -30,7 +30,7 @@ public interface SollbuchungPosition extends DBObject
   
   public Double getSteuersatz() throws RemoteException;
 
-  public void setSteuersatz(Double satz) throws RemoteException;
+  public void setSteuer(Steuer steuer) throws RemoteException;
   
   public Long getBuchungsartId() throws RemoteException;
 
@@ -57,6 +57,8 @@ public interface SollbuchungPosition extends DBObject
   public String getZweck() throws RemoteException;
 
   public Double getNettobetrag() throws RemoteException;
+
+  public Steuer getSteuer() throws RemoteException;
 
   public Double getSteuerbetrag() throws RemoteException;
 

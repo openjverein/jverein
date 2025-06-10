@@ -19,10 +19,13 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -66,6 +69,33 @@ public class SollbuchungPositionImpl extends AbstractDBObject
     if (getZweck() == null || getZweck().length() == 0)
     {
       throw new ApplicationException("Bitte Verwendungszweck eingeben");
+    }
+    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    {
+      if (getSteuer() != null && getBuchungsart() != null
+          && getSteuer().getBuchungsart().getArt() != getBuchungsart().getArt())
+      {
+        switch (getBuchungsart().getArt())
+        {
+          case ArtBuchungsart.AUSGABE:
+            throw new ApplicationException(
+                "Umsatzsteuer statt Vorsteuer gewählt.");
+          case ArtBuchungsart.EINNAHME:
+            throw new ApplicationException(
+                "Vorsteuer statt Umsatzsteuer gewählt.");
+          // Umbuchung ist bei Anlagebuchungen möglich,
+          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
+          case ArtBuchungsart.UMBUCHUNG:
+            break;
+        }
+      }
+      if (getSteuer() != null && getBuchungsart() != null
+          && (getBuchungsart().getSpende()
+              || getBuchungsart().getAbschreibung()))
+      {
+        throw new ApplicationException(
+            "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
+      }
     }
   }
 
@@ -112,20 +142,24 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   @Override
   public Double getSteuersatz() throws RemoteException
   {
-    return (Double) getAttribute("steuersatz");
+    if (getSteuer() == null)
+    {
+      return 0d;
+    }
+    return getSteuer().getSatz();
   }
 
   @Override
-  public void setSteuersatz(Double satz) throws RemoteException
+  public void setSteuer(Steuer steuer) throws RemoteException
   {
-    setAttribute("steuersatz", satz);
+    setAttribute("steuer", steuer);
   }
 
   @Override
   public Double getNettobetrag() throws RemoteException
   {
     Double betrag = (Double) getAttribute("betrag");
-    Double steuersatz = (Double) getAttribute("steuersatz");
+    Double steuersatz = getSteuersatz();
     if (steuersatz == null || betrag == null)
     {
       return betrag;
@@ -137,12 +171,41 @@ public class SollbuchungPositionImpl extends AbstractDBObject
   public Double getSteuerbetrag() throws RemoteException
   {
     Double betrag = (Double) getAttribute("betrag");
-    Double steuersatz = (Double) getAttribute("steuersatz");
+    Double steuersatz = getSteuersatz();
     if (steuersatz == null || betrag == null)
     {
       return 0d;
     }
     return betrag * steuersatz / (100 + steuersatz);
+  }
+
+  @Override
+  public Steuer getSteuer() throws RemoteException
+  {
+    // Nur wenn Steuer in Buchung aktiviert ist, nehemen wir dies, sonst aus der
+    // Buchungsart.
+    if (!Einstellungen.getEinstellung().getOptiert())
+    {
+      return null;
+    }
+    if (!Einstellungen.getEinstellung().getSteuerInBuchung())
+    {
+      if (getBuchungsart() == null)
+      {
+        return null;
+      }
+      return getBuchungsart().getSteuer();
+    }
+
+    Object o = super.getAttribute("steuer");
+    if (o == null)
+      return null;
+
+    if (o instanceof Steuer)
+      return (Steuer) o;
+
+    Cache cache = Cache.get(Steuer.class, true);
+    return (Steuer) cache.get(o);
   }
 
   @Override
@@ -245,13 +308,21 @@ public class SollbuchungPositionImpl extends AbstractDBObject
     {
         return getBuchungsklasse();
     }
-    else if ("steuerbetrag".equals(fieldName))
+    else if ("steuersatz".equals(fieldName))
     {
-      return getSteuerbetrag();
+      return getSteuersatz();
     }
     else if ("nettobetrag".equals(fieldName))
     {
       return getNettobetrag();
+    }
+    else if ("steuerbetrag".equals(fieldName))
+    {
+      return getSteuerbetrag();
+    }
+    else if ("steuer".equals(fieldName))
+    {
+      return getSteuer();
     }
     return super.getAttribute(fieldName);
   }

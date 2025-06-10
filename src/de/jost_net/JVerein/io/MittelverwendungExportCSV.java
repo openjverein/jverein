@@ -32,13 +32,20 @@ import org.supercsv.prefs.CsvPreference;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MittelverwendungControl;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MittelverwendungExportCSV
+public class MittelverwendungExportCSV implements ISaldoExport
 {
+  private int tab;
+
+  public MittelverwendungExportCSV(int tab)
+  {
+    this.tab = tab;
+  }
 
   private static CellProcessor[] getProcessors()
   {
@@ -54,8 +61,9 @@ public class MittelverwendungExportCSV
     return processors;
   }
 
-  public MittelverwendungExportCSV(ArrayList<MittelverwendungZeile> zeile,
-      final File file, Date datumvon, Date datumbis, int tab) throws ApplicationException
+  @Override
+  public void export(ArrayList<PseudoDBObject> zeile, File file, Date datumvon,
+      Date datumbis) throws ApplicationException
   {
     ICsvMapWriter writer = null;
     try
@@ -104,75 +112,33 @@ public class MittelverwendungExportCSV
       csvzeile.put(header[1], " ");
       writer.write(csvzeile, header, processors);
 
-      for (MittelverwendungZeile mvz : zeile)
+      for (PseudoDBObject mvz : zeile)
       {
         csvzeile = new HashMap<>();
-        switch (mvz.getStatus())
-        {
-          case MittelverwendungZeile.EINNAHME:
-          case MittelverwendungZeile.AUSGABE:
-          {
-            String position = "";
-            Integer pos = (Integer) mvz.getAttribute("position");
-            if (pos != null)
-            {
-              position = pos.toString();
-            }
-            csvzeile.put(header[0], position);
-            csvzeile.put(header[1], (String) mvz.getAttribute("bezeichnung"));
-            csvzeile.put(header[2],(Double) mvz.getAttribute("betrag"));
-            csvzeile.put(header[3], (Double) mvz.getAttribute("summe"));
-            if (tab == MittelverwendungControl.SALDO_REPORT)
-            {
-              csvzeile.put(header[4], (String) mvz.getAttribute("kommentar"));
-            }
-            break;
-          }
-          case MittelverwendungZeile.SUMME:
-          case MittelverwendungZeile.ART:
-          {
-            String position = "";
-            Integer pos = (Integer) mvz.getAttribute("position");
-            if (pos != null)
-            {
-              position = pos.toString();
-            }
-            String art = (String) mvz.getAttribute("art");
-            if (mvz.getStatus() == MittelverwendungZeile.ART)
-            {
-              csvzeile.put(header[0], art);
-            }
-            else
-            {
-              csvzeile.put(header[0], position);
-            }
-            csvzeile.put(header[1], (String) mvz.getAttribute("bezeichnung"));
-            csvzeile.put(header[2], (Double) mvz.getAttribute("betrag"));
-            csvzeile.put(header[3], (Double) mvz.getAttribute("summe"));
-            if (tab == MittelverwendungControl.SALDO_REPORT)
-            {
-              csvzeile.put(header[4], (String) mvz.getAttribute("kommentar"));
-            }
-            break;
-          }
-          case MittelverwendungZeile.LEERZEILE:
-          {
-            String position = "";
-            Integer pos = (Integer) mvz.getAttribute("position");
-            if (pos != null)
-            {
-              position = pos.toString();
-            }
-            csvzeile.put(header[0], position);
-            csvzeile.put(header[1], (String) mvz.getAttribute("bezeichnung"));
-            break;
-          }
-          case MittelverwendungZeile.UNDEFINED:
-          {
-            continue;
-          }
-        }
 
+        if (tab == MittelverwendungControl.FLOW_REPORT)
+        {
+          csvzeile.put(header[0], mvz.getInteger(MittelverwendungControl.NR));
+          csvzeile.put(header[1],
+              (String) mvz.getAttribute(MittelverwendungControl.GRUPPE));
+        }
+        else
+        {
+          csvzeile.put(header[0],
+              (String) mvz.getAttribute(MittelverwendungControl.GRUPPE));
+          csvzeile.put(header[1],
+              mvz.getAttribute(MittelverwendungControl.BEZEICHNUNG));
+        }
+        csvzeile.put(header[2],
+            (Double) mvz.getAttribute(MittelverwendungControl.BETRAG));
+        csvzeile.put(header[3],
+            (Double) mvz.getAttribute(MittelverwendungControl.SUMME));
+        if (tab == MittelverwendungControl.SALDO_REPORT)
+        {
+          csvzeile.put(header[4],
+              (String) mvz.getAttribute(MittelverwendungControl.KOMMENTAR));
+        }
+        
         writer.write(csvzeile, header, processors);
       }
       GUI.getStatusBar().setSuccessText("Export fertig.");
@@ -201,5 +167,4 @@ public class MittelverwendungExportCSV
     }
 
   }
-
 }

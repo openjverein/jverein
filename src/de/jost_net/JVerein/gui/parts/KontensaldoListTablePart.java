@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.io.SaldoZeile;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
@@ -39,9 +39,10 @@ public class KontensaldoListTablePart extends TablePart
     super(action);
   }
 
-  public KontensaldoListTablePart(ArrayList<SaldoZeile> list, Action action)
+  public KontensaldoListTablePart(ArrayList<PseudoDBObject> arrayList,
+      Action action)
   {
-    super(list, action);
+    super(arrayList, action);
 
     // ChangeListener für die Summe der ausgewählten Konten
     addSelectionListener(e -> {
@@ -69,14 +70,14 @@ public class KontensaldoListTablePart extends TablePart
       try
       {
         Object o = getSelection();
-        if (o != null && o instanceof SaldoZeile[])
+        if (o != null && o instanceof PseudoDBObject[])
         {
           Double anfangsbestand = Double.valueOf(0d);
           Double einnahmen = Double.valueOf(0d);
           Double ausgaben = Double.valueOf(0d);
           Double umbuchungen = Double.valueOf(0d);
           Double endbestand = Double.valueOf(0d);
-          SaldoZeile[] zeilen = (SaldoZeile[]) o;
+          PseudoDBObject[] zeilen = (PseudoDBObject[]) o;
           for (int i = 0; i < zeilen.length; i++)
           {
             anfangsbestand = anfangsbestand
