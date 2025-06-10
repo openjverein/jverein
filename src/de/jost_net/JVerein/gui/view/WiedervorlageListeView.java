@@ -38,28 +38,41 @@ public class WiedervorlageListeView extends AbstractView
     final WiedervorlageControl control = new WiedervorlageControl(this);
     
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addLabelPair("Vermerk", control.getSuchtext());
     
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    middle.addInput(control.getDatumvon());
+    middle.addInput(control.getDatumbis());
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getDatumvon());
-    right.addInput(control.getDatumbis());
+    right.addLabelPair("Erledigung von", control.getEingabedatumvon());
+    right.addLabelPair("Erledigung bis", control.getEingabedatumbis());
+    right.addLabelPair("Ohne Erledigung", control.getCheckboxAuswahl());
     
     ButtonArea fbuttons = new ButtonArea();
-    ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),
+    ToolTipButton zurueck1 = control.getZurueckButton(control.getDatumvon(),
         control.getDatumbis());
-    fbuttons.addButton(zurueck);
-    ToolTipButton vor = control.getVorButton(control.getDatumvon(),
+    fbuttons.addButton(zurueck1);
+    ToolTipButton vor1 = control.getVorButton(control.getDatumvon(),
         control.getDatumbis());
-    fbuttons.addButton(vor);
+    fbuttons.addButton(vor1);
+    ToolTipButton zurueck2 = control.getZurueckButton(
+        control.getEingabedatumvon(), control.getEingabedatumbis());
+    fbuttons.addButton(zurueck2);
+    ToolTipButton vor2 = control.getVorButton(control.getEingabedatumvon(),
+        control.getEingabedatumbis());
+    fbuttons.addButton(vor2);
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck.setToolTipText("Datumsbereich zurück");
-    vor.setToolTipText("Datumsbereich vowärts");
+    zurueck1.setToolTipText("Datumsbereich zurück");
+    vor1.setToolTipText("Datumsbereich vowärts");
+    zurueck2.setToolTipText("Erledigung Datumsbereich zurück");
+    vor2.setToolTipText("Erledigung Datumsbereich vowärts");
     
     control.getWiedervorlageList().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();

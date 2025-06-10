@@ -174,7 +174,7 @@ public class LastschriftMap extends AbstractMap
     map.put(LastschriftVar.IBAN.getName(), "DE89370400440532013000");
     map.put(LastschriftVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
     map.put(LastschriftVar.VERWENDUNGSZWECK.getName(), "Zweck");
-    map.put(LastschriftVar.BETRAG.getName(), Double.valueOf("23.80"));
+    map.put(LastschriftVar.BETRAG.getName(), "23,80");
     map.put(LastschriftVar.EMPFAENGER.getName(),
         "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
     return map;
