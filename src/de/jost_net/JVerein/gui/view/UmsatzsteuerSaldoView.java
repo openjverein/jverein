@@ -46,7 +46,7 @@ public class UmsatzsteuerSaldoView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.JAHRESSALDO, false, "question-circle.png");
+        DokumentationUtil.UMSATZSTEUERSALDO, false, "question-circle.png");
     buttons.addButton(control.getStartAuswertungCSVButton());
     buttons.addButton(control.getStartAuswertungPDFButton());
     buttons.paint(this.getParent());
