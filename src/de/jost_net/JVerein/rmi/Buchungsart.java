@@ -44,14 +44,6 @@ public interface Buchungsart extends DBObject
 
   public void setSpende(Boolean spende) throws RemoteException;
   
-  public double getSteuersatz() throws RemoteException;
-
-  public void setSteuersatz(double steuersatz) throws RemoteException;
-
-  public Buchungsart getSteuerBuchungsart() throws RemoteException;
-
-  public void setSteuerBuchungsart(Long steuer_buchungsart) throws RemoteException;
-  
   public int getStatus() throws RemoteException;
 
   public void setStatus(int status) throws RemoteException;
@@ -67,5 +59,11 @@ public interface Buchungsart extends DBObject
   public boolean getRegexp() throws RemoteException;
 
   public void setRegexp(boolean regexp) throws RemoteException;
+
+  public Steuer getSteuer() throws RemoteException;
+
+  public void setSteuer(Steuer steuer) throws RemoteException;
+
+  public void setSteuerId(Integer id) throws RemoteException;
 
 }

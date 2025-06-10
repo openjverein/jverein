@@ -93,6 +93,7 @@ import de.jost_net.JVerein.gui.view.SpendenbescheinigungListeView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.jost_net.JVerein.gui.view.StatistikMitgliedView;
+import de.jost_net.JVerein.gui.view.SteuerListeView;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragListeView;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
@@ -453,6 +454,12 @@ public class MyExtension implements Extension
         einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
             "Projekte", new StartViewAction(ProjektListeView.class),
             "screwdriver.png"));
+      }
+      if (Einstellungen.getEinstellung().getOptiert())
+      {
+        einstellungenbuchfuehrung
+            .addChild(new MyItem(einstellungenbuchfuehrung, "Steuer",
+                new StartViewAction(SteuerListeView.class), "coins.png"));
       }
       administration.addChild(einstellungenbuchfuehrung);
       

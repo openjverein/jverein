@@ -647,6 +647,11 @@ public interface Einstellung extends DBObject, IBankverbindung
   public void setProjekteAnzeigen(boolean projekteanzeigen)
       throws RemoteException;
 
+  public boolean getSteuerInBuchung() throws RemoteException;
+
+  public void setSteuerInBuchung(boolean steuerinbuchung)
+      throws RemoteException;
+
   public boolean getSpendenbescheinigungenAnzeigen() throws RemoteException;
 
   public void setSpendenbescheinigungenAnzeigen(

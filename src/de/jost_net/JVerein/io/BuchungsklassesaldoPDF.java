@@ -25,17 +25,30 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 
+import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
+import de.jost_net.JVerein.gui.control.BuchungsklasseSaldoControl;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsklassesaldoPDF
+public class BuchungsklassesaldoPDF implements ISaldoExport
 {
 
-  public BuchungsklassesaldoPDF(ArrayList<BuchungsklasseSaldoZeile> zeile,
-      final File file, Date datumvon, Date datumbis, String title,
-      boolean umbuchung)
+  private boolean umbuchung;
+
+  private String title;
+
+  public BuchungsklassesaldoPDF(boolean umbuchung, String title)
+  {
+    this.umbuchung = umbuchung;
+    this.title = title;
+  }
+
+  @Override
+  public void export(ArrayList<PseudoDBObject> zeile,
+      final File file, Date datumvon, Date datumbis)
       throws ApplicationException
   {
     try
@@ -47,89 +60,78 @@ public class BuchungsklassesaldoPDF
           zeile.size());
       makeHeader(reporter, umbuchung);
 
-      for (BuchungsklasseSaldoZeile bkz : zeile)
+      for (PseudoDBObject bkz : zeile)
       {
-        switch (bkz.getStatus())
+        switch (bkz.getInteger(AbstractSaldoControl.ART))
         {
-          case BuchungsklasseSaldoZeile.HEADER:
+          case AbstractSaldoControl.ART_HEADER:
           {
             reporter.addColumn(
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"),
+                (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_LEFT, new BaseColor(220, 220, 220), 4);
             break;
           }
-          case BuchungsklasseSaldoZeile.DETAIL:
+          case AbstractSaldoControl.ART_DETAIL:
           {
             reporter.addColumn(
-                (String) bkz.getAttribute("buchungsartbezeichnung"),
+                (String) bkz.getAttribute(AbstractSaldoControl.BUCHUNGSART),
                 Element.ALIGN_LEFT);
-            reporter.addColumn((Double) bkz.getAttribute("einnahmen"));
-            reporter.addColumn((Double) bkz.getAttribute("ausgaben"));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN));
             if (umbuchung)
             {
-              reporter.addColumn((Double) bkz.getAttribute("umbuchungen"));
+              reporter
+                  .addColumn(bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
             }
             break;
           }
-          case BuchungsklasseSaldoZeile.SALDOFOOTER:
+          case AbstractSaldoControl.ART_SALDOFOOTER:
           {
             reporter.addColumn(
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"),
+                (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_RIGHT);
-            reporter.addColumn((Double) bkz.getAttribute("einnahmen"));
-            reporter.addColumn((Double) bkz.getAttribute("ausgaben"));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN));
             if (umbuchung)
             {
-              reporter.addColumn((Double) bkz.getAttribute("umbuchungen"));
+              reporter
+                  .addColumn(bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
             }
             break;
           }
-          case BuchungsklasseSaldoZeile.GESAMTSALDOFOOTER:
+          case AbstractSaldoControl.ART_GESAMTSALDOFOOTER:
           {
             reporter.addColumn("Gesamt", Element.ALIGN_LEFT, 4);
             reporter.addColumn(
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"),
+                (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_RIGHT);
-            reporter.addColumn((Double) bkz.getAttribute("einnahmen"));
-            reporter.addColumn((Double) bkz.getAttribute("ausgaben"));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN));
             if (umbuchung)
             {
-              reporter.addColumn((Double) bkz.getAttribute("umbuchungen"));
+              reporter
+                  .addColumn(bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
             }
             break;
           }
-          case BuchungsklasseSaldoZeile.GESAMTGEWINNVERLUST:
-          case BuchungsklasseSaldoZeile.SALDOGEWINNVERLUST:
+          case AbstractSaldoControl.ART_GESAMTGEWINNVERLUST:
+          case AbstractSaldoControl.ART_SALDOGEWINNVERLUST:
           {
             reporter.addColumn(
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"),
+                (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_RIGHT);
-            reporter.addColumn((Double) bkz.getAttribute("einnahmen"));
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
             reporter.addColumn("", Element.ALIGN_LEFT, 2);
             break;
           }
-          case BuchungsklasseSaldoZeile.STEUERHEADER:
+          case AbstractSaldoControl.ART_NICHTZUGEORDNETEBUCHUNGEN:
           {
             reporter.addColumn(
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"),
-                Element.ALIGN_LEFT, 4);
-          }
-          case BuchungsklasseSaldoZeile.STEUER:
-          {
-            reporter.addColumn(
-                (String) bkz.getAttribute("buchungsartbezeichnung"),
-                Element.ALIGN_RIGHT);
-            reporter.addColumn((Double) bkz.getAttribute("einnahmen"));
-            reporter.addColumn((Double) bkz.getAttribute("ausgaben"));
-            reporter.addColumn("", Element.ALIGN_LEFT, 1);
-            break;
-          }
-          case BuchungsklasseSaldoZeile.NICHTZUGEORDNETEBUCHUNGEN:
-          {
-            reporter.addColumn(
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"),
+                (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_LEFT);
-            reporter.addColumn((Integer) bkz.getAttribute("anzahlbuchungen"));
+            reporter
+                .addColumn(
+                    bkz.getInteger(BuchungsklasseSaldoControl.EINNAHMEN));
             reporter.addColumn("", Element.ALIGN_LEFT, 2);
             break;
           }

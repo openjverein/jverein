@@ -16,199 +16,322 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Date;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.parts.AnlagenList;
-import de.jost_net.JVerein.io.AnlagenlisteZeile;
 import de.jost_net.JVerein.io.AnlagenverzeichnisCSV;
 import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
-//import de.jost_net.JVerein.io.AnlagenlisteCSV;
-//import de.jost_net.JVerein.io.AnlagenlistePDF;
-import de.jost_net.JVerein.util.Dateiname;
+import de.jost_net.JVerein.io.ISaldoExport;
+import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.KontoImpl;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
-import de.willuhn.jameica.system.Settings;
+import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
+import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
-public class AnlagenlisteControl extends SaldoControl
+public class AnlagenlisteControl extends AbstractSaldoControl
 {
 
-  private AnlagenList saldoList;
+  public static final String STARTWERT = "startwert";
 
-  final static String AuswertungPDF = "PDF";
+  public static final String ZUGANG = "zugang";
 
-  final static String AuswertungCSV = "CSV";
+  public static final String ABSCHREIBUNG = "abschreibung";
 
-  public AnlagenlisteControl(AbstractView view)
+  public static final String ABGANG = "abgang";
+
+  public static final String ENDWERT = "endwert";
+
+  public static final String KONTO = "konto";
+
+  public static final String NUTZUNGSDAUER = "nutzungsdauer";
+
+  public static final String ANSCHAFFUNG_DATUM = "anschaffung";
+
+  public static final String BETRAG = "betrag";
+
+  public static final String AFAART = "afaart";
+
+  private static final String KONTO_ID = "konto_id";
+
+  private TablePart saldoList;
+
+  public AnlagenlisteControl(AbstractView view) throws RemoteException
   {
     super(view);
   }
 
-  public Button getStartAuswertungButton()
-  {
-    Button b = new Button("PDF", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        starteAuswertung(AuswertungPDF);
-      }
-    }, null, false, "file-pdf.png");
-    // button
-    return b;
-  }
-
-  public Button getStartAuswertungCSVButton()
-  {
-    Button b = new Button("CSV", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        starteAuswertung(AuswertungCSV);
-      }
-    }, null, false, "xsd.png");
-    // button
-    return b;
-  }
-
-  public void handleStore()
-  {
-    //
-  }
-
-  public Part getSaldoList() throws ApplicationException
+  public TablePart getSaldoList() throws ApplicationException
   {
     try
     {
-      if (getDatumvon().getDate() != null)
+      if (saldoList != null)
       {
-        settings.setAttribute("von",
-            new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
-        settings.setAttribute("bis",
-            new JVDateFormatTTMMJJJJ().format(getDatumbis().getDate()));
+        return saldoList;
       }
-
-      if (saldoList == null)
+      saldoList = new TablePart(getList(), null)
       {
-        saldoList = new AnlagenList(null,
-            datumvon.getDate(), datumbis.getDate());
-      }
-      else
-      {
-        settings.setAttribute("von",
-            new JVDateFormatTTMMJJJJ().format(getDatumvon().getDate()));
-
-        saldoList.setDatumvon(datumvon.getDate());
-        saldoList.setDatumbis(datumbis.getDate());
-        ArrayList<AnlagenlisteZeile> zeile = saldoList.getInfo();
-        saldoList.removeAll();
-        for (AnlagenlisteZeile sz : zeile)
+        // Sortieren verhindern
+        @Override
+        protected void orderBy(int index)
         {
-          saldoList.addItem(sz);
+          return;
         }
-      }
+      };
+      saldoList.addColumn("Anlagenart", GRUPPE);
+      saldoList.addColumn("Bezeichnung", KONTO);
+      saldoList.addColumn("Nutzungsdauer", NUTZUNGSDAUER, null, false,
+          Column.ALIGN_RIGHT);
+      saldoList.addColumn("Afa Art", AFAART);
+      saldoList.addColumn("Anschaffung", ANSCHAFFUNG_DATUM,
+          new DateFormatter(new JVDateFormatTTMMJJJJ()), false,
+          Column.ALIGN_RIGHT);
+      saldoList.addColumn("Anschaffungskosten", BETRAG,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      saldoList.addColumn("Buchwert Start GJ", STARTWERT,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      saldoList.addColumn("Zugang", ZUGANG,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      saldoList.addColumn("Abschreibung", ABSCHREIBUNG,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      saldoList.addColumn("Abgang", ABGANG,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      saldoList.addColumn("Buchwert Ende GJ", ENDWERT,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      // Dummy Spalte, damit endwert nicht am rechten Rand klebt
+      saldoList.addColumn(" ", " ",
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_LEFT);
+      saldoList.setRememberColWidths(true);
+      saldoList.removeFeature(FeatureSummary.class);
+      return saldoList;
     }
     catch (RemoteException e)
     {
       throw new ApplicationException(
           String.format("Fehler aufgetreten %s", e.getMessage()));
     }
-    return saldoList.getSaldoList();
   }
 
-  // THL pdf cvs umschalter
-  private void starteAuswertung(String type) throws ApplicationException
+  protected ExtendedDBIterator<PseudoDBObject> getIterator()
+      throws RemoteException
   {
-    try
-    {
-      ArrayList<AnlagenlisteZeile> zeilen = saldoList.getInfo();
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("konto");
 
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-      //
-      Settings settings = new Settings(this.getClass());
-      //
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      fd.setFileName(new Dateiname("anlagenverzeichnis", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), type).get());
+    it.addColumn("buchungsart.bezeichnung AS " + BUCHUNGSART);
+    it.addColumn("buchungsklasse.bezeichnung AS " + BUCHUNGSKLASSE);
+    it.addColumn("konto.bezeichnung AS " + KONTO);
+    it.addColumn("konto.id AS " + KONTO_ID);
+    it.addColumn("konto.nutzungsdauer AS " + NUTZUNGSDAUER);
+    it.addColumn("konto.anschaffung AS " + ANSCHAFFUNG_DATUM);
+    it.addColumn("afaart.bezeichnung AS " + AFAART);
+    it.addColumn("konto.betrag AS " + BETRAG);
 
-      final String s = fd.open();
+    it.addColumn(
+        "SUM(case when buchungbuchungsart.abschreibung = TRUE then buchung.betrag ELSE 0 END) AS "
+            + ABSCHREIBUNG);
+    it.addColumn(
+        "SUM(case when buchungbuchungsart.abschreibung = FALSE AND buchung.betrag > 0 then buchung.betrag ELSE 0 END) AS "
+            + ZUGANG);
+    it.addColumn(
+        "SUM(case when buchungbuchungsart.abschreibung = FALSE AND buchung.betrag < 0 then buchung.betrag ELSE 0 END) AS "
+            + ABGANG);
 
-      if (s == null || s.length() == 0)
-      {
-        return;
-      }
+    it.leftJoin("buchung",
+        "konto.id = buchung.konto AND buchung.datum >= ? AND buchung.datum <= ?",
+        getDatumvon().getDate(), getDatumbis().getDate());
+    it.leftJoin("buchungsart as buchungbuchungsart",
+        "buchungbuchungsart.id = buchung.buchungsart");
 
-      final File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
+    it.join("buchungsart", "buchungsart.id = konto.anlagenart");
+    it.leftJoin("buchungsklasse", "buchungsklasse.id = konto.anlagenklasse");
+    it.leftJoin("buchungsart as afaart", "afaart.id = konto.afaart");
 
-      auswertungSaldo(zeilen, file, getDatumvon().getDate(),
-          getDatumbis().getDate(), type);
-    }
-    catch (RemoteException e)
-    {
-      throw new ApplicationException(
-          String.format("Fehler beim Aufbau des Reports: %s", e.getMessage()));
-    }
+    it.addFilter("konto.kontoart = ?", Kontoart.ANLAGE.getKey());
+    it.addFilter("konto.eroeffnung is null or konto.eroeffnung <= ?",
+        getDatumbis().getDate());
+    it.addFilter("konto.aufloesung is null or konto.aufloesung >= ?",
+        getDatumvon().getDate());
+
+    it.addGroupBy("konto.id");
+    it.addGroupBy("konto.anlagenart");
+    it.addGroupBy("konto.anlagenklasse");
+
+    it.setOrder(
+        "ORDER BY buchungsklasse.nummer, buchungsart.nummer, konto.nummer");
+
+    return it;
   }
 
-  private void auswertungSaldo(final ArrayList<AnlagenlisteZeile> zeile,
-      final File file, final Date datumvon, final Date datumbis,
-      final String type)
+  @Override
+  public ArrayList<PseudoDBObject> getList() throws RemoteException
   {
-    BackgroundTask t = new BackgroundTask()
+    ExtendedDBIterator<PseudoDBObject> it = getIterator();
+
+    ArrayList<PseudoDBObject> zeilen = new ArrayList<>();
+
+    String klasseAlt = null;
+    String artAlt = null;
+
+    // Summen der Buchungsklasse
+    Double summeStartwert = 0d;
+    Double summeAbschreibung = 0d;
+    Double summeZugang = 0d;
+    Double summeAbgang = 0d;
+    Double summeEndwert = 0d;
+
+    // Gesamtsummen
+    Double gesamtStartwert = 0d;
+    Double gesamtAbschreibung = 0d;
+    Double gesamtZugang = 0d;
+    Double gesamtAbgang = 0d;
+    Double gesamtEndwert = 0d;
+
+    while (it.hasNext())
     {
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
+      PseudoDBObject o = it.next();
+
+      String klasse = (String) o.getAttribute(BUCHUNGSKLASSE);
+      if (klasse == null)
       {
-        try
-        {
-          if (type.equals(AuswertungCSV))
-            new AnlagenverzeichnisCSV(zeile, file, datumvon, datumbis);
-          else if (type.equals(AuswertungPDF))
-            new AnlagenverzeichnisPDF(zeile, file, datumvon, datumbis);
-          GUI.getCurrentView().reload();
-        }
-        catch (ApplicationException ae)
-        {
-          GUI.getStatusBar().setErrorText(ae.getMessage());
-          throw ae;
-        }
+        klasse = "Nicht zugeordnet";
+      }
+      String buchungsart = (String) o.getAttribute(BUCHUNGSART);
+      Integer konto = o.getInteger(KONTO_ID);
+
+      Double zugang = o.getDouble(ZUGANG);
+      Double abschreibung = o.getDouble(ABSCHREIBUNG);
+      Double abgang = o.getDouble(ABGANG);
+
+      Double startwert = KontoImpl.getSaldo(konto, getDatumvon().getDate());
+      Double endwert = null;
+
+      // Summen Berechnen
+
+      if (startwert != null)
+      {
+        gesamtStartwert += startwert;
+        summeStartwert += startwert;
+        endwert = startwert + zugang + abschreibung + abgang;
       }
 
-      @Override
-      public void interrupt()
+      summeAbschreibung += abschreibung;
+      gesamtAbschreibung += abschreibung;
+      summeZugang += zugang;
+      gesamtZugang += zugang;
+      summeAbgang += abgang;
+      gesamtAbgang += abgang;
+
+      if (endwert != null)
       {
-        //
+        summeEndwert += endwert;
+        gesamtEndwert += endwert;
       }
 
-      @Override
-      public boolean isInterrupted()
+      // Vor neuer Klasse Saldo der letzten anzeigen.
+      if (!klasse.equals(klasseAlt) && klasseAlt != null)
       {
-        return false;
+        PseudoDBObject saldo = new PseudoDBObject();
+        saldo.setAttribute(ART, ART_SALDOFOOTER);
+        saldo.setAttribute(GRUPPE, "Saldo " + klasseAlt);
+        saldo.setAttribute(EINNAHMEN, summeStartwert);
+        saldo.setAttribute(AUSGABEN, summeZugang);
+        saldo.setAttribute(ABSCHREIBUNG, summeAbschreibung);
+        saldo.setAttribute(ABGANG, summeAbgang);
+        saldo.setAttribute(ENDWERT, summeEndwert);
+        zeilen.add(saldo);
+
+        summeStartwert = 0d;
+        summeAbschreibung = 0d;
+        summeZugang = 0d;
+        summeAbgang = 0d;
+        summeEndwert = 0d;
       }
-    };
-    Application.getController().start(t);
+
+      // Bei neuer Klasse Kopfzeile anzeigen.
+      if (!klasse.equals(klasseAlt))
+      {
+        PseudoDBObject head = new PseudoDBObject();
+        head.setAttribute(ART, ART_HEADER);
+        head.setAttribute(GRUPPE, klasse);
+        zeilen.add(head);
+        klasseAlt = klasse;
+      }
+      // Bei neuer Buchungsart Kopfzeile anzeigen.
+      if (!buchungsart.equals(artAlt))
+      {
+        PseudoDBObject head = new PseudoDBObject();
+        head.setAttribute(ART, ART_HEADER);
+        head.setAttribute(GRUPPE, buchungsart);
+        zeilen.add(head);
+        artAlt = buchungsart;
+      }
+
+      // Die Detailzeile wie sie aus dem iterator kommt azeigen.
+      o.setAttribute(ART, ART_DETAIL);
+      o.setAttribute(STARTWERT, startwert);
+      o.setAttribute(ENDWERT, endwert);
+      zeilen.add(o);
+    }
+
+    // Am Ende noch Saldo der letzten Klasse.
+    // (Nur wenn auch Buchungsklassen existieren)
+    if (klasseAlt != null)
+    {
+      PseudoDBObject saldo = new PseudoDBObject();
+      saldo.setAttribute(ART, ART_SALDOFOOTER);
+      saldo.setAttribute(GRUPPE, "Saldo " + klasseAlt);
+      saldo.setAttribute(STARTWERT, summeStartwert);
+      saldo.setAttribute(ZUGANG, summeZugang);
+      saldo.setAttribute(ABSCHREIBUNG, summeAbschreibung);
+      saldo.setAttribute(ABGANG, summeAbgang);
+      saldo.setAttribute(ENDWERT, summeEndwert);
+      zeilen.add(saldo);
+    }
+
+    PseudoDBObject saldo = new PseudoDBObject();
+    saldo.setAttribute(ART, ART_GESAMTSALDOFOOTER);
+    saldo.setAttribute(GRUPPE, "Gesamt Saldo");
+    saldo.setAttribute(STARTWERT, gesamtStartwert);
+    saldo.setAttribute(ZUGANG, gesamtZugang);
+    saldo.setAttribute(ABSCHREIBUNG, gesamtAbschreibung);
+    saldo.setAttribute(ABGANG, gesamtAbgang);
+    saldo.setAttribute(ENDWERT, gesamtEndwert);
+    zeilen.add(saldo);
+
+    return zeilen;
   }
 
+  @Override
+  protected String getAuswertungTitle()
+  {
+    return "Anlagenverzeichnis";
+  }
+
+  @Override
+  protected ISaldoExport getAuswertung(String type) throws ApplicationException
+  {
+    switch (type)
+    {
+      case AuswertungCSV:
+        return new AnlagenverzeichnisCSV();
+      case AuswertungPDF:
+        return new AnlagenverzeichnisPDF();
+      default:
+        throw new ApplicationException("Ausgabetyp nicht implementiert");
+    }
+  }
 }

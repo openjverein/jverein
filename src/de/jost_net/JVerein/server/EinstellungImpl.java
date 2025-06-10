@@ -2087,6 +2087,23 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     setAttribute("bkinbuchung", bkinbuchung);
   }
 
+  @Override
+  public boolean getSteuerInBuchung() throws RemoteException
+  {
+    // Nur bei Optierenden Vereinen möglich
+    if (!getOptiert())
+    {
+      return false;
+    }
+    return Util.getBoolean(getAttribute("steuerinbuchung"));
+  }
+
+  @Override
+  public void setSteuerInBuchung(boolean steuerinbuchung) throws RemoteException
+  {
+    setAttribute("steuerinbuchung", steuerinbuchung);
+  }
+
   public Boolean getSummenAnlagenkonto() throws RemoteException
   {
     return Util.getBoolean(getAttribute("summenanlagenkonto"));

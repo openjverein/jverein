@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.BuchungsartControl;
@@ -45,8 +46,10 @@ public class BuchungsartDetailView extends AbstractView
     group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     group.addLabelPair("Spende", control.getSpende());
     group.addLabelPair("Abschreibung", control.getAbschreibung());
-    group.addLabelPair("Steuersatz", control.getSteuersatz());
-    group.addLabelPair("Steuer Buchungsart", control.getSteuerBuchungsart());
+    if (Einstellungen.getEinstellung().getOptiert())
+    {
+      group.addLabelPair("Steuer", control.getSteuer());
+    }
     // TODO Jo Dokumentation nachpflegen
     group.addLabelPair("Status", control.getStatus());
     group.addLabelPair("Suchbegriff", control.getSuchbegriff());

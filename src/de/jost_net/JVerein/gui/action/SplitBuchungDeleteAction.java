@@ -17,8 +17,6 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -51,25 +49,7 @@ public class SplitBuchungDeleteAction implements Action
       Buchung bu = (Buchung) context;
       if (((Buchung) context).isNewObject())
       {
-        if (bu.getDependencyId() == -1)
-        {
-          SplitbuchungsContainer.get().remove(bu);
-        }
-        else
-        {
-          ArrayList<Buchung> container = SplitbuchungsContainer.get();
-          Buchung[] splitbuchungen = new Buchung[container.size()];
-          splitbuchungen = container.toArray(splitbuchungen);
-          int size = splitbuchungen.length;
-          int dependencyId = bu.getDependencyId();
-          for (int i = 0; i < size; i++)
-          {
-            if (splitbuchungen[i].getDependencyId() == dependencyId)
-            {
-              container.remove(splitbuchungen[i]);
-            }
-          }
-        }
+        SplitbuchungsContainer.get().remove(bu);
       }
       else
       {

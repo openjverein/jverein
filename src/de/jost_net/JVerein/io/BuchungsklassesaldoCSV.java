@@ -32,13 +32,23 @@ import org.supercsv.io.ICsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
+import de.jost_net.JVerein.gui.control.BuchungsklasseSaldoControl;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsklassesaldoCSV
+public class BuchungsklassesaldoCSV implements ISaldoExport
 {
+
+  private boolean umbuchung;
+
+  public BuchungsklassesaldoCSV(boolean umbuchung)
+  {
+    this.umbuchung = umbuchung;
+  }
 
   private static CellProcessor[] getProcessors(boolean umbuchung)
   {
@@ -67,8 +77,9 @@ public class BuchungsklassesaldoCSV
     }
   }
 
-  public BuchungsklassesaldoCSV(ArrayList<BuchungsklasseSaldoZeile> zeile,
-      final File file, Date datumvon, Date datumbis, boolean umbuchung)
+  @Override
+  public void export(ArrayList<PseudoDBObject> zeile,
+      final File file, Date datumvon, Date datumbis)
       throws ApplicationException
   {
     ICsvMapWriter writer = null;
@@ -95,84 +106,77 @@ public class BuchungsklassesaldoCSV
       csvzeile.put(header[0], subtitle);
       writer.write(csvzeile, header, processors);
 
-      for (BuchungsklasseSaldoZeile bkz : zeile)
+      for (PseudoDBObject bkz : zeile)
       {
         csvzeile = new HashMap<>();
-        switch (bkz.getStatus())
+        switch (bkz.getInteger(AbstractSaldoControl.ART))
         {
-          case BuchungsklasseSaldoZeile.HEADER:
+          case AbstractSaldoControl.ART_HEADER:
           {
             csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"));
+                (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE));
             break;
           }
-          case BuchungsklasseSaldoZeile.DETAIL:
+          case AbstractSaldoControl.ART_DETAIL:
           {
             csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsartbezeichnung"));
-            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
-            csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            if (umbuchung)
-            {
-              csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
-            }
-            break;
-          }
-          case BuchungsklasseSaldoZeile.SALDOFOOTER:
-          {
-            csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"));
-            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
-            csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            if (umbuchung)
-            {
-              csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
-            }
-            break;
-          }
-          case BuchungsklasseSaldoZeile.GESAMTSALDOFOOTER:
-          {
-            csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"));
-            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
-            csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            if (umbuchung)
-            {
-              csvzeile.put(header[3], (Double) bkz.getAttribute("umbuchungen"));
-            }
-            break;
-          }
-          case BuchungsklasseSaldoZeile.GESAMTGEWINNVERLUST:
-          case BuchungsklasseSaldoZeile.SALDOGEWINNVERLUST:
-          {
-            csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"));
-            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
-            break;
-          }
-          case BuchungsklasseSaldoZeile.STEUERHEADER:
-          {
-            csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsklassenbezeichnung") + " - "
-                    + (String) bkz.getAttribute("buchungsartbezeichnung"));
-            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
-            csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            break;
-          }
-          case BuchungsklasseSaldoZeile.STEUER:
-          {
-            csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsartbezeichnung"));
-            csvzeile.put(header[1], (Double) bkz.getAttribute("einnahmen"));
-            csvzeile.put(header[2], (Double) bkz.getAttribute("ausgaben"));
-            break;
-          }
-          case BuchungsklasseSaldoZeile.NICHTZUGEORDNETEBUCHUNGEN:
-          {
-            csvzeile.put(header[0],
-                (String) bkz.getAttribute("buchungsklassenbezeichnung"));
+                (String) bkz.getAttribute(AbstractSaldoControl.BUCHUNGSART));
             csvzeile.put(header[1],
-                (Integer) bkz.getAttribute("anzahlbuchungen"));
+                bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
+            csvzeile.put(header[2],
+                bkz.getDouble(AbstractSaldoControl.AUSGABEN));
+            if (umbuchung)
+            {
+              csvzeile.put(header[3],
+                  bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
+            }
+            break;
+          }
+          case AbstractSaldoControl.ART_SALDOFOOTER:
+          {
+            csvzeile.put(header[0],
+                (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE));
+            csvzeile.put(header[1],
+                bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
+            csvzeile.put(header[2],
+                bkz.getDouble(AbstractSaldoControl.AUSGABEN));
+            if (umbuchung)
+            {
+              csvzeile.put(header[3],
+                  bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
+            }
+            break;
+          }
+          case AbstractSaldoControl.ART_GESAMTSALDOFOOTER:
+          {
+            csvzeile.put(header[0],
+                (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE));
+            csvzeile.put(header[1],
+                bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
+            csvzeile.put(header[2],
+                bkz.getDouble(AbstractSaldoControl.AUSGABEN));
+            if (umbuchung)
+            {
+              csvzeile.put(header[3],
+                  bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
+            }
+            break;
+          }
+          case AbstractSaldoControl.ART_GESAMTGEWINNVERLUST:
+          case AbstractSaldoControl.ART_SALDOGEWINNVERLUST:
+          {
+            csvzeile.put(header[0],
+                (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE));
+            csvzeile.put(header[1],
+                bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
+            break;
+          }
+          case AbstractSaldoControl.ART_NICHTZUGEORDNETEBUCHUNGEN:
+          {
+            csvzeile.put(header[0],
+                (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE));
+            csvzeile.put(header[1],
+                bkz.getDouble(BuchungsklasseSaldoControl.EINNAHMEN));
             break;
           }
           default:
