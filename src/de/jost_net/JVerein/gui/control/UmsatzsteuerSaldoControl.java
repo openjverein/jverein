@@ -20,7 +20,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.parts.KontensaldoListTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.io.UmsatzsteuerSaldoCSV;
 import de.jost_net.JVerein.io.UmsatzsteuerSaldoPDF;
@@ -58,7 +57,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
 
   private static final String ARTSTEUERBUCHUNGSART = "artsteuerbuchungsart";
 
-  private KontensaldoListTablePart saldoList;
+  private TablePart saldoList;
 
   public UmsatzsteuerSaldoControl(AbstractView view) throws RemoteException
   {
@@ -74,7 +73,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       {
         return saldoList;
       }
-      saldoList = new KontensaldoListTablePart(getList(), null)
+      saldoList = new TablePart(getList(), null)
       {
         @Override
         protected void orderBy(int index)
@@ -92,7 +91,6 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
           Column.ALIGN_RIGHT);
       saldoList.addColumn("Anzahl", ANZAHL);
       saldoList.setRememberColWidths(true);
-      saldoList.setMulti(true);
       saldoList.addFeature(new FeatureSummary());
     }
     catch (RemoteException e)
