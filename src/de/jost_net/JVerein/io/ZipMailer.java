@@ -226,8 +226,8 @@ public class ZipMailer
               {
                 try
                 {
-                  sender.sendMail(mail, wtext1.getBuffer().toString(),
-                      wtext2.getBuffer().toString(), anhang);
+                  sender.sendMail(mail, wtext1.toString(), wtext2.toString(),
+                      anhang);
                 }
                 // Wenn eine ApplicationException geworfen wurde, wurde die
                 // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
@@ -240,8 +240,8 @@ public class ZipMailer
                       
                 Mail ml = (Mail) Einstellungen.getDBService()
                         .createObject(Mail.class, null);
-                ml.setBetreff(betreff);
-                ml.setTxt(txt);
+                ml.setBetreff(wtext1.toString());
+                ml.setTxt(wtext2.toString());
                 ml.setBearbeitung(new Timestamp(new Date().getTime()));
                 ml.setVersand(new Timestamp(new Date().getTime()));
                 ml.store();

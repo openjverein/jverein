@@ -79,6 +79,21 @@ public abstract class AbstractSaldoControl extends AbstractControl
   public static final String BUCHUNGSART = "buchungsart";
 
   /**
+   * Anfangsbestand der Konten.
+   */
+  public static final String ANFANGSBESTAND = "anfangsbestand";
+
+  /**
+   * Endbestand der Konten.
+   */
+  public static final String ENDBESTAND = "endbestand";
+
+  /**
+   * Anzahl Einträge
+   */
+  public static final String ANZAHL = "anzahl";
+
+  /**
    * Die Gruppe die im Saldo an erster Stelle stehen soll (Buchungsklasse,
    * Projekt...)
    */

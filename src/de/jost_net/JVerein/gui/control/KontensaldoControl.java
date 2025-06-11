@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.parts.KontensaldoListTablePart;
+import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.io.KontenSaldoCSV;
 import de.jost_net.JVerein.io.KontenSaldoPDF;
@@ -46,13 +46,9 @@ public class KontensaldoControl extends AbstractSaldoControl
 
   public static final String BEMERKUNG = "bemerkung";
 
-  public static final String ANFANGSBESTAND = "anfangsbestand";
-
-  public static final String ENDBESTAND = "endbestand";
-
   public static final String KONTO_NUMMER = "konto_nummer";
 
-  private KontensaldoListTablePart saldoList;
+  private SaldoListTablePart saldoList;
 
   protected boolean summensaldo;
 
@@ -70,7 +66,7 @@ public class KontensaldoControl extends AbstractSaldoControl
       {
         return saldoList;
       }
-      saldoList = new KontensaldoListTablePart(getList(), null)
+      saldoList = new SaldoListTablePart(getList(), null)
       {
         @Override
         protected void orderBy(int index)

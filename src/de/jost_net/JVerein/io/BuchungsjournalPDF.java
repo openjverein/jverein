@@ -18,6 +18,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.TreeMap;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
@@ -36,7 +37,8 @@ import de.willuhn.util.ApplicationException;
 public class BuchungsjournalPDF
 {
 
-  public BuchungsjournalPDF(BuchungQuery query, final File file)
+  public BuchungsjournalPDF(BuchungQuery query, final File file,
+      final TreeMap<String, String> params)
       throws ApplicationException
   {
     try
@@ -158,6 +160,7 @@ public class BuchungsjournalPDF
       }
 
       reporter.closeTable();
+      reporter.addParams(params);
       GUI.getStatusBar().setSuccessText("Auswertung fertig.");
 
       reporter.close();
