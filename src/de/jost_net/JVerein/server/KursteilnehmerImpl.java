@@ -30,12 +30,12 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class KursteilnehmerImpl extends AbstractDBObject implements
+public class KursteilnehmerImpl extends AbstractJVereinDBObject
+    implements
     Kursteilnehmer
 {
 

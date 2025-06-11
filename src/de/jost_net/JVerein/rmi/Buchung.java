@@ -20,10 +20,9 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Map;
 
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.util.ApplicationException;
 
-public interface Buchung extends DBObject
+public interface Buchung extends JVereinDBObject
 {
   public static final String TABLE_NAME = "buchung";
 

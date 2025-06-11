@@ -24,10 +24,10 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.util.ApplicationException;
 
-public class ArbeitseinsatzImpl extends AbstractDBObject implements
+public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
+    implements
     Arbeitseinsatz
 {
 

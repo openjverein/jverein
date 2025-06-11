@@ -315,7 +315,7 @@ public class Migration
         String id = HM_eigenschaftsgruppen.get(groupName);
         if (id != null) // no entry for this groupName
         {
-          eigenschaftneu.setEigenschaftGruppe(Integer.parseInt(id));
+          eigenschaftneu.setEigenschaftGruppe(Long.parseLong(id));
         }
         eigenschaftneu.store();
         return eigenschaftneu.getID();
@@ -761,7 +761,7 @@ public class Migration
     m.setKtoiEmail(getResultFrom(results, InternalColumns.KTOIEMAIL));
     Integer bg = beitragsGruppen
         .get(getResultFrom(results, InternalColumns.BEITRAGSART));
-    m.setBeitragsgruppe(bg);
+    m.setBeitragsgruppeId(bg);
 
     /* Setze verschiedene Ein/Ausdritt etc Daten */
     String eintritt = formatDate(

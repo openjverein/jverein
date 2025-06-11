@@ -16,6 +16,7 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 import java.sql.Connection;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
+
 import de.jost_net.JVerein.server.DDLTool.Column;
 import de.jost_net.JVerein.server.DDLTool.Index;
 import de.jost_net.JVerein.server.DDLTool.Table;

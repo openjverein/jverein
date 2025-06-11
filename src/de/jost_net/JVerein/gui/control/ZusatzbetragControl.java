@@ -75,6 +75,7 @@ import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class ZusatzbetragControl extends AbstractControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -184,10 +185,32 @@ public class ZusatzbetragControl extends AbstractControl
     return ausfuehrungSuch;
   }
 
-  public void handleStore()
+  @Override
+  public void prepareStore() throws RemoteException, ApplicationException
+  {
+    Zusatzbetrag z = getZusatzbetrag();
+    z.setFaelligkeit((Date) getZusatzbetragPart().getFaelligkeit().getValue());
+    z.setStartdatum(
+        (Date) getZusatzbetragPart().getStartdatum(false).getValue());
+    IntervallZusatzzahlung iz = (IntervallZusatzzahlung) getZusatzbetragPart()
+        .getIntervall().getValue();
+    z.setIntervall(iz.getKey());
+    z.setEndedatum((Date) getZusatzbetragPart().getEndedatum().getValue());
+    z.setBuchungstext(
+        (String) getZusatzbetragPart().getBuchungstext().getValue());
+    z.setBuchungsart(
+        (Buchungsart) getZusatzbetragPart().getBuchungsart().getValue());
+    z.setBuchungsklasseId(getZusatzbetragPart().getSelectedBuchungsKlasseId());
+    z.setBetrag((Double) getZusatzbetragPart().getBetrag().getValue());
+    z.setZahlungsweg(
+        (Zahlungsweg) getZusatzbetragPart().getZahlungsweg().getValue());
+  }
+
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       Zusatzbetrag z = getZusatzbetrag();
       if (z.isNewObject())
       {
@@ -201,21 +224,6 @@ public class ZusatzbetragControl extends AbstractControl
           throw new ApplicationException("Bitte Mitglied eingeben");
         }
       }
-      z.setFaelligkeit(
-          (Date) getZusatzbetragPart().getFaelligkeit().getValue());
-      z.setStartdatum(
-          (Date) getZusatzbetragPart().getStartdatum(false).getValue());
-      IntervallZusatzzahlung iz = (IntervallZusatzzahlung) getZusatzbetragPart()
-          .getIntervall().getValue();
-      z.setIntervall(iz.getKey());
-      z.setEndedatum((Date) getZusatzbetragPart().getEndedatum().getValue());
-      z.setBuchungstext(
-          (String) getZusatzbetragPart().getBuchungstext().getValue());
-      z.setBuchungsart(
-          (Buchungsart) getZusatzbetragPart().getBuchungsart().getValue());
-      z.setBuchungsklasseId(getZusatzbetragPart().getSelectedBuchungsKlasseId());
-      z.setBetrag((Double) getZusatzbetragPart().getBetrag().getValue());
-      z.setZahlungsweg((Zahlungsweg) getZusatzbetragPart().getZahlungsweg().getValue());
       z.store();
       if (getVorlage().getValue().equals(MITDATUM)
           || getVorlage().getValue().equals(OHNEDATUM))
@@ -236,17 +244,12 @@ public class ZusatzbetragControl extends AbstractControl
         zv.setZahlungsweg(z.getZahlungsweg());
         zv.store();
       }
-      GUI.getStatusBar().setSuccessText("Zusatzbetrag gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern des Zusatzbetrages";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

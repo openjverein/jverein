@@ -13,30 +13,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.server.EinstellungImpl;
-import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
-import de.jost_net.JVerein.server.DDLTool.Column;
-import de.jost_net.JVerein.server.DDLTool.Index;
-import de.jost_net.JVerein.server.DDLTool.Table;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.system.Settings;
-import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
-import de.willuhn.util.Base64;
-import de.willuhn.util.ProgressMonitor;
-
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
+
+import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
+import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
 public class Update0475 extends AbstractDDLUpdate
 {
-  protected DBService service;
-
   public Update0475(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
@@ -45,91 +29,69 @@ public class Update0475 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    Table t = new Table("einstellungneu");
-    Column pk = new Column("id", COLTYPE.BIGINT, 10, null, true, true);
-    t.add(pk);
-    t.setPrimaryKey(pk);
+    // Buchung
+    execute("update buchung set verzicht = 0 where verzicht is null");
+    execute("update buchung set art = '' where art is null");
+    execute("update buchung set iban = '' where iban is null");
+    execute("update buchung set kommentar = '' where kommentar is null");
 
-    Column name = new Column("name", COLTYPE.VARCHAR, 50, null, true, false);
-    t.add(name);
+    // Buchungsart
+    execute(
+        "update buchungsart set suchbegriff = '' where suchbegriff is null");
+    execute("update buchungsart set regularexp = 0 where regularexp is null");
 
-    Column wert = new Column("wert", COLTYPE.MEDIUMTEXT, 1000, null, false,
-        false);
-    t.add(wert);
+    // Spendenbescheinigung
+    execute(
+        "update spendenbescheinigung set unterlagenwertermittlung = 0 where unterlagenwertermittlung is null");
+    execute(
+        "update spendenbescheinigung set bezeichnungsachzuwendung = '' where bezeichnungsachzuwendung is null");
+    execute(
+        "update spendenbescheinigung set ersatzaufwendungen = 0 where ersatzaufwendungen is null");
+    execute(
+        "update spendenbescheinigung set herkunftspende = 3 where herkunftspende is null");
+    execute("update spendenbescheinigung set zeile1 = '' where zeile1 is null");
+    execute("update spendenbescheinigung set zeile2 = '' where zeile2 is null");
+    execute("update spendenbescheinigung set zeile3 = '' where zeile3 is null");
+    execute("update spendenbescheinigung set zeile4 = '' where zeile4 is null");
+    execute("update spendenbescheinigung set zeile5 = '' where zeile5 is null");
+    execute("update spendenbescheinigung set zeile6 = '' where zeile6 is null");
+    execute("update spendenbescheinigung set zeile7 = '' where zeile7 is null");
 
-    Index idx = new Index("ixEinstellungneu", true);
-    idx.add(name);
-    t.add(idx);
-    execute(this.createTable(t));
+    // Konto
+    execute("update konto set kommentar = '' where kommentar is null");
 
-    // Bestehende Einstellungen in die neue Tabelle migrieren
-    try
-    {
-      ResultSet result = conn.createStatement()
-          .executeQuery("SELECT * FROM einstellung WHERE id = 1");
-
-      if (!result.next())
-        throw new ApplicationException("Keine Einstellung vorhanden");
-
-      ResultSetMetaData m = result.getMetaData();
-
-      for (int i = 1; i <= m.getColumnCount(); i++)
-      {
-        String value = null;
-        String col = m.getColumnName(i);
-        if (col == "id")
-        {
-          continue;
-        }
-        if (result.getObject(i) != null)
-        {
-          switch (m.getColumnType(i))
-          {
-            case Types.BIT:
-            case Types.BOOLEAN:
-              value = result.getBoolean(i) ? "1" : "0";
-              break;
-            case Types.DATE:
-              value = new JVDateFormatTTMMJJJJ().format(result.getDate(i));
-              break;
-            case Types.CHAR:
-            case Types.VARCHAR:
-              value = result.getString(i).replace("\n", "\\n");
-              break;
-            case Types.INTEGER:
-            case Types.TINYINT:
-            case Types.BIGINT:
-            case Types.DOUBLE:
-              value = result.getObject(i).toString();
-              break;
-            case Types.BLOB:
-            case Types.LONGVARBINARY:
-              value = Base64.encode(result.getBytes(i));
-              break;
-            default:
-              String fehler = "Kann Einstellung nicht lesen, Type nicht implementiert: "
-                  + m.getColumnType(i);
-              Logger.error(fehler);
-              throw new ApplicationException(fehler);
-          }
-        }
-        execute("INSERT INTO einstellungneu (name,wert) VALUES('" + col + "',"
-            + (value == null ? "null" : "'" + value + "')"));
-      }
-    }
-    catch (SQLException e)
-    {
-      String fehler = "Fehler beim Update";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler);
-    }
-
-    // Settings an neuen Ort umziehen
-    Settings settingsAlt = new Settings(EinstellungImpl.class);
-    Settings settings = new Settings(Einstellungen.class);
-    for (String s : settingsAlt.getAttributes())
-    {
-      settings.setAttribute(s, settingsAlt.getString(s, null));
-    }
+    // Mitglied
+    execute("update mitglied set leitwegid = '' where leitwegid is null");
+    execute(
+        "update mitglied set ktoipersonenart = 'J' where ktoipersonenart = 'j'");
+    execute(
+        "update mitglied set ktoipersonenart = 'N' where ktoipersonenart = 'n'");
+    execute("update mitglied set mandatid = '' where mandatid is null");
+    execute("update mitglied set staat = '' where staat is null");
+    execute(
+        "update mitglied set adressierungszusatz = '' where adressierungszusatz is null");
+    execute("update mitglied set anrede = '' where anrede is null");
+    execute("update mitglied set email = '' where email is null");
+    execute(
+        "update mitglied set ktoiadressierungszusatz = '' where ktoiadressierungszusatz is null");
+    execute("update mitglied set ktoianrede = '' where ktoianrede is null");
+    execute("update mitglied set ktoiemail = '' where ktoiemail is null");
+    execute("update mitglied set ktoiname = '' where ktoiname is null");
+    execute("update mitglied set ktoiort = '' where ktoiort is null");
+    execute("update mitglied set ktoiplz = '' where ktoiplz is null");
+    execute("update mitglied set ktoistaat = '' where ktoistaat is null");
+    execute("update mitglied set ktoistrasse = '' where ktoistrasse is null");
+    execute("update mitglied set ktoititel = '' where ktoititel is null");
+    execute("update mitglied set ktoivorname = '' where ktoivorname is null");
+    execute(
+        "update mitglied set ktoigeschlecht = '' where ktoigeschlecht is null");
+    execute(
+        "update mitglied set telefondienstlich = '' where telefondienstlich is null");
+    execute(
+        "update mitglied set telefonprivat = '' where telefonprivat is null");
+    execute("update mitglied set handy = '' where handy is null");
+    execute("update mitglied set titel = '' where titel is null");
+    execute("update mitglied set vermerk1 = '' where vermerk1 is null");
+    execute("update mitglied set vermerk2 = '' where vermerk2 is null");
   }
 }

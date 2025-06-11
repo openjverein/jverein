@@ -45,7 +45,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SteuerControl extends AbstractControl
+public class SteuerControl extends AbstractControl implements Savable
 {
 
   private TablePart steuerList;
@@ -183,19 +183,26 @@ public class SteuerControl extends AbstractControl
     return aktiv;
   }
 
+  @Override
+  public void prepareStore() throws RemoteException, ApplicationException
+  {
+    Steuer s = getSteuer();
+    s.setName((String) getName().getValue());
+    s.setSatz((Double) getSatz().getValue());
+    if (getBuchungsart().getValue() != null)
+    {
+      s.setBuchungsartId(
+          Long.parseLong(((Buchungsart) getBuchungsart().getValue()).getID()));
+    }
+    s.setAktiv((Boolean) getAktiv().getValue());
+  }
+
   public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       Steuer s = getSteuer();
-      s.setName((String) getName().getValue());
-      s.setSatz((Double) getSatz().getValue());
-      if (getBuchungsart().getValue() != null)
-      {
-        s.setBuchungsartId(Long
-            .parseLong(((Buchungsart) getBuchungsart().getValue()).getID()));
-      }
-      s.setAktiv((Boolean) getAktiv().getValue());
       s.store();
     }
     catch (RemoteException e)

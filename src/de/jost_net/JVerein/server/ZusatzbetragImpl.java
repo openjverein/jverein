@@ -28,11 +28,11 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.Datum;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class ZusatzbetragImpl extends AbstractDBObject implements Zusatzbetrag
+public class ZusatzbetragImpl extends AbstractJVereinDBObject
+    implements Zusatzbetrag
 {
 
   private static final long serialVersionUID = 1L;

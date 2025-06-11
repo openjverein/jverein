@@ -160,7 +160,7 @@ public class FormularfelderImportCSV implements Importer
           }
           catch (SQLException e)
           {
-            ff.setFontsize(1);
+            ff.setSeite(1);
           }
 
           try

@@ -76,7 +76,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FilterControl extends AbstractControl
+public abstract class FilterControl extends AbstractControl
 {
   public final static String ALLE = "Alle";
 

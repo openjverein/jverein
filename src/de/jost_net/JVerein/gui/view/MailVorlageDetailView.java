@@ -21,8 +21,9 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
+import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -31,15 +32,16 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 
 import java.util.Map;
 
-public class MailVorlageDetailView extends AbstractView
+public class MailVorlageDetailView extends AbstractDetailView
 {
+  private MailVorlageControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Mail-Vorlage");
 
-    final MailVorlageControl control = new MailVorlageControl(this);
+    control = new MailVorlageControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Mail-Vorlage");
     group.addInput(control.getBetreff(true));
@@ -57,8 +59,13 @@ public class MailVorlageDetailView extends AbstractView
     buttons
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
             control, false, "edit-copy.png"));
-    buttons.addButton("Speichern", context -> control.handleStore(), null, true,
-        "document-save.png");
+    buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }

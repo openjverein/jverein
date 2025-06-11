@@ -83,6 +83,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class SollbuchungControl extends DruckMailControl
+    implements Savable
 {
   public enum DIFFERENZ
   {
@@ -318,10 +319,23 @@ public class SollbuchungControl extends DruckMailControl
     return suchname2;
   }
 
-  public boolean handleStore()
+  @Override
+  public void prepareStore() throws RemoteException, ApplicationException
+  {
+    Sollbuchung sollb = getSollbuchung();
+    sollb.setZahlerId(getSelectedZahlerId());
+    sollb.setBetrag((Double) getBetrag().getValue());
+    sollb.setDatum((Date) getDatum().getValue());
+    Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
+    sollb.setZahlungsweg(zw.getKey());
+    sollb.setZweck1((String) getZweck1().getValue());
+  }
+
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       Sollbuchung sollb = getSollbuchung();
 
       if (getZahler().getValue() == null)
@@ -332,28 +346,14 @@ public class SollbuchungControl extends DruckMailControl
       if (sollb.getRechnung() != null)
         throw new ApplicationException(
             "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
-      sollb.setZahlerId(getSelectedZahlerId());
-      sollb.setBetrag((Double) getBetrag().getValue());
-      sollb.setDatum((Date) getDatum().getValue());
-      Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
-      sollb.setZahlungsweg(zw.getKey());
-      sollb.setZweck1((String) getZweck1().getValue());
-
       sollb.store();
-      GUI.getStatusBar().setSuccessText("Sollbuchung gespeichert");
-      return true;
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler beim speichern der Sollbuchung";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
-    return false;
   }
 
   public Part getMitgliedskontoTree(Mitglied mitglied) throws RemoteException

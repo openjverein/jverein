@@ -41,7 +41,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -58,6 +57,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class ZusatzbetragVorlageControl extends AbstractControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -311,36 +311,36 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     return endedatum;
   }
 
-  public void handleStore()
+  public void prepareStore() throws RemoteException, ApplicationException
+  {
+    ZusatzbetragVorlage z = getZusatzbetragVorlage();
+    z.setFaelligkeit((Date) getFaelligkeit().getValue());
+    z.setStartdatum((Date) getStartdatum(false).getValue());
+    IntervallZusatzzahlung iz = (IntervallZusatzzahlung) getIntervall()
+        .getValue();
+    z.setIntervall(iz.getKey());
+    z.setEndedatum((Date) getEndedatum().getValue());
+    z.setBuchungstext((String) getBuchungstext().getValue());
+    Double d = (Double) getBetrag().getValue();
+    z.setBetrag(d.doubleValue());
+    z.setBuchungsart((Buchungsart) getBuchungsart().getValue());
+    z.setBuchungsklasseId(getSelectedBuchungsKlasseId());
+    z.setZahlungsweg((Zahlungsweg) getZahlungsweg().getValue());
+  }
+
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       ZusatzbetragVorlage z = getZusatzbetragVorlage();
-      z.setFaelligkeit((Date) getFaelligkeit().getValue());
-      z.setStartdatum((Date) getStartdatum(false).getValue());
-      IntervallZusatzzahlung iz = (IntervallZusatzzahlung) getIntervall()
-          .getValue();
-      z.setIntervall(iz.getKey());
-      z.setEndedatum((Date) getEndedatum().getValue());
-      z.setBuchungstext((String) getBuchungstext().getValue());
-      Double d = (Double) getBetrag().getValue();
-      z.setBetrag(d.doubleValue());
-      z.setBuchungsart((Buchungsart) getBuchungsart().getValue());
-      z.setBuchungsklasseId(getSelectedBuchungsKlasseId());
-      z.setZahlungsweg((Zahlungsweg) getZahlungsweg().getValue());
-
       z.store();
-      GUI.getStatusBar().setSuccessText("Zusatzbetrag-Vorlage gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern der Zusatzbetrag-Vorlage";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

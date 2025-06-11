@@ -306,7 +306,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
       if(mitglied.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
         mitglied.setZahlungsweg((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
     }
-    mitglied.setBeitragsgruppe(Integer.valueOf(beitragsGruppe.getID()));
+    mitglied.setBeitragsgruppe(beitragsGruppe);
     mitglied.store();
     mitgliedBeitraege.delete();
     aenderungsListenPart.removeItem(mitgliedBeitraege);

@@ -22,8 +22,8 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SollbuchungPositionControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -31,16 +31,16 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
 
-public class SollbuchungPositionDetailView extends AbstractView
+public class SollbuchungPositionDetailView extends AbstractDetailView
 {
+  private SollbuchungPositionControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Sollbuchungsposition");
 
-    final SollbuchungPositionControl control = new SollbuchungPositionControl(
-        this);
+    control = new SollbuchungPositionControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Sollbuchungsposition");
     group.addLabelPair("Datum", control.getDatum());
@@ -72,7 +72,7 @@ public class SollbuchungPositionDetailView extends AbstractView
           GUI.startPreviousView();
           GUI.getStatusBar().setSuccessText("Sollbuchungsposition gespeichert");
         }
-        catch (ApplicationException | RemoteException e)
+        catch (ApplicationException e)
         {
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
@@ -100,5 +100,11 @@ public class SollbuchungPositionDetailView extends AbstractView
       }
     }, null, false, "go-next.png"));
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }

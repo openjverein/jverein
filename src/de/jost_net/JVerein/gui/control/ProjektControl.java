@@ -27,7 +27,6 @@ import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -39,6 +38,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class ProjektControl extends FilterControl
+    implements Savable
 {
 
   private TablePart projektList;
@@ -114,33 +114,32 @@ public class ProjektControl extends FilterControl
     return endeDatum;
   }
 
+  public void prepareStore() throws RemoteException
+  {
+    Projekt p = getProjekt();
+    p.setBezeichnung((String) getBezeichnung().getValue());
+    p.setStartDatum((Date) getStartDatum().getValue());
+    p.setEndeDatum((Date) getEndeDatum().getValue());
+  }
+
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       Projekt p = getProjekt();
-      p.setBezeichnung((String) getBezeichnung().getValue());
-      p.setStartDatum( (Date) getStartDatum().getValue() );
-      p.setEndeDatum( (Date) getEndeDatum().getValue() );
-
-      try
-      {
-        p.store();
-        GUI.getStatusBar().setSuccessText("Projekt gespeichert");
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
+      p.store();
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern des Projektes";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

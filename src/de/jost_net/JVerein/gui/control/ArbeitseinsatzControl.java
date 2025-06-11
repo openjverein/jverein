@@ -74,6 +74,7 @@ import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class ArbeitseinsatzControl extends FilterControl
+    implements Savable
 {
   private ArbeitseinsatzPart part = null;
 
@@ -126,38 +127,40 @@ public class ArbeitseinsatzControl extends FilterControl
     return auswertungschluessel;
   }
 
-  public void handleStore()
+  @Override
+  public void prepareStore() throws RemoteException, ApplicationException
+  {
+    Arbeitseinsatz ae = getArbeitseinsatz();
+    if (ae.isNewObject())
+    {
+      if (getPart().getMitglied().getValue() != null)
+      {
+        Mitglied m = (Mitglied) getPart().getMitglied().getValue();
+        ae.setMitglied(Integer.parseInt(m.getID()));
+      }
+      else
+      {
+        throw new ApplicationException("Bitte Mitglied eingeben");
+      }
+    }
+    ae.setDatum((Date) part.getDatum().getValue());
+    ae.setStunden((Double) part.getStunden().getValue());
+    ae.setBemerkung((String) part.getBemerkung().getValue());
+  }
+
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       Arbeitseinsatz ae = getArbeitseinsatz();
-      if (ae.isNewObject())
-      {
-        if (getPart().getMitglied().getValue() != null)
-        {
-          Mitglied m = (Mitglied) getPart().getMitglied().getValue();
-          ae.setMitglied(Integer.parseInt(m.getID()));
-        }
-        else
-        {
-          throw new ApplicationException("Bitte Mitglied eingeben");
-        }
-      }
-      ae.setDatum((Date) part.getDatum().getValue());
-      ae.setStunden((Double) part.getStunden().getValue());
-      ae.setBemerkung((String) part.getBemerkung().getValue());
       ae.store();
-      GUI.getStatusBar().setSuccessText("Arbeitseinsatz gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern des Arbeitseinsatzes";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

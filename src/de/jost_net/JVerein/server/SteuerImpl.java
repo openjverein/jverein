@@ -24,11 +24,10 @@ import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SteuerImpl extends AbstractDBObject implements Steuer
+public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
 {
 
   private static final long serialVersionUID = -8362187140697518972L;

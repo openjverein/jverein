@@ -184,6 +184,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler parameter, ignorieren wir
+          m.setAdressierungszusatz("");
         }
 
         if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
@@ -248,6 +249,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler parameter, ignorieren wir
+          m.setAnrede("");
         }
 
         try
@@ -267,7 +269,7 @@ public class MitgliederImport implements Importer
             if (it.hasNext())
               throw new ApplicationException("Beitragsgruppe mit dem Namen "
                   + beitragsgruppe + " ist mehrfach vorhanden");
-            m.setBeitragsgruppe(Integer.parseInt(bg.getID()));
+            m.setBeitragsgruppe(bg);
             if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
             {
               m.setVollZahlerID(null);
@@ -522,6 +524,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setEmail("");
         }
 
         if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
@@ -604,6 +607,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setKtoiAdressierungszusatz("");
         }
 
         try
@@ -617,6 +621,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setKtoiAnrede("");
         }
 
         try
@@ -633,6 +638,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setKtoiEmail("");
         }
 
         try
@@ -646,6 +652,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setKtoiName("");
         }
 
         try
@@ -659,6 +666,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setKtoiOrt("");
         }
 
         try
@@ -690,6 +698,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setKtoiPlz("");
         }
 
         try
@@ -714,6 +723,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setKtoiStaat("");
         }
 
         try
@@ -727,6 +737,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setKtoiStrasse("");
         }
 
         try
@@ -740,6 +751,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setKtoiTitel("");
         }
 
         try
@@ -753,6 +765,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setKtoiVorname("");
         }
 
         try
@@ -771,6 +784,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setKtoiGeschlecht("o");
         }
 
         try
@@ -858,6 +872,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setStaat("");
         }
 
         try
@@ -882,6 +897,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setTelefondienstlich("");
         }
 
         try
@@ -895,6 +911,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setTelefonprivat("");
         }
 
         try
@@ -908,6 +925,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setHandy("");
         }
 
         try
@@ -921,6 +939,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setTitel("");
         }
 
         try
@@ -934,6 +953,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setVermerk1("");
         }
 
         try
@@ -947,6 +967,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
+          m.setVermerk2("");
         }
 
         try

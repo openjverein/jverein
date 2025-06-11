@@ -31,7 +31,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -42,6 +41,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class EigenschaftControl extends AbstractControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -103,37 +103,36 @@ public class EigenschaftControl extends AbstractControl
     return eigenschaftgruppe;
   }
 
-  public void handleStore()
+  @Override
+  public void prepareStore() throws RemoteException
+  {
+    Eigenschaft ei = getEigenschaft();
+
+    GenericObject o = (GenericObject) getEigenschaftGruppe().getValue();
+    if (o != null)
+    {
+      ei.setEigenschaftGruppe(Long.valueOf(o.getID()));
+    }
+    else
+    {
+      ei.setEigenschaftGruppe(null);
+    }
+    ei.setBezeichnung((String) getBezeichnung().getValue());
+  }
+
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       Eigenschaft ei = getEigenschaft();
-
-      GenericObject o = (GenericObject) getEigenschaftGruppe().getValue();
-      try
-      {
-        if (o != null)
-        {
-          ei.setEigenschaftGruppe(Integer.valueOf(o.getID()));
-        }
-        else
-        {
-          ei.setEigenschaftGruppe(null);
-        }
-        ei.setBezeichnung((String) getBezeichnung().getValue());
-        ei.store();
-        GUI.getStatusBar().setSuccessText("Eigenschaft gespeichert");
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
+      ei.store();
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern der Eigenschaft";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

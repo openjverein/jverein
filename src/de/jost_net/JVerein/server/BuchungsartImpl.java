@@ -25,11 +25,11 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsartImpl extends AbstractDBObject implements Buchungsart
+public class BuchungsartImpl extends AbstractJVereinDBObject
+    implements Buchungsart
 {
 
   private static final long serialVersionUID = 500102542884220658L;
