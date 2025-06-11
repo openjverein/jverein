@@ -180,7 +180,7 @@ public class DateinameControl extends AbstractControl
       namenList.setRememberColWidths(true);
       namenList.setRememberOrder(true);
       namenList.setRememberState(true);
-      namenList.addFeature(new FeatureSummary());
+      namenList.removeFeature(FeatureSummary.class);
     }
     else
     {
