@@ -259,7 +259,7 @@ public class BuchungMenu extends ContextMenu
               return false;
             }
             if (b.getBuchungsart() == null
-                || b.getBuchungsart().getArt() == ArtBuchungsart.UMBUCHUNG)
+                || b.getBuchungsart().getArt() != ArtBuchungsart.UMBUCHUNG)
             {
               return false;
             }
