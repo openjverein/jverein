@@ -17,22 +17,23 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.control.EigenschaftGruppeControl;
-import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class EigenschaftGruppeDetailView extends AbstractView
+public class EigenschaftGruppeDetailView extends AbstractDetailView
 {
+  private EigenschaftGruppeControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Eigenschaften-Gruppe");
 
-    final EigenschaftGruppeControl control = new EigenschaftGruppeControl(this);
+    control = new EigenschaftGruppeControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Eigenschaften-Gruppe");
     group.addLabelPair("Bezeichnung", control.getBezeichnung());
@@ -42,15 +43,13 @@ public class EigenschaftGruppeDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EIGENSCHAFTGRUPPE, false, "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }

@@ -26,12 +26,11 @@ import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AnfangsbestandImpl extends AbstractDBObject
+public class AnfangsbestandImpl extends AbstractJVereinDBObject
     implements Anfangsbestand
 {
 

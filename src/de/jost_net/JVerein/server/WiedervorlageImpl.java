@@ -21,11 +21,11 @@ import java.util.Date;
 
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class WiedervorlageImpl extends AbstractDBObject implements
+public class WiedervorlageImpl extends AbstractJVereinDBObject
+    implements
     Wiedervorlage
 {
 

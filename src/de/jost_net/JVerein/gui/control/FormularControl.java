@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ import de.jost_net.JVerein.server.FormularImpl;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.IntegerInput;
@@ -50,6 +48,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FormularControl extends FormularPartControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -168,7 +167,7 @@ public class FormularControl extends FormularPartControl
     }
 
     Formular currentForm = getFormular();
-    Integer currentlyLinkedFormId = currentForm.getFormlink();
+    Long currentlyLinkedFormId = currentForm.getFormlink();
     // Create select box
     if (currentlyLinkedFormId != 0)
     {
@@ -214,17 +213,38 @@ public class FormularControl extends FormularPartControl
     return formlink;
   }
 
+  @Override
+  public void prepareStore() throws RemoteException
+  {
+    Formular f = getFormular();
+    f.setBezeichnung((String) getBezeichnung(true).getValue());
+    FormularArt fa = (FormularArt) getArt().getValue();
+    f.setArt(fa);
+    f.setZaehler((int) getZaehler().getValue());
+
+    Formular fl = (Formular) getFormlink().getValue();
+    if (fl != null)
+    {
+      f.setFormlink(Long.valueOf(fl.getID()));
+    }
+    else
+    {
+      f.setFormlink(null);
+    }
+  }
+
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       Formular f = getFormular();
-      f.setBezeichnung((String) getBezeichnung(true).getValue());
-      FormularArt fa = (FormularArt) getArt().getValue();
-      f.setArt(fa);
+      f.setZaehlerToFormlink((int) getZaehler().getValue());
       String dat = (String) getDatei().getValue();
       if (dat.length() > 0)
       {
@@ -235,43 +255,13 @@ public class FormularControl extends FormularPartControl
         f.setInhalt(b);
       }
 
-      int newZaehler = (int) getZaehler().getValue();
-      f.setZaehler(newZaehler);
-      f.setZaehlerToFormlink(newZaehler);
-
-      Formular fl = (Formular) getFormlink().getValue();
-      if (fl != null)
-      {
-        f.setFormlink(Integer.valueOf(fl.getID()));
-      }
-      else
-      {
-        f.setFormlink(null);
-      }
-
       f.store();
-      GUI.getStatusBar().setSuccessText("Formular gespeichert");
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler beim Speichern des Formulares";
-      Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
-    }
-    catch (ApplicationException e)
-    {
-      Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(e.getMessage());
-    }
-    catch (FileNotFoundException e)
-    {
-      Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText("Datei nicht gefunden");
     }
     catch (IOException e)
     {
-      Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText("Ein-/Ausgabe-Fehler");
+      String fehler = "Fehler beim Speichern des Formulares";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler, e);
     }
   }
 

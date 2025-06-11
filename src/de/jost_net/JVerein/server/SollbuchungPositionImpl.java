@@ -30,7 +30,7 @@ import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SollbuchungPositionImpl extends AbstractDBObject
+public class SollbuchungPositionImpl extends AbstractJVereinDBObject
     implements SollbuchungPosition
 {
 

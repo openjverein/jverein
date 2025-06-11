@@ -35,7 +35,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -49,6 +48,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class AbrechnungslaufControl extends FilterControl
+    implements Savable
 {
 
   private Abrechnungslauf abrl;
@@ -316,29 +316,28 @@ public class AbrechnungslaufControl extends FilterControl
     return statistiklastschriften;
   }
 
-  public void handleStore()
+  @Override
+  public void prepareStore() throws RemoteException
   {
     // Es kann nur die Bemerkung verändert werden
+    Abrechnungslauf al = getAbrechnungslaeufe();
+    al.setBemerkung((String) getBemerkung().getValue());
+  }
+
+  public void handleStore() throws ApplicationException
+  {
     try
     {
+      prepareStore();
       Abrechnungslauf al = getAbrechnungslaeufe();
-      al.setBemerkung((String) getBemerkung().getValue());
-      try
-      {
-        al.store();
-        GUI.getStatusBar()
-            .setSuccessText("Bemerkung zum Abrechnungslauf gespeichert");
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
+
+      al.store();
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler beim Speichern des Abrechnungslaufs";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 
@@ -419,5 +418,4 @@ public class AbrechnungslaufControl extends FilterControl
       Logger.error("Fehler", e1);
     }
   }
-
 }

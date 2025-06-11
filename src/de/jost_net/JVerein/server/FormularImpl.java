@@ -21,12 +21,11 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FormularImpl extends AbstractDBObject implements Formular
+public class FormularImpl extends AbstractJVereinDBObject implements Formular
 {
 
   private static final long serialVersionUID = 1603994510932244220L;
@@ -198,19 +197,19 @@ public class FormularImpl extends AbstractDBObject implements Formular
   }
 
   @Override
-  public Integer getFormlink() throws RemoteException
+  public Long getFormlink() throws RemoteException
   {
     Long formId = (Long) getAttribute("formlink");
     if (formId == null)
     {
-      return 0;
+      return 0l;
     }
 
-    return (Integer) Math.toIntExact((formId));
+    return formId;
   }
 
   @Override
-  public void setFormlink(Integer formlink) throws RemoteException
+  public void setFormlink(Long formlink) throws RemoteException
   {
     setAttribute("formlink", formlink);
   }

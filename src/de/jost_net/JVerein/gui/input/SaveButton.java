@@ -14,22 +14,39 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
 
-import java.rmi.RemoteException;
+package de.jost_net.JVerein.gui.input;
 
-public interface EigenschaftGruppe extends JVereinDBObject
+import de.jost_net.JVerein.gui.control.Savable;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.util.ApplicationException;
+
+/**
+ * Fertig konfigurierter Speichern Button
+ */
+public class SaveButton extends Button
 {
-  public String getBezeichnung() throws RemoteException;
-
-  public void setBezeichnung(String bezeichnung) throws RemoteException;
-
-  public void setPflicht(Boolean pflicht) throws RemoteException;
-
-  public Boolean getPflicht() throws RemoteException;
-
-  public void setMax1(Boolean max1) throws RemoteException;
-
-  public Boolean getMax1() throws RemoteException;
+  /**
+   * Erstellt den Speichern Button
+   * 
+   * @param control
+   *          Das control
+   */
+  public SaveButton(Savable control)
+  {
+    super("Speichern", context -> {
+      try
+      {
+        control.handleStore();
+        GUI.getStatusBar().setSuccessText("Gespeichert");
+      }
+      catch (ApplicationException ae)
+      {
+        GUI.getStatusBar()
+            .setErrorText(ae.getMessage());
+      }
+    }, null, true, "document-save.png");
+  }
 
 }

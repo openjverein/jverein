@@ -48,7 +48,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.formatter.TableFormatter;
@@ -64,6 +63,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class BeitragsgruppeControl extends AbstractControl
+    implements Savable
 {
   private Input[] alterstaffel;
   
@@ -389,90 +389,97 @@ public class BeitragsgruppeControl extends AbstractControl
     return notiz;
   }
 
-  public void handleStore()
+  @Override
+  public void prepareStore() throws RemoteException, ApplicationException
+  {
+    Beitragsgruppe b = getBeitragsgruppe();
+    b.setBezeichnung((String) getBezeichnung(false).getValue());
+    if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen())
+    {
+      b.setSekundaer((Boolean) sekundaer.getValue());
+    }
+    else
+    {
+      b.setSekundaer(false);
+    }
+    ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
+
+    b.setBeitragsArt(ba.getKey());
+    b.setBuchungsart((Buchungsart) getBuchungsart().getValue());
+    b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
+    Double d = (Double) getArbeitseinsatzStunden().getValue();
+    b.setArbeitseinsatzStunden(d.doubleValue());
+    d = (Double) getArbeitseinsatzBetrag().getValue();
+    b.setArbeitseinsatzBetrag(d.doubleValue());
+    b.setNotiz((String) getNotiz().getValue());
+
+    switch (Einstellungen.getEinstellung().getBeitragsmodel())
+    {
+      case GLEICHERTERMINFUERALLE:
+      case MONATLICH12631:
+        if (isAltersstaffel != null && (Boolean) isAltersstaffel.getValue()
+            && alterstaffel != null)
+        {
+          b.setHasAltersstaffel(true);
+        }
+        else
+        {
+          Double betrag = (Double) getBetrag().getValue();
+          b.setBetrag(betrag.doubleValue());
+          b.setHasAltersstaffel(false);
+        }
+        break;
+      case FLEXIBEL:
+        Double d1 = (Double) getBetragMonatlich().getValue();
+        b.setBetragMonatlich(d1.doubleValue());
+        Double d3 = (Double) getBetragVierteljaehrlich().getValue();
+        b.setBetragVierteljaehrlich(d3.doubleValue());
+        Double d6 = (Double) getBetragHalbjaehrlich().getValue();
+        b.setBetragHalbjaehrlich(d6.doubleValue());
+        Double d12 = (Double) getBetragJaehrlich().getValue();
+        b.setBetragJaehrlich(d12.doubleValue());
+        b.setHasAltersstaffel(false);
+        break;
+    }
+  }
+
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       Beitragsgruppe b = getBeitragsgruppe();
-      b.setBezeichnung((String) getBezeichnung(false).getValue());
-      if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen())
-      {
-        b.setSekundaer((Boolean) sekundaer.getValue());
-      }
-      else
-      {
-        b.setSekundaer(false);
-      }
-      ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
-
-      b.setBeitragsArt(ba.getKey());
-      b.setBuchungsart((Buchungsart) getBuchungsart().getValue());
-      b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
-      Double d = (Double) getArbeitseinsatzStunden().getValue();
-      b.setArbeitseinsatzStunden(d.doubleValue());
-      d = (Double) getArbeitseinsatzBetrag().getValue();
-      b.setArbeitseinsatzBetrag(d.doubleValue());
-      b.setNotiz((String) getNotiz().getValue());
-      //Die Beitragsgruppe in die DB schreiben damit sie evtl für Altersstaffel verfügbar ist
-      b.setHasAltersstaffel(false);
       b.store();
-      
-      switch (Einstellungen.getEinstellung().getBeitragsmodel())
+
+      if (isAltersstaffel != null && (Boolean) isAltersstaffel.getValue()
+          && alterstaffel != null)
       {
-        case GLEICHERTERMINFUERALLE:
-        case MONATLICH12631:
-          if(isAltersstaffel != null && (Boolean)isAltersstaffel.getValue() && alterstaffel != null)
+        for (Input i : alterstaffel)
+        {
+          Altersstaffel a = null;
+          Double betrag = (Double) i.getValue();
+          a = b.getAltersstaffel((Integer) i.getData("nummer"));
+          if (betrag != null && a != null)
           {
-            for (Input i : alterstaffel)
-            {
-              Altersstaffel a = null;
-              Double betrag = (Double)i.getValue();
-              a = beitrag.getAltersstaffel((Integer)i.getData("nummer"));
-              if(betrag != null && a != null) {
-                a.setBetrag(betrag);
-               }
-              else
-              {
-                a = (Altersstaffel)Einstellungen.getDBService().createObject(Altersstaffel.class, null);
-                a.setBeitragsgruppe(beitrag);
-                a.setBetrag(betrag);
-                a.setNummer((Integer)i.getData("nummer"));
-              }
-              a.store();
-            }
-            b.setHasAltersstaffel(true);
+            a.setBetrag(betrag);
           }
           else
           {
-            Double betrag = (Double) getBetrag().getValue();
-            b.setBetrag(betrag.doubleValue());
-            b.setHasAltersstaffel(false);
+            a = (Altersstaffel) Einstellungen.getDBService()
+                .createObject(Altersstaffel.class, null);
+            a.setBeitragsgruppe(b);
+            a.setBetrag(betrag);
+            a.setNummer((Integer) i.getData("nummer"));
           }
-          break;
-        case FLEXIBEL:
-          Double d1 = (Double) getBetragMonatlich().getValue();
-          b.setBetragMonatlich(d1.doubleValue());
-          Double d3 = (Double) getBetragVierteljaehrlich().getValue();
-          b.setBetragVierteljaehrlich(d3.doubleValue());
-          Double d6 = (Double) getBetragHalbjaehrlich().getValue();
-          b.setBetragHalbjaehrlich(d6.doubleValue());
-          Double d12 = (Double) getBetragJaehrlich().getValue();
-          b.setBetragJaehrlich(d12.doubleValue());
-          b.setHasAltersstaffel(false);
-          break;
+          a.store();
+        }
       }
-      b.store();
-      GUI.getStatusBar().setSuccessText("Beitragsgruppe gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern der Beitragsgruppe";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

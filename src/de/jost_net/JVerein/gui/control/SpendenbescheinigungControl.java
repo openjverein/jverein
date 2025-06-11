@@ -92,6 +92,7 @@ import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class SpendenbescheinigungControl extends DruckMailControl
+    implements Savable
 {
 
   // Spendenbescheinigung View
@@ -458,48 +459,51 @@ public class SpendenbescheinigungControl extends DruckMailControl
         new BuchungAction(false), new BuchungPartAnzeigenMenu());
   }
 
+  @Override
+  public void prepareStore() throws RemoteException
+  {
+    Spendenbescheinigung spb = getSpendenbescheinigung();
+    Spendenart spa = (Spendenart) getSpendenart().getValue();
+    spb.setMitglied((Mitglied) getMitglied().getValue());
+    spb.setSpendenart(spa.getKey());
+    spb.setZeile1((String) getZeile1(false).getValue());
+    spb.setZeile2((String) getZeile2().getValue());
+    spb.setZeile3((String) getZeile3().getValue());
+    spb.setZeile4((String) getZeile4().getValue());
+    spb.setZeile5((String) getZeile5().getValue());
+    spb.setZeile6((String) getZeile6().getValue());
+    spb.setZeile7((String) getZeile7().getValue());
+    spb.setSpendedatum((Date) getSpendedatum().getValue());
+    spb.setBescheinigungsdatum((Date) getBescheinigungsdatum().getValue());
+    spb.setBetrag((Double) getBetrag().getValue());
+    spb.setErsatzAufwendungen((Boolean) getErsatzAufwendungen().getValue());
+    spb.setBezeichnungSachzuwendung(
+        (String) getBezeichnungSachzuwendung().getValue());
+    spb.setFormular((Formular) getFormular().getValue());
+    HerkunftSpende hsp = (HerkunftSpende) getHerkunftSpende().getValue();
+    spb.setHerkunftSpende(hsp.getKey());
+    spb.setUnterlagenWertermittlung(
+        (Boolean) getUnterlagenWertermittlung().getValue());
+  }
+  
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       Spendenbescheinigung spb = getSpendenbescheinigung();
-      Spendenart spa = (Spendenart) getSpendenart().getValue();
-      spb.setMitglied((Mitglied) getMitglied().getValue());
-      spb.setSpendenart(spa.getKey());
-      spb.setZeile1((String) getZeile1(false).getValue());
-      spb.setZeile2((String) getZeile2().getValue());
-      spb.setZeile3((String) getZeile3().getValue());
-      spb.setZeile4((String) getZeile4().getValue());
-      spb.setZeile5((String) getZeile5().getValue());
-      spb.setZeile6((String) getZeile6().getValue());
-      spb.setZeile7((String) getZeile7().getValue());
-      spb.setSpendedatum((Date) getSpendedatum().getValue());
-      spb.setBescheinigungsdatum((Date) getBescheinigungsdatum().getValue());
-      spb.setBetrag((Double) getBetrag().getValue());
-      spb.setErsatzAufwendungen((Boolean) getErsatzAufwendungen().getValue());
-      spb.setBezeichnungSachzuwendung(
-          (String) getBezeichnungSachzuwendung().getValue());
-      spb.setFormular((Formular) getFormular().getValue());
-      HerkunftSpende hsp = (HerkunftSpende) getHerkunftSpende().getValue();
-      spb.setHerkunftSpende(hsp.getKey());
-      spb.setUnterlagenWertermittlung(
-          (Boolean) getUnterlagenWertermittlung().getValue());
       spb.store();
-
-      GUI.getStatusBar().setSuccessText("Spendenbescheinigung gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei Speichern der Spendenbescheinigung";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

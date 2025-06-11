@@ -17,22 +17,24 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.control.FelddefinitionControl;
-import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class ZusatzfeldDetailView extends AbstractView
+public class ZusatzfeldDetailView extends AbstractDetailView
 {
+
+  private FelddefinitionControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Zusatzfeld");
 
-    final FelddefinitionControl control = new FelddefinitionControl(this);
+    control = new FelddefinitionControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Zusatzfeld");
     group.addLabelPair("Name", control.getName(true));
@@ -43,15 +45,13 @@ public class ZusatzfeldDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FELDDEFINITIONEN, false, "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }

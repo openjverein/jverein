@@ -31,7 +31,6 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -43,6 +42,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class WiedervorlageControl extends FilterControl
+    implements Savable
 {
 
   private DateInput datum = null;
@@ -168,10 +168,20 @@ public class WiedervorlageControl extends FilterControl
     return mitglied;
   }
 
-  public void handleStore()
+  @Override
+  public void prepareStore() throws RemoteException
+  {
+    Wiedervorlage w = getWiedervorlage();
+    w.setDatum((Date) getDatum(false).getValue());
+    w.setVermerk((String) getVermerk().getValue());
+    w.setErledigung((Date) getErledigung().getValue());
+  }
+
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       Wiedervorlage w = getWiedervorlage();
       if (w.isNewObject())
       {
@@ -185,21 +195,13 @@ public class WiedervorlageControl extends FilterControl
           throw new ApplicationException("Bitte Mitglied eingeben");
         }
       }
-      w.setDatum((Date) getDatum(false).getValue());
-      w.setVermerk((String) getVermerk().getValue());
-      w.setErledigung((Date) getErledigung().getValue());
       w.store();
-      GUI.getStatusBar().setSuccessText("Wiedervorlage gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern der Wiedervorlage";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
   

@@ -19,9 +19,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 import java.util.Date;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface SollbuchungPosition extends DBObject
+public interface SollbuchungPosition extends JVereinDBObject
 {
 
   public Double getBetrag() throws RemoteException;

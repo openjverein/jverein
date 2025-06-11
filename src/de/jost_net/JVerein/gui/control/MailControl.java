@@ -59,7 +59,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class MailControl extends FilterControl implements IMailControl
+public class MailControl extends FilterControl
+    implements IMailControl, Savable
 {
 
   private AutoUpdateTablePart empfaenger;
@@ -376,21 +377,6 @@ public class MailControl extends FilterControl implements IMailControl
     return b;
   }
 
-  public Button getMailSpeichernButton()
-  {
-    Button b = new Button("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        handleStore(false);
-      }
-    }, null, true, "document-save.png");
-    return b;
-  }
-
-  // IMailControl Interface
   @Override
   public String getBetreffString() throws RemoteException
   {
@@ -557,19 +543,33 @@ public class MailControl extends FilterControl implements IMailControl
     Application.getController().start(t);
   }
 
+  @Override
+  public void prepareStore() throws RemoteException
+  {
+    Mail m = getMail();
+    m.setBetreff(getBetreffString());
+    m.setTxt(getTxtString());
+  }
+
+  @Override
+  public void handleStore() throws ApplicationException
+  {
+    handleStore(false);
+  }
+
   /**
    * Speichert die Mail in der DB.
    *
    * @param mitversand
-   *     wenn true, wird Spalte Versand auf aktuelles Datum gesetzt.
+   *          wenn true, wird Spalte Versand auf aktuelles Datum gesetzt.
+   * @throws ApplicationException
    */
-  public void handleStore(boolean mitversand)
+  public void handleStore(boolean mitversand) throws ApplicationException
   {
     try
     {
+      prepareStore();
       Mail m = getMail();
-      m.setBetreff(getBetreffString());
-      m.setTxt(getTxtString());
       m.setBearbeitung(new Timestamp(new Date().getTime()));
       if (mitversand)
       {
@@ -611,17 +611,12 @@ public class MailControl extends FilterControl implements IMailControl
           ma.delete();
         }
       }
-      GUI.getStatusBar().setSuccessText("Mail gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler bei speichern der Mail: " + e.getLocalizedMessage();
+      String fehler = "Fehler bei speichern der Mail";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
 
   }

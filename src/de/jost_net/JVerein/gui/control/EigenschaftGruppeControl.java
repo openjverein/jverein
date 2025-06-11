@@ -28,7 +28,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -39,6 +38,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class EigenschaftGruppeControl extends AbstractControl
+    implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -100,32 +100,33 @@ public class EigenschaftGruppeControl extends AbstractControl
     return max1;
   }
 
+  @Override
+  public void prepareStore() throws RemoteException
+  {
+    EigenschaftGruppe eg = getEigenschaftGruppe();
+    eg.setBezeichnung((String) getBezeichnung().getValue());
+    eg.setPflicht((Boolean) getPflicht().getValue());
+    eg.setMax1((Boolean) getMax1().getValue());
+  }
+
   /**
    * This method stores the project using the current values.
+   * 
+   * @throws ApplicationException
    */
-  public void handleStore()
+  public void handleStore() throws ApplicationException
   {
     try
     {
+      prepareStore();
       EigenschaftGruppe eg = getEigenschaftGruppe();
-      eg.setBezeichnung((String) getBezeichnung().getValue());
-      eg.setPflicht((Boolean) getPflicht().getValue());
-      eg.setMax1((Boolean) getMax1().getValue());
-      try
-      {
-        eg.store();
-        GUI.getStatusBar().setSuccessText("Eigenschaften Gruppe gespeichert");
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
+      eg.store();
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern der Eigenschaft Gruppe";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 

@@ -16,9 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.parts.BuchungPart;
@@ -26,13 +29,16 @@ import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
-public class BuchungDetailView extends AbstractView
+public class BuchungDetailView extends AbstractDetailView
 {
+  private BuchungsControl control;
 
   @Override
   public void bind() throws Exception
@@ -46,7 +52,7 @@ public class BuchungDetailView extends AbstractView
           && bu.getKonto().getKontoArt() == Kontoart.ANLAGE)
         art = Kontenfilter.ANLAGEKONTO;
     }
-    final BuchungsControl control = new BuchungsControl(this, art);
+    control = new BuchungsControl(this, art);
 
     final boolean buchungabgeschlossen = control.isBuchungAbgeschlossen();
 
@@ -107,5 +113,30 @@ public class BuchungDetailView extends AbstractView
     buttons.addButton(saveNextButton);
 
     buttons.paint(getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
+  }
+
+  @Override
+  public void unbind() throws OperationCanceledException, ApplicationException
+  {
+    // Bei Splitbuchunge Funktioniert die Änderungsüberwachung nicht, da nicht
+    // direkt gespeichert wird.
+    try
+    {
+      if (control.getBuchung().getSpeicherung())
+      {
+        super.unbind();
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler bei Unbind", e);
+      throw new ApplicationException("Fehler, siehe Systemlog");
+    }
   }
 }

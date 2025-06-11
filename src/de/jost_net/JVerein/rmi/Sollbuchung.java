@@ -21,9 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Sollbuchung extends DBObject
+public interface Sollbuchung extends JVereinDBObject
 {
   public static final String TABLE_NAME = "mitgliedskonto";
 

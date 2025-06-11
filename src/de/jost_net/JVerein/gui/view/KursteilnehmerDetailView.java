@@ -18,10 +18,10 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
+import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
-import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -31,15 +31,16 @@ import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
 
-public class KursteilnehmerDetailView extends AbstractView
+public class KursteilnehmerDetailView extends AbstractDetailView
 {
+  private KursteilnehmerControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Kursteilnehmer");
 
-    final KursteilnehmerControl control = new KursteilnehmerControl(this);
+    control = new KursteilnehmerControl(this);
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 
@@ -75,22 +76,7 @@ public class KursteilnehmerDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        try
-        {
-          control.handleStore();
-        }
-        catch (ApplicationException e)
-        {
-          GUI.getStatusBar().setErrorText(e.getMessage());
-        }
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton(new SaveButton(control));
 
     buttons.addButton(new Button("Speichern und neu", context -> {
       try
@@ -109,5 +95,11 @@ public class KursteilnehmerDetailView extends AbstractView
     }, null, false, "go-next.png"));
 
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }

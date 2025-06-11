@@ -19,9 +19,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 import java.util.Date;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Projekt extends DBObject
+public interface Projekt extends JVereinDBObject
 {
   public String getBezeichnung() throws RemoteException;
 

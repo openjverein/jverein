@@ -23,10 +23,9 @@ import java.util.Map;
 import de.jost_net.JVerein.io.ILastschrift;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.util.ApplicationException;
 
-public interface Mitglied extends DBObject, ILastschrift
+public interface Mitglied extends JVereinDBObject, ILastschrift
 {
   public static final String TABLE_NAME = "mitglied";
 
@@ -173,7 +172,8 @@ public interface Mitglied extends DBObject, ILastschrift
 
   public int getBeitragsgruppeId() throws RemoteException;
 
-  public void setBeitragsgruppe(Integer beitragsgruppe) throws RemoteException;
+  public void setBeitragsgruppe(Beitragsgruppe beitragsgruppe)
+      throws RemoteException;
 
   public Double getIndividuellerBeitrag() throws RemoteException;
 
@@ -257,4 +257,7 @@ public interface Mitglied extends DBObject, ILastschrift
   public String getMandatID() throws RemoteException;
 
   public void setMandatID(String mandatid) throws RemoteException;
+
+  public void setBeitragsgruppeId(Integer beitragsgruppe)
+      throws RemoteException;
 }

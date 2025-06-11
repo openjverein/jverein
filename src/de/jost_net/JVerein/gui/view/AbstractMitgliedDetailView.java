@@ -35,6 +35,7 @@ import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedMailSendenAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.DokumentControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
@@ -45,7 +46,6 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedDokument;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
@@ -63,7 +63,7 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public abstract class AbstractMitgliedDetailView extends AbstractView
+public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 {
 
   // Statische Variable, die den zuletzt ausgewählten Tab speichert.
@@ -753,5 +753,11 @@ public abstract class AbstractMitgliedDetailView extends AbstractView
       Logger.error("error while adding button area",e);
       Application.getMessagingFactory().sendMessage(new StatusBarMessage(Application.getI18n().tr("Fehler beim Anzeigen des Buttons."),StatusBarMessage.TYPE_ERROR));
     }
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }
