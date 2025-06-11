@@ -31,7 +31,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
-
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
 
 public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
@@ -86,6 +86,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
           Column.ALIGN_RIGHT);
       saldoList.addColumn("Anzahl", ANZAHL);
       saldoList.setRememberColWidths(true);
+      saldoList.removeFeature(FeatureSummary.class);
     }
     catch (RemoteException e)
     {
@@ -224,7 +225,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
         + STEUERBETRAG);
 
     it.join("buchung",
-        "buchung.buchungsart = buchungsart.id AND datum >= ? AND datum <= ?",
+        "buchung.buchungsart = buchungsart.id AND buchung.datum >= ? AND buchung.datum <= ?",
         getDatumvon().getDate(), getDatumbis().getDate());
 
     // Die Steuer-Splitbuchung mit der gleichen dependecy-ID anhängen um die
