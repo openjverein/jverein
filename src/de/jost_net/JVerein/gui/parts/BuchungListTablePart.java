@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.jameica.gui.Action;
@@ -84,7 +85,7 @@ public class BuchungListTablePart extends AutoUpdateTablePart
         summary += " / " + "Gesamtbetrag:" + " "
             + Einstellungen.DECIMALFORMAT.format(sumBetrag) + " "
             + Einstellungen.CURRENCY;
-        if (Einstellungen.getEinstellung().getOptiert())
+        if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
         {
           summary += " / " + "Gesamtnetto:" + " "
               + Einstellungen.DECIMALFORMAT.format(sumNetto) + " "
@@ -109,7 +110,7 @@ public class BuchungListTablePart extends AutoUpdateTablePart
           summary += " / " + "Summe Auswahl: "
               + Einstellungen.DECIMALFORMAT.format(summe) + " "
               + Einstellungen.CURRENCY;
-          if (Einstellungen.getEinstellung().getOptiert())
+          if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
           {
             summary += " / " + "Auswahl Netto:" + " "
                 + Einstellungen.DECIMALFORMAT.format(netto) + " "
