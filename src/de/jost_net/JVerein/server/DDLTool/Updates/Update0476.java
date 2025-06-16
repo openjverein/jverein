@@ -77,44 +77,41 @@ public class Update0476 extends AbstractDDLUpdate
       {
         String value = null;
         String col = m.getColumnName(i);
-        if (col == "id")
+        if (col == "id" || result.getObject(i) == null)
         {
           continue;
         }
-        if (result.getObject(i) != null)
+        switch (m.getColumnType(i))
         {
-          switch (m.getColumnType(i))
-          {
-            case Types.BIT:
-            case Types.BOOLEAN:
-              value = result.getBoolean(i) ? "1" : "0";
-              break;
-            case Types.DATE:
-              value = new JVDateFormatTTMMJJJJ().format(result.getDate(i));
-              break;
-            case Types.CHAR:
-            case Types.VARCHAR:
-              value = result.getString(i).replace("\n", "\\n");
-              break;
-            case Types.INTEGER:
-            case Types.TINYINT:
-            case Types.BIGINT:
-            case Types.DOUBLE:
-              value = result.getObject(i).toString();
-              break;
-            case Types.BLOB:
-            case Types.LONGVARBINARY:
-              value = Base64.encode(result.getBytes(i));
-              break;
-            default:
-              String fehler = "Kann Einstellung nicht lesen, Type nicht implementiert: "
-                  + m.getColumnType(i);
-              Logger.error(fehler);
-              throw new ApplicationException(fehler);
-          }
+          case Types.BIT:
+          case Types.BOOLEAN:
+            value = result.getBoolean(i) ? "1" : "0";
+            break;
+          case Types.DATE:
+            value = new JVDateFormatTTMMJJJJ().format(result.getDate(i));
+            break;
+          case Types.CHAR:
+          case Types.VARCHAR:
+            value = result.getString(i).replace("\n", "\\n");
+            break;
+          case Types.INTEGER:
+          case Types.TINYINT:
+          case Types.BIGINT:
+          case Types.DOUBLE:
+            value = result.getObject(i).toString();
+            break;
+          case Types.BLOB:
+          case Types.LONGVARBINARY:
+            value = Base64.encode(result.getBytes(i));
+            break;
+          default:
+            String fehler = "Kann Einstellung nicht lesen, Type nicht implementiert: "
+                + m.getColumnType(i);
+            Logger.error(fehler);
+            throw new ApplicationException(fehler);
         }
-        execute("INSERT INTO einstellungneu (name,wert) VALUES('" + col + "',"
-            + (value == null ? "null" : "'" + value + "')"));
+        execute("INSERT INTO einstellungneu (name,wert) VALUES('" + col + "','"
+            + value + "')");
       }
     }
     catch (SQLException e)
