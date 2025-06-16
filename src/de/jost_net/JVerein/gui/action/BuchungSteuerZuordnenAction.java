@@ -17,15 +17,19 @@
 
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.DBTools.DBTransaction;
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.dialogs.SteuerZuordnungDialog;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
 /**
  * Steuer zuordnen.
@@ -53,75 +57,147 @@ public class BuchungSteuerZuordnenAction implements Action
       {
         b = (Buchung[]) context;
       }
-      if (b == null || b.length == 0 || b[0].isNewObject())
+      if (b == null || b.length == 0)
       {
         return;
       }
+      final Buchung[] buchungen = b;
 
       SteuerZuordnungDialog dialog = new SteuerZuordnungDialog(
           SteuerZuordnungDialog.POSITION_MOUSE);
-      Steuer steuer = dialog.open();
+      Steuer steuer;
+      try
+      {
+        steuer = dialog.open();
+      }
+      catch (Exception e)
+      {
+        String fehler = "Fehler beim öffnen des SteuerZuordnen Dialogs";
+        Logger.error(fehler, e);
+        throw new ApplicationException(fehler);
+      }
       if (!dialog.getAbort())
       {
-        DBTransaction.starten();
-        int counter = 0;
-        if (steuer == null)
+        BackgroundTask t = new BackgroundTask()
         {
-          for (Buchung buchung : b)
+          private boolean interrupted = false;
+
+          @Override
+          public void run(ProgressMonitor monitor) throws ApplicationException
           {
-            buchung.setSteuer(null);
-            buchung.store();
-          }
-        }
-        else
-        {
-          for (Buchung buchung : b)
-          {
-            if (buchung.getSteuer() != null && !dialog.getOverride())
+            int count = 0;
+            int skip = 0;
+            if (steuer == null)
             {
-              counter++;
+              monitor.setStatusText(
+                  "Entferne Steuer aus " + buchungen.length + " Buchungen.");
+              for (Buchung buchung : buchungen)
+              {
+                if (isInterrupted())
+                {
+                  throw new OperationCanceledException();
+                }
+                try
+                {
+                  buchung.setSteuer(null);
+                  buchung.store();
+                }
+                catch (RemoteException e)
+                {
+                  skip++;
+                  String fehler = "Fehler beim entfernen der Steuer";
+                  try
+                  {
+                    fehler += " aus Buchung Nr. " + buchung.getID();
+                  }
+                  catch (RemoteException ingore)
+                  {
+                  }
+                  monitor.setStatusText(fehler);
+                  Logger.error(fehler, e);
+                }
+                count++;
+                monitor.setPercentComplete(
+                    (skip + count) * 100 + buchungen.length);
+              }
+              monitor.setStatusText("Steuer aus " + count
+                  + " Buchungen entfernt, " + skip + " übersprungen.");
             }
             else
             {
-              buchung.setSteuer(steuer);
-              buchung.store();
+              monitor.setStatusText(
+                  "Ordne Steuer " + buchungen.length + " Buchungen zu.");
+              for (Buchung buchung : buchungen)
+              {
+                if (isInterrupted())
+                {
+                  throw new OperationCanceledException();
+                }
+                try
+                {
+                  if (buchung.getSteuer() != null && !dialog.getOverride())
+                  {
+                    skip++;
+                  }
+                  else
+                  {
+                    count++;
+                    buchung.setSteuer(steuer);
+                    buchung.store();
+                  }
+                }
+                catch (ApplicationException e)
+                {
+                  skip++;
+                  try
+                  {
+                    monitor.setStatusText("Buchung Nr. " + buchung.getID() + " "
+                        + e.getLocalizedMessage());
+                  }
+                  catch (RemoteException ingore)
+                  {
+                  }
+                }
+                catch (RemoteException e)
+                {
+                  skip++;
+                  String fehler = "Fehler beim entfernen der Steuer";
+                  try
+                  {
+                    fehler += " aus Buchung Nr. " + buchung.getID();
+                  }
+                  catch (RemoteException ingore)
+                  {
+                  }
+                  monitor.setStatusText(fehler);
+                  Logger.error(fehler, e);
+                }
+                monitor.setPercentComplete(
+                    (skip + count) * 100 + buchungen.length);
+              }
+              monitor.setStatusText("Steuer " + count
+                  + " Buchungen zugeordnet, " + skip + " übersprungen.");
             }
           }
-        }
-        if (steuer == null)
-        {
-          GUI.getStatusBar().setSuccessText("Steuer gelöscht");
-        }
-        else
-        {
-          String protecttext = "";
-          if (counter > 0)
+
+          @Override
+          public void interrupt()
           {
-            protecttext = String
-                .format(", %d Buchungen wurden nicht überschrieben. ", counter);
+            interrupted = true;
           }
-          GUI.getStatusBar()
-              .setSuccessText("Steuer zugeordnet" + protecttext);
-        }
-        DBTransaction.commit();
+
+          @Override
+          public boolean isInterrupted()
+          {
+            return interrupted;
+          }
+        };
+        Application.getController().start(t);
       }
-    }
-    catch (OperationCanceledException oce)
-    {
-      throw oce;
     }
     catch (ApplicationException e)
     {
-      DBTransaction.rollback();
       GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
-    }
-    catch (Exception e)
-    {
-      DBTransaction.rollback();
-      Logger.error("Fehler", e);
-      GUI.getStatusBar()
-          .setErrorText("Fehler bei der Zuordnung der Steuer: "
-              + e.getLocalizedMessage());
     }
   }
 }
