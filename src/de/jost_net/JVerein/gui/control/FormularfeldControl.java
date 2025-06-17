@@ -20,8 +20,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.itextpdf.text.pdf.BaseFont;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.LastschriftVar;
@@ -328,19 +326,18 @@ public class FormularfeldControl extends FormularPartControl
     fonts.add("FreeSans-Bold");
     fonts.add("FreeSans-BoldOblique");
     fonts.add("FreeSans-Oblique");
-    fonts.add(BaseFont.HELVETICA);
-    fonts.add(BaseFont.HELVETICA_BOLD);
-    fonts.add(BaseFont.HELVETICA_BOLDOBLIQUE);
-    fonts.add(BaseFont.HELVETICA_OBLIQUE);
-    fonts.add(BaseFont.TIMES_ROMAN);
-    fonts.add(BaseFont.TIMES_BOLD);
-    fonts.add(BaseFont.TIMES_ITALIC);
-    fonts.add(BaseFont.TIMES_BOLDITALIC);
-    fonts.add(BaseFont.COURIER);
-    fonts.add(BaseFont.COURIER_BOLD);
-    fonts.add(BaseFont.COURIER_OBLIQUE);
-    fonts.add(BaseFont.COURIER_BOLDOBLIQUE);
-    font = new SelectInput(fonts, getFormularfeld().getFont());
+    fonts.add("Courier Prime");
+    fonts.add("Courier Prime Bold");
+    fonts.add("Courier Prime Bold Italic");
+    fonts.add("Courier Prime Italic");
+    fonts.add("LiberationSans-Bold");
+    fonts.add("LiberationSans-BoldItalic");
+    fonts.add("LiberationSans-Italic");
+    fonts.add("LiberationSans-Regular");
+    fonts.add("LiberationSerif-Bold");
+    fonts.add("LiberationSerif-BoldItalic");
+    fonts.add("LiberationSerif-Italic");
+    fonts.add("LiberationSerif-Regular");
     return font;
   }
 
