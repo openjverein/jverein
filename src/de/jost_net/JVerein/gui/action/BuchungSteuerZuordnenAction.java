@@ -101,6 +101,7 @@ public class BuchungSteuerZuordnenAction implements Action
                 {
                   buchung.setSteuer(null);
                   buchung.store();
+                  count++;
                 }
                 catch (RemoteException e)
                 {
@@ -116,9 +117,7 @@ public class BuchungSteuerZuordnenAction implements Action
                   monitor.setStatusText(fehler);
                   Logger.error(fehler, e);
                 }
-                count++;
-                monitor.setPercentComplete(
-                    (skip + count) * 100 + buchungen.length);
+                monitor.setPercentComplete(100);
               }
               monitor.setStatusText("Steuer aus " + count
                   + " Buchungen entfernt, " + skip + " übersprungen.");
@@ -141,9 +140,9 @@ public class BuchungSteuerZuordnenAction implements Action
                   }
                   else
                   {
-                    count++;
                     buchung.setSteuer(steuer);
                     buchung.store();
+                    count++;
                   }
                 }
                 catch (ApplicationException e)
@@ -172,8 +171,7 @@ public class BuchungSteuerZuordnenAction implements Action
                   monitor.setStatusText(fehler);
                   Logger.error(fehler, e);
                 }
-                monitor.setPercentComplete(
-                    (skip + count) * 100 + buchungen.length);
+                monitor.setPercentComplete(100);
               }
               monitor.setStatusText("Steuer " + count
                   + " Buchungen zugeordnet, " + skip + " übersprungen.");
