@@ -14,18 +14,17 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package com.schlevoigt.JVerein.gui.control;
+package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 
-import com.schlevoigt.JVerein.Queries.BuchungsKorrekturQuery;
-import com.schlevoigt.JVerein.util.Misc;
-
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.Queries.BuchungsKorrekturQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.Misc;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;

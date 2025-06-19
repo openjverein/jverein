@@ -1,4 +1,4 @@
-package com.schlevoigt.JVerein.util;
+package de.jost_net.JVerein.util;
 
 import java.rmi.RemoteException;
 

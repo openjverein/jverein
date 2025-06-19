@@ -14,7 +14,7 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package com.schlevoigt.JVerein.Queries;
+package de.jost_net.JVerein.Queries;
 
 import java.rmi.RemoteException;
 import java.util.Date;
