@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Basis-Code fuer alle DB-Klassen in JVerein.
@@ -56,5 +57,23 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
   public boolean isChanged() throws RemoteException
   {
     return hasChanged();
+  }
+
+  @Override
+  public void store() throws RemoteException, ApplicationException
+  {
+    if (isNewObject())
+    {
+      super.store();
+      // Das ist hier nötig, da AbstractDBObject blöderweise die Properties beim
+      // Insert nicht in der Map speichert und somit keine Änderungsüberwachnung
+      // möglich ist. Wir laden das Object einfach neu aus der DB dabei wird die
+      // Map gefüllt.
+      load(getID());
+    }
+    else
+    {
+      super.store();
+    }
   }
 }
