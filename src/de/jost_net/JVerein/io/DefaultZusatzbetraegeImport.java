@@ -57,8 +57,6 @@ public class DefaultZusatzbetraegeImport implements Importer
     Connection conn = null;
     try
     {
-      boolean fehlerInUeberschrift = false;
-
       Properties props = new java.util.Properties();
       props.put("separator", ";"); // separator is a bar
       props.put("suppressHeaders", "false"); // first line contains data
@@ -97,10 +95,7 @@ public class DefaultZusatzbetraegeImport implements Importer
         {
           if (Character.getNumericValue(meta.getColumnName(1).charAt(0)) == -1)
           {
-            monitor.setStatus(ProgressMonitor.STATUS_ERROR);
-            monitor.setStatusText(
-                "Eingelesene Datei beginnt mit UTF-8 BOM. Bitte entfernen. Abbruch!");
-            fehlerInUeberschrift = true;
+            throw new ApplicationException("Eingelesene Datei beginnt mit UTF-8 BOM. Bitte entfernen. Abbruch!");
           }
 
         }
@@ -123,209 +118,188 @@ public class DefaultZusatzbetraegeImport implements Importer
       }
       if (b_mitgliedsnummer && b_extmitgliedsnummer)
       {
-        monitor.setStatus(ProgressMonitor.STATUS_ERROR);
-        monitor.setStatusText(
-            "Spaltenüberschrift muss entweder nur Mitglieds_Nr oder Ext_Mitglieds_Nr zur Zuordnung des Mitglieds enthalten. Es ist beides vorhanden. Abbruch!");
-        fehlerInUeberschrift = true;
+        throw new ApplicationException("Spaltenüberschrift muss entweder nur Mitglieds_Nr"
+            + " oder Ext_Mitglieds_Nr zur Zuordnung des Mitglieds enthalten. Es ist beides vorhanden. Abbruch!");
       }
       if ((b_mitgliedsnummer || b_extmitgliedsnummer)
           && (b_nachname || b_vorname))
       {
-        monitor.setStatus(ProgressMonitor.STATUS_ERROR);
-        monitor.setStatusText(
-            "Spaltenüberschrift muss entweder Angaben zur Mitgliedsnummer oder Nachname und Vorname zur Zuordnung des Mitglieds enthalten. Es ist beides vorhanden. Abbruch!");
-        fehlerInUeberschrift = true;
+        throw new ApplicationException("Spaltenüberschrift muss entweder Angaben zur Mitgliedsnummer"
+            + " oder Nachname und Vorname zur Zuordnung des Mitglieds enthalten. Es ist beides vorhanden. Abbruch!");
       }
       if (b_mitgliedsnummer == false && b_extmitgliedsnummer == false
           && (b_nachname == false || b_vorname == false))
       {
-        monitor.setStatus(ProgressMonitor.STATUS_ERROR);
-        monitor.setStatusText(
-            "Spaltenüberschrift muss entweder Mitglieds_Nr, Ext_Mitglieds_Nr oder Nachname/Vorname zur Zuordnung des Mitglieds enhalten. Es ist keine Information vorhanden. Abbruch!");
-        fehlerInUeberschrift = true;
-      }
-      if (fehlerInUeberschrift)
-      {
-        monitor.setStatus(ProgressMonitor.STATUS_ERROR);
-        throw new ApplicationException("Fehler in Spaltenüberschriften");
+        throw new ApplicationException("Spaltenüberschrift muss entweder Mitglieds_Nr, Ext_Mitglieds_Nr"
+            + " oder Nachname/Vorname zur Zuordnung des Mitglieds enhalten. Es ist keine Information vorhanden. Abbruch!");
       }
 
       List<Zusatzbetrag> zusatzbetraegeList = new ArrayList<>();
-      if (fehlerInUeberschrift == false)
+      monitor.setStatusText(
+          "Überprüfung der Spaltenüberschriften erfolgreich abgeschlossen.");
+
+      int anz = 0;
+      while (results.next())
       {
-        monitor.setStatusText(
-            "Überprüfung der Spaltenüberschriften erfolgreich abgeschlossen.");
+        anz++;
+        monitor.setPercentComplete(10);
 
-        int anz = 0;
-        boolean fehlerInDaten = false;
-        while (results.next())
+        DBIterator<Mitglied> list = Einstellungen.getDBService()
+            .createList(Mitglied.class);
+        if (b_mitgliedsnummer)
         {
-          anz++;
-          monitor.setPercentComplete(10);
+          list.addFilter("id = ? ", results.getString(columnMitgliedsnummer));
+        }
+        if (b_extmitgliedsnummer)
+        {
+          list.addFilter("externemitgliedsnummer = ? ",
+              results.getString(colExtMitgliedsnummer));
+        }
+        if (b_nachname)
+        {
+          list.addFilter("name = ? ", results.getString(colNachname));
+        }
+        if (b_vorname)
+        {
+          list.addFilter("vorname = ? ", results.getString(colVorname));
+        }
 
-          DBIterator<Mitglied> list = Einstellungen.getDBService()
-              .createList(Mitglied.class);
-          if (b_mitgliedsnummer)
-          {
-            list.addFilter("id = ? ", results.getString(columnMitgliedsnummer));
-          }
-          if (b_extmitgliedsnummer)
-          {
-            list.addFilter("externemitgliedsnummer = ? ",
-                results.getString(colExtMitgliedsnummer));
-          }
-          if (b_nachname)
-          {
-            list.addFilter("name = ? ", results.getString(colNachname));
-          }
-          if (b_vorname)
-          {
-            list.addFilter("vorname = ? ", results.getString(colVorname));
-          }
+        String mitgliedIdString = "";
+        if (b_mitgliedsnummer)
+          mitgliedIdString = columnMitgliedsnummer + "="
+              + results.getString(columnMitgliedsnummer);
+        else if (b_extmitgliedsnummer)
+        {
+          mitgliedIdString = colExtMitgliedsnummer + "="
+              + results.getString(colExtMitgliedsnummer);
+        }
+        else
+          mitgliedIdString = colNachname + "=" + results.getString(colNachname)
+              + ", " + colVorname + "=" + results.getString(colVorname);
 
-          String mitgliedIdString = "";
-          if (b_mitgliedsnummer)
-            mitgliedIdString = columnMitgliedsnummer + "="
-                + results.getString(columnMitgliedsnummer);
-          else if (b_extmitgliedsnummer)
+        if (list.size() == 0)
+        {
+          throw new ApplicationException(String.format(
+              "Für die Importzeile %d (%s) kein Mitglied in JVerein-Datenbank gefunden. Abbruch!",
+              anz, mitgliedIdString));
+        }
+        else if (list.size() > 1)
+        {
+          throw new ApplicationException(String.format(
+              "Für die Importzeile %d (%s) mehr als ein Mitglied gefunden. Abbruch!",
+              anz, mitgliedIdString));
+        }
+        else
+        // list.size() == 1
+        {
+          Mitglied m = (Mitglied) list.next();
+          Zusatzbetrag zus = (Zusatzbetrag) Einstellungen.getDBService()
+              .createObject(Zusatzbetrag.class, null);
+          zus.setMitglied(Integer.valueOf(m.getID()));
+          double betrag = results.getDouble("Betrag");
+          if (betrag == 0)
           {
-            mitgliedIdString = colExtMitgliedsnummer + "="
-                + results.getString(colExtMitgliedsnummer);
-          }
-          else
-            mitgliedIdString = colNachname + "="
-                + results.getString(colNachname) + ", " + colVorname + "="
-                + results.getString(colVorname);
-
-          if (list.size() == 0)
-          {
-            monitor.setStatus(ProgressMonitor.STATUS_ERROR);
-            monitor.setStatusText(String.format(
-                "Für die Importzeile %d (%s) kein Mitglied in JVerein-Datenbank gefunden. Abbruch!",
+            throw new ApplicationException(String.format(
+                "Für die Importzeile %d (%s) konnte die Fließkommazahl in der Spalte Betrag"
+                    + " nicht verarbeitet werden. Zahl muss größer 0 sein. Abbruch!",
                 anz, mitgliedIdString));
-            fehlerInDaten = true;
           }
-          else if (list.size() > 1)
+          zus.setBetrag(betrag);
+          String buchungstext = results.getString("Buchungstext");
+          if (buchungstext.length() > 140)
           {
-            monitor.setStatus(ProgressMonitor.STATUS_ERROR);
-            monitor.setStatusText(String.format(
-                "Für die Importzeile %d (%s) mehr als ein Mitglied gefunden. Abbruch!",
+            throw new ApplicationException(String.format(
+                "Für die Importzeile %d (%s) konnte der Text in der Spalte Buchungstext nicht verarbeitet werden."
+                    + " Länge des Buchungstextes ist auf 140 Zeichen begrenzt. Abbruch!",
                 anz, mitgliedIdString));
-            fehlerInDaten = true;
           }
-          else
-          // list.size() == 1
+          zus.setBuchungstext(buchungstext);
+          try
           {
-            Mitglied m = (Mitglied) list.next();
-            Zusatzbetrag zus = (Zusatzbetrag) Einstellungen.getDBService()
-                .createObject(Zusatzbetrag.class, null);
-            zus.setMitglied(Integer.valueOf(m.getID()));
-            double betrag = results.getDouble("Betrag");
-            if (betrag == 0)
-            {
-              monitor.setStatusText(String.format(
-                  "Für die Importzeile %d (%s) konnte die Fließkommazahl in der Spalte Betrag nicht verarbeitet werden. Zahl muss größer 0 sein. Abbruch!",
-                  anz, mitgliedIdString));
-              fehlerInDaten = true;
-            }
-            zus.setBetrag(betrag);
-            String buchungstext = results.getString("Buchungstext");
-            if (buchungstext.length() > 140)
-            {
-              monitor.setStatusText(String.format(
-                  "Für die Importzeile %d (%s) konnte der Text in der Spalte Buchungstext nicht verarbeitet werden. Länge des Buchungstextes ist auf 140 Zeichen begrenzt. Abbruch!",
-                  anz, mitgliedIdString));
-              fehlerInDaten = true;
-            }
-            zus.setBuchungstext(buchungstext);
-            try
+            Date d = de.jost_net.JVerein.util.Datum
+                .toDate(results.getString("Fälligkeit"));
+            zus.setFaelligkeit(d);
+            zus.setStartdatum(d);
+          }
+          catch (ParseException e)
+          {
+            throw new ApplicationException(String.format(
+                "Für die Importzeile %d (%s) konnte das Datum in der Spalte Fälligkeit nicht verarbeitet werden. Abbruch!",
+                anz, mitgliedIdString));
+          }
+
+          int intervall = results.getInt("Intervall");
+          if (intervall < 0)
+          {
+            throw new ApplicationException(String.format(
+                "Für die Importzeile %d (%s) konnte die Zahl in der Spalte Intervall nicht verarbeitet werden."
+                    + " Zahl muss größer oder gleich 0 sein. Abbruch!",
+                anz, mitgliedIdString));
+          }
+          zus.setIntervall(intervall);
+          try
+          {
+            String datum = results.getString("Endedatum");
+            if (datum.length() > 0)
             {
               Date d = de.jost_net.JVerein.util.Datum
-                  .toDate(results.getString("Fälligkeit"));
-              zus.setFaelligkeit(d);
-              zus.setStartdatum(d);
+                  .toDate(results.getString("Endedatum"));
+              zus.setEndedatum(d);
             }
-            catch (ParseException e)
+          }
+          catch (ParseException e)
+          {
+            throw new ApplicationException(String.format(
+                "Für die Importzeile %d (%s) konnte das Datum in der Spalte Fälligkeit nicht verarbeitet werden. Abbruch!",
+                anz, mitgliedIdString));
+          }
+          catch (SQLException e)
+          {
+            //
+          }
+          Buchungsart ba = null;
+          try
+          {
+            String buchungsart = results.getString("Buchungsart");
+            DBIterator<Buchungsart> it = Einstellungen.getDBService()
+                .createList(Buchungsart.class);
+            it.addFilter("nummer = ?", buchungsart);
+            if (it.size() == 0)
             {
-              monitor.setStatusText(String.format(
-                  "Für die Importzeile %d (%s) konnte das Datum in der Spalte Fälligkeit nicht verarbeitet werden. Abbruch!",
-                  anz, mitgliedIdString));
-              fehlerInDaten = true;
+              throw new ApplicationException(String.format(
+                  "Buchungsart mit der Nummer %s nicht gefunden", buchungsart));
             }
-
-            int intervall = results.getInt("Intervall");
-            if (intervall < 0)
+            ba = it.next();
+            zus.setBuchungsart(ba);
+          }
+          catch (SQLException e)
+          {
+            //
+          }
+          try
+          {
+            String buchungsklasse = results.getString("Buchungsklasse");
+            DBIterator<Buchungsklasse> it = Einstellungen.getDBService()
+                .createList(Buchungsklasse.class);
+            it.addFilter("nummer = ?", buchungsklasse);
+            if (it.size() == 0)
             {
-              monitor.setStatusText(String.format(
-                  "Für die Importzeile %d (%s) konnte die Zahl in der Spalte Intervall nicht verarbeitet werden. Zahl muss größer oder gleich 0 sein. Abbruch!",
-                  anz, mitgliedIdString));
-              fehlerInDaten = true;
+              throw new ApplicationException(String.format(
+                  "Buchungsklasse mit der Nummer %s nicht gefunden",
+                  buchungsklasse));
             }
-            zus.setIntervall(intervall);
-            try
+            zus.setBuchungsklasseId(Long.valueOf(buchungsklasse));
+          }
+          catch (SQLException e)
+          {
+            //
+          }
+          try
+          {
+            String steuer = results.getString("Steuer");
+            // Bei 0 setzen wir keine Steuer
+            if (!"0".equals(steuer))
             {
-              String datum = results.getString("Endedatum");
-              if (datum.length() > 0)
-              {
-                Date d = de.jost_net.JVerein.util.Datum
-                    .toDate(results.getString("Endedatum"));
-                zus.setEndedatum(d);
-              }
-            }
-            catch (ParseException e)
-            {
-              monitor.setStatusText(String.format(
-                  "Für die Importzeile %d (%s) konnte das Datum in der Spalte Fälligkeit nicht verarbeitet werden. Abbruch!",
-                  anz, mitgliedIdString));
-              fehlerInDaten = true;
-            }
-            catch (SQLException e)
-            {
-              //
-            }
-            Buchungsart ba = null;
-            try
-            {
-              String buchungsart = results.getString("Buchungsart");
-              DBIterator<Buchungsart> it = Einstellungen.getDBService()
-                  .createList(Buchungsart.class);
-              it.addFilter("nummer = ?", buchungsart);
-              if (it.size() == 0)
-              {
-                monitor.setStatusText(String.format(
-                    "Buchungsart mit der Nummer %s nicht gefunden",
-                    buchungsart));
-                fehlerInDaten = true;
-              }
-              ba = it.next();
-              zus.setBuchungsart(ba);
-            }
-            catch (SQLException e)
-            {
-              //
-            }
-            try
-            {
-              String buchungsklasse = results.getString("Buchungsklasse");
-              DBIterator<Buchungsklasse> it = Einstellungen.getDBService()
-                  .createList(Buchungsklasse.class);
-              it.addFilter("nummer = ?", buchungsklasse);
-              if (it.size() == 0)
-              {
-                monitor.setStatusText(String.format(
-                    "Buchungsklasse mit der Nummer %s nicht gefunden",
-                    buchungsklasse));
-                fehlerInDaten = true;
-              }
-              zus.setBuchungsklasseId(Long.valueOf(buchungsklasse));
-            }
-            catch (SQLException e)
-            {
-              //
-            }
-            try
-            {
-              String steuer = results.getString("Steuer");
               DBIterator<Steuer> it = Einstellungen.getDBService()
                   .createList(Steuer.class);
               it.join("buchungsart");
@@ -352,70 +326,51 @@ public class DefaultZusatzbetraegeImport implements Importer
                     throw new ApplicationException(
                         "Steuer bei Umbuchungen ist bei Zusatzbeträgen nicht möglich");
                 }
-                monitor.setStatusText(String
-                    .format(steuerart + " mit dem Satz %s%% nicht gefunden.",
-                        steuer));
-                fehlerInDaten = true;
+                throw new ApplicationException(String.format(
+                    steuerart + " mit dem Satz %s%% nicht gefunden.", steuer));
               }
               zus.setSteuer(it.next());
             }
-            catch (SQLException e)
-            {
-              //
-            }
-            try
-            {
-              Integer zahlungsweg = results.getInt("Zahlungsweg");
-              zus.setZahlungsweg(new Zahlungsweg(zahlungsweg));
-            }
-            catch (Exception e)
-            {
-              zus.setZahlungsweg(new Zahlungsweg(Zahlungsweg.STANDARD));
-            }
-            zusatzbetraegeList.add(zus);
           }
-
-        }
-        // überprüfen und parsen der Daten beendet.
-        if (fehlerInDaten == false)
-        {
-          monitor.setStatusText(String.format(
-              "Überprüfen aller Zusatzbeiträge erfolgreich abschlossen. %d Zusatzbeiträge werden importiert...",
-              anz));
-          int count = 0;
-          for (Zusatzbetrag zusatzbetrag : zusatzbetraegeList)
+          catch (SQLException e)
           {
-            anz++;
-            monitor.setPercentComplete(
-                10 + (count * 90 / zusatzbetraegeList.size()));
-            zusatzbetrag.store();
-            monitor.setStatusText(String.format(
-                "Zusatzbeitrag für Mitglied %s erfolgreich importiert.",
-                Adressaufbereitung.getNameVorname(zusatzbetrag.getMitglied())));
+            //
           }
-          monitor.setStatusText("Import komplett abgeschlossen.");
+          try
+          {
+            Integer zahlungsweg = results.getInt("Zahlungsweg");
+            zus.setZahlungsweg(new Zahlungsweg(zahlungsweg));
+          }
+          catch (Exception e)
+          {
+            zus.setZahlungsweg(new Zahlungsweg(Zahlungsweg.STANDARD));
+          }
+          zusatzbetraegeList.add(zus);
         }
-        else
-        {
-          // if(fehlerInDaten)
-          monitor.setStatus(ProgressMonitor.STATUS_ERROR);
-          throw new ApplicationException(
-              "Fehler in Daten. Import abgebrochen.");
-        }
-      }
 
+        // überprüfen und parsen der Daten beendet.
+        monitor.setStatusText(String.format(
+            "Überprüfen aller Zusatzbeiträge erfolgreich abschlossen. %d Zusatzbeiträge werden importiert...",
+            anz));
+        int count = 0;
+        for (Zusatzbetrag zusatzbetrag : zusatzbetraegeList)
+        {
+          anz++;
+          monitor.setPercentComplete(
+              10 + (count * 90 / zusatzbetraegeList.size()));
+          zusatzbetrag.store();
+          monitor.setStatusText(String.format(
+              "Zusatzbeitrag für Mitglied %s erfolgreich importiert.",
+              Adressaufbereitung.getNameVorname(zusatzbetrag.getMitglied())));
+        }
+        monitor.setStatusText("Import komplett abgeschlossen.");
+      }
     }
-    catch (RemoteException e)
+    catch (RemoteException | SQLException e)
     {
       Logger.error("Fehler", e);
       throw new ApplicationException(
           "Fehler beim Importieren: " + e.getMessage());
-    }
-    catch (SQLException e)
-    {
-      Logger.error("Fehler", e);
-      throw new ApplicationException(
-          "Fehler beim Importieren:" + e.getMessage());
     }
     catch (ClassNotFoundException e)
     {
