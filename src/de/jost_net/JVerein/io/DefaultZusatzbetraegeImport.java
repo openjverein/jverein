@@ -32,10 +32,12 @@ import java.util.Properties;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
@@ -281,6 +283,7 @@ public class DefaultZusatzbetraegeImport implements Importer
             {
               //
             }
+            Buchungsart ba = null;
             try
             {
               String buchungsart = results.getString("Buchungsart");
@@ -294,8 +297,8 @@ public class DefaultZusatzbetraegeImport implements Importer
                     buchungsart));
                 fehlerInDaten = true;
               }
-              Buchungsart bu = it.next();
-              zus.setBuchungsart(bu);
+              ba = it.next();
+              zus.setBuchungsart(ba);
             }
             catch (SQLException e)
             {
@@ -315,6 +318,46 @@ public class DefaultZusatzbetraegeImport implements Importer
                 fehlerInDaten = true;
               }
               zus.setBuchungsklasseId(Long.valueOf(buchungsklasse));
+            }
+            catch (SQLException e)
+            {
+              //
+            }
+            try
+            {
+              String steuer = results.getString("Steuer");
+              DBIterator<Steuer> it = Einstellungen.getDBService()
+                  .createList(Steuer.class);
+              it.join("buchungsart");
+              it.addFilter("buchungsart.id = steuer.buchungsart");
+              if (ba == null)
+              {
+                throw new ApplicationException(
+                    "Steuer nur möglich, wenn auch eine Buchungsart angegeben ist.");
+              }
+              it.addFilter("buchungsart.art = ?", ba.getArt());
+              it.addFilter("satz = ?", steuer);
+              if (it.size() == 0)
+              {
+                String steuerart = "";
+                switch (ba.getArt())
+                {
+                  case ArtBuchungsart.AUSGABE:
+                    steuerart = "Vorsteuer";
+                    break;
+                  case ArtBuchungsart.EINNAHME:
+                    steuerart = "Umsatzsteuer";
+                    break;
+                  case ArtBuchungsart.UMBUCHUNG:
+                    throw new ApplicationException(
+                        "Steuer bei Umbuchungen ist bei Zusatzbeträgen nicht möglich");
+                }
+                monitor.setStatusText(String
+                    .format(steuerart + " mit dem Satz %s%% nicht gefunden.",
+                        steuer));
+                fehlerInDaten = true;
+              }
+              zus.setSteuer(it.next());
             }
             catch (SQLException e)
             {
