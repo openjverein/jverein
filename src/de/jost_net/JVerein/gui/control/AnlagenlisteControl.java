@@ -23,6 +23,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.AnlagenverzeichnisCSV;
 import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
+import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.KontoImpl;
@@ -131,13 +132,46 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   {
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("konto");
 
-    it.addColumn("buchungsart.bezeichnung AS " + BUCHUNGSART);
-    it.addColumn("buchungsklasse.bezeichnung AS " + BUCHUNGSKLASSE);
+    switch (Einstellungen.getEinstellung().getBuchungsartSort())
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        it.addColumn(
+            "CONCAT(buchungsart.nummer,' - ',buchungsart.bezeichnung) as "
+                + BUCHUNGSART);
+        it.addColumn(
+            "CONCAT(buchungsklasse.nummer,' - ',buchungsklasse.bezeichnung) as "
+                + BUCHUNGSKLASSE);
+        it.addColumn(
+            "CONCAT(afaart.nummer,' - ',afaart.bezeichnung) as " + AFAART);
+        it.setOrder(
+            "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC, konto.nummer");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        it.addColumn(
+            "CONCAT(buchungsart.bezeichnung,' (',buchungsart.nummer,')') as "
+                + BUCHUNGSART);
+        it.addColumn(
+            "CONCAT(buchungsklasse.bezeichnung,' (',buchungsklasse.nummer,')') as "
+                + BUCHUNGSKLASSE);
+        it.addColumn(
+            "CONCAT(afaart.bezeichnung,' (',afaart.nummer,')') as " + AFAART);
+        it.setOrder(
+            "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
+                + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung, konto.nummer");
+        break;
+      default:
+        it.addColumn("buchungsart.bezeichnung as " + BUCHUNGSART);
+        it.addColumn("buchungsklasse.bezeichnung as " + BUCHUNGSKLASSE);
+        it.addColumn("afaart.bezeichnung as " + AFAART);
+        it.setOrder(
+            "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
+                + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung, konto.nummer");
+        break;
+    }
     it.addColumn("konto.bezeichnung AS " + KONTO);
     it.addColumn("konto.id AS " + KONTO_ID);
     it.addColumn("konto.nutzungsdauer AS " + NUTZUNGSDAUER);
     it.addColumn("konto.anschaffung AS " + ANSCHAFFUNG_DATUM);
-    it.addColumn("afaart.bezeichnung AS " + AFAART);
     it.addColumn("konto.betrag AS " + BETRAG);
 
     it.addColumn(
@@ -169,9 +203,6 @@ public class AnlagenlisteControl extends AbstractSaldoControl
     it.addGroupBy("konto.id");
     it.addGroupBy("konto.anlagenart");
     it.addGroupBy("konto.anlagenklasse");
-
-    it.setOrder(
-        "ORDER BY buchungsklasse.nummer, buchungsart.nummer, konto.nummer");
 
     return it;
   }
