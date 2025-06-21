@@ -144,7 +144,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         it.addColumn(
             "CONCAT(afaart.nummer,' - ',afaart.bezeichnung) as " + AFAART);
         it.setOrder(
-            "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC, konto.nummer");
+            "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC, konto.anschaffung");
         break;
       case BuchungsartSort.NACH_BEZEICHNUNG_NR:
         it.addColumn(
@@ -157,7 +157,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
             "CONCAT(afaart.bezeichnung,' (',afaart.nummer,')') as " + AFAART);
         it.setOrder(
             "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
-                + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung, konto.nummer");
+                + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung, konto.anschaffung");
         break;
       default:
         it.addColumn("buchungsart.bezeichnung as " + BUCHUNGSART);
@@ -165,7 +165,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         it.addColumn("afaart.bezeichnung as " + AFAART);
         it.setOrder(
             "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
-                + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung, konto.nummer");
+                + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung, konto.anschaffung");
         break;
     }
     it.addColumn("konto.bezeichnung AS " + KONTO);
