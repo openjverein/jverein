@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.io.KontenSaldoCSV;
@@ -96,6 +97,7 @@ public class KontensaldoControl extends AbstractSaldoControl
       saldoList.setRememberColWidths(true);
       saldoList.setMulti(true);
       saldoList.addFeature(new FeatureSummary());
+      saldoList.setFormatter(new SaldoFormatter());
     }
     catch (RemoteException e)
     {

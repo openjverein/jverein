@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.io.AnlagenverzeichnisCSV;
 import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
@@ -117,6 +118,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
           Column.ALIGN_LEFT);
       saldoList.setRememberColWidths(true);
       saldoList.removeFeature(FeatureSummary.class);
+      saldoList.setFormatter(new SaldoFormatter());
       return saldoList;
     }
     catch (RemoteException e)
