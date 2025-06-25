@@ -32,7 +32,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.util.Misc;
+import de.jost_net.JVerein.util.BuchungsZweckKorrektur;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -193,7 +193,7 @@ public class Buchungsuebernahme
         // Beautify zweck
         if (Einstellungen.getEinstellung().getAutomatischeBuchungskorrekturHibiscus())
         {
-          zweck = Misc.getBuchungsZweckKorrektur(zweck, true);
+          zweck = BuchungsZweckKorrektur.getBuchungsZweckKorrektur(zweck, true);
         }
         if (zweck != null && zweck.length() > 500)
         {

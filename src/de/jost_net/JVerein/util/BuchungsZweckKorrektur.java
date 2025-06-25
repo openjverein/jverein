@@ -8,7 +8,7 @@ import de.willuhn.jameica.hbci.rmi.Transfer;
 import de.willuhn.jameica.hbci.server.VerwendungszweckUtil;
 import de.willuhn.jameica.hbci.server.VerwendungszweckUtil.Tag;
 
-public class Misc {
+public class BuchungsZweckKorrektur {
 	
 	public static String getBuchungsZweckKorrektur(String value, boolean withRealLineBreak) {
 	  if (value == null) {
@@ -47,49 +47,42 @@ final class Verwendungszweck implements Transfer
   @Override
   public String getGegenkontoNummer() throws RemoteException
   {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public String getGegenkontoBLZ() throws RemoteException
   {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public String getGegenkontoName() throws RemoteException
   {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public double getBetrag() throws RemoteException
   {
-    // TODO Auto-generated method stub
     return 0;
   }
 
   @Override
   public String getZweck() throws RemoteException
   {
-    // TODO Auto-generated method stub
     return zweck;
   }
 
   @Override
   public String getZweck2() throws RemoteException
   {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public String[] getWeitereVerwendungszwecke() throws RemoteException
   {
-    // TODO Auto-generated method stub
     return null;
   }
 

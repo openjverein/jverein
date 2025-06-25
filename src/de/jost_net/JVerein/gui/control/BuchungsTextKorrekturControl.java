@@ -21,20 +21,18 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Queries.BuchungsKorrekturQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.formatter.KontoFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.Misc;
+import de.jost_net.JVerein.util.BuchungsZweckKorrektur;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class BuchungsTextKorrekturControl extends AbstractControl {
@@ -48,15 +46,8 @@ public class BuchungsTextKorrekturControl extends AbstractControl {
 	}
 
 	public Button getStartKorrekturButton() {
-		Button b = new Button("Korrektur", new Action() {
-
-			@Override
-			public void handleAction(Object context) {
-				starteKorrektur();
-			}
-		}, null, true, "walking.png"); // "true" defines this button as the
-											// default
-		return b;
+    return new Button("Korrektur", context -> starteKorrektur(), null, true,
+        "walking.png");
 	}
 
 	public Part getBuchungsList() throws RemoteException {
@@ -64,39 +55,19 @@ public class BuchungsTextKorrekturControl extends AbstractControl {
 		query = new BuchungsKorrekturQuery();
 		if (buchungsList == null) {
 			buchungsList = new TablePart(query.get(), new BuchungAction(false));
-			buchungsList.addColumn("Nr", "id-int");
-			buchungsList.addColumn("S", "splitid", new Formatter() {
-				@Override
-				public String format(Object o) {
-					return (o != null ? "S" : " ");
-				}
-			});
-			buchungsList.addColumn("Konto", "konto", new Formatter() {
-
-				@Override
-				public String format(Object o) {
-					Konto k = (Konto) o;
-					if (k != null) {
-						try {
-							return k.getBezeichnung();
-						} catch (RemoteException e) {
-							Logger.error("Fehler", e);
-						}
-					}
-					return "";
-				}
-			});
+      buchungsList.addColumn("Nr", "id-int");
+      buchungsList.addColumn("S", "splitid", o -> {
+        return (o != null ? "S" : " ");
+      });
+      buchungsList.addColumn("Konto", "konto", new KontoFormatter());
 			buchungsList.addColumn("Datum", "datum", new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
-			buchungsList.addColumn("Verwendungszweck neu", "zweck", new Formatter() {
-				@Override
-				public String format(Object value) {
+      buchungsList.addColumn("Verwendungszweck neu", "zweck", value -> {
 					if (value == null) {
 						return null;
 					}
-					return Misc.getBuchungsZweckKorrektur(value.toString(), false);
-				}
-			});
+					return BuchungsZweckKorrektur.getBuchungsZweckKorrektur(value.toString(), false);
+      });
 			buchungsList.addColumn("Verwendungszweck alt", "zweck", new Formatter() {
 				@Override
 				public String format(Object value) {
@@ -141,7 +112,7 @@ public class BuchungsTextKorrekturControl extends AbstractControl {
 					continue;
 				}
 				String zweck = b.getZweck();
-				zweck = Misc.getBuchungsZweckKorrektur(zweck, true);
+				zweck = BuchungsZweckKorrektur.getBuchungsZweckKorrektur(zweck, true);
 				b.setZweck(zweck);
 				b.store();
 				count++;

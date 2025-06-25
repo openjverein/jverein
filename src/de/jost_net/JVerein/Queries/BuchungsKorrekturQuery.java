@@ -38,18 +38,18 @@ public class BuchungsKorrekturQuery {
 	public List<Buchung> get() throws RemoteException {
 		final DBService service = Einstellungen.getDBService();
 
-		DBIterator<Jahresabschluss> it1 = service.createList(Jahresabschluss.class);
-		it1.setOrder("ORDER BY bis DESC");
+		DBIterator<Jahresabschluss> jahresabschlussIterator = service.createList(Jahresabschluss.class);
+		jahresabschlussIterator.setOrder("ORDER BY bis DESC");
 		Date bis = null;
-		if(it1.hasNext())
-		  bis =  ((Jahresabschluss) it1.next()).getBis();
+		if(jahresabschlussIterator.hasNext())
+		  bis =  ((Jahresabschluss) jahresabschlussIterator.next()).getBis();
 
-		DBIterator<Buchung> it = service.createList(Buchung.class);
+		DBIterator<Buchung> buchungIterator = service.createList(Buchung.class);
 		if(bis != null)
-		  it.addFilter("datum > ?", new java.sql.Date(bis.getTime()));
+		  buchungIterator.addFilter("datum > ?", new java.sql.Date(bis.getTime()));
 		Object[] keys = { "%EREF%", "%KREF%", "%MREF%", "%CRED%",
 		    "%DBET%", "%SVWZ%", "%ABWA%","%IBAN+%","%IBAN:%", "%BIC%"};
-		it.addFilter("(upper(zweck) like ? or "
+		buchungIterator.addFilter("(upper(zweck) like ? or "
 		    + "upper(zweck) like ? or "
 		    + "upper(zweck) like ? or "
 		    + "upper(zweck) like ? or "
@@ -60,9 +60,9 @@ public class BuchungsKorrekturQuery {
 		    + "upper(zweck) like ? or "
 		    + "upper(zweck) like ?)", keys);
 
-		it.setOrder("ORDER BY datum");
+		buchungIterator.setOrder("ORDER BY datum");
 
-		this.ergebnis = it != null ? PseudoIterator.asList(it) : null;
+		this.ergebnis = buchungIterator != null ? PseudoIterator.asList(buchungIterator) : null;
 		return ergebnis;
 	}
 
