@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
@@ -76,17 +77,25 @@ public class BuchungsHeaderControl extends AbstractControl
           "SUM(case when buchung.betrag > 0 then buchung.betrag ELSE 0 END) AS einnahmen");
       it.addColumn(
           "SUM(case when buchung.betrag < 0 then buchung.betrag ELSE 0 END) AS ausgaben");
-      it.addColumn("SUM(buchung.betrag) AS saldo");
+      it.addColumn("anfangsbestand.betrag + SUM(buchung.betrag) AS saldo");
       it.addColumn("MAX(buchung.datum) AS letzte_buchung");
 
       it.join("konto", "konto.id = buchung.konto");
       it.join("anfangsbestand", "anfangsbestand.konto = konto.id");
       it.addFilter("buchung.datum >= anfangsbestand.datum");
-      it.addFilter(
-          "buchung.datum < DATE_ADD(anfangsbestand.datum, INTERVAL 1 YEAR)");
-      // TODO H2
+      // Hier müssen wir zwischen H2 und MySQL unterscheiden, da es nicht die
+      // gleichen Funktionen gibt
+      if (JVereinDBService.SETTINGS.getString("database.driver", "h2")
+          .toLowerCase().contains("h2"))
+      {
+        it.addFilter("buchung.datum < DATEADD(YEAR, 1,anfangsbestand.datum)");
+      }
+      else
+      {
+        it.addFilter(
+            "buchung.datum < DATE_ADD(anfangsbestand.datum, INTERVAL 1 YEAR)");
+      }
       it.addFilter("konto.id = ?", konto.getID());
-      // DATEADD(YEAR, 1,anfangsbestand.datum)
       it.addGroupBy("anfangsbestand.id");
       it.setOrder("Order By anfangsbestand.datum DESC");
       it.setLimit(2);
