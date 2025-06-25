@@ -41,6 +41,7 @@ import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -59,6 +60,7 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
@@ -68,7 +70,7 @@ import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class RechnungControl extends DruckMailControl
+public class RechnungControl extends DruckMailControl implements Savable
 {
 
   private TablePart rechnungList;
@@ -120,6 +122,8 @@ public class RechnungControl extends DruckMailControl
   private TextInput zahlungsweg;
 
   private TextInput leitwegID;
+
+  private TextAreaInput kommentar;
 
   public enum TYP
   {
@@ -435,7 +439,6 @@ public class RechnungControl extends DruckMailControl
     rechnungFormular = new FormularInput(FormularArt.RECHNUNG,
         getRechnung().getFormular().getID());
     rechnungFormular.setName("Formular");
-    rechnungFormular.disable();
     return rechnungFormular;
   }
 
@@ -705,6 +708,19 @@ public class RechnungControl extends DruckMailControl
     return zahlungsweg;
   }
 
+  public TextAreaInput getKommentar() throws RemoteException
+  {
+    if (kommentar != null)
+    {
+      return kommentar;
+    }
+
+    kommentar = new TextAreaInput(getRechnung().getKommentar(), 1024);
+    kommentar.setName("Kommentar");
+    kommentar.setHeight(50);
+    return kommentar;
+  }
+
   public Button getRechnungDruckUndMailButton()
   {
 
@@ -735,5 +751,30 @@ public class RechnungControl extends DruckMailControl
       }
     }, getRechnung(), false, "document-print.png");
     return b;
+  }
+
+  @Override
+  public void prepareStore() throws RemoteException, ApplicationException
+  {
+    Rechnung re = getRechnung();
+    re.setFormular((Formular) getRechnungFormular().getValue());
+    re.setKommentar((String) getKommentar().getValue());
+  }
+
+  @Override
+  public void handleStore() throws ApplicationException
+  {
+    try
+    {
+      prepareStore();
+      Rechnung re = getRechnung();
+      re.store();
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler bei speichern der Rechnung";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler, e);
+    }
   }
 }
