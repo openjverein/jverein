@@ -192,6 +192,7 @@ public class RechnungMap extends AbstractMap
   }
 
   public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
+      throws RemoteException
   {
     Map<String, Object> map = null;
     if (inMap == null)
@@ -203,13 +204,23 @@ public class RechnungMap extends AbstractMap
       map = inMap;
     }
 
+    map.put(RechnungVar.BUCHUNGSDATUM.getName(),
+        new Date[] { new Date(), new Date() });
+    map.put(RechnungVar.ZAHLUNGSGRUND.getName(),
+        new String[] { "Mitgliedsbeitrag", "Zusatzbetrag" });
+    map.put(RechnungVar.NETTOBETRAG.getName(), new Double[] { 10d, 13.8d });
+    map.put(RechnungVar.STEUERSATZ.getName(), new Double[] { 0d, 0d });
+    map.put(RechnungVar.STEUERBETRAG.getName(), new Double[] { 0d, 0d });
+    map.put(RechnungVar.BETRAG.getName(), new Double[] { 10d, 13.8d });
+    
     map.put(RechnungVar.SUMME.getName(), Double.valueOf("23.80"));
     map.put(RechnungVar.IST.getName(), Double.valueOf("10.00"));
     map.put(RechnungVar.STAND.getName(), Double.valueOf("-13.80"));
     map.put(RechnungVar.SUMME_OFFEN.getName(), Double.valueOf("13.80"));
     map.put(RechnungVar.QRCODE_INTRO.getName(), "QRCode Intro");
     map.put(RechnungVar.DATUM.getName(), toDate("10.01.2025"));
-    map.put(RechnungVar.NUMMER.getName(), "Nummer");
+    map.put(RechnungVar.NUMMER.getName(), StringTool.lpad("11",
+        Einstellungen.getEinstellung().getZaehlerLaenge(), "0"));
     map.put(RechnungVar.ANREDE.getName(), "Herrn");
     map.put(RechnungVar.TITEL.getName(), "Dr. Dr.");
     map.put(RechnungVar.NAME.getName(), "Wichtig");
