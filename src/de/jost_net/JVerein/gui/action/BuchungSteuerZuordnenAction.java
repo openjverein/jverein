@@ -70,6 +70,10 @@ public class BuchungSteuerZuordnenAction implements Action
       {
         steuer = dialog.open();
       }
+      catch (OperationCanceledException e)
+      {
+        throw new OperationCanceledException(e);
+      }
       catch (Exception e)
       {
         String fehler = "Fehler beim öffnen des SteuerZuordnen Dialogs";
@@ -160,10 +164,10 @@ public class BuchungSteuerZuordnenAction implements Action
                 catch (RemoteException e)
                 {
                   skip++;
-                  String fehler = "Fehler beim entfernen der Steuer";
+                  String fehler = "Fehler beim zuordnen der Steuer";
                   try
                   {
-                    fehler += " aus Buchung Nr. " + buchung.getID();
+                    fehler += " zu Buchung Nr. " + buchung.getID();
                   }
                   catch (RemoteException ingore)
                   {
