@@ -49,7 +49,7 @@ public class AfaUtil
     {
       monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
       monitor.setPercentComplete(0);
-      monitor.setStatusText("Genreriere Abschreibungen");
+      monitor.setStatusText("Generiere Abschreibungen");
 
       int anzahlBuchungen = 0;
       DBService service;
