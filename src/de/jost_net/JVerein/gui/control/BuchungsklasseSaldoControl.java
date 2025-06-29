@@ -18,7 +18,9 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.BuchungsklassesaldoCSV;
@@ -118,6 +120,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       saldoList.setRememberOrder(true);
       saldoList.setRememberState(true);
       saldoList.addFeature(new FeatureSummary());
+      saldoList.setFormatter(new SaldoFormatter());
+
       return saldoList;
     }
     catch (RemoteException e)

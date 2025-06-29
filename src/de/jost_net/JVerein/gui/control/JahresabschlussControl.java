@@ -25,6 +25,7 @@ import org.apache.commons.lang.time.DateUtils;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
 import de.jost_net.JVerein.gui.util.AfaUtil;
@@ -299,6 +300,7 @@ public class JahresabschlussControl extends KontensaldoControl
   {
     try
     {
+      DBTransaction.starten();
       Jahresabschluss ja = getJahresabschluss();
       ja.setVon(getDatumvon().getDate());
       ja.setBis(getDatumbis().getDate());
@@ -308,6 +310,7 @@ public class JahresabschlussControl extends KontensaldoControl
       if (afaberechnung != null && (Boolean) getAfaberechnung().getValue())
       {
         new AfaUtil(new Geschaeftsjahr(ja.getVon()), ja);
+        reloadList();
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
       {
@@ -336,24 +339,27 @@ public class JahresabschlussControl extends KontensaldoControl
           }
         }
       }
+      DBTransaction.commit();
       GUI.getStatusBar().setSuccessText("Jahresabschluss gespeichert");
     }
 
     catch (RemoteException e)
     {
+      DBTransaction.rollback();
       String fehler = "Fehler beim speichern des Jahresabschlusses";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
     catch (ParseException e)
     {
-
+      DBTransaction.rollback();
       String fehler = "Fehler beim speichern des Jahresabschlusses";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
     catch (ApplicationException e)
     {
+      DBTransaction.rollback();
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
