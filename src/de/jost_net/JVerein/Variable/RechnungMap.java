@@ -207,11 +207,16 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.BUCHUNGSDATUM.getName(),
         new Date[] { new Date(), new Date() });
     map.put(RechnungVar.ZAHLUNGSGRUND.getName(),
-        new String[] { "Mitgliedsbeitrag", "Zusatzbetrag" });
-    map.put(RechnungVar.NETTOBETRAG.getName(), new Double[] { 10d, 13.8d });
-    map.put(RechnungVar.STEUERSATZ.getName(), new Double[] { 0d, 0d });
+        new String[] { "Mitgliedsbeitrag", "Zusatzbetrag",
+            Einstellungen.getEinstellung().getOptiert()
+                ? "Rechnungsbetrag inkl. USt."
+                : "Summe" });
+    map.put(RechnungVar.NETTOBETRAG.getName(),
+        new Double[] { 10d, 13.8d });
+    map.put(RechnungVar.STEUERSATZ.getName(),
+        new String[] { "(0%)", "(0%)" });
     map.put(RechnungVar.STEUERBETRAG.getName(), new Double[] { 0d, 0d });
-    map.put(RechnungVar.BETRAG.getName(), new Double[] { 10d, 13.8d });
+    map.put(RechnungVar.BETRAG.getName(), new Double[] { 10d, 13.8d, 23.8d });
     
     map.put(RechnungVar.SUMME.getName(), Double.valueOf("23.80"));
     map.put(RechnungVar.IST.getName(), Double.valueOf("10.00"));
