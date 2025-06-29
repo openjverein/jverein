@@ -338,6 +338,7 @@ public class FormularfeldControl extends FormularPartControl
     fonts.add("LiberationSerif-BoldItalic");
     fonts.add("LiberationSerif-Italic");
     fonts.add("LiberationSerif-Regular");
+    font = new SelectInput(fonts, getFormularfeld().getFont());
     return font;
   }
 
