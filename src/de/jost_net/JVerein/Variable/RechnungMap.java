@@ -222,7 +222,8 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.IST.getName(), Double.valueOf("10.00"));
     map.put(RechnungVar.STAND.getName(), Double.valueOf("-13.80"));
     map.put(RechnungVar.SUMME_OFFEN.getName(), Double.valueOf("13.80"));
-    map.put(RechnungVar.QRCODE_INTRO.getName(), "QRCode Intro");
+    map.put(RechnungVar.QRCODE_INTRO.getName(),
+        "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen.");
     map.put(RechnungVar.DATUM.getName(), toDate("10.01.2025"));
     map.put(RechnungVar.NUMMER.getName(), StringTool.lpad("11",
         Einstellungen.getEinstellung().getZaehlerLaenge(), "0"));
@@ -247,7 +248,8 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
     map.put(RechnungVar.EMPFAENGER.getName(),
         "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
-    map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(), "Überweisung");
+    map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(),
+        "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
     return map;
   }
 }
