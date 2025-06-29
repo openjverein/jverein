@@ -34,9 +34,9 @@ public class Update0476 extends AbstractDDLUpdate
     execute(
         "update formularfeld set font = 'Courier Prime Bold' where font = 'Courier-Bold'");
     execute(
-        "update formularfeld set font = 'Courier Prime Bold Italic' where font = 'Courier-Oblique'");
+        "update formularfeld set font = 'Courier Prime Italic' where font = 'Courier-Oblique'");
     execute(
-        "update formularfeld set font = 'Courier Prime Italic' where font = 'Courier-BoldOblique'");
+        "update formularfeld set font = 'Courier Prime Bold Italic' where font = 'Courier-BoldOblique'");
 
     execute(
         "update formularfeld set font = 'LiberationSans-Bold' where font = 'Helvetica-Bold'");
