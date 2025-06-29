@@ -1230,7 +1230,7 @@ public class MitgliederImport implements Importer
           }
           // Wenn bei Existierenden Mitgliedern das Zusatzfeld in der
           // Importdatei leer ist, wird es gelöscht
-          else if (id != null)
+          else if (id != null && zusatzfeld != null)
           {
             zusatzfeld.delete();
           }
@@ -1254,7 +1254,8 @@ public class MitgliederImport implements Importer
             }
           }
           if (inhalt.length() != 0 && !inhalt.equalsIgnoreCase("false")
-              && !inhalt.equalsIgnoreCase("nein") && eigenschaften == null)
+              && !inhalt.equalsIgnoreCase("nein")
+              && !inhalt.equalsIgnoreCase("0") && eigenschaften == null)
           {
             eigenschaften = (Eigenschaften) Einstellungen
                 .getDBService().createObject(Eigenschaften.class, null);
@@ -1263,7 +1264,7 @@ public class MitgliederImport implements Importer
             eigenschaften.store();
           }
           // Vorhandene Eigenschaft ggf. entfernen
-          else if (id != null)
+          else if (id != null && eigenschaften != null)
           {
             eigenschaften.delete();
           }
@@ -1288,7 +1289,8 @@ public class MitgliederImport implements Importer
               }
             }
             if (inhalt.length() != 0 && !inhalt.equalsIgnoreCase("false")
-                && !inhalt.equalsIgnoreCase("nein") && sekundaer == null)
+                && !inhalt.equalsIgnoreCase("nein")
+                && !inhalt.equalsIgnoreCase("0") && sekundaer == null)
             {
               sekundaer = (SekundaereBeitragsgruppe) Einstellungen
                   .getDBService()
@@ -1298,7 +1300,7 @@ public class MitgliederImport implements Importer
               sekundaer.store();
             }
             // Ggf. vorhandene Sekundäre Beitragsgruppe entfernen
-            else if (id != null)
+            else if (id != null && sekundaer != null)
             {
               sekundaer.delete();
             }
@@ -1313,7 +1315,6 @@ public class MitgliederImport implements Importer
         {
           text = "Mitglied %s geändert.";
         }
-        monitor.setPercentComplete(100);
         monitor.setStatusText(
             String.format(text, Adressaufbereitung.getNameVorname(m)));
       }
@@ -1321,6 +1322,7 @@ public class MitgliederImport implements Importer
       stmt.close();
       conn.close();
       DBTransaction.commit();
+      monitor.setPercentComplete(100);
       monitor.setStatusText("Import komplett abgeschlossen.");
     }
     catch (Exception e)
