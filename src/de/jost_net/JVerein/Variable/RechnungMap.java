@@ -233,7 +233,7 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.EMPFAENGER.getName(),
         "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
     map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(), "Überweisung");
-    map.put(RechnungVar.KOMMENTAR.getName(), "");
+    map.put(RechnungVar.KOMMENTAR.getName(), "Der Rechnungskommentar");
     return map;
   }
 }
