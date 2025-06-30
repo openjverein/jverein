@@ -22,10 +22,9 @@ import java.util.Date;
 
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.util.ApplicationException;
 
-public interface Rechnung extends DBObject, IAdresse
+public interface Rechnung extends JVereinDBObject, IAdresse
 {
   public Mitglied getMitglied() throws RemoteException;
 
@@ -136,4 +135,8 @@ public interface Rechnung extends DBObject, IAdresse
   public String getLeitwegID() throws RemoteException;
 
   public void setLeitwegID(String leitwegid) throws RemoteException;
+
+  public void setKommentar(String value) throws RemoteException;
+
+  public String getKommentar() throws RemoteException;
 }

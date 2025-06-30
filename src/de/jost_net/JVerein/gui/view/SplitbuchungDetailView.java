@@ -19,17 +19,17 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungAufloesenAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
-import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
+import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.InfoPanel;
 
-public class SplitbuchungDetailView extends AbstractDetailView
+public class SplitbuchungDetailView extends AbstractView
 {
   private BuchungsControl control;
 
@@ -91,11 +91,5 @@ public class SplitbuchungDetailView extends AbstractDetailView
     speichern.setEnabled(!buchungabgeschlossen);
     buttons.addButton(speichern);
     buttons.paint(getParent());
-  }
-
-  @Override
-  protected Savable getControl()
-  {
-    return control;
   }
 }

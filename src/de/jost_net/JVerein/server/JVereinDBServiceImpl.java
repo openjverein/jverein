@@ -87,6 +87,14 @@ public class JVereinDBServiceImpl extends DBServiceImpl implements
     return SETTINGS.getBoolean("autocommit", super.getAutoCommit());
   }
 
+  /**
+   * @see de.willuhn.datasource.db.DBServiceImpl#getTransactionIsolationLevel()
+   */
+  protected int getTransactionIsolationLevel() throws RemoteException
+  {
+    return this.driver.getTransactionIsolationLevel();
+  }
+
   @Override
   protected String getJdbcDriver()
   {
