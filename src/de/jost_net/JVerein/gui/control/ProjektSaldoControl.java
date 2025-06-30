@@ -17,6 +17,9 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.jameica.gui.AbstractView;
@@ -47,7 +50,19 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
        on += " OR projekt.id = st.projekt";
      }
      it.join("projekt", on);
-     it.setOrder("ORDER BY projekt.bezeichnung, -buchungsart.nummer DESC ");
+
+     switch (Einstellungen.getEinstellung().getBuchungsartSort())
+     {
+       case BuchungsartSort.NACH_NUMMER:
+         it.setOrder("ORDER BY projekt.bezeichnung, -buchungsart.nummer DESC ");
+         break;
+       case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+       default:
+         it.setOrder(
+             "ORDER BY projekt.bezeichnung, buchungsart.bezeichnung is NUll,"
+                 + "buchungsart.bezeichnung ");
+         break;
+     }
      return it;
    }
 

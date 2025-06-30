@@ -18,12 +18,15 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.BuchungsklassesaldoCSV;
 import de.jost_net.JVerein.io.BuchungsklassesaldoPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
@@ -117,6 +120,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       saldoList.setRememberOrder(true);
       saldoList.setRememberState(true);
       saldoList.addFeature(new FeatureSummary());
+      saldoList.setFormatter(new SaldoFormatter());
+
       return saldoList;
     }
     catch (RemoteException e)
@@ -357,8 +362,37 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
 
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
         "buchungsart");
-    it.addColumn("buchungsklasse.bezeichnung as " + BUCHUNGSKLASSE);
-    it.addColumn("buchungsart.bezeichnung as " + BUCHUNGSART);
+    switch (Einstellungen.getEinstellung().getBuchungsartSort())
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        it.addColumn(
+            "CONCAT(buchungsart.nummer,' - ',buchungsart.bezeichnung) as "
+                + BUCHUNGSART);
+        it.addColumn(
+            "CONCAT(buchungsklasse.nummer,' - ',buchungsklasse.bezeichnung) as "
+                + BUCHUNGSKLASSE);
+        it.setOrder(
+            "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC ");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        it.addColumn(
+            "CONCAT(buchungsart.bezeichnung,' (',buchungsart.nummer,')') as "
+                + BUCHUNGSART);
+        it.addColumn(
+            "CONCAT(buchungsklasse.bezeichnung,' (',buchungsklasse.nummer,')') as "
+                + BUCHUNGSKLASSE);
+        it.setOrder(
+            "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
+                + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung ");
+        break;
+      default:
+        it.addColumn("buchungsart.bezeichnung as " + BUCHUNGSART);
+        it.addColumn("buchungsklasse.bezeichnung as " + BUCHUNGSKLASSE);
+        it.setOrder(
+            "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
+                + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung ");
+        break;
+    }
     it.addColumn("buchungsart.art as " + ARTBUCHUNGSART);
     it.addColumn("COUNT(buchung.id) as " + ANZAHL);
     it.addColumn("buchungsart.status");
@@ -423,8 +457,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           "anzahl > 0 OR abs(" + SUMME + ") >= 0.01 OR buchungsart.status != ?",
           StatusBuchungsart.INACTIVE);
     }
-    it.setOrder(
-        "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC ");
 
     // Für die Steuerbträge auf der Steuerbuchungsart machen wir ein Subselect
     if (mitSteuer)

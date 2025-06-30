@@ -38,7 +38,7 @@ public class RechnungMenu extends ContextMenu
    */
   public RechnungMenu()
   {
-    addItem(new CheckedSingleContextMenuItem("Anzeigen",
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(RechnungDetailView.class), "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new RechnungDeleteAction(), "user-trash-full.png"));

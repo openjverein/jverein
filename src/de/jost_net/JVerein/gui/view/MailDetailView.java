@@ -137,27 +137,29 @@ public class MailDetailView extends AbstractDetailView
       {
         Settings settings = new Settings(this.getClass());
         settings.setStoreWhenRead(true);
-        FileDialog fd = new FileDialog(GUI.getShell(), SWT.OPEN);
+        FileDialog fd = new FileDialog(GUI.getShell(), SWT.OPEN | SWT.MULTI);
         fd.setFilterPath(
             settings.getString("lastdir", System.getProperty("user.home")));
         fd.setText("Bitte wählen Sie einen Anhang aus.");
-        String f = fd.open();
-        if (f != null)
+        if (fd.open() != null)
         {
           try
           {
-            MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
-                .createObject(MailAnhang.class, null);
-            anh.setDateiname(f.substring(
-                f.lastIndexOf(System.getProperty("file.separator")) + 1));
-            File file = new File(f);
-            FileInputStream fis = new FileInputStream(file);
-            byte[] buffer = new byte[(int) file.length()];
-            fis.read(buffer);
-            anh.setAnhang(buffer);
-            control.addAnhang(anh);
-            fis.close();
-            settings.setAttribute("lastdir", file.getParent());
+            for (String f : fd.getFileNames())
+            {
+              MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
+                  .createObject(MailAnhang.class, null);
+              anh.setDateiname(f);
+              File file = new File(fd.getFilterPath()
+                  + System.getProperty("file.separator") + f);
+              FileInputStream fis = new FileInputStream(file);
+              byte[] buffer = new byte[(int) file.length()];
+              fis.read(buffer);
+              anh.setAnhang(buffer);
+              control.addAnhang(anh);
+              fis.close();
+              settings.setAttribute("lastdir", file.getParent());
+            }
           }
           catch (Exception e)
           {

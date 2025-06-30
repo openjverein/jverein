@@ -70,7 +70,9 @@ public class BuchungMenu extends ContextMenu
         "edit-copy.png"));
     if (geldkonto)
     {
-      addItem(new SingleGegenBuchungItem("Gegenbuchung", new BuchungGegenbuchungAction(),
+      addItem(
+          new GegenBuchungItem("Gegenbuchung",
+              new BuchungGegenbuchungAction(control),
           "edit-copy.png"));
     }
     addItem(new SplitBuchungItem("Splitbuchung", new SplitBuchungAction(),
@@ -195,7 +197,8 @@ public class BuchungMenu extends ContextMenu
     }
   }
     
-  private static class SingleGegenBuchungItem extends CheckedSingleContextMenuItem
+  private static class SingleGegenBuchungItem
+      extends CheckedSingleContextMenuItem
   {
     private SingleGegenBuchungItem(String text, Action action, String icon)
     {
@@ -210,7 +213,8 @@ public class BuchungMenu extends ContextMenu
         Buchung b = (Buchung) o;
         try
         {
-          if ((b.getSplitId() != null) && (b.getSplitTyp() != SplitbuchungTyp.SPLIT))
+          if ((b.getSplitId() != null)
+              && (b.getSplitTyp() != SplitbuchungTyp.SPLIT))
           {
             return false;
           }
@@ -218,6 +222,49 @@ public class BuchungMenu extends ContextMenu
           {
             return b.getBuchungsart().getArt() == ArtBuchungsart.UMBUCHUNG;
           }
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+      return false;
+    }
+  }
+
+  private static class GegenBuchungItem extends CheckedContextMenuItem
+  {
+    private GegenBuchungItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof Buchung)
+      {
+        o = new Buchung[] { (Buchung) o };
+      }
+      if (o instanceof Buchung[])
+      {
+
+        try
+        {
+          for (Buchung b : (Buchung[]) o)
+          {
+            if ((b.getSplitId() != null)
+                && (b.getSplitTyp() != SplitbuchungTyp.SPLIT))
+            {
+              return false;
+            }
+            if (b.getBuchungsart() == null
+                || b.getBuchungsart().getArt() != ArtBuchungsart.UMBUCHUNG)
+            {
+              return false;
+            }
+          }
+          return true;
         }
         catch (RemoteException e)
         {
