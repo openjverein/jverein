@@ -236,7 +236,7 @@ public class MyExtension implements Extension
           new StartViewAction(BuchungsklasseSaldoView.class),
           "emblem-documents.png"));
       // UstVA
-      if (Einstellungen.getEinstellung().getOptiert())
+      if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
       {
         buchfuehrung
             .addChild(new MyItem(buchfuehrung, "Umsatzsteuer Voranmeldung",

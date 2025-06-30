@@ -362,7 +362,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
 
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
         "buchungsart");
-    switch (Einstellungen.getEinstellung().getBuchungsartSort())
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {
       case BuchungsartSort.NACH_NUMMER:
         it.addColumn(
