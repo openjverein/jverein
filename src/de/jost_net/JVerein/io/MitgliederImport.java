@@ -1158,7 +1158,6 @@ public class MitgliederImport implements Importer
           }
           if (inhalt.length() != 0)
           {
-
             if (zusatzfeld == null)
             {
               zusatzfeld = (Zusatzfelder) Einstellungen
@@ -1255,13 +1254,16 @@ public class MitgliederImport implements Importer
           }
           if (inhalt.length() != 0 && !inhalt.equalsIgnoreCase("false")
               && !inhalt.equalsIgnoreCase("nein")
-              && !inhalt.equalsIgnoreCase("0") && eigenschaften == null)
+              && !inhalt.equalsIgnoreCase("0"))
           {
-            eigenschaften = (Eigenschaften) Einstellungen
-                .getDBService().createObject(Eigenschaften.class, null);
-            eigenschaften.setMitglied(m.getID());
-            eigenschaften.setEigenschaft(e.getID());
-            eigenschaften.store();
+            if (eigenschaften == null)
+            {
+              eigenschaften = (Eigenschaften) Einstellungen.getDBService()
+                  .createObject(Eigenschaften.class, null);
+              eigenschaften.setMitglied(m.getID());
+              eigenschaften.setEigenschaft(e.getID());
+              eigenschaften.store();
+            }
           }
           // Vorhandene Eigenschaft ggf. entfernen
           else if (id != null && eigenschaften != null)
@@ -1290,14 +1292,17 @@ public class MitgliederImport implements Importer
             }
             if (inhalt.length() != 0 && !inhalt.equalsIgnoreCase("false")
                 && !inhalt.equalsIgnoreCase("nein")
-                && !inhalt.equalsIgnoreCase("0") && sekundaer == null)
+                && !inhalt.equalsIgnoreCase("0"))
             {
-              sekundaer = (SekundaereBeitragsgruppe) Einstellungen
-                  .getDBService()
-                  .createObject(SekundaereBeitragsgruppe.class, null);
-              sekundaer.setMitglied(Integer.parseInt(m.getID()));
-              sekundaer.setBeitragsgruppe(Integer.parseInt(bg.getID()));
-              sekundaer.store();
+              if (sekundaer == null)
+              {
+                sekundaer = (SekundaereBeitragsgruppe) Einstellungen
+                    .getDBService()
+                    .createObject(SekundaereBeitragsgruppe.class, null);
+                sekundaer.setMitglied(Integer.parseInt(m.getID()));
+                sekundaer.setBeitragsgruppe(Integer.parseInt(bg.getID()));
+                sekundaer.store();
+              }
             }
             // Ggf. vorhandene Sekundäre Beitragsgruppe entfernen
             else if (id != null && sekundaer != null)
