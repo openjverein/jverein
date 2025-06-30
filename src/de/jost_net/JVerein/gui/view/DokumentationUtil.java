@@ -122,6 +122,9 @@ public class DokumentationUtil
   public static final String MITTELVERWENDUNGSALDO = PRE + FUNKTIONEN + BUCHF
       + "mittelverwendungsaldo";
 
+  public static final String UMSATZSTEUERSALDO = PRE + FUNKTIONEN + BUCHF
+      + "umsatzsteuersaldo";
+
 
   // Abrechnung
   public static final String ABRECHNUNG = PRE + FUNKTIONEN + ABRECH + "abrechnung";

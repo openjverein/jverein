@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.menu.SteuerMenue;
@@ -87,7 +88,8 @@ public class SteuerControl extends AbstractControl implements Savable
             return (Double) o + "%";
           }, false,
           Column.ALIGN_RIGHT);
-      steuerList.addColumn("Buchungsart", "buchungsart");
+      steuerList.addColumn("Buchungsart", "buchungsart",
+          new BuchungsartFormatter());
       steuerList.addColumn("Aktiv", "aktiv", new JaNeinFormatter());
       steuerList.setContextMenu(new SteuerMenue());
       steuerList.setRememberColWidths(true);

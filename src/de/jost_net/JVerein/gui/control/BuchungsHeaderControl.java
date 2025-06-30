@@ -17,18 +17,13 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.util.Calendar;
-import java.util.Date;
-
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.rmi.Anfangsbestand;
-import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -60,15 +55,11 @@ public class BuchungsHeaderControl extends AbstractControl
   public BuchungsHeaderControl(AbstractView view, BuchungsControl control)
   {
     super(view);
-    control.addKontoChangeListener(new Listener()
-    {
-      @Override
-      public void handleEvent(Event event)
+    control.addKontoChangeListener(event ->
       {
         Object data = event.data;
         if (data instanceof Konto)
           felderAktuallisieren((Konto) data);
-      }
     });
   }
 
@@ -76,72 +67,123 @@ public class BuchungsHeaderControl extends AbstractControl
   {
     try
     {
-      DatenSammler sammler = ladeAnfangsBestand(konto);
-      sammler = ermittleSaldos(sammler);
-      zeigeDaten(sammler);
+      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+          "konto");
+
+      it.addColumn("konto.bezeichnung as konto");
+      it.addColumn("anfangsbestand.betrag AS anfangssaldo");
+      it.addColumn("anfangsbestand.datum");
+      it.addColumn(
+          "SUM(case when buchung.betrag > 0 then buchung.betrag ELSE 0 END) AS einnahmen");
+      it.addColumn(
+          "SUM(case when buchung.betrag < 0 then buchung.betrag ELSE 0 END) AS ausgaben");
+      it.addColumn(
+          "anfangsbestand.betrag + SUM(coalesce(buchung.betrag,0)) AS saldo");
+      it.addColumn("MAX(buchung.datum) AS letzte_buchung");
+
+      it.join("anfangsbestand", "anfangsbestand.konto = konto.id");
+      
+      // Hier müssen wir zwischen H2 und MySQL unterscheiden, da es nicht die
+      // gleichen Funktionen gibt
+      String filter = "konto.id = buchung.konto AND buchung.datum >= anfangsbestand.datum";
+      if (JVereinDBService.SETTINGS.getString("database.driver", "h2")
+          .toLowerCase().contains("h2"))
+      {
+        filter += " AND buchung.datum < DATEADD(YEAR, 1,anfangsbestand.datum)";
+      }
+      else
+      {
+        filter +=
+            " AND buchung.datum < DATE_ADD(anfangsbestand.datum, INTERVAL 1 YEAR)";
+      }
+      it.leftJoin("buchung", filter);
+
+      it.addFilter("konto.id = ?", konto.getID());
+      it.addGroupBy("anfangsbestand.id");
+      it.setOrder("Order By anfangsbestand.datum DESC");
+      it.setLimit(2);
+
+      if (it.hasNext())
+      {
+        PseudoDBObject o = it.next();
+
+        getKontoNameInput().setValue(o.getAttribute("konto"));
+
+        getAktJahrAnfangsSaldoInput()
+            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+                .format(o.getAttribute("anfangssaldo")));
+        getAktJahrAnfangsSaldoInput()
+            .setComment("am: " + new DateFormatter(new JVDateFormatTTMMJJJJ())
+                .format(o.getAttribute("datum")));
+
+        getAktJahrEinnahmenInput()
+            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+                .format(o.getAttribute("einnahmen")));
+        getAktJahrAusgabenInput()
+            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+                .format(o.getAttribute("ausgaben")));
+        getAktJahrSaldoInput()
+            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+                .format(o.getAttribute("saldo")));
+        getAktJahrSaldoInput()
+            .setComment("letzte Buchung: "
+                + new DateFormatter(new JVDateFormatTTMMJJJJ())
+                .format(o.getAttribute("letzte_buchung")));
+      }
+      else
+      {
+        getKontoNameInput().setValue("");
+
+        getAktJahrAnfangsSaldoInput().setValue("/");
+        getAktJahrAnfangsSaldoInput().setComment("");
+
+        getAktJahrEinnahmenInput().setValue("/");
+        getAktJahrAusgabenInput().setValue("/");
+        getAktJahrSaldoInput().setValue("/");
+        getAktJahrSaldoInput().setComment("");
+      }
+
+      if (it.hasNext())
+      {
+        PseudoDBObject o = it.next();
+        getVorJahrAnfangsSaldoInput()
+            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+                .format(o.getAttribute("anfangssaldo")));
+        getVorJahrAnfangsSaldoInput()
+            .setComment("am: " + new DateFormatter(new JVDateFormatTTMMJJJJ())
+                .format(o.getAttribute("datum")));
+
+        getVorJahrEinnahmenInput()
+            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+                .format(o.getAttribute("einnahmen")));
+        getVorJahrAusgabenInput()
+            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+                .format(o.getAttribute("ausgaben")));
+        getVorJahrSaldoInput()
+            .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
+                .format(o.getAttribute("saldo")));
+        getVorJahrSaldoInput()
+            .setComment("letzte Buchung: "
+                + new DateFormatter(new JVDateFormatTTMMJJJJ())
+                .format(o.getAttribute("letzte_buchung")));
+      }
+      else
+      {
+        getVorJahrAnfangsSaldoInput().setValue("/");
+        getVorJahrAnfangsSaldoInput().setComment("");
+
+        getVorJahrEinnahmenInput().setValue("/");
+        getVorJahrAusgabenInput().setValue("/");
+        getVorJahrSaldoInput().setValue("/");
+        getVorJahrSaldoInput().setComment("");
+      }
     }
-    catch (RemoteException ex)
+    catch (RemoteException e)
     {
-      Logger.warn(ex.getLocalizedMessage());
+      Logger.error("Fehler beim laden der Kontodaten", e);
     }
   }
 
-  private void zeigeDaten(DatenSammler sammler) throws RemoteException
-  {
-    getKontoNameInput().setValue(sammler.konto.getBezeichnung());
-
-    JahresDaten aktJahrDaten = sammler.getAktJahr();
-    getAktJahrAnfangsSaldoInput().setValue(aktJahrDaten.getAnfangsSaldoText());
-    getAktJahrAnfangsSaldoInput()
-        .setComment(aktJahrDaten.getAnfangsDatumText());
-
-    getAktJahrEinnahmenInput().setValue(aktJahrDaten.getEinnahmenText());
-    getAktJahrAusgabenInput().setValue(aktJahrDaten.getAusgabenText());
-    getAktJahrSaldoInput().setValue(aktJahrDaten.getSaldoText());
-    getAktJahrSaldoInput().setComment(aktJahrDaten.getSaldoDatumText());
-
-    JahresDaten vorJahrDaten = sammler.getVorJahr();
-    getVorJahrAnfangsSaldoInput().setValue(vorJahrDaten.getAnfangsSaldoText());
-    getVorJahrAnfangsSaldoInput()
-        .setComment(vorJahrDaten.getAnfangsDatumText());
-
-    getVorJahrEinnahmenInput().setValue(vorJahrDaten.getEinnahmenText());
-    getVorJahrAusgabenInput().setValue(vorJahrDaten.getAusgabenText());
-    getVorJahrSaldoInput().setValue(vorJahrDaten.getSaldoText());
-    getVorJahrSaldoInput().setComment(vorJahrDaten.getSaldoDatumText());
-  }
-
-  private DatenSammler ermittleSaldos(DatenSammler sammler)
-      throws RemoteException
-  {
-    DBIterator<Buchung> iteratorBuchungen = Einstellungen.getDBService()
-        .createList(Buchung.class);
-    iteratorBuchungen.addFilter("konto = ?", sammler.konto.getID());
-    iteratorBuchungen.addFilter("datum >= ?", sammler.gibStartDatum());
-
-    while (iteratorBuchungen.hasNext())
-    {
-      Buchung buchung = iteratorBuchungen.next();
-      sammler.addBuchung(buchung);
-    }
-    return sammler;
-  }
-
-  private DatenSammler ladeAnfangsBestand(Konto konto) throws RemoteException
-  {
-    DBIterator<Anfangsbestand> iteratorAnfangsBestand = Einstellungen
-        .getDBService().createList(Anfangsbestand.class);
-    iteratorAnfangsBestand.addFilter("Konto = ?", konto.getID());
-    iteratorAnfangsBestand.setOrder("order by datum desc");
-
-    DatenSammler sammler = new DatenSammler(konto);
-    if (iteratorAnfangsBestand.hasNext())
-      sammler.setAnfangsBestandAktJahr(iteratorAnfangsBestand.next());
-    if (iteratorAnfangsBestand.hasNext())
-      sammler.setAnfangsBestandVorJahr(iteratorAnfangsBestand.next());
-
-    return sammler;
-  }
 
   public Input getKontoNameInput()
   {
@@ -231,197 +273,5 @@ public class BuchungsHeaderControl extends AbstractControl
     input.setComment("");
     input.disable();
     return input;
-  }
-
-  static class JahresDaten
-  {
-    private static CurrencyFormatter wertFormater = new CurrencyFormatter("",
-        Einstellungen.DECIMALFORMAT);
-
-    private static DateFormatter dateFormater = new DateFormatter(
-        new JVDateFormatTTMMJJJJ());
-
-    Anfangsbestand anfangsBestand;
-
-    double einnahmen;
-
-    double ausgaben;
-
-    double saldo;
-
-    Date juengstesBuchungsDatum;
-
-    public JahresDaten()
-    {
-      einnahmen = 0d;
-      ausgaben = 0d;
-      saldo = 0d;
-    }
-
-    public void setAnfangsBestand(Anfangsbestand bestand) throws RemoteException
-    {
-      anfangsBestand = bestand;
-      if (null != bestand)
-        saldo = bestand.getBetrag();
-    }
-
-    public boolean hatAnfangsBestand()
-    {
-      if (null != anfangsBestand)
-        return true;
-      return false;
-    }
-
-    public void addBuchung(Buchung buchung) throws RemoteException
-    {
-      double wert = buchung.getBetrag();
-      saldo += wert;
-      if (wert > 0d)
-        einnahmen += wert;
-      else
-        ausgaben += wert;
-
-      Date datum = buchung.getDatum();
-      if (null == juengstesBuchungsDatum)
-        juengstesBuchungsDatum = datum;
-      else if (juengstesBuchungsDatum.before(datum))
-        juengstesBuchungsDatum = datum;
-    }
-
-    private String formatWert(double wert)
-    {
-      if (wert != 0d)
-        return wertFormater.format(Double.valueOf(wert));
-      return "\\";
-    }
-
-    private String formatDatum(Date datum)
-    {
-      if (null == datum)
-        return " ";
-      return dateFormater.format(datum);
-    }
-
-    public String getSaldoText()
-    {
-      return formatWert(saldo);
-    }
-
-    public String getSaldoDatumText()
-    {
-      return "letzte Buchung: " + formatDatum(juengstesBuchungsDatum);
-    }
-
-    public String getAusgabenText()
-    {
-      return formatWert(ausgaben);
-    }
-
-    public String getEinnahmenText()
-    {
-      return formatWert(einnahmen);
-    }
-
-    public String getAnfangsSaldoText() throws RemoteException
-    {
-      if (null == anfangsBestand)
-        return "-";
-      return formatWert(anfangsBestand.getBetrag());
-    }
-
-    public Date getAnfangsDatum() throws RemoteException
-    {
-      if (null == anfangsBestand)
-        return null;
-      return anfangsBestand.getDatum();
-    }
-
-    public String getAnfangsDatumText() throws RemoteException
-    {
-      if (null == anfangsBestand)
-        return " ";
-      return "am: " + formatDatum(anfangsBestand.getDatum());
-    }
-  }
-
-  static class DatenSammler
-  {
-    Konto konto;
-
-    JahresDaten aktJahr;
-
-    JahresDaten vorJahr;
-
-    long grenzeVorJahr;
-
-    public DatenSammler(Konto konto)
-    {
-      this.konto = konto;
-      aktJahr = new JahresDaten();
-      vorJahr = new JahresDaten();
-      grenzeVorJahr = 0;
-    }
-
-    /**
-     * Datum ab dem die Summen ermittelt werden sollen
-     * 
-     * @return
-     * @throws RemoteException
-     */
-    public Date gibStartDatum() throws RemoteException
-    {
-      if (vorJahr.hatAnfangsBestand())
-        return vorJahr.getAnfangsDatum();
-      if (aktJahr.hatAnfangsBestand())
-        return aktJahr.getAnfangsDatum();
-
-      Calendar calendar = Calendar.getInstance();
-      int jahr = calendar.get(Calendar.YEAR);
-      calendar.clear();
-      calendar.set(jahr, Calendar.JANUARY, 1);
-      return calendar.getTime();
-    }
-
-    public void addBuchung(Buchung buchung) throws RemoteException
-    {
-      if (isFuerVorjahr(buchung))
-        vorJahr.addBuchung(buchung);
-      else
-        aktJahr.addBuchung(buchung);
-    }
-
-    private boolean isFuerVorjahr(Buchung buchung) throws RemoteException
-    {
-      if (buchung.getDatum().getTime() < grenzeVorJahr)
-        return true;
-      return false;
-    }
-
-    public void setAnfangsBestandAktJahr(Anfangsbestand bestand)
-        throws RemoteException
-    {
-      aktJahr.setAnfangsBestand(bestand);
-      if (null != bestand)
-      {
-        grenzeVorJahr = bestand.getDatum().getTime();
-      }
-    }
-
-    public void setAnfangsBestandVorJahr(Anfangsbestand bestand)
-        throws RemoteException
-    {
-      vorJahr.setAnfangsBestand(bestand);
-    }
-
-    public JahresDaten getAktJahr()
-    {
-      return aktJahr;
-    }
-
-    public JahresDaten getVorJahr()
-    {
-      return vorJahr;
-    }
-
   }
 }

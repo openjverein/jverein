@@ -94,6 +94,7 @@ import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.jost_net.JVerein.gui.view.StatistikMitgliedView;
 import de.jost_net.JVerein.gui.view.SteuerListeView;
+import de.jost_net.JVerein.gui.view.UmsatzsteuerSaldoView;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragListeView;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
@@ -234,6 +235,14 @@ public class MyExtension implements Extension
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",
           new StartViewAction(BuchungsklasseSaldoView.class),
           "emblem-documents.png"));
+      // UstVA
+      if (Einstellungen.getEinstellung().getOptiert())
+      {
+        buchfuehrung
+            .addChild(new MyItem(buchfuehrung, "Umsatzsteuer Voranmeldung",
+                new StartViewAction(UmsatzsteuerSaldoView.class),
+                "coins.png"));
+      }
       // Projekte
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
