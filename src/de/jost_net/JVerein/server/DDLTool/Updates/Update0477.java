@@ -33,11 +33,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 
-public class Update0476 extends AbstractDDLUpdate
+public class Update0477 extends AbstractDDLUpdate
 {
   protected DBService service;
 
-  public Update0476(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0477(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
