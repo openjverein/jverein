@@ -34,7 +34,9 @@ import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
@@ -1398,6 +1400,37 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       try
       {
         plausi();
+        return true;
+      }
+      catch (Exception e)
+      {
+        return false;
+      }
+    }
+    else if ("kontostand".equals(fieldName))
+    {
+      try
+      {
+        Double soll = Double.valueOf(0d);
+        Double ist = Double.valueOf(0d);
+        ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+            Sollbuchung.TABLE_NAME);
+        it.addColumn("COALESCE(" + Sollbuchung.T_BETRAG + ",0) as soll");
+        it.addColumn("COALESCE(sum(buchung.betrag),0) as ist");
+        it.addFilter(Sollbuchung.T_MITGLIED + " = " + this.getID());
+        it.leftJoin("buchung",
+            Buchung.T_SOLLBUCHUNG + " = " + Sollbuchung.TABLE_NAME_ID);
+        it.addGroupBy(Sollbuchung.TABLE_NAME_ID);
+        while (it.hasNext())
+        {
+          PseudoDBObject o = it.next();
+          soll += o.getDouble("soll");
+          ist += o.getDouble("ist");
+        }
+        if (soll - ist > 0.005)
+        {
+          return false;
+        }
         return true;
       }
       catch (Exception e)

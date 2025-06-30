@@ -50,6 +50,14 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
         return (Boolean) o ? "\u2705" : "\u2757";
       }
     }, Column.ALIGN_LEFT, true);
+    add("Konto", "kontostand", false, new Formatter()
+    {
+      @Override
+      public String format(Object o)
+      {
+        return (Boolean) o ? "\u2705" : "\u2757";
+      }
+    }, Column.ALIGN_LEFT, false);
     add("Mitgliedsnummer", "idint", false, true);
     try
     {
