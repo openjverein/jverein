@@ -75,7 +75,8 @@ public enum RechnungVar
   IBAN("rechnung_iban"), //
   IBANMASKIERT("rechnung_ibanmaskiert"), //
   EMPFAENGER("rechnung_empfaenger"), 
-  ZAHLUNGSWEGTEXT("rechnung_zahlungsweg_text");
+  ZAHLUNGSWEGTEXT("rechnung_zahlungsweg_text"),
+  KOMMENTAR("rechnung_kommentar");
 
   private String name;
 
