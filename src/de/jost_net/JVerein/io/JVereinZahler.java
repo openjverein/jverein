@@ -20,6 +20,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.OBanToo.SEPA.Basislastschrift.Zahler;
 
 public class JVereinZahler extends Zahler
@@ -38,6 +39,8 @@ public class JVereinZahler extends Zahler
   private Date datum;
 
   private Mitglied mitglied;
+
+  private Steuer steuer;
 
   public JVereinZahler()
   {
@@ -113,4 +116,13 @@ public class JVereinZahler extends Zahler
     this.mitglied = mitglied;
   }
 
+  public Steuer getSteuer()
+  {
+    return steuer;
+  }
+
+  public void setSteuer(Steuer steuer)
+  {
+    this.steuer = steuer;
+  }
 }

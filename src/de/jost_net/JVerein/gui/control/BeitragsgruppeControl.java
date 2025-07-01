@@ -35,6 +35,7 @@ import de.jost_net.JVerein.gui.formatter.NotizFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
+import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BeitragsgruppeMenu;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeDetailView;
 import de.jost_net.JVerein.io.AltersgruppenParser;
@@ -43,6 +44,7 @@ import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.VonBis;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -58,6 +60,7 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -97,9 +100,9 @@ public class BeitragsgruppeControl extends AbstractControl
 
   private AbstractInput buchungsart;
   
-  
-
   private TextAreaInput notiz;
+
+  private SteuerInput steuer = null;
 
   public BeitragsgruppeControl(AbstractView view)
   {
@@ -343,6 +346,19 @@ public class BeitragsgruppeControl extends AbstractControl
         }
       }
     });
+    buchungsart.addListener(e -> {
+      if (steuer != null && buchungsart.getValue() != null)
+      {
+        try
+        {
+          steuer.setValue(((Buchungsart) buchungsart.getValue()).getSteuer());
+        }
+        catch (RemoteException e1)
+        {
+          Logger.error("Fehler", e1);
+        }
+      }
+    });
     return buchungsart;
   }
   
@@ -389,6 +405,20 @@ public class BeitragsgruppeControl extends AbstractControl
     return notiz;
   }
 
+  public SelectInput getSteuer() throws RemoteException
+  {
+    if (steuer != null)
+    {
+      return steuer;
+    }
+    steuer = new SteuerInput(getBeitragsgruppe().getSteuer());
+
+    steuer.setAttribute("name");
+    steuer.setPleaseChoose("Keine Steuer");
+
+    return steuer;
+  }
+
   @Override
   public void prepareStore() throws RemoteException, ApplicationException
   {
@@ -412,6 +442,10 @@ public class BeitragsgruppeControl extends AbstractControl
     d = (Double) getArbeitseinsatzBetrag().getValue();
     b.setArbeitseinsatzBetrag(d.doubleValue());
     b.setNotiz((String) getNotiz().getValue());
+    if (steuer != null)
+    {
+      b.setSteuer((Steuer) steuer.getValue());
+    }
 
     switch (Einstellungen.getEinstellung().getBeitragsmodel())
     {
@@ -530,6 +564,24 @@ public class BeitragsgruppeControl extends AbstractControl
     }
     beitragsgruppeList.addColumn("Buchungsart", "buchungsart",
         new BuchungsartFormatter());
+    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    {
+      beitragsgruppeList.addColumn("Steuer", "steuer", o -> {
+        if (o == null)
+        {
+          return "";
+        }
+        try
+        {
+          return ((Steuer) o).getName();
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return "";
+      }, false, Column.ALIGN_RIGHT);
+    }
     beitragsgruppeList.addColumn("Altersstaffel", "altersstaffel",
         new JaNeinFormatter());
     beitragsgruppeList.addColumn("Sekundär", "sekundaer",

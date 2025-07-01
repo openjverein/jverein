@@ -80,4 +80,8 @@ public interface Zusatzbetrag extends JVereinDBObject
   public Zahlungsweg getZahlungsweg() throws RemoteException;
 
   void setZahlungsweg(Zahlungsweg zahlungsweg) throws RemoteException;
+
+  public Steuer getSteuer() throws RemoteException;
+
+  void setSteuer(Steuer steuer) throws RemoteException;
 }

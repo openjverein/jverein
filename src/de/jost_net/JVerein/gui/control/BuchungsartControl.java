@@ -31,6 +31,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
+import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BuchungsartMenu;
 import de.jost_net.JVerein.gui.view.BuchungsartDetailView;
 import de.jost_net.JVerein.io.FileViewer;
@@ -211,13 +212,7 @@ public class BuchungsartControl extends FilterControl
     {
       return steuer;
     }
-    DBIterator<Steuer> it = Einstellungen.getDBService()
-        .createList(Steuer.class);
-    it.addFilter("aktiv = true or id = ?",
-        (getBuchungsart().getSteuer() == null ? 0
-            : getBuchungsart().getSteuer().getID()));
-    steuer = new SelectInput(PseudoIterator.asList(it),
-        getBuchungsart().getSteuer());
+    steuer = new SteuerInput(getBuchungsart().getSteuer());
 
     steuer.setAttribute("name");
     steuer.setPleaseChoose("Keine Steuer");

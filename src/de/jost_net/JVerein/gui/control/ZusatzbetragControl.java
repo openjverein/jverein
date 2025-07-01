@@ -48,6 +48,7 @@ import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.Dateiname;
@@ -65,6 +66,7 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
@@ -203,6 +205,10 @@ public class ZusatzbetragControl extends AbstractControl
     z.setBetrag((Double) getZusatzbetragPart().getBetrag().getValue());
     z.setZahlungsweg(
         (Zahlungsweg) getZusatzbetragPart().getZahlungsweg().getValue());
+    if (getZusatzbetragPart().isSteuerActive())
+    {
+      z.setSteuer((Steuer) getZusatzbetragPart().getSteuer().getValue());
+    }
   }
 
   public void handleStore() throws ApplicationException
@@ -241,6 +247,10 @@ public class ZusatzbetragControl extends AbstractControl
         zv.setBuchungsart(z.getBuchungsart());
         zv.setBuchungsklasseId(z.getBuchungsklasseId());
         zv.setZahlungsweg(z.getZahlungsweg());
+        if (getZusatzbetragPart().isSteuerActive())
+        {
+          zv.setSteuer(z.getSteuer());
+        }
         zv.store();
       }
     }
@@ -288,6 +298,24 @@ public class ZusatzbetragControl extends AbstractControl
       }
       zusatzbetraegeList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
+      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      {
+        zusatzbetraegeList.addColumn("Steuer", "steuer", o -> {
+          if (o == null)
+          {
+            return "";
+          }
+          try
+          {
+            return ((Steuer) o).getName();
+          }
+          catch (RemoteException e)
+          {
+            Logger.error("Fehler", e);
+          }
+          return "";
+        }, false, Column.ALIGN_RIGHT);
+      }
       zusatzbetraegeList
           .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
       zusatzbetraegeList.setRememberColWidths(true);
