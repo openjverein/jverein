@@ -65,7 +65,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
 
   private static String FEHLER_MANDAT = ": Es ist kein Mandat-Datum vorhanden.";
 
-  private static String FEHLER_ALTER = ": Das Mandat-Datum ist Ã¤lter als 36 Monate und es sind in JVerein keine Lastschriften fÃ¼r die letzten 3 Jahre vorhanden.";
+  private static String FEHLER_ALTER = ": Das Mandat-Datum ist Älter als 36 Monate und es sind in JVerein keine Lastschriften für die letzten 3 Jahre vorhanden.";
 
   private transient Map<String, String> variable;
 
@@ -112,12 +112,12 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       if (famang.hasNext())
       {
         throw new ApplicationException(
-            "Dieses Mitglied zahlt noch fÃ¼r andere Mitglieder. ZunÃ¤chst Beitragsart der AngehÃ¶rigen Ã¤ndern!");
+            "Dieses Mitglied zahlt noch für andere Mitglieder. ZunÃ¤chst Beitragsart der Angehörigen Ändern!");
       }
     }
     catch (RemoteException e)
     {
-      String fehler = "Mitglied kann nicht gelÃ¶scht werden. Siehe system log";
+      String fehler = "Mitglied kann nicht gelöscht werden. Siehe system log";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
@@ -183,18 +183,18 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       if (cal1.before(cal2))
       {
         throw new ApplicationException(
-            "Ist das Mitglied wirklich Ã¤lter als 150 Jahre?");
+            "Ist das Mitglied wirklich älter als 150 Jahre?");
       }
     }
     if (getPersonenart().equalsIgnoreCase("n") && getGeschlecht() == null)
     {
-      throw new ApplicationException("Bitte Geschlecht auswÃ¤hlen");
+      throw new ApplicationException("Bitte Geschlecht auswählen");
     }
     if (getEmail() != null && getEmail().length() > 0)
     {
       if (!EmailValidator.isValid(getEmail()))
       {
-        throw new ApplicationException("UngÃ¼ltige Email-Adresse.");
+        throw new ApplicationException("Ungültige Email-Adresse.");
       }
     }
 
@@ -236,7 +236,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       }
       catch (SEPAException e)
       {
-        throw new ApplicationException("UngÃ¼ltige IBAN");
+        throw new ApplicationException("Ungültige IBAN");
       }
     }
     if (getBic() != null && getBic().length() != 0)
@@ -247,18 +247,18 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       }
       catch (SEPAException e)
       {
-        throw new ApplicationException("UngÃ¼ltige BIC");
+        throw new ApplicationException("Ungültige BIC");
       }
     }
     if (getZahlungsrhythmus() == null)
     {
       throw new ApplicationException(
-          "UngÃ¼ltiger Zahlungsrhytmus: " + getZahlungsrhythmus());
+          "Ungültiger Zahlungsrhytmus: " + getZahlungsrhythmus());
     }
     if (getSterbetag() != null && getAustritt() == null)
     {
       throw new ApplicationException(
-          "Bei verstorbenem Mitglied muss das Austrittsdatum gefÃ¼llt sein!");
+          "Bei verstorbenem Mitglied muss das Austrittsdatum gefüllt sein!");
     }
     if (getAustritt() != null)
     {
@@ -273,7 +273,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         if (famang.hasNext())
         {
           throw new ApplicationException(
-              "Dieses Mitglied ist Vollzahler fÃ¼r andere. ZunÃ¤chst Beitragsart der AngehÃ¶rigen Ã¤ndern!");
+              "Dieses Mitglied ist Vollzahler für andere. Zunächst Beitragsart der Angehörigen ändern!");
         }
       }
     }
@@ -283,7 +283,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
             .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
         && getVollZahlerID() != null)
     {
-      // ja, suche Vollzahler. Er darf nicht, bzw nicht frÃ¼her, ausgetreten sein!
+      // ja, suche Vollzahler. Er darf nicht, bzw nicht früher, ausgetreten
+      // sein!
       DBIterator<Mitglied> zahler = Einstellungen.getDBService()
           .createList(Mitglied.class);
       zahler.addFilter("id = " + getVollZahlerID());
@@ -296,32 +297,34 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       if (z != null && ((Mitglied) z).getAustritt() != null)
       {
         throw new ApplicationException(
-            "Der ausgewÃ¤hlte Vollzahler ist ausgetreten zu " + z.getAustritt() + ". Bitte anderen Vollzahler wÃ¤hlen!");
+            "Der ausgewählte Vollzahler ist ausgetreten zu " + z.getAustritt()
+                + ". Bitte anderen Vollzahler wählen!");
       }
       if (z != null && ((Mitglied) z).getEintritt()
           .after(new Date()) && ((Mitglied) z).getEintritt()
           .after(getEintritt()))
       {
         throw new ApplicationException(
-            "Der ausgewÃ¤hlte Vollzahler tritt erst ein zu " + z.getEintritt() + ". Bitte anderen Vollzahler wÃ¤hlen!");
+            "Der ausgewählte Vollzahler tritt erst ein zu " + z.getEintritt()
+                + ". Bitte anderen Vollzahler wählen!");
       }
     }
     // Check ob das Mitglied vorher ein Vollzahler eines Familienverbandes war
     if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
     {
-      // Es darf keine FamilienangehÃ¶rigen geben
+      // Es darf keine Familienangehörigen geben
       DBIterator<Mitglied> famang = Einstellungen.getDBService()
           .createList(Mitglied.class);
       famang.addFilter("zahlerid = " + getID());
       if (famang.hasNext())
       {
         throw new ApplicationException(
-            "Dieses Mitglied ist Vollzahler in einem Familienverband.. ZunÃ¤chst Beitragsart der AngehÃ¶rigen Ã¤ndern!");
+            "Dieses Mitglied ist Vollzahler in einem Familienverband.. Zunächst Beitragsart der Angehörigen ändern!");
       }
     }
     if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER && getVollZahlerID() == null)
     {
-      throw new ApplicationException("Bitte Vollzahler auswÃ¤hlen!");
+      throw new ApplicationException("Bitte Vollzahler auswählen!");
     }
 
     // Individueller Beitrag darf nicht kleiner als 0 sein
@@ -333,7 +336,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   /***
-   * PrÃ¼fe die externe Mitgliedsnummer. Ist es ein Mitgliedssatz und ist in den
+   * Prüfe die externe Mitgliedsnummer. Ist es ein Mitgliedssatz und ist in den
    * Einstellungen die externe Mitgliedsnummer aktiviert, dann muss eine
    * vorhanden sein und diese muss eindeutig sein.
    *
@@ -362,7 +365,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     {
       Mitglied mitglied = (Mitglied) mitglieder.next();
       throw new ApplicationException(
-          "Die externe Mitgliedsnummer wird bereits verwendet fÃ¼r Mitglied : " + mitglied.getAttribute(
+          "Die externe Mitgliedsnummer wird bereits verwendet für Mitglied : "
+              + mitglied.getAttribute(
               "namevorname"));
     }
 
@@ -1384,7 +1388,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         Eigenschaft e = eigenschaftIt.next();
         value += ", " + e.getBezeichnung();
       }
-      // FÃ¼hrendes Komme entfernen
+      // Führendes Komme entfernen
       return value.substring(1).trim();
     }
     else if ("alter".equals(fieldName))
@@ -1428,11 +1432,11 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
           PseudoDBObject o = it.next();
           return o.getDouble("dif");
         }
-        return 0;
+        return 0d;
       }
       catch (Exception e)
       {
-        return false;
+        return 0d;
       }
     }
     return super.getAttribute(fieldName);
@@ -1495,7 +1499,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       throw new ApplicationException(Adressaufbereitung.getNameVorname(this)
           + FEHLER_MANDAT);
     }
-    // Bei Mandaten Ã¤lter als 3 Jahre muss es eine Lastschrift
+    // Bei Mandaten älter als 3 Jahre muss es eine Lastschrift
     // innerhalb der letzten 3 Jahre geben
     Calendar sepagueltigkeit = Calendar.getInstance();
     sepagueltigkeit.add(Calendar.MONTH, -36);
