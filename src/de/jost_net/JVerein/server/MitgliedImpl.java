@@ -65,7 +65,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
 
   private static String FEHLER_MANDAT = ": Es ist kein Mandat-Datum vorhanden.";
 
-  private static String FEHLER_ALTER = ": Das Mandat-Datum ist Älter als 36 Monate und es sind in JVerein keine Lastschriften für die letzten 3 Jahre vorhanden.";
+  private static String FEHLER_ALTER = ": Das Mandat-Datum ist älter als 36 Monate und es sind in JVerein keine Lastschriften für die letzten 3 Jahre vorhanden.";
 
   private transient Map<String, String> variable;
 
@@ -105,14 +105,14 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   {
     try
     {
-      // Falls das Mitglied fÃ¼r andere zahlt kann man nicht lÃ¶schen
+      // Falls das Mitglied für andere zahlt kann man nicht löschen
       DBIterator<Mitglied> famang = Einstellungen.getDBService()
           .createList(Mitglied.class);
       famang.addFilter("zahlerid = " + getID());
       if (famang.hasNext())
       {
         throw new ApplicationException(
-            "Dieses Mitglied zahlt noch für andere Mitglieder. ZunÃ¤chst Beitragsart der Angehörigen Ändern!");
+            "Dieses Mitglied zahlt noch für andere Mitglieder. Zunächst Beitragsart der Angehörigen ändern!");
       }
     }
     catch (RemoteException e)
