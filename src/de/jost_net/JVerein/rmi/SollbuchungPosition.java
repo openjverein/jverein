@@ -19,9 +19,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 import java.util.Date;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface SollbuchungPosition extends DBObject
+public interface SollbuchungPosition extends JVereinDBObject
 {
 
   public Double getBetrag() throws RemoteException;
@@ -30,7 +28,7 @@ public interface SollbuchungPosition extends DBObject
   
   public Double getSteuersatz() throws RemoteException;
 
-  public void setSteuersatz(Double satz) throws RemoteException;
+  public void setSteuer(Steuer steuer) throws RemoteException;
   
   public Long getBuchungsartId() throws RemoteException;
 
@@ -57,6 +55,8 @@ public interface SollbuchungPosition extends DBObject
   public String getZweck() throws RemoteException;
 
   public Double getNettobetrag() throws RemoteException;
+
+  public Steuer getSteuer() throws RemoteException;
 
   public Double getSteuerbetrag() throws RemoteException;
 

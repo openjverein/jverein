@@ -17,22 +17,23 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.control.MitgliedstypControl;
-import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class MitgliedstypDetailView extends AbstractView
+public class MitgliedstypDetailView extends AbstractDetailView
 {
+  private MitgliedstypControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Mitgliedstyp");
 
-    final MitgliedstypControl control = new MitgliedstypControl(this);
+    control = new MitgliedstypControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Mitgliedstyp");
     group.addLabelPair("Bezeichnung", control.getBezeichnung());
@@ -41,14 +42,13 @@ public class MitgliedstypDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ADRESSTYPEN, false, "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }

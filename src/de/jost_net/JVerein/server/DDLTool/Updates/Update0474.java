@@ -2,27 +2,27 @@
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
- * <p>
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without 
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See 
  * the GNU General Public License for more details.
- * <p>
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  **********************************************************************/
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
+import java.sql.Connection;
+
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
+
 import de.jost_net.JVerein.server.DDLTool.Column;
 import de.jost_net.JVerein.server.DDLTool.Index;
 import de.jost_net.JVerein.server.DDLTool.Table;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-import java.sql.Connection;
-
-@SuppressWarnings("unused")
 public class Update0474 extends AbstractDDLUpdate
 {
   public Update0474(String driver, ProgressMonitor monitor, Connection conn)
@@ -33,62 +33,81 @@ public class Update0474 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("einstellung",
-        new Column("wirtschaftsplanung", COLTYPE.BOOLEAN, 0, null, false,
-            false)));
+    Table t = new Table("steuer");
+    Column pk = new Column("id", COLTYPE.BIGINT, 10, null, true, true);
+    t.add(pk);
+    t.setPrimaryKey(pk);
 
-    Table wirtschaftsplan = new Table("wirtschaftsplan");
-    Column id = new Column("id", COLTYPE.BIGINT, 4, null, false, true);
-    wirtschaftsplan.add(id);
-    wirtschaftsplan.setPrimaryKey(id);
-    wirtschaftsplan.add(
-            new Column("bezeichnung", COLTYPE.VARCHAR, 200, null, false, false));
-    wirtschaftsplan.add(
-        new Column("datum_von", COLTYPE.DATE, 10, null, true, false));
-    wirtschaftsplan.add(
-        new Column("datum_bis", COLTYPE.DATE, 10, null, true, false));
+    t.add(new Column("name", COLTYPE.VARCHAR, 50, null, true, false));
+    t.add(new Column("satz", COLTYPE.DOUBLE, 10, null, true, false));
 
-    execute(createTable(wirtschaftsplan));
-
-    Table wirtschaftsplanItem = new Table("wirtschaftsplanitem");
-    Column itemId = new Column("id", COLTYPE.BIGINT, 4, null, false, true);
-    wirtschaftsplanItem.add(itemId);
-    wirtschaftsplanItem.setPrimaryKey(itemId);
-    Column wirtschaftsplanCol = new Column("wirtschaftsplan", COLTYPE.INTEGER, 4,
-        null, true, false);
-    wirtschaftsplanItem.add(wirtschaftsplanCol);
-    Column buchungsart = new Column("buchungsart", COLTYPE.INTEGER, 4, null,
+    Column buchungsart = new Column("buchungsart", COLTYPE.BIGINT, 10, null,
         true, false);
-    wirtschaftsplanItem.add(buchungsart);
-    Column buchungsklasse = new Column("buchungsklasse", COLTYPE.INTEGER, 4,
-        null, true, false);
-    wirtschaftsplanItem.add(buchungsklasse);
-    wirtschaftsplanItem.add(
-        new Column("posten", COLTYPE.VARCHAR, 200, null, true, false));
-    wirtschaftsplanItem.add(
-        new Column("soll", COLTYPE.DOUBLE, 10, null, true, false));
+    t.add(new Column("aktiv", COLTYPE.BOOLEAN, 1, "1", true, false));
+    t.add(buchungsart);
 
-    execute(createTable(wirtschaftsplanItem));
+    execute(createTable(t));
 
-    Index idx = new Index("ix_wirtschaftsplanitem", false);
-    idx.add(wirtschaftsplanCol);
-    execute(idx.getCreateIndex("wirtschaftsplanitem"));
+    // Indexes und ForeignKeys
+    Index idx = new Index("ixSteuerBuchungsart", false);
+    idx.add(buchungsart);
+    execute(idx.getCreateIndex("steuer"));
 
-    execute(createForeignKey("fK_wirtschaftsplanitem", "wirtschaftsplanitem",
-        "wirtschaftsplan", "wirtschaftsplan", "id", "CASCADE", "CASCADE"));
+    execute(this.createForeignKey("fk_steuerBuchungsart", "steuer",
+        "buchungsart", "buchungsart", "id", "RESTRICT", "RESTRICT"));
 
-    Index idx1 = new Index("ix_wirtschaftsplanitem1", false);
-    idx1.add(buchungsart);
-    execute(idx1.getCreateIndex("wirtschaftsplanitem"));
+    // Spalte steuer in buchungsart
+    Column steuer = new Column("steuer", COLTYPE.BIGINT, 0, null, false, false);
+    execute(addColumn("buchungsart", steuer));
 
-    execute(createForeignKey("fk_wirtschaftsplanitem1", "wirtschaftsplanitem",
-        "buchungsart", "buchungsart", "id", "RESTRICT", "CASCADE"));
+    // Index und ForeignKey in buchungsart
+    idx = new Index("ixBuchungsartSteuer", false);
+    idx.add(steuer);
+    execute(idx.getCreateIndex("buchungsart"));
 
-    Index idx2 = new Index("ix_wirtschaftsplanitem2", false);
-    idx2.add(buchungsklasse);
-    execute(idx2.getCreateIndex("wirtschaftsplanitem"));
+    execute(this.createForeignKey("fkBuchungsartSteuer", "buchungsart",
+        "steuer", "steuer", "id", "RESTRICT", "RESTRICT"));
 
-    execute(createForeignKey("fk_wirtschaftsplanitem2", "wirtschaftsplanitem",
-        "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "CASCADE"));
+    // Spalte steuer in buchung
+    steuer = new Column("steuer", COLTYPE.BIGINT, 0, null, false, false);
+    execute(addColumn("buchung", steuer));
+
+    // Index und ForeignKey in buchung
+    idx = new Index("ixBuchungSteuer", false);
+    idx.add(steuer);
+    execute(idx.getCreateIndex("buchung"));
+
+    execute(this.createForeignKey("fkBuchungSteuer", "buchung", "steuer",
+        "steuer", "id", "RESTRICT", "RESTRICT"));
+
+    // Spalte steuer in sollbuchungposition
+    steuer = new Column("steuer", COLTYPE.BIGINT, 0, null, false, false);
+    execute(addColumn("sollbuchungposition", steuer));
+
+    // Index und ForeignKey in sollbuchungposition
+    idx = new Index("ixSollbuchungpositionSteuer", false);
+    idx.add(steuer);
+    execute(idx.getCreateIndex("sollbuchungposition"));
+
+    execute(this.createForeignKey("fkSollbuchungpositionSteuer",
+        "sollbuchungposition", "steuer", "steuer", "id", "RESTRICT",
+        "RESTRICT"));
+
+    // Spalte in einstellung
+    steuer = new Column("steuerinbuchung", COLTYPE.BOOLEAN, 1, "0", true,
+        false);
+    execute(addColumn("einstellung", steuer));
+
+    // Steuer für bestehende Steuersätze erstellen
+    execute("INSERT INTO steuer (NAME, satz, buchungsart,aktiv) SELECT"
+        + " concat(case art when 0 then 'Umsatzsteuer ' when 1 then 'Vorsteuer ' when 2 then 'Steuer ' END, steuersatz , '%'),"
+        + " steuersatz,steuer_buchungsart,1 FROM buchungsart"
+        + " where steuersatz > 0 AND steuer_buchungsart IS NOT NULL "
+        + "GROUP BY steuersatz,steuer_buchungsart,art");
+
+    // Die erstellte Steuer der Buchungsart zuweisen
+    execute("UPDATE buchungsart SET steuer = "
+        + "(SELECT id FROM steuer WHERE steuer.buchungsart = buchungsart.steuer_buchungsart AND steuer.satz = buchungsart.steuersatz) "
+        + "WHERE steuer IS null");
   }
 }

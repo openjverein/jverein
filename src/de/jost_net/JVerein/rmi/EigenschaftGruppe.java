@@ -18,9 +18,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface EigenschaftGruppe extends DBObject
+public interface EigenschaftGruppe extends JVereinDBObject
 {
   public String getBezeichnung() throws RemoteException;
 

@@ -124,6 +124,9 @@ public class DokumentationUtil
   public static final String MITTELVERWENDUNGSALDO = PRE + FUNKTIONEN + BUCHF
       + "mittelverwendungsaldo";
 
+  public static final String UMSATZSTEUERSALDO = PRE + FUNKTIONEN + BUCHF
+      + "umsatzsteuersaldo";
+
 
   // Abrechnung
   public static final String ABRECHNUNG = PRE + FUNKTIONEN + ABRECH + "abrechnung";
@@ -224,6 +227,9 @@ public class DokumentationUtil
 
   public static final String PROJEKTE = PRE + FUNKTIONEN + ADMIN + ADMBUCHF + "projekte";
 
+  public static final String STEUER = PRE + FUNKTIONEN + ADMIN + ADMBUCHF
+      + "steuer";
+
 
   // Einstellungen Erweitert
   public static final String BEREINIGEN = PRE + FUNKTIONEN + ADMIN + ADMERWEITERT + "bereinigen";  
@@ -234,4 +240,5 @@ public class DokumentationUtil
 
   // Changelog bei Update
   public static final String CHANGELOG = PRE + FUNKTIONEN + "notes";
+
 }

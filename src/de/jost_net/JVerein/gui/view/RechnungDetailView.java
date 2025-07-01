@@ -18,22 +18,25 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.RechnungControl;
-import de.willuhn.jameica.gui.AbstractView;
+import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class RechnungDetailView extends AbstractView
+public class RechnungDetailView extends AbstractDetailView
 {
+
+  RechnungControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Rechnungen");
 
-    final RechnungControl control = new RechnungControl(this);
+    control = new RechnungControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Rechnung");
     
@@ -45,6 +48,7 @@ public class RechnungDetailView extends AbstractView
     left.addInput(control.getMitglied());
     left.addInput(control.getBetrag());
     left.addInput(control.getRechnungFormular());
+    left.addInput(control.getKommentar());
     left.addInput(control.getPersonenart());
     
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
@@ -75,6 +79,13 @@ public class RechnungDetailView extends AbstractView
         DokumentationUtil.RECHNUNG, false, "question-circle.png");
     buttons.addButton(control.getRechnungDruckUndMailButton());
     buttons.addButton(control.getMahnungDruckUndMailButton());
+    buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }

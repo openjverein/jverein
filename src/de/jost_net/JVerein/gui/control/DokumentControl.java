@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.swt.widgets.FileDialog;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.DokumentMessage;
 import de.jost_net.JVerein.gui.action.DokumentShowAction;
@@ -49,6 +51,7 @@ import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -73,11 +76,14 @@ public class DokumentControl extends AbstractControl
 
   private DokumentMessageConsumer mc = null;
 
+  private Settings settings = null;
+
   public DokumentControl(AbstractView view, String verzeichnis, boolean enabled)
   {
     super(view);
     this.verzeichnis = verzeichnis;
     this.enabled = enabled;
+    this.settings = new Settings(this.getClass());
   }
 
   private AbstractDokument getDokument() throws RemoteException
@@ -96,7 +102,8 @@ public class DokumentControl extends AbstractControl
     {
       return datei;
     }
-    datei = new FileInput("", false);
+    datei = new PathFileInput("", false,
+        settings.getString("buchung.dokument", ""));
     return datei;
   }
 
@@ -165,6 +172,8 @@ public class DokumentControl extends AbstractControl
         fis.close();
         throw new ApplicationException("Datei ist leer");
       }
+      settings.setAttribute("buchung.dokument", // (String) datei.getValue());
+          new File((String) datei.getValue()).getParent());
       // Dokument speichern
       String locverz = verzeichnis + doc.getReferenz();
       QueryMessage qm = new QueryMessage(locverz, fis);
@@ -293,4 +302,24 @@ public class DokumentControl extends AbstractControl
     }
   }
 
+  /**
+   * FileInput mit Angabe des Ordners
+   */
+  private class PathFileInput extends FileInput
+  {
+
+    private String path;
+
+    public PathFileInput(String file, boolean save, String path)
+    {
+      super(file, save);
+      this.path = path;
+    }
+
+    @Override
+    protected void customize(FileDialog fd)
+    {
+      fd.setFilterPath(path);
+    }
+  }
 }

@@ -109,6 +109,10 @@ public class BuchungSollbuchungZuordnungAction implements Action
             {
               sbp.setBuchungsklasseId(buchung.getBuchungsklasseId());
             }
+            if (buchung.getSteuer() != null)
+            {
+              sbp.setSteuer(buchung.getSteuer());
+              }
             sbp.setDatum(buchung.getDatum());
             sbp.setZweck(buchung.getZweck());
             sbp.setSollbuchung(sollb.getID());
@@ -174,6 +178,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
                 buchung.setSplitId(b[0].getSplitId());
                 buchung.setBuchungsartId(b[0].getBuchungsartId());
                 buchung.setBuchungsklasseId(b[0].getBuchungsklasseId());
+                buchung.setSteuer(b[0].getSteuer());
 
                 SplitbuchungsContainer.init(b[0]);
                 SplitbuchungsContainer.add(buchung);

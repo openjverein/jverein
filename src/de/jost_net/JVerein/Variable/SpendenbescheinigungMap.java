@@ -37,12 +37,12 @@ import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.logging.Logger;
 import jonelo.NumericalChameleon.SpokenNumbers.GermanNumber;
 
-public class SpendenbescheinigungMap
+public class SpendenbescheinigungMap extends AbstractMap
 {
 
   public SpendenbescheinigungMap()
   {
-    //
+    super();
   }
 
   public Map<String, Object> getMap(Spendenbescheinigung spb, Map<String, Object> inMap)
@@ -433,7 +433,7 @@ public class SpendenbescheinigungMap
     map.put(SpendenbescheinigungVar.ANREDE.getName(), "Herrn");
     map.put(SpendenbescheinigungVar.EMPFAENGER.getName(),
         "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
-    map.put(SpendenbescheinigungVar.BETRAG.getName(), "300,00");
+    map.put(SpendenbescheinigungVar.BETRAG.getName(), Double.valueOf("300.00"));
     map.put(SpendenbescheinigungVar.BETRAGINWORTEN.getName(), "dreihundert");
     map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(), "10.01.2025");
     map.put(SpendenbescheinigungVar.SPENDEART.getName(), "Geldspende");
@@ -448,7 +448,7 @@ public class SpendenbescheinigungMap
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_DATEN.getName(), "Willi");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_ART.getName(), "Spende");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_VERZICHT.getName(), "nein");
-    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_BETRAG.getName(), "300,00");
+    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_BETRAG.getName(), "300.00");
     map.put(SpendenbescheinigungVar.BEZEICHNUNGSACHZUWENDUNG.getName(),
         "Waschmaschine");
     map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),

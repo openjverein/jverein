@@ -31,13 +31,14 @@ import de.willuhn.jameica.gui.parts.InfoPanel;
 
 public class SplitbuchungDetailView extends AbstractView
 {
+  private BuchungsControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Splitbuchungen");
 
-    final BuchungsControl control = new BuchungsControl(this, Kontenfilter.GELDKONTO);
+    control = new BuchungsControl(this, Kontenfilter.GELDKONTO);
     
     final boolean buchungabgeschlossen = control.isSplitBuchungAbgeschlossen();
     

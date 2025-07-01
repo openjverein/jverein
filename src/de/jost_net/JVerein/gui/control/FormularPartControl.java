@@ -31,7 +31,7 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 
-public class FormularPartControl extends AbstractControl
+public abstract class FormularPartControl extends AbstractControl
 {
   protected TablePart formularfelderList;
 

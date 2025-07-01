@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -29,18 +30,16 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
-import de.jost_net.JVerein.gui.action.MailVorschauAction;
-import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.util.JameicaUtil;
 import de.jost_net.JVerein.rmi.MailAnhang;
-import de.jost_net.JVerein.rmi.MailEmpfaenger;
-import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.server.MitgliedImpl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -50,15 +49,16 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailDetailView extends AbstractView
+public class MailDetailView extends AbstractDetailView
 {
+  private MailControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Mail");
 
-    final MailControl control = new MailControl(this);
+    control = new MailControl(this);
 
     Composite comp = new Composite(this.getParent(), SWT.NONE);
     comp.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -137,27 +137,29 @@ public class MailDetailView extends AbstractView
       {
         Settings settings = new Settings(this.getClass());
         settings.setStoreWhenRead(true);
-        FileDialog fd = new FileDialog(GUI.getShell(), SWT.OPEN);
+        FileDialog fd = new FileDialog(GUI.getShell(), SWT.OPEN | SWT.MULTI);
         fd.setFilterPath(
             settings.getString("lastdir", System.getProperty("user.home")));
         fd.setText("Bitte wählen Sie einen Anhang aus.");
-        String f = fd.open();
-        if (f != null)
+        if (fd.open() != null)
         {
           try
           {
-            MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
-                .createObject(MailAnhang.class, null);
-            anh.setDateiname(f.substring(
-                f.lastIndexOf(System.getProperty("file.separator")) + 1));
-            File file = new File(f);
-            FileInputStream fis = new FileInputStream(file);
-            byte[] buffer = new byte[(int) file.length()];
-            fis.read(buffer);
-            anh.setAnhang(buffer);
-            control.addAnhang(anh);
-            fis.close();
-            settings.setAttribute("lastdir", file.getParent());
+            for (String f : fd.getFileNames())
+            {
+              MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
+                  .createObject(MailAnhang.class, null);
+              anh.setDateiname(f);
+              File file = new File(fd.getFilterPath()
+                  + System.getProperty("file.separator") + f);
+              FileInputStream fis = new FileInputStream(file);
+              byte[] buffer = new byte[(int) file.length()];
+              fis.read(buffer);
+              anh.setAnhang(buffer);
+              control.addAnhang(anh);
+              fis.close();
+              settings.setAttribute("lastdir", file.getParent());
+            }
           }
           catch (Exception e)
           {
@@ -175,30 +177,27 @@ public class MailDetailView extends AbstractView
     buttons.addButton(
         new Button("Mail-Vorlage", new MailVorlageZuweisenAction(), control,
             false, "view-refresh.png"));
-    Mitglied m;
-    if (control.getEmpfaenger().getItems().isEmpty())
-    {
-      m = MitgliedImpl.getDummy();
-    }
-    else
-    {
-      MailEmpfaenger empfaenger = (MailEmpfaenger) control.getEmpfaenger()
-          .getItems().get(0);
-      m = empfaenger.getMitglied();
-    }
-    buttons.addButton(
-        new Button("Variablen anzeigen", new OpenInsertVariableDialogAction(),
-            new MitgliedMap().getMap(m, new AllgemeineMap().getMap(null)),
-            false, "bookmark.png"));
-    buttons.addButton(
-        new Button("Vorschau", new MailVorschauAction(control), m, false,
-            "edit-copy.png"));
+
+    Map<String, Object> map = MitgliedMap.getDummyMap(null);
+    map = new AllgemeineMap().getMap(map);
+
+    buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
+        control, false, "bookmark.png");
+    buttons
+        .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
+            control, false, "edit-copy.png"));
     buttons.addButton(
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
-    buttons.addButton(control.getMailSpeichernButton());
+    buttons.addButton(new SaveButton(control));
     buttons.addButton(control.getMailReSendButton());
     buttons.addButton(control.getMailSendButton());
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }

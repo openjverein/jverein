@@ -31,6 +31,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -41,8 +42,6 @@ import de.willuhn.util.ApplicationException;
 public class SplitbuchungsContainer
 {
   private static ArrayList<Buchung> splitbuchungen = null;
-
-  private static int dependencyid = 0;
 
   private static Buchung[] buchungen = null;
 
@@ -82,7 +81,7 @@ public class SplitbuchungsContainer
       throws RemoteException, ApplicationException
   {
     splitbuchungen = new ArrayList<>();
-    dependencyid = 0;
+
     // Wenn eine gesplittete Buchung aufgerufen wird, wird die Hauptbuchung
     // gelesen
     if (b.getSplitId() != null)
@@ -109,7 +108,6 @@ public class SplitbuchungsContainer
     {
       Buchung buchung = (Buchung) it.next();
       SplitbuchungsContainer.add(buchung);
-      dependencyid = Math.max(dependencyid, buchung.getDependencyId());
     }
   }
 
@@ -202,6 +200,9 @@ public class SplitbuchungsContainer
 
     Buchungsart ba_haupt = null;
     Buchungsart ba_gegen = null;
+    Steuer steuer_haupt = null;
+    Steuer steuer_gegen = null;
+
     for (Buchung b : get())
     {
       if (b.getSplitTyp() == SplitbuchungTyp.HAUPT)
@@ -211,6 +212,7 @@ public class SplitbuchungsContainer
         {
           throw new RemoteException("Buchungsart bei der Hauptbuchung fehlt");
         }
+        steuer_haupt = b.getSteuer();
       }
       if (b.getSplitTyp() == SplitbuchungTyp.GEGEN)
       {
@@ -219,12 +221,20 @@ public class SplitbuchungsContainer
         {
           throw new RemoteException("Buchungsart bei der Gegenbuchung fehlt");
         }
+        steuer_gegen = b.getSteuer();
       }
     }
     if (ba_haupt.getNummer() != ba_gegen.getNummer())
     {
       throw new RemoteException(
           "Buchungsarten bei Haupt- und Gegenbuchung müssen identisch sein");
+    }
+    if (Einstellungen.getEinstellung().getSteuerInBuchung()
+        && ((steuer_haupt == null && steuer_gegen != null)
+            || (steuer_haupt != null && !steuer_haupt.equals(steuer_gegen))))
+    {
+      throw new RemoteException(
+          "Steuer bei Haupt- und Gegenbuchung müssen identisch sein");
     }
     try
     {
@@ -307,11 +317,6 @@ public class SplitbuchungsContainer
     }
   }
 
-  public static int getNewDependencyId()
-  {
-    return ++dependencyid;
-  }
-
   public static String getText()
   {
     return text;
@@ -338,6 +343,7 @@ public class SplitbuchungsContainer
     buch.setZweck(b.getZweck());
     buch.setIban(b.getIban());
     buch.setSplitTyp(SplitbuchungTyp.GEGEN);
+    buch.setSteuer(b.getSteuer());
     return buch;
   }
 
@@ -376,8 +382,8 @@ public class SplitbuchungsContainer
     {
       buch.setZweck(origin.getZweck());
     }
+    buch.setSteuer(origin.getSteuer());
     buch.setIban(master.getIban());
-    buch.setDependencyId(origin.getDependencyId());
     buch.setSplitTyp(SplitbuchungTyp.SPLIT);
     return buch;
   }
@@ -410,6 +416,8 @@ public class SplitbuchungsContainer
 
     HashMap<String, Double> splitMap = new HashMap<>();
     HashMap<String, String> splitZweckMap = new HashMap<>();
+    boolean steuerInBuchung = Einstellungen.getEinstellung()
+        .getSteuerInBuchung();
     ArrayList<SollbuchungPosition> spArray = sollb.getSollbuchungPositionList();
     try
     {
@@ -421,9 +429,17 @@ public class SplitbuchungsContainer
           throw new ApplicationException(
               "Es haben nicht alle Sollbuchungspositionen eine Buchungsart.");
         }
+        // Key in der Form BuchungsartId-BuchungsklasseId#SteuerId (Steuer nur
+        // wenn steuerInBuchung gesetzt ist)
         String key = sp.getBuchungsartId() + "-"
             + (sp.getBuchungsklasseId() != null ? sp.getBuchungsklasseId()
-                : "");
+                : "")
+            + "#";
+        if (steuerInBuchung)
+        {
+          key += (sp.getSteuer() != null ? sp.getSteuer().getID() : "");
+        }
+
         Double betrag = splitMap.getOrDefault(key, 0d);
         if (sp.getBetrag().doubleValue() == 0)
         {
@@ -541,11 +557,18 @@ public class SplitbuchungsContainer
           String buchungsart = entry.getKey().substring(0,
               entry.getKey().indexOf("-"));
           splitBuchung.setBuchungsartId(Long.parseLong(buchungsart));
-          String buchungsklasse = entry.getKey()
+          String tmpKey = entry.getKey()
               .substring(entry.getKey().indexOf("-") + 1);
+          String buchungsklasse = tmpKey.substring(0, tmpKey.indexOf("#"));
+          String steuer = tmpKey.substring(tmpKey.indexOf("#") + 1);
+
           if (buchungsklasse.length() > 0)
           {
             splitBuchung.setBuchungsklasseId(Long.parseLong(buchungsklasse));
+          }
+          if (steuer.length() > 0)
+          {
+            splitBuchung.setSteuerId(Long.parseLong(steuer));
           }
           splitBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
           splitBuchung.setSplitId(Long.parseLong(getMaster().getID()));
@@ -586,13 +609,16 @@ public class SplitbuchungsContainer
       {
         splitbuchungen.clear();
       }
+      Logger.error(
+          "Fehler beim Autosplit, ordne Buchung Sollbuchung ohne splitten zu.",
+          e);
       GUI.getStatusBar().setErrorText(
           "Fehler beim Autosplit, ordne Buchung Sollbuchung ohne splitten zu.");
     }
     if (!splitten)
     {
       // Wenn kein automatisches Spliten möglich ist nur Buchungsart,
-      // Buchungsklasse und Sollbuchung zuweisen
+      // Buchungsklasse, Steuer und Sollbuchung zuweisen
       if (spArray.get(0).getBuchungsartId() != null)
       {
         buchung.setBuchungsartId(spArray.get(0).getBuchungsartId());
@@ -600,6 +626,10 @@ public class SplitbuchungsContainer
       if (spArray.get(0).getBuchungsklasseId() != null)
       {
         buchung.setBuchungsklasseId(spArray.get(0).getBuchungsklasseId());
+      }
+      if (steuerInBuchung && spArray.get(0).getSteuer() != null)
+      {
+        buchung.setSteuer(spArray.get(0).getSteuer());
       }
       buchung.setSollbuchung(sollb);
       buchung.store();

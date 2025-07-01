@@ -68,6 +68,7 @@ public class BuchungListTablePart extends AutoUpdateTablePart
     if (this.hasEvent(FeatureSummary.class,e))
     {
       double sumBetrag = 0.0;
+      double sumNetto = 0d;
       String summary = "";
       try
       {
@@ -78,10 +79,17 @@ public class BuchungListTablePart extends AutoUpdateTablePart
         {
           Buchung b = (Buchung) l.get(i);
           sumBetrag += b.getBetrag();
+          sumNetto += b.getNetto();
         }
         summary += " / " + "Gesamtbetrag:" + " "
             + Einstellungen.DECIMALFORMAT.format(sumBetrag) + " "
             + Einstellungen.CURRENCY;
+        if (Einstellungen.getEinstellung().getOptiert())
+        {
+          summary += " / " + "Gesamtnetto:" + " "
+              + Einstellungen.DECIMALFORMAT.format(sumNetto) + " "
+              + Einstellungen.CURRENCY;
+        }
         if (saldo != null)
         {
         summary += " / " + "Kontosaldo:" + " "
@@ -92,13 +100,21 @@ public class BuchungListTablePart extends AutoUpdateTablePart
         if (o != null && o instanceof Buchung[])
         {
           double summe = 0d;
+          double netto = 0d;
           for (Buchung b : (Buchung[]) o)
           {
             summe += b.getBetrag();
+            netto += b.getNetto();
           }
           summary += " / " + "Summe Auswahl: "
               + Einstellungen.DECIMALFORMAT.format(summe) + " "
               + Einstellungen.CURRENCY;
+          if (Einstellungen.getEinstellung().getOptiert())
+          {
+            summary += " / " + "Auswahl Netto:" + " "
+                + Einstellungen.DECIMALFORMAT.format(netto) + " "
+                + Einstellungen.CURRENCY;
+          }
         }
       }
       catch (RemoteException re)

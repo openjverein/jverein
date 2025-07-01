@@ -18,9 +18,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Felddefinition extends DBObject
+public interface Felddefinition extends JVereinDBObject
 {
   public String getName() throws RemoteException;
 

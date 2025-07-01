@@ -20,9 +20,9 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularfeldAction;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.rmi.Formularfeld;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -30,8 +30,9 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
 
-public class FormularfeldDetailView extends AbstractView
+public class FormularfeldDetailView extends AbstractDetailView
 {
+  private FormularfeldControl control;
 
   @Override
   public void bind() throws Exception
@@ -39,8 +40,7 @@ public class FormularfeldDetailView extends AbstractView
     GUI.getView().setTitle("Formularfeld");
     Formularfeld ff = (Formularfeld) getCurrentObject();
 
-    final FormularfeldControl control = new FormularfeldControl(this,
-        ff.getFormular());
+    control = new FormularfeldControl(this, ff.getFormular());
 
     LabelGroup group = new LabelGroup(getParent(), "Formularfeld");
     group.addLabelPair("Name", control.getName());
@@ -87,5 +87,11 @@ public class FormularfeldDetailView extends AbstractView
     }, null, false, "go-next.png"));
 
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }

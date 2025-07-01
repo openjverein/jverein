@@ -17,27 +17,25 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.MailAuswahlDeleteAction;
-import de.jost_net.JVerein.gui.action.MailVorschauAction;
-import de.jost_net.JVerein.gui.action.OpenInsertVariableDialogAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 /**
  * Kontext-Menu zur MailEmpfänger-Auswahl.
  */
-public class MailAuswahlMenu extends ContextMenu
+public class MailEmpfaengerMenu extends ContextMenu
 {
 
-  public MailAuswahlMenu(MailControl control)
+  public MailEmpfaengerMenu(MailControl control)
   {
-    addItem(new CheckedSingleContextMenuItem("Variablen anzeigen",
-        new OpenInsertVariableDialogAction(), "bookmark.png"));
-    addItem(new CheckedSingleContextMenuItem("Vorschau",
-        new MailVorschauAction(control),
-        "edit-copy.png" /* "mail-message-new.png" */));
     addItem(new CheckedContextMenuItem("Entfernen",
         new MailAuswahlDeleteAction(control), "user-trash-full.png"));
+    addItem(ContextMenuItem.SEPARATOR);
+    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+        new MitgliedDetailAction(), "user-friends.png"));
   }
 }

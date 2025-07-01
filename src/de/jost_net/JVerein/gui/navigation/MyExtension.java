@@ -87,6 +87,8 @@ import de.jost_net.JVerein.gui.view.SpendenbescheinigungListeView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.jost_net.JVerein.gui.view.StatistikMitgliedView;
+import de.jost_net.JVerein.gui.view.SteuerListeView;
+import de.jost_net.JVerein.gui.view.UmsatzsteuerSaldoView;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanListeView;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragListeView;
@@ -232,6 +234,14 @@ public class MyExtension implements Extension
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",
           new StartViewAction(BuchungsklasseSaldoView.class),
           "emblem-documents.png"));
+      // UstVA
+      if (Einstellungen.getEinstellung().getOptiert())
+      {
+        buchfuehrung
+            .addChild(new MyItem(buchfuehrung, "Umsatzsteuer Voranmeldung",
+                new StartViewAction(UmsatzsteuerSaldoView.class),
+                "coins.png"));
+      }
       // Projekte
       if (Einstellungen.getEinstellung().getProjekteAnzeigen())
       {
@@ -458,6 +468,12 @@ public class MyExtension implements Extension
         einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
             "Projekte", new StartViewAction(ProjektListeView.class),
             "screwdriver.png"));
+      }
+      if (Einstellungen.getEinstellung().getOptiert())
+      {
+        einstellungenbuchfuehrung
+            .addChild(new MyItem(einstellungenbuchfuehrung, "Steuer",
+                new StartViewAction(SteuerListeView.class), "coins.png"));
       }
       administration.addChild(einstellungenbuchfuehrung);
       

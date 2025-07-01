@@ -22,11 +22,11 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FelddefinitionImpl extends AbstractDBObject implements
+public class FelddefinitionImpl extends AbstractJVereinDBObject
+    implements
     Felddefinition
 {
 

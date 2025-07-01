@@ -32,14 +32,14 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
+public class RechnungImpl extends AbstractJVereinDBObject
+    implements Rechnung, IAdresse
 {
 
   /**
@@ -481,5 +481,21 @@ public class RechnungImpl extends AbstractDBObject implements Rechnung, IAdresse
   public void setLeitwegID(String leitwegid) throws RemoteException
   {
     setAttribute("leitwegid", leitwegid);
+  }
+
+  @Override
+  public void setKommentar(String kommentar) throws RemoteException
+  {
+    setAttribute("kommentar", kommentar);
+  }
+
+  @Override
+  public String getKommentar() throws RemoteException
+  {
+    if (getAttribute("kommentar") == null)
+    {
+      return "";
+    }
+    return (String) getAttribute("kommentar");
   }
 }

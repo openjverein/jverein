@@ -18,7 +18,10 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import de.jost_net.JVerein.rmi.DBSupport;
 import de.jost_net.JVerein.rmi.JVereinDBService;
@@ -63,7 +66,7 @@ public class JVereinDBServiceImpl extends DBServiceImpl implements
     try
     {
       Class<?> c = Application.getClassLoader().load(driverClass);
-      this.driver = (DBSupport) c.newInstance();
+      this.driver = (DBSupport) c.getConstructor().newInstance();
     }
     catch (Throwable t)
     {
@@ -82,6 +85,14 @@ public class JVereinDBServiceImpl extends DBServiceImpl implements
   protected boolean getAutoCommit() throws RemoteException
   {
     return SETTINGS.getBoolean("autocommit", super.getAutoCommit());
+  }
+
+  /**
+   * @see de.willuhn.datasource.db.DBServiceImpl#getTransactionIsolationLevel()
+   */
+  protected int getTransactionIsolationLevel() throws RemoteException
+  {
+    return this.driver.getTransactionIsolationLevel();
   }
 
   @Override
@@ -195,6 +206,60 @@ public class JVereinDBServiceImpl extends DBServiceImpl implements
   // + oldVersion + " to " + newVersion, e);
   // }
   // }
+
+  @Override
+  public int executeUpdate(String sql, Object[] params) throws RemoteException
+  {
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    try
+    {
+      ps = getConnection().prepareStatement(sql);
+      if (params != null)
+      {
+        for (int i = 0; i < params.length; ++i)
+        {
+          Object o = params[i];
+          if (o == null)
+            ps.setNull((i + 1), Types.NULL);
+          else
+            ps.setObject((i + 1), params[i]);
+        }
+      }
+      return ps.executeUpdate();
+    }
+    catch (SQLException e)
+    {
+      Logger.error("error while executing sql statement", e);
+      throw new RemoteException(
+          "error while executing sql statement: " + e.getMessage(), e);
+    }
+    finally
+    {
+      if (rs != null)
+      {
+        try
+        {
+          rs.close();
+        }
+        catch (Throwable t)
+        {
+          Logger.error("error while closing resultset", t);
+        }
+      }
+      if (ps != null)
+      {
+        try
+        {
+          ps.close();
+        }
+        catch (Throwable t2)
+        {
+          Logger.error("error while closing statement", t2);
+        }
+      }
+    }
+  }
 
   @Override
   public String getSQLTimestamp(String content) throws RemoteException

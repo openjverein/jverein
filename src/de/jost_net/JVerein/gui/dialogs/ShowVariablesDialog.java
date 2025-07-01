@@ -27,44 +27,33 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 
-import de.jost_net.JVerein.gui.menu.ShowVariablesMenu;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 
 /**
- * Dialog, zum Anzeigen von Variablen-Namen und deren Inhalten. Action für
- * Doppelklick auf Eintrag und ContextMenu können mit setDoubleClickAction() und
- * setContextMenu() gesetzt werden. Standard: null und new ShowVariablesMenu()
+ * Dialog, zum Anzeigen von Variablen-Namen und deren Inhalten.
  */
 public class ShowVariablesDialog extends AbstractDialog<Object>
 {
 
   private Map<String, Object> vars;
 
-  private ContextMenu contextMenu;
-
-  private Action doubleClickAction = null;
-
   private final Clipboard clipboard;
 
   private final String prependCopyText, appendCopyText;
 
+  TablePart tab;
+
   public ShowVariablesDialog(Map<String, Object> vars)
   {
-    this(vars, true);
+    this(vars, "", "");
   }
 
-  public ShowVariablesDialog(Map<String, Object> vars, boolean open)
-  {
-    this(vars, open, "", "");
-  }
-
-  public ShowVariablesDialog(Map<String, Object> vars, boolean open,
+  public ShowVariablesDialog(Map<String, Object> vars,
       String prependCopyText, String appendCopyText)
   {
     super(AbstractDialog.POSITION_CENTER);
@@ -74,19 +63,21 @@ public class ShowVariablesDialog extends AbstractDialog<Object>
     this.vars = vars;
     this.prependCopyText = prependCopyText;
     this.appendCopyText = appendCopyText;
-    // default context menu
-    contextMenu = new ShowVariablesMenu();
-    if (open)
+
+    try
     {
-      try
-      {
-        this.open();
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler", e);
-      }
+      this.open();
     }
+    catch (Exception e)
+    {
+      Logger.error("Fehler", e);
+    }
+  }
+
+  @Override
+  protected void onEscape()
+  {
+    close();
   }
 
   @Override
@@ -99,15 +90,21 @@ public class ShowVariablesDialog extends AbstractDialog<Object>
     {
       list.add(new Var(entry));
     }
-    TablePart tab = new TablePart(list, doubleClickAction);
+    tab = new TablePart(list, getCopyAction());
     tab.addColumn("Name", "name");
     tab.addColumn("Wert", "wert");
     tab.setRememberOrder(true);
-    tab.setContextMenu(contextMenu);
     tab.paint(parent);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("In Zwischenablage kopieren", new Action()
+    buttons.addButton("In Zwischenablage kopieren", getCopyAction(), null, true,
+        "edit-copy.png");
+    buttons.paint(parent);
+  }
+
+  private Action getCopyAction()
+  {
+    return new Action()
     {
 
       @Override
@@ -125,32 +122,9 @@ public class ShowVariablesDialog extends AbstractDialog<Object>
                 new Transfer[] { textTransfer });
           }
         }
-
         close();
       }
-    }, null, true, "edit-copy.png");
-    buttons.paint(parent);
-  }
-
-  /**
-   * Setze ContextMenu für Tabelle.
-   *
-   * @param newContextMenu
-   */
-  public void setContextMenu(ContextMenu newContextMenu)
-  {
-    this.contextMenu = newContextMenu;
-  }
-
-  /**
-   * Setze Action, die ausgelöst wird, wenn Nutzer doppelt auf Eintrag in
-   * Tabelle klickt.
-   *
-   * @param newDoubleClickAction
-   */
-  public void setDoubleClickAction(Action newDoubleClickAction)
-  {
-    doubleClickAction = newDoubleClickAction;
+    };
   }
 
   /**

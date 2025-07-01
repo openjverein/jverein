@@ -18,6 +18,7 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.widgets.Composite;
@@ -30,7 +31,6 @@ import de.jost_net.JVerein.gui.control.IMailControl;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.util.EvalMail;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.server.MitgliedImpl;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -63,6 +63,8 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
   private String betreffString;
 
   private String textString;
+
+  private MitgliedListener listener = null;
 
   private final de.willuhn.jameica.system.Settings settings;
 
@@ -102,7 +104,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     betreffString = control.getBetreffString();
     textString = control.getTxtString();
 
-    if (mitMitglied)
+    if (mitMitglied && control.getEmpfaengerList() == null)
     {
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
           Einstellungen.getEinstellung().getMitgliedAuswahl());
@@ -113,6 +115,18 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
         ((SelectInput) mitglied).setPreselected(null);
       }
       container.addLabelPair("Mitglied", mitglied);
+    }
+    else if (mitMitglied && control.getEmpfaengerList() != null)
+    {
+      List<Mitglied> empfaenger = control.getEmpfaengerList();
+      mitglied = new SelectInput(empfaenger, null);
+      listener = new MitgliedListener();
+      mitglied.addListener(listener);
+      if (empfaenger.isEmpty() || empfaenger.size() == 1)
+      {
+        mitglied.disable();
+      }
+      container.addLabelPair("Empfänger", mitglied);
     }
 
     betreff = new TextInput(em.evalBetreff(betreffString));
@@ -126,6 +140,11 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     b.addButton("Schließen", context -> close(), null, false,
         "process-stop.png");
     b.paint(parent);
+
+    if (listener != null)
+    {
+      listener.handleEvent(null);
+    }
   }
 
   @Override
@@ -145,12 +164,9 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     public void handleEvent(Event event)
     {
       Mitglied m = (Mitglied) mitglied.getValue();
-      if (m == null)
-      {
-        m = MitgliedImpl.getDummy();
-      }
       try
       {
+        // Mitglied (m) NULL ist, dann wird die Dummy geliefert
         map = new MitgliedMap().getMap(m, map);
         em = new EvalMail(map);
         betreff.setValue(em.evalBetreff(betreffString));

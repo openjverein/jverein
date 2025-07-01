@@ -24,10 +24,13 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.BeitragsUtil;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.Zahlungsrhythmus;
+import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
@@ -35,7 +38,6 @@ import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
-import de.jost_net.JVerein.server.MitgliedImpl;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.jost_net.JVerein.util.StringTool;
@@ -45,12 +47,12 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedMap
+public class MitgliedMap extends AbstractMap
 {
 
   public MitgliedMap()
   {
-    //
+    super();
   }
 
   public Map<String, Object> getMap(Mitglied m, Map<String, Object> inma)
@@ -68,7 +70,7 @@ public class MitgliedMap
     map = Objects.requireNonNullElseGet(initMap, HashMap::new);
     if (mitglied == null || mitglied.getID() == null)
     {
-      mitglied = MitgliedImpl.getDummy();
+      return getDummyMap(map);
     }
     map.put(MitgliedVar.ADRESSIERUNGSZUSATZ.getName(),
         StringTool.toNotNullString(mitglied.getAdressierungszusatz()));
@@ -150,6 +152,7 @@ public class MitgliedMap
       map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), null);
     }
     map.put(MitgliedVar.BANKNAME.getName(), getBankname(mitglied));
+    map.put(MitgliedVar.KONTOINHABER.getName(), mitglied.getKontoinhaber(1));
     map.put(MitgliedVar.KONTOINHABER_ADRESSIERUNGSZUSATZ.getName(),
         mitglied.getKtoiAdressierungszusatz());
     map.put(MitgliedVar.KONTOINHABER_ANREDE.getName(),
@@ -166,6 +169,8 @@ public class MitgliedMap
     map.put(MitgliedVar.KONTOINHABER_TITEL.getName(), mitglied.getKtoiTitel());
     map.put(MitgliedVar.KONTOINHABER_VORNAME.getName(),
         mitglied.getKtoiVorname());
+    map.put(MitgliedVar.KONTOINHABER_GESCHLECHT.getName(),
+        mitglied.getKtoiGeschlecht());
     map.put(MitgliedVar.KUENDIGUNG.getName(),
         Datum.formatDate(mitglied.getKuendigung()));
     map.put(MitgliedVar.LETZTEAENDERUNG.getName(),
@@ -350,6 +355,150 @@ public class MitgliedMap
       return name.trim();
     }
     return null;
+  }
+
+  public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
+      throws RemoteException
+  {
+    Map<String, Object> map = null;
+    if (inMap == null)
+    {
+      map = new HashMap<>();
+    }
+    else
+    {
+      map = inMap;
+    }
+
+    map.put(MitgliedVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei Müller");
+    map.put(MitgliedVar.MITGLIEDSTYP.getName(), "1");
+    map.put(MitgliedVar.ANREDE.getName(), "Herrn");
+    map.put(MitgliedVar.ANREDE_DU.getName(), "Hallo Willi,");
+    map.put(MitgliedVar.ANREDE_FOERMLICH.getName(),
+        "Sehr geehrter Herr Dr. Dr. Wichtig,");
+    map.put(MitgliedVar.AUSTRITT.getName(), toDate("01.01.2025"));
+    map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG.getName(), "50");
+    map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN.getName(), "10");
+    map.put(MitgliedVar.BEITRAGSGRUPPE_BEZEICHNUNG.getName(), "Beitrag");
+    map.put(MitgliedVar.BEITRAGSGRUPPE_BETRAG.getName(), "300,00");
+    map.put(MitgliedVar.BEITRAGSGRUPPE_ID.getName(), "1");
+    map.put(MitgliedVar.MANDATDATUM.getName(), toDate("01.01.2024"));
+    map.put(MitgliedVar.MANDATID.getName(), "12345");
+    map.put(MitgliedVar.BIC.getName(), "BICXXXXXXXX");
+    map.put(MitgliedVar.BLZ.getName(), "");
+    map.put(MitgliedVar.EINTRITT.getName(), toDate("01.01.2010"));
+    map.put(MitgliedVar.EINGABEDATUM.getName(), toDate("01.02.2010"));
+    map.put(MitgliedVar.EMPFAENGER.getName(),
+        "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
+    map.put(MitgliedVar.EMAIL.getName(), "willi.wichtig@jverein.de");
+    map.put(MitgliedVar.EXTERNE_MITGLIEDSNUMMER.getName(), "123456");
+    map.put(MitgliedVar.GEBURTSDATUM.getName(), toDate("02.03.1980"));
+    map.put(MitgliedVar.GESCHLECHT.getName(), GeschlechtInput.MAENNLICH);
+    map.put(MitgliedVar.HANDY.getName(), "0152778899");
+    map.put(MitgliedVar.IBAN.getName(), "DE89370400440532013000");
+    map.put(MitgliedVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
+    map.put(MitgliedVar.ID.getName(), "15");
+    map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), "123,45");
+    map.put(MitgliedVar.KONTO.getName(), "");
+    map.put(MitgliedVar.BANKNAME.getName(), "XY Bank");
+    map.put(MitgliedVar.KONTOINHABER.getName(), "Maier, Werner");
+    map.put(MitgliedVar.KONTOINHABER_PERSONENART.getName(), "n");
+    map.put(MitgliedVar.KONTOINHABER_ANREDE.getName(), "Herr");
+    map.put(MitgliedVar.KONTOINHABER_TITEL.getName(), "Dr.");
+    map.put(MitgliedVar.KONTOINHABER_NAME.getName(), "Maier");
+    map.put(MitgliedVar.KONTOINHABER_VORNAME.getName(), "Werner");
+    map.put(MitgliedVar.KONTOINHABER_STRASSE.getName(), "Kirchenstrasse 5");
+    map.put(MitgliedVar.KONTOINHABER_ADRESSIERUNGSZUSATZ.getName(),
+        "Adresszusatz");
+    map.put(MitgliedVar.KONTOINHABER_PLZ.getName(), "5678");
+    map.put(MitgliedVar.KONTOINHABER_ORT.getName(), "Essen");
+    map.put(MitgliedVar.KONTOINHABER_STAAT.getName(), "Deutschland");
+    map.put(MitgliedVar.KONTOINHABER_EMAIL.getName(),
+        "werner.maier@jverein.de");
+    map.put(MitgliedVar.KONTOINHABER_GESCHLECHT.getName(),
+        GeschlechtInput.MAENNLICH);
+    map.put(MitgliedVar.KUENDIGUNG.getName(), toDate("01.11.2024"));
+    map.put(MitgliedVar.LETZTEAENDERUNG.getName(), toDate("01.11.2024"));
+    map.put(MitgliedVar.NAME.getName(), "Wichtig");
+    map.put(MitgliedVar.NAMEVORNAME.getName(), "Wichtig, Willi");
+    map.put(MitgliedVar.ORT.getName(), "Testenhausen");
+    map.put(MitgliedVar.PERSONENART.getName(), "n");
+    map.put(MitgliedVar.PLZ.getName(), "12345");
+    map.put(MitgliedVar.STAAT.getName(), "Deutschland");
+    map.put(MitgliedVar.STERBETAG.getName(), toDate(("31.12.2024")));
+    map.put(MitgliedVar.STRASSE.getName(), "Bahnhofstr. 22");
+    map.put(MitgliedVar.TELEFONDIENSTLICH.getName(), "011/123456789");
+    map.put(MitgliedVar.TELEFONPRIVAT.getName(), "011/123456");
+    map.put(MitgliedVar.TITEL.getName(), "Dr. Dr.");
+    map.put(MitgliedVar.VERMERK1.getName(), "Vermerk 1");
+    map.put(MitgliedVar.VERMERK2.getName(), "Vermerk 2");
+    map.put(MitgliedVar.VORNAME.getName(), "Willi");
+    map.put(MitgliedVar.VORNAMENAME.getName(), "Willi, Wichtig");
+    map.put(MitgliedVar.ZAHLUNGSRHYTMUS.getName(),
+        Zahlungsrhythmus.get(Zahlungsrhythmus.HALBJAEHRLICH));
+    map.put(MitgliedVar.ZAHLUNGSRHYTHMUS.getName(),
+        Zahlungsrhythmus.get(Zahlungsrhythmus.HALBJAEHRLICH));
+    map.put(MitgliedVar.ZAHLUNGSTERMIN.getName(),
+        Zahlungstermin.HALBJAEHRLICH4.toString());
+    map.put(MitgliedVar.ZAHLUNGSWEG.getName(), "2");
+    map.put(MitgliedVar.ZAHLUNGSWEGTEXT.getName(),
+        "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
+    map.put(MitgliedVar.ZAHLERID.getName(), "123456");
+
+    // Liste der Felddefinitionen
+    DBIterator<Felddefinition> itfd = Einstellungen.getDBService()
+        .createList(Felddefinition.class);
+    while (itfd.hasNext())
+    {
+      Felddefinition fd = itfd.next();
+      switch (fd.getDatentyp())
+      {
+        case Datentyp.DATUM:
+          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
+              toDate(("31.12.2024")));
+          break;
+        case Datentyp.JANEIN:
+          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "X");
+          break;
+        case Datentyp.GANZZAHL:
+          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "22");
+          break;
+        case Datentyp.WAEHRUNG:
+          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "3.00");
+          break;
+        case Datentyp.ZEICHENFOLGE:
+          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "abcd");
+          break;
+      }
+    }
+
+    // Liste der Eigenschaften
+    DBIterator<Eigenschaft> iteig = Einstellungen.getDBService()
+        .createList(Eigenschaft.class);
+    while (iteig.hasNext())
+    {
+      Eigenschaft eig = iteig.next();
+      map.put("mitglied_eigenschaft_" + eig.getBezeichnung(), "X");
+    }
+
+    // Liste der Eigenschaften einer Eigenschaftengruppe
+    DBIterator<EigenschaftGruppe> eigenschaftGruppeIt = Einstellungen
+        .getDBService().createList(EigenschaftGruppe.class);
+    while (eigenschaftGruppeIt.hasNext())
+    {
+      EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
+
+      String key = "eigenschaften_" + eg.getBezeichnung();
+      map.put("mitglied_" + key, "Eigenschaft1, Eigenschaft2");
+    }
+
+    // Füge Lesefelder diesem Mitglied-Objekt hinzu.
+    LesefeldAuswerter l = new LesefeldAuswerter();
+    l.setLesefelderDefinitionsFromDatabase();
+    l.setMap(map);
+    map.putAll(l.getLesefelderMap());
+
+    return map;
   }
 
 }

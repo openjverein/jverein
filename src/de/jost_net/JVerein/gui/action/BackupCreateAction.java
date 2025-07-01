@@ -58,6 +58,7 @@ import de.jost_net.JVerein.server.RechnungImpl;
 import de.jost_net.JVerein.server.SekundaereBeitragsgruppeImpl;
 import de.jost_net.JVerein.server.SollbuchungPositionImpl;
 import de.jost_net.JVerein.server.SpendenbescheinigungImpl;
+import de.jost_net.JVerein.server.SteuerImpl;
 import de.jost_net.JVerein.server.SuchprofilImpl;
 import de.jost_net.JVerein.server.VersionImpl;
 import de.jost_net.JVerein.server.WiedervorlageImpl;
@@ -175,6 +176,10 @@ public class BackupCreateAction implements Action
           
           monitor.setStatusText("Speichere Buchungsarten");
           backup(BuchungsartImpl.class, writer, monitor, "steuer_buchungsart, id");
+          monitor.addPercentComplete(1);
+
+          monitor.setStatusText("Speichere Steuer");
+          backup(SteuerImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Eigenschaftengruppen");

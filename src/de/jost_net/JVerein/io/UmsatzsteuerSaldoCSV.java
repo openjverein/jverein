@@ -25,38 +25,38 @@ import java.util.Map;
 
 import org.supercsv.cellprocessor.ConvertNullTo;
 import org.supercsv.cellprocessor.FmtNumber;
-import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvMapWriter;
 import org.supercsv.io.ICsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
+import de.jost_net.JVerein.gui.control.UmsatzsteuerSaldoControl;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class ProjektSaldoCSV
+public class UmsatzsteuerSaldoCSV implements ISaldoExport
 {
 
   private static CellProcessor[] getProcessors()
   {
 
-    final CellProcessor[] processors = new CellProcessor[] { new NotNull(), // BuchungsArt/Klasse,
-                                                                            // Summe
-        // new Optional(new FmtNumber(Einstellungen.DECIMALFORMAT)), //
-        // Einnahmen
-        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Einnahmen
-        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Ausgaben
-        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)) // Umbuchung
+    final CellProcessor[] processors = new CellProcessor[] {
+        new ConvertNullTo(""), // Steuerart,
+        new ConvertNullTo(""), // Steuer-Name
+        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Bemessungsgrundlage
+        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Steuer
     };
-
     return processors;
   }
 
-  public ProjektSaldoCSV(ArrayList<ProjektSaldoZeile> zeile,
-      final File file, Date datumvon, Date datumbis) throws ApplicationException
+  @Override
+  public void export(ArrayList<PseudoDBObject> zeile, final File file,
+      Date datumvon, Date datumbis) throws ApplicationException
   {
     ICsvMapWriter writer = null;
     try
@@ -65,8 +65,9 @@ public class ProjektSaldoCSV
           CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
       final CellProcessor[] processors = getProcessors();
       Map<String, Object> csvzeile = new HashMap<>();
-
-      String[] header = { "Buchungsart", "Einnahmen", "Ausgaben", "Umbuchung" };
+      String[] header;
+      header = new String[] { "Steuerart", "Steuer Name", "Bemessungsgrundlage",
+          "Steuer" };
       writer.writeHeader(header);
 
       String subtitle = new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
@@ -74,65 +75,41 @@ public class ProjektSaldoCSV
       csvzeile.put(header[0], subtitle);
       writer.write(csvzeile, header, processors);
 
-      for (ProjektSaldoZeile pz : zeile)
+      for (PseudoDBObject bkz : zeile)
       {
         csvzeile = new HashMap<>();
-        switch (pz.getStatus())
+        switch (bkz.getInteger(AbstractSaldoControl.ART))
         {
-          case ProjektSaldoZeile.HEADER:
+          case AbstractSaldoControl.ART_HEADER:
           {
             csvzeile.put(header[0],
-                (String) pz.getAttribute("projektbezeichnung"));
+                (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE));
             break;
           }
-          case ProjektSaldoZeile.DETAIL:
+          case AbstractSaldoControl.ART_DETAIL:
           {
-            csvzeile.put(header[0],
-                (String) pz.getAttribute("buchungsartbezeichnung"));
-            csvzeile.put(header[1], (Double) pz.getAttribute("einnahmen"));
-            csvzeile.put(header[2], (Double) pz.getAttribute("ausgaben"));
-            csvzeile.put(header[3], (Double) pz.getAttribute("umbuchungen"));
+            csvzeile.put(header[1],
+                (String) bkz.getAttribute(UmsatzsteuerSaldoControl.STEUER));
+            csvzeile.put(header[2],
+                bkz.getDouble(UmsatzsteuerSaldoControl.SUMME));
+            csvzeile.put(header[3],
+                bkz.getDouble(UmsatzsteuerSaldoControl.STEUERBETRAG));
             break;
           }
-          case ProjektSaldoZeile.SALDOFOOTER:
+          case AbstractSaldoControl.ART_SALDOFOOTER:
+          case AbstractSaldoControl.ART_GESAMTSALDOFOOTER:
           {
             csvzeile.put(header[0],
-                (String) pz.getAttribute("projektbezeichnung"));
-            csvzeile.put(header[1], (Double) pz.getAttribute("einnahmen"));
-            csvzeile.put(header[2], (Double) pz.getAttribute("ausgaben"));
-            csvzeile.put(header[3], (Double) pz.getAttribute("umbuchungen"));
-            break;
-          }
-          case ProjektSaldoZeile.GESAMTSALDOFOOTER:
-          {
-            csvzeile.put(header[0],
-                (String) pz.getAttribute("projektbezeichnung"));
-            csvzeile.put(header[1], (Double) pz.getAttribute("einnahmen"));
-            csvzeile.put(header[2], (Double) pz.getAttribute("ausgaben"));
-            csvzeile.put(header[3], (Double) pz.getAttribute("umbuchungen"));
-            break;
-          }
-          case ProjektSaldoZeile.SALDOGEWINNVERLUST:
-          case ProjektSaldoZeile.GESAMTSALDOGEWINNVERLUST:
-          {
-            csvzeile.put(header[0],
-                (String) pz.getAttribute("projektbezeichnung"));
-            csvzeile.put(header[1], (Double) pz.getAttribute("einnahmen"));
-            break;
-          }
-          case ProjektSaldoZeile.NICHTZUGEORDNETEBUCHUNGEN:
-          {
-            csvzeile.put(header[0],
-                (String) pz.getAttribute("projektbezeichnung"));
+                (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE));
+            csvzeile.put(header[3],
+                bkz.getDouble(UmsatzsteuerSaldoControl.STEUERBETRAG));
             break;
           }
           default:
           {
             csvzeile.put(header[0], "");
           }
-
         }
-
         writer.write(csvzeile, header, processors);
       }
       GUI.getStatusBar().setSuccessText("Auswertung fertig");
@@ -162,5 +139,4 @@ public class ProjektSaldoCSV
     }
 
   }
-
 }

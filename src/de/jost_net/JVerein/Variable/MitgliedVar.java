@@ -59,6 +59,7 @@ public enum MitgliedVar
   KONTOINHABER_ORT("mitglied_kontoinhaber_ort"), //
   KONTOINHABER_STAAT("mitglied_kontoinhaber_staat"), //
   KONTOINHABER_EMAIL("mitglied_kontoinhaber_email"), //
+  KONTOINHABER_GESCHLECHT("mitglied_kontoinhaber_geschlecht"), //
   KUENDIGUNG("mitglied_kuendigung"), //
   LETZTEAENDERUNG("mitglied_letzte.aenderung"), //
   NAME("mitglied_name"), //

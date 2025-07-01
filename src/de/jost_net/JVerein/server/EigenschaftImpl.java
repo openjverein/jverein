@@ -20,11 +20,11 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftImpl extends AbstractDBObject implements Eigenschaft
+public class EigenschaftImpl extends AbstractJVereinDBObject
+    implements Eigenschaft
 {
 
   private static final long serialVersionUID = 1L;
@@ -114,13 +114,13 @@ public class EigenschaftImpl extends AbstractDBObject implements Eigenschaft
   }
 
   @Override
-  public int getEigenschaftGruppeId() throws RemoteException
+  public long getEigenschaftGruppeId() throws RemoteException
   {
-    return Integer.parseInt(getEigenschaftGruppe().getID());
+    return Long.parseLong(getEigenschaftGruppe().getID());
   }
 
   @Override
-  public void setEigenschaftGruppe(Integer eigenschaftgruppe)
+  public void setEigenschaftGruppe(Long eigenschaftgruppe)
       throws RemoteException
   {
     setAttribute("eigenschaftgruppe", eigenschaftgruppe);

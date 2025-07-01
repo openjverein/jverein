@@ -19,9 +19,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 import java.util.Date;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Lehrgang extends DBObject
+public interface Lehrgang extends JVereinDBObject
 {
   public Mitglied getMitglied() throws RemoteException;
 
@@ -29,7 +27,7 @@ public interface Lehrgang extends DBObject
 
   public Lehrgangsart getLehrgangsart() throws RemoteException;
 
-  public void setLehrgangsart(Integer lehrgangsart) throws RemoteException;
+  public void setLehrgangsart(Long lehrgangsart) throws RemoteException;
 
   public Date getVon() throws RemoteException;
 

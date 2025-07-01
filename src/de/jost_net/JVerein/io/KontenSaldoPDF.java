@@ -24,16 +24,24 @@ import java.util.Date;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
+import de.jost_net.JVerein.gui.control.KontensaldoControl;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class KontenSaldoPDF
+public class KontenSaldoPDF implements ISaldoExport
 {
 
-  public KontenSaldoPDF(ArrayList<SaldoZeile> zeile, final File file,
-      final Date datumvon, final Date datumbis) throws ApplicationException
+  public KontenSaldoPDF()
+  {
+  }
+
+  @Override
+  public void export(ArrayList<PseudoDBObject> zeile, final File file,
+      final Date datumvon, final Date datumbis)
+      throws ApplicationException
   {
     try
     {
@@ -61,18 +69,18 @@ public class KontenSaldoPDF
           BaseColor.LIGHT_GRAY);
       reporter.createHeader();
 
-      for (SaldoZeile sz : zeile)
+      for (PseudoDBObject sz : zeile)
       {
-        reporter.addColumn((String) sz.getAttribute("kontonummer"),
+        reporter.addColumn((String) sz.getAttribute(KontensaldoControl.KONTO_NUMMER),
             Element.ALIGN_LEFT);
-        reporter.addColumn((String) sz.getAttribute("kontobezeichnung"),
+        reporter.addColumn((String) sz.getAttribute(KontensaldoControl.GRUPPE),
             Element.ALIGN_LEFT);
-        reporter.addColumn((Double) sz.getAttribute("anfangsbestand"));
-        reporter.addColumn((Double) sz.getAttribute("einnahmen"));
-        reporter.addColumn((Double) sz.getAttribute("ausgaben"));
-        reporter.addColumn((Double) sz.getAttribute("umbuchungen"));
-        reporter.addColumn((Double) sz.getAttribute("endbestand"));
-        reporter.addColumn((String) sz.getAttribute("bemerkung"),
+        reporter.addColumn((Double) sz.getAttribute(KontensaldoControl.ANFANGSBESTAND));
+        reporter.addColumn((Double) sz.getAttribute(KontensaldoControl.EINNAHMEN));
+        reporter.addColumn((Double) sz.getAttribute(KontensaldoControl.AUSGABEN));
+        reporter.addColumn((Double) sz.getAttribute(KontensaldoControl.UMBUCHUNGEN));
+        reporter.addColumn((Double) sz.getAttribute(KontensaldoControl.ENDBESTAND));
+        reporter.addColumn((String) sz.getAttribute(KontensaldoControl.BEMERKUNG),
             Element.ALIGN_LEFT);
       }
       reporter.closeTable();
@@ -88,5 +96,4 @@ public class KontenSaldoPDF
       throw new ApplicationException("Fehler beim Erzeugen des Reports", e);
     }
   }
-
 }

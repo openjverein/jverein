@@ -27,8 +27,13 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Lastschrift;
 
-public class LastschriftMap
+public class LastschriftMap extends AbstractMap
 {
+
+  public LastschriftMap()
+  {
+    super();
+  }
 
   public Map<String, Object> getMap(Lastschrift ls, Map<String, Object> inma)
       throws RemoteException
@@ -143,8 +148,10 @@ public class LastschriftMap
     }
 
     map.put(LastschriftVar.ABRECHNUNGSLAUF_NR.getName(), "99");
-    map.put(LastschriftVar.ABRECHNUNGSLAUF_DATUM.getName(), "01.01.2025");
-    map.put(LastschriftVar.ABRECHNUNGSLAUF_FAELLIGKEIT.getName(), "10.01.2025");
+    map.put(LastschriftVar.ABRECHNUNGSLAUF_DATUM.getName(),
+        toDate("01.01.2025"));
+    map.put(LastschriftVar.ABRECHNUNGSLAUF_FAELLIGKEIT.getName(),
+        toDate("10.01.2025"));
     map.put(LastschriftVar.ANREDE_DU.getName(), "Hallo Willi,");
     map.put(LastschriftVar.ANREDE_FOERMLICH.getName(),
         "Sehr geehrter Herr Dr. Dr. Wichtig,");
@@ -162,7 +169,7 @@ public class LastschriftMap
     map.put(LastschriftVar.STAAT.getName(), "Deutschland");
     map.put(LastschriftVar.EMAIL.getName(), "willi.wichtig@email.de");
     map.put(LastschriftVar.MANDATID.getName(), "12345");
-    map.put(LastschriftVar.MANDATDATUM.getName(), "01.01.2024");
+    map.put(LastschriftVar.MANDATDATUM.getName(), toDate("01.01.2024"));
     map.put(LastschriftVar.BIC.getName(), "XXXXXXXXXXX");
     map.put(LastschriftVar.IBAN.getName(), "DE89370400440532013000");
     map.put(LastschriftVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");

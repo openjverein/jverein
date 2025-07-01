@@ -23,9 +23,8 @@ import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 
-public interface Konto extends DBObject
+public interface Konto extends JVereinDBObject
 {
   public String getNummer() throws RemoteException;
 
@@ -110,9 +109,6 @@ public interface Konto extends DBObject
   public Double getSaldo() throws RemoteException;
 
   public DBIterator<Konto> getKontenEinesJahres(Geschaeftsjahr gj)
-      throws RemoteException;
-  
-  public DBIterator<Konto> getKontenVonBis(Date von, Date bis)
       throws RemoteException;
 
   public Anlagenzweck getAnlagenzweck() throws RemoteException;
