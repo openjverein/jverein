@@ -26,6 +26,7 @@ import org.apache.commons.lang.time.DateUtils;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.MittelverwendungDialog;
+import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.io.MittelverwendungExportCSV;
 import de.jost_net.JVerein.io.MittelverwendungExportPDF;
@@ -318,6 +319,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
       saldoList.setRememberColWidths(true);
       saldoList.setRememberOrder(true);
       saldoList.removeFeature(FeatureSummary.class);
+      saldoList.setFormatter(new SaldoFormatter());
       return saldoList;
     }
     catch (RemoteException e)
