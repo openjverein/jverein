@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.KontoControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
@@ -161,7 +162,8 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       konto.setAnlagenartId(getSelectedAnlagenartId());
       konto.setBuchungsklasseId(getSelectedBuchungsklasseId());
       konto.setAfaartId(getSelectedAfaartId());
-      konto.setAfaRestwert(Einstellungen.getEinstellung().getAfaRestwert());
+      konto.setAfaRestwert(
+          (Double) Einstellungen.getEinstellung(Property.AFARESTWERT));
       konto.setAfaMode(AfaMode.AUTO);
       konto.setNutzungsdauer((Integer)getNutzungsdauer().getValue());
       konto.setKommentar(buchung.getKommentar());
@@ -207,7 +209,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     }
     anlagenart = new BuchungsartInput().getBuchungsartInput( anlagenart,
         buchung.getBuchungsart(), buchungsarttyp.ANLAGENART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     anlagenart.addListener(new AnlagenartListener());
     return anlagenart;
   }
@@ -283,7 +285,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     }
     afaart = new BuchungsartInput().getBuchungsartInput( afaart,
         null, buchungsarttyp.AFAART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     return afaart;
   }
   

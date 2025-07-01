@@ -18,6 +18,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
@@ -232,7 +233,7 @@ public class LesefeldDetailView extends AbstractView
     }
 
     mitglied = new MitgliedInput().getMitgliedInput(mitglied, selectedMitglied,
-        Einstellungen.getEinstellung().getMitgliedAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     mitglied.addListener(new MitgliedListener());
     mitglied.setMandatory(true);
     return mitglied;

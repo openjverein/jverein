@@ -53,7 +53,7 @@ public class FreiesFormularMailView extends AbstractView
     right.addInput(eigenschaftenInput);
     control.updateEigenschaftenAuswahlTooltip();
     right.addInput(control.getStichtag());
-    if (Einstellungen.getEinstellung().hasZusatzfelder())
+    if (Einstellungen.hasZusatzfelder())
     {
       DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
       right.addInput(zusatzfelderInput);

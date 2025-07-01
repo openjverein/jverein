@@ -31,7 +31,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
 
   public enum COLTYPE
   {
-    BIGINT, INTEGER, VARCHAR, CHAR, DATE, TIMESTAMP, BOOLEAN, DOUBLE, LONGBLOB
+    BIGINT, INTEGER, VARCHAR, CHAR, DATE, TIMESTAMP, BOOLEAN, DOUBLE, LONGBLOB, MEDIUMTEXT
   }
 
   private DRIVER drv;
@@ -284,6 +284,9 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
         break;
       case VARCHAR:
         ret += "VARCHAR(" + col.getLen() + ")";
+        break;
+      case MEDIUMTEXT:
+        ret += "MEDIUMTEXT";
         break;
       case LONGBLOB:
         ret += "LONGBLOB";

@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
@@ -62,7 +63,7 @@ public class KontoDetailView extends AbstractDetailView
     left1.addLabelPair("AfA Buchungsart", control.getAfaart());
     left1.addLabelPair("Anlagenwert", control.getBetrag());
     left1.addLabelPair("Anschaffungsdatum", control.getAnschaffung());
-    if (Einstellungen.getEinstellung().getMittelverwendung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
     {
       left1.addLabelPair("Anlagenzweck", control.getAnlagenzweck());
     }

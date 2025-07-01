@@ -19,6 +19,7 @@ package de.jost_net.JVerein.util;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.BeitragsgruppeFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungsrhythmusFormatter;
@@ -53,7 +54,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Mitgliedsnummer", "idint", false, true);
     try
     {
-      if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+      if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         add("Externe Mitgliedsnummer", "externemitgliedsnummer", false, false);
       }
@@ -72,7 +73,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Ort", "ort", true, true);
     try
     {
-      if (Einstellungen.getEinstellung().getAuslandsadressen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
       {
         add("Staat", "staat", false, new StaatFormatter(), Column.ALIGN_LEFT,
             true);
@@ -127,11 +128,11 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Zahler ID", "zahlerid", false, false);
     try
     {
-      if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
+      if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
         add("Individueller Beitrag", "individuellerbeitrag", false, false);
       }
-      if (Einstellungen.getEinstellung().getSterbedatum())
+      if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
       {
         add("Sterbedatum", "sterbetag", false,
             new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,

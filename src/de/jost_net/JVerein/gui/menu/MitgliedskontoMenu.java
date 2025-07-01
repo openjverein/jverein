@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.menu;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.IstbuchungEditAction;
 import de.jost_net.JVerein.gui.action.IstbuchungLoesenAction;
 import de.jost_net.JVerein.gui.action.GesamtrechnungNeuAction;
@@ -56,7 +57,7 @@ public class MitgliedskontoMenu extends ContextMenu
         new SollbuchungLoeschenAction(), "user-trash-full.png"));
     try
     {
-      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
         addItem(new MitRechnungItem("Rechnung anzeigen",
             new SollbuchungRechnungAction(), "file-invoice.png"));
@@ -77,7 +78,7 @@ public class MitgliedskontoMenu extends ContextMenu
         new IstbuchungLoesenAction(), "unlocked.png"));
     try
     {
-      if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
         addItem(ContextMenuItem.SEPARATOR);
         addItem(new SpendenbescheinigungItem("Geldspendenbescheinigung",

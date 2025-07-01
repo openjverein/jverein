@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.LastschriftMap;
@@ -301,7 +302,7 @@ public class FormularAnzeigeAction implements Action
       differenz.add(-39.99d);
       
       // Summe
-      if (Einstellungen.getEinstellung().getOptiert())
+      if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
       {
         zg1.add("Rechnungsbetrag inkl. USt.");
         zg.add("Rechnungsbetrag inkl. USt.");
@@ -348,12 +349,12 @@ public class FormularAnzeigeAction implements Action
       map.put(RechnungVar.DIFFERENZ.getName(), differenz.toArray());
       map.put(RechnungVar.SUMME_OFFEN.getName(), 700);
       map.put(RechnungVar.QRCODE_INTRO.getName(),
-          Einstellungen.getEinstellung().getQRCodeIntro());
+          (String) Einstellungen.getEinstellung(Property.QRCODEINTRO));
       map.put(RechnungVar.EMPFAENGER.getName(),
           "Herr\nDr. Willi Wichtig\nTestgasse 1\n12345 Testenhausen");
       map.put(RechnungVar.NUMMER.getName(), "0001");
       map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(),
-          Einstellungen.getEinstellung().getRechnungTextUeberweisung());
+          (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG));
       FormularAufbereitung fab = new FormularAufbereitung(file, false, false);
       fab.writeForm(formular, map);
       fab.showFormular();

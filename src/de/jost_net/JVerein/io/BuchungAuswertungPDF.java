@@ -31,6 +31,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
@@ -75,7 +76,7 @@ public class BuchungAuswertungPDF
         title = "Summenliste";
       }
 
-      if (Boolean.valueOf(Einstellungen.getEinstellung().getKontonummerInBuchungsliste()))
+      if (Boolean.valueOf((Boolean) Einstellungen.getEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE)))
         kontonummer_in_buchungsliste = true;
 
       Reporter reporter = new Reporter(fos, title, query.getSubtitle(),
@@ -100,7 +101,8 @@ public class BuchungAuswertungPDF
         Buchungsklasse bukla = buchungsklassen.next();
         for (Buchungsart bua : buchungsarten)
         {
-          if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+          if (!(Boolean) Einstellungen
+              .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
           {
             if (bua.getBuchungsklasseId() == null
                 || bua.getBuchungsklasse().getNummer() != bukla.getNummer())
@@ -125,7 +127,8 @@ public class BuchungAuswertungPDF
       // Buchungsarten ohne Buchungsklassen
       for (Buchungsart bua : buchungsarten)
       {
-        if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+        if (!(Boolean) Einstellungen
+            .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
         {
           if (bua.getBuchungsklasseId() != null)
           {
@@ -286,7 +289,7 @@ public class BuchungAuswertungPDF
       List<Buchung> buchungen, boolean einzel)
       throws RemoteException, DocumentException
   {
-    if (Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung()
+    if ((Boolean) Einstellungen.getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG)
         && buchungen.size() == 0)
     {
       return false;
@@ -405,7 +408,7 @@ public class BuchungAuswertungPDF
         continue;
       }
       
-      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         if (b.getBuchungsklasseId() == null
             || b.getBuchungsklasse().getNummer() != bukla.getNummer())
@@ -431,7 +434,7 @@ public class BuchungAuswertungPDF
         continue;
       }
 
-      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         if (b.getBuchungsklasseId() != null)
         {

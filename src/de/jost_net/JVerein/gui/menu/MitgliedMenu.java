@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import org.eclipse.swt.SWT;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
@@ -81,7 +82,7 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedEigenschaftZuordnungAction(), "document-properties.png"));
     addItem(new CheckedContextMenuItem("Zusatzbetrag zuordnen",
         new MitgliedZusatzbetraegeZuordnungAction(), "euro-sign.png"));
-    if (Einstellungen.getEinstellung().getArbeitseinsatz() && !(detailaction instanceof NichtMitgliedDetailAction))
+    if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ) && !(detailaction instanceof NichtMitgliedDetailAction))
     {
       addItem(new CheckedContextMenuItem("Arbeitseinsatz zuordnen",
           new MitgliedArbeitseinsatzZuordnungAction(), "screwdriver.png"));
@@ -201,7 +202,7 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedVCardQRCodeAction(), "qr-code.png"));
     addItem(new CheckedContextMenuItem("Kontoauszug", new KontoauszugAction(),
         "file-invoice.png"));
-    if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+    if ((Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
       addItem(new CheckedSingleContextMenuItem("Geldspendenbescheinigung",
           new SpendenbescheinigungAction(Spendenart.GELDSPENDE),

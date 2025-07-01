@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.util.Datum;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
@@ -243,8 +244,7 @@ public class QuickAccessPart implements Part
 
   private Date genYearStartDate(Integer year) throws ParseException, RemoteException
   {
-    return Datum.toDate(Einstellungen.getEinstellung()
-        .getBeginnGeschaeftsjahr() + year);
+    return Datum.toDate((String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + year);
   }
 
   private Date genYearEndDate(Integer year) throws ParseException, RemoteException

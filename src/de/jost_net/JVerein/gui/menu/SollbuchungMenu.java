@@ -20,6 +20,7 @@ package de.jost_net.JVerein.gui.menu;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.GesamtrechnungNeuAction;
 import de.jost_net.JVerein.gui.action.RechnungNeuAction;
@@ -56,7 +57,7 @@ public class SollbuchungMenu extends ContextMenu
         new MitgliedDetailAction(), "user-friends.png"));
     try
     {
-      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
         addItem(new MitRechnungItem("Rechnung anzeigen",
             new SollbuchungRechnungAction(), "file-invoice.png"));

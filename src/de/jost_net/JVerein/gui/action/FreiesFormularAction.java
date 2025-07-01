@@ -23,6 +23,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.io.FormularAufbereitung;
@@ -96,8 +97,9 @@ public class FreiesFormularAction implements Action
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("freiesformular", "", Einstellungen
-        .getEinstellung().getDateinamenmuster(), "pdf").get());
+    fd.setFileName(new Dateiname("freiesformular", "",
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
+            .get());
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();

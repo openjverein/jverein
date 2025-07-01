@@ -23,6 +23,7 @@ import java.util.Date;
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Monat;
@@ -126,12 +127,13 @@ public class AbrechnungSEPAParam
             "database");
         DBIterator<Konto> konten = service.createList(Konto.class);
         Logger
-            .debug("Vereinskonto: " + Einstellungen.getEinstellung().getIban());
+            .debug("Vereinskonto: " + (String) Einstellungen.getEinstellung(Property.IBAN));
         while (konten.hasNext())
         {
           konto = (Konto) konten.next();
           Logger.debug("Hibiscus-Konto: " + konto.getIban());
-          if (Einstellungen.getEinstellung().getIban().equals(konto.getIban()))
+          if (((String) Einstellungen.getEinstellung(Property.IBAN))
+              .equals(konto.getIban()))
           {
             // passendes Konto gefunden
             break;

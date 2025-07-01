@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -55,7 +56,7 @@ public class EinstellungenMitgliedAnsichtView extends AbstractView
     leftMitglied.addLabelPair("Anzahl Spalten Zusatzfelder",
         control.getAnzahlSpaltenZusatzfelderInput());
 
-    if (Einstellungen.getEinstellung().getUseLesefelder())
+    if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
       leftMitglied.addLabelPair("Anzahl Spalten Lesefelder",
           control.getAnzahlSpaltenLesefelderInput());
 
@@ -72,18 +73,18 @@ public class EinstellungenMitgliedAnsichtView extends AbstractView
     leftTab.addLabelPair("Zeige Zahlung in Tab",
         control.getZeigeZahlungInTabCheckbox());
 
-    if (Einstellungen.getEinstellung().getZusatzbetrag())
+    if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
       leftTab.addLabelPair("Zeige Zusatzbeträge in Tab",
           control.getZeigeZusatzbetrageInTabCheckbox());
 
     leftTab.addLabelPair("Zeige Mitgliedskonto in Tab",
         control.getZeigeMitgliedskontoInTabCheckbox());
 
-    if (Einstellungen.getEinstellung().getVermerke())
+    if ((Boolean) Einstellungen.getEinstellung(Property.VERMERKE))
       leftTab.addLabelPair("Zeige Vermerke in Tab",
           control.getZeigeVermerkeInTabCheckbox());
 
-    if (Einstellungen.getEinstellung().getWiedervorlage())
+    if ((Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE))
       leftTab.addLabelPair("Zeige Wiedervorlage in Tab",
           control.getZeigeWiedervorlageInTabCheckbox());
 
@@ -96,19 +97,19 @@ public class EinstellungenMitgliedAnsichtView extends AbstractView
     leftTab.addLabelPair("Zeige Zusatzfelder in Tab",
         control.getZeigeZusatzfelderInTabCheckbox());
 
-    if (Einstellungen.getEinstellung().getLehrgaenge())
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
       leftTab.addLabelPair("Zeige Lehrgänge in Tab",
           control.getZeigeLehrgaengeInTabCheckbox());
 
-    if (Einstellungen.getEinstellung().getMitgliedfoto())
+    if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO))
       leftTab.addLabelPair("Zeige Foto in Tab",
           control.getZeigeFotoInTabCheckbox());
 
-    if (Einstellungen.getEinstellung().getUseLesefelder())
+    if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
       leftTab.addLabelPair("Zeige Lesefelder in Tab",
           control.getZeigeLesefelderInTabCheckbox());
 
-    if (Einstellungen.getEinstellung().getArbeitseinsatz())
+    if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
       leftTab.addLabelPair("Zeige Arbeitseinsatz in Tab",
           control.getZeigeArbeitseinsatzInTabCheckbox());
 

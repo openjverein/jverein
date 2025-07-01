@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -229,7 +230,7 @@ public class SplitbuchungsContainer
       throw new RemoteException(
           "Buchungsarten bei Haupt- und Gegenbuchung müssen identisch sein");
     }
-    if (Einstellungen.getEinstellung().getSteuerInBuchung()
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG)
         && ((steuer_haupt == null && steuer_gegen != null)
             || (steuer_haupt != null && !steuer_haupt.equals(steuer_gegen))))
     {
@@ -416,8 +417,8 @@ public class SplitbuchungsContainer
 
     HashMap<String, Double> splitMap = new HashMap<>();
     HashMap<String, String> splitZweckMap = new HashMap<>();
-    boolean steuerInBuchung = Einstellungen.getEinstellung()
-        .getSteuerInBuchung();
+    boolean steuerInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.STEUERINBUCHUNG);
     ArrayList<SollbuchungPosition> spArray = sollb.getSollbuchungPositionList();
     try
     {
@@ -531,8 +532,7 @@ public class SplitbuchungsContainer
           }
         }
       
-        boolean splitPositionZweck = Einstellungen.getEinstellung()
-            .getSplitPositionZweck();
+        boolean splitPositionZweck = (Boolean) Einstellungen.getEinstellung(Property.SPLITPOSITIONZWECK);
         Iterator<Entry<String, Double>> iterator = splitMap.entrySet()
             .iterator();
         while (iterator.hasNext())

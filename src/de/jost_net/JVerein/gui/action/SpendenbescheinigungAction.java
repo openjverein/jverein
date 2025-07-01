@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.keys.Spendenart;
@@ -232,7 +233,8 @@ public class SpendenbescheinigungAction implements Action
     spb.setSpendedatum(minDatum);
     spb.setAutocreate(Boolean.TRUE);
     
-    double minbetrag = Einstellungen.getEinstellung().getSpendenbescheinigungminbetrag();
+    double minbetrag = (Double) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG);
     if (spb.getBetrag() < minbetrag)
     {
       throw new ApplicationException(

@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.menu;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AbrechnungslaufAbschliessenAction;
 import de.jost_net.JVerein.gui.action.AbrechnungslaufDeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -55,7 +56,7 @@ public class AbrechnungslaufMenu extends ContextMenu
         new AbrechnungslaufDeleteAction(), "user-trash-full.png"));
     try
     {
-      if (Einstellungen.getEinstellung().getAbrlAbschliessen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.ABRLABSCHLIESSEN))
       {
         addItem(ContextMenuItem.SEPARATOR);
         addItem(new AbgeschlossenDisabledItem("Abschlieﬂen",

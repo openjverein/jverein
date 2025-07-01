@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.input;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -32,8 +33,7 @@ public class BuchungsklasseInput
   {
     DBIterator<Buchungsklasse> it = Einstellungen.getDBService()
         .createList(Buchungsklasse.class);
-    if (Einstellungen.getEinstellung()
-        .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+    if ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
     {
       it.setOrder("ORDER BY nummer");
     }
@@ -44,7 +44,7 @@ public class BuchungsklasseInput
     buchungsklasse = new SelectInput(it != null ? PseudoIterator.asList(it) : null, 
         klasse);
 
-    switch (Einstellungen.getEinstellung().getBuchungsartSort())
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {
       case BuchungsartSort.NACH_NUMMER:
         buchungsklasse.setAttribute("nrbezeichnung");

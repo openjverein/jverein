@@ -27,6 +27,7 @@ import java.util.Date;
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
@@ -112,7 +113,7 @@ public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
   private JubilaeenParser holeJubelJahreAusEinstellungen()
       throws RemoteException
   {
-    String jubilarListe = Einstellungen.getEinstellung().getJubilaeen();
+    String jubilarListe = (String) Einstellungen.getEinstellung(Property.JUBILAEEN);
     JubilaeenParser jp = new JubilaeenParser(jubilarListe);
     return jp;
   }
@@ -130,7 +131,7 @@ public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
   {
     MitgliedControl control = (MitgliedControl) objects[0];
     jahr = control.getJJahr();
-    jubilarStartAlter = Einstellungen.getEinstellung().getJubilarStartAlter();
+    jubilarStartAlter = (Integer) Einstellungen.getEinstellung(Property.JUBILARSTARTALTER);
     Logger.debug("Mitgliedschaftsjubiläum, Jahr=" + Integer.toString(jahr)
         + " StartAlter= " + Integer.toString(jubilarStartAlter));
   }

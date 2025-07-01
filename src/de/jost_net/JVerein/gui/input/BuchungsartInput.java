@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
@@ -50,7 +51,7 @@ public class BuchungsartInput
     switch (auswahl)
     {
       case AbstractInputAuswahl.ComboBox:
-        unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
+        unterdrueckunglaenge = (Integer) Einstellungen.getEinstellung(Property.UNTERDRUECKUNGLAENGE);
         if (unterdrueckunglaenge > 0) 
         {
           final DBService service = Einstellungen.getDBService();
@@ -86,8 +87,7 @@ public class BuchungsartInput
             sql += "AND buchungsart.status = ?) OR buchungsart.status = ? ";
           }
 
-          if (Einstellungen.getEinstellung()
-              .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+          if ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
           {
             sql += "ORDER BY nummer";
           }
@@ -130,8 +130,7 @@ public class BuchungsartInput
             it.addFilter("buchungsart.abschreibung = TRUE");
           }
 
-          if (Einstellungen.getEinstellung()
-              .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+          if ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
           {
             it.setOrder("ORDER BY nummer");
           }
@@ -147,7 +146,7 @@ public class BuchungsartInput
           buchungsart = new SelectInput(ergebnis, bart);
         }
         
-        switch (Einstellungen.getEinstellung().getBuchungsartSort())
+        switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
         {
           case BuchungsartSort.NACH_NUMMER:
             ((SelectInput) buchungsart).setAttribute("nrbezeichnung");
@@ -165,7 +164,7 @@ public class BuchungsartInput
       default: // default soll SearchInput sein. Eigentlich sollten die
         // Settings immer gesetzt sein, aber man weiss ja nie.
         buchungsart = new BuchungsartSearchInput(art);
-        switch (Einstellungen.getEinstellung().getBuchungsartSort())
+        switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
         {
           case BuchungsartSort.NACH_NUMMER:
             ((BuchungsartSearchInput) buchungsart).setAttribute("nrbezeichnung");

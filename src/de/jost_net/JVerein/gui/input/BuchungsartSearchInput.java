@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
@@ -62,7 +63,7 @@ public class BuchungsartSearchInput extends SearchInput
   {
     try
     {
-      unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
+      unterdrueckunglaenge = (Integer) Einstellungen.getEinstellung(Property.UNTERDRUECKUNGLAENGE);
       if (unterdrueckunglaenge > 0 )
       {
         final DBService service = Einstellungen.getDBService();
@@ -103,8 +104,7 @@ public class BuchungsartSearchInput extends SearchInput
           text = "%" + text.toUpperCase() + "%";
           sql += "AND (UPPER(buchungsart.bezeichnung) like ? or buchungsart.nummer like ?) ";
         }
-        if (Einstellungen.getEinstellung()
-            .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+        if ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
         {
           sql += "ORDER BY nummer";
         }
@@ -165,8 +165,7 @@ public class BuchungsartSearchInput extends SearchInput
           result.addFilter("(UPPER(bezeichnung) like ? or nummer like ?)",
               new Object[] { text, text });
         }
-        if (Einstellungen.getEinstellung()
-            .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+        if ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
         {
           result.setOrder("ORDER BY nummer");
         }

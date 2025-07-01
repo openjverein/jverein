@@ -44,8 +44,8 @@ public class Index
         if (i > 0)
         {
           sb.append(",");
-          sb.append(c.getName());
         }
+        sb.append(c.getName());
       }
       sb.append("), ");
     }

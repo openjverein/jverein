@@ -36,11 +36,13 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.BeitragsUtil;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -118,7 +120,8 @@ public class PersonalbogenAction implements Action
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("personalbogen", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
+            .get());
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -162,29 +165,29 @@ public class PersonalbogenAction implements Action
 
             generiereMitglied(rpt, m);
 
-            if (Einstellungen.getEinstellung().getZusatzbetrag())
+            if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
             {
               generiereZusatzbetrag(rpt, m);
             }
             generiereMitgliedskonto(rpt, m);
-            if (Einstellungen.getEinstellung().getVermerke()
+            if ((Boolean) Einstellungen.getEinstellung(Property.VERMERKE)
                 && ((m.getVermerk1() != null && m.getVermerk1().length() > 0)
                     || (m.getVermerk2() != null
                         && m.getVermerk2().length() > 0)))
             {
               generiereVermerke(rpt, m);
             }
-            if (Einstellungen.getEinstellung().getWiedervorlage())
+            if ((Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE))
             {
               generiereWiedervorlagen(rpt, m);
             }
-            if (Einstellungen.getEinstellung().getLehrgaenge())
+            if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
             {
               generiereLehrgaenge(rpt, m);
             }
             generiereZusatzfelder(rpt, m);
             generiereEigenschaften(rpt, m);
-            if (Einstellungen.getEinstellung().getArbeitseinsatz())
+            if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
             {
               generiereArbeitseinsaetze(rpt, m);
             }
@@ -235,7 +238,7 @@ public class PersonalbogenAction implements Action
         rpt.addColumn(foto.getFoto(), 100, 100, Element.ALIGN_RIGHT);
       }
     }
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
     {
       rpt.addColumn("Ext. Mitgliedsnummer", Element.ALIGN_LEFT);
       rpt.addColumn(m.getExterneMitgliedsnummer() != null
@@ -297,7 +300,7 @@ public class PersonalbogenAction implements Action
       rpt.addColumn("Eintritt", Element.ALIGN_LEFT);
       rpt.addColumn(m.getEintritt(), Element.ALIGN_LEFT);
       printBeitragsgruppe(rpt, m, m.getBeitragsgruppe(), false);
-      if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
       {
         DBIterator<SekundaereBeitragsgruppe> sb = Einstellungen.getDBService()
             .createList(SekundaereBeitragsgruppe.class);
@@ -309,7 +312,7 @@ public class PersonalbogenAction implements Action
         }
       }
 
-      if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
+      if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
         rpt.addColumn("Individueller Beitrag", Element.ALIGN_LEFT);
         if (m.getIndividuellerBeitrag() != null)
@@ -390,7 +393,8 @@ public class PersonalbogenAction implements Action
         Element.ALIGN_LEFT);
     String beitragsgruppe = bg.getBezeichnung() + " - "
         + Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
-            Einstellungen.getEinstellung().getBeitragsmodel(),
+            Beitragsmodel.getByKey(
+                (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)),
             m.getZahlungstermin(), m.getZahlungsrhythmus().getKey(), bg,
             new Date(), m))
         + " EUR";

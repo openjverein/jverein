@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -74,8 +75,8 @@ public class SpendenbescheinigungNode implements GenericObjectNode
   {
     childrens = new ArrayList<>();
     nodetype = ROOT;
-    double minBetrag = Einstellungen.getEinstellung()
-        .getSpendenbescheinigungminbetrag();
+    double minBetrag = (Double) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG);
 
     ResultSetExtractor rse = new ResultSetExtractor()
     {

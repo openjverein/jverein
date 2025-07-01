@@ -21,6 +21,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -80,7 +81,7 @@ public class MitgliedLastschriftAction implements Action
             SepaLastschrift.class, null);
 
         // Gläubiger-ID
-        sl.setCreditorId(Einstellungen.getEinstellung().getGlaeubigerID());
+        sl.setCreditorId((String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
 
         // Kontodaten: Name, BIC, IBAN
         sl.setGegenkontoName(mZ.getKontoinhaber(1));
@@ -97,7 +98,7 @@ public class MitgliedLastschriftAction implements Action
         // damit der Anwender nicht vergisst den Verwendungszweck
         // korrekt einzugeben
         String verwendungszweck = "#ANPASSEN# "
-            + (Einstellungen.getEinstellung().getExterneMitgliedsnummer() ? m
+            + ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER) ? m
                 .getExterneMitgliedsnummer() : m.getID()) + "/"
             + Adressaufbereitung.getNameVorname(m);
         sl.setZweck(verwendungszweck);

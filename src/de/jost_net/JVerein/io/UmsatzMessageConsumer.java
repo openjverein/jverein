@@ -1,6 +1,7 @@
 package de.jost_net.JVerein.io;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.willuhn.datasource.GenericObject;
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
@@ -43,7 +44,7 @@ public class UmsatzMessageConsumer implements MessageConsumer
     {
       return;
     }
-    if (!Einstellungen.getEinstellung().getAutoBuchunguebernahme())
+    if (!(Boolean) Einstellungen.getEinstellung(Property.AUTOBUCHUNGUEBERNAHME))
     {
       return;
     }

@@ -20,13 +20,13 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -70,7 +70,7 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
     {
       throw new ApplicationException("Bitte Verwendungszweck eingeben");
     }
-    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       if (getSteuer() != null && getBuchungsart() != null
           && getSteuer().getBuchungsart().getArt() != getBuchungsart().getArt())
@@ -184,11 +184,11 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
   {
     // Nur wenn Steuer in Buchung aktiviert ist, nehemen wir dies, sonst aus der
     // Buchungsart.
-    if (!Einstellungen.getEinstellung().getOptiert())
+    if (!(Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       return null;
     }
-    if (!Einstellungen.getEinstellung().getSteuerInBuchung())
+    if (!(Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       if (getBuchungsart() == null)
       {

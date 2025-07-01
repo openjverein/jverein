@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
@@ -468,7 +469,7 @@ public class KontoControl extends FilterControl
       return buchungsart;
     }
     ArrayList<Buchungsart> liste = new ArrayList<>();
-    unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
+    unterdrueckunglaenge = (Integer) Einstellungen.getEinstellung(Property.UNTERDRUECKUNGLAENGE);
     final DBService service = Einstellungen.getDBService();
     
     ResultSetExtractor rs = new ResultSetExtractor()
@@ -505,8 +506,7 @@ public class KontoControl extends FilterControl
       sql += "AND ((ba.id = bu.buchungsart ";
       sql += "AND bu.datum >= ? AND bu.datum <= ? ";
       sql += "AND ba.status = ?) OR ba.status = ?) ";
-      if (Einstellungen.getEinstellung()
-          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+      if ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
       {
         sql += "ORDER BY nummer";
       }
@@ -545,8 +545,7 @@ public class KontoControl extends FilterControl
         sql += "WHERE (k.buchungsart IS NULL OR k.buchungsart = ?) ";
       }
       sql += "AND ba.art = ? AND ba.status != ? ";
-      if (Einstellungen.getEinstellung()
-          .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+      if ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
       {
         sql += "ORDER BY nummer";
       }
@@ -578,7 +577,7 @@ public class KontoControl extends FilterControl
     buchungsart = new SelectInput(liste, b);
     buchungsart.setPleaseChoose("Bitte auswählen");
 
-    switch (Einstellungen.getEinstellung().getBuchungsartSort())
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {
       case BuchungsartSort.NACH_NUMMER:
         buchungsart.setAttribute("nrbezeichnung");
@@ -666,7 +665,7 @@ public class KontoControl extends FilterControl
     {
       anlagenart = new BuchungsartInput().getBuchungsartInput(anlagenart,
           getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART,
-          Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+          (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     }
     anlagenart.addListener(new AnlagenartListener());
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
@@ -759,7 +758,7 @@ public class KontoControl extends FilterControl
     {
       afaart = new BuchungsartInput().getBuchungsartInput(afaart,
           getKonto().getAfaart(), buchungsarttyp.AFAART,
-          Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+          (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     }
     afaart.addListener(new AnlagenartListener());
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
@@ -998,7 +997,7 @@ public class KontoControl extends FilterControl
   {
     try
     {
-      switch (Einstellungen.getEinstellung().getBuchungsartSort())
+      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
       {
         case BuchungsartSort.NACH_NUMMER:
           return "ORDER BY nummer";
@@ -1020,7 +1019,7 @@ public class KontoControl extends FilterControl
   {
     try
     {
-      switch (Einstellungen.getEinstellung().getBuchungsartSort())
+      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
       {
         case BuchungsartSort.NACH_NUMMER:
           return "nrbezeichnung";
@@ -1085,7 +1084,7 @@ public class KontoControl extends FilterControl
         getNutzungsdauer().enable();
         getAnschaffung().enable();
         getAfaRestwert().enable();
-        getAfaRestwert().setValue(Einstellungen.getEinstellung().getAfaRestwert());
+        getAfaRestwert().setValue((Boolean) Einstellungen.getEinstellung(Property.AFARESTWERT));
         if (getBetrag().getValue() == null)
           getAutobutton().setEnabled(true);
         getAfabutton().setEnabled(false);
@@ -1257,8 +1256,7 @@ public class KontoControl extends FilterControl
       calendar.setTime(anschaffung);
       Integer monatAnschaffung = calendar.get(Calendar.MONTH);
       Integer year = calendar.get(Calendar.YEAR);
-      Date startGJ = Datum.toDate(Einstellungen.getEinstellung()
-          .getBeginnGeschaeftsjahr() + year);
+      Date startGJ = Datum.toDate((String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + year);
       calendar.setTime(startGJ);
       Integer monatStartGJ = calendar.get(Calendar.MONTH);
       Integer monate = 12;

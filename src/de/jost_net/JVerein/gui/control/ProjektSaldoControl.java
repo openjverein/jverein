@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
@@ -51,7 +52,7 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
      }
      it.join("projekt", on);
 
-     switch (Einstellungen.getEinstellung().getBuchungsartSort())
+     switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
      {
        case BuchungsartSort.NACH_NUMMER:
          it.setOrder("ORDER BY projekt.bezeichnung, -buchungsart.nummer DESC ");

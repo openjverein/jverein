@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.DokumentControl;
@@ -83,15 +84,15 @@ public class BuchungPart implements Part
 
     grBuchungsinfos.addHeadline("Buchungsinfos");
     grBuchungsinfos.addLabelPair("Buchungsart", control.getBuchungsart());
-    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       grBuchungsinfos.addLabelPair("Steuer", control.getSteuer());
     }
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       grBuchungsinfos.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     }
-    if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+    if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
     {
       grBuchungsinfos.addLabelPair("Projekt", control.getProjekt());
     }
