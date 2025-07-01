@@ -27,47 +27,50 @@ import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 
-public class BuchungsKorrekturQuery {
+public class BuchungsKorrekturQuery
+{
 
-	private List<Buchung> ergebnis;
+  private List<Buchung> ergebnis;
 
-	public BuchungsKorrekturQuery() {
-	}
+  public BuchungsKorrekturQuery()
+  {
+  }
 
-	@SuppressWarnings("unchecked")
-	public List<Buchung> get() throws RemoteException {
-		final DBService service = Einstellungen.getDBService();
+  @SuppressWarnings("unchecked")
+  public List<Buchung> get() throws RemoteException
+  {
+    final DBService service = Einstellungen.getDBService();
 
-		DBIterator<Jahresabschluss> jahresabschlussIterator = service.createList(Jahresabschluss.class);
-		jahresabschlussIterator.setOrder("ORDER BY bis DESC");
-		Date bis = null;
-		if(jahresabschlussIterator.hasNext())
-		  bis =  ((Jahresabschluss) jahresabschlussIterator.next()).getBis();
+    DBIterator<Jahresabschluss> jahresabschlussIterator = service
+        .createList(Jahresabschluss.class);
+    jahresabschlussIterator.setOrder("ORDER BY bis DESC");
+    Date bis = null;
+    if (jahresabschlussIterator.hasNext())
+      bis = ((Jahresabschluss) jahresabschlussIterator.next()).getBis();
 
-		DBIterator<Buchung> buchungIterator = service.createList(Buchung.class);
-		if(bis != null)
-		  buchungIterator.addFilter("datum > ?", new java.sql.Date(bis.getTime()));
-		Object[] keys = { "%EREF%", "%KREF%", "%MREF%", "%CRED%",
-		    "%DBET%", "%SVWZ%", "%ABWA%","%IBAN+%","%IBAN:%", "%BIC%"};
-		buchungIterator.addFilter("(upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ? or "
-		    + "upper(zweck) like ?)", keys);
+    DBIterator<Buchung> buchungIterator = service.createList(Buchung.class);
+    if (bis != null)
+      buchungIterator.addFilter("datum > ?", new java.sql.Date(bis.getTime()));
+    Object[] keys = { "%EREF%", "%KREF%", "%MREF%", "%CRED%", "%DBET%",
+        "%SVWZ%", "%ABWA%", "%IBAN+%", "%IBAN:%", "%BIC%" };
+    buchungIterator
+        .addFilter("(upper(zweck) like ? or " + "upper(zweck) like ? or "
+            + "upper(zweck) like ? or " + "upper(zweck) like ? or "
+            + "upper(zweck) like ? or " + "upper(zweck) like ? or "
+            + "upper(zweck) like ? or " + "upper(zweck) like ? or "
+            + "upper(zweck) like ? or " + "upper(zweck) like ?)", keys);
 
-		buchungIterator.setOrder("ORDER BY datum");
+    buchungIterator.setOrder("ORDER BY datum");
 
-		this.ergebnis = buchungIterator != null ? PseudoIterator.asList(buchungIterator) : null;
-		return ergebnis;
-	}
+    this.ergebnis = buchungIterator != null
+        ? PseudoIterator.asList(buchungIterator)
+        : null;
+    return ergebnis;
+  }
 
-	public int getSize() {
-		return ergebnis.size();
-	}
+  public int getSize()
+  {
+    return ergebnis.size();
+  }
 
 }
