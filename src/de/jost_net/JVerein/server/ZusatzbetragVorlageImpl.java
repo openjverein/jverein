@@ -27,11 +27,10 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class ZusatzbetragVorlageImpl extends AbstractDBObject
+public class ZusatzbetragVorlageImpl extends AbstractJVereinDBObject
     implements ZusatzbetragVorlage
 {
 
@@ -298,6 +297,11 @@ public class ZusatzbetragVorlageImpl extends AbstractDBObject
     if (l == null)
     {
       return null; // Keine Steuer zugeordnet
+    }
+
+    if (l instanceof Steuer)
+    {
+      return (Steuer) l;
     }
 
     Cache cache = Cache.get(Steuer.class, true);

@@ -489,6 +489,11 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
       return null; // Keine Steuer zugeordnet
     }
 
+    if (l instanceof Steuer)
+    {
+      return (Steuer) l;
+    }
+
     Cache cache = Cache.get(Steuer.class, true);
     return (Steuer) cache.get(l);
   }
