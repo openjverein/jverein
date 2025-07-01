@@ -50,14 +50,16 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
         return (Boolean) o ? "\u2705" : "\u2757";
       }
     }, Column.ALIGN_LEFT, true);
-    add("Konto", "kontostand", false, new Formatter()
+    add("Kontostand", "kontostand", false, new Formatter()
     {
       @Override
       public String format(Object o)
       {
-        return (Boolean) o ? "\u2705" : "\u2757";
+        String anzeige = ((Double) o) > -0.0049 ? "\u2705" : "\u2757";
+        anzeige += " " + Einstellungen.DECIMALFORMAT.format((Double) o);
+        return anzeige;
       }
-    }, Column.ALIGN_LEFT, false);
+    }, Column.ALIGN_LEFT, true);
     add("Mitgliedsnummer", "idint", false, true);
     try
     {

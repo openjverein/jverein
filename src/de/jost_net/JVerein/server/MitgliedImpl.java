@@ -1427,11 +1427,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
           soll += o.getDouble("soll");
           ist += o.getDouble("ist");
         }
-        if (soll - ist > 0.005)
-        {
-          return false;
-        }
-        return true;
+        return ist - soll;
       }
       catch (Exception e)
       {
