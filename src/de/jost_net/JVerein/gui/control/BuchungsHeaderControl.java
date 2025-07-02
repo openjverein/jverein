@@ -68,7 +68,7 @@ public class BuchungsHeaderControl extends AbstractControl
     try
     {
       ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
-          "buchung");
+          "konto");
 
       it.addColumn("konto.bezeichnung as konto");
       it.addColumn("anfangsbestand.betrag AS anfangssaldo");
@@ -77,24 +77,27 @@ public class BuchungsHeaderControl extends AbstractControl
           "SUM(case when buchung.betrag > 0 then buchung.betrag ELSE 0 END) AS einnahmen");
       it.addColumn(
           "SUM(case when buchung.betrag < 0 then buchung.betrag ELSE 0 END) AS ausgaben");
-      it.addColumn("anfangsbestand.betrag + SUM(buchung.betrag) AS saldo");
+      it.addColumn(
+          "anfangsbestand.betrag + SUM(coalesce(buchung.betrag,0)) AS saldo");
       it.addColumn("MAX(buchung.datum) AS letzte_buchung");
 
-      it.join("konto", "konto.id = buchung.konto");
       it.join("anfangsbestand", "anfangsbestand.konto = konto.id");
-      it.addFilter("buchung.datum >= anfangsbestand.datum");
+      
       // Hier müssen wir zwischen H2 und MySQL unterscheiden, da es nicht die
       // gleichen Funktionen gibt
+      String filter = "konto.id = buchung.konto AND buchung.datum >= anfangsbestand.datum";
       if (JVereinDBService.SETTINGS.getString("database.driver", "h2")
           .toLowerCase().contains("h2"))
       {
-        it.addFilter("buchung.datum < DATEADD(YEAR, 1,anfangsbestand.datum)");
+        filter += " AND buchung.datum < DATEADD(YEAR, 1,anfangsbestand.datum)";
       }
       else
       {
-        it.addFilter(
-            "buchung.datum < DATE_ADD(anfangsbestand.datum, INTERVAL 1 YEAR)");
+        filter +=
+            " AND buchung.datum < DATE_ADD(anfangsbestand.datum, INTERVAL 1 YEAR)";
       }
+      it.leftJoin("buchung", filter);
+
       it.addFilter("konto.id = ?", konto.getID());
       it.addGroupBy("anfangsbestand.id");
       it.setOrder("Order By anfangsbestand.datum DESC");
