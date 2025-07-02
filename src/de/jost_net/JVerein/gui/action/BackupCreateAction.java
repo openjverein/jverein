@@ -36,6 +36,7 @@ import de.jost_net.JVerein.server.BuchungDokumentImpl;
 import de.jost_net.JVerein.server.BuchungImpl;
 import de.jost_net.JVerein.server.BuchungsartImpl;
 import de.jost_net.JVerein.server.BuchungsklasseImpl;
+import de.jost_net.JVerein.server.DateinamenVorlageImpl;
 import de.jost_net.JVerein.server.EigenschaftGruppeImpl;
 import de.jost_net.JVerein.server.EigenschaftImpl;
 import de.jost_net.JVerein.server.EigenschaftenImpl;
@@ -345,6 +346,10 @@ public class BackupCreateAction implements Action
           
           monitor.setStatusText("Speichere Zusatzbetrag Vorlagen");
           backup(ZusatzbetragVorlageImpl.class, writer, monitor);
+          monitor.addPercentComplete(1);
+
+          monitor.setStatusText("Speichere Dateinamen Vorlagen");
+          backup(DateinamenVorlageImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
