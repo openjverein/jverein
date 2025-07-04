@@ -81,11 +81,13 @@ public class WirtschaftsplanView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
 
+    /*
     Button zurueck = new Button("", context -> loadNextPlan(false, control), null, false, "go-previous.png");
     buttons.addButton(zurueck);
 
     Button vor = new Button("", context -> loadNextPlan(true, control), null, false, "go-next.png");
     buttons.addButton(vor);
+     */
 
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.WIRTSCHAFTSPLANUNG, false, "question-circle.png");
