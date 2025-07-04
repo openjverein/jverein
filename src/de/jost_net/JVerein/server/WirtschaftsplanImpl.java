@@ -113,6 +113,7 @@ public class WirtschaftsplanImpl extends AbstractDBObject
         "AND buchung.datum >= wirtschaftsplan.datum_von " +
         "AND buchung.datum <= wirtschaftsplan.datum_bis " +
         "AND buchungsart.art = ? " +
+        "AND konto.kontoart > ? " +
         "AND konto.kontoart < ? " +
         "AND wirtschaftsplan.id = ? " +
         "GROUP BY wirtschaftsplan.id";
@@ -144,7 +145,9 @@ public class WirtschaftsplanImpl extends AbstractDBObject
           }
         });
       case "istEinnahme":
-        return service.execute(sqlIst, new Object[] { EINNAHME, Kontoart.LIMIT.getKey(), this.getID() }, resultSet -> {
+        return service.execute(sqlIst,
+            new Object[] { EINNAHME, 0, Kontoart.LIMIT.getKey(), this.getID() },
+            resultSet -> {
           try
           {
             resultSet.next();
@@ -156,7 +159,9 @@ public class WirtschaftsplanImpl extends AbstractDBObject
           }
         });
       case "istAusgabe":
-        return service.execute(sqlIst, new Object[] { AUSGABE, Kontoart.LIMIT.getKey(), this.getID() }, resultSet -> {
+        return service.execute(sqlIst,
+            new Object[] { AUSGABE, 0, Kontoart.LIMIT.getKey(), this.getID() },
+            resultSet -> {
           try
           {
             resultSet.next();
@@ -167,10 +172,79 @@ public class WirtschaftsplanImpl extends AbstractDBObject
             return 0.;
           }
         });
+      case "istRücklagenGebildet":
+        return service.execute(sqlIst,
+            new Object[] { EINNAHME, Kontoart.LIMIT.getKey(),
+                Kontoart.LIMIT_RUECKLAGE.getKey(), this.getID() },
+            resultSet -> {
+              try
+              {
+                resultSet.next();
+                return resultSet.getDouble(BETRAG_COL);
+              }
+              catch (Exception e)
+              {
+                return 0.;
+              }
+            });
+      case "istRücklagenAufgelöst":
+        return service.execute(sqlIst,
+            new Object[] { AUSGABE, Kontoart.LIMIT.getKey(),
+                Kontoart.LIMIT_RUECKLAGE.getKey(), this.getID() },
+            resultSet -> {
+              try
+              {
+                resultSet.next();
+                return resultSet.getDouble(BETRAG_COL);
+              }
+              catch (Exception e)
+              {
+                return 0.;
+              }
+            });
+      case "istForderungen":
+        return service.execute(sqlIst,
+            new Object[] { EINNAHME, Kontoart.LIMIT_RUECKLAGE.getKey(),
+                Integer.MAX_VALUE, this.getID() }, resultSet -> {
+              try
+              {
+                resultSet.next();
+                return resultSet.getDouble(BETRAG_COL);
+              }
+              catch (Exception e)
+              {
+                return 0.;
+              }
+            });
+      case "istVerbindlichkeiten":
+        return service.execute(sqlIst,
+            new Object[] { AUSGABE, Kontoart.LIMIT_RUECKLAGE.getKey(),
+                Integer.MAX_VALUE, this.getID() }, resultSet -> {
+              try
+              {
+                resultSet.next();
+                return resultSet.getDouble(BETRAG_COL);
+              }
+              catch (Exception e)
+              {
+                return 0.;
+              }
+            });
+      case "istPlus":
+        return (Double) getAttribute("istEinnahme") + (Double) getAttribute(
+            "istRücklagenGebildet") + (Double) getAttribute("istForderungen");
+      case "istMinus":
+        return (Double) getAttribute("istAusgabe") + (Double) getAttribute(
+            "istRücklagenAufgelöst") + (Double) getAttribute(
+            "istVerbindlichkeiten");
       case "planSaldo":
         return (Double) getAttribute("planEinnahme") + (Double) getAttribute("planAusgabe");
       case "istSaldo":
-        return (Double) getAttribute("istEinnahme") + (Double) getAttribute("istAusgabe");
+        return (Double) getAttribute("istEinnahme") + (Double) getAttribute(
+            "istAusgabe") + (Double) getAttribute(
+            "istRücklagenGebildet") + (Double) getAttribute(
+            "istRücklagenAufgelöst") + (Double) getAttribute(
+            "istForderungen") + (Double) getAttribute("istVerbindlichkeiten");
       case "differenz":
         return (Double) getAttribute("istSaldo") - (Double) getAttribute("planSaldo");
       default:

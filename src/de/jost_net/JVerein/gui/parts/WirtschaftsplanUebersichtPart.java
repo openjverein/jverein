@@ -19,7 +19,9 @@ package de.jost_net.JVerein.gui.parts;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -27,6 +29,7 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.hbci.rmi.Konto;
 import de.willuhn.util.ApplicationException;
 import org.eclipse.swt.widgets.Composite;
 
@@ -62,6 +65,15 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     ColumnLayout columns = new ColumnLayout(uebersicht.getComposite(), 2);
 
+    DBIterator<Konto> ruecklagenIterator = Einstellungen.getDBService()
+        .createList(Konto.class);
+    ruecklagenIterator.addFilter("kontoart > ?", Kontoart.LIMIT.getKey());
+    ruecklagenIterator.addFilter("kontoart < ?", Kontoart.LIMIT_RUECKLAGE.getKey());
+
+    DBIterator<Konto> verbindlichkeitenIterator = Einstellungen.getDBService()
+        .createList(Konto.class);
+    verbindlichkeitenIterator.addFilter("kontoart > ?", Kontoart.LIMIT_RUECKLAGE.getKey());
+
     SimpleContainer einnahmen = new SimpleContainer(columns.getComposite());
 
     von = new DateInput(
@@ -78,6 +90,30 @@ public class WirtschaftsplanUebersichtPart implements Part
         Einstellungen.DECIMALFORMAT);
     istEinnahme.disable();
     einnahmen.addLabelPair("Einnahmen Ist", istEinnahme);
+    if (ruecklagenIterator.size() > 0)
+    {
+      DecimalInput istRuecklagenGebildet = new DecimalInput(
+          (Double) control.getWirtschaftsplan().getAttribute("istRücklagenGebildet"),
+          Einstellungen.DECIMALFORMAT);
+      istRuecklagenGebildet.disable();
+      einnahmen.addLabelPair("Rücklagen gebildet Ist", istRuecklagenGebildet);
+    }
+    if (verbindlichkeitenIterator.size() > 0)
+    {
+      DecimalInput istForderungen = new DecimalInput(
+          (Double) control.getWirtschaftsplan().getAttribute("istForderungen"),
+          Einstellungen.DECIMALFORMAT);
+      istForderungen.disable();
+      einnahmen.addLabelPair("Forderungen Ist", istForderungen);
+    }
+    if (ruecklagenIterator.size() > 0 || verbindlichkeitenIterator.size() > 0)
+    {
+      DecimalInput istPositiv = new DecimalInput(
+          (Double) control.getWirtschaftsplan().getAttribute("istPlus"),
+          Einstellungen.DECIMALFORMAT);
+      istPositiv.disable();
+      einnahmen.addLabelPair("Summe Zuflüsse Ist", istPositiv);
+    }
 
     SimpleContainer ausgaben = new SimpleContainer(columns.getComposite());
 
@@ -95,6 +131,30 @@ public class WirtschaftsplanUebersichtPart implements Part
         Einstellungen.DECIMALFORMAT);
     istAusgaben.disable();
     ausgaben.addLabelPair("Ausgaben Ist", istAusgaben);
+    if (ruecklagenIterator.size() > 0)
+    {
+      DecimalInput istRuecklagenAufgeloest = new DecimalInput(
+          (Double) control.getWirtschaftsplan().getAttribute("istRücklagenAufgelöst"),
+          Einstellungen.DECIMALFORMAT);
+      istRuecklagenAufgeloest.disable();
+      ausgaben.addLabelPair("Rücklagen aufgelöst Ist", istRuecklagenAufgeloest);
+    }
+    if (verbindlichkeitenIterator.size() > 0)
+    {
+      DecimalInput istVerbindlichkeiten = new DecimalInput(
+          (Double) control.getWirtschaftsplan().getAttribute("istVerbindlichkeiten"),
+          Einstellungen.DECIMALFORMAT);
+      istVerbindlichkeiten.disable();
+      ausgaben.addLabelPair("Verbindlichkeiten Ist", istVerbindlichkeiten);
+    }
+    if (ruecklagenIterator.size() > 0 || verbindlichkeitenIterator.size() > 0)
+    {
+      DecimalInput istNegativ = new DecimalInput(
+          (Double) control.getWirtschaftsplan().getAttribute("istMinus"),
+          Einstellungen.DECIMALFORMAT);
+      istNegativ.disable();
+      ausgaben.addLabelPair("Summe Abflüsse Ist", istNegativ);
+    }
   }
 
   @SuppressWarnings("unchecked")
