@@ -16,40 +16,48 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.gui.action.DateinameVorschauAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.EinstellungControl;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.control.DateinameControl;
+import de.jost_net.JVerein.keys.DateinameTyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.ScrolledContainer;
+import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class EinstellungenDateinamenView extends AbstractView
+public class DateinameDetailView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen Dateinamen");
+    GUI.getView().setTitle("Dateiname");
 
-    final EinstellungControl control = new EinstellungControl(this);
+    final DateinameControl control = new DateinameControl(this);
 
-    ScrolledContainer cont = new ScrolledContainer(getParent());
-
-    cont.addLabelPair("Auswertung", control.getDateinamenmuster());
-    cont.addLabelPair("CSV Vorlagenverzeichnis",
-        control.getVorlagenCsvVerzeichnis());
+    LabelGroup grName = new LabelGroup(getParent(), DateinameTyp
+        .getByKey(Integer.valueOf(control.getDateiname().getID())).toString());
+    grName.addLabelPair("Dateiname", control.getName());
+    grName.addLabelPair("Vorschau", control.getVorschau());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_DATEINAMEN, false, "question-circle.png");
+        DokumentationUtil.DATEI_NAME, false, "question-circle.png");
+    buttons.addButton("Variablen anzeigen",
+        new InsertVariableDialogAction(control.getDummyMap()), control, false,
+        "bookmark.png");
+    buttons.addButton(new Button("Update Vorschau",
+        new DateinameVorschauAction(), control, false, "view-refresh.png"));
     buttons.addButton("Speichern", new Action()
     {
 
       @Override
       public void handleAction(Object context)
       {
-        control.handleStoreDateinamen();
+        control.handleStore();
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());

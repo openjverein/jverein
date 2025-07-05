@@ -169,8 +169,6 @@ public class EinstellungControl extends AbstractControl
 
   private TextInput dateinamenmuster;
 
-  private TextInput dateinamenmusterspende;
-
   private DirectoryInput vorlagenCsvVerzeichnis;
 
   private DecimalInput spendenbescheinigungminbetrag;
@@ -1008,19 +1006,6 @@ public class EinstellungControl extends AbstractControl
     dateinamenmuster
         .setComment("a$ = Aufgabe, d$ = Datum, s$ = Sortierung, z$ = Zeit");
     return dateinamenmuster;
-  }
-
-  public TextInput getDateinamenmusterSpende() throws RemoteException
-  {
-    if (dateinamenmusterspende != null)
-    {
-      return dateinamenmusterspende;
-    }
-    dateinamenmusterspende = new TextInput(Einstellungen.getEinstellung()
-        .getDateinamenmusterSpende(), 30);
-    dateinamenmusterspende
-        .setComment("n$ = Name, v$ = Vorname, d$ = Datum, z$ = Zeit");
-    return dateinamenmusterspende;
   }
 
   public DirectoryInput getVorlagenCsvVerzeichnis() throws RemoteException
@@ -2430,7 +2415,6 @@ public class EinstellungControl extends AbstractControl
       Einstellung e = Einstellungen.getEinstellung();
       e.setID();
       e.setDateinamenmuster((String) dateinamenmuster.getValue());
-      e.setDateinamenmusterSpende((String) dateinamenmusterspende.getValue());
       e.setVorlagenCsvVerzeichnis((String) vorlagenCsvVerzeichnis.getValue());
       e.store();
       Einstellungen.setEinstellung(e);

@@ -17,41 +17,26 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.EinstellungControl;
+import de.jost_net.JVerein.gui.control.DateinameControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.ScrolledContainer;
 
-public class EinstellungenDateinamenView extends AbstractView
+public class DateinameListeView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen Dateinamen");
+    GUI.getView().setTitle("Dateinamen");
 
-    final EinstellungControl control = new EinstellungControl(this);
+    DateinameControl control = new DateinameControl(this);
 
-    ScrolledContainer cont = new ScrolledContainer(getParent());
-
-    cont.addLabelPair("Auswertung", control.getDateinamenmuster());
-    cont.addLabelPair("CSV Vorlagenverzeichnis",
-        control.getVorlagenCsvVerzeichnis());
+    control.getDateinamenList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_DATEINAMEN, false, "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStoreDateinamen();
-      }
-    }, null, true, "document-save.png");
+        DokumentationUtil.DATEI_NAME, false, "question-circle.png");
     buttons.paint(this.getParent());
   }
 }

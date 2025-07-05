@@ -220,11 +220,6 @@ public interface Einstellung extends DBObject, IBankverbindung
   public void setDateinamenmuster(String dateinamenmuster)
       throws RemoteException;
 
-  public String getDateinamenmusterSpende() throws RemoteException;
-
-  public void setDateinamenmusterSpende(String dateinamenmusterspende)
-      throws RemoteException;
-
   public String getVorlagenCsvVerzeichnis() throws RemoteException;
 
   public void setVorlagenCsvVerzeichnis(String vorlagenCsvVerzeichnis)
