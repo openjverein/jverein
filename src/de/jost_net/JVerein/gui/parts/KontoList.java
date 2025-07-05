@@ -37,7 +37,8 @@ import de.willuhn.jameica.gui.parts.TablePart;
 /**
  * Implementierung einer fix und fertig vorkonfigurierten Liste aller Konten.
  */
-public class KontoList extends TablePart implements Part
+public class
+KontoList extends TablePart implements Part
 {
   public KontoList(Action action, boolean onlyHibiscus,
       boolean nurAktuelleKonten, Kontenfilter art) throws RemoteException

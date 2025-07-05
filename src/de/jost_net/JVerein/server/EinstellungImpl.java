@@ -2122,6 +2122,19 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     setAttribute("steuerinbuchung", steuerinbuchung);
   }
 
+  @Override
+  public Boolean getWirtschaftsplanung() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("wirtschaftsplanung"));
+  }
+
+  @Override
+  public void setWirtschaftsplanung(Boolean wirtschaftsplanung)
+      throws RemoteException
+  {
+    setAttribute("wirtschaftsplanung", wirtschaftsplanung);
+  }
+
   public Boolean getSummenAnlagenkonto() throws RemoteException
   {
     return Util.getBoolean(getAttribute("summenanlagenkonto"));

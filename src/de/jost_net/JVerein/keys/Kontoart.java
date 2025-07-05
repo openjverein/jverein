@@ -18,10 +18,10 @@ package de.jost_net.JVerein.keys;
 
 public enum Kontoart
 {
-  // LIMIT ist keine Kontoart sondern dient zur Abgrenzung.
-  // Ids unter dem Limit werden regulär im Buchungsklassensaldo und Kontensaldo
+  // LIMIT ist keine Kontoart, sondern dient zur Abgrenzung.
+  // Ids unter dem Limit werden regulär im Buchungsklassensaldo, Kontensaldo und der Wirtschaftsplanung
   // berücksichtigt.
-  // Ids über dem Limit werden in beiden Salden ignoriert.
+  // Ids über dem Limit werden in diesen Salden ignoriert.
   // Ebenfals is LIMIT_RUECKLAGE keine Kontoart, sondern grenzt die
   // Rücklagekonten ab.
   GELD(1, "Geldkonto", "Geldvermögen"),
@@ -37,14 +37,16 @@ public enum Kontoart
   RUECKLAGE_ERWERB(107, "Rücklage für Gesellschaftsrechte nach § 62 Abs. 1 Nr. 4 AO"),
   VERMOEGEN(108, "Vermögen nach § 62 Abs. 3 und 4 AO"),
   RUECKLAGE_SONSTIG(109, "Sonstige Rücklagen und Vermögen"),
-  LIMIT_RUECKLAGE(200, "-- Limit Rücklage --");
+  LIMIT_RUECKLAGE(200, "-- Limit Rücklage --"),
+  VERBINDLICHKEITEN(201, "Verbindlichkeiten"),
+  FORDERUNGEN(202, "Forderungen");
 
   private final String text;
 
   private final int key;
 
   private String textVermoegen;
-  
+
   Kontoart(int key, String text)
   {
     this(key, text, text);
