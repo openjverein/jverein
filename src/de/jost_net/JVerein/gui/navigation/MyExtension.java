@@ -20,8 +20,6 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.schlevoigt.JVerein.gui.view.BuchungsTexteKorrigierenView;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AboutAction;
 import de.jost_net.JVerein.gui.action.BackupCreateAction;
@@ -45,6 +43,7 @@ import de.jost_net.JVerein.gui.view.BuchungsartListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseSaldoView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
+import de.jost_net.JVerein.gui.view.BuchungsTexteKorrigierenView;
 import de.jost_net.JVerein.gui.view.DbBereinigenView;
 import de.jost_net.JVerein.gui.view.EigenschaftGruppeListeView;
 import de.jost_net.JVerein.gui.view.EigenschaftListeView;

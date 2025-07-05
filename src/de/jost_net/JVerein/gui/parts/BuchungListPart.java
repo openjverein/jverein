@@ -22,9 +22,9 @@ import java.util.List;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
+import de.jost_net.JVerein.gui.formatter.KontoFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
@@ -48,27 +48,7 @@ public class BuchungListPart extends BuchungListTablePart
     super(list, action);
 
     addColumn("Nr", "id-int");
-    addColumn("Konto", "konto", new Formatter()
-    {
-
-      @Override
-      public String format(Object o)
-      {
-        Konto k = (Konto) o;
-        if (k != null)
-        {
-          try
-          {
-            return k.getBezeichnung();
-          }
-          catch (RemoteException e)
-          {
-            Logger.error("Fehler", e);
-          }
-        }
-        return "";
-      }
-    });
+    addColumn("Konto", "konto", new KontoFormatter());
     addColumn("Datum", "datum", new DateFormatter(new JVDateFormatTTMMJJJJ()));
     addColumn("Auszug", "auszugsnummer");
     addColumn("Blatt", "blattnummer");

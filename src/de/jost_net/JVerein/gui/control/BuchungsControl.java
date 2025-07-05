@@ -46,6 +46,7 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.JVerein.gui.formatter.KontoFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
@@ -1408,27 +1409,7 @@ public class BuchungsControl extends AbstractControl
         }
       });
 
-      buchungsList.addColumn("Konto", "konto", new Formatter()
-      {
-
-        @Override
-        public String format(Object o)
-        {
-          Konto k = (Konto) o;
-          if (k != null)
-          {
-            try
-            {
-              return k.getBezeichnung();
-            }
-            catch (RemoteException e)
-            {
-              Logger.error("Fehler", e);
-            }
-          }
-          return "";
-        }
-      });
+      buchungsList.addColumn("Konto", "konto", new KontoFormatter());
       buchungsList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
@@ -1531,26 +1512,7 @@ public class BuchungsControl extends AbstractControl
       splitbuchungsList = new SplitbuchungListTablePart(
           SplitbuchungsContainer.get(), new BuchungAction(true));
       splitbuchungsList.addColumn("Nr", "id-int");
-      splitbuchungsList.addColumn("Konto", "konto", new Formatter()
-      {
-        @Override
-        public String format(Object o)
-        {
-          Konto k = (Konto) o;
-          if (k != null)
-          {
-            try
-            {
-              return k.getBezeichnung();
-            }
-            catch (RemoteException e)
-            {
-              Logger.error("Fehler", e);
-            }
-          }
-          return "";
-        }
-      });
+      splitbuchungsList.addColumn("Konto", "konto", new KontoFormatter());
       splitbuchungsList.addColumn("Typ", "splittyp", new Formatter()
       {
         @Override
