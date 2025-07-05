@@ -70,7 +70,8 @@ public abstract class Spaltenauswahl
             || spalte.isAuchNichtMitglied())
         {
           part.addColumn(spalte.getSpaltenbezeichnung(),
-              spalte.getSpaltenname(), spalte.getFormatter());
+              spalte.getSpaltenname(), spalte.getFormatter(), false,
+              spalte.getAlign());
         }
       }
     }
