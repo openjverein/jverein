@@ -14,9 +14,8 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVereinJUnit.messaging;
+package de.jost_net.JVerein.messaging;
 
-import de.jost_net.JVereinJUnit.Test;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.messaging.SystemMessage;
@@ -44,7 +43,7 @@ public class TestMessageConsumer implements MessageConsumer
   {
     SystemMessage m = (SystemMessage) message;
     if (m.getStatusCode() == SystemMessage.SYSTEM_STARTED)
-      Test.start();
+      ;//Test.start();
   }
 
   /**
