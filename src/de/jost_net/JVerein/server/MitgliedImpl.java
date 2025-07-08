@@ -918,7 +918,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   /**
-   * art = 1: Name, Vorname
+   * art = 1: Name, Vorname art = 2: Vorname, Name art = 3: Als Adressfeld
    */
   @Override
   public String getKontoinhaber(int art) throws RemoteException
@@ -943,10 +943,42 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     {
       m2.setTitel(getKtoiTitel());
     }
+    else
+    {
+      m2.setTitel(null);
+    }
     switch (art)
     {
       case 1:
         return Adressaufbereitung.getNameVorname(m2);
+      case 2:
+        return Adressaufbereitung.getVornameName(m2);
+      case 3:
+        if (m2.getKtoiAnrede() != null && m2.getKtoiAnrede().length() > 0)
+        {
+          m2.setAnrede(getKtoiAnrede());
+        }
+        if (m2.getKtoiAdressierungszusatz() != null && m2.getKtoiAdressierungszusatz().length() > 0)
+        {
+          m2.setAdressierungszusatz(getKtoiAdressierungszusatz());
+        }
+        if (m2.getKtoiStrasse() != null && m2.getKtoiStrasse().length() > 0)
+        {
+          m2.setStrasse(getKtoiStrasse());
+        }
+        if (m2.getKtoiOrt() != null && m2.getKtoiOrt().length() > 0)
+        {
+          m2.setOrt(getKtoiOrt());
+        }
+        if (m2.getKtoiPlz() != null && m2.getKtoiPlz().length() > 0)
+        {
+          m2.setPlz(getKtoiPlz());
+        }
+        if (m2.getKtoiStaat() != null && m2.getKtoiStaat().length() > 0)
+        {
+          m2.setStaat(getKtoiStaat());
+        }
+        return Adressaufbereitung.getAdressfeld(m2);
     }
     return null;
   }
