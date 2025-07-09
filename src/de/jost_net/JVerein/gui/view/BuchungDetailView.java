@@ -17,6 +17,10 @@
 package de.jost_net.JVerein.gui.view;
 
 import java.rmi.RemoteException;
+import java.util.Date;
+import java.util.LinkedList;
+
+import org.apache.commons.lang.StringUtils;
 
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
@@ -29,6 +33,7 @@ import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -62,6 +67,16 @@ public class BuchungDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
+
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getVorButton());
+    Geschaeftsjahr gj = new Geschaeftsjahr(new Date());
+    LinkedList<Long> ids = control.getKontoIds(art);
+    // Parameter: Objekt Klasse, Tabellen Name, Order By, Filter,
+    // Filter Parameter
+    control.setObjektListe(Buchung.class, "buchung", "datum",
+        "konto in (" + StringUtils.join(ids, ",") + ") AND datum >= ?",
+        gj.getBeginnLetztesGeschaeftsjahr());
 
     Button saveButton = new Button("Speichern", context -> {
       try

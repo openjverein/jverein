@@ -25,6 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -66,6 +67,7 @@ import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -85,7 +87,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.AbstractControl;
+import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -120,7 +122,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class BuchungsControl extends AbstractControl
+public class BuchungsControl extends VorZurueckControl
     implements Savable
 {
 
@@ -2292,7 +2294,7 @@ public class BuchungsControl extends AbstractControl
     return settingsprefix;
   }
 
-  public ToolTipButton getZurueckButton()
+  public ToolTipButton getTTZurueckButton()
   {
     return new ToolTipButton("", new Action()
     {
@@ -2337,7 +2339,7 @@ public class BuchungsControl extends AbstractControl
     }, null, false, "go-previous.png");
   }
 
-  public ToolTipButton getVorButton()
+  public ToolTipButton getTTVorButton()
   {
     return new ToolTipButton("", new Action()
     {
@@ -2413,4 +2415,27 @@ public class BuchungsControl extends AbstractControl
     }
   }
 
+  @SuppressWarnings("unchecked")
+  public LinkedList<Long> getKontoIds(Kontenfilter art)
+  {
+    try
+    {
+      String sql;
+      final DBService service = Einstellungen.getDBService();
+      switch (art)
+      {
+        case ANLAGEKONTO:
+          sql = "SELECT id FROM konto WHERE kontoart = ?";
+          break;
+        default:
+          sql = "SELECT id FROM konto WHERE kontoart != ?";
+      }
+      return (LinkedList<Long>) service.execute(sql,
+          new Object[] { Kontoart.ANLAGE.getKey() }, rs);
+    }
+    catch (RemoteException e)
+    {
+      return null;
+    }
+  }
 }

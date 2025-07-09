@@ -16,10 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.util.Date;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
+import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -77,6 +81,13 @@ public class RechnungDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.RECHNUNG, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getVorButton());
+    Geschaeftsjahr gj = new Geschaeftsjahr(new Date());
+    // Parameter: Objekt Klasse, Tabellen Name, Order By, Filter,
+    // Filter Parameter
+    control.setObjektListe(Rechnung.class, "rechnung", "datum, name, vorname",
+        "datum >= ?", gj.getBeginnLetztesGeschaeftsjahr());
     buttons.addButton(control.getRechnungDruckUndMailButton());
     buttons.addButton(control.getMahnungDruckUndMailButton());
     buttons.addButton(new SaveButton(control));
