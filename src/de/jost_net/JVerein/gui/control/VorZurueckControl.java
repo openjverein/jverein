@@ -36,7 +36,9 @@ public class VorZurueckControl extends AbstractControl
 
   private Class<? extends DBObject> objectClass;
 
-  private LinkedList<Long> objektListe = null;
+  static LinkedList<Long> objektListe = null;
+
+  static boolean validList = false;
 
   public VorZurueckControl(AbstractView view)
   {
@@ -66,36 +68,40 @@ public class VorZurueckControl extends AbstractControl
       String tabelle, String order, String filter, Object objekt)
   {
     this.objectClass = objectClass;
-    try
+    if (objektListe == null || !validList)
     {
-      final DBService service = Einstellungen.getDBService();
+      try
+      {
+        final DBService service = Einstellungen.getDBService();
 
-      String sql = "SELECT id FROM " + tabelle;
-      if (filter != null)
-      {
-        sql += " WHERE " + filter;
-      }
-      if (order != null)
-      {
-        sql += " ORDER BY (" + order + ")";
-      }
+        String sql = "SELECT id FROM " + tabelle;
+        if (filter != null)
+        {
+          sql += " WHERE " + filter;
+        }
+        if (order != null)
+        {
+          sql += " ORDER BY (" + order + ")";
+        }
 
-      if (objekt == null)
-      {
-        objektListe = (LinkedList<Long>) service.execute(sql, new Object[] {},
-            rs);
-      }
-      else if (filter != null && objekt != null)
-      {
-        objektListe = (LinkedList<Long>) service.execute(sql,
-            new Object[] { objekt }, rs);
-      }
+        if (objekt == null)
+        {
+          objektListe = (LinkedList<Long>) service.execute(sql, new Object[] {},
+              rs);
+        }
+        else if (filter != null && objekt != null)
+        {
+          objektListe = (LinkedList<Long>) service.execute(sql,
+              new Object[] { objekt }, rs);
+        }
 
+      }
+      catch (RemoteException e)
+      {
+        //
+      }
     }
-    catch (RemoteException e)
-    {
-      //
-    }
+    validList = false;
   }
 
   /**
@@ -116,6 +122,7 @@ public class VorZurueckControl extends AbstractControl
         {
           DBObject instanz = Einstellungen.getDBService()
               .createObject(objectClass, objektListe.get(index - 1).toString());
+          validList = true;
           GUI.startView(viewClass, instanz);
         }
       }
@@ -154,6 +161,7 @@ public class VorZurueckControl extends AbstractControl
         {
           DBObject instanz = Einstellungen.getDBService()
               .createObject(objectClass, objektListe.get(index + 1).toString());
+          validList = true;
           GUI.startView(viewClass, instanz);
         }
       }
