@@ -40,6 +40,10 @@ public class VorZurueckControl extends AbstractControl
 
   static boolean validList = false;
 
+  private Button zurueck;
+
+  private Button vor;
+
   public VorZurueckControl(AbstractView view)
   {
     super(view);
@@ -102,6 +106,32 @@ public class VorZurueckControl extends AbstractControl
       }
     }
     validList = false;
+    DBObject object = (DBObject) getCurrentObject();
+    try
+    {
+      if (object.isNewObject())
+      {
+        zurueck.setEnabled(false);
+        vor.setEnabled(false);
+      }
+      else
+      {
+        int index = objektListe.indexOf(Long.valueOf(object.getID()));
+        if (index <= 0)
+        {
+          zurueck.setEnabled(false);
+        }
+        if (index < 0 || index >= objektListe.size() - 1)
+        {
+          vor.setEnabled(false);
+        }
+      }
+    }
+    catch (NumberFormatException | RemoteException e)
+    {
+      zurueck.setEnabled(false);
+      vor.setEnabled(false);
+    }
   }
 
   /**
@@ -109,7 +139,7 @@ public class VorZurueckControl extends AbstractControl
    */
   public Button getZurueckButton()
   {
-    Button button = new Button("", context -> {
+    zurueck = new Button("", context -> {
       if (objektListe == null || viewClass == null)
       {
         return;
@@ -132,23 +162,12 @@ public class VorZurueckControl extends AbstractControl
       }
 
     }, null, false, "go-previous.png");
-    try
-    {
-      if (((DBObject) getCurrentObject()).isNewObject())
-      {
-        button.setEnabled(false);
-      }
-    }
-    catch (RemoteException e)
-    {
-      //
-    }
-    return button;
+    return zurueck;
   }
 
   public Button getVorButton()
   {
-    Button button = new Button("", context -> {
+    vor = new Button("", context -> {
       if (objektListe == null || viewClass == null)
       {
         return;
@@ -171,18 +190,7 @@ public class VorZurueckControl extends AbstractControl
       }
 
     }, null, false, "go-next.png");
-    try
-    {
-      if (((DBObject) getCurrentObject()).isNewObject())
-      {
-        button.setEnabled(false);
-      }
-    }
-    catch (RemoteException e)
-    {
-      //
-    }
-    return button;
+    return vor;
   }
 
 }
