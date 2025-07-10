@@ -140,12 +140,7 @@ public class BuchungsTextKorrekturControl extends AbstractControl
       GUI.getStatusBar().setSuccessText(count + " Buchungen korrigiert");
       refreshBuchungen();
     }
-    catch (ApplicationException e)
-    {
-      DBTransaction.rollback();
-      GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
-    }
-    catch (RemoteException e)
+    catch (ApplicationException | RemoteException e)
     {
       DBTransaction.rollback();
       GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
