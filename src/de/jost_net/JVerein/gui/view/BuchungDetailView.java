@@ -75,7 +75,8 @@ public class BuchungDetailView extends AbstractDetailView
     // Parameter: Objekt Klasse, Tabellen Name, Order By, Filter,
     // Filter Parameter
     control.setObjektListe(Buchung.class, "buchung", "datum",
-        "konto in (" + StringUtils.join(ids, ",") + ") AND datum >= ?",
+        "konto in (" + StringUtils.join(ids, ",")
+            + ") AND splitid IS NULL AND datum >= ?",
         gj.getBeginnLetztesGeschaeftsjahr());
 
     Button saveButton = new Button("Speichern", context -> {
