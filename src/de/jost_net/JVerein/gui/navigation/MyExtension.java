@@ -43,7 +43,7 @@ import de.jost_net.JVerein.gui.view.BuchungsartListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseSaldoView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
-import de.jost_net.JVerein.gui.view.BuchungsTexteKorrigierenView;
+import de.jost_net.JVerein.gui.view.BuchungsTexteKorrekturView;
 import de.jost_net.JVerein.gui.view.DbBereinigenView;
 import de.jost_net.JVerein.gui.view.EigenschaftGruppeListeView;
 import de.jost_net.JVerein.gui.view.EigenschaftListeView;
@@ -227,7 +227,7 @@ public class MyExtension implements Extension
           new StartViewAction(BuchungListeView.class),
           "emblem-documents.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
-          new StartViewAction(BuchungsTexteKorrigierenView.class),
+          new StartViewAction(BuchungsTexteKorrekturView.class),
           "emblem-documents.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",
           new StartViewAction(BuchungsklasseSaldoView.class),

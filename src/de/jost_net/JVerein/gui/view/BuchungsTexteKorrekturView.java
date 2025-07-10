@@ -22,7 +22,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class BuchungsTexteKorrigierenView extends AbstractView
+public class BuchungsTexteKorrekturView extends AbstractView
 {
 
   @Override
