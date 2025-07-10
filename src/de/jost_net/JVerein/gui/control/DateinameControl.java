@@ -22,6 +22,7 @@ import java.util.Map;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.DateinameMenu;
@@ -125,6 +126,30 @@ public class DateinameControl extends AbstractControl
         case SPENDENBESCHEINIGUNG_MITGLIED:
           map = SpendenbescheinigungMap.getDummyMap(map);
           map = MitgliedMap.getDummyMap(map);
+          break;
+        case RECHNUNG_MITGLIED:
+        case MAHNUNG_MITGLIED:
+          map = RechnungMap.getDummyMap(map);
+          map = MitgliedMap.getDummyMap(map);
+          break;
+        case KONTOAUSZUG_MITGLIED:
+        case PRENOTIFICATION_MITGLIED:
+          map = MitgliedMap.getDummyMap(map);
+          break;
+        case FREIES_FORMULAR:
+          map.put("formular_name", "Freies Formular");
+          break;
+        case FREIES_FORMULAR_MITGLIED:
+          map = MitgliedMap.getDummyMap(map);
+          map.put("formular_name", "Freies Formular");
+          break;
+        case RECHNUNG:
+        case MAHNUNG:
+        case KONTOAUSZUG:
+        case CT1_AUSGABE:
+        case PRENOTIFICATION:
+          // Bei zip oder einzelnes Dokument für mehrere Einträge
+          // Nur die allgemeine Map
           break;
         default:
           Logger.error("Dateiname Typ nicht implementiert: " + typ.toString());

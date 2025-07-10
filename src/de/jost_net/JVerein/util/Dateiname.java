@@ -28,11 +28,13 @@ import org.apache.velocity.app.Velocity;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.keys.DateinameTyp;
 import de.jost_net.JVerein.rmi.DateinamenVorlage;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.logging.Logger;
 
@@ -194,6 +196,11 @@ public class Dateiname
     return "";
   }
 
+  public static String getDateiname(DateinameTyp typ)
+  {
+    return getDateiname(typ, null, null);
+  }
+
   public static String getDateiname(DateinameTyp typ, Object obj)
   {
     return getDateiname(typ, obj, null);
@@ -220,6 +227,31 @@ public class Dateiname
           map = new SpendenbescheinigungMap().getMap((Spendenbescheinigung) obj,
               map);
           map = new MitgliedMap().getMap(mitglied, map);
+          break;
+        case RECHNUNG_MITGLIED:
+        case MAHNUNG_MITGLIED:
+          // Ein Dokument pro Mitglied
+          map = new RechnungMap().getMap((Rechnung) obj, map);
+          map = new MitgliedMap().getMap(mitglied, map);
+          break;
+        case KONTOAUSZUG_MITGLIED:
+        case PRENOTIFICATION_MITGLIED:
+          map = new MitgliedMap().getMap(mitglied, map);
+          break;
+        case FREIES_FORMULAR:
+          map.put("formular_name", (String) obj);
+          break;
+        case FREIES_FORMULAR_MITGLIED:
+          map = new MitgliedMap().getMap(mitglied, map);
+          map.put("formular_name", (String) obj);
+          break;
+        case RECHNUNG:
+        case MAHNUNG:
+        case KONTOAUSZUG:
+        case CT1_AUSGABE:
+        case PRENOTIFICATION:
+          // Bei zip oder einzelnes Dokument für mehrere Einträge
+          // Nur die allgemeine Map
           break;
         default:
           Logger.error("Dateiname Typ nicht implementiert: " + typ.toString());

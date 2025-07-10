@@ -19,7 +19,18 @@ package de.jost_net.JVerein.keys;
 public enum DateinameTyp
 {
   SPENDENBESCHEINIGUNG(1, "Spendenbescheinigung"),
-  SPENDENBESCHEINIGUNG_MITGLIED(2, "Spendenbescheinigung-Mitglied");
+  SPENDENBESCHEINIGUNG_MITGLIED(2, "Spendenbescheinigung-Mitglied"),
+  RECHNUNG(3, "Rechnung"),
+  RECHNUNG_MITGLIED(4, "Rechnung-Mitglied"),
+  MAHNUNG(5, "Mahnung"),
+  MAHNUNG_MITGLIED(6, "Mahnung-Mitglied"),
+  KONTOAUSZUG(7, "Kontoauszug"),
+  KONTOAUSZUG_MITGLIED(8, "Kontoauszug-Mitglied"),
+  FREIES_FORMULAR(9, "Freies Formular"),
+  FREIES_FORMULAR_MITGLIED(10, "Freies Formular-Mitglied"),
+  CT1_AUSGABE(11, "1ct Ausgabe"),
+  PRENOTIFICATION(12, "Pre-Notification"),
+  PRENOTIFICATION_MITGLIED(13, "Pre-Notification-Mitglied");
 
   private final String text;
 

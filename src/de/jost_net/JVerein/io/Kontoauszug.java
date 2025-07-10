@@ -42,6 +42,7 @@ import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.DateinameTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -179,8 +180,8 @@ public class Kontoauszug
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("KONTOAUSZUG", "", Einstellungen
-        .getEinstellung().getDateinamenmuster(), extension).get());
+    fd.setFileName(
+        Dateiname.getDateiname(DateinameTyp.KONTOAUSZUG) + "." + extension);
     fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();
@@ -303,7 +304,7 @@ public class Kontoauszug
   String getDateiname(Mitglied m) throws RemoteException
   {
     // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
-    String filename = m.getID() + "# # #";
+    String filename = m.getID() + "#kontoauszug# #";
     String email = StringTool.toNotNullString(m.getEmail());
     filename += email + "#Kontoauszug";
     return filename;

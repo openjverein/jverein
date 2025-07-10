@@ -18,6 +18,8 @@ package de.jost_net.JVerein.Variable;
 
 public enum AllgemeineVar
 {
+  AKTUELLESDATUM("aktuellesdatum"), //
+  AKTUELLEZEIT("aktuellezeit"), //
   AKTUELLERMONAT("aktuellermonat"), //
   AKTUELLESJAHR("aktuellesjahr"), //
   NURMONAT("nurmonat"), //

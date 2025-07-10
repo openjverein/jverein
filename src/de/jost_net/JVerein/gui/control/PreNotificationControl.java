@@ -42,6 +42,7 @@ import de.jost_net.JVerein.io.Ct1Ueberweisung;
 import de.jost_net.JVerein.io.FormularAufbereitung;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.keys.Ct1Ausgabe;
+import de.jost_net.JVerein.keys.DateinameTyp;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Formular;
@@ -354,8 +355,8 @@ public class PreNotificationControl extends DruckMailControl
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("prenotification", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
+    fd.setFileName(
+        Dateiname.getDateiname(DateinameTyp.PRENOTIFICATION) + ".pdf");
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -492,8 +493,7 @@ public class PreNotificationControl extends DruckMailControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("1ctueberweisung", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "xml").get());
+      fd.setFileName(Dateiname.getDateiname(DateinameTyp.CT1_AUSGABE) + ".xml");
       fd.setFilterExtensions(new String[] { "*.xml" });
 
       String s = fd.open();

@@ -46,5 +46,28 @@ public class Update0478 extends AbstractDDLUpdate
         "INSERT into dateinamenvorlage VALUES (1, 'Spendenbescheinigung-$spendenbescheinigung_spendedatum_erstes-$spendenbescheinigung_zeile2');\n");
     execute(
         "INSERT into dateinamenvorlage VALUES (2, 'Spendenbescheinigung-$spendenbescheinigung_spendedatum_erstes-$mitglied_name-$mitglied_vorname');\n");
+    execute(
+        "INSERT into dateinamenvorlage VALUES (3, 'Rechnung-$aktuellesdatum-$aktuellezeit');\n");
+    execute(
+        "INSERT into dateinamenvorlage VALUES (4, 'Rechnung-$rechnung_nummer-$mitglied_name-$mitglied_vorname');\n");
+    execute(
+        "INSERT into dateinamenvorlage VALUES (5, 'Mahnung-$aktuellesdatum-$aktuellezeit');\n");
+    execute(
+        "INSERT into dateinamenvorlage VALUES (6, 'Mahnung-$rechnung_nummer-$mitglied_name-$mitglied_vorname');\n");
+    execute(
+        "INSERT into dateinamenvorlage VALUES (7, 'Kontoauszug-$aktuellesdatum-$aktuellezeit');\n");
+    execute(
+        "INSERT into dateinamenvorlage VALUES (8, 'Kontoauszug-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
+    execute(
+        "INSERT into dateinamenvorlage VALUES (9, '$formular_name-$aktuellesdatum-$aktuellezeit');\n");
+    execute(
+        "INSERT into dateinamenvorlage VALUES (10, '$formular_name-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
+    execute(
+        "INSERT into dateinamenvorlage VALUES (11, '1ctueberweisung-$aktuellesdatum-$aktuellezeit');\n");
+    execute(
+        "INSERT into dateinamenvorlage VALUES (12, 'Prenotification-$aktuellesdatum-$aktuellezeit');\n");
+    execute(
+        "INSERT into dateinamenvorlage VALUES (13, 'Prenotification-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
+
   }
 }
