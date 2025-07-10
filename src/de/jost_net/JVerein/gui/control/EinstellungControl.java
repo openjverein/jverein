@@ -2154,6 +2154,8 @@ public class EinstellungControl extends AbstractControl
     }
 
     unterschrift = new ImageInput(
+        Einstellungen.getEinstellung(Property.UNTERSCHRIFT) == null ? null
+            :
         Base64.decode(
             (String) Einstellungen.getEinstellung(Property.UNTERSCHRIFT)),
         400, 75);
