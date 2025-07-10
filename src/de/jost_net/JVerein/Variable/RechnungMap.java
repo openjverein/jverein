@@ -187,6 +187,7 @@ public class RechnungMap extends AbstractMap
       e.printStackTrace();
     }
     map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(), zahlungsweg);
+    map.put(RechnungVar.KOMMENTAR.getName(), re.getKommentar());
 
     return map;
   }
@@ -250,6 +251,7 @@ public class RechnungMap extends AbstractMap
         "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
     map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(),
         "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
+    map.put(RechnungVar.KOMMENTAR.getName(), "Der Rechnungskommentar");
     return map;
   }
 }
