@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.io.UmsatzsteuerSaldoCSV;
 import de.jost_net.JVerein.io.UmsatzsteuerSaldoPDF;
@@ -88,6 +89,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       saldoList.addColumn("Anzahl", ANZAHL);
       saldoList.setRememberColWidths(true);
       saldoList.removeFeature(FeatureSummary.class);
+      saldoList.setFormatter(new SaldoFormatter());
     }
     catch (RemoteException e)
     {
