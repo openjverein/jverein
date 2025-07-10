@@ -20,23 +20,25 @@ import de.jost_net.JVerein.gui.action.DateinameVorschauAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.DateinameControl;
+import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.keys.DateinameTyp;
-import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class DateinameDetailView extends AbstractView
+public class DateinameDetailView extends AbstractDetailView
 {
+
+  private DateinameControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Dateiname");
 
-    final DateinameControl control = new DateinameControl(this);
+    control = new DateinameControl(this);
 
     LabelGroup grName = new LabelGroup(getParent(), DateinameTyp
         .getByKey(Integer.valueOf(control.getDateiname().getID())).toString());
@@ -51,15 +53,13 @@ public class DateinameDetailView extends AbstractView
         "bookmark.png");
     buttons.addButton(new Button("Update Vorschau",
         new DateinameVorschauAction(), control, false, "view-refresh.png"));
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStore();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }

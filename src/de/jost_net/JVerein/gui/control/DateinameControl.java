@@ -34,7 +34,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -43,7 +42,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class DateinameControl extends AbstractControl
+public class DateinameControl extends AbstractControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -164,35 +163,45 @@ public class DateinameControl extends AbstractControl
     return map;
   }
 
-  public void handleStore()
+  /**
+   * This method sets the attributes of the DateinamenVorlage.
+   * 
+   * @throws nRemoteException
+   */
+  @Override
+  public void prepareStore() throws RemoteException
+  {
+    DateinamenVorlage bv = getDateiname();
+    bv.setDateiname((String) getName().getValue());
+  }
+
+  /**
+   * This method stores the DateinamenVorlage using the current values.
+   * 
+   * @throws ApplicationException
+   */
+  @Override
+  public void handleStore() throws ApplicationException
   {
     try
     {
-      DateinamenVorlage name = getDateiname();
-
-      try
-      {
-        name.setDateiname((String) getName().getValue());
-        name.store();
-        GUI.getStatusBar().setSuccessText("Dateiname gespeichert");
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
+      prepareStore();
+      DateinamenVorlage bv = getDateiname();
+      bv.store();
     }
     catch (RemoteException e)
     {
       String fehler = "Fehler bei speichern des Dateinamen";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler, e);
     }
   }
 
   public Part getDateinamenList() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
-    DBIterator<DateinamenVorlage> namen = service.createList(DateinamenVorlage.class);
+    DBIterator<DateinamenVorlage> namen = service
+        .createList(DateinamenVorlage.class);
     namen.setOrder("ORDER BY dateiname");
 
     if (namenList == null)

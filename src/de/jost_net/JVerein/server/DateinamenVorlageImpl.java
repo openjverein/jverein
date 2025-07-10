@@ -20,11 +20,11 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.keys.DateinameTyp;
 import de.jost_net.JVerein.rmi.DateinamenVorlage;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class DateinamenVorlageImpl extends AbstractDBObject implements DateinamenVorlage
+public class DateinamenVorlageImpl extends AbstractJVereinDBObject
+    implements DateinamenVorlage
 {
 
   private static final long serialVersionUID = 1L;
