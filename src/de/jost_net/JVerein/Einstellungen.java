@@ -91,6 +91,13 @@ public class Einstellungen
 
   private static HashMap<String, String> cache = new HashMap<>();
 
+  private static long loadtime;
+
+  /**
+   * Timeout nach dem die Einstellungen neu geladen werden in sekunden
+   */
+  private static long TIMEOUT = 60;
+
   /**
    * Variable, in der gespeichert wird, ob für den Verein Zusatzfelder vorhanden
    * sind.
@@ -403,6 +410,12 @@ public class Einstellungen
   public static Object getEinstellung(Property prop)
       throws RemoteException
   {
+    // Nach dem Timeout einstellungen neu laden. So werden auch Änderungen von
+    // Außerhalb gelesen.
+    if (System.currentTimeMillis() > loadtime + TIMEOUT * 1000)
+    {
+      loadEinstellungen();
+    }
     String value = cache.get(prop.getKey());
     if (value == null)
     {
@@ -538,6 +551,7 @@ public class Einstellungen
       }
       cache.put(e.getKey(), e.getValue());
     }
+    loadtime = System.currentTimeMillis();
   }
 
   /**
