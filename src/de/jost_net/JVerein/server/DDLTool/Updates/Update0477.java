@@ -16,8 +16,6 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 import java.sql.Connection;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
-import de.jost_net.JVerein.server.DDLTool.Column;
-import de.jost_net.JVerein.server.DDLTool.Index;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
@@ -31,41 +29,31 @@ public class Update0477 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    // Beitragsgruppe
-    Column colBeitragsgruppe = new Column("steuer", COLTYPE.BIGINT, 10, "null",
-        false, false);
-    execute(addColumn("beitragsgruppe", colBeitragsgruppe));
-
-    Index idxBeitragsgruppe = new Index("ixBeitragsgruppeSteuer", false);
-    idxBeitragsgruppe.add(colBeitragsgruppe);
-    execute(idxBeitragsgruppe.getCreateIndex("beitragsgruppe"));
-
-    execute(createForeignKey("fkBeitragsgruppeSteuer", "beitragsgruppe",
-        "steuer", "steuer", "id", "RESTRICT", "NO ACTION"));
-
-    // Zusatzbetrag
-    Column colZusatzbetrag = new Column("steuer", COLTYPE.BIGINT, 10, "null",
-        false, false);
-    execute(addColumn("zusatzabbuchung", colZusatzbetrag));
-
-    Index idxZusatzbetrag = new Index("ixZusatzbetragSteuer", false);
-    idxZusatzbetrag.add(colZusatzbetrag);
-    execute(idxZusatzbetrag.getCreateIndex("zusatzabbuchung"));
-
-    execute(createForeignKey("fkZusatzbetragSteuer", "zusatzabbuchung",
-        "steuer", "steuer", "id", "RESTRICT", "NO ACTION"));
-
-    // Zusatzbetrag Vorlage
-    Column colZusatzvorlage = new Column("steuer", COLTYPE.BIGINT, 10, "null",
-        false, false);
-    execute(addColumn("zusatzbetragvorlage", colZusatzvorlage));
-
-    Index idxZusatzvorlage = new Index("ixZusatzbetragvorlageSteuer", false);
-    idxZusatzvorlage.add(colZusatzvorlage);
-    execute(idxZusatzvorlage.getCreateIndex("zusatzbetragvorlage"));
+    execute(
+        "update formularfeld set font = 'Courier Prime' where font = 'Courier'");
+    execute(
+        "update formularfeld set font = 'Courier Prime Bold' where font = 'Courier-Bold'");
+    execute(
+        "update formularfeld set font = 'Courier Prime Italic' where font = 'Courier-Oblique'");
+    execute(
+        "update formularfeld set font = 'Courier Prime Bold Italic' where font = 'Courier-BoldOblique'");
 
     execute(
-        createForeignKey("fkZusatzbetragvorlageSteuer", "zusatzbetragvorlage",
-        "steuer", "steuer", "id", "RESTRICT", "NO ACTION"));
+        "update formularfeld set font = 'LiberationSans-Bold' where font = 'Helvetica-Bold'");
+    execute(
+        "update formularfeld set font = 'LiberationSans-BoldItalic' where font = 'Helvetica-BoldOblique'");
+    execute(
+        "update formularfeld set font = 'LiberationSans-Italic' where font = 'Helvetica-Oblique'");
+    execute(
+        "update formularfeld set font = 'LiberationSans-Regular' where font = 'Helvetica'");
+
+    execute(
+        "update formularfeld set font = 'LiberationSerif-Bold' where font = 'Times-Bold'");
+    execute(
+        "update formularfeld set font = 'LiberationSerif-BoldItalic' where font = 'Times-BoldItalic'");
+    execute(
+        "update formularfeld set font = 'LiberationSerif-Italic' where font = 'Times-Italic'");
+    execute(
+        "update formularfeld set font = 'LiberationSerif-Regular' where font = 'Times-Roman'");
   }
 }
