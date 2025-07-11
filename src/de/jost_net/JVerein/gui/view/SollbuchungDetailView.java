@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.util.Date;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -26,6 +28,8 @@ import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.input.SaveButton;
+import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -88,7 +92,13 @@ public class SollbuchungDetailView extends AbstractDetailView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
-
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getVorButton());
+    Geschaeftsjahr gj = new Geschaeftsjahr(new Date());
+    // Parameter: Objekt Klasse, Tabellen Name, Order By, Filter,
+    // Filter Parameter
+    control.setObjektListe(Sollbuchung.class, Sollbuchung.TABLE_NAME,
+        "datum, mitglied", "datum >= ?", gj.getBeginnLetztesGeschaeftsjahr());
     Button save = new SaveButton(control);
     save.setEnabled(!hasRechnung);
     buttons.addButton(save);

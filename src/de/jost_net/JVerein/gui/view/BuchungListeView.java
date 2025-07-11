@@ -82,9 +82,9 @@ public class BuchungListeView extends AbstractView
     right.addLabelPair("Mitglied Name", control.getMitglied());
     
     ButtonArea buttons1 = new ButtonArea();
-    ToolTipButton zurueck = control.getZurueckButton();
+    ToolTipButton zurueck = control.getTTZurueckButton();
     buttons1.addButton(zurueck);
-    ToolTipButton vor = control.getVorButton();
+    ToolTipButton vor = control.getTTVorButton();
     buttons1.addButton(vor);
     Button reset = new Button("Filter-Reset", new Action()
     {
