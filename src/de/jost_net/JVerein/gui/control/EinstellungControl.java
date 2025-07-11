@@ -2153,12 +2153,15 @@ public class EinstellungControl extends AbstractControl
       return unterschrift;
     }
 
-    unterschrift = new ImageInput(
-        Einstellungen.getEinstellung(Property.UNTERSCHRIFT) == null ? null
-            :
-        Base64.decode(
-            (String) Einstellungen.getEinstellung(Property.UNTERSCHRIFT)),
-        400, 75);
+    String imgString = (String) Einstellungen
+        .getEinstellung(Property.UNTERSCHRIFT);
+    byte[] img = null;
+    if (imgString != null && !imgString.isBlank())
+    {
+      img = Base64.decode(imgString);
+    }
+
+    unterschrift = new ImageInput(img, 400, 75);
     return unterschrift;
   }
   
