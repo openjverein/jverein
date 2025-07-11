@@ -386,16 +386,16 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.ZWECK.getName(),
         (String) Einstellungen.getEinstellung(Property.BEGUENSTIGTERZWECK));
 
+    String unterschrift = (String) Einstellungen
+        .getEinstellung(Property.UNTERSCHRIFT);
     if (spb.isEchteGeldspende()
         && (Boolean) Einstellungen.getEinstellung(Property.UNTERSCHRIFTDRUCKEN)
-        && (Boolean) Einstellungen.getEinstellung(Property.UNTERSCHRIFT) != null)
+        && unterschrift != null && !unterschrift.isBlank())
     {
       Image i;
       try
       {
-        i = Image.getInstance(
-            Base64.decode(
-                (String) Einstellungen.getEinstellung(Property.UNTERSCHRIFT)));
+        i = Image.getInstance(Base64.decode(unterschrift));
         int width = 400;
         int height = 55;
         float w = i.getWidth() / width;

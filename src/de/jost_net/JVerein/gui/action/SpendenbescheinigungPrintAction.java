@@ -654,8 +654,10 @@ public class SpendenbescheinigungPrintAction implements Action
     }
 
     boolean unterschriftDrucken = false;
+    String unterschrift = (String) Einstellungen
+        .getEinstellung(Property.UNTERSCHRIFT);
     if ((Boolean) Einstellungen.getEinstellung(Property.UNTERSCHRIFTDRUCKEN)
-        && (Boolean) Einstellungen.getEinstellung(Property.UNTERSCHRIFT) != null
+        && unterschrift != null && !unterschrift.isBlank()
         && spb.isEchteGeldspende())
     {
       unterschriftDrucken = true;
@@ -664,10 +666,7 @@ public class SpendenbescheinigungPrintAction implements Action
     if (unterschriftDrucken)
     {
       rpt.add("\n", 8);
-      rpt.add(
-          Base64.decode(
-              (String) Einstellungen.getEinstellung(Property.UNTERSCHRIFT)),
-          400, 55, 0);
+      rpt.add(Base64.decode(unterschrift), 400, 55, 0);
     }
     else
     {

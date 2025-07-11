@@ -2499,7 +2499,8 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.UNTERSCHRIFTDRUCKEN,
           (Boolean) unterschriftdrucken.getValue());
       Einstellungen.setEinstellung(Property.UNTERSCHRIFT,
-          Base64.encode((byte[]) unterschrift.getValue()));
+          unterschrift.getValue() == null ? null
+              : Base64.encode((byte[]) unterschrift.getValue()));
       DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
