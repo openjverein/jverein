@@ -28,6 +28,7 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
+import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -74,6 +75,8 @@ public class ZusatzbetragPart implements Part
 
   private SelectInput zahlungsweg;
 
+  private SelectInput steuer = null;
+
   public ZusatzbetragPart(Zusatzbetrag zusatzbetrag, boolean mitMitglied)
   {
     this.zusatzbetrag = zusatzbetrag;
@@ -97,6 +100,10 @@ public class ZusatzbetragPart implements Part
     group.addLabelPair("Buchungsart", getBuchungsart());
     if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
       group.addLabelPair("Buchungsklasse", getBuchungsklasse());
+    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    {
+      group.addLabelPair("Steuer", getSteuer());
+    }
     group.addLabelPair("Zahlungsweg", getZahlungsweg());
   }
 
@@ -288,6 +295,19 @@ public class ZusatzbetragPart implements Part
         }
       }
     });
+    buchungsart.addListener(e -> {
+      if (steuer != null && buchungsart.getValue() != null)
+      {
+        try
+        {
+          steuer.setValue(((Buchungsart) buchungsart.getValue()).getSteuer());
+        }
+        catch (RemoteException e1)
+        {
+          Logger.error("Fehler", e1);
+        }
+      }
+    });
     return buchungsart;
   }
   
@@ -339,6 +359,25 @@ public class ZusatzbetragPart implements Part
     return zahlungsweg;
   }
   
+  public SelectInput getSteuer() throws RemoteException
+  {
+    if (steuer != null)
+    {
+      return steuer;
+    }
+    steuer = new SteuerInput(zusatzbetrag.getSteuer());
+
+    steuer.setAttribute("name");
+    steuer.setPleaseChoose("Keine Steuer");
+
+    return steuer;
+  }
+
+  public boolean isSteuerActive()
+  {
+    return steuer != null;
+  }
+
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)

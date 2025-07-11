@@ -234,6 +234,7 @@ public class ImportDialog extends AbstractDialog<Object>
         }
         catch (ApplicationException ae)
         {
+          monitor.setStatus(ProgressMonitor.STATUS_ERROR);
           GUI.getStatusBar().setErrorText(ae.getMessage());
           throw ae;
         }

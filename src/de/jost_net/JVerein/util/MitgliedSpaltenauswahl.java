@@ -72,6 +72,17 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
         return anzeige;
       }
     }, Column.ALIGN_RIGHT, true);
+    try
+    {
+      if (Einstellungen.getEinstellung().getDokumentenspeicherung())
+      {
+        add("D", "document", false, true);
+      }
+    }
+    catch (RemoteException e)
+    {
+      //
+    }
     add("Anrede", "anrede", false, true);
     add("Titel", "titel", false, true);
     add("Name", "name", true, true);

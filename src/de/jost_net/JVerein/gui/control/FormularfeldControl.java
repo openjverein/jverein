@@ -20,8 +20,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.itextpdf.text.pdf.BaseFont;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.LastschriftVar;
@@ -66,69 +64,6 @@ public class FormularfeldControl extends FormularPartControl
   private TextInput formularTyp;
 
   private TextInput formularName;
-
-  public static final String EMPFAENGER = "Empfänger";
-
-  public static final String TAGESDATUM = "Tagesdatum";
-
-  public static final String TAGESDATUMTT = "Tagesdatum TT";
-
-  public static final String TAGESDATUMMM = "Tagesdatum MM";
-
-  public static final String TAGESDATUMJJJJ = "Tagesdatum JJJJ";
-
-  public static final String ZAHLUNGSWEG = "Zahlungsweg";
-
-  public static final String ID = "ID";
-
-  public static final String EXTERNEMITGLIEDSNUMMER = "externe Mitgliedsnummer";
-
-  public static final String ANREDE = "Anrede";
-
-  public static final String TITEL = "Titel";
-
-  public static final String NAME = "Name";
-
-  public static final String VORNAME = "Vorname";
-
-  public static final String ADRESSIERUNGSZUSATZ = "Adressierungszusatz";
-
-  public static final String STRASSE = "Strasse";
-
-  public static final String PLZ = "PLZ";
-
-  public static final String ORT = "Ort";
-
-  public static final String STAAT = "Staat";
-
-  @Deprecated
-  public static final String ZAHLUNGSRHYTMUS = "Zahlungsrhytmus";
-
-  public static final String ZAHLUNGSRHYTHMUS = "Zahlungsrhythmus";
-
-  public static final String KONTOINHABER = "Kontoinhaber";
-
-  public static final String GEBURTSDATUM = "Geburtsdatum";
-
-  public static final String GESCHLECHT = "Geschlecht";
-
-  public static final String TELEFONPRIVAT = "Telefon privat";
-
-  public static final String TELEFONDIENSTLICH = "Telefon dienstlich";
-
-  public static final String HANDY = "Handy";
-
-  public static final String EMAIL = "Email";
-
-  public static final String EINTRITT = "Eintritt";
-
-  public static final String BEITRAGSGRUPPE = "Beitragsgruppe";
-
-  public static final String AUSTRITT = "Austritt";
-
-  public static final String KUENDIGUNG = "Kündigung";
-  
-  public static final String ZAEHLER = "Fortlaufende Nummer des Formulars";
 
   public FormularfeldControl(AbstractView view, Formular formular)
   {
@@ -328,18 +263,18 @@ public class FormularfeldControl extends FormularPartControl
     fonts.add("FreeSans-Bold");
     fonts.add("FreeSans-BoldOblique");
     fonts.add("FreeSans-Oblique");
-    fonts.add(BaseFont.HELVETICA);
-    fonts.add(BaseFont.HELVETICA_BOLD);
-    fonts.add(BaseFont.HELVETICA_BOLDOBLIQUE);
-    fonts.add(BaseFont.HELVETICA_OBLIQUE);
-    fonts.add(BaseFont.TIMES_ROMAN);
-    fonts.add(BaseFont.TIMES_BOLD);
-    fonts.add(BaseFont.TIMES_ITALIC);
-    fonts.add(BaseFont.TIMES_BOLDITALIC);
-    fonts.add(BaseFont.COURIER);
-    fonts.add(BaseFont.COURIER_BOLD);
-    fonts.add(BaseFont.COURIER_OBLIQUE);
-    fonts.add(BaseFont.COURIER_BOLDOBLIQUE);
+    fonts.add("Courier Prime");
+    fonts.add("Courier Prime Bold");
+    fonts.add("Courier Prime Bold Italic");
+    fonts.add("Courier Prime Italic");
+    fonts.add("LiberationSans-Bold");
+    fonts.add("LiberationSans-BoldItalic");
+    fonts.add("LiberationSans-Italic");
+    fonts.add("LiberationSans-Regular");
+    fonts.add("LiberationSerif-Bold");
+    fonts.add("LiberationSerif-BoldItalic");
+    fonts.add("LiberationSerif-Italic");
+    fonts.add("LiberationSerif-Regular");
     font = new SelectInput(fonts, getFormularfeld().getFont());
     return font;
   }

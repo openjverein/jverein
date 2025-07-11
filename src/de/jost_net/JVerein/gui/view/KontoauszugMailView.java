@@ -71,6 +71,7 @@ public class KontoauszugMailView extends AbstractView
       ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
       SimpleContainer left = new SimpleContainer(cl.getComposite());
       left.addInput(control.getDifferenz());
+      left.addLabelPair("Differenz Limit", control.getDoubleAusw());
 
       SimpleContainer right = new SimpleContainer(cl.getComposite());
       right.addInput(control.getDatumvon());
