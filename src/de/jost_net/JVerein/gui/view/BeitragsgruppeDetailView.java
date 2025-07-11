@@ -77,6 +77,10 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
     {
       group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     }
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      group.addLabelPair("Steuer", control.getSteuer());
+    }
 
     if ((Integer) Einstellungen.getEinstellung(
         Property.BEITRAGSMODEL) != Beitragsmodel.FLEXIBEL.getKey()

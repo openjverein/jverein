@@ -55,6 +55,7 @@ import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SollbuchungAuswahlInput;
+import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
@@ -918,25 +919,8 @@ public class BuchungsControl extends AbstractControl
     {
       return steuer;
     }
-    DBIterator<Steuer> it = Einstellungen.getDBService()
-        .createList(Steuer.class);
-    String steuerId = "0";
-    if (getBuchung().getSteuer() != null)
-    {
-      steuerId = getBuchung().getSteuer().getID();
-    }
-    String steuerBuchunsartId = "0";
-    if (getBuchung().getBuchungsart() != null
-        && getBuchung().getBuchungsart().getSteuer() != null)
-    {
-      steuerBuchunsartId = getBuchung().getBuchungsart().getSteuer().getID();
-    }
-    it.addFilter("aktiv = true or id = ? or id = ?", steuerId,
-        steuerBuchunsartId);
 
-    steuer = new SelectInput(PseudoIterator.asList(it),
-        getBuchung().getSteuer());
-
+    steuer = new SteuerInput(getBuchung().getSteuer());
     steuer.setAttribute("name");
     steuer.setPleaseChoose("Keine Steuer");
 

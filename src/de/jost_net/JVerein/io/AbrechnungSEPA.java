@@ -631,6 +631,10 @@ public class AbrechnungSEPA
         zahler.setVerwendungszweck(bg.getBezeichnung());
       }
       zahler.setName(mZahler.getKontoinhaber(1));
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        zahler.setSteuer(bg.getSteuer());
+      }
     }
     catch (Exception e)
     {
@@ -730,6 +734,11 @@ public class AbrechnungSEPA
           }
           zahler.setDatum(z.getFaelligkeit());
           zahler.setMitglied(m);
+
+          if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+          {
+            zahler.setSteuer(z.getSteuer());
+          }
 
           ArrayList<JVereinZahler> zlist = zahlermap
               .get(zahler.getPersonTyp() + zahler.getPersonId());
@@ -1045,13 +1054,9 @@ public class AbrechnungSEPA
         .createObject(SollbuchungPosition.class, null);
     sp.setBetrag(zahler.getBetrag().doubleValue());
     sp.setBuchungsartId(zahler.getBuchungsartId());
-    // TODO Wir nehmen die Steuer der Buchungsart. Ggf. könnte man zukünftig
-    // auch die Steuer in der Beitragsgruppe und Zusatzbetrag definieren, und
-    // diese hier verwenden.
-    if (zahler.getBuchungsartId() != null
-        && (Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
-      sp.setSteuer(sp.getBuchungsart().getSteuer());
+      sp.setSteuer(zahler.getSteuer());
     }
     sp.setBuchungsklasseId(zahler.getBuchungsklasseId());
     sp.setDatum(zahler.getDatum());

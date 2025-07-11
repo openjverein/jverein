@@ -1403,6 +1403,16 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         return false;
       }
     }
+    if ("document".equals(fieldName))
+    {
+      DBIterator<MitgliedDokument> list = Einstellungen.getDBService()
+          .createList(MitgliedDokument.class);
+      list.addFilter("referenz = ?", Long.valueOf(getID()));
+      if (list.size() > 0)
+        return list.size();
+      else
+        return "";
+    }
     return super.getAttribute(fieldName);
   }
 

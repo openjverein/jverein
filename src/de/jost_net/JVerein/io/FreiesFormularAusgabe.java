@@ -56,10 +56,18 @@ public class FreiesFormularAusgabe
     {
       case DRUCK:
         file = getDateiAuswahl("pdf", formular.getBezeichnung());
+        if (file == null)
+        {
+          return;
+        }
         formularaufbereitung = new FormularAufbereitung(file, false, false);
         break;
       case MAIL:
         file = getDateiAuswahl("zip", formular.getBezeichnung());
+        if (file == null)
+        {
+          return;
+        }
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }

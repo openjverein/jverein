@@ -47,6 +47,10 @@ public class ZusatzbetragVorlageDetailView extends AbstractDetailView
     group.addLabelPair("Buchungsart", control.getBuchungsart());
     if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      group.addLabelPair("Steuer", control.getSteuer());
+    }
     group.addLabelPair("Zahlungsweg", control.getZahlungsweg());
 
     ButtonArea buttons = new ButtonArea();

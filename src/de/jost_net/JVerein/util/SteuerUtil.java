@@ -32,6 +32,7 @@ public class SteuerUtil
   public static int setSteuerToBuchung() throws RemoteException
   {
     // Nur Buchungen auf Geldkonten können Steuern haben
+    // Buchungen
     String sql = "update buchung "
         + "set steuer = (select buchungsart.steuer from buchungsart "
         + "where buchung.buchungsart = buchungsart.id) "
@@ -43,6 +44,7 @@ public class SteuerUtil
 
     int anzahlBuchungen = Einstellungen.getDBService().executeUpdate(sql, null);
 
+    // Sollbuchungspositionen
     sql = "update sollbuchungposition "
         + "set steuer = (select buchungsart.steuer from buchungsart "
         + "where sollbuchungposition.buchungsart = buchungsart.id) "
@@ -53,6 +55,40 @@ public class SteuerUtil
     int anzahlSollbuchungpositionen = Einstellungen.getDBService()
         .executeUpdate(sql, null);
 
-    return anzahlBuchungen + anzahlSollbuchungpositionen;
+    // Zusatzbeträge
+    sql = "update zusatzabbuchung "
+        + "set steuer = (select buchungsart.steuer from buchungsart "
+        + "where zusatzabbuchung.buchungsart = buchungsart.id) "
+        + "where exists (select id from buchungsart where buchungsart.id = zusatzabbuchung.buchungsart "
+        + "and steuer is not null)"
+        + "and buchungsart is not null and steuer is null";
+
+    int anzahlZusatzbetraege = Einstellungen.getDBService().executeUpdate(sql,
+        null);
+
+    // Zusatzbeträge-Vorlagen
+    sql = "update zusatzbetragvorlage "
+        + "set steuer = (select buchungsart.steuer from buchungsart "
+        + "where zusatzbetragvorlage.buchungsart = buchungsart.id) "
+        + "where exists (select id from buchungsart where buchungsart.id = zusatzbetragvorlage.buchungsart "
+        + "and steuer is not null)"
+        + "and buchungsart is not null and steuer is null";
+
+    int anzahlZusatzbetraegeVorlagen = Einstellungen.getDBService()
+        .executeUpdate(sql, null);
+
+    // Beitragsgruppen
+    sql = "update beitragsgruppe "
+        + "set steuer = (select buchungsart.steuer from buchungsart "
+        + "where beitragsgruppe.buchungsart = buchungsart.id) "
+        + "where exists (select id from buchungsart where buchungsart.id = beitragsgruppe.buchungsart "
+        + "and steuer is not null)"
+        + "and buchungsart is not null and steuer is null";
+
+    int anzahlZusatzbeträge = Einstellungen.getDBService().executeUpdate(sql,
+        null);
+
+    return anzahlBuchungen + anzahlSollbuchungpositionen + anzahlZusatzbetraege
+        + anzahlZusatzbetraegeVorlagen + anzahlZusatzbeträge;
   }
 }

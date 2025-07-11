@@ -63,6 +63,18 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     {
       //
     }
+    try
+    {
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+      {
+        add("D", "document", false, true);
+      }
+    }
+    catch (RemoteException e)
+    {
+      //
+    }
     add("Anrede", "anrede", false, true);
     add("Titel", "titel", false, true);
     add("Name", "name", true, true);

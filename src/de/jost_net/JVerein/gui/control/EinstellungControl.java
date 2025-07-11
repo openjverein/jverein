@@ -2523,8 +2523,9 @@ public class EinstellungControl extends AbstractControl
         dialog.setTitle("Migration Steuer in Buchung");
 
         dialog.setText("Soll die Steuer aus den Buchungsarten in die\n"
-            + "Buchungen und Sollbuchungspositionen übernommen werden?\n"
-            + "Das wird für alle bisherigen Buchungen und Sollbuchungspositionen gemacht,\n"
+            + "Buchungen, Sollbuchungspositionen, Zusatzbeträge und Beitragsgruppen\n"
+            + "übernommen werden?\n"
+            + "Das wird für alle bisherigen Einträge gemacht,\n"
             + "so dass die bisherige Steuer erhalten bleibt.");
         try
         {
@@ -2532,7 +2533,7 @@ public class EinstellungControl extends AbstractControl
           {
             int anzahl = SteuerUtil.setSteuerToBuchung();
             successText = "Steuer in " + anzahl
-                + " Buchungen und Sollbuchungspositionen übernommen. ";
+                + " Einträgen übernommen. ";
           }
         }
         catch (Exception ex)
