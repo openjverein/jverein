@@ -921,17 +921,21 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   public String getKontoinhaber(namenformat art)
       throws RemoteException
   {
+    boolean vorname = false;
+    boolean name = false;
     Mitglied m2 = (Mitglied) Einstellungen.getDBService()
         .createObject(Mitglied.class, getID());
     if (m2.getKtoiVorname() != null && m2.getKtoiVorname().length() > 0)
     {
       m2.setVorname(getKtoiVorname());
       m2.setPersonenart(getKtoiPersonenart());
+      vorname = true;
     }
     if (m2.getKtoiName() != null && m2.getKtoiName().length() > 0)
     {
       m2.setName(getKtoiName());
       m2.setPersonenart(getKtoiPersonenart());
+      name = true;
     }
     if (m2.getKtoiAnrede() != null && m2.getKtoiAnrede().length() > 0)
     {
@@ -941,7 +945,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     {
       m2.setTitel(getKtoiTitel());
     }
-    else
+    else if (name || vorname)
     {
       m2.setTitel(null);
     }
