@@ -64,4 +64,8 @@ public interface ZusatzbetragVorlage extends DBObject
   public Zahlungsweg getZahlungsweg() throws RemoteException;
 
   public void setZahlungsweg(Zahlungsweg value) throws RemoteException;
+
+  public Steuer getSteuer() throws RemoteException;
+
+  void setSteuer(Steuer steuer) throws RemoteException;
 }

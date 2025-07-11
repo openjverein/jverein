@@ -72,10 +72,18 @@ public class Rechnungsausgabe
     {
       case DRUCK:
         file = getDateiAuswahl("pdf");
+        if (file == null)
+        {
+          return;
+        }
         formularaufbereitung = new FormularAufbereitung(file, true, false);
         break;
       case MAIL:
         file = getDateiAuswahl("zip");
+        if (file == null)
+        {
+          return;
+        }
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }

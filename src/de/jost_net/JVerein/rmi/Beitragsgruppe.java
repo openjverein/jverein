@@ -89,4 +89,7 @@ public interface Beitragsgruppe extends JVereinDBObject
 
   public Altersstaffel getAltersstaffel(int nummer) throws RemoteException;
 
+  public Steuer getSteuer() throws RemoteException;
+
+  void setSteuer(Steuer steuer) throws RemoteException;
 }
