@@ -433,9 +433,9 @@ public class SpendenbescheinigungMap extends AbstractMap
       map = inMap;
     }
 
-    map.put(SpendenbescheinigungVar.ANREDE.getName(), "Herrn");
+    map.put(SpendenbescheinigungVar.ANREDE.getName(), "Herr Willi Wichtig");
     map.put(SpendenbescheinigungVar.EMPFAENGER.getName(),
-        "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
+        "Herr\nWilli Wichtig\nBahnhofstr. 22\n12345 Testenhausen");
     map.put(SpendenbescheinigungVar.BETRAG.getName(), Double.valueOf("300.00"));
     map.put(SpendenbescheinigungVar.BETRAGINWORTEN.getName(), "dreihundert");
     map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(), "10.01.2025");
@@ -447,8 +447,8 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_JA.getName(), "X");
     map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(),
         (char) 113);
-    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE.getName(), "Wichtig");
-    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_DATEN.getName(), "Willi");
+    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE.getName(), "Liste");
+    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_DATEN.getName(), "Daten");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_ART.getName(), "Spende");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_VERZICHT.getName(), "nein");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_BETRAG.getName(), "300.00");

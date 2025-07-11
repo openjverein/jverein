@@ -50,6 +50,7 @@ import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Ct1Ausgabe;
 import de.jost_net.JVerein.rmi.Lastschrift;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.OBanToo.SEPA.SEPAException;
@@ -114,7 +115,8 @@ public class Ct1Ueberweisung
       if (ls.getMitglied() != null)
       {
         ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),      StringUtils.trimToEmpty(ls.getMitglied()
-            .getKontoinhaber(1).toUpperCase()));
+            .getKontoinhaber(Mitglied.namenformat.NAME_VORNAME)
+            .toUpperCase()));
       }
       else if (ls.getKursteilnehmer() != null)
       {

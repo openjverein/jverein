@@ -915,23 +915,24 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     setAttribute("ktoigeschlecht", ktoigeschlecht);
   }
 
-  /**
-   * art = 1: Name, Vorname
-   */
   @Override
-  public String getKontoinhaber(int art) throws RemoteException
+  public String getKontoinhaber(namenformat art)
+      throws RemoteException
   {
+    boolean aktoi = false;
     Mitglied m2 = (Mitglied) Einstellungen.getDBService()
         .createObject(Mitglied.class, getID());
     if (m2.getKtoiVorname() != null && m2.getKtoiVorname().length() > 0)
     {
       m2.setVorname(getKtoiVorname());
       m2.setPersonenart(getKtoiPersonenart());
+      aktoi = true;
     }
     if (m2.getKtoiName() != null && m2.getKtoiName().length() > 0)
     {
       m2.setName(getKtoiName());
       m2.setPersonenart(getKtoiPersonenart());
+      aktoi = true;
     }
     if (m2.getKtoiAnrede() != null && m2.getKtoiAnrede().length() > 0)
     {
@@ -941,10 +942,18 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     {
       m2.setTitel(getKtoiTitel());
     }
+    else if (aktoi)
+    {
+      m2.setTitel(null);
+    }
     switch (art)
     {
-      case 1:
+      case NAME_VORNAME:
         return Adressaufbereitung.getNameVorname(m2);
+      case VORNAME_NAME:
+        return Adressaufbereitung.getVornameName(m2);
+      case ADRESSE:
+        return Adressaufbereitung.getAdressfeld(m2);
     }
     return null;
   }
