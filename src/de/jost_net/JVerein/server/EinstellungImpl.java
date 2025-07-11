@@ -846,24 +846,6 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
 
   @Override
-  public String getDateinamenmusterSpende() throws RemoteException
-  {
-    String muster = (String) getAttribute("dateinamenmusterspende");
-    if (muster == null)
-    {
-      muster = "a$-d$-n$-v$";
-    }
-    return muster;
-  }
-
-  @Override
-  public void setDateinamenmusterSpende(String dateinamenmusterspende)
-      throws RemoteException
-  {
-    setAttribute("dateinamenmusterspende", dateinamenmusterspende);
-  }
-
-  @Override
   public String getVorlagenCsvVerzeichnis() throws RemoteException
   {
     String tmpdir = (String) getAttribute("vorlagencsvverzeichnis");

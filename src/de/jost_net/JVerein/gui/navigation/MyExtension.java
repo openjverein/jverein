@@ -42,6 +42,7 @@ import de.jost_net.JVerein.gui.view.BeitragsgruppeListeView;
 import de.jost_net.JVerein.gui.view.BuchungsartListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseSaldoView;
+import de.jost_net.JVerein.gui.view.DateinameListeView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.gui.view.BuchungsTextKorrekturView;
 import de.jost_net.JVerein.gui.view.DbBereinigenView;
@@ -473,6 +474,9 @@ public class MyExtension implements Extension
       NavigationItem einstellungenerweitert = null;
       einstellungenerweitert = new MyItem(einstellungenerweitert, "Erweitert",
           null);
+      einstellungenerweitert.addChild(new MyItem(einstellungenerweitert,
+          "Dateinamen", new StartViewAction(DateinameListeView.class),
+          "text-x-generic.png"));
       einstellungenerweitert.addChild(new MyItem(einstellungenerweitert, "Migration",
           new StartViewAction(MigrationView.class), "file-import.png"));
       einstellungenerweitert
