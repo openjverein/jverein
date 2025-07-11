@@ -20,12 +20,14 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -142,6 +144,33 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
         if(getSekundaer() && getBeitragsArt().getKey() == ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey())
         {
           throw new ApplicationException("Sekundäre Beitragsgrupe kann nicht Beitragsart Angehöriger haben!");
+        }
+      }
+      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      {
+        if (getSteuer() != null && getBuchungsart() != null && getSteuer()
+            .getBuchungsart().getArt() != getBuchungsart().getArt())
+        {
+          switch (getBuchungsart().getArt())
+          {
+            case ArtBuchungsart.AUSGABE:
+              throw new ApplicationException(
+                  "Umsatzsteuer statt Vorsteuer gewählt.");
+            case ArtBuchungsart.EINNAHME:
+              throw new ApplicationException(
+                  "Vorsteuer statt Umsatzsteuer gewählt.");
+            // Umbuchung ist bei Anlagebuchungen möglich,
+            // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
+            case ArtBuchungsart.UMBUCHUNG:
+              break;
+          }
+        }
+        if (getSteuer() != null && getBuchungsart() != null
+            && (getBuchungsart().getSpende()
+                || getBuchungsart().getAbschreibung()))
+        {
+          throw new ApplicationException(
+              "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
         }
       }
     }
@@ -394,6 +423,10 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
     {
       return getBuchungsart();
     }
+    if (fieldName.equals("steuer"))
+    {
+      return getSteuer();
+    }
     return super.getAttribute(fieldName);
   }
 
@@ -436,5 +469,24 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   public void setHasAltersstaffel(boolean b) throws RemoteException
   {
     setAttribute("altersstaffel", b);
+  }
+
+  @Override
+  public Steuer getSteuer() throws RemoteException
+  {
+    Object l = (Object) super.getAttribute("steuer");
+    if (l == null)
+    {
+      return null; // Keine Steuer zugeordnet
+    }
+
+    Cache cache = Cache.get(Steuer.class, true);
+    return (Steuer) cache.get(l);
+  }
+
+  @Override
+  public void setSteuer(Steuer steuer) throws RemoteException
+  {
+    setAttribute("steuer", steuer);
   }
 }
