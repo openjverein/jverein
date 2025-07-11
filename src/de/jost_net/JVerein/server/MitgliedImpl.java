@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
@@ -917,11 +918,9 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     setAttribute("ktoigeschlecht", ktoigeschlecht);
   }
 
-  /**
-   * art = 1: Name, Vorname art = 2: Vorname, Name art = 3: Als Adressfeld
-   */
   @Override
-  public String getKontoinhaber(int art) throws RemoteException
+  public String getKontoinhaber(MitgliedMap.namenformat art)
+      throws RemoteException
   {
     Mitglied m2 = (Mitglied) Einstellungen.getDBService()
         .createObject(Mitglied.class, getID());
@@ -949,11 +948,11 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     }
     switch (art)
     {
-      case 1:
+      case NAME_VORNAME:
         return Adressaufbereitung.getNameVorname(m2);
-      case 2:
+      case VORNAME_NAME:
         return Adressaufbereitung.getVornameName(m2);
-      case 3:
+      case ADRESSE:
         if (m2.getKtoiAnrede() != null && m2.getKtoiAnrede().length() > 0)
         {
           m2.setAnrede(getKtoiAnrede());

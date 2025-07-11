@@ -49,6 +49,12 @@ import de.willuhn.util.ApplicationException;
 
 public class MitgliedMap extends AbstractMap
 {
+  public enum namenformat
+  {
+    NAME_VORNAME,
+    VORNAME_NAME,
+    ADRESSE
+  }
 
   public MitgliedMap()
   {
@@ -152,11 +158,12 @@ public class MitgliedMap extends AbstractMap
       map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), null);
     }
     map.put(MitgliedVar.BANKNAME.getName(), getBankname(mitglied));
-    map.put(MitgliedVar.KONTOINHABER.getName(), mitglied.getKontoinhaber(1));
+    map.put(MitgliedVar.KONTOINHABER.getName(),
+        mitglied.getKontoinhaber(namenformat.NAME_VORNAME));
     map.put(MitgliedVar.KONTOINHABER_VORNAMENAME.getName(),
-        mitglied.getKontoinhaber(2));
+        mitglied.getKontoinhaber(namenformat.VORNAME_NAME));
     map.put(MitgliedVar.KONTOINHABER_EMPFAENGER.getName(),
-        mitglied.getKontoinhaber(3));
+        mitglied.getKontoinhaber(namenformat.ADRESSE));
     map.put(MitgliedVar.KONTOINHABER_ADRESSIERUNGSZUSATZ.getName(),
         mitglied.getKtoiAdressierungszusatz());
     map.put(MitgliedVar.KONTOINHABER_ANREDE.getName(),
