@@ -61,7 +61,8 @@ public class MitgliedLastschriftAction implements Action
             "Dieses Mitglied ist ein Familienangehöriger.\n\n"
                 + "Als Konto wird das Konto des Zahlers belastet:\n"
                 + "Zahler: " + mZ.getName() + "," + mZ.getVorname() + "\n"
-                + "Kontoinhaber des Zahlers: " + mZ.getKontoinhaber(1)))
+                + "Kontoinhaber des Zahlers: "
+                + mZ.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME)))
         {
           return;
         }
@@ -83,7 +84,8 @@ public class MitgliedLastschriftAction implements Action
         sl.setCreditorId(Einstellungen.getEinstellung().getGlaeubigerID());
 
         // Kontodaten: Name, BIC, IBAN
-        sl.setGegenkontoName(mZ.getKontoinhaber(1));
+        sl.setGegenkontoName(
+            mZ.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
         sl.setGegenkontoBLZ(mZ.getBic());
         sl.setGegenkontoNummer(mZ.getIban());
 

@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
@@ -919,7 +918,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
-  public String getKontoinhaber(MitgliedMap.namenformat art)
+  public String getKontoinhaber(namenformat art)
       throws RemoteException
   {
     Mitglied m2 = (Mitglied) Einstellungen.getDBService()

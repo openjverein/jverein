@@ -28,6 +28,13 @@ import de.willuhn.util.ApplicationException;
 
 public interface Mitglied extends JVereinDBObject, ILastschrift
 {
+  public enum namenformat
+  {
+    NAME_VORNAME,
+    VORNAME_NAME,
+    ADRESSE
+  }
+
   public static final String TABLE_NAME = "mitglied";
 
   public static final String PRIMARY_ATTRIBUTE = "namevorname";
@@ -131,7 +138,7 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
 
   public void setKtoiGeschlecht(String ktoigeschlecht) throws RemoteException;
 
-  public String getKontoinhaber(MitgliedMap.namenformat art)
+  public String getKontoinhaber(namenformat art)
       throws RemoteException;
 
   public Date getGeburtsdatum() throws RemoteException;
