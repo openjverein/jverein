@@ -35,6 +35,7 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.server.FormularImpl;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
@@ -215,7 +216,7 @@ public class FormularControl extends FormularPartControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public DBObject prepareStore() throws RemoteException
   {
     Formular f = getFormular();
     f.setBezeichnung((String) getBezeichnung(true).getValue());
@@ -232,6 +233,7 @@ public class FormularControl extends FormularPartControl
     {
       f.setFormlink(null);
     }
+    return f;
   }
 
   /**

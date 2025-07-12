@@ -26,6 +26,7 @@ import de.jost_net.JVerein.gui.view.ProjektDetailView;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -114,12 +115,13 @@ public class ProjektControl extends FilterControl
     return endeDatum;
   }
 
-  public void prepareStore() throws RemoteException
+  public DBObject prepareStore() throws RemoteException
   {
     Projekt p = getProjekt();
     p.setBezeichnung((String) getBezeichnung().getValue());
     p.setStartDatum((Date) getStartDatum().getValue());
     p.setEndeDatum((Date) getEndeDatum().getValue());
+    return p;
   }
 
   /**

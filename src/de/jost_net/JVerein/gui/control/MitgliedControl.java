@@ -116,6 +116,7 @@ import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -2253,7 +2254,7 @@ public class MitgliedControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public DBObject prepareStore() throws RemoteException, ApplicationException
   {
     Mitglied m = getMitglied();
 
@@ -2441,6 +2442,7 @@ public class MitgliedControl extends FilterControl
     {
       m.setEingabedatum();
     }
+    return m;
   }
 
   public void handleStore() throws ApplicationException

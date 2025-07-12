@@ -34,6 +34,7 @@ import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -186,7 +187,7 @@ public class SteuerControl extends AbstractControl implements Savable
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public DBObject prepareStore() throws RemoteException, ApplicationException
   {
     Steuer s = getSteuer();
     s.setName((String) getName().getValue());
@@ -197,6 +198,7 @@ public class SteuerControl extends AbstractControl implements Savable
           Long.parseLong(((Buchungsart) getBuchungsart().getValue()).getID()));
     }
     s.setAktiv((Boolean) getAktiv().getValue());
+    return s;
   }
 
   public void handleStore() throws ApplicationException

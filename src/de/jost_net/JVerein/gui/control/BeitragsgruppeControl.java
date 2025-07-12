@@ -49,6 +49,7 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.VonBis;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -423,7 +424,8 @@ public class BeitragsgruppeControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public DBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Beitragsgruppe b = getBeitragsgruppe();
     b.setBezeichnung((String) getBezeichnung(false).getValue());
@@ -480,6 +482,7 @@ public class BeitragsgruppeControl extends AbstractControl
         b.setHasAltersstaffel(false);
         break;
     }
+    return b;
   }
 
   public void handleStore() throws ApplicationException

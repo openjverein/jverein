@@ -88,6 +88,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -304,9 +305,11 @@ public class BuchungsControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public DBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
-    fill((Buchung) getCurrentObject());
+    fill(getBuchung());
+    return getBuchung();
   }
 
   public void fill(Buchung b) throws ApplicationException, RemoteException

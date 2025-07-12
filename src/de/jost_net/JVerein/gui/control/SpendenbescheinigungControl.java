@@ -66,6 +66,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.SpbAdressaufbereitung;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
@@ -460,7 +461,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public DBObject prepareStore() throws RemoteException
   {
     Spendenbescheinigung spb = getSpendenbescheinigung();
     Spendenart spa = (Spendenart) getSpendenart().getValue();
@@ -484,6 +485,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spb.setHerkunftSpende(hsp.getKey());
     spb.setUnterlagenWertermittlung(
         (Boolean) getUnterlagenWertermittlung().getValue());
+    return spb;
   }
   
   /**

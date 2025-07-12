@@ -26,6 +26,7 @@ import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -106,7 +107,7 @@ public class AnfangsbestandControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public DBObject prepareStore() throws RemoteException
   {
     Anfangsbestand a = getAnfangsbestand();
     DBIterator<Konto> konten = Einstellungen.getDBService()
@@ -126,6 +127,7 @@ public class AnfangsbestandControl extends FilterControl
     a.setKonto(k);
     a.setDatum((Date) getDatum(false).getValue());
     a.setBetrag((Double) getBetrag().getValue());
+    return a;
   }
 
   /**

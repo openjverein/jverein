@@ -25,6 +25,7 @@ import de.jost_net.JVerein.gui.menu.EigenschaftGruppeMenu;
 import de.jost_net.JVerein.gui.view.EigenschaftGruppeDetailView;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -101,12 +102,13 @@ public class EigenschaftGruppeControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public DBObject prepareStore() throws RemoteException
   {
     EigenschaftGruppe eg = getEigenschaftGruppe();
     eg.setBezeichnung((String) getBezeichnung().getValue());
     eg.setPflicht((Boolean) getPflicht().getValue());
     eg.setMax1((Boolean) getMax1().getValue());
+    return eg;
   }
 
   /**
