@@ -32,6 +32,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -173,7 +174,7 @@ public class LehrgangControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public DBObject prepareStore() throws RemoteException
   {
     Lehrgang l = getLehrgang();
 
@@ -190,6 +191,7 @@ public class LehrgangControl extends FilterControl
     l.setBis((Date) getBis().getValue());
     l.setVeranstalter((String) getVeranstalter().getValue());
     l.setErgebnis((String) getErgebnis().getValue());
+    return l;
   }
 
   public void handleStore() throws ApplicationException

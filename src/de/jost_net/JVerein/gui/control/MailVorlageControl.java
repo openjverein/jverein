@@ -22,6 +22,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.menu.MailVorlageMenu;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -100,7 +101,7 @@ public class MailVorlageControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public DBObject prepareStore() throws RemoteException, ApplicationException
   {
     MailVorlage mv = getMailVorlage();
     String betreff = (String) getBetreff(false).getValue();
@@ -119,6 +120,7 @@ public class MailVorlageControl extends AbstractControl
 
     mv.setBetreff(betreff);
     mv.setTxt((String) getTxt().getValue());
+    return mv;
   }
 
   public void handleStore() throws ApplicationException

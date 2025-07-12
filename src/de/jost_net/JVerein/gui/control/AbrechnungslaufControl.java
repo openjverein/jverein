@@ -32,6 +32,7 @@ import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
@@ -317,11 +318,12 @@ public class AbrechnungslaufControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public DBObject prepareStore() throws RemoteException
   {
     // Es kann nur die Bemerkung verändert werden
     Abrechnungslauf al = getAbrechnungslaeufe();
     al.setBemerkung((String) getBemerkung().getValue());
+    return al;
   }
 
   public void handleStore() throws ApplicationException

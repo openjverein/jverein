@@ -54,6 +54,7 @@ import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -187,7 +188,7 @@ public class ZusatzbetragControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public DBObject prepareStore() throws RemoteException, ApplicationException
   {
     Zusatzbetrag z = getZusatzbetrag();
     z.setFaelligkeit((Date) getZusatzbetragPart().getFaelligkeit().getValue());
@@ -209,6 +210,7 @@ public class ZusatzbetragControl extends AbstractControl
     {
       z.setSteuer((Steuer) getZusatzbetragPart().getSteuer().getValue());
     }
+    return z;
   }
 
   public void handleStore() throws ApplicationException

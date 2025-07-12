@@ -52,6 +52,7 @@ import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -244,7 +245,8 @@ public class KontoControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public DBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Konto k = getKonto();
     k.setNummer((String) getNummer().getValue());
@@ -284,6 +286,7 @@ public class KontoControl extends FilterControl
     {
       k.setAnlagenzweck((Anlagenzweck) getAnlagenzweck().getValue());
     }
+    return k;
   }
 
   /**

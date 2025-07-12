@@ -34,6 +34,7 @@ import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -193,7 +194,7 @@ public class SollbuchungPositionControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public DBObject prepareStore() throws RemoteException
   {
     boolean steuerInBuchung = Einstellungen.getEinstellung()
         .getSteuerInBuchung();
@@ -231,6 +232,7 @@ public class SollbuchungPositionControl extends AbstractControl
     {
       pos.setSteuer((Steuer) getSteuer().getValue());
     }
+    return pos;
   }
 
   public void handleStore() throws ApplicationException

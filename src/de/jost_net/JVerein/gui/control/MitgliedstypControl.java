@@ -23,6 +23,7 @@ import de.jost_net.JVerein.gui.action.MitgliedstypAction;
 import de.jost_net.JVerein.gui.menu.MitgliedstypMenu;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -86,11 +87,12 @@ public class MitgliedstypControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public DBObject prepareStore() throws RemoteException
   {
     Mitgliedstyp mt = getMitgliedstyp();
     mt.setBezeichnung((String) getBezeichnung().getValue());
     mt.setBezeichnungPlural((String) getBezeichnungPlural().getValue());
+    return mt;
   }
 
   /**

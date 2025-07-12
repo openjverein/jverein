@@ -46,6 +46,7 @@ import de.jost_net.JVerein.util.Dateiname;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -290,7 +291,8 @@ public class BuchungsartControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public DBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Buchungsart b = getBuchungsart();
     try
@@ -342,6 +344,7 @@ public class BuchungsartControl extends FilterControl
     {
       b.setSteuer((Steuer) steuer.getValue());
     }
+    return b;
   }
 
   /**

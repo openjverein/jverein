@@ -55,6 +55,7 @@ import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -127,7 +128,8 @@ public class ArbeitseinsatzControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public DBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Arbeitseinsatz ae = getArbeitseinsatz();
     if (ae.isNewObject())
@@ -145,6 +147,7 @@ public class ArbeitseinsatzControl extends FilterControl
     ae.setDatum((Date) part.getDatum().getValue());
     ae.setStunden((Double) part.getStunden().getValue());
     ae.setBemerkung((String) part.getBemerkung().getValue());
+    return ae;
   }
 
   public void handleStore() throws ApplicationException
