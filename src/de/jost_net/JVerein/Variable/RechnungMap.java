@@ -79,6 +79,7 @@ public class RechnungMap extends AbstractMap
       steuerbetrag.add(sp.getSteuerbetrag());
       betrag.add(sp.getBetrag());
       summe += sp.getBetrag();
+      if (sp.getSteuersatz() > 0)
       {
         Double steuer = steuerMap.getOrDefault(sp.getSteuersatz(), 0d);
         steuerMap.put(sp.getSteuersatz(), steuer + sp.getSteuerbetrag());
