@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
@@ -60,6 +62,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.Base64;
 
 /**
  * Action zur Generierung von Spendenbescheinigungen aus der Datenbank.<br>
@@ -183,8 +186,7 @@ public class SpendenbescheinigungPrintAction implements Action
     // Aufbereitung
     try
     {
-      String path = Einstellungen.getEinstellung()
-          .getSpendenbescheinigungverzeichnis();
+      String path = (String) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGVERZEICHNIS);
       if (path == null || path.length() == 0)
       {
         path = settings.getString("lastdir", System.getProperty("user.home"));
@@ -251,8 +253,7 @@ public class SpendenbescheinigungPrintAction implements Action
           map = new AllgemeineMap().getMap(map);
           if(spb.getMitglied() != null)
             map = new MitgliedMap().getMap(spb.getMitglied(), map);
-          boolean encrypt = Einstellungen.getEinstellung()
-              .getUnterschriftdrucken();
+          boolean encrypt = (Boolean) Einstellungen.getEinstellung(Property.UNTERSCHRIFTDRUCKEN);
           FormularAufbereitung fa = new FormularAufbereitung(file, false,
               encrypt);
           fa.writeForm(fo, map);
@@ -501,7 +502,7 @@ public class SpendenbescheinigungPrintAction implements Action
     {
       rpt.add(new Paragraph(" ", Reporter.getFreeSans(8)));
     }
-    if (Einstellungen.getEinstellung().getVorlaeufig())
+    if ((Boolean) Einstellungen.getEinstellung(Property.VORLAEUFIG))
     {
       // Verein neu gegründet, hat noch keinen Bescheid
       String txt = "     Wir sind wegen "
@@ -526,13 +527,14 @@ public class SpendenbescheinigungPrintAction implements Action
 
       txt = "     Die Einhaltung der satzungsgemäßen Voraussetzungen nach den §§ 51, 59, 60 und 61 "
           + "AO wurde vom Finanzamt "
-          + Einstellungen.getEinstellung().getFinanzamt() + ", StNr. "
-          + Einstellungen.getEinstellung().getSteuernummer()
+          + (String) Einstellungen.getEinstellung(Property.FINANZAMT) + ", StNr. "
+          + (String) Einstellungen.getEinstellung(Property.STEUERNUMMER)
           + ", mit Bescheid vom "
           + new JVDateFormatTTMMJJJJ()
-          .format(Einstellungen.getEinstellung().getBescheiddatum())
+          .format((Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM))
           + " nach § 60a AO gesondert festgestellt. Wir fördern nach unserer Satzung "
-          + Einstellungen.getEinstellung().getBeguenstigterzweck() + ".";
+          + (String) Einstellungen.getEinstellung(Property.BEGUENSTIGTERZWECK)
+          + ".";
       p = new Paragraph();
       p.setFont(Reporter.getFreeSans(8));
       p.setAlignment(Element.ALIGN_JUSTIFIED);
@@ -547,19 +549,19 @@ public class SpendenbescheinigungPrintAction implements Action
     {
       // Verein existiert und hat einen Bescheid bekommen
       String txt = "     Wir sind wegen "
-          + Einstellungen.getEinstellung().getBeguenstigterzweck()
+          + (String) Einstellungen.getEinstellung(Property.BEGUENSTIGTERZWECK)
           + " nach dem Freistellungsbescheid bzw. nach der Anlage zum Körperschaftssteuerbescheid "
-          + "des Finanzamtes " + Einstellungen.getEinstellung().getFinanzamt()
-          + ", StNr. " + Einstellungen.getEinstellung().getSteuernummer()
+          + "des Finanzamtes " + (String) Einstellungen.getEinstellung(Property.FINANZAMT)
+          + ", StNr. " + (String) Einstellungen.getEinstellung(Property.STEUERNUMMER)
           + ", vom "
           + new JVDateFormatTTMMJJJJ()
-          .format(Einstellungen.getEinstellung().getBescheiddatum())
+          .format((Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM))
           + " für den letzten Veranlagungszeitraum "
           + new JVDateFormatJJJJ()
-          .format(Einstellungen.getEinstellung().getVeranlagungVon())
+          .format((Date) Einstellungen.getEinstellung(Property.VERANLAGUNGVON))
           + " bis "
           + new JVDateFormatJJJJ()
-          .format(Einstellungen.getEinstellung().getVeranlagungBis())
+          .format((Date) Einstellungen.getEinstellung(Property.VERANLAGUNGBIS))
           + " nach § 5 Abs. 1 Nr. 9 des Körperschaftsteuergesetzes von der Körperschaftsteuer und nach "
           + "§ 3 Nr. 6 des Gewerbesteuergesetzes von der Gewerbesteuer befreit.\n ";
       Paragraph p = new Paragraph();
@@ -598,7 +600,7 @@ public class SpendenbescheinigungPrintAction implements Action
     p.setMultipliedLeading(1.5f);
     p.add(new Chunk(
         "Es wird bestätigt, dass die Zuwendung nur zur "
-            + Einstellungen.getEinstellung().getBeguenstigterzweck()
+            + (String) Einstellungen.getEinstellung(Property.BEGUENSTIGTERZWECK)
             + " verwendet wird.\n  "));
     cell.addElement(p);
 
@@ -620,7 +622,7 @@ public class SpendenbescheinigungPrintAction implements Action
       p.setIndentationLeft((float) 17.5);
       p.setMultipliedLeading(1.5f);
       char mitgliedBetraege = (char) 113; // box leer
-      if (!Einstellungen.getEinstellung().getMitgliedsbetraege())
+      if (!(Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSBETRAEGE))
       {
         mitgliedBetraege = (char) 53; // X
       }
@@ -650,8 +652,10 @@ public class SpendenbescheinigungPrintAction implements Action
     }
 
     boolean unterschriftDrucken = false;
-    if (Einstellungen.getEinstellung().getUnterschriftdrucken()
-        && Einstellungen.getEinstellung().getUnterschrift() != null
+    String unterschrift = (String) Einstellungen
+        .getEinstellung(Property.UNTERSCHRIFT);
+    if ((Boolean) Einstellungen.getEinstellung(Property.UNTERSCHRIFTDRUCKEN)
+        && unterschrift != null && !unterschrift.isBlank()
         && spb.isEchteGeldspende())
     {
       unterschriftDrucken = true;
@@ -660,14 +664,14 @@ public class SpendenbescheinigungPrintAction implements Action
     if (unterschriftDrucken)
     {
       rpt.add("\n", 8);
-      rpt.add(Einstellungen.getEinstellung().getUnterschrift(), 400, 55, 0);
+      rpt.add(Base64.decode(unterschrift), 400, 55, 0);
     }
     else
     {
       rpt.add("\n\n\n\n", 8);
     }
     rpt.add(
-        "\n" + Einstellungen.getEinstellung().getOrt() + ", "
+        "\n" + (String) Einstellungen.getEinstellung(Property.ORT) + ", "
             + new JVDateFormatTTMMJJJJ().format(spb.getBescheinigungsdatum()),
             9);
 
@@ -680,7 +684,7 @@ public class SpendenbescheinigungPrintAction implements Action
     if (unterschriftDrucken)
     {
       rpt.addLight("\nDie maschinelle Erstellung der Zuwendungsbestätigung wurde dem "
-          + "zuständigen Finanzamt " + Einstellungen.getEinstellung().getFinanzamt()
+          + "zuständigen Finanzamt " + (String) Einstellungen.getEinstellung(Property.FINANZAMT)
           + " angezeigt.", 8);
     }
 
@@ -726,8 +730,7 @@ public class SpendenbescheinigungPrintAction implements Action
           BaseColor.LIGHT_GRAY);
       rpt.createHeader();
 
-      boolean printBuchungsart = Einstellungen.getEinstellung()
-          .getSpendenbescheinigungPrintBuchungsart();
+      boolean printBuchungsart = (Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGPRINTBUCHUNGSART);
 
       /* Buchungszeilen */
       for (Buchung buchung : buchungen)
@@ -816,9 +819,9 @@ public class SpendenbescheinigungPrintAction implements Action
 
   private String getAussteller() throws RemoteException
   {
-    return Einstellungen.getEinstellung().getName() + ", "
-        + Einstellungen.getEinstellung().getStrasse() + ", "
-        + Einstellungen.getEinstellung().getPlz() + " "
-        + Einstellungen.getEinstellung().getOrt();
+    return (String) Einstellungen.getEinstellung(Property.NAME) + ", "
+        + (String) Einstellungen.getEinstellung(Property.STRASSE) + ", "
+        + (String) Einstellungen.getEinstellung(Property.PLZ) + " "
+        + (String) Einstellungen.getEinstellung(Property.ORT);
   }
 }

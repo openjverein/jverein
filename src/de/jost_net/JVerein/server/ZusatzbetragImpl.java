@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -125,7 +126,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
               "Beim Mitglied ist keine IBAN oder Mandatdatum hinterlegt.");
         }
       }
-      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         if (getSteuer() != null && getBuchungsart() != null && getSteuer()
             .getBuchungsart().getArt() != getBuchungsart().getArt())
@@ -375,7 +376,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   public boolean isOffen(Date datum) throws RemoteException
   {
     if (!getMitglied().isAngemeldet(datum)
-        && !Einstellungen.getEinstellung().getZusatzbetragAusgetretene())
+        && !(Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
     {
       return false;
     }
@@ -400,7 +401,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   public boolean isAktiv(Date datum) throws RemoteException
   {
     if (!getMitglied().isAngemeldet(datum)
-        && !Einstellungen.getEinstellung().getZusatzbetragAusgetretene())
+        && !(Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
     {
       return false;
     }

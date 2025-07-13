@@ -37,6 +37,7 @@ public class EinstellungenDateinamenView extends AbstractView
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
     cont.addLabelPair("Auswertung", control.getDateinamenmuster());
+
     cont.addLabelPair("CSV Vorlagenverzeichnis",
         control.getVorlagenCsvVerzeichnis());
 

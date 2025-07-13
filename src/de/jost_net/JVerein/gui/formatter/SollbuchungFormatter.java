@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.formatter;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.formatter.Formatter;
@@ -33,7 +34,7 @@ public class SollbuchungFormatter implements Formatter
       Sollbuchung sollb = (Sollbuchung) o;
       try
       {
-        if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+        if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
         {
           return Adressaufbereitung.getIdNameVorname(sollb.getMitglied());
         }

@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -78,7 +79,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   {
     LabelGroup group = new LabelGroup(parent, "");
     group.addLabelPair("Buchungsart", getBuchungsartAuswahl());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       group.addLabelPair("Buchungsklasse", getBuchungsklasseAuswahl());
     }
@@ -103,7 +104,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         }
         try
         {
-          if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+          if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
           {
             if (buchungsklassen.getValue() == null)
             {
@@ -188,7 +189,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     }
     buchungsarten = new BuchungsartInput().getBuchungsartInput(buchungsarten, null,
         buchungsarttyp.BUCHUNGSART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsarten.addListener(new Listener()
     {
       @Override

@@ -28,6 +28,7 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
@@ -230,7 +231,7 @@ public class BuchungsartControl extends FilterControl
   {
     try
     {
-      switch (Einstellungen.getEinstellung().getBuchungsartSort())
+      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
       {
         case BuchungsartSort.NACH_NUMMER:
           return "nrbezeichnung";
@@ -254,7 +255,7 @@ public class BuchungsartControl extends FilterControl
   {
     try
     {
-      switch (Einstellungen.getEinstellung().getBuchungsartSort())
+      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
       {
         case BuchungsartSort.NACH_NUMMER:
           return "ORDER BY nummer";
@@ -394,7 +395,7 @@ public class BuchungsartControl extends FilterControl
       buchungsartList.addColumn("Spende", "spende", new JaNeinFormatter());
       buchungsartList.addColumn("Abschreibung", "abschreibung",
           new JaNeinFormatter(), false, Column.ALIGN_RIGHT);
-      if (Einstellungen.getEinstellung().getOptiert())
+      if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
       {
         buchungsartList.addColumn("Steuer", "steuer", o -> {
           if (o == null)
@@ -531,7 +532,8 @@ public class BuchungsartControl extends FilterControl
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("buchungsarten", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
+            .get());
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();

@@ -40,7 +40,6 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
     cont.addLabelPair("Steuernummer", control.getSteuernummer());
     cont.addLabelPair("Bescheiddatum", control.getBescheiddatum());
     cont.addLabelPair("Bescheid nach § 60a AO", control.getVorlaeufig());
-    // cont.addLabelPair("Vorläufig ab", control.getVorlaeufigab());
     cont.addLabelPair("Veranlagung von", control.getVeranlagungVon());
     cont.addLabelPair("Veranlagung bis", control.getVeranlagungBis());
     cont.addLabelPair("Begünstigter Zweck", control.getBeguenstigterzweck());

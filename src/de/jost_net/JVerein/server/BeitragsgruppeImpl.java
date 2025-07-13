@@ -19,7 +19,9 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -71,7 +73,8 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben");
       }
-      switch (Einstellungen.getEinstellung().getBeitragsmodel())
+      switch (Beitragsmodel.getByKey(
+          (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
       {
         case GLEICHERTERMINFUERALLE:
         case MONATLICH12631:
@@ -146,7 +149,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
           throw new ApplicationException("Sekundäre Beitragsgrupe kann nicht Beitragsart Angehöriger haben!");
         }
       }
-      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         if (getSteuer() != null && getBuchungsart() != null && getSteuer()
             .getBuchungsart().getArt() != getBuchungsart().getArt())

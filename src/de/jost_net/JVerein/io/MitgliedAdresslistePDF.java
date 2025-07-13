@@ -24,6 +24,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -59,7 +60,7 @@ public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
           50, BaseColor.LIGHT_GRAY);
       report.addHeaderColumn("Email", Element.ALIGN_CENTER,
           80, BaseColor.LIGHT_GRAY);
-      if(Einstellungen.getEinstellung().getGeburtsdatumPflicht())
+      if((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
         report.addHeaderColumn("Geburtsdatum", Element.ALIGN_CENTER, 30,
             BaseColor.LIGHT_GRAY);
       report.createHeader(100, Element.ALIGN_CENTER);
@@ -94,7 +95,7 @@ public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
           mail = mail.substring(mail.indexOf(":")+1).replace(",", "\n").replace(";","").trim();
         }
         report.addColumn(mail, Element.ALIGN_LEFT);
-        if(Einstellungen.getEinstellung().getGeburtsdatumPflicht())
+        if((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
           report.addColumn(m.getGeburtsdatum(), Element.ALIGN_LEFT);
       }
       report.closeTable();

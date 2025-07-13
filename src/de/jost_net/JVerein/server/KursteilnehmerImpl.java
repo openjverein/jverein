@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
@@ -92,7 +93,7 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
     {
       throw new ApplicationException("Bitte Datum des Mandats eingeben");
     }
-    if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
+    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
     {
       if (getGeburtsdatum() == null)
       {

@@ -36,6 +36,7 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
@@ -291,14 +292,14 @@ public class ZusatzbetragControl extends AbstractControl
           return new Zahlungsweg((Integer)o).getText();
         }
       });
-      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
             new BuchungsklasseFormatter());
       }
       zusatzbetraegeList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
-      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         zusatzbetraegeList.addColumn("Steuer", "steuer", o -> {
           if (o == null)
@@ -424,7 +425,8 @@ public class ZusatzbetragControl extends AbstractControl
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("zusatzbetraege", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
+            .get());
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -471,7 +473,7 @@ public class ZusatzbetragControl extends AbstractControl
           while (it.hasNext())
           {
             Zusatzbetrag z = (Zusatzbetrag) it.next();
-            if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+            if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
             {
               reporter.addColumn(
                   Adressaufbereitung.getIdNameVorname(z.getMitglied()),

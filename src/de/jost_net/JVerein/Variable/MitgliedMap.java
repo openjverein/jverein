@@ -24,10 +24,12 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.BeitragsUtil;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
@@ -49,7 +51,6 @@ import de.willuhn.util.ApplicationException;
 
 public class MitgliedMap extends AbstractMap
 {
-
   public MitgliedMap()
   {
     super();
@@ -99,7 +100,8 @@ public class MitgliedMap extends AbstractMap
       map.put(MitgliedVar.BEITRAGSGRUPPE_BETRAG.getName(),
           mitglied.getBeitragsgruppe() != null ?
               Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
-                  Einstellungen.getEinstellung().getBeitragsmodel(),
+                  Beitragsmodel.getByKey((Integer) Einstellungen
+                      .getEinstellung(Property.BEITRAGSMODEL)),
                   mitglied.getZahlungstermin(),
                   mitglied.getZahlungsrhythmus().getKey(),
                   mitglied.getBeitragsgruppe(), new Date(), mitglied)) :
@@ -152,7 +154,12 @@ public class MitgliedMap extends AbstractMap
       map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), null);
     }
     map.put(MitgliedVar.BANKNAME.getName(), getBankname(mitglied));
-    map.put(MitgliedVar.KONTOINHABER.getName(), mitglied.getKontoinhaber(1));
+    map.put(MitgliedVar.KONTOINHABER.getName(),
+        mitglied.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
+    map.put(MitgliedVar.KONTOINHABER_VORNAMENAME.getName(),
+        mitglied.getKontoinhaber(Mitglied.namenformat.VORNAME_NAME));
+    map.put(MitgliedVar.KONTOINHABER_EMPFAENGER.getName(),
+        mitglied.getKontoinhaber(Mitglied.namenformat.ADRESSE));
     map.put(MitgliedVar.KONTOINHABER_ADRESSIERUNGSZUSATZ.getName(),
         mitglied.getKtoiAdressierungszusatz());
     map.put(MitgliedVar.KONTOINHABER_ANREDE.getName(),
@@ -209,7 +216,7 @@ public class MitgliedMap extends AbstractMap
     switch (mitglied.getZahlungsweg())
     {
       case Zahlungsweg.BASISLASTSCHRIFT:
-        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextAbbuchung();
+        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTABBUCHUNG);
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}", mitglied.getBic());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}",
             mitglied.getIban());
@@ -217,11 +224,10 @@ public class MitgliedMap extends AbstractMap
             mitglied.getMandatID());
         break;
       case Zahlungsweg.BARZAHLUNG:
-        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextBar();
+        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR);
         break;
       case Zahlungsweg.ÜBERWEISUNG:
-        zahlungsweg = Einstellungen.getEinstellung()
-            .getRechnungTextUeberweisung();
+        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
         break;
     }
     try
@@ -389,7 +395,7 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.EINTRITT.getName(), toDate("01.01.2010"));
     map.put(MitgliedVar.EINGABEDATUM.getName(), toDate("01.02.2010"));
     map.put(MitgliedVar.EMPFAENGER.getName(),
-        "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
+        "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
     map.put(MitgliedVar.EMAIL.getName(), "willi.wichtig@jverein.de");
     map.put(MitgliedVar.EXTERNE_MITGLIEDSNUMMER.getName(), "123456");
     map.put(MitgliedVar.GEBURTSDATUM.getName(), toDate("02.03.1980"));
@@ -401,7 +407,10 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), "123,45");
     map.put(MitgliedVar.KONTO.getName(), "");
     map.put(MitgliedVar.BANKNAME.getName(), "XY Bank");
-    map.put(MitgliedVar.KONTOINHABER.getName(), "Maier, Werner");
+    map.put(MitgliedVar.KONTOINHABER.getName(), "Maier, Dr. Werner");
+    map.put(MitgliedVar.KONTOINHABER_VORNAMENAME.getName(), "Dr. Werner Maier");
+    map.put(MitgliedVar.KONTOINHABER_EMPFAENGER.getName(),
+        "Herr\nDr. Werner Maier\nAdresszusatz\nKirchenstrasse 5\n5678 Essen\nDeutschland");
     map.put(MitgliedVar.KONTOINHABER_PERSONENART.getName(), "n");
     map.put(MitgliedVar.KONTOINHABER_ANREDE.getName(), "Herr");
     map.put(MitgliedVar.KONTOINHABER_TITEL.getName(), "Dr.");
@@ -420,7 +429,7 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.KUENDIGUNG.getName(), toDate("01.11.2024"));
     map.put(MitgliedVar.LETZTEAENDERUNG.getName(), toDate("01.11.2024"));
     map.put(MitgliedVar.NAME.getName(), "Wichtig");
-    map.put(MitgliedVar.NAMEVORNAME.getName(), "Wichtig, Willi");
+    map.put(MitgliedVar.NAMEVORNAME.getName(), "Wichtig, Dr. Dr. Willi");
     map.put(MitgliedVar.ORT.getName(), "Testenhausen");
     map.put(MitgliedVar.PERSONENART.getName(), "n");
     map.put(MitgliedVar.PLZ.getName(), "12345");
@@ -433,7 +442,7 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.VERMERK1.getName(), "Vermerk 1");
     map.put(MitgliedVar.VERMERK2.getName(), "Vermerk 2");
     map.put(MitgliedVar.VORNAME.getName(), "Willi");
-    map.put(MitgliedVar.VORNAMENAME.getName(), "Willi, Wichtig");
+    map.put(MitgliedVar.VORNAMENAME.getName(), "Dr. Dr. Willi Wichtig");
     map.put(MitgliedVar.ZAHLUNGSRHYTMUS.getName(),
         Zahlungsrhythmus.get(Zahlungsrhythmus.HALBJAEHRLICH));
     map.put(MitgliedVar.ZAHLUNGSRHYTHMUS.getName(),

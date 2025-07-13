@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -72,7 +73,7 @@ public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
       }
       if (getStunden() <= 0d)
       {
-          if ( Einstellungen.getEinstellung().getArbeitsstundenmodel() == ArbeitsstundenModel.STANDARD )
+          if ( (Integer) Einstellungen.getEinstellung(Property.ARBEITSSTUNDENMODEL) == ArbeitsstundenModel.STANDARD )
           {
               throw new ApplicationException("Bitte mehr als 0 Stunden eingeben oder Arbeitsstundenmodel in Einstellung ändern");
           }

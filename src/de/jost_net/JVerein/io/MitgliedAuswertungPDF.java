@@ -26,6 +26,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -64,7 +65,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
       if (mitgliedstyp.getJVereinid() == Mitgliedstyp.MITGLIED)
       {
         report.addHeaderColumn("Eintritt / \nAustritt / \nKündigung"
-            + (Einstellungen.getEinstellung().getSterbedatum()
+            + ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM)
                 ? ("/\n" + "Sterbedatum")
                 : ""),
             Element.ALIGN_CENTER, 30, BaseColor.LIGHT_GRAY);
@@ -72,7 +73,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
       report.addHeaderColumn(
 
           "Beitragsgruppe /\nEigenschaften"
-              + (Einstellungen.getEinstellung().getExterneMitgliedsnummer()
+              + ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
                   ? "\nMitgliedsnummer"
                   : ""),
           Element.ALIGN_CENTER, 60, BaseColor.LIGHT_GRAY);
@@ -154,7 +155,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
         }
 
         zelle = "";
-        if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+        if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
         {
           zelle += (m.getExterneMitgliedsnummer() != null
               ? m.getExterneMitgliedsnummer()

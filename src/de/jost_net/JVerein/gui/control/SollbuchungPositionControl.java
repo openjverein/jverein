@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
@@ -144,7 +145,7 @@ public class SollbuchungPositionControl extends AbstractControl
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         getPosition().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
 
     buchungsart.addListener(new Listener()
     {
@@ -195,8 +196,8 @@ public class SollbuchungPositionControl extends AbstractControl
   @Override
   public void prepareStore() throws RemoteException
   {
-    boolean steuerInBuchung = Einstellungen.getEinstellung()
-        .getSteuerInBuchung();
+    boolean steuerInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.STEUERINBUCHUNG);
     SollbuchungPosition pos = getPosition();
     pos.setDatum((Date) getDatum().getValue());
     pos.setZweck((String) getZweck().getValue());
