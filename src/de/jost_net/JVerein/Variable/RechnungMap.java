@@ -79,24 +79,27 @@ public class RechnungMap extends AbstractMap
       betrag.add(sp.getBetrag());
       summe += sp.getBetrag();
 
-      Double steuer = steuerMap.getOrDefault(sp.getSteuersatz(), 0d);
-      steuerMap.put(sp.getSteuersatz(), steuer + sp.getSteuerbetrag());
-      Double brutto = steuerBetragMap.getOrDefault(sp.getSteuersatz(), 0d);
-      steuerBetragMap.put(sp.getSteuersatz(), brutto + sp.getBetrag());
-    }
-    if (buchungDatum.size() > 1)
-    {
-      if (Einstellungen.getEinstellung().getOptiert())
+      if (sp.getSteuersatz() > 0)
       {
-        for (Double satz : steuerMap.keySet())
-        {
-          zweck.add("inkl. " + satz + "% USt.  von "
-              + Einstellungen.DECIMALFORMAT.format(steuerBetragMap.get(satz)));
-          betrag.add(+steuerMap.get(satz));
-        }
+        Double steuer = steuerMap.getOrDefault(sp.getSteuersatz(), 0d);
+        steuerMap.put(sp.getSteuersatz(), steuer + sp.getSteuerbetrag());
+        Double brutto = steuerBetragMap.getOrDefault(sp.getSteuersatz(), 0d);
+        steuerBetragMap.put(sp.getSteuersatz(), brutto + sp.getBetrag());
       }
-      zweck.add("Summe");
-      betrag.add(summe);
+    }
+    if (Einstellungen.getEinstellung().getOptiert())
+    {
+      for (Double satz : steuerMap.keySet())
+      {
+        zweck.add("inkl. " + satz + "% USt.  von "
+            + Einstellungen.DECIMALFORMAT.format(steuerBetragMap.get(satz)));
+        betrag.add(+steuerMap.get(satz));
+      }
+      if (buchungDatum.size() > 1)
+      {
+        zweck.add("Summe");
+        betrag.add(summe);
+      }
     }
     map.put(RechnungVar.BUCHUNGSDATUM.getName(), buchungDatum.toArray());
     map.put(RechnungVar.MK_BUCHUNGSDATUM.getName(), buchungDatum.toArray());
