@@ -20,7 +20,6 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Map;
 
-import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.io.ILastschrift;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;

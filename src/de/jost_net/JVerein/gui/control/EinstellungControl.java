@@ -1951,8 +1951,6 @@ public class EinstellungControl extends AbstractControl
   // Einstellungen.setEinstellung(Property.ALTERSMODEL, amValue.getKey());
   // Einstellungen.setEinstellung(Property.DATEINAMENMUSTER, (String)
   // dateinamenmuster.getValue());
-  // Einstellungen.setEinstellung(Property.DATEINAMENMUSTERSPENDE, (String)
-  // dateinamenmusterspende.getValue());
   // Einstellungen.setEinstellung(Property.VORLAGENCSVVERZEICHNIS, (String)
   // vorlagenCsvVerzeichnis.getValue());
   // Einstellungen.setEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG,

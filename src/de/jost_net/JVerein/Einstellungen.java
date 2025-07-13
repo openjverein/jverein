@@ -223,7 +223,7 @@ public class Einstellungen
     MITTELVERWENDUNG("mittelverwendung", Boolean.class, "0"),
     PROJEKTEANZEIGEN("projekteanzeigen", Boolean.class, "0"),
     SPENDENBESCHEINIGUNGENANZEIGEN("spendenbescheinigungenanzeigen",
-        Boolean.class, "1"),
+        Boolean.class, "0"),
     RECHNUNGENANZEIGEN("rechnungenanzeigen", Boolean.class, "0"),
     // Anzeige 2.Spalte
     USELESEFELDER("uselesefelder", Boolean.class, ""),
@@ -263,8 +263,6 @@ public class Einstellungen
 
     // Dateinamen
     DATEINAMENMUSTER("dateinamenmuster", String.class, "a$s$-d$-z$"),
-    DATEINAMENMUSTERSPENDE("dateinamenmusterspende", String.class,
-        "a$-d$-n$-v$"),
     VORLAGENCSVVERZEICHNIS("vorlagencsvverzeichnis", String.class, ""),
 
     // Spendenbescheinigung
