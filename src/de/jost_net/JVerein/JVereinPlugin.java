@@ -18,6 +18,7 @@ package de.jost_net.JVerein;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.navigation.MyExtension;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.UmsatzMessageConsumer;
@@ -246,7 +247,7 @@ public class JVereinPlugin extends AbstractPlugin
 
   public static boolean isArchiveServiceActive() throws RemoteException
   {
-    if (!Einstellungen.getEinstellung().getDokumentenspeicherung())
+    if (!(Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
     {
       return false;
     }

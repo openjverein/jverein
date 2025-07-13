@@ -43,6 +43,7 @@ import org.kapott.hbci.GV.generators.SEPAGeneratorFactory;
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.VarTools;
@@ -54,13 +55,16 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.jost_net.OBanToo.StringLatin.Zeichen;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.HBCI;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.hbci.gui.action.SepaUeberweisungMerge;
 import de.willuhn.jameica.hbci.rmi.AuslandsUeberweisung;
 import de.willuhn.jameica.hbci.rmi.HibiscusAddress;
+import de.willuhn.jameica.hbci.rmi.Konto;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class Ct1Ueberweisung
@@ -88,11 +92,14 @@ public class Ct1Ueberweisung
   private int dateiausgabe(ArrayList<Lastschrift> lastschriften, File file, Date faell,
       Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
   {
-    SepaVersion  sepaVersion = Einstellungen.getEinstellung().getCt1SepaVersion();
+    SepaVersion sepaVersion = SepaVersion
+        .byURN((String) Einstellungen.getEinstellung(Property.CT1SEPAVERSION));
     Properties ls_properties = new Properties();
-    ls_properties.setProperty("src.bic", Einstellungen.getEinstellung().getBic());
-    ls_properties.setProperty("src.iban", Einstellungen.getEinstellung().getIban());
-    ls_properties.setProperty("src.name", Einstellungen.getEinstellung().getName().toUpperCase());
+    ls_properties.setProperty("src.bic",
+        (String) Einstellungen.getEinstellung(Property.BIC));
+    ls_properties.setProperty("src.iban", (String) Einstellungen.getEinstellung(Property.IBAN));
+    ls_properties.setProperty("src.name",
+        ((String) Einstellungen.getEinstellung(Property.NAME)).toUpperCase());
     long epochtime = Calendar.getInstance().getTimeInMillis();
     String epochtime_string = Long.toString(epochtime);
     DateFormat ISO_DATE = new SimpleDateFormat(SepaUtil.DATE_FORMAT);
@@ -137,8 +144,30 @@ public class Ct1Ueberweisung
   {
     try
     {
-      de.willuhn.jameica.hbci.rmi.Konto hibk = Einstellungen.getEinstellung()
-          .getHibiscusKonto();
+      Konto hibk;
+      try
+      {
+        // DB-Service holen
+        DBService service = (DBService) Application.getServiceFactory()
+            .lookup(HBCI.class, "database");
+        DBIterator<Konto> konten = service.createList(Konto.class);
+        konten.addFilter("iban = ?",
+            (String) Einstellungen.getEinstellung(Property.IBAN));
+        Logger.debug("Vereinskonto: "
+            + (String) Einstellungen.getEinstellung(Property.IBAN));
+        if (konten.hasNext())
+        {
+          hibk = (Konto) konten.next();
+        }
+        else
+        {
+          throw new RemoteException("Vereinskonto nicht in Hibiscus gefunden");
+        }
+      }
+      catch (Exception e)
+      {
+        throw new RemoteException(e.getMessage());
+      }
       AuslandsUeberweisung[] ueberweisungen = new AuslandsUeberweisung[
           lastschriften.size()];
       int i = 0;

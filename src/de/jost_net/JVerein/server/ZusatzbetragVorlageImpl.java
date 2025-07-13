@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -76,7 +77,7 @@ public class ZusatzbetragVorlageImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException("Betrag nicht gültig");
       }
-      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         if (getSteuer() != null && getBuchungsart() != null && getSteuer()
             .getBuchungsart().getArt() != getBuchungsart().getArt())

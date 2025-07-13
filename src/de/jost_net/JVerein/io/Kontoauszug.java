@@ -35,6 +35,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
@@ -179,8 +180,9 @@ public class Kontoauszug
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("KONTOAUSZUG", "", Einstellungen
-        .getEinstellung().getDateinamenmuster(), extension).get());
+    fd.setFileName(new Dateiname("KONTOAUSZUG", "",
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+        extension).get());
     fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();
@@ -227,7 +229,7 @@ public class Kontoauszug
     }
     
     rpt.newPage();
-    rpt.add(Einstellungen.getEinstellung().getName(), 20);
+    rpt.add((String) Einstellungen.getEinstellung(Property.NAME), 20);
     rpt.add(
         String.format("Kontoauszug %s", Adressaufbereitung.getVornameName(m)),
         18);

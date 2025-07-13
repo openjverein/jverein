@@ -14,22 +14,32 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
+package de.jost_net.JVerein.gui.formatter;
 
 import java.rmi.RemoteException;
-import de.willuhn.datasource.rmi.DBObject;
 
-public interface Einstellung extends DBObject
+import de.jost_net.JVerein.rmi.Konto;
+import de.willuhn.jameica.gui.formatter.Formatter;
+import de.willuhn.logging.Logger;
+
+public class KontoFormatter implements Formatter
 {
-  public static final String COL_SEPA_MANDANTID_SOURCE = "mandatid_source";
+  @Override
+  public String format(Object o)
+  {
 
-  public static final String COL_BUCHUNG_BUCHUNGSART_AUSWAHL = "buchungbuchungsartauswahl";
-
-  public String getValue() throws RemoteException;
-
-  public void setValue(Object value) throws RemoteException;
-
-  public String getKey() throws RemoteException;
-
-  public void setKey(String key) throws RemoteException;
+    Konto k = (Konto) o;
+    if (k != null)
+    {
+      try
+      {
+        return k.getBezeichnung();
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+      }
+    }
+    return "";
+  }
 }

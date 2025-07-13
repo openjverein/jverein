@@ -28,6 +28,7 @@ import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Image;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -35,6 +36,7 @@ import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.Base64;
 import jonelo.NumericalChameleon.SpokenNumbers.GermanNumber;
 
 public class SpendenbescheinigungMap extends AbstractMap
@@ -121,7 +123,7 @@ public class SpendenbescheinigungMap extends AbstractMap
     {
       case Spendenart.GELDSPENDE:
         String art = "Geldzuwendungen";
-        if (Einstellungen.getEinstellung().getMitgliedsbetraege())
+        if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSBETRAEGE))
         {
           art += "/Mitgliedsbeitrag";
         }
@@ -132,8 +134,7 @@ public class SpendenbescheinigungMap extends AbstractMap
         break;
     }
     String spendedatum = new JVDateFormatTTMMJJJJ().format(spb.getSpendedatum());
-    boolean printBuchungsart = Einstellungen.getEinstellung()
-        .getSpendenbescheinigungPrintBuchungsart();
+    boolean printBuchungsart = (Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGPRINTBUCHUNGSART);
     map.put(SpendenbescheinigungVar.BEZEICHNUNGSACHZUWENDUNG.getName(),
         spb.getBezeichnungSachzuwendung());
     map.put(SpendenbescheinigungVar.UNTERLAGENWERTERMITTUNG.getName(),
@@ -370,29 +371,31 @@ public class SpendenbescheinigungMap extends AbstractMap
     }
 
     map.put(SpendenbescheinigungVar.FINANZAMT.getName(),
-        Einstellungen.getEinstellung().getFinanzamt());
+        (String) Einstellungen.getEinstellung(Property.FINANZAMT));
     map.put(SpendenbescheinigungVar.STEUER_NR.getName(),
-        Einstellungen.getEinstellung().getSteuernummer());
+        (String) Einstellungen.getEinstellung(Property.STEUERNUMMER));
     String bescheiddatum = new JVDateFormatTTMMJJJJ()
-        .format(Einstellungen.getEinstellung().getBescheiddatum());
+        .format((Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM));
     map.put(SpendenbescheinigungVar.DATUM_BESCHEID.getName(), bescheiddatum);
     Calendar cal = Calendar.getInstance();
-    cal.setTime(Einstellungen.getEinstellung().getVeranlagungVon());
+    cal.setTime((Date) Einstellungen.getEinstellung(Property.VERANLAGUNGVON));
     String start = "" + cal.get(Calendar.YEAR);
-    cal.setTime(Einstellungen.getEinstellung().getVeranlagungBis());
+    cal.setTime((Date) Einstellungen.getEinstellung(Property.VERANLAGUNGBIS));
     map.put(SpendenbescheinigungVar.VERANLAGUNGSZEITRAUM.getName(), String
         .format("%s bis %s", start, "" + cal.get(Calendar.YEAR)));
     map.put(SpendenbescheinigungVar.ZWECK.getName(),
-        Einstellungen.getEinstellung().getBeguenstigterzweck());
+        (String) Einstellungen.getEinstellung(Property.BEGUENSTIGTERZWECK));
 
+    String unterschrift = (String) Einstellungen
+        .getEinstellung(Property.UNTERSCHRIFT);
     if (spb.isEchteGeldspende()
-        && Einstellungen.getEinstellung().getUnterschriftdrucken()
-        && Einstellungen.getEinstellung().getUnterschrift() != null)
+        && (Boolean) Einstellungen.getEinstellung(Property.UNTERSCHRIFTDRUCKEN)
+        && unterschrift != null && !unterschrift.isBlank())
     {
       Image i;
       try
       {
-        i = Image.getInstance(Einstellungen.getEinstellung().getUnterschrift());
+        i = Image.getInstance(Base64.decode(unterschrift));
         int width = 400;
         int height = 55;
         float w = i.getWidth() / width;

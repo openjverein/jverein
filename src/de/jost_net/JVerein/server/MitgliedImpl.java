@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
@@ -86,7 +87,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   {
     try
     {
-      if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
       {
         return "idnamevorname";
       }
@@ -157,14 +158,13 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     }
     if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
         && getPersonenart().equalsIgnoreCase(
-        "n") && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime() && Einstellungen.getEinstellung()
-        .getGeburtsdatumPflicht())
+        "n") && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime() && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
     {
       throw new ApplicationException("Bitte Geburtsdatum eingeben");
     }
     if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
         && getPersonenart().equalsIgnoreCase(
-        "n") && Einstellungen.getEinstellung().getGeburtsdatumPflicht())
+        "n") && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
     {
       Calendar cal1 = Calendar.getInstance();
       cal1.setTime(getGeburtsdatum());
@@ -198,8 +198,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
 
     if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
         && getEintritt().getTime() == Einstellungen.NODATE.getTime()
-        && Einstellungen.getEinstellung()
-        .getEintrittsdatumPflicht())
+        && (Boolean) Einstellungen.getEinstellung(Property.EINTRITTSDATUMPFLICHT))
     {
       throw new ApplicationException("Bitte Eintrittsdatum eingeben");
     }
@@ -343,7 +342,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   {
     if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED)
       return;
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer() == false)
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER) == false)
       return;
 
     if (getExterneMitgliedsnummer() == null || getExterneMitgliedsnummer().isEmpty())
@@ -679,8 +678,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getMandatID() throws RemoteException
   {
-    int sepaMandatIdSource = Einstellungen.getEinstellung()
-        .getSepaMandatIdSource();
+    int sepaMandatIdSource = (Integer) Einstellungen.getEinstellung(Property.SEPAMANDATIDSOURCE);
     if (sepaMandatIdSource == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER)
     {
       return getExterneMitgliedsnummer() + "-" + getMandatVersion();
@@ -975,7 +973,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   public Integer getAlter() throws RemoteException
   {
     Date geburtstag = getGeburtsdatum();
-    int altersmodel = Einstellungen.getEinstellung().getAltersModel();
+    int altersmodel = (Integer) Einstellungen.getEinstellung(Property.ALTERSMODEL);
     return Datum.getAlter(geburtstag, altersmodel);
   }
 

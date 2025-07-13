@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -45,8 +46,8 @@ public class AbrechnungSEPAView extends AbstractView
 
     left.addLabelPair("Modus", control.getAbbuchungsmodus());
     left.addLabelPair("Fälligkeit", control.getFaelligkeit());
-    if (Einstellungen.getEinstellung()
-        .getBeitragsmodel() == Beitragsmodel.FLEXIBEL)
+    if ((Integer) Einstellungen.getEinstellung(
+        Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
     {
       left.addLabelPair("Abrechnungsmonat", control.getAbrechnungsmonat());
     }
@@ -56,11 +57,11 @@ public class AbrechnungSEPAView extends AbstractView
     left.addLabelPair("Bis Austrittsdatum", control.getBisdatum());
     left.addLabelPair("Zahlungsgrund für Beiträge",
         control.getZahlungsgrund());
-    if (Einstellungen.getEinstellung().getZusatzbetrag())
+    if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
       left.addLabelPair("Zusatzbeträge", control.getZusatzbetrag());
     }
-    if (Einstellungen.getEinstellung().getKursteilnehmer())
+    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
     {
       left.addLabelPair("Kursteilnehmer", control.getKursteilnehmer());
     }
@@ -74,7 +75,7 @@ public class AbrechnungSEPAView extends AbstractView
     rigth.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
     rigth.addLabelPair("Abbuchungsausgabe", control.getAbbuchungsausgabe());
     
-    if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       rigth.addHeadline("Rechnungen");
       rigth.addLabelPair("Rechnung(en) erstellen²", control.getRechnung());

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -78,8 +79,6 @@ public class RechnungMap extends AbstractMap
       steuerbetrag.add(sp.getSteuerbetrag());
       betrag.add(sp.getBetrag());
       summe += sp.getBetrag();
-
-      if (sp.getSteuersatz() > 0)
       {
         Double steuer = steuerMap.getOrDefault(sp.getSteuersatz(), 0d);
         steuerMap.put(sp.getSteuersatz(), steuer + sp.getSteuerbetrag());
@@ -87,7 +86,7 @@ public class RechnungMap extends AbstractMap
         steuerBetragMap.put(sp.getSteuersatz(), brutto + sp.getBetrag());
       }
     }
-    if (Einstellungen.getEinstellung().getOptiert())
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       for (Double satz : steuerMap.keySet())
       {
@@ -135,11 +134,11 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.MK_IST.getName(), "");
 
     map.put(RechnungVar.QRCODE_INTRO.getName(),
-        Einstellungen.getEinstellung().getQRCodeIntro());
+        (String) Einstellungen.getEinstellung(Property.QRCODEINTRO));
 
     map.put(RechnungVar.DATUM.getName(), re.getDatum());
     map.put(RechnungVar.NUMMER.getName(), StringTool.lpad(re.getID(),
-        Einstellungen.getEinstellung().getZaehlerLaenge(), "0"));
+        (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
 
     map.put(RechnungVar.PERSONENART.getName(), re.getPersonenart());
     map.put(RechnungVar.GESCHLECHT.getName(), re.getGeschlecht());
@@ -171,7 +170,7 @@ public class RechnungMap extends AbstractMap
     {
       case Zahlungsweg.BASISLASTSCHRIFT:
       {
-        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextAbbuchung();
+        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTABBUCHUNG);
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}", re.getBIC());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}", re.getIBAN());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{MANDATID\\}",
@@ -180,13 +179,12 @@ public class RechnungMap extends AbstractMap
       }
       case Zahlungsweg.BARZAHLUNG:
       {
-        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextBar();
+        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR);
         break;
       }
       case Zahlungsweg.ÜBERWEISUNG:
       {
-        zahlungsweg = Einstellungen.getEinstellung()
-            .getRechnungTextUeberweisung();
+        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
         break;
       }
     }
@@ -219,6 +217,7 @@ public class RechnungMap extends AbstractMap
 
     map.put(RechnungVar.BUCHUNGSDATUM.getName(),
         new Date[] { new Date(), new Date() });
+<<<<<<< HEAD
     if (Einstellungen.getEinstellung().getOptiert())
     {
       map.put(RechnungVar.ZAHLUNGSGRUND.getName(),
@@ -242,6 +241,19 @@ public class RechnungMap extends AbstractMap
       map.put(RechnungVar.BETRAG.getName(),
           new Double[] { 10d, 13.8d, 23.8d });
     }
+=======
+    map.put(RechnungVar.ZAHLUNGSGRUND.getName(),
+        new String[] { "Mitgliedsbeitrag", "Zusatzbetrag",
+            (Boolean) Einstellungen.getEinstellung(Property.OPTIERT)
+                ? "Rechnungsbetrag inkl. USt."
+                : "Summe" });
+    map.put(RechnungVar.NETTOBETRAG.getName(),
+        new Double[] { 10d, 13.8d });
+    map.put(RechnungVar.STEUERSATZ.getName(),
+        new String[] { "(0%)", "(0%)" });
+    map.put(RechnungVar.STEUERBETRAG.getName(), new Double[] { 0d, 0d });
+    map.put(RechnungVar.BETRAG.getName(), new Double[] { 10d, 13.8d, 23.8d });
+>>>>>>> refs/heads/feature-3.1.0
     
     map.put(RechnungVar.SUMME.getName(), Double.valueOf("23.80"));
     map.put(RechnungVar.IST.getName(), Double.valueOf("10.00"));
@@ -251,7 +263,7 @@ public class RechnungMap extends AbstractMap
         "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen.");
     map.put(RechnungVar.DATUM.getName(), toDate("10.01.2025"));
     map.put(RechnungVar.NUMMER.getName(), StringTool.lpad("11",
-        Einstellungen.getEinstellung().getZaehlerLaenge(), "0"));
+        (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
     map.put(RechnungVar.ANREDE.getName(), "Herrn");
     map.put(RechnungVar.TITEL.getName(), "Dr. Dr.");
     map.put(RechnungVar.NAME.getName(), "Wichtig");

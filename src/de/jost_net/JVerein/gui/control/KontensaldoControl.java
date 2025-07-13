@@ -22,6 +22,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.KontenSaldoCSV;
 import de.jost_net.JVerein.io.KontenSaldoPDF;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -56,7 +57,8 @@ public class KontensaldoControl extends AbstractSaldoControl
   public KontensaldoControl(AbstractView view) throws RemoteException
   {
     super(view);
-    summensaldo = Einstellungen.getEinstellung().getSummenAnlagenkonto();
+    summensaldo = (Boolean) Einstellungen
+        .getEinstellung(Property.SUMMENANLAGENKONTO);
   }
 
   public TablePart getSaldoList() throws ApplicationException
@@ -110,7 +112,8 @@ public class KontensaldoControl extends AbstractSaldoControl
       throws RemoteException
   {
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("konto");
-    boolean mitSteuer = Einstellungen.getEinstellung().getOptiert();
+    boolean mitSteuer = (Boolean) Einstellungen
+        .getEinstellung(Property.OPTIERT);
     if (mitSteuer)
     {
       // Bei Umbuchungen vom Geldkonto den Steueranteil nicht bei den
@@ -177,7 +180,7 @@ public class KontensaldoControl extends AbstractSaldoControl
 
     if (mitSteuer)
     {
-      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         it.leftJoin("steuer", "steuer.id = buchung.steuer");
       }

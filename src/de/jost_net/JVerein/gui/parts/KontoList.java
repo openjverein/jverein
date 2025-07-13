@@ -25,6 +25,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Konto;
@@ -101,7 +102,7 @@ public class KontoList extends TablePart implements Part
     {
       Calendar cal = Calendar.getInstance();
       int year = cal.get(Calendar.YEAR);
-      year = year - Einstellungen.getEinstellung().getUnterdrueckungKonten();
+      year = year - (Integer) Einstellungen.getEinstellung(Property.UNTERDRUECKUNGKONTEN);
       i.addFilter("(aufloesung is null or year(aufloesung) >= ?)", year);
     }
     if (art == Kontenfilter.GELDKONTO)

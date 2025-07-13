@@ -24,6 +24,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.dialogs.BuchungenSollbuchungZuordnungDialog.BookingMemberAccountEntry;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
@@ -64,7 +65,7 @@ public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<
   {
     final TablePart bu = new TablePart(assignedBooking, null);
 
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer().booleanValue())
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
     {
       bu.addColumn("Ext. Mitgliedsnummer", BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "mitglied.externemitgliedsnummer");
     }

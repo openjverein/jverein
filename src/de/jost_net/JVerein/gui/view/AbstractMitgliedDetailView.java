@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
@@ -41,6 +42,7 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedDokument;
@@ -65,7 +67,6 @@ import de.willuhn.util.ApplicationException;
 
 public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 {
-
   // Statische Variable, die den zuletzt ausgewählten Tab speichert.
   private static int tabindex = -1;
 
@@ -105,54 +106,52 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     MitgliedUtils.setMitglied(zhl);
     zhl.setOrder("ORDER BY name, vorname");
 
-    int anzahlSpalten = Einstellungen.getEinstellung()
-        .getAnzahlSpaltenStammdaten();
-    boolean showInTab = Einstellungen.getEinstellung()
-        .getZeigeStammdatenInTab();
+    int anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenStammdaten",2);
+    boolean showInTab = Einstellungen.getSettingBoolean("ZeigeStammdatenInTab",
+        false);
     zeicheStammdaten(showInTab ? folder : oben.getComposite(), anzahlSpalten);
 
-    anzahlSpalten = Einstellungen.getEinstellung()
-        .getAnzahlSpaltenMitgliedschaft();
-    showInTab = Einstellungen.getEinstellung().getZeigeMitgliedschaftInTab();
+    anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenMitgliedschaft",
+        1);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeMitgliedschaftInTab",true);
     zeichneMitgliedschaft(showInTab ? folder : oben.getComposite(),
         anzahlSpalten);
 
-    anzahlSpalten = Einstellungen.getEinstellung().getAnzahlSpaltenZahlung();
-    showInTab = Einstellungen.getEinstellung().getZeigeZahlungInTab();
+    anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenZahlung",1);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeZahlungInTab",true);
     zeichneZahlung(showInTab ? folder : oben.getComposite(), anzahlSpalten);
 
-    showInTab = Einstellungen.getEinstellung().getZeigeZusatzbetraegeInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeZusatzbetraegeInTab",true);
     zeichneZusatzbeitraege(showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getEinstellung().getZeigeMitgliedskontoInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeMitgliedskontoInTab",true);
     zeichneMitgliedkonto(controlSollb, showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getEinstellung().getZeigeVermerkeInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeVermerkeInTab",true);
     zeichneVermerke(showInTab ? folder : oben.getComposite(), 1);
 
-    showInTab = Einstellungen.getEinstellung().getZeigeWiedervorlageInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeWiedervorlageInTab",true);
     zeichneWiedervorlage(showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getEinstellung().getZeigeMailsInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeMailsInTab",true);
     zeichneMails(showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getEinstellung().getZeigeEigenschaftenInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeEigenschaftenInTab",true);
     zeichneEigenschaften(showInTab ? folder : oben.getComposite());
 
-    anzahlSpalten = Einstellungen.getEinstellung()
-        .getAnzahlSpaltenZusatzfelder();
-    showInTab = Einstellungen.getEinstellung().getZeigeZusatzfelderInTab();
+    anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenZusatzfelder", 1);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeZusatzfelderInTab",true);
     zeichneZusatzfelder(showInTab ? folder : oben.getComposite(),
         anzahlSpalten);
 
-    showInTab = Einstellungen.getEinstellung().getZeigeLehrgaengeInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeLehrgaengeInTab",true);
     zeichneLehrgaenge(showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getEinstellung().getZeigeFotoInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeFotoInTab",true);
     zeichneMitgliedfoto(showInTab ? folder : oben.getComposite());
 
-    anzahlSpalten = Einstellungen.getEinstellung().getAnzahlSpaltenLesefelder();
-    showInTab = Einstellungen.getEinstellung().getZeigeLesefelderInTab();
+    anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenLesefelder", 1);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeLesefelderInTab",true);
     zeichneLesefelder(showInTab ? folder : oben.getComposite(), anzahlSpalten);
 
     zeichneMitgliedDetail(showInTab ? folder : oben.getComposite());
@@ -272,7 +271,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       throws RemoteException
   {
     if (isMitgliedDetail()
-        && Einstellungen.getEinstellung().getArbeitseinsatz())
+        && (Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
     {
       Container cont = getTabOrLabelContainer(parentComposite,
           "Arbeitseinsatz");
@@ -293,7 +292,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   {
     // TODO: getLesefelder() ist zu langsam. Inhalt von Lesefeldern sollte erst
     // evaluiert werden, wenn Lesefelder-Tab angeklickt wird.
-    if (Einstellungen.getEinstellung().getUseLesefelder())
+    if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
     {
       Input[] lesefelder = control.getLesefelder();
       if (lesefelder != null)
@@ -327,7 +326,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneMitgliedfoto(Composite parentComposite)
       throws RemoteException
   {
-    if (isMitgliedDetail() && Einstellungen.getEinstellung().getMitgliedfoto())
+    if (isMitgliedDetail() && (Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO))
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Foto");
       cont.addLabelPair("Foto", control.getFoto());
@@ -337,7 +336,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneLehrgaenge(Composite parentComposite)
       throws RemoteException
   {
-    if (isMitgliedDetail() && Einstellungen.getEinstellung().getLehrgaenge())
+    if (isMitgliedDetail() && (Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Lehrgänge");
 
@@ -382,7 +381,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneWiedervorlage(Composite parentComposite)
       throws RemoteException
   {
-    if (Einstellungen.getEinstellung().getWiedervorlage())
+    if ((Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE))
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Wiedervorlage");
 
@@ -398,8 +397,9 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
   private void zeichneMails(Composite parentComposite) throws RemoteException
   {
-    if (Einstellungen.getEinstellung().getSmtpServer() != null
-        && Einstellungen.getEinstellung().getSmtpServer().length() > 0)
+    if ((String) Einstellungen.getEinstellung(Property.SMTPSERVER) != null
+        && ((String) Einstellungen.getEinstellung(Property.SMTPSERVER))
+            .length() > 0)
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Mails");
 
@@ -410,7 +410,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneVermerke(Composite parentComposite, int spaltenanzahl)
       throws RemoteException
   {
-    if (Einstellungen.getEinstellung().getVermerke())
+    if ((Boolean) Einstellungen.getEinstellung(Property.VERMERKE))
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Vermerke");
       SimpleContainer cols = new SimpleContainer(cont.getComposite(), true,
@@ -457,7 +457,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneZusatzbeitraege(Composite parentComposite)
       throws RemoteException
   {
-    if (Einstellungen.getEinstellung().getZusatzbetrag())
+    if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Zusatzbeträge");
 
@@ -488,7 +488,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     zahlungsweg.addInput(control.getZahlungsweg());
     if (isMitgliedDetail())
     {
-      switch (Einstellungen.getEinstellung().getBeitragsmodel())
+      switch (Beitragsmodel.getByKey(
+          (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
       {
         case GLEICHERTERMINFUERALLE:
           break;
@@ -532,7 +533,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     cols2.addInput(control.getKtoiAdressierungszusatz());
     cols2.addInput(control.getKtoiPlz());
     cols2.addInput(control.getKtoiOrt());
-    if (Einstellungen.getEinstellung().getAuslandsadressen())
+    if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
     {
       cols2.addInput(control.getKtoiStaat());
     }
@@ -581,7 +582,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       SimpleVerticalContainer cols = new SimpleVerticalContainer(
           container.getComposite(), false, spaltenanzahl);
 
-      if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+      if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         cols.addInput(control.getExterneMitgliedsnummer());
       }
@@ -592,18 +593,18 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       cols.addInput(control.getBeitragsgruppe(true));
       cols.addInput(control.getEintritt());
       cols.addInput(control.getAustritt());
-      if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
+      if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
         cols.addInput(control.getIndividuellerBeitrag());
       }
       cols.addInput(control.getKuendigung());
-      if (Einstellungen.getEinstellung().getSterbedatum()
+      if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM)
           && control.getMitglied().getPersonenart().equalsIgnoreCase("n"))
       {
         cols.addInput(control.getSterbetag());
       }
       cols.arrangeVertically();
-      if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
       {
         container.addPart(control.getMitgliedSekundaereBeitragsgruppeView());
       }
@@ -662,7 +663,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     cols.addInput(control.getStrasse());
     cols.addInput(control.getPlz());
     cols.addInput(control.getOrt());
-    if (Einstellungen.getEinstellung().getAuslandsadressen())
+    if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
     {
       cols.addInput(control.getStaat());
     }
@@ -676,7 +677,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       cols.addInput(control.getLeitwegID());
     }
 
-    if (Einstellungen.getEinstellung().getKommunikationsdaten())
+    if ((Boolean) Einstellungen.getEinstellung(Property.KOMMUNIKATIONSDATEN))
     {
       cols.addInput(control.getTelefonprivat());
       cols.addInput(control.getHandy());
@@ -699,7 +700,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     if (funktion == 'B' && isMitgliedDetail())
     {
-      if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+      if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         mgname = (String) control.getExterneMitgliedsnummer().getValue();
         if (mgname == null || mgname.isEmpty())
