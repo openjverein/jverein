@@ -37,6 +37,7 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SEPALandInput;
 import de.jost_net.JVerein.gui.input.SEPALandObject;
+import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.io.MailSender.IMAPCopyData;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
@@ -358,7 +359,7 @@ public class EinstellungControl extends AbstractControl
 
   private TextInput ustid;
 
-  private SelectInput staat;
+  private StaatSearchInput staat;
 
   private DialogInput verrechnungskonto;
 
@@ -420,14 +421,17 @@ public class EinstellungControl extends AbstractControl
     return ort;
   }
 
-  public SelectInput getStaat() throws RemoteException
+  public StaatSearchInput getStaat() throws RemoteException
   {
     if (staat != null)
     {
       return staat;
     }
-    staat = new SelectInput(Staat.values(),
+    staat = new StaatSearchInput();
+    staat.setSearchString("Zum Suchen tippen");
+    staat.setValue(
         Staat.getByKey((String) Einstellungen.getEinstellung(Property.STAAT)));
+    staat.setName("Staat");
     return staat;
   }
 

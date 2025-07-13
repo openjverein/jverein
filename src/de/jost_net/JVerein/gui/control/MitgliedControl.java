@@ -59,6 +59,7 @@ import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.input.SelectNoScrollInput;
 import de.jost_net.JVerein.gui.input.SpinnerNoScrollInput;
+import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.input.VollzahlerInput;
 import de.jost_net.JVerein.gui.input.VollzahlerSearchInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
@@ -180,7 +181,7 @@ public class MitgliedControl extends FilterControl
 
   private Input ort;
 
-  private SelectNoScrollInput staat;
+  private StaatSearchInput staat;
   
   private TextInput leitwegID;
 
@@ -228,7 +229,7 @@ public class MitgliedControl extends FilterControl
 
   private TextInput ktoiort;
 
-  private SelectNoScrollInput ktoistaat;
+  private StaatSearchInput ktoistaat;
 
   private EmailInput ktoiemail;
 
@@ -526,7 +527,7 @@ public class MitgliedControl extends FilterControl
     return ort;
   }
 
-  public SelectNoScrollInput getStaat() throws RemoteException
+  public StaatSearchInput getStaat() throws RemoteException
   {
     if (staat != null)
     {
@@ -539,9 +540,9 @@ public class MitgliedControl extends FilterControl
       GUI.getStatusBar().setErrorText("Konnte Staat \""
           + getMitglied().getStaat() + "\" nicht finden, bitte anpassen.");
     }
-    staat = new SelectNoScrollInput(Staat.values(),
-        Staat.getByKey(getMitglied().getStaatCode()));
-    staat.setPleaseChoose("Nicht gesetzt");
+    staat = new StaatSearchInput();
+    staat.setSearchString("Zum Suchen tippen");
+    staat.setValue(Staat.getByKey(getMitglied().getStaatCode()));
     staat.setName("Staat");
     return staat;
   }
@@ -1010,7 +1011,7 @@ public class MitgliedControl extends FilterControl
     return ktoiort;
   }
 
-  public SelectNoScrollInput getKtoiStaat() throws RemoteException
+  public StaatSearchInput getKtoiStaat() throws RemoteException
   {
     if (ktoistaat != null)
     {
@@ -1023,9 +1024,9 @@ public class MitgliedControl extends FilterControl
       GUI.getStatusBar().setErrorText("Konnte Kontoinhaber Staat \""
           + getMitglied().getKtoiStaat() + "\" nicht finden, bitte anpassen.");
     }
-    ktoistaat = new SelectNoScrollInput(Staat.values(),
-        Staat.getByKey(getMitglied().getKtoiStaatCode()));
-    ktoistaat.setPleaseChoose("Nicht gesetzt");
+    ktoistaat = new StaatSearchInput();
+    ktoistaat.setSearchString("Zum Suchen tippen");
+    ktoistaat.setValue(Staat.getByKey(getMitglied().getKtoiStaatCode()));
     ktoistaat.setName("Staat");
     return ktoistaat;
   }

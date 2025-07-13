@@ -37,6 +37,7 @@ import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
+import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.menu.KursteilnehmerMenu;
 import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
@@ -55,7 +56,6 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -90,7 +90,7 @@ public class KursteilnehmerControl extends FilterControl
 
   private TextInput ort;
 
-  private SelectInput staat;
+  private StaatSearchInput staat;
 
   private EmailInput email;
 
@@ -250,7 +250,7 @@ public class KursteilnehmerControl extends FilterControl
     return ort;
   }
 
-  public SelectInput getStaat() throws RemoteException
+  public StaatSearchInput getStaat() throws RemoteException
   {
     if (staat != null)
     {
@@ -264,9 +264,9 @@ public class KursteilnehmerControl extends FilterControl
           .setErrorText("Konnte Staat \"" + getKursteilnehmer().getStaat()
               + "\" nicht finden, bitte anpassen.");
     }
-    staat = new SelectInput(Staat.values(),
-        Staat.getByKey(getKursteilnehmer().getStaatCode()));
-    staat.setPleaseChoose("Nicht gesetzt");
+    staat = new StaatSearchInput();
+    staat.setSearchString("Zum Suchen tippen");
+    staat.setValue(Staat.getByKey(getKursteilnehmer().getStaatCode()));
     staat.setName("Staat");
     return staat;
   }
