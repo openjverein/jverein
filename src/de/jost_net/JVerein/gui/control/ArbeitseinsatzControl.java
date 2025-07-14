@@ -48,6 +48,7 @@ import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.Dateiname;
@@ -56,7 +57,6 @@ import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -129,7 +129,7 @@ public class ArbeitseinsatzControl extends FilterControl
   }
 
   @Override
-  public DBObject prepareStore()
+  public JVereinDBObject prepareStore()
       throws RemoteException, ApplicationException
   {
     Arbeitseinsatz ae = getArbeitseinsatz();
@@ -155,9 +155,7 @@ public class ArbeitseinsatzControl extends FilterControl
   {
     try
     {
-      prepareStore();
-      Arbeitseinsatz ae = getArbeitseinsatz();
-      ae.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

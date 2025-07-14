@@ -96,6 +96,7 @@ import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -116,7 +117,6 @@ import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -2254,7 +2254,8 @@ public class MitgliedControl extends FilterControl
   }
 
   @Override
-  public DBObject prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Mitglied m = getMitglied();
 

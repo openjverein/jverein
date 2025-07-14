@@ -23,10 +23,10 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.LehrgangsartMenu;
 import de.jost_net.JVerein.gui.view.LehrgangsartDetailView;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -135,7 +135,7 @@ public class LehrgangsartControl extends AbstractControl
   }
 
   @Override
-  public DBObject prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Lehrgangsart l = getLehrgangsart();
     l.setBezeichnung((String) getBezeichnung(false).getValue());
@@ -154,9 +154,7 @@ public class LehrgangsartControl extends AbstractControl
   {
     try
     {
-      prepareStore();
-      Lehrgangsart l = getLehrgangsart();
-      l.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

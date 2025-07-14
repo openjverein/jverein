@@ -37,11 +37,11 @@ import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
@@ -344,7 +344,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     return endedatum;
   }
 
-  public DBObject prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     ZusatzbetragVorlage z = getZusatzbetragVorlage();
     z.setFaelligkeit((Date) getFaelligkeit().getValue());
@@ -370,9 +371,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
   {
     try
     {
-      prepareStore();
-      ZusatzbetragVorlage z = getZusatzbetragVorlage();
-      z.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

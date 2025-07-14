@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.datasource.rmi.DBObject;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.util.ApplicationException;
 
 /**
@@ -35,7 +35,7 @@ public interface Savable
    * @throws RemoteException
    * @throws ApplicationException
    */
-  public DBObject prepareStore()
+  public JVereinDBObject prepareStore()
       throws RemoteException, ApplicationException;
 
   /**

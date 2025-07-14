@@ -23,10 +23,10 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AnfangsbestandDetailAction;
 import de.jost_net.JVerein.gui.menu.AnfangsbestandMenu;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -107,7 +107,7 @@ public class AnfangsbestandControl extends FilterControl
   }
 
   @Override
-  public DBObject prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Anfangsbestand a = getAnfangsbestand();
     DBIterator<Konto> konten = Einstellungen.getDBService()
@@ -139,9 +139,7 @@ public class AnfangsbestandControl extends FilterControl
   {
     try
     {
-      prepareStore();
-      Anfangsbestand a = getAnfangsbestand();
-      a.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

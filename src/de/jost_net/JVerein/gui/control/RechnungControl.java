@@ -43,6 +43,7 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -52,7 +53,6 @@ import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -756,7 +756,8 @@ public class RechnungControl extends DruckMailControl implements Savable
   }
 
   @Override
-  public DBObject prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Rechnung re = getRechnung();
     re.setFormular((Formular) getRechnungFormular().getValue());
@@ -769,9 +770,7 @@ public class RechnungControl extends DruckMailControl implements Savable
   {
     try
     {
-      prepareStore();
-      Rechnung re = getRechnung();
-      re.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

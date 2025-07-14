@@ -51,7 +51,7 @@ public abstract class AbstractDetailView extends AbstractView
       boolean error = false;
       try
       {
-        o = (JVereinDBObject) getControl().prepareStore();
+        o = getControl().prepareStore();
       }
       catch (RemoteException | ApplicationException e)
       {

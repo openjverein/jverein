@@ -30,10 +30,10 @@ import de.jost_net.JVerein.gui.menu.AbrechnungslaufMenu;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufDetailView;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
@@ -88,7 +88,7 @@ public class AbrechnungslaufControl extends FilterControl
     settings.setStoreWhenRead(true);
   }
 
-  public Abrechnungslauf getAbrechnungslaeufe()
+  public Abrechnungslauf getAbrechnungslauf()
   {
     if (abrl != null)
     {
@@ -105,7 +105,7 @@ public class AbrechnungslaufControl extends FilterControl
       return datum;
     }
     datum = new LabelInput(
-        new JVDateFormatTTMMJJJJ().format(getAbrechnungslaeufe().getDatum()));
+        new JVDateFormatTTMMJJJJ().format(getAbrechnungslauf().getDatum()));
     datum.setName("Datum");
     return datum;
   }
@@ -116,7 +116,7 @@ public class AbrechnungslaufControl extends FilterControl
     {
       return abgeschlossen;
     }
-    Boolean b = getAbrechnungslaeufe().getAbgeschlossen();
+    Boolean b = getAbrechnungslauf().getAbgeschlossen();
     abgeschlossen = new LabelInput(b ? "Ja" : "Nein");
     abgeschlossen.setName("Abgeschlossen");
     return abgeschlossen;
@@ -128,7 +128,7 @@ public class AbrechnungslaufControl extends FilterControl
     {
       return modus;
     }
-    String m = Abrechnungsmodi.get(getAbrechnungslaeufe().getModus());
+    String m = Abrechnungsmodi.get(getAbrechnungslauf().getModus());
     modus = new LabelInput(m);
     modus.setName("Abrechnungsmodus");
     return modus;
@@ -141,7 +141,7 @@ public class AbrechnungslaufControl extends FilterControl
       return faelligkeit;
     }
     faelligkeit = new LabelInput(new JVDateFormatTTMMJJJJ()
-        .format(getAbrechnungslaeufe().getFaelligkeit()));
+        .format(getAbrechnungslauf().getFaelligkeit()));
     faelligkeit.setName("Fälligkeit");
     return faelligkeit;
   }
@@ -153,7 +153,7 @@ public class AbrechnungslaufControl extends FilterControl
       return astichtag;
     }
     astichtag = new LabelInput(new JVDateFormatTTMMJJJJ()
-        .format(getAbrechnungslaeufe().getStichtag()));
+        .format(getAbrechnungslauf().getStichtag()));
     astichtag.setName("Stichtag");
     return astichtag;
   }
@@ -164,7 +164,7 @@ public class AbrechnungslaufControl extends FilterControl
     {
       return eintrittsdatum;
     }
-    Date ed = getAbrechnungslaeufe().getEintrittsdatum();
+    Date ed = getAbrechnungslauf().getEintrittsdatum();
     if(ed.equals(Einstellungen.NODATE))
       eintrittsdatum = new LabelInput(null);
     else
@@ -179,7 +179,7 @@ public class AbrechnungslaufControl extends FilterControl
     {
       return austrittsdatum;
     }
-    Date ed = getAbrechnungslaeufe().getAustrittsdatum();
+    Date ed = getAbrechnungslauf().getAustrittsdatum();
     if(ed.equals(Einstellungen.NODATE))
       austrittsdatum = new LabelInput(null);
     else
@@ -194,7 +194,7 @@ public class AbrechnungslaufControl extends FilterControl
     {
       return zahlungsgrund;
     }
-    zahlungsgrund = new LabelInput(getAbrechnungslaeufe().getZahlungsgrund());
+    zahlungsgrund = new LabelInput(getAbrechnungslauf().getZahlungsgrund());
     zahlungsgrund.setName("Zahlungsgrund");
     return zahlungsgrund;
   }
@@ -206,11 +206,11 @@ public class AbrechnungslaufControl extends FilterControl
       return zusatzabrechnungen;
     }
     String zs = "";
-    if (getAbrechnungslaeufe().getZusatzbetraege())
+    if (getAbrechnungslauf().getZusatzbetraege())
     {
       zs += "Zusatzbeträge ";
     }
-    if (getAbrechnungslaeufe().getKursteilnehmer())
+    if (getAbrechnungslauf().getKursteilnehmer())
     {
       zs += "Kursteilnehmer ";
     }
@@ -225,7 +225,7 @@ public class AbrechnungslaufControl extends FilterControl
     {
       return bemerkung;
     }
-    bemerkung = new TextInput(getAbrechnungslaeufe().getBemerkung(), 80);
+    bemerkung = new TextInput(getAbrechnungslauf().getBemerkung(), 80);
     bemerkung.setName("Bemerkung");
     return bemerkung;
   }
@@ -267,7 +267,7 @@ public class AbrechnungslaufControl extends FilterControl
         + Sollbuchung.TABLE_NAME + " WHERE " + Sollbuchung.ABRECHNUNGSLAUF
         + " = ?";
     StatData data = (StatData) Einstellungen.getDBService().execute(sql,
-        new Object[] { getAbrechnungslaeufe().getID() }, rs);
+        new Object[] { getAbrechnungslauf().getID() }, rs);
 
     CurrencyFormatter cf = new CurrencyFormatter("EUR",
         Einstellungen.DECIMALFORMAT);
@@ -306,7 +306,7 @@ public class AbrechnungslaufControl extends FilterControl
     String sql = "SELECT SUM(betrag), COUNT(id) " + "FROM lastschrift "
         + "WHERE abrechnungslauf=?";
     StatData data = (StatData) Einstellungen.getDBService().execute(sql,
-        new Object[] { getAbrechnungslaeufe().getID() }, rs);
+        new Object[] { getAbrechnungslauf().getID() }, rs);
 
     CurrencyFormatter cf = new CurrencyFormatter("EUR",
         Einstellungen.DECIMALFORMAT);
@@ -319,10 +319,10 @@ public class AbrechnungslaufControl extends FilterControl
   }
 
   @Override
-  public DBObject prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     // Es kann nur die Bemerkung verändert werden
-    Abrechnungslauf al = getAbrechnungslaeufe();
+    Abrechnungslauf al = getAbrechnungslauf();
     al.setBemerkung((String) getBemerkung().getValue());
     return al;
   }
@@ -331,10 +331,7 @@ public class AbrechnungslaufControl extends FilterControl
   {
     try
     {
-      prepareStore();
-      Abrechnungslauf al = getAbrechnungslaeufe();
-
-      al.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

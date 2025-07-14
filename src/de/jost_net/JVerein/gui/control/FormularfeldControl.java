@@ -30,9 +30,9 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -291,7 +291,7 @@ public class FormularfeldControl extends FormularPartControl
   }
 
   @Override
-  public DBObject prepareStore()
+  public JVereinDBObject prepareStore()
       throws RemoteException, ApplicationException
   {
     Formularfeld f = getFormularfeld();
@@ -323,9 +323,7 @@ public class FormularfeldControl extends FormularPartControl
   {
     try
     {
-      prepareStore();
-      Formularfeld f = getFormularfeld();
-      f.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

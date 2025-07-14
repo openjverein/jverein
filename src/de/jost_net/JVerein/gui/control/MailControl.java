@@ -35,13 +35,13 @@ import de.jost_net.JVerein.gui.menu.MailMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.util.EvalMail;
 import de.jost_net.JVerein.io.MailSender;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -546,7 +546,7 @@ public class MailControl extends FilterControl
   }
 
   @Override
-  public DBObject prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Mail m = getMail();
     m.setBetreff(getBetreffString());

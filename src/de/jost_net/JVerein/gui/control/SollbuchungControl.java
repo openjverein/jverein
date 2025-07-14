@@ -47,13 +47,13 @@ import de.jost_net.JVerein.gui.view.SollbuchungPositionDetailView;
 import de.jost_net.JVerein.io.Kontoauszug;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -322,7 +322,8 @@ public class SollbuchungControl extends DruckMailControl
   }
 
   @Override
-  public DBObject prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Sollbuchung sollb = getSollbuchung();
     sollb.setZahlerId(getSelectedZahlerId());

@@ -42,12 +42,12 @@ import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.Dateiname;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -292,7 +292,7 @@ public class BuchungsartControl extends FilterControl
   }
 
   @Override
-  public DBObject prepareStore()
+  public JVereinDBObject prepareStore()
       throws RemoteException, ApplicationException
   {
     Buchungsart b = getBuchungsart();
@@ -357,9 +357,7 @@ public class BuchungsartControl extends FilterControl
   {
     try
     {
-      prepareStore();
-      Buchungsart b = getBuchungsart();
-      b.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

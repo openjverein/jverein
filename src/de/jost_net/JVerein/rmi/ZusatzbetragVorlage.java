@@ -20,9 +20,8 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.willuhn.datasource.rmi.DBObject;
 
-public interface ZusatzbetragVorlage extends DBObject
+public interface ZusatzbetragVorlage extends JVereinDBObject
 {
 
   public Date getFaelligkeit() throws RemoteException;

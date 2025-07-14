@@ -29,10 +29,10 @@ import de.jost_net.JVerein.gui.menu.FelddefinitionMenu;
 import de.jost_net.JVerein.gui.view.ZusatzfeldDetailView;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -125,7 +125,7 @@ public class FelddefinitionControl extends AbstractControl
   }
 
   @Override
-  public DBObject prepareStore()
+  public JVereinDBObject prepareStore()
       throws RemoteException, ApplicationException
   {
     Felddefinition f = getFelddefinition();
@@ -144,9 +144,7 @@ public class FelddefinitionControl extends AbstractControl
   {
     try
     {
-      prepareStore();
-      Felddefinition f = getFelddefinition();
-      f.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

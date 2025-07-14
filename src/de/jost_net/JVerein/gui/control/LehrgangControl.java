@@ -27,13 +27,13 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.LehrgangAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -175,7 +175,7 @@ public class LehrgangControl extends FilterControl
   }
 
   @Override
-  public DBObject prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Lehrgang l = getLehrgang();
 

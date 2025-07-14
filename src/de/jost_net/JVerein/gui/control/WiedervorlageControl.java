@@ -28,10 +28,10 @@ import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.parts.WiedervorlageList;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -171,7 +171,7 @@ public class WiedervorlageControl extends FilterControl
   }
 
   @Override
-  public DBObject prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Wiedervorlage w = getWiedervorlage();
     w.setDatum((Date) getDatum(false).getValue());

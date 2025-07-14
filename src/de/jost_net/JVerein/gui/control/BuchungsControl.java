@@ -73,6 +73,7 @@ import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -88,7 +89,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -305,7 +305,7 @@ public class BuchungsControl extends AbstractControl
   }
 
   @Override
-  public DBObject prepareStore()
+  public JVereinDBObject prepareStore()
       throws RemoteException, ApplicationException
   {
     fill(getBuchung());

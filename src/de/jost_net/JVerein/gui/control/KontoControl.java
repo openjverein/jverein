@@ -48,12 +48,12 @@ import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -246,7 +246,7 @@ public class KontoControl extends FilterControl
   }
 
   @Override
-  public DBObject prepareStore()
+  public JVereinDBObject prepareStore()
       throws RemoteException, ApplicationException
   {
     Konto k = getKonto();
@@ -299,7 +299,7 @@ public class KontoControl extends FilterControl
   {
     try
     {
-      prepareStore();
+      prepareStore().store();
 
       DBService service = Einstellungen.getDBService();
       String sql = "SELECT DISTINCT konto.id from konto "
@@ -333,9 +333,6 @@ public class KontoControl extends FilterControl
           Logger.error("Fehler", e);
         }
       }
-      Konto k = getKonto();
-      k.store();
-
     }
     catch (RemoteException e)
     {

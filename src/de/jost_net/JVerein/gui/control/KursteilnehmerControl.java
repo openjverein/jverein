@@ -42,11 +42,11 @@ import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.Staat;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -456,7 +456,7 @@ public class KursteilnehmerControl extends FilterControl
   }
 
   @Override
-  public DBObject prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Kursteilnehmer k = getKursteilnehmer();
     String p = (String) getPersonenart().getValue();
@@ -502,9 +502,7 @@ public class KursteilnehmerControl extends FilterControl
   {
     try
     {
-      prepareStore();
-      Kursteilnehmer k = getKursteilnehmer();
-      k.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
