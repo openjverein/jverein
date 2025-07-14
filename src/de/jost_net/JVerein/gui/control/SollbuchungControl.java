@@ -47,6 +47,7 @@ import de.jost_net.JVerein.gui.view.SollbuchungPositionDetailView;
 import de.jost_net.JVerein.io.Kontoauszug;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
@@ -321,7 +322,8 @@ public class SollbuchungControl extends DruckMailControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Sollbuchung sollb = getSollbuchung();
     sollb.setZahlerId(getSelectedZahlerId());
@@ -330,14 +332,14 @@ public class SollbuchungControl extends DruckMailControl
     Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
     sollb.setZahlungsweg(zw.getKey());
     sollb.setZweck1((String) getZweck1().getValue());
+    return sollb;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Sollbuchung sollb = getSollbuchung();
+      Sollbuchung sollb = (Sollbuchung) prepareStore();
 
       if (getZahler().getValue() == null)
       {

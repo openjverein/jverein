@@ -25,6 +25,7 @@ import de.jost_net.JVerein.gui.menu.EigenschaftMenu;
 import de.jost_net.JVerein.gui.view.EigenschaftDetailView;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -104,7 +105,7 @@ public class EigenschaftControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Eigenschaft ei = getEigenschaft();
 
@@ -118,15 +119,14 @@ public class EigenschaftControl extends AbstractControl
       ei.setEigenschaftGruppe(null);
     }
     ei.setBezeichnung((String) getBezeichnung().getValue());
+    return ei;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Eigenschaft ei = getEigenschaft();
-      ei.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

@@ -59,6 +59,7 @@ import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.SuchSpendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
@@ -460,7 +461,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Spendenbescheinigung spb = getSpendenbescheinigung();
     Spendenart spa = (Spendenart) getSpendenart().getValue();
@@ -484,6 +485,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spb.setHerkunftSpende(hsp.getKey());
     spb.setUnterlagenWertermittlung(
         (Boolean) getUnterlagenWertermittlung().getValue());
+    return spb;
   }
   
   /**
@@ -495,9 +497,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
   {
     try
     {
-      prepareStore();
-      Spendenbescheinigung spb = getSpendenbescheinigung();
-      spb.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

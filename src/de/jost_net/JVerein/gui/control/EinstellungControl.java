@@ -2292,6 +2292,10 @@ public class EinstellungControl extends AbstractControl
             ib.toUpperCase().replace(" ", ""));
       Einstellungen.setEinstellung(Property.GLAEUBIGERID,
           (String) getGlaeubigerID().getValue());
+      if (getStaat().getValue() == null)
+      {
+        throw new ApplicationException("Bitte Staat auswählen");
+      }
       Einstellungen.setEinstellung(Property.STAAT,
           ((Staat) getStaat().getValue()).getKey());
       Einstellungen.setEinstellung(Property.USTID,
@@ -2573,6 +2577,8 @@ public class EinstellungControl extends AbstractControl
           (Boolean) kontonummer_in_buchungsliste.getValue());
       Einstellungen.setEinstellung(Property.OPTIERT,
           (Boolean) getOptiert().getValue());
+      Einstellungen.setEinstellung(Property.STEUERINBUCHUNG,
+          (Boolean) getSteuerInBuchung().getValue());
       Einstellungen.setEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG,
           (Boolean) getFreieBuchungsklasse().getValue());
       Einstellungen.setEinstellung(Property.SPLITPOSITIONZWECK,
@@ -2642,15 +2648,13 @@ public class EinstellungControl extends AbstractControl
   public void handleStoreMitgliederSpalten()
   {
     try
-    {// TODO
+    {
       spalten.save();
-      DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
     }
-    catch (RemoteException | ApplicationException e)
+    catch (RemoteException e)
     {
-      DBTransaction.rollback();
       Logger.error("Speichern felgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }

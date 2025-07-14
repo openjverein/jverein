@@ -48,6 +48,7 @@ import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.Dateiname;
@@ -128,7 +129,8 @@ public class ArbeitseinsatzControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Arbeitseinsatz ae = getArbeitseinsatz();
     if (ae.isNewObject())
@@ -146,15 +148,14 @@ public class ArbeitseinsatzControl extends FilterControl
     ae.setDatum((Date) part.getDatum().getValue());
     ae.setStunden((Double) part.getStunden().getValue());
     ae.setBemerkung((String) part.getBemerkung().getValue());
+    return ae;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Arbeitseinsatz ae = getArbeitseinsatz();
-      ae.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

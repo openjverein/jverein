@@ -23,6 +23,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.LehrgangsartMenu;
 import de.jost_net.JVerein.gui.view.LehrgangsartDetailView;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -134,13 +135,14 @@ public class LehrgangsartControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Lehrgangsart l = getLehrgangsart();
     l.setBezeichnung((String) getBezeichnung(false).getValue());
     l.setVon((Date) getVon().getValue());
     l.setBis((Date) getBis().getValue());
     l.setVeranstalter((String) getVeranstalter().getValue());
+    return l;
   }
 
   /**
@@ -152,9 +154,7 @@ public class LehrgangsartControl extends AbstractControl
   {
     try
     {
-      prepareStore();
-      Lehrgangsart l = getLehrgangsart();
-      l.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

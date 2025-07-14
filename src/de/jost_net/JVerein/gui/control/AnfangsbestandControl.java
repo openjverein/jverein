@@ -23,6 +23,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AnfangsbestandDetailAction;
 import de.jost_net.JVerein.gui.menu.AnfangsbestandMenu;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -106,7 +107,7 @@ public class AnfangsbestandControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Anfangsbestand a = getAnfangsbestand();
     DBIterator<Konto> konten = Einstellungen.getDBService()
@@ -126,6 +127,7 @@ public class AnfangsbestandControl extends FilterControl
     a.setKonto(k);
     a.setDatum((Date) getDatum(false).getValue());
     a.setBetrag((Double) getBetrag().getValue());
+    return a;
   }
 
   /**
@@ -137,9 +139,7 @@ public class AnfangsbestandControl extends FilterControl
   {
     try
     {
-      prepareStore();
-      Anfangsbestand a = getAnfangsbestand();
-      a.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

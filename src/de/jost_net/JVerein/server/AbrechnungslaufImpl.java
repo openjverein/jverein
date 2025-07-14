@@ -22,10 +22,9 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.db.AbstractDBObject;
 
-public class AbrechnungslaufImpl extends AbstractDBObject implements
-    Abrechnungslauf
+public class AbrechnungslaufImpl extends AbstractJVereinDBObject
+    implements Abrechnungslauf
 {
 
   private static final long serialVersionUID = 1L;

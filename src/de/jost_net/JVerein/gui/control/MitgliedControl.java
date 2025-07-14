@@ -97,6 +97,7 @@ import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -2254,7 +2255,8 @@ public class MitgliedControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Mitglied m = getMitglied();
 
@@ -2442,14 +2444,14 @@ public class MitgliedControl extends FilterControl
     {
       m.setEingabedatum();
     }
+    return m;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Mitglied m = getMitglied();
+      Mitglied m = (Mitglied) prepareStore();
       m.setMandatID((String) getMandatID().getValue());
       // Mitgleidstyp ist in der DB als Long, wird jedoch sonst als Integer
       // verwendet, daher können wir ihn nicht in fill() setzen, sonst wird der

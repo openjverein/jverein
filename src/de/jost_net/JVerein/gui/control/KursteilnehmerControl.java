@@ -43,6 +43,7 @@ import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.Staat;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -455,7 +456,7 @@ public class KursteilnehmerControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Kursteilnehmer k = getKursteilnehmer();
     String p = (String) getPersonenart().getValue();
@@ -494,15 +495,14 @@ public class KursteilnehmerControl extends FilterControl
     {
       k.setEingabedatum();
     }
+    return k;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Kursteilnehmer k = getKursteilnehmer();
-      k.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

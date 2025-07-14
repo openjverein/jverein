@@ -45,24 +45,24 @@ public abstract class AbstractDetailView extends AbstractView
   @Override
   public void unbind() throws OperationCanceledException, ApplicationException
   {
+    JVereinDBObject o = null;
     try
     {
       boolean error = false;
       try
       {
-        getControl().prepareStore();
+        o = getControl().prepareStore();
       }
       catch (RemoteException | ApplicationException e)
       {
         error = true;
         Logger.error("Fehler bei unbind prepareStore", e);
       }
-      JVereinDBObject o = (JVereinDBObject) getCurrentObject();
 
       // Wenn beim prepareStore() eine Exception geworfen wird, ist es
       // warscheinlich, dass etwas ungültiges eingegeben wurde. Also wurde etwas
       // verändert und wir fragen auch nach.
-      if (o.isChanged() || error || getControl().hasChanged())
+      if (error || o.isChanged() || getControl().hasChanged())
       {
         ViewVerlassenDialog dialog = new ViewVerlassenDialog(
             AbstractDialog.POSITION_CENTER);
@@ -108,7 +108,7 @@ public abstract class AbstractDetailView extends AbstractView
     }
     catch (Exception e)
     {
-      String fehler = "Feler beim testen auf Änderungen: ";
+      String fehler = "Fehler beim testen auf Änderungen: ";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler + e.getMessage());
     }

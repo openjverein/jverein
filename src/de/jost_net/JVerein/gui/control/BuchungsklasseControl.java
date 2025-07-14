@@ -23,6 +23,7 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.BuchungsklasseMenu;
 import de.jost_net.JVerein.gui.view.BuchungsklasseDetailView;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -91,11 +92,12 @@ public class BuchungsklasseControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Buchungsklasse b = getBuchungsklasse();
     b.setNummer(((Integer) getNummer(false).getValue()).intValue());
     b.setBezeichnung((String) getBezeichnung().getValue());
+    return b;
   }
 
   /**
@@ -107,9 +109,7 @@ public class BuchungsklasseControl extends AbstractControl
   {
     try
     {
-      prepareStore();
-      Buchungsklasse b = getBuchungsklasse();
-      b.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

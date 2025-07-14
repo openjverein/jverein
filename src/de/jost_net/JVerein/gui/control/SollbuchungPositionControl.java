@@ -31,6 +31,7 @@ import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Steuer;
@@ -194,7 +195,7 @@ public class SollbuchungPositionControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     boolean steuerInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.STEUERINBUCHUNG);
@@ -232,14 +233,14 @@ public class SollbuchungPositionControl extends AbstractControl
     {
       pos.setSteuer((Steuer) getSteuer().getValue());
     }
+    return pos;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      SollbuchungPosition pos = getPosition();
+      SollbuchungPosition pos = (SollbuchungPosition) prepareStore();
       pos.store();
       // Betrag in Sollbuchung neu berechnen
       Double betrag = 0.0;

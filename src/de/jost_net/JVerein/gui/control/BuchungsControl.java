@@ -73,6 +73,7 @@ import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -309,13 +310,10 @@ public class BuchungsControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
-    fill((Buchung) getCurrentObject());
-  }
-
-  public void fill(Buchung b) throws ApplicationException, RemoteException
-  { 
+    Buchung b = getBuchung();
     b.setBuchungsartId(getSelectedBuchungsArtId());
     b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
     b.setProjektID(getSelectedProjektId());
@@ -346,6 +344,7 @@ public class BuchungsControl extends AbstractControl
     {
       b.setSteuer((Steuer) getSteuer().getValue());
     }
+    return b;
   }
 
   public Input getID() throws RemoteException
@@ -1148,8 +1147,7 @@ public class BuchungsControl extends AbstractControl
   {
     try
     {
-      Buchung b = getBuchung();
-      fill(b);
+      Buchung b = (Buchung) prepareStore();
 
       if (b.getSpeicherung())
       {
