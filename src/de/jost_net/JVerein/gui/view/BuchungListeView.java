@@ -81,6 +81,10 @@ public class BuchungListeView extends AbstractView
     right.addLabelPair("Mitglied zugeordnet?",
         control.getSuchMitgliedZugeordnet());
     right.addLabelPair("Mitglied Name", control.getMitglied());
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      right.addLabelPair("Steuer", control.getSuchSteuer());
+    }
     
     ButtonArea buttons1 = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton();
