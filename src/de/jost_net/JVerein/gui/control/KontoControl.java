@@ -299,7 +299,7 @@ public class KontoControl extends FilterControl
   {
     try
     {
-      prepareStore().store();
+      prepareStore();
 
       DBService service = Einstellungen.getDBService();
       String sql = "SELECT DISTINCT konto.id from konto "
@@ -333,6 +333,8 @@ public class KontoControl extends FilterControl
           Logger.error("Fehler", e);
         }
       }
+      Konto k = getKonto();
+      k.store();
     }
     catch (RemoteException e)
     {
