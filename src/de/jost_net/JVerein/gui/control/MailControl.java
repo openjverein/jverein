@@ -571,8 +571,7 @@ public class MailControl extends FilterControl
   {
     try
     {
-      prepareStore();
-      Mail m = getMail();
+      Mail m = (Mail) prepareStore();
       m.setBearbeitung(new Timestamp(new Date().getTime()));
       if (mitversand)
       {

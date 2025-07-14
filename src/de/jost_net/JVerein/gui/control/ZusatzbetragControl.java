@@ -219,8 +219,7 @@ public class ZusatzbetragControl extends AbstractControl
   {
     try
     {
-      prepareStore();
-      Zusatzbetrag z = getZusatzbetrag();
+      Zusatzbetrag z = (Zusatzbetrag) prepareStore();
       if (z.isNewObject())
       {
         if (getZusatzbetragPart().getMitglied().getValue() != null)

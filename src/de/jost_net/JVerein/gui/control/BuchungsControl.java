@@ -308,12 +308,7 @@ public class BuchungsControl extends AbstractControl
   public JVereinDBObject prepareStore()
       throws RemoteException, ApplicationException
   {
-    fill(getBuchung());
-    return getBuchung();
-  }
-
-  public void fill(Buchung b) throws ApplicationException, RemoteException
-  { 
+    Buchung b = getBuchung();
     b.setBuchungsartId(getSelectedBuchungsArtId());
     b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
     b.setProjektID(getSelectedProjektId());
@@ -344,6 +339,7 @@ public class BuchungsControl extends AbstractControl
     {
       b.setSteuer((Steuer) getSteuer().getValue());
     }
+    return b;
   }
 
   public Input getID() throws RemoteException
@@ -1097,8 +1093,7 @@ public class BuchungsControl extends AbstractControl
   {
     try
     {
-      Buchung b = getBuchung();
-      fill(b);
+      Buchung b = (Buchung) prepareStore();
 
       if (b.getSpeicherung())
       {

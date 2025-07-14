@@ -184,8 +184,7 @@ public class WiedervorlageControl extends FilterControl
   {
     try
     {
-      prepareStore();
-      Wiedervorlage w = getWiedervorlage();
+      Wiedervorlage w = (Wiedervorlage) prepareStore();
       if (w.isNewObject())
       {
         if (getMitglied().getValue() != null)

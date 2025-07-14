@@ -240,8 +240,8 @@ public class SollbuchungPositionControl extends AbstractControl
   {
     try
     {
-      prepareStore().store();
-      SollbuchungPosition pos = getPosition();
+      SollbuchungPosition pos = (SollbuchungPosition) prepareStore();
+      pos.store();
       // Betrag in Sollbuchung neu berechnen
       Double betrag = 0.0;
       Sollbuchung sollb = pos.getSollbuchung();

@@ -2450,8 +2450,7 @@ public class MitgliedControl extends FilterControl
   {
     try
     {
-      prepareStore();
-      Mitglied m = getMitglied();
+      Mitglied m = (Mitglied) prepareStore();
       m.setMandatID((String) getMandatID().getValue());
       // Mitgleidstyp ist in der DB als Long, wird jedoch sonst als Integer
       // verwendet, daher können wir ihn nicht in fill() setzen, sonst wird der

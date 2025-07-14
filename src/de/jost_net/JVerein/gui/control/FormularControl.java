@@ -245,8 +245,7 @@ public class FormularControl extends FormularPartControl
   {
     try
     {
-      prepareStore();
-      Formular f = getFormular();
+      Formular f = (Formular) prepareStore();
       f.setZaehlerToFormlink((int) getZaehler().getValue());
       String dat = (String) getDatei().getValue();
       if (dat.length() > 0)

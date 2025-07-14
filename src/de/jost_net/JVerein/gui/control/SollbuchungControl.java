@@ -339,8 +339,7 @@ public class SollbuchungControl extends DruckMailControl
   {
     try
     {
-      prepareStore();
-      Sollbuchung sollb = getSollbuchung();
+      Sollbuchung sollb = (Sollbuchung) prepareStore();
 
       if (getZahler().getValue() == null)
       {

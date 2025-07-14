@@ -489,8 +489,7 @@ public class BeitragsgruppeControl extends AbstractControl
   {
     try
     {
-      prepareStore();
-      Beitragsgruppe b = getBeitragsgruppe();
+      Beitragsgruppe b = (Beitragsgruppe) prepareStore();
       b.store();
       if (isAltersstaffel != null && (Boolean) isAltersstaffel.getValue()
           && alterstaffel != null)

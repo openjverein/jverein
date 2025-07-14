@@ -199,8 +199,7 @@ public class LehrgangControl extends FilterControl
   {
     try
     {
-      prepareStore();
-      Lehrgang l = getLehrgang();
+      Lehrgang l = (Lehrgang) prepareStore();
       if (l.isNewObject())
       {
         if (getMitglied().getValue() != null)
