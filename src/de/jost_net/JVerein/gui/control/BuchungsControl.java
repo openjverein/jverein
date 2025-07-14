@@ -1433,7 +1433,7 @@ public class BuchungsControl extends AbstractControl
       }
       else
       {
-        settings.setAttribute(settingsprefix + SUCHSTEUER, "");
+        settings.setAttribute(settingsprefix + SUCHSTEUER, -2);
       }
     }
 
