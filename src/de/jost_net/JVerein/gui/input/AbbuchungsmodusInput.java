@@ -21,7 +21,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.jameica.gui.input.SelectInput;
 
@@ -45,7 +47,8 @@ public class AbbuchungsmodusInput extends SelectInput
   {
     ArrayList<AbbuchungsmodusObject> l = new ArrayList<>();
     l.add(new AbbuchungsmodusObject(Abrechnungsmodi.KEINBEITRAG));
-    switch (Einstellungen.getEinstellung().getBeitragsmodel())
+    switch (Beitragsmodel
+        .getByKey((Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
     {
       case GLEICHERTERMINFUERALLE:
       case FLEXIBEL:

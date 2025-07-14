@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.LehrgangAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
@@ -329,7 +330,7 @@ public class LehrgangControl extends FilterControl
     else
     {
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
-          Einstellungen.getEinstellung().getMitgliedAuswahl());
+          (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     }
     mitglied.setMandatory(true);
     return mitglied;

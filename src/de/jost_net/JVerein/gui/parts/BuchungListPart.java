@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.KontoFormatter;
@@ -73,7 +74,7 @@ public class BuchungListPart extends BuchungListTablePart
     addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
     addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       addColumn("Steuer", "steuer", o -> {
         if (o == null)

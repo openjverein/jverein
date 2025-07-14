@@ -37,6 +37,7 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzAction;
 import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
@@ -277,7 +278,8 @@ public class ArbeitseinsatzControl extends FilterControl
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("arbeitseinsaetze", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
+            .get());
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -321,7 +323,7 @@ public class ArbeitseinsatzControl extends FilterControl
           while (it.hasNext())
           {
             ArbeitseinsatzZeile z = (ArbeitseinsatzZeile) it.next();
-            if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+            if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
             {
               reporter.addColumn((String) z.getAttribute("idnamevorname"),
                   Element.ALIGN_LEFT);
@@ -378,7 +380,8 @@ public class ArbeitseinsatzControl extends FilterControl
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("arbeitseinsaetze", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "csv").get());
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "csv")
+            .get());
     fd.setFilterExtensions(new String[] { "*.csv" });
 
     String s = fd.open();

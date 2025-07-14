@@ -44,6 +44,7 @@ import org.kapott.hbci.GV.generators.SEPAGeneratorFactory;
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
@@ -264,20 +265,24 @@ public class AbrechnungSEPA
     {
       monitor.setStatusText("Lastschriften erstellen");
 
-      if (Einstellungen.getEinstellung().getName() == null
-          || Einstellungen.getEinstellung().getName().length() == 0
-          || Einstellungen.getEinstellung().getIban() == null
-          || Einstellungen.getEinstellung().getIban().length() == 0
-          || Einstellungen.getEinstellung().getBic() == null
-          || Einstellungen.getEinstellung().getBic().length() == 0)
+      if (Einstellungen.getEinstellung(Property.NAME) == null
+          || ((String) Einstellungen.getEinstellung(Property.NAME))
+              .length() == 0
+          || Einstellungen.getEinstellung(Property.IBAN) == null
+          || ((String) Einstellungen.getEinstellung(Property.IBAN))
+              .length() == 0
+          || Einstellungen.getEinstellung(Property.BIC) == null
+          || ((String) Einstellungen.getEinstellung(Property.BIC))
+              .length() == 0)
       {
         throw new ApplicationException(
             "Name des Vereins oder Bankverbindung fehlt. Bitte unter "
                 + "Administration|Einstellungen|Allgemein erfassen.");
       }
 
-      if (Einstellungen.getEinstellung().getGlaeubigerID() == null
-          || Einstellungen.getEinstellung().getGlaeubigerID().length() == 0)
+      if (Einstellungen.getEinstellung(Property.GLAEUBIGERID) == null
+          || ((String) Einstellungen.getEinstellung(Property.GLAEUBIGERID))
+              .length() == 0)
       {
         throw new ApplicationException(
             "Gläubiger-ID fehlt. Gfls. unter https://extranet.bundesbank.de/scp/ oder"
@@ -294,13 +299,15 @@ public class AbrechnungSEPA
 
       Basislastschrift lastschrift = new Basislastschrift();
       // Vorbereitung: Allgemeine Informationen einstellen
-      lastschrift.setBIC(Einstellungen.getEinstellung().getBic());
+      lastschrift.setBIC((String) Einstellungen.getEinstellung(Property.BIC));
       lastschrift
-          .setGlaeubigerID(Einstellungen.getEinstellung().getGlaeubigerID());
-      lastschrift.setIBAN(Einstellungen.getEinstellung().getIban());
+          .setGlaeubigerID(
+              (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
+      lastschrift.setIBAN((String) Einstellungen.getEinstellung(Property.IBAN));
       lastschrift.setKomprimiert(param.kompakteabbuchung);
       lastschrift
-          .setName(Zeichen.convert(Einstellungen.getEinstellung().getName()));
+          .setName(Zeichen
+              .convert((String) Einstellungen.getEinstellung(Property.NAME)));
       lastschrift.setMessageID(abrl.getID() + "-RCUR");
 
       count = 0;
@@ -393,8 +400,8 @@ public class AbrechnungSEPA
         list.addFilter("eingabedatum >= ?",
             new java.sql.Date(param.voneingabedatum.getTime()));
       }
-      if (Einstellungen.getEinstellung()
-          .getBeitragsmodel() == Beitragsmodel.MONATLICH12631)
+      if ((Integer) Einstellungen.getEinstellung(
+          Property.BEITRAGSMODEL) == Beitragsmodel.MONATLICH12631.getKey())
       {
         if (param.abbuchungsmodus == Abrechnungsmodi.HAVIMO)
         {
@@ -527,8 +534,8 @@ public class AbrechnungSEPA
       mZahler = Einstellungen.getDBService().createObject(Mitglied.class,
           m.getVollZahlerID().toString());
     }
-    if ((Einstellungen.getEinstellung()
-        .getBeitragsmodel() == Beitragsmodel.FLEXIBEL)
+    if (((Integer) Einstellungen.getEinstellung(
+        Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
         && (mZahler.getZahlungstermin() != null && !mZahler.getZahlungstermin()
             .isAbzurechnen(param.abrechnungsmonat)))
     {
@@ -538,7 +545,8 @@ public class AbrechnungSEPA
     try
     {
       betr = BeitragsUtil.getBeitrag(
-          Einstellungen.getEinstellung().getBeitragsmodel(),
+          Beitragsmodel.getByKey(
+              (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)),
           mZahler.getZahlungstermin(), mZahler.getZahlungsrhythmus().getKey(),
           bg, param.stichtag, m);
     }
@@ -547,7 +555,7 @@ public class AbrechnungSEPA
       throw new ApplicationException(
           "Zahlungsinformationen bei " + Adressaufbereitung.getNameVorname(m));
     }
-    if (primaer && (Einstellungen.getEinstellung().getIndividuelleBeitraege()
+    if (primaer && ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE)
         && m.getIndividuellerBeitrag() != null))
     {
       betr = m.getIndividuellerBeitrag();
@@ -624,7 +632,7 @@ public class AbrechnungSEPA
       }
       zahler.setName(
           mZahler.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
-      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         zahler.setSteuer(bg.getSteuer());
       }
@@ -729,7 +737,7 @@ public class AbrechnungSEPA
           zahler.setDatum(z.getFaelligkeit());
           zahler.setMitglied(m);
 
-          if (Einstellungen.getEinstellung().getSteuerInBuchung())
+          if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
           {
             zahler.setSteuer(z.getSteuer());
           }
@@ -945,7 +953,7 @@ public class AbrechnungSEPA
         SepaLastschrift sl = (SepaLastschrift) param.service
             .createObject(SepaLastschrift.class, null);
         sl.setBetrag(za.getBetrag().doubleValue());
-        sl.setCreditorId(Einstellungen.getEinstellung().getGlaeubigerID());
+        sl.setCreditorId((String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
         sl.setGegenkontoName(za.getName());
         sl.setGegenkontoBLZ(za.getBic());
         sl.setGegenkontoNummer(za.getIban());
@@ -1005,7 +1013,7 @@ public class AbrechnungSEPA
   {
     String id = adr.getID();
     if (adr instanceof Mitglied
-        && Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+        && (Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
     {
       id = ((Mitglied) adr).getExterneMitgliedsnummer();
     }
@@ -1048,7 +1056,7 @@ public class AbrechnungSEPA
         .createObject(SollbuchungPosition.class, null);
     sp.setBetrag(zahler.getBetrag().doubleValue());
     sp.setBuchungsartId(zahler.getBuchungsartId());
-    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       sp.setSteuer(zahler.getSteuer());
     }
@@ -1274,13 +1282,13 @@ public class AbrechnungSEPA
 
   private Konto getKonto() throws RemoteException, ApplicationException
   {
-    if (Einstellungen.getEinstellung().getVerrechnungskontoId() == null)
+    if ((Boolean) Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID) == null)
     {
       throw new ApplicationException(
           "Verrechnungskonto nicht gesetzt. Unter Administration->Einstellungen->Abrechnung erfassen.");
     }
     Konto k = Einstellungen.getDBService().createObject(Konto.class,
-        Einstellungen.getEinstellung().getVerrechnungskontoId().toString());
+        Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID).toString());
     if (k == null)
     {
       throw new ApplicationException(

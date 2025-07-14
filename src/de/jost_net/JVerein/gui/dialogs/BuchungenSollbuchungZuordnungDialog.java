@@ -34,6 +34,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -132,7 +133,11 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
     group.addLabelPair("Startdatum", dateFrom);
     group.addLabelPair("Enddatum", dateUntil);
     group.addLabelPair("Nach eindeutiger IBAN", useIban);
-    group.addLabelPair("Nach " + (Einstellungen.getEinstellung().getExterneMitgliedsnummer().booleanValue() ? "Ext. Mitgliedsnummer" : "Mitgliedsnummer"), useMemberNumber);
+    group.addLabelPair("Nach " + ((Boolean) Einstellungen
+        .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
+            ? "Ext. Mitgliedsnummer"
+            : "Mitgliedsnummer"),
+        useMemberNumber);
     group.addLabelPair("Nach eindeutigen Vorname und Nachname", useName);
     group.addLabelPair("Nach eindeutigem Verwendungszweck", useZweck);
     ButtonArea buttons = new ButtonArea();
@@ -189,7 +194,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
       {
         try 
         {
-          boolean externeMitgliedsnummer = Boolean.TRUE.equals(Einstellungen.getEinstellung().getExterneMitgliedsnummer());
+          boolean externeMitgliedsnummer = Boolean.TRUE.equals((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER));
 
           if (!useIbanInput && !useMemberNumberInput && !useNameInput
               && !useZweckInput)

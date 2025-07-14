@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
@@ -174,6 +175,7 @@ public class SollbuchungControl extends DruckMailControl
     }
     sollbuchung = Einstellungen.getDBService().createObject(Sollbuchung.class,
         ((Sollbuchung) getCurrentObject()).getID());
+    GUI.getCurrentView().setCurrentObject(sollbuchung);
     return sollbuchung;
   }
 
@@ -252,7 +254,7 @@ public class SollbuchungControl extends DruckMailControl
 
     zahlungsweg = new SelectInput(weg,
         z == null
-            ? new Zahlungsweg(Einstellungen.getEinstellung().getZahlungsweg())
+            ? new Zahlungsweg((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG))
             : new Zahlungsweg(getSollbuchung().getZahlungsweg()));
     zahlungsweg.setName("Zahlungsweg");
     return zahlungsweg;
@@ -473,7 +475,7 @@ public class SollbuchungControl extends DruckMailControl
       });
       sollbuchungenList.addColumn("Zahlungseingang", Sollbuchung.ISTSUMME,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
         sollbuchungenList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
       }
@@ -849,7 +851,7 @@ public class SollbuchungControl extends DruckMailControl
     else
     {
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
-          Einstellungen.getEinstellung().getMitgliedAuswahl());
+          (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
       if (mitglied instanceof SelectInput)
       {
         ((SelectInput) mitglied).setPleaseChoose("Bitte auswählen");
@@ -868,7 +870,7 @@ public class SollbuchungControl extends DruckMailControl
     }
     zahler = new MitgliedInput().getMitgliedInput(zahler,
         getSollbuchung().getZahler(),
-        Einstellungen.getEinstellung().getMitgliedAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     if (zahler instanceof SelectInput)
     {
       ((SelectInput) zahler).setPleaseChoose("Bitte auswählen");

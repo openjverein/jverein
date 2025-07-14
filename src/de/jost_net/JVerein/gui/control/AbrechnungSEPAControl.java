@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
@@ -191,7 +192,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     Calendar cal = Calendar.getInstance();
     Bankarbeitstage bat = new Bankarbeitstage();
     cal = bat.getCalendar(cal,
-        1 + Einstellungen.getEinstellung().getSEPADatumOffset());
+        1 + (Integer) Einstellungen.getEinstellung(Property.SEPADATUMOFFSET));
     this.faelligkeit = new DateInput(cal.getTime(),
         new JVDateFormatTTMMJJJJ());
     this.faelligkeit.setTitle("Fälligkeit");
@@ -475,7 +476,7 @@ public class AbrechnungSEPAControl extends AbstractControl
         (Boolean) kompakteabbuchung.getValue());
     settings.setAttribute("sollbuchungenzusammenfassen",
         (Boolean) sollbuchungenzusammenfassen.getValue());
-    if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       settings.setAttribute("rechnung", (Boolean) rechnung.getValue());
       settings.setAttribute("rechnungstext", (String) rechnungstext.getValue());
@@ -532,7 +533,8 @@ public class AbrechnungSEPAControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("abbuchungRCUR", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "XML").get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "XML")
+              .get());
       String file = fd.open();
       if (file == null || file.length() == 0)
       {
@@ -543,7 +545,8 @@ public class AbrechnungSEPAControl extends AbstractControl
       settings.setAttribute("lastdir.sepa", sepafilercur.getParent());
       try
       {
-        sepaVersion = Einstellungen.getEinstellung().getSepaVersion();
+        sepaVersion = SepaVersion
+            .byURN((String) Einstellungen.getEinstellung(Property.SEPAVERSION));
       }
       catch (Exception e)
       {
@@ -566,7 +569,8 @@ public class AbrechnungSEPAControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("abbuchungRCUR", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "PDF")
+              .get());
       pdffileRCUR = fd.open();
       if (pdffileRCUR == null)
       {

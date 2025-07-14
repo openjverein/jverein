@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
@@ -221,7 +222,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     Mitglied m = getSpendenbescheinigung().getMitglied();
     mitglied = new MitgliedInput().getMitgliedInput(mitglied, m,
-        Einstellungen.getEinstellung().getMitgliedAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     mitglied.addListener(new MitgliedListener());
     if (mitglied instanceof SelectInput)
     {
@@ -895,8 +896,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       }
       // PDF wurde bereits erstellt, dieses holen wir und schreiben es in das
       // ZIP
-      String path = Einstellungen.getEinstellung()
-          .getSpendenbescheinigungverzeichnis();
+      String path = (String) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGVERZEICHNIS);
       if (path == null || path.length() == 0)
       {
         path = settings.getString("lastdir", System.getProperty("user.home"));
@@ -906,7 +906,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
       String fileName = new Dateiname(spb.getMitglied(),
           spb.getSpendedatum(), "Spendenbescheinigung",
-          Einstellungen.getEinstellung().getDateinamenmusterSpende(),
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTERSPENDE),
           "pdf").get();
 
       // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
@@ -969,7 +969,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("spendenbescheinigungen", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), type).get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), type)
+              .get());
 
       final String s = fd.open();
 

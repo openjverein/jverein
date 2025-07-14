@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.menu;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
@@ -92,7 +93,7 @@ public class BuchungMenu extends ContextMenu
           "document-new.png"));
       try
       {
-        if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+        if ((Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
         {
           addItem(new SpendenbescheinigungMenuItem("Geldspendenbescheinigung",
               new SpendenbescheinigungAction(Spendenart.GELDSPENDE),
@@ -108,7 +109,7 @@ public class BuchungMenu extends ContextMenu
         new BuchungBuchungsartZuordnungAction(), "view-refresh.png"));
     try
     {
-      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         addItem(new CheckedContextMenuItem("Steuer zuordnen",
             new BuchungSteuerZuordnenAction(), "view-refresh.png"));
@@ -124,7 +125,7 @@ public class BuchungMenu extends ContextMenu
     }
     try
     {
-      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
         addItem(new CheckedContextMenuItem("Projekt zuordnen",
             new BuchungProjektZuordnungAction(), "view-refresh.png"));

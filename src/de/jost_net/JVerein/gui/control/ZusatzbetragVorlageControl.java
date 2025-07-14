@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
@@ -219,7 +220,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         getZusatzbetragVorlage().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.addListener(new Listener()
     {
       @Override
@@ -410,14 +411,14 @@ public class ZusatzbetragVorlageControl extends AbstractControl
               return new Zahlungsweg((Integer) o).getText();
             }
           });
-      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         zusatzbetragVorlageList.addColumn("Buchungsklasse", "buchungsklasse",
             new BuchungsklasseFormatter());
       }
       zusatzbetragVorlageList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
-      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         zusatzbetragVorlageList.addColumn("Steuer", "steuer", o -> {
           if (o == null)

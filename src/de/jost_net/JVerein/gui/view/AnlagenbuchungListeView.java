@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungImportAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
@@ -63,7 +64,7 @@ public class AnlagenbuchungListeView extends AbstractView
 
     left.addLabelPair("Konto", control.getSuchKonto());
     left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
-    if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+    if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
     {
       left.addLabelPair("Projekt", control.getSuchProjekt());
     }
@@ -131,7 +132,7 @@ public class AnlagenbuchungListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ANLAGENBUCHUNGEN, false, "question-circle.png");
-    if (!control.getGeldkonto() && !Einstellungen.getEinstellung().getAfaInJahresabschluss())
+    if (!control.getGeldkonto() && !(Boolean) Einstellungen.getEinstellung(Property.AFAINJAHRESABSCHLUSS))
       buttons.addButton(control.getAfaButton());
     buttons.addButton("Import", new BuchungImportAction(), null, false,
         "file-import.png");

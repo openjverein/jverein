@@ -28,6 +28,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -76,7 +77,7 @@ public class MitgliederStatistik
       reporter.createHeader(70f, Element.ALIGN_LEFT);
 
       AltersgruppenParser ap = new AltersgruppenParser(
-          Einstellungen.getEinstellung().getAltersgruppen());
+          (String) Einstellungen.getEinstellung(Property.ALTERSGRUPPEN));
       while (ap.hasNext())
       {
         VonBis vb = ap.getNext();

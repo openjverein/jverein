@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
@@ -451,7 +452,7 @@ public class RechnungControl extends DruckMailControl implements Savable
     }
 
     nummer = new TextInput(StringTool.lpad(getRechnung().getID(),
-        Einstellungen.getEinstellung().getZaehlerLaenge(), "0"));
+        (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
     nummer.setName("Rechnungsnummer");
     nummer.disable();
     ;

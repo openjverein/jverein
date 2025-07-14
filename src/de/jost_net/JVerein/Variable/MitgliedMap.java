@@ -24,10 +24,12 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.BeitragsUtil;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
@@ -98,7 +100,8 @@ public class MitgliedMap extends AbstractMap
       map.put(MitgliedVar.BEITRAGSGRUPPE_BETRAG.getName(),
           mitglied.getBeitragsgruppe() != null ?
               Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
-                  Einstellungen.getEinstellung().getBeitragsmodel(),
+                  Beitragsmodel.getByKey((Integer) Einstellungen
+                      .getEinstellung(Property.BEITRAGSMODEL)),
                   mitglied.getZahlungstermin(),
                   mitglied.getZahlungsrhythmus().getKey(),
                   mitglied.getBeitragsgruppe(), new Date(), mitglied)) :
@@ -213,7 +216,7 @@ public class MitgliedMap extends AbstractMap
     switch (mitglied.getZahlungsweg())
     {
       case Zahlungsweg.BASISLASTSCHRIFT:
-        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextAbbuchung();
+        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTABBUCHUNG);
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}", mitglied.getBic());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}",
             mitglied.getIban());
@@ -221,11 +224,10 @@ public class MitgliedMap extends AbstractMap
             mitglied.getMandatID());
         break;
       case Zahlungsweg.BARZAHLUNG:
-        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextBar();
+        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR);
         break;
       case Zahlungsweg.ÜBERWEISUNG:
-        zahlungsweg = Einstellungen.getEinstellung()
-            .getRechnungTextUeberweisung();
+        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
         break;
     }
     try

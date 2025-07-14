@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.BuchungVar;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -189,7 +190,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
             + "geändert werden da eine Spendenbescheinigung zugeordnet ist!");
       }
     }
-    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       if (getSteuer() != null
           && !getKonto().getKontoArt().equals(Kontoart.GELD))
@@ -667,7 +668,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   public Double getNetto() throws RemoteException
   {
     Double brutto = (Double) getAttribute("betrag");
-    if (!Einstellungen.getEinstellung().getOptiert())
+    if (!(Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       return brutto;
     }
@@ -685,7 +686,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
       return brutto;
     }
     Steuer steuer = null;
-    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       steuer = getSteuer();
     }

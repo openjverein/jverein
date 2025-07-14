@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.io.AnlagenverzeichnisCSV;
 import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
@@ -134,7 +135,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   {
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("konto");
 
-    switch (Einstellungen.getEinstellung().getBuchungsartSort())
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {
       case BuchungsartSort.NACH_NUMMER:
         it.addColumn(

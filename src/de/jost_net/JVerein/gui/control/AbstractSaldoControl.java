@@ -27,6 +27,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.Dateiname;
@@ -234,7 +235,8 @@ public abstract class AbstractSaldoControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname(title, "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), type).get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+          type).get());
 
       final String s = fd.open();
 
@@ -407,7 +409,8 @@ public abstract class AbstractSaldoControl extends AbstractControl
       cal.setTime(von);
       year = cal.get(Calendar.YEAR);
       Date gjvon = Datum.toDate(
-          Einstellungen.getEinstellung().getBeginnGeschaeftsjahr() + year);
+          (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+              + year);
       if (!von.equals(gjvon))
       {
         return 0;

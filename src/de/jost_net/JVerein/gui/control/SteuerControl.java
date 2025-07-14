@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
@@ -135,7 +136,8 @@ public class SteuerControl extends AbstractControl implements Savable
     }
     buchungsart = new BuchungsartInput()
         .getBuchungsartInput(buchungsart, getSteuer().getBuchungsart(), null,
-            Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+            (Integer) Einstellungen
+                .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.setMandatory(true);
     buchungsart.setComment("");
     Listener listener = new Listener()

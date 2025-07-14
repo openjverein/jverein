@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AboutAction;
 import de.jost_net.JVerein.gui.action.BackupCreateAction;
 import de.jost_net.JVerein.gui.action.BackupRestoreAction;
@@ -150,13 +151,13 @@ public class MyExtension implements Extension
       
       mitglieder.addChild(new MyItem(mitglieder, "Mitglieder",
           new StartViewAction(MitgliedListeView.class), "user-friends.png"));
-      if (Einstellungen.getEinstellung().getZusatzadressen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN))
       {
         mitglieder.addChild(new MyItem(mitglieder, "Nicht-Mitglieder",
             new StartViewAction(NichtMitgliedListeView.class),
             "user-friends.png"));
       }
-      if (Einstellungen.getEinstellung().getKursteilnehmer())
+      if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
       {
         mitglieder.addChild(new MyItem(mitglieder, "Kursteilnehmer",
             new StartViewAction(KursteilnehmerListeView.class),
@@ -174,36 +175,36 @@ public class MyExtension implements Extension
       
       mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new StartViewAction(SollbuchungListeView.class), "calculator.png"));
-      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
         mitglieder.addChild(new MyItem(mitglieder, "Rechnungen",
             new StartViewAction(RechnungListeView.class), "file-invoice.png"));
       }
-      if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
         mitglieder.addChild(new MyItem(mitglieder, "Spendenbescheinigungen",
             new StartViewAction(SpendenbescheinigungListeView.class),
             "file-invoice.png"));
       }
-      if (Einstellungen.getEinstellung().getZusatzbetrag())
+      if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
       {
         mitglieder.addChild(new MyItem(mitglieder, "Zusatzbeträge",
             new StartViewAction(ZusatzbetragListeView.class),
             "euro-sign.png"));
       }
-      if (Einstellungen.getEinstellung().getWiedervorlage())
+      if ((Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE))
       {
         mitglieder.addChild(new MyItem(mitglieder, "Wiedervorlagen",
             new StartViewAction(WiedervorlageListeView.class),
             "office-calendar.png"));
       }
-      if (Einstellungen.getEinstellung().getLehrgaenge())
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
       {
         mitglieder.addChild(new MyItem(mitglieder, "Lehrgänge",
             new StartViewAction(LehrgangListeView.class),
             "chalkboard-teacher.png"));
       }
-      if (Einstellungen.getEinstellung().getArbeitseinsatz())
+      if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
       {
         mitglieder.addChild(new MyItem(mitglieder, "Arbeitseinsätze",
             new StartViewAction(ArbeitseinsatzListeView.class),
@@ -234,7 +235,7 @@ public class MyExtension implements Extension
           new StartViewAction(BuchungsklasseSaldoView.class),
           "emblem-documents.png"));
       // UstVA
-      if (Einstellungen.getEinstellung().getOptiert())
+      if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
       {
         buchfuehrung
             .addChild(new MyItem(buchfuehrung, "Umsatzsteuer Voranmeldung",
@@ -242,7 +243,7 @@ public class MyExtension implements Extension
                 "coins.png"));
       }
       // Projekte
-      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Projektsaldo",
             new StartViewAction(ProjektSaldoView.class), "screwdriver.png"));
@@ -258,7 +259,7 @@ public class MyExtension implements Extension
             "office-chart-area.png"));
       }
       // Mittelverwendung
-      if (Einstellungen.getEinstellung().getMittelverwendung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Mittelverwendung",
             new StartViewAction(MittelverwendungReportView.class),
@@ -286,7 +287,7 @@ public class MyExtension implements Extension
       auswertung = new MyItem(auswertung, "Auswertungen", null);
       auswertung.addChild(new MyItem(auswertung, "Mitglieder",
           new StartViewAction(AuswertungMitgliedView.class), "receipt.png"));
-      if (Einstellungen.getEinstellung().getZusatzadressen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN))
       {
         auswertung.addChild(new MyItem(auswertung, "Nicht-Mitglieder",
             new StartViewAction(AuswertungNichtMitgliedView.class),
@@ -294,7 +295,7 @@ public class MyExtension implements Extension
       }
       auswertung.addChild(new MyItem(auswertung, "Jubiläen",
           new StartViewAction(JubilaeenView.class), "receipt.png"));
-      if (Einstellungen.getEinstellung().getKursteilnehmer())
+      if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
       {
         auswertung.addChild(new MyItem(auswertung, "Kursteilnehmer",
             new StartViewAction(AuswertungKursteilnehmerView.class),
@@ -305,7 +306,7 @@ public class MyExtension implements Extension
       auswertung.addChild(new MyItem(auswertung, "Jahrgangsstatistik",
           new StartViewAction(StatistikJahrgaengeView.class),
           "chart-line.png"));
-      if (Einstellungen.getEinstellung().getArbeitseinsatz())
+      if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
       {
         auswertung.addChild(new MyItem(mitglieder, "Arbeitseinsätze",
             new StartViewAction(ArbeitseinsatzUeberpruefungView.class),
@@ -315,7 +316,7 @@ public class MyExtension implements Extension
 
       NavigationItem mail = null;
       mail = new MyItem(mail, "Druck & Mail", null);
-      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
         mail.addChild(new MyItem(mail, "Rechnungen",
             new StartViewAction(RechnungMailView.class), "document-print.png"));
@@ -331,7 +332,7 @@ public class MyExtension implements Extension
       mail.addChild(new MyItem(mail, "Pre-Notification",
           new StartViewAction(PreNotificationMailView.class),
           "document-print.png"));
-      if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
         mail.addChild(new MyItem(mail, "Spendenbescheinigungen",
             new StartViewAction(SpendenbescheinigungMailView.class),
@@ -376,7 +377,7 @@ public class MyExtension implements Extension
           .addChild(new MyItem(administrationEinstellungen, "Dateinamen",
               new StartViewAction(EinstellungenDateinamenView.class),
               "wrench.png"));
-      if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
         administrationEinstellungen.addChild(
             new MyItem(administrationEinstellungen, "Spendenbescheinigungen",
@@ -388,7 +389,7 @@ public class MyExtension implements Extension
           administrationEinstellungen, "Buchführung",
           new StartViewAction(EinstellungenBuchfuehrungView.class),
           "wrench.png"));
-      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
         administrationEinstellungen
             .addChild(new MyItem(administrationEinstellungen, "Rechnungen",
@@ -419,7 +420,7 @@ public class MyExtension implements Extension
       einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Zusatzfelder",
           new StartViewAction(ZusatzfeldListeView.class),
           "list.png"));
-      if (Einstellungen.getEinstellung().getUseLesefelder())
+      if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
       {
         einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Lesefelder",
             new LesefelddefinitionenAction(null), "list.png"));
@@ -427,13 +428,13 @@ public class MyExtension implements Extension
 
       einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Formulare",
           new StartViewAction(FormularListeView.class), "columns.png"));
-      if (Einstellungen.getEinstellung().getLehrgaenge())
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
       {
         einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Lehrgangsarten",
             new StartViewAction(LehrgangsartListeView.class),
             "chalkboard-teacher.png"));
       }
-      if (Einstellungen.getEinstellung().getZusatzadressen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN))
       {
         einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder, "Mitgliedstypen",
             new StartViewAction(MitgliedstypListeView.class),
@@ -456,13 +457,13 @@ public class MyExtension implements Extension
       einstellungenbuchfuehrung
           .addChild(new MyItem(einstellungenbuchfuehrung, "Kontenrahmen-Import",
               new KontenrahmenImportAction(), "file-import.png"));
-      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
         einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
             "Projekte", new StartViewAction(ProjektListeView.class),
             "screwdriver.png"));
       }
-      if (Einstellungen.getEinstellung().getOptiert())
+      if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
       {
         einstellungenbuchfuehrung
             .addChild(new MyItem(einstellungenbuchfuehrung, "Steuer",

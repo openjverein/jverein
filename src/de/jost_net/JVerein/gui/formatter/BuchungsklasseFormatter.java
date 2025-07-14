@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.formatter;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.willuhn.jameica.gui.formatter.Formatter;
@@ -37,7 +38,7 @@ public class BuchungsklasseFormatter implements Formatter
     String bez = null;
     try
     {
-      switch (Einstellungen.getEinstellung().getBuchungsartSort())
+      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
       {
         case BuchungsartSort.NACH_NUMMER:
           bez = bk.getNummer() + " - " + bk.getBezeichnung(); 
