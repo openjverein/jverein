@@ -215,8 +215,8 @@ public class Buchungsuebernahme
             {
               b.setSteuer(ba.getSteuer());
             }
+            break;
           }
-          break;
         }
         
         b.setDatum(u.getDatum());
