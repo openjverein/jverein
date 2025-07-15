@@ -19,12 +19,12 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -108,7 +108,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
     try
     {
       if (hasChanged("steuer")
-          && !Einstellungen.getEinstellung().getSteuerInBuchung())
+          && !(Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
 
         // Prüfen ob es abgeschlossene Buchungen mit der Buchungsart gibt

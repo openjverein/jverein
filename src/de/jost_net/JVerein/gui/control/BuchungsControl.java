@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
@@ -47,6 +48,7 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.JVerein.gui.formatter.KontoFormatter;
 import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
@@ -55,6 +57,7 @@ import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SollbuchungAuswahlInput;
+import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
@@ -72,6 +75,7 @@ import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -88,6 +92,7 @@ import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -184,6 +189,8 @@ public class BuchungsControl extends VorZurueckControl
   
   private TextInput mitglied = null;
 
+  private SelectInput suchsteuer;
+
   private CheckboxInput verzicht;
 
   private Buchung buchung;
@@ -199,6 +206,8 @@ public class BuchungsControl extends VorZurueckControl
   public static final String PROJEKT = "suchprojekt";
 
   public static final String MITGLIEDZUGEORDNET = "suchmitgliedzugeordnet";
+
+  public static final String SUCHSTEUER = "suchsteuer";
 
   private Vector<Listener> changeKontoListener = new Vector<>();
   
@@ -303,13 +312,10 @@ public class BuchungsControl extends VorZurueckControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
-    fill((Buchung) getCurrentObject());
-  }
-
-  public void fill(Buchung b) throws ApplicationException, RemoteException
-  { 
+    Buchung b = getBuchung();
     b.setBuchungsartId(getSelectedBuchungsArtId());
     b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
     b.setProjektID(getSelectedProjektId());
@@ -340,6 +346,7 @@ public class BuchungsControl extends VorZurueckControl
     {
       b.setSteuer((Steuer) getSteuer().getValue());
     }
+    return b;
   }
 
   public Input getID() throws RemoteException
@@ -538,6 +545,55 @@ public class BuchungsControl extends VorZurueckControl
     return mitglied != null;
   }
 
+  public SelectInput getSuchSteuer() throws RemoteException
+  {
+    if (suchsteuer != null)
+    {
+      return suchsteuer;
+    }
+    ArrayList<Steuer> steuerliste = new ArrayList<>();
+    Steuer s1 = (Steuer) Einstellungen.getDBService().createObject(Steuer.class,
+        null);
+    s1.setName("Ohne Steuer");
+    steuerliste.add(s1);
+
+    DBIterator<Steuer> it = Einstellungen.getDBService()
+        .createList(Steuer.class);
+    it.setOrder("order by name");
+    while (it.hasNext())
+    {
+      steuerliste.add(it.next());
+    }
+    int swert = settings.getInt(settingsprefix + SUCHSTEUER, -2);
+    Steuer letztesuche = null;
+    if (swert == 0)
+    {
+      letztesuche = steuerliste.get(0);
+    }
+    else
+    {
+      try
+      {
+        letztesuche = (Steuer) Einstellungen.getDBService()
+            .createObject(Steuer.class, String.valueOf(swert));
+      }
+      catch (ObjectNotFoundException e)
+      {
+        //
+      }
+    }
+    suchsteuer = new SelectInput(steuerliste, letztesuche);
+    suchsteuer.setAttribute("name");
+    suchsteuer.setPleaseChoose("Alle");
+    suchsteuer.addListener(new FilterListener());
+    return suchsteuer;
+  }
+
+  public boolean isSuchSteuerAktiv()
+  {
+    return suchsteuer != null;
+  }
+
   public CheckboxInput getVerzicht() throws RemoteException
   {
     if (verzicht != null)
@@ -643,7 +699,7 @@ public class BuchungsControl extends VorZurueckControl
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
       getBuchung().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-      Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+      (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     if (!getBuchung().getSpeicherung())
     {
       buchungsart.setMandatory(true);
@@ -691,7 +747,7 @@ public class BuchungsControl extends VorZurueckControl
     buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklasse,
         getBuchung().getBuchungsklasse());
     if (!getBuchung().getSpeicherung() && 
-        Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+        (Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       buchungsklasse.setMandatory(true);
     }
@@ -919,25 +975,8 @@ public class BuchungsControl extends VorZurueckControl
     {
       return steuer;
     }
-    DBIterator<Steuer> it = Einstellungen.getDBService()
-        .createList(Steuer.class);
-    String steuerId = "0";
-    if (getBuchung().getSteuer() != null)
-    {
-      steuerId = getBuchung().getSteuer().getID();
-    }
-    String steuerBuchunsartId = "0";
-    if (getBuchung().getBuchungsart() != null
-        && getBuchung().getBuchungsart().getSteuer() != null)
-    {
-      steuerBuchunsartId = getBuchung().getBuchungsart().getSteuer().getID();
-    }
-    it.addFilter("aktiv = true or id = ? or id = ?", steuerId,
-        steuerBuchunsartId);
 
-    steuer = new SelectInput(PseudoIterator.asList(it),
-        getBuchung().getSteuer());
-
+    steuer = new SteuerInput(getBuchung().getSteuer());
     steuer.setAttribute("name");
     steuer.setPleaseChoose("Keine Steuer");
 
@@ -1110,8 +1149,7 @@ public class BuchungsControl extends VorZurueckControl
   {
     try
     {
-      Buchung b = getBuchung();
-      fill(b);
+      Buchung b = (Buchung) prepareStore();
 
       if (b.getSpeicherung())
       {
@@ -1183,7 +1221,7 @@ public class BuchungsControl extends VorZurueckControl
   {
     try
     {
-      if (!Einstellungen.getEinstellung().getProjekteAnzeigen())
+      if (!(Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
         return null;
       }
@@ -1379,9 +1417,31 @@ public class BuchungsControl extends VorZurueckControl
       }
     }
 
+    Steuer steuer = null;
+    if (isSuchSteuerAktiv())
+    {
+      if (getSuchSteuer().getValue() != null)
+      {
+        steuer = (Steuer) getSuchSteuer().getValue();
+        if (steuer.isNewObject())
+        {
+          settings.setAttribute(settingsprefix + SUCHSTEUER, 0);
+        }
+        else
+        {
+          settings.setAttribute(settingsprefix + SUCHSTEUER, steuer.getID());
+        }
+        params.put("Steuer ", steuer.getName());
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + SUCHSTEUER, -2);
+      }
+    }
+
     query = new BuchungQuery(dv, db, k, b, p, suchtext,
         suchbetrag, mvalue, mitglied, geldkonto, split,
-        ungeprueft);
+        ungeprueft, steuer);
 
     if (buchungsList == null)
     {
@@ -1396,7 +1456,7 @@ public class BuchungsControl extends VorZurueckControl
           return (Boolean) o ? "\u2705" : "";
         }
       });
-      if (Einstellungen.getEinstellung().getDokumentenspeicherung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
       {
         buchungsList.addColumn("D", "document");
       }
@@ -1410,27 +1470,7 @@ public class BuchungsControl extends VorZurueckControl
         }
       });
 
-      buchungsList.addColumn("Konto", "konto", new Formatter()
-      {
-
-        @Override
-        public String format(Object o)
-        {
-          Konto k = (Konto) o;
-          if (k != null)
-          {
-            try
-            {
-              return k.getBezeichnung();
-            }
-            catch (RemoteException e)
-            {
-              Logger.error("Fehler", e);
-            }
-          }
-          return "";
-        }
-      });
+      buchungsList.addColumn("Konto", "konto", new KontoFormatter());
       buchungsList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
@@ -1459,7 +1499,7 @@ public class BuchungsControl extends VorZurueckControl
           return s;
         }
       });
-      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         buchungsList.addColumn("Buchungsklasse", "buchungsklasse",
             new BuchungsklasseFormatter());
@@ -1469,11 +1509,11 @@ public class BuchungsControl extends VorZurueckControl
           new BuchungsartFormatter());
       buchungsList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      if (Einstellungen.getEinstellung().getOptiert() && geldkonto)
+      if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT) && geldkonto)
       {
         buchungsList.addColumn("Netto", "netto",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-        if (Einstellungen.getEinstellung().getSteuerInBuchung())
+        if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
         {
           buchungsList.addColumn("Steuer", "steuer", o -> {
             if (o == null)
@@ -1496,7 +1536,7 @@ public class BuchungsControl extends VorZurueckControl
         buchungsList.addColumn(new Column(Buchung.SOLLBUCHUNG, "Mitglied",
           new SollbuchungFormatter(), false, Column.ALIGN_AUTO,
           Column.SORT_BY_DISPLAY));
-      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
         buchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
       }
@@ -1533,26 +1573,7 @@ public class BuchungsControl extends VorZurueckControl
       splitbuchungsList = new SplitbuchungListTablePart(
           SplitbuchungsContainer.get(), new BuchungAction(true));
       splitbuchungsList.addColumn("Nr", "id-int");
-      splitbuchungsList.addColumn("Konto", "konto", new Formatter()
-      {
-        @Override
-        public String format(Object o)
-        {
-          Konto k = (Konto) o;
-          if (k != null)
-          {
-            try
-            {
-              return k.getBezeichnung();
-            }
-            catch (RemoteException e)
-            {
-              Logger.error("Fehler", e);
-            }
-          }
-          return "";
-        }
-      });
+      splitbuchungsList.addColumn("Konto", "konto", new KontoFormatter());
       splitbuchungsList.addColumn("Typ", "splittyp", new Formatter()
       {
         @Override
@@ -1568,7 +1589,7 @@ public class BuchungsControl extends VorZurueckControl
       splitbuchungsList.addColumn("Blatt", "blattnummer");
       splitbuchungsList.addColumn("Name", "name");
       splitbuchungsList.addColumn("Verwendungszweck", "zweck");
-      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         splitbuchungsList.addColumn("Buchungsklasse", "buchungsklasse",
             new BuchungsklasseFormatter());
@@ -1577,11 +1598,11 @@ public class BuchungsControl extends VorZurueckControl
           new BuchungsartFormatter());
       splitbuchungsList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      if (Einstellungen.getEinstellung().getOptiert())
+      if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
       {
         splitbuchungsList.addColumn("Netto", "netto",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-        if (Einstellungen.getEinstellung().getSteuerInBuchung())
+        if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
         {
           splitbuchungsList.addColumn("Steuer", "steuer", o -> {
             if (o == null)
@@ -1602,7 +1623,7 @@ public class BuchungsControl extends VorZurueckControl
       }
       splitbuchungsList.addColumn("Mitglied", Buchung.SOLLBUCHUNG,
           new SollbuchungFormatter());
-      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
         splitbuchungsList.addColumn("Projekt", "projekt",
             new ProjektFormatter());
@@ -1695,7 +1716,8 @@ public class BuchungsControl extends VorZurueckControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("buchungen", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "PDF")
+              .get());
 
       final String s = fd.open();
 
@@ -1732,7 +1754,8 @@ public class BuchungsControl extends VorZurueckControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("buchungen", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "CSV").get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "CSV")
+              .get());
 
       final String s = fd.open();
 
@@ -1809,7 +1832,8 @@ public class BuchungsControl extends VorZurueckControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("buchungsjournal", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "PDF")
+              .get());
 
       final String s = fd.open();
 
@@ -2245,13 +2269,11 @@ public class BuchungsControl extends VorZurueckControl
       }
       Calendar calendar = Calendar.getInstance();
       Integer year = calendar.get(Calendar.YEAR);
-      Date startGJ = Datum.toDate(
-          Einstellungen.getEinstellung().getBeginnGeschaeftsjahr() + year);
+      Date startGJ = Datum.toDate((String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + year);
       if (calendar.getTime().before(startGJ))
       {
-        year = year - 1;
-        startGJ = Datum.toDate(
-            Einstellungen.getEinstellung().getBeginnGeschaeftsjahr() + year);
+        year = year -1;
+        startGJ = Datum.toDate((String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + year);
       }
       if (isVondatumAktiv())
       {
@@ -2276,6 +2298,11 @@ public class BuchungsControl extends VorZurueckControl
       {
         mitglied.setValue("");
       }
+      if (isSuchSteuerAktiv())
+      {
+        suchsteuer.setValue(null);
+      }
+
       refreshBuchungsList();
     }
     catch (Exception ex)

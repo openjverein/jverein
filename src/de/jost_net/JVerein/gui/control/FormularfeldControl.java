@@ -30,6 +30,7 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
@@ -64,69 +65,6 @@ public class FormularfeldControl extends FormularPartControl
   private TextInput formularTyp;
 
   private TextInput formularName;
-
-  public static final String EMPFAENGER = "Empfänger";
-
-  public static final String TAGESDATUM = "Tagesdatum";
-
-  public static final String TAGESDATUMTT = "Tagesdatum TT";
-
-  public static final String TAGESDATUMMM = "Tagesdatum MM";
-
-  public static final String TAGESDATUMJJJJ = "Tagesdatum JJJJ";
-
-  public static final String ZAHLUNGSWEG = "Zahlungsweg";
-
-  public static final String ID = "ID";
-
-  public static final String EXTERNEMITGLIEDSNUMMER = "externe Mitgliedsnummer";
-
-  public static final String ANREDE = "Anrede";
-
-  public static final String TITEL = "Titel";
-
-  public static final String NAME = "Name";
-
-  public static final String VORNAME = "Vorname";
-
-  public static final String ADRESSIERUNGSZUSATZ = "Adressierungszusatz";
-
-  public static final String STRASSE = "Strasse";
-
-  public static final String PLZ = "PLZ";
-
-  public static final String ORT = "Ort";
-
-  public static final String STAAT = "Staat";
-
-  @Deprecated
-  public static final String ZAHLUNGSRHYTMUS = "Zahlungsrhytmus";
-
-  public static final String ZAHLUNGSRHYTHMUS = "Zahlungsrhythmus";
-
-  public static final String KONTOINHABER = "Kontoinhaber";
-
-  public static final String GEBURTSDATUM = "Geburtsdatum";
-
-  public static final String GESCHLECHT = "Geschlecht";
-
-  public static final String TELEFONPRIVAT = "Telefon privat";
-
-  public static final String TELEFONDIENSTLICH = "Telefon dienstlich";
-
-  public static final String HANDY = "Handy";
-
-  public static final String EMAIL = "Email";
-
-  public static final String EINTRITT = "Eintritt";
-
-  public static final String BEITRAGSGRUPPE = "Beitragsgruppe";
-
-  public static final String AUSTRITT = "Austritt";
-
-  public static final String KUENDIGUNG = "Kündigung";
-  
-  public static final String ZAEHLER = "Fortlaufende Nummer des Formulars";
 
   public FormularfeldControl(AbstractView view, Formular formular)
   {
@@ -353,11 +291,12 @@ public class FormularfeldControl extends FormularPartControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
+    Formularfeld f = getFormularfeld();
     try
     {
-      Formularfeld f = getFormularfeld();
       f.setFormular(getFormular());
       f.setName((String) getName().getValue());
       f.setSeite((Integer) getSeite().getValue());
@@ -374,6 +313,7 @@ public class FormularfeldControl extends FormularPartControl
     {
       throw new ApplicationException(e);
     }
+    return f;
   }
 
   /**
@@ -383,9 +323,7 @@ public class FormularfeldControl extends FormularPartControl
   {
     try
     {
-      prepareStore();
-      Formularfeld f = getFormularfeld();
-      f.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

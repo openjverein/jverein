@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
@@ -318,7 +319,7 @@ public abstract class FilterControl extends VorZurueckControl
         settings.getString(settingsprefix + "status.art", ""));
     try
     {
-      if (Einstellungen.getEinstellung().getKursteilnehmer())
+      if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
       {
         art = new SelectInput(
             new String[] { "Mitglied", "Nicht-Mitglied", "Kursteilnehmer" },

@@ -22,6 +22,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -47,10 +48,10 @@ public class BeitragsUtil
     switch (bm)
     {
       case GLEICHERTERMINFUERALLE:
-        if(Einstellungen.getEinstellung().getGeburtsdatumPflicht() && bg.getHasAltersstaffel())
+        if((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT) && bg.getHasAltersstaffel())
         {
-          Einstellungen.getEinstellung().getAltersModel();
-          String stufen = Einstellungen.getEinstellung().getBeitragAltersstufen();
+          String stufen = (String) Einstellungen
+              .getEinstellung(Property.BEITRAGALTERSSTUFEN);
           if(stufen != null && stufen != "")
           {
         	if(m.getAlter() == null)
@@ -90,10 +91,9 @@ public class BeitragsUtil
         }
         break;
       case MONATLICH12631:
-        if(Einstellungen.getEinstellung().getGeburtsdatumPflicht() && bg.getHasAltersstaffel())
+        if((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT) && bg.getHasAltersstaffel())
         {
-          Einstellungen.getEinstellung().getAltersModel();
-          String stufen = Einstellungen.getEinstellung().getBeitragAltersstufen();
+          String stufen = (String) Einstellungen.getEinstellung(Property.BEITRAGALTERSSTUFEN);
           if(stufen != null && stufen != "")
           {
         	if(m.getAlter() == null)

@@ -14,6 +14,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
@@ -55,10 +56,18 @@ public class FreiesFormularAusgabe
     {
       case DRUCK:
         file = getDateiAuswahl("pdf", formular.getBezeichnung());
+        if (file == null)
+        {
+          return;
+        }
         formularaufbereitung = new FormularAufbereitung(file, false, false);
         break;
       case MAIL:
         file = getDateiAuswahl("zip", formular.getBezeichnung());
+        if (file == null)
+        {
+          return;
+        }
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }
@@ -135,7 +144,8 @@ public class FreiesFormularAusgabe
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname(name, "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), extension).get());
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+        extension).get());
     fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();

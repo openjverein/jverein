@@ -24,6 +24,7 @@ import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.EigenschaftGruppeMenu;
 import de.jost_net.JVerein.gui.view.EigenschaftGruppeDetailView;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -101,12 +102,13 @@ public class EigenschaftGruppeControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     EigenschaftGruppe eg = getEigenschaftGruppe();
     eg.setBezeichnung((String) getBezeichnung().getValue());
     eg.setPflicht((Boolean) getPflicht().getValue());
     eg.setMax1((Boolean) getMax1().getValue());
+    return eg;
   }
 
   /**
@@ -118,9 +120,7 @@ public class EigenschaftGruppeControl extends AbstractControl
   {
     try
     {
-      prepareStore();
-      EigenschaftGruppe eg = getEigenschaftGruppe();
-      eg.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

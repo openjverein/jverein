@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.FormularLinkFormatter;
 import de.jost_net.JVerein.gui.formatter.FormularartFormatter;
@@ -32,6 +33,7 @@ import de.jost_net.JVerein.gui.menu.FormularMenu;
 import de.jost_net.JVerein.gui.view.FormularDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.server.FormularImpl;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -107,7 +109,7 @@ public class FormularControl extends FormularPartControl
     FormularArt aktuelleFormularArt = getFormular().getArt();
     ArrayList<FormularArt> list = new ArrayList<FormularArt>(
         Arrays.asList(FormularArt.values()));
-    if (!Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+    if (!(Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
       if (aktuelleFormularArt != FormularArt.SPENDENBESCHEINIGUNG)
       {
@@ -118,7 +120,7 @@ public class FormularControl extends FormularPartControl
         list.remove(FormularArt.SAMMELSPENDENBESCHEINIGUNG);
       }
     }
-    if (!Einstellungen.getEinstellung().getRechnungenAnzeigen())
+    if (!(Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       if (aktuelleFormularArt != FormularArt.RECHNUNG)
       {
@@ -214,7 +216,7 @@ public class FormularControl extends FormularPartControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Formular f = getFormular();
     f.setBezeichnung((String) getBezeichnung(true).getValue());
@@ -231,6 +233,7 @@ public class FormularControl extends FormularPartControl
     {
       f.setFormlink(null);
     }
+    return f;
   }
 
   /**
@@ -242,8 +245,7 @@ public class FormularControl extends FormularPartControl
   {
     try
     {
-      prepareStore();
-      Formular f = getFormular();
+      Formular f = (Formular) prepareStore();
       f.setZaehlerToFormlink((int) getZaehler().getValue());
       String dat = (String) getDatei().getValue();
       if (dat.length() > 0)

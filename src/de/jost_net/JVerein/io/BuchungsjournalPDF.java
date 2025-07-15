@@ -25,6 +25,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -74,7 +75,7 @@ public class BuchungsjournalPDF
         reporter.addColumn(b.getZweck(), Element.ALIGN_LEFT);
         String buklaString = "-: ";
         String buaString = "--";
-        if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+        if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
         {
           if (b.getBuchungsklasseId() != null)
           {

@@ -28,9 +28,11 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
+import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BuchungsartMenu;
 import de.jost_net.JVerein.gui.view.BuchungsartDetailView;
 import de.jost_net.JVerein.io.FileViewer;
@@ -40,6 +42,7 @@ import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.Dateiname;
 import de.willuhn.datasource.GenericObject;
@@ -211,13 +214,7 @@ public class BuchungsartControl extends FilterControl
     {
       return steuer;
     }
-    DBIterator<Steuer> it = Einstellungen.getDBService()
-        .createList(Steuer.class);
-    it.addFilter("aktiv = true or id = ?",
-        (getBuchungsart().getSteuer() == null ? 0
-            : getBuchungsart().getSteuer().getID()));
-    steuer = new SelectInput(PseudoIterator.asList(it),
-        getBuchungsart().getSteuer());
+    steuer = new SteuerInput(getBuchungsart().getSteuer());
 
     steuer.setAttribute("name");
     steuer.setPleaseChoose("Keine Steuer");
@@ -235,7 +232,7 @@ public class BuchungsartControl extends FilterControl
   {
     try
     {
-      switch (Einstellungen.getEinstellung().getBuchungsartSort())
+      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
       {
         case BuchungsartSort.NACH_NUMMER:
           return "nrbezeichnung";
@@ -259,7 +256,7 @@ public class BuchungsartControl extends FilterControl
   {
     try
     {
-      switch (Einstellungen.getEinstellung().getBuchungsartSort())
+      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
       {
         case BuchungsartSort.NACH_NUMMER:
           return "ORDER BY nummer";
@@ -295,7 +292,8 @@ public class BuchungsartControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Buchungsart b = getBuchungsart();
     try
@@ -347,6 +345,7 @@ public class BuchungsartControl extends FilterControl
     {
       b.setSteuer((Steuer) steuer.getValue());
     }
+    return b;
   }
 
   /**
@@ -358,9 +357,7 @@ public class BuchungsartControl extends FilterControl
   {
     try
     {
-      prepareStore();
-      Buchungsart b = getBuchungsart();
-      b.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -399,7 +396,7 @@ public class BuchungsartControl extends FilterControl
       buchungsartList.addColumn("Spende", "spende", new JaNeinFormatter());
       buchungsartList.addColumn("Abschreibung", "abschreibung",
           new JaNeinFormatter(), false, Column.ALIGN_RIGHT);
-      if (Einstellungen.getEinstellung().getOptiert())
+      if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
       {
         buchungsartList.addColumn("Steuer", "steuer", o -> {
           if (o == null)
@@ -536,7 +533,8 @@ public class BuchungsartControl extends FilterControl
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("buchungsarten", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
+            .get());
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();

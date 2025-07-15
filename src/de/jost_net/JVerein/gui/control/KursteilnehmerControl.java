@@ -30,17 +30,20 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
+import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.menu.KursteilnehmerMenu;
 import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.Staat;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -54,7 +57,6 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -89,7 +91,7 @@ public class KursteilnehmerControl extends FilterControl
 
   private TextInput ort;
 
-  private SelectInput staat;
+  private StaatSearchInput staat;
 
   private EmailInput email;
 
@@ -249,7 +251,7 @@ public class KursteilnehmerControl extends FilterControl
     return ort;
   }
 
-  public SelectInput getStaat() throws RemoteException
+  public StaatSearchInput getStaat() throws RemoteException
   {
     if (staat != null)
     {
@@ -263,9 +265,9 @@ public class KursteilnehmerControl extends FilterControl
           .setErrorText("Konnte Staat \"" + getKursteilnehmer().getStaat()
               + "\" nicht finden, bitte anpassen.");
     }
-    staat = new SelectInput(Staat.values(),
-        Staat.getByKey(getKursteilnehmer().getStaatCode()));
-    staat.setPleaseChoose("Nicht gesetzt");
+    staat = new StaatSearchInput();
+    staat.setSearchString("Zum Suchen tippen");
+    staat.setValue(Staat.getByKey(getKursteilnehmer().getStaatCode()));
     staat.setName("Staat");
     return staat;
   }
@@ -360,7 +362,7 @@ public class KursteilnehmerControl extends FilterControl
     this.geburtsdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.geburtsdatum.setTitle("Geburtsdatum");
     this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
-    if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
+    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
     {
       this.geburtsdatum.setMandatory(true);
     }
@@ -376,7 +378,7 @@ public class KursteilnehmerControl extends FilterControl
     geschlecht = new GeschlechtInput(getKursteilnehmer().getGeschlecht());
     geschlecht.setName("Geschlecht");
     geschlecht.setPleaseChoose("Bitte auswählen");
-    if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
+    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
     {
       geschlecht.setMandatory(true);
     }
@@ -454,7 +456,7 @@ public class KursteilnehmerControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Kursteilnehmer k = getKursteilnehmer();
     String p = (String) getPersonenart().getValue();
@@ -493,15 +495,14 @@ public class KursteilnehmerControl extends FilterControl
     {
       k.setEingabedatum();
     }
+    return k;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Kursteilnehmer k = getKursteilnehmer();
-      k.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -531,7 +532,8 @@ public class KursteilnehmerControl extends FilterControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("kursteilnehmer", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "PDF")
+              .get());
 
       final String s = fd.open();
 

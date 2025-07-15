@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
@@ -44,12 +45,13 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
     LabelGroup group = new LabelGroup(getParent(), "Beitrag");
     group.addLabelPair("Bezeichnung", control.getBezeichnung(true));
 
-    if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen())
+    if ((Boolean) Einstellungen.getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
     {
       group.addLabelPair("Sekundäre Beitragsgruppe", control.getSekundaer());
     }
 
-    switch (Einstellungen.getEinstellung().getBeitragsmodel())
+    switch (Beitragsmodel
+        .getByKey((Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
     {
       case GLEICHERTERMINFUERALLE:
       case MONATLICH12631:
@@ -71,13 +73,18 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
     
     group.addLabelPair("Beitragsart", control.getBeitragsArt());
     group.addLabelPair("Buchungsart", control.getBuchungsart());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     }
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      group.addLabelPair("Steuer", control.getSteuer());
+    }
 
-    if(Einstellungen.getEinstellung().getBeitragsmodel() != Beitragsmodel.FLEXIBEL
-        && Einstellungen.getEinstellung().getGeburtsdatumPflicht())
+    if ((Integer) Einstellungen.getEinstellung(
+        Property.BEITRAGSMODEL) != Beitragsmodel.FLEXIBEL.getKey()
+        && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
     {
       Input[] altersstaffel = control.getAltersstaffel();
       if (altersstaffel != null)
@@ -94,7 +101,7 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
       }
     }
     
-    if (Einstellungen.getEinstellung().getArbeitseinsatz())
+    if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
     {
       LabelGroup groupAe = new LabelGroup(getParent(), "Arbeitseinsatz");
       groupAe.addLabelPair("Stunden", control.getArbeitseinsatzStunden());

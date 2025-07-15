@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.util.JVDateFormatJJJJ;
 import de.jost_net.JVerein.util.JVDateFormatMM;
@@ -88,30 +89,30 @@ public class AllgemeineMap
     map.put(AllgemeineVar.AKTUELLERMONAT.getName(), mmjjjj.format(new Date()));
 
     map.put(AllgemeineVar.NAME.getName(),
-        Einstellungen.getEinstellung().getName());
+        (String) Einstellungen.getEinstellung(Property.NAME));
     map.put(AllgemeineVar.STRASSE.getName(),
-        Einstellungen.getEinstellung().getStrasse());
+        (String) Einstellungen.getEinstellung(Property.STRASSE));
     map.put(AllgemeineVar.PLZ.getName(),
-        Einstellungen.getEinstellung().getPlz());
+        (String) Einstellungen.getEinstellung(Property.PLZ));
     map.put(AllgemeineVar.ORT.getName(),
-        Einstellungen.getEinstellung().getOrt());
+        (String) Einstellungen.getEinstellung(Property.ORT));
     map.put(AllgemeineVar.ABSENDER.getName(),
-        Einstellungen.getEinstellung().getName() + ", "
-            + Einstellungen.getEinstellung().getStrasse() + ", "
-            + Einstellungen.getEinstellung().getPlz() + " "
-            + Einstellungen.getEinstellung().getOrt());
+        (String) Einstellungen.getEinstellung(Property.NAME) + ", "
+            + (String) Einstellungen.getEinstellung(Property.STRASSE) + ", "
+            + (String) Einstellungen.getEinstellung(Property.PLZ) + " "
+            + (String) Einstellungen.getEinstellung(Property.ORT));
     map.put(AllgemeineVar.STAAT.getName(),
-        Staat.getByKey(Einstellungen.getEinstellung().getStaat()).getText());
+        Staat.getByKey((String) Einstellungen.getEinstellung(Property.STAAT)).getText());
     map.put(AllgemeineVar.IBAN.getName(),
-        Einstellungen.getEinstellung().getIban());
+        (String) Einstellungen.getEinstellung(Property.IBAN));
     map.put(AllgemeineVar.BIC.getName(),
-        Einstellungen.getEinstellung().getBic());
+        (String) Einstellungen.getEinstellung(Property.BIC));
     map.put(AllgemeineVar.GLAEUBIGER_ID.getName(),
-        Einstellungen.getEinstellung().getGlaeubigerID());
+        (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
     map.put(AllgemeineVar.UST_ID.getName(),
-        Einstellungen.getEinstellung().getUStID());
+        (String) Einstellungen.getEinstellung(Property.USTID));
     map.put(AllgemeineVar.STEUER_NR.getName(),
-        Einstellungen.getEinstellung().getSteuernummer());
+        (String) Einstellungen.getEinstellung(Property.STEUERNUMMER));
     return map;
   }
 }

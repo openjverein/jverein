@@ -24,10 +24,12 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
+import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -74,6 +76,8 @@ public class ZusatzbetragPart implements Part
 
   private SelectInput zahlungsweg;
 
+  private SelectInput steuer = null;
+
   public ZusatzbetragPart(Zusatzbetrag zusatzbetrag, boolean mitMitglied)
   {
     this.zusatzbetrag = zusatzbetrag;
@@ -95,8 +99,12 @@ public class ZusatzbetragPart implements Part
     group.addLabelPair("Buchungstext", getBuchungstext());
     group.addLabelPair("Betrag", getBetrag());
     group.addLabelPair("Buchungsart", getBuchungsart());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       group.addLabelPair("Buchungsklasse", getBuchungsklasse());
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      group.addLabelPair("Steuer", getSteuer());
+    }
     group.addLabelPair("Zahlungsweg", getZahlungsweg());
   }
 
@@ -269,7 +277,7 @@ public class ZusatzbetragPart implements Part
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         zusatzbetrag.getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.addListener(new Listener()
     {
       @Override
@@ -285,6 +293,19 @@ public class ZusatzbetragPart implements Part
         catch (RemoteException e)
         {
           Logger.error("Fehler", e);
+        }
+      }
+    });
+    buchungsart.addListener(e -> {
+      if (steuer != null && buchungsart.getValue() != null)
+      {
+        try
+        {
+          steuer.setValue(((Buchungsart) buchungsart.getValue()).getSteuer());
+        }
+        catch (RemoteException e1)
+        {
+          Logger.error("Fehler", e1);
         }
       }
     });
@@ -339,6 +360,25 @@ public class ZusatzbetragPart implements Part
     return zahlungsweg;
   }
   
+  public SelectInput getSteuer() throws RemoteException
+  {
+    if (steuer != null)
+    {
+      return steuer;
+    }
+    steuer = new SteuerInput(zusatzbetrag.getSteuer());
+
+    steuer.setAttribute("name");
+    steuer.setPleaseChoose("Keine Steuer");
+
+    return steuer;
+  }
+
+  public boolean isSteuerActive()
+  {
+    return steuer != null;
+  }
+
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
@@ -355,7 +395,7 @@ public class ZusatzbetragPart implements Part
     else
     {
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
-          Einstellungen.getEinstellung().getMitgliedAuswahl());
+          (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     }
     mitglied.setMandatory(true);
     return mitglied;

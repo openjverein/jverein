@@ -29,6 +29,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
@@ -71,10 +72,18 @@ public class Rechnungsausgabe
     {
       case DRUCK:
         file = getDateiAuswahl("pdf");
+        if (file == null)
+        {
+          return;
+        }
         formularaufbereitung = new FormularAufbereitung(file, true, false);
         break;
       case MAIL:
         file = getDateiAuswahl("zip");
+        if (file == null)
+        {
+          return;
+        }
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }
@@ -178,7 +187,8 @@ public class Rechnungsausgabe
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname(typ.name(), "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), extension).get());
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+        extension).get());
     fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();

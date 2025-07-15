@@ -26,14 +26,14 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.schlevoigt.JVerein.util.Misc;
-
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.dialogs.BuchungUebernahmeProtokollDialog;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.util.BuchungsZweckKorrektur;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -192,9 +192,9 @@ public class Buchungsuebernahme
           }
         }
         // Beautify zweck
-        if (Einstellungen.getEinstellung().getAutomatischeBuchungskorrekturHibiscus())
+        if ((Boolean) Einstellungen.getEinstellung(Property.AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS))
         {
-          zweck = Misc.getBuchungsZweckKorrektur(zweck, true);
+          zweck = BuchungsZweckKorrektur.getBuchungsZweckKorrektur(zweck, true);
         }
         if (zweck != null && zweck.length() > 500)
         {
@@ -210,12 +210,13 @@ public class Buchungsuebernahme
           if (match(ba.getSuchbegriff(), suchZweck, ba.getRegexp()))
           {
             b.setBuchungsartId(Long.parseLong(ba.getID()));
-            if (Einstellungen.getEinstellung().getSteuerInBuchung())
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.STEUERINBUCHUNG))
             {
               b.setSteuer(ba.getSteuer());
             }
+            break;
           }
-          break;
         }
         
         b.setDatum(u.getDatum());

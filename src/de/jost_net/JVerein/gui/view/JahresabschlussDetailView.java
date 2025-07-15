@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.JahresabschlussControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -51,7 +52,7 @@ public class JahresabschlussDetailView extends AbstractView
     
     LabelGroup group = new LabelGroup(getParent(), "Jahresabschluss");
     ColumnLayout cl;
-    if (Einstellungen.getEinstellung().getMittelverwendung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
     {
       cl = new ColumnLayout(group.getComposite(), 3);
     }
@@ -68,12 +69,12 @@ public class JahresabschlussDetailView extends AbstractView
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addLabelPair("Datum", control.getDatum());
     middle.addLabelPair("Name", control.getName());
-    if (Einstellungen.getEinstellung().getAfaInJahresabschluss())
+    if ((Boolean) Einstellungen.getEinstellung(Property.AFAINJAHRESABSCHLUSS))
     {
       middle.addLabelPair("", control.getAfaberechnung());
     }
 
-    if (Einstellungen.getEinstellung().getMittelverwendung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
     {
       SimpleContainer right = new SimpleContainer(cl.getComposite());
       right.addLabelPair("Rest Verwendungsrückstand \naus dem Vorjahr",

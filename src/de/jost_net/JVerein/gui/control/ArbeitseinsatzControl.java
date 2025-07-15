@@ -37,6 +37,7 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzAction;
 import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
@@ -47,6 +48,7 @@ import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.Dateiname;
@@ -127,7 +129,8 @@ public class ArbeitseinsatzControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Arbeitseinsatz ae = getArbeitseinsatz();
     if (ae.isNewObject())
@@ -145,15 +148,14 @@ public class ArbeitseinsatzControl extends FilterControl
     ae.setDatum((Date) part.getDatum().getValue());
     ae.setStunden((Double) part.getStunden().getValue());
     ae.setBemerkung((String) part.getBemerkung().getValue());
+    return ae;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Arbeitseinsatz ae = getArbeitseinsatz();
-      ae.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -274,7 +276,8 @@ public class ArbeitseinsatzControl extends FilterControl
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("arbeitseinsaetze", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
+            .get());
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -318,7 +321,7 @@ public class ArbeitseinsatzControl extends FilterControl
           while (it.hasNext())
           {
             ArbeitseinsatzZeile z = (ArbeitseinsatzZeile) it.next();
-            if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+            if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
             {
               reporter.addColumn((String) z.getAttribute("idnamevorname"),
                   Element.ALIGN_LEFT);
@@ -375,7 +378,8 @@ public class ArbeitseinsatzControl extends FilterControl
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("arbeitseinsaetze", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "csv").get());
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "csv")
+            .get());
     fd.setFilterExtensions(new String[] { "*.csv" });
 
     String s = fd.open();

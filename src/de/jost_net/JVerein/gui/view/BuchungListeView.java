@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungImportAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.BuchungsuebernahmeAction;
@@ -66,7 +67,7 @@ public class BuchungListeView extends AbstractView
 
     left.addLabelPair("Konto", control.getSuchKonto());
     left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
-    if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+    if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
     {
       left.addLabelPair("Projekt", control.getSuchProjekt());
     }
@@ -80,6 +81,10 @@ public class BuchungListeView extends AbstractView
     right.addLabelPair("Mitglied zugeordnet?",
         control.getSuchMitgliedZugeordnet());
     right.addLabelPair("Mitglied Name", control.getMitglied());
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      right.addLabelPair("Steuer", control.getSuchSteuer());
+    }
     
     ButtonArea buttons1 = new ButtonArea();
     ToolTipButton zurueck = control.getTTZurueckButton();

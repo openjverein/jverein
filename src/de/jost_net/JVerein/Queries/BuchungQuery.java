@@ -31,6 +31,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -60,6 +61,8 @@ public class BuchungQuery
   
   private boolean geldkonto;
   
+  private Steuer steuer;
+
   private HashMap<String, String> sortValues = new HashMap<String, String>();
 
   private void SortHashMap() {
@@ -87,7 +90,7 @@ public class BuchungQuery
   public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
       Buchungsart buchungsart, Projekt projekt, String text, String betrag,
       Boolean hasMitglied, String mitglied, boolean geldkonto,
-      SplitFilter split, Boolean ungeprueft)
+      SplitFilter split, Boolean ungeprueft, Steuer steuer)
   {
     this.datumvon = datumvon;
     this.datumbis = datumbis;
@@ -101,6 +104,7 @@ public class BuchungQuery
     this.mitglied = mitglied;
     this.split = split;
     this.ungeprueft = ungeprueft;
+    this.steuer = steuer;
   }
   
   public String getOrder(String value) {
@@ -318,6 +322,18 @@ public class BuchungQuery
           "(upper(buchung.name) like ? or upper(buchung.zweck) like ? "
           + "or upper(buchung.kommentar) like ? or buchung.id = ?) ",
           ttext, ttext, ttext, id);
+    }
+
+    if (steuer != null)
+    {
+      if (steuer.getID() == null)
+      {
+        it.addFilter("steuer is null");
+      }
+      else
+      {
+        it.addFilter("steuer = ? ", steuer.getID());
+      }
     }
 
     // 20220823: sbuer: Neue Sortierfelder

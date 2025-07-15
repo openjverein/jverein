@@ -14,30 +14,31 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package com.schlevoigt.JVerein.gui.view;
-
-import com.schlevoigt.JVerein.gui.control.BuchungsTextKorrekturControl;
+package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.view.DokumentationUtil;
+import de.jost_net.JVerein.gui.control.BuchungsTextKorrekturControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class BuchungsTexteKorrigierenView extends AbstractView {
+public class BuchungsTextKorrekturView extends AbstractView
+{
 
-	@Override
-	public void bind() throws Exception {
-	    GUI.getView().setTitle("Buchungskorrektur");
+  @Override
+  public void bind() throws Exception
+  {
+    GUI.getView().setTitle("Buchungskorrektur");
 
-		final BuchungsTextKorrekturControl control = new BuchungsTextKorrekturControl(this);
+    final BuchungsTextKorrekturControl control = new BuchungsTextKorrekturControl(
+        this);
 
-		control.getBuchungsList().paint(this.getParent());
+    control.getBuchungsList().paint(this.getParent());
 
-		ButtonArea buttons = new ButtonArea();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGSKORREKTUR, false, "question-circle.png");
-		buttons.addButton(control.getStartKorrekturButton());
-		buttons.paint(this.getParent());
-	}
+    buttons.addButton(control.getStartKorrekturButton());
+    buttons.paint(this.getParent());
+  }
 }

@@ -93,8 +93,11 @@ public class BuchungSteuerZuordnenAction implements Action
             int skip = 0;
             if (steuer == null)
             {
-              monitor.setStatusText(
-                  "Entferne Steuer aus " + buchungen.length + " Buchungen.");
+              if (buchungen.length > 1)
+              {
+                monitor.setStatusText(
+                    "Entferne Steuer aus " + buchungen.length + " Buchungen.");
+              }
               for (Buchung buchung : buchungen)
               {
                 if (isInterrupted())
@@ -121,15 +124,23 @@ public class BuchungSteuerZuordnenAction implements Action
                   monitor.setStatusText(fehler);
                   Logger.error(fehler, e);
                 }
-                monitor.setPercentComplete(100);
+                monitor.setPercentComplete(
+                    100 * (count + skip) / buchungen.length);
               }
-              monitor.setStatusText("Steuer aus " + count
-                  + " Buchungen entfernt, " + skip + " übersprungen.");
+              if (buchungen.length > 1)
+              {
+                monitor.setPercentComplete(100);
+                monitor.setStatusText("Steuer aus " + count
+                    + " Buchungen entfernt, " + skip + " übersprungen.");
+              }
             }
             else
             {
-              monitor.setStatusText(
-                  "Ordne Steuer " + buchungen.length + " Buchungen zu.");
+              if (buchungen.length > 1)
+              {
+                monitor.setStatusText(
+                    "Ordne Steuer " + buchungen.length + " Buchungen zu.");
+              }
               for (Buchung buchung : buchungen)
               {
                 if (isInterrupted())
@@ -175,10 +186,15 @@ public class BuchungSteuerZuordnenAction implements Action
                   monitor.setStatusText(fehler);
                   Logger.error(fehler, e);
                 }
-                monitor.setPercentComplete(100);
+                monitor.setPercentComplete(
+                    100 * (count + skip) / buchungen.length);
               }
-              monitor.setStatusText("Steuer " + count
-                  + " Buchungen zugeordnet, " + skip + " übersprungen.");
+              if (buchungen.length > 1)
+              {
+                monitor.setPercentComplete(100);
+                monitor.setStatusText("Steuer " + count
+                    + " Buchungen zugeordnet, " + skip + " übersprungen.");
+              }
             }
           }
 
