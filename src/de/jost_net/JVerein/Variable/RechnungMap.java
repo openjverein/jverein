@@ -80,7 +80,7 @@ public class RechnungMap extends AbstractMap
     }
     if (buchungDatum.size() > 1)
     {
-      if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
+      if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
       {
         zweck.add("Rechnungsbetrag inkl. USt.");
       }
@@ -209,7 +209,7 @@ public class RechnungMap extends AbstractMap
         new Date[] { new Date(), new Date() });
     map.put(RechnungVar.ZAHLUNGSGRUND.getName(),
         new String[] { "Mitgliedsbeitrag", "Zusatzbetrag",
-            (Boolean) Einstellungen.getEinstellung(Property.OPTIERT)
+            (Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT)
                 ? "Rechnungsbetrag inkl. USt."
                 : "Summe" });
     map.put(RechnungVar.NETTOBETRAG.getName(),

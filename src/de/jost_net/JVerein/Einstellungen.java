@@ -297,6 +297,7 @@ public class Einstellungen
     KONTONUMMERINBUCHUNGSLISTE("kontonummer_in_buchungsliste", Boolean.class,
         "0"),
     OPTIERT("optiert", Boolean.class, "0"),
+    OPTIERTPFLICHT("optiertpflicht", Boolean.class, "0"),
     STEUERINBUCHUNG("steuerinbuchung", Boolean.class, "0"),
     BUCHUNGSKLASSEINBUCHUNG("bkinbuchung", Boolean.class, "0"),
     SPLITPOSITIONZWECK("splitpositionzweck", Boolean.class, "0"),
