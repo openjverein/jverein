@@ -113,7 +113,7 @@ public class KontensaldoControl extends AbstractSaldoControl
   {
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("konto");
     boolean mitSteuer = (Boolean) Einstellungen
-        .getEinstellung(Property.OPTIERT);
+        .getEinstellung(Property.OPTIERTPFLICHT);
     if (mitSteuer)
     {
       // Bei Umbuchungen vom Geldkonto den Steueranteil nicht bei den

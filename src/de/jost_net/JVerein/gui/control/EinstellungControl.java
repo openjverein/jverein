@@ -311,6 +311,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput optiert;
 
+  private CheckboxInput optiertpflicht;
+
   private CheckboxInput unterschriftdrucken;
   
   private ImageInput unterschrift;
@@ -812,10 +814,13 @@ public class EinstellungControl extends AbstractControl
     }
     optiert = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.OPTIERT));
-    optiert.setName("Umsatzsteueroption (Neustart erforderlich)");
+    optiert.setName("Umsatzsteuer Support (Neustart erforderlich)");
     optiert.addListener(e -> {
       try
       {
+        getOptiertPflicht().setValue(Boolean.FALSE);
+        getSteuerInBuchung().setValue(Boolean.FALSE);
+        getOptiertPflicht().setEnabled((boolean) optiert.getValue());
         getSteuerInBuchung().setEnabled((boolean) optiert.getValue());
       }
       catch (RemoteException e1)
@@ -826,6 +831,20 @@ public class EinstellungControl extends AbstractControl
     return optiert;
   }
   
+  public CheckboxInput getOptiertPflicht() throws RemoteException
+  {
+    if (optiertpflicht != null)
+    {
+      return optiertpflicht;
+    }
+    optiertpflicht = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT));
+    optiertpflicht.setName("Umsatzsteuer Pflicht");
+
+    optiertpflicht.setEnabled((boolean) getOptiert().getValue());
+    return optiertpflicht;
+  }
+
   public CheckboxInput getSteuerInBuchung() throws RemoteException
   {
     if (steuerInBuchung != null)
@@ -2577,6 +2596,8 @@ public class EinstellungControl extends AbstractControl
           (Boolean) kontonummer_in_buchungsliste.getValue());
       Einstellungen.setEinstellung(Property.OPTIERT,
           (Boolean) getOptiert().getValue());
+      Einstellungen.setEinstellung(Property.OPTIERTPFLICHT,
+          (Boolean) getOptiertPflicht().getValue());
       Einstellungen.setEinstellung(Property.STEUERINBUCHUNG,
           (Boolean) getSteuerInBuchung().getValue());
       Einstellungen.setEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG,

@@ -79,7 +79,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   public BuchungsklasseSaldoControl(AbstractView view) throws RemoteException
   {
     super(view);
-    mitSteuer = (Boolean) Einstellungen.getEinstellung(Property.OPTIERT);
+    mitSteuer = (Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT);
   }
 
   @Override
