@@ -32,38 +32,8 @@ public class Update0481 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    try
-    {
-      ResultSet check = conn.createStatement().executeQuery(
-          "SELECT * FROM einstellungneu WHERE name = 'optiertpflicht'");
-
-      if (!check.next())
-      {
-        ResultSet result = conn.createStatement().executeQuery(
-            "SELECT * FROM einstellungneu WHERE name = 'optiert'");
-
-        if (result.next())
-        {
-          String value = result.getBoolean(3) ? "1" : "0";
-          execute(
-              "INSERT INTO einstellungneu (name,wert) VALUES('optiertpflicht','"
-                  + value + "')");
-        }
-        else
-        {
-          setNewVersion(481);
-        }
-      }
-      else
-      {
-        setNewVersion(481);
-      }
-    }
-    catch (SQLException e)
-    {
-      String fehler = "Fehler beim Update";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler);
-    }
+      execute("INSERT INTO einstellungneu (name,wert)"
+        + " SELECT 'optiertpflicht',wert FROM einstellungneu WHERE name = 'optiert' "
+        + "AND not exists(select * from einstellungneu where name = 'optiertpflicht')");
   }
 }
