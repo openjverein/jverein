@@ -87,7 +87,7 @@ public class RechnungMap extends AbstractMap
         steuerBetragMap.put(sp.getSteuersatz(), brutto + sp.getBetrag());
       }
     }
-    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
     {
       for (Double satz : steuerMap.keySet())
       {
@@ -218,7 +218,7 @@ public class RechnungMap extends AbstractMap
 
     map.put(RechnungVar.BUCHUNGSDATUM.getName(),
         new Date[] { new Date(), new Date() });
-    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
     {
       map.put(RechnungVar.ZAHLUNGSGRUND.getName(),
           new String[] { "Mitgliedsbeitrag", "Zusatzbetrag",

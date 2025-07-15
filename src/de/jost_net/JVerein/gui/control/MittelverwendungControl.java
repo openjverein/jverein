@@ -517,7 +517,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
         Kontoart.SCHULDEN.getKey(), Kontoart.ANLAGE.getKey(),
         Anlagenzweck.NUTZUNGSGEBUNDEN.getKey());
 
-    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
     {
       // Die Steuer bei Veräußerung von Anlagevermögen mit Steuer
       // Steuer Einnahmen bei Umbuchungen > 0 auf dem Geldkonto
@@ -560,7 +560,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
         : 0d;
 
     // ggf. Steuern hinzurechnen
-    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
     {
       if (fluss.getDouble("steuereinnahme") != null)
       {
