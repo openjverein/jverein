@@ -14,11 +14,8 @@
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
