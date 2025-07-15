@@ -124,6 +124,8 @@ public class BuchungSteuerZuordnenAction implements Action
                   monitor.setStatusText(fehler);
                   Logger.error(fehler, e);
                 }
+                monitor.setPercentComplete(
+                    100 * (count + skip) / buchungen.length);
               }
               if (buchungen.length > 1)
               {
@@ -184,6 +186,8 @@ public class BuchungSteuerZuordnenAction implements Action
                   monitor.setStatusText(fehler);
                   Logger.error(fehler, e);
                 }
+                monitor.setPercentComplete(
+                    100 * (count + skip) / buchungen.length);
               }
               if (buchungen.length > 1)
               {
