@@ -29,6 +29,7 @@ import de.jost_net.JVerein.gui.menu.DateinameMenu;
 import de.jost_net.JVerein.gui.view.DateinameDetailView;
 import de.jost_net.JVerein.keys.DateinameTyp;
 import de.jost_net.JVerein.rmi.DateinamenVorlage;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.util.Dateiname;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -166,13 +167,16 @@ public class DateinameControl extends AbstractControl implements Savable
   /**
    * This method sets the attributes of the DateinamenVorlage.
    * 
+   * @return
+   * 
    * @throws nRemoteException
    */
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     DateinamenVorlage bv = getDateiname();
     bv.setDateiname((String) getName().getValue());
+    return bv;
   }
 
   /**
@@ -185,9 +189,7 @@ public class DateinameControl extends AbstractControl implements Savable
   {
     try
     {
-      prepareStore();
-      DateinamenVorlage bv = getDateiname();
-      bv.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

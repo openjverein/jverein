@@ -18,9 +18,8 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.datasource.rmi.DBObject;
 
-public interface DateinamenVorlage extends DBObject
+public interface DateinamenVorlage extends JVereinDBObject
 {
   public String getDateiname() throws RemoteException;
 
