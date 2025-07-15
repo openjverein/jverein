@@ -35,7 +35,9 @@ import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Felddefinition;
@@ -280,7 +282,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
             .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
         && getVollZahlerID() != null)
     {
-      // ja, suche Vollzahler. Er darf nicht, bzw nicht früher, ausgetreten sein!
+      // ja, suche Vollzahler. Er darf nicht, bzw nicht früher, ausgetreten
+      // sein!
       DBIterator<Mitglied> zahler = Einstellungen.getDBService()
           .createList(Mitglied.class);
       zahler.addFilter("id = " + getVollZahlerID());
@@ -293,14 +296,16 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       if (z != null && ((Mitglied) z).getAustritt() != null)
       {
         throw new ApplicationException(
-            "Der ausgewählte Vollzahler ist ausgetreten zu " + z.getAustritt() + ". Bitte anderen Vollzahler wählen!");
+            "Der ausgewählte Vollzahler ist ausgetreten zu " + z.getAustritt()
+                + ". Bitte anderen Vollzahler wählen!");
       }
       if (z != null && ((Mitglied) z).getEintritt()
           .after(new Date()) && ((Mitglied) z).getEintritt()
           .after(getEintritt()))
       {
         throw new ApplicationException(
-            "Der ausgewählte Vollzahler tritt erst ein zu " + z.getEintritt() + ". Bitte anderen Vollzahler wählen!");
+            "Der ausgewählte Vollzahler tritt erst ein zu " + z.getEintritt()
+                + ". Bitte anderen Vollzahler wählen!");
       }
     }
     // Check ob das Mitglied vorher ein Vollzahler eines Familienverbandes war
@@ -359,7 +364,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     {
       Mitglied mitglied = (Mitglied) mitglieder.next();
       throw new ApplicationException(
-          "Die externe Mitgliedsnummer wird bereits verwendet für Mitglied : " + mitglied.getAttribute(
+          "Die externe Mitgliedsnummer wird bereits verwendet für Mitglied : "
+              + mitglied.getAttribute(
               "namevorname"));
     }
 
@@ -1412,7 +1418,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         return false;
       }
     }
-    if ("document".equals(fieldName))
+    else if ("document".equals(fieldName))
     {
       DBIterator<MitgliedDokument> list = Einstellungen.getDBService()
           .createList(MitgliedDokument.class);
@@ -1421,6 +1427,34 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         return list.size();
       else
         return "";
+    }
+    else if ("kontostand".equals(fieldName))
+    {
+      try
+      {
+        ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+            Sollbuchung.TABLE_NAME);
+        it.addColumn("sum(cast(COALESCE(buchung.ist,0) - COALESCE("
+            + Sollbuchung.T_BETRAG + ",0) AS DECIMAL(10,2))) as dif");
+        it.leftJoin(
+            "(SELECT sum(COALESCE((betrag),0)) AS ist," + Buchung.T_SOLLBUCHUNG
+                + " FROM buchung GROUP BY " + Buchung.T_SOLLBUCHUNG
+                + ") AS buchung",
+            Buchung.T_SOLLBUCHUNG + " = " + Sollbuchung.TABLE_NAME_ID);
+        it.addFilter(Sollbuchung.T_MITGLIED + " = " + this.getID());
+        it.addGroupBy(Sollbuchung.T_MITGLIED);
+
+        if (it.hasNext())
+        {
+          PseudoDBObject o = it.next();
+          return o.getDouble("dif");
+        }
+        return 0d;
+      }
+      catch (Exception e)
+      {
+        return 0d;
+      }
     }
     return super.getAttribute(fieldName);
   }

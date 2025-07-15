@@ -37,6 +37,7 @@ import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -343,7 +344,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     return endedatum;
   }
 
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     ZusatzbetragVorlage z = getZusatzbetragVorlage();
     z.setFaelligkeit((Date) getFaelligkeit().getValue());
@@ -362,15 +364,14 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     {
       z.setSteuer((Steuer) steuer.getValue());
     }
+    return z;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      ZusatzbetragVorlage z = getZusatzbetragVorlage();
-      z.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

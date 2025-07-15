@@ -69,7 +69,7 @@ public class Update0479 extends AbstractDDLUpdate
           .executeQuery("SELECT * FROM einstellung WHERE id = 1");
 
       if (!result.next())
-        throw new ApplicationException("Keine Einstellung vorhanden");
+        return;
 
       ResultSetMetaData m = result.getMetaData();
 

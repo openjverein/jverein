@@ -46,6 +46,7 @@ import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.VonBis;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -423,7 +424,8 @@ public class BeitragsgruppeControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Beitragsgruppe b = getBeitragsgruppe();
     b.setBezeichnung((String) getBezeichnung(false).getValue());
@@ -480,14 +482,14 @@ public class BeitragsgruppeControl extends AbstractControl
         b.setHasAltersstaffel(false);
         break;
     }
+    return b;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Beitragsgruppe b = getBeitragsgruppe();
+      Beitragsgruppe b = (Beitragsgruppe) prepareStore();
       b.store();
       if (isAltersstaffel != null && (Boolean) isAltersstaffel.getValue()
           && alterstaffel != null)

@@ -63,6 +63,16 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     {
       //
     }
+    add("Kontostand", "kontostand", false, new Formatter()
+    {
+      @Override
+      public String format(Object o)
+      {
+        String anzeige = Einstellungen.DECIMALFORMAT.format((Double) o) + " ";
+        anzeige += ((Double) o) > -0.0049 ? "\u2705" : "\u2757";
+        return anzeige;
+      }
+    }, Column.ALIGN_RIGHT, true);
     try
     {
       if ((Boolean) Einstellungen

@@ -14,25 +14,43 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
+package de.jost_net.JVerein.gui.input;
 
-import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface Steuer extends JVereinDBObject
+import de.jost_net.JVerein.keys.Staat;
+import de.willuhn.jameica.gui.input.SearchInput;
+import de.willuhn.logging.Logger;
+
+public class StaatSearchInput extends SearchInput
 {
-  public String getName() throws RemoteException;
+  public StaatSearchInput()
+  {
+    super();
+  }
 
-  public void setName(String name) throws RemoteException;
+  @Override
+  @SuppressWarnings("rawtypes")
+  public List startSearch(String text)
+  {
+    List<Staat> list = new ArrayList<>();
+    try
+    {
+      for (Staat staat : Staat.values())
+      {
+        if (staat.getText().contains(text.toUpperCase()))
+        {
+          list.add(staat);
+        }
+      }
+      return list;
+    }
+    catch (Exception e)
+    {
+      Logger.error("Unable to load staat list", e);
+      return null;
+    }
+  }
 
-  public Double getSatz() throws RemoteException;
-
-  public void setSatz(Double satz) throws RemoteException;
-
-  public Buchungsart getBuchungsart() throws RemoteException;
-
-  public void setBuchungsartId(Long buchungsart) throws RemoteException;
-
-  public void setAktiv(boolean aktiv) throws RemoteException;
-
-  public boolean getAktiv() throws RemoteException;
 }

@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.MitgliedstypAction;
 import de.jost_net.JVerein.gui.menu.MitgliedstypMenu;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -86,11 +87,12 @@ public class MitgliedstypControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Mitgliedstyp mt = getMitgliedstyp();
     mt.setBezeichnung((String) getBezeichnung().getValue());
     mt.setBezeichnungPlural((String) getBezeichnungPlural().getValue());
+    return mt;
   }
 
   /**
@@ -102,9 +104,7 @@ public class MitgliedstypControl extends AbstractControl
   {
     try
     {
-      prepareStore();
-      Mitgliedstyp mt = getMitgliedstyp();
-      mt.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

@@ -48,6 +48,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
@@ -188,7 +189,8 @@ public class ZusatzbetragControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Zusatzbetrag z = getZusatzbetrag();
     z.setFaelligkeit((Date) getZusatzbetragPart().getFaelligkeit().getValue());
@@ -210,14 +212,14 @@ public class ZusatzbetragControl extends AbstractControl
     {
       z.setSteuer((Steuer) getZusatzbetragPart().getSteuer().getValue());
     }
+    return z;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Zusatzbetrag z = getZusatzbetrag();
+      Zusatzbetrag z = (Zusatzbetrag) prepareStore();
       if (z.isNewObject())
       {
         if (getZusatzbetragPart().getMitglied().getValue() != null)

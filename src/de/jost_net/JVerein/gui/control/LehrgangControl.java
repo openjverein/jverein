@@ -27,6 +27,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.LehrgangAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -174,7 +175,7 @@ public class LehrgangControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Lehrgang l = getLehrgang();
 
@@ -191,14 +192,14 @@ public class LehrgangControl extends FilterControl
     l.setBis((Date) getBis().getValue());
     l.setVeranstalter((String) getVeranstalter().getValue());
     l.setErgebnis((String) getErgebnis().getValue());
+    return l;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Lehrgang l = getLehrgang();
+      Lehrgang l = (Lehrgang) prepareStore();
       if (l.isNewObject())
       {
         if (getMitglied().getValue() != null)

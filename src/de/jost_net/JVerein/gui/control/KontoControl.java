@@ -48,6 +48,7 @@ import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -245,7 +246,8 @@ public class KontoControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Konto k = getKonto();
     k.setNummer((String) getNummer().getValue());
@@ -285,6 +287,7 @@ public class KontoControl extends FilterControl
     {
       k.setAnlagenzweck((Anlagenzweck) getAnlagenzweck().getValue());
     }
+    return k;
   }
 
   /**
@@ -332,7 +335,6 @@ public class KontoControl extends FilterControl
       }
       Konto k = getKonto();
       k.store();
-
     }
     catch (RemoteException e)
     {

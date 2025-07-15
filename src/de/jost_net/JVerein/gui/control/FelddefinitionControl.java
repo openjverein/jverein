@@ -29,6 +29,7 @@ import de.jost_net.JVerein.gui.menu.FelddefinitionMenu;
 import de.jost_net.JVerein.gui.view.ZusatzfeldDetailView;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -124,7 +125,8 @@ public class FelddefinitionControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Felddefinition f = getFelddefinition();
     Datentyp d = (Datentyp) getDatentyp().getValue();
@@ -135,15 +137,14 @@ public class FelddefinitionControl extends AbstractControl
     f.setDatentyp(d.getKey());
     Integer i = (Integer) getLaenge().getValue();
     f.setLaenge(i.intValue());
+    return f;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Felddefinition f = getFelddefinition();
-      f.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

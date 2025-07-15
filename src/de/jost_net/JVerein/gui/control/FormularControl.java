@@ -33,6 +33,7 @@ import de.jost_net.JVerein.gui.menu.FormularMenu;
 import de.jost_net.JVerein.gui.view.FormularDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.server.FormularImpl;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -215,7 +216,7 @@ public class FormularControl extends FormularPartControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Formular f = getFormular();
     f.setBezeichnung((String) getBezeichnung(true).getValue());
@@ -232,6 +233,7 @@ public class FormularControl extends FormularPartControl
     {
       f.setFormlink(null);
     }
+    return f;
   }
 
   /**
@@ -243,8 +245,7 @@ public class FormularControl extends FormularPartControl
   {
     try
     {
-      prepareStore();
-      Formular f = getFormular();
+      Formular f = (Formular) prepareStore();
       f.setZaehlerToFormlink((int) getZaehler().getValue());
       String dat = (String) getDatei().getValue();
       if (dat.length() > 0)

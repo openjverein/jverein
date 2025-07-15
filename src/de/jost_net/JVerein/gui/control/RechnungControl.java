@@ -43,6 +43,7 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -755,11 +756,13 @@ public class RechnungControl extends DruckMailControl implements Savable
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Rechnung re = getRechnung();
     re.setFormular((Formular) getRechnungFormular().getValue());
     re.setKommentar((String) getKommentar().getValue());
+    return re;
   }
 
   @Override
@@ -767,9 +770,7 @@ public class RechnungControl extends DruckMailControl implements Savable
   {
     try
     {
-      prepareStore();
-      Rechnung re = getRechnung();
-      re.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

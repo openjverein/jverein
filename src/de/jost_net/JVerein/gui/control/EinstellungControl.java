@@ -37,6 +37,7 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SEPALandInput;
 import de.jost_net.JVerein.gui.input.SEPALandObject;
+import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.io.MailSender.IMAPCopyData;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
@@ -356,7 +357,7 @@ public class EinstellungControl extends AbstractControl
 
   private TextInput ustid;
 
-  private SelectInput staat;
+  private StaatSearchInput staat;
 
   private DialogInput verrechnungskonto;
 
@@ -418,14 +419,17 @@ public class EinstellungControl extends AbstractControl
     return ort;
   }
 
-  public SelectInput getStaat() throws RemoteException
+  public StaatSearchInput getStaat() throws RemoteException
   {
     if (staat != null)
     {
       return staat;
     }
-    staat = new SelectInput(Staat.values(),
+    staat = new StaatSearchInput();
+    staat.setSearchString("Zum Suchen tippen");
+    staat.setValue(
         Staat.getByKey((String) Einstellungen.getEinstellung(Property.STAAT)));
+    staat.setName("Staat");
     return staat;
   }
 
@@ -2272,6 +2276,10 @@ public class EinstellungControl extends AbstractControl
             ib.toUpperCase().replace(" ", ""));
       Einstellungen.setEinstellung(Property.GLAEUBIGERID,
           (String) getGlaeubigerID().getValue());
+      if (getStaat().getValue() == null)
+      {
+        throw new ApplicationException("Bitte Staat auswählen");
+      }
       Einstellungen.setEinstellung(Property.STAAT,
           ((Staat) getStaat().getValue()).getKey());
       Einstellungen.setEinstellung(Property.USTID,
@@ -2548,6 +2556,8 @@ public class EinstellungControl extends AbstractControl
           (Boolean) kontonummer_in_buchungsliste.getValue());
       Einstellungen.setEinstellung(Property.OPTIERT,
           (Boolean) getOptiert().getValue());
+      Einstellungen.setEinstellung(Property.STEUERINBUCHUNG,
+          (Boolean) getSteuerInBuchung().getValue());
       Einstellungen.setEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG,
           (Boolean) getFreieBuchungsklasse().getValue());
       Einstellungen.setEinstellung(Property.SPLITPOSITIONZWECK,
@@ -2617,15 +2627,13 @@ public class EinstellungControl extends AbstractControl
   public void handleStoreMitgliederSpalten()
   {
     try
-    {// TODO
+    {
       spalten.save();
-      DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
     }
-    catch (RemoteException | ApplicationException e)
+    catch (RemoteException e)
     {
-      DBTransaction.rollback();
       Logger.error("Speichern felgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }

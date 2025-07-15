@@ -35,6 +35,7 @@ import de.jost_net.JVerein.gui.menu.MailMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.util.EvalMail;
 import de.jost_net.JVerein.io.MailSender;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
@@ -545,11 +546,12 @@ public class MailControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Mail m = getMail();
     m.setBetreff(getBetreffString());
     m.setTxt(getTxtString());
+    return m;
   }
 
   @Override
@@ -569,8 +571,7 @@ public class MailControl extends FilterControl
   {
     try
     {
-      prepareStore();
-      Mail m = getMail();
+      Mail m = (Mail) prepareStore();
       m.setBearbeitung(new Timestamp(new Date().getTime()));
       if (mitversand)
       {

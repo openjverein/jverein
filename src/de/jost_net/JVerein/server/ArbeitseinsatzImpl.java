@@ -27,8 +27,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.util.ApplicationException;
 
 public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
-    implements
-    Arbeitseinsatz
+    implements Arbeitseinsatz
 {
 
   private static final long serialVersionUID = 380278347818535726L;

@@ -25,21 +25,23 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class AbrechnungslaufDetailView extends AbstractView
+public class AbrechnungslaufDetailView extends AbstractDetailView
 {
+
+  private AbrechnungslaufControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Abrechnungslauf");
 
-    final AbrechnungslaufControl control = new AbrechnungslaufControl(this);
+    control = new AbrechnungslaufControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Detaildaten");
     group.addInput(control.getDatum());
@@ -71,6 +73,12 @@ public class AbrechnungslaufDetailView extends AbstractView
         DokumentationUtil.ABRECHNUNGSLAUF, false, "question-circle.png");
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 
 }

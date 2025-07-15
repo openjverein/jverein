@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.menu.MailVorlageMenu;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -100,7 +101,8 @@ public class MailVorlageControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     MailVorlage mv = getMailVorlage();
     String betreff = (String) getBetreff(false).getValue();
@@ -119,15 +121,14 @@ public class MailVorlageControl extends AbstractControl
 
     mv.setBetreff(betreff);
     mv.setTxt((String) getTxt().getValue());
+    return mv;
   }
 
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      MailVorlage mv = getMailVorlage();
-      mv.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
