@@ -49,6 +49,10 @@ public class Update0481 extends AbstractDDLUpdate
               "INSERT INTO einstellungneu (name,wert) VALUES('optiertpflicht','"
                   + value + "')");
         }
+        else
+        {
+          setNewVersion(481);
+        }
       }
       else
       {
