@@ -119,8 +119,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
 
       String art = null;
       Integer steuerArt = o.getInteger(ARTSTEUERBUCHUNGSART);
-      if (steuerArt == (Integer) ArtBuchungsart.EINNAHME || (steuerArt == null
-          && o.getInteger(ARTBUCHUNGSART) == (Integer) ArtBuchungsart.EINNAHME))
+      if (steuerArt == (Integer) ArtBuchungsart.EINNAHME || steuerArt == null)
       {
         art = "Umsatzsteuer";
       }
@@ -245,6 +244,10 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
     // Keine Steuer auf Anlagekonten
     it.addFilter("konto.kontoart != ?", Kontoart.ANLAGE.getKey());
 
+    // Steuerfrei Buchungen nur Einnahmen und Umbuchungen auf Bankkonten
+    it.addFilter("steuerbuchungsart.art IS NOT NULL OR buchungsart.art != ?",
+        ArtBuchungsart.AUSGABE);
+
     if (steuerInBuchung)
     {
       it.leftJoin("steuer", "steuer.id = buchung.steuer");
@@ -256,7 +259,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
     it.leftJoin("buchungsart as steuerbuchungsart",
         "steuer.buchungsart = steuerbuchungsart.id");
 
-    it.addGroupBy("steuer.id, buchungsart.art");
+    it.addGroupBy("steuer.id");
 
     it.setOrder("ORDER BY buchungsart.art, steuerbuchungsart.art, steuer.id");
 
