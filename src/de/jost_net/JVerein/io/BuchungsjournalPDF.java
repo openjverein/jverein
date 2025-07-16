@@ -18,6 +18,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.rmi.RemoteException;
 import java.util.TreeMap;
 
 import com.itextpdf.text.BaseColor;
@@ -97,6 +98,11 @@ public class BuchungsjournalPDF
         }
         reporter.addColumn(buklaString + buaString, Element.ALIGN_LEFT);
         reporter.addColumn(b.getBetrag());
+        if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+        {
+          reporter.addColumn(
+              b.getSteuer() == null ? null : b.getSteuer().getSatz());
+        }
         if (b.getBuchungsart() != null)
         {
           int buchungsartart = b.getBuchungsart().getArt();
@@ -175,7 +181,8 @@ public class BuchungsjournalPDF
     }
   }
 
-  private void createTableHeader(Reporter reporter) throws DocumentException
+  private void createTableHeader(Reporter reporter)
+      throws DocumentException, RemoteException
   {
     reporter.addHeaderColumn("Nr", Element.ALIGN_RIGHT, 20,
         BaseColor.LIGHT_GRAY);
@@ -193,6 +200,11 @@ public class BuchungsjournalPDF
         Element.ALIGN_CENTER, 70, BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 50,
         BaseColor.LIGHT_GRAY);
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      reporter.addHeaderColumn("Steuersatz", Element.ALIGN_CENTER, 30,
+          BaseColor.LIGHT_GRAY);
+    }
     reporter.createHeader();
   }
 }

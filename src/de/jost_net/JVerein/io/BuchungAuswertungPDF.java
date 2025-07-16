@@ -269,6 +269,11 @@ public class BuchungAuswertungPDF
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 40,
         BaseColor.LIGHT_GRAY);
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      reporter.addHeaderColumn("Steuersatz", Element.ALIGN_CENTER, 30,
+          BaseColor.LIGHT_GRAY);
+    }
     reporter.createHeader();
   }
 
@@ -340,6 +345,11 @@ public class BuchungAuswertungPDF
         reporter.addColumn(b.getName(), Element.ALIGN_LEFT);
         reporter.addColumn(b.getZweck(), Element.ALIGN_LEFT);
         reporter.addColumn(b.getBetrag());
+        if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+        {
+          reporter.addColumn(
+              b.getSteuer() == null ? null : b.getSteuer().getSatz());
+        }
       }
       buchungsartSumme += b.getBetrag();
       if (bua.getArt() == ArtBuchungsart.EINNAHME)
