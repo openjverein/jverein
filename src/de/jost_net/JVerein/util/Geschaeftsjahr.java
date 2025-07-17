@@ -70,14 +70,6 @@ public class Geschaeftsjahr
     return beginnGeschaeftsjahr;
   }
 
-  public Date getBeginnLetztesGeschaeftsjahr()
-  {
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(beginnGeschaeftsjahr);
-    cal.add(Calendar.YEAR, -1);
-    return cal.getTime();
-  }
-
   public int getBeginnGeschaeftsjahrjahr()
   {
     return beginnGeschaeftsjahrjahr;
