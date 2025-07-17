@@ -23,7 +23,6 @@ import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.control.KontoControl;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -85,14 +84,10 @@ public class KontoDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KONTEN, false, "question-circle.png");
-    Button zurueckButton = control.getZurueckButton();
-    Button vorButton = control.getVorButton();
-    buttons.addButton(zurueckButton);
-    buttons.addButton(vorButton);
-    if (control.getKonto().isNewObject())
+    if (!control.getKonto().isNewObject())
     {
-      zurueckButton.setEnabled(false);
-      vorButton.setEnabled(false);
+      buttons.addButton(control.getZurueckButton());
+      buttons.addButton(control.getVorButton());
     }
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());

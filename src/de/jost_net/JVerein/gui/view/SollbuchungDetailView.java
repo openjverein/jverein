@@ -88,14 +88,10 @@ public class SollbuchungDetailView extends AbstractDetailView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
-    Button zurueckButton = control.getZurueckButton();
-    Button vorButton = control.getVorButton();
-    buttons.addButton(zurueckButton);
-    buttons.addButton(vorButton);
-    if (control.getSollbuchung().isNewObject())
+    if (!control.getSollbuchung().isNewObject())
     {
-      zurueckButton.setEnabled(false);
-      vorButton.setEnabled(false);
+      buttons.addButton(control.getZurueckButton());
+      buttons.addButton(control.getVorButton());
     }
     Button save = new SaveButton(control);
     save.setEnabled(!hasRechnung);

@@ -23,7 +23,6 @@ import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
@@ -47,14 +46,10 @@ public class ZusatzbetragDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
-    Button zurueckButton = control.getZurueckButton();
-    Button vorButton = control.getVorButton();
-    buttons.addButton(zurueckButton);
-    buttons.addButton(vorButton);
-    if (control.getZusatzbetrag().isNewObject())
+    if (!control.getZusatzbetrag().isNewObject())
     {
-      zurueckButton.setEnabled(false);
-      vorButton.setEnabled(false);
+      buttons.addButton(control.getZurueckButton());
+      buttons.addButton(control.getVorButton());
     }
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
         null, false, "view-refresh.png");

@@ -76,14 +76,10 @@ public class KursteilnehmerDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
-    Button zurueckButton = control.getZurueckButton();
-    Button vorButton = control.getVorButton();
-    buttons.addButton(zurueckButton);
-    buttons.addButton(vorButton);
-    if (control.getKursteilnehmer().isNewObject())
+    if (!control.getKursteilnehmer().isNewObject())
     {
-      zurueckButton.setEnabled(false);
-      vorButton.setEnabled(false);
+      buttons.addButton(control.getZurueckButton());
+      buttons.addButton(control.getVorButton());
     }
     buttons.addButton(new SaveButton(control));
     buttons.addButton(new Button("Speichern und neu", context -> {

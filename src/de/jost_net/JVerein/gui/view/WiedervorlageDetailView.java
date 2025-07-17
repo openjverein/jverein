@@ -21,7 +21,6 @@ import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.WiedervorlageControl;
 import de.jost_net.JVerein.gui.input.SaveButton;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
@@ -44,14 +43,10 @@ public class WiedervorlageDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.WIEDERVORLAGE, false, "question-circle.png");
-    Button zurueckButton = control.getZurueckButton();
-    Button vorButton = control.getVorButton();
-    buttons.addButton(zurueckButton);
-    buttons.addButton(vorButton);
-    if (control.getWiedervorlage().isNewObject())
+    if (!control.getWiedervorlage().isNewObject())
     {
-      zurueckButton.setEnabled(false);
-      vorButton.setEnabled(false);
+      buttons.addButton(control.getZurueckButton());
+      buttons.addButton(control.getVorButton());
     }
     buttons.addButton(new SaveButton(control));
     buttons.paint(getParent());
