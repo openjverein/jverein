@@ -77,6 +77,14 @@ public class VorZurueckControl extends AbstractControl
           GUI.getCurrentView().setCurrentObject(instanz);
           GUI.startView(viewClass, instanz);
         }
+        else
+        {
+          zurueck.setEnabled(false);
+        }
+        if (index >= 0 && index < objektListe.size() - 1)
+        {
+          vor.setEnabled(true);
+        }
       }
       catch (RemoteException e)
       {
@@ -106,6 +114,14 @@ public class VorZurueckControl extends AbstractControl
           // Neuen View nicht in die History aufnehmen
           GUI.getCurrentView().setCurrentObject(instanz);
           GUI.startView(viewClass, instanz);
+        }
+        else
+        {
+          vor.setEnabled(false);
+        }
+        if (index > 0 && index < objektListe.size())
+        {
+          zurueck.setEnabled(true);
         }
       }
       catch (RemoteException e)
