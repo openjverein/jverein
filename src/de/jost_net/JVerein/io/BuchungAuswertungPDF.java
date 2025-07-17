@@ -255,7 +255,7 @@ public class BuchungAuswertungPDF
   {
     reporter.addHeaderColumn("Nummer", Element.ALIGN_CENTER, 22,
         BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Datum", Element.ALIGN_CENTER, 28,
+    reporter.addHeaderColumn("Datum", Element.ALIGN_CENTER, 32,
         BaseColor.LIGHT_GRAY);
     if (kontonummer_in_buchungsliste)
       reporter.addHeaderColumn("Konto", Element.ALIGN_CENTER, 34,
@@ -271,7 +271,7 @@ public class BuchungAuswertungPDF
         BaseColor.LIGHT_GRAY);
     if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
-      reporter.addHeaderColumn("Steuersatz", Element.ALIGN_CENTER, 30,
+      reporter.addHeaderColumn("Steuersatz", Element.ALIGN_CENTER, 25,
           BaseColor.LIGHT_GRAY);
     }
     reporter.createHeader();
