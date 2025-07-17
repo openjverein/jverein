@@ -64,6 +64,7 @@ public class VorZurueckControl extends AbstractControl
       if (objektListe == null || viewClass == null
           || object.getClass() != objectClass)
       {
+        zurueck.setEnabled(false);
         return;
       }
       try
@@ -102,6 +103,7 @@ public class VorZurueckControl extends AbstractControl
       if (objektListe == null || viewClass == null
           || object.getClass() != objectClass)
       {
+        vor.setEnabled(false);
         return;
       }
       try
