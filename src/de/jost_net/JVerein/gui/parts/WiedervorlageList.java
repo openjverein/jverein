@@ -18,15 +18,15 @@ package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.LinkedList;
 
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.WiedervorlageAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.VorZurueckControl;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
+import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.server.WiedervorlageImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -41,7 +41,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 public class WiedervorlageList extends TablePart implements Part
 {
 
-  private TablePart wiedervorlageList;
+  private JVereinTablePart wiedervorlageList;
   
   private FilterControl control;
 
@@ -53,12 +53,10 @@ public class WiedervorlageList extends TablePart implements Part
 
   public Part getWiedervorlageList() throws RemoteException
   {
-    LinkedList<Long> objektListe = new LinkedList<>();
     DBIterator<Wiedervorlage> wiedervorlagen = getIterator();
     if (wiedervorlageList == null)
     {
-      wiedervorlageList = new TablePart(wiedervorlagen,
-          new WiedervorlageAction(null));
+      wiedervorlageList = new JVereinTablePart(wiedervorlagen, null);
       wiedervorlageList.addColumn("Name", "mitglied");
       wiedervorlageList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -70,24 +68,20 @@ public class WiedervorlageList extends TablePart implements Part
       wiedervorlageList.setRememberColWidths(true);
       wiedervorlageList.setRememberOrder(true);
       wiedervorlageList.addFeature(new FeatureSummary());
-      while (wiedervorlagen.hasNext())
-      {
-        Wiedervorlage w = wiedervorlagen.next();
-        objektListe.add(Long.valueOf(w.getID()));
-      }
+      wiedervorlageList
+          .setAction(new EditAction(WiedervorlageDetailView.class,
+              WiedervorlageImpl.class, wiedervorlageList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {
       wiedervorlageList.removeAll();
       while (wiedervorlagen.hasNext())
       {
-        Wiedervorlage w = wiedervorlagen.next();
-        wiedervorlageList.addItem(w);
-        objektListe.add(Long.valueOf(w.getID()));
+        wiedervorlageList.addItem(wiedervorlagen.next());
       }
       wiedervorlageList.sort();
     }
-    VorZurueckControl.setObjektListe(WiedervorlageImpl.class, objektListe);
     return wiedervorlageList;
   }
   

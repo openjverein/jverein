@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -38,11 +37,13 @@ import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
+import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -92,7 +93,7 @@ public class ZusatzbetragControl extends VorZurueckControl
 
   private SelectInput ausfuehrungSuch = null;
 
-  private TablePart zusatzbetraegeList;
+  private JVereinTablePart zusatzbetraegeList;
 
   public static final String NEIN = "nein";
 
@@ -268,13 +269,11 @@ public class ZusatzbetragControl extends VorZurueckControl
 
   public Part getZusatzbetraegeList() throws RemoteException
   {
-    LinkedList<Long> objektListe = new LinkedList<>();
     DBIterator<Zusatzbetrag> zusatzbetraege = getIterator();
 
     if (zusatzbetraegeList == null)
     {
-      zusatzbetraegeList = new TablePart(zusatzbetraege,
-          new ZusatzbetraegeAction(null));
+      zusatzbetraegeList = new JVereinTablePart(zusatzbetraege, null);
       zusatzbetraegeList.addColumn("Name", "mitglied");
       zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -327,24 +326,20 @@ public class ZusatzbetragControl extends VorZurueckControl
       zusatzbetraegeList.setRememberOrder(true);
       zusatzbetraegeList.addFeature(new FeatureSummary());
       zusatzbetraegeList.setMulti(true);
-      while (zusatzbetraege.hasNext())
-      {
-        Zusatzbetrag zb = zusatzbetraege.next();
-        objektListe.add(Long.valueOf(zb.getID()));
-      }
+      zusatzbetraegeList
+          .setAction(new EditAction(ZusatzbetragDetailView.class,
+              ZusatzbetragImpl.class, zusatzbetraegeList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {
       zusatzbetraegeList.removeAll();
       while (zusatzbetraege.hasNext())
       {
-        Zusatzbetrag zb = zusatzbetraege.next();
-        zusatzbetraegeList.addItem(zb);
-        objektListe.add(Long.valueOf(zb.getID()));
+        zusatzbetraegeList.addItem(zusatzbetraege.next());
       }
       zusatzbetraegeList.sort();
     }
-    VorZurueckControl.setObjektListe(ZusatzbetragImpl.class, objektListe);
     if (this.ausfuehrungSuch.getText().equals("Aktive"))
     {
       nichtAktiveEliminieren(zusatzbetraegeList);

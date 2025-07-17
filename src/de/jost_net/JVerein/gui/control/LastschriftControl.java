@@ -18,7 +18,6 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.LinkedList;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -28,6 +27,7 @@ import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.LastschriftMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -44,7 +44,6 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
@@ -91,7 +90,7 @@ public class LastschriftControl extends FilterControl
   
   private Lastschrift lastschrift;
 
-  private TablePart lastschriftList;
+  private JVereinTablePart lastschriftList;
 
   public LastschriftControl(AbstractView view)
   {
@@ -106,9 +105,7 @@ public class LastschriftControl extends FilterControl
     {
       return lastschriftList;
     }
-    DBIterator<Lastschrift> lastschriften = getLastschriften();
-    lastschriftList = new TablePart(lastschriften,
-        new EditAction(LastschriftDetailView.class));
+    lastschriftList = new JVereinTablePart(getLastschriften(), null);
     lastschriftList.addColumn("Nr", "id-int");
     lastschriftList.addColumn("Abrechnungslauf", "abrechnungslauf");
     lastschriftList.addColumn("Name", "name");
@@ -124,17 +121,13 @@ public class LastschriftControl extends FilterControl
     lastschriftList.addColumn("Mandatdatum", "mandatdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lastschriftList.setRememberColWidths(true);
-    lastschriftList.setContextMenu(new LastschriftMenu());
+    lastschriftList.setContextMenu(new LastschriftMenu(lastschriftList));
     lastschriftList.setRememberOrder(true);
     lastschriftList.addFeature(new FeatureSummary());
     lastschriftList.setMulti(true);
-    LinkedList<Long> objektListe = new LinkedList<>();
-    while (lastschriften.hasNext())
-    {
-      Lastschrift la = lastschriften.next();
-      objektListe.add(Long.valueOf(la.getID()));
-    }
-    VorZurueckControl.setObjektListe(LastschriftImpl.class, objektListe);
+    lastschriftList.setAction(new EditAction(LastschriftDetailView.class,
+        LastschriftImpl.class, lastschriftList));
+    VorZurueckControl.setObjektListe(null, null);
     return lastschriftList;
   }
 
@@ -146,17 +139,13 @@ public class LastschriftControl extends FilterControl
     }
     try
     {
-      LinkedList<Long> objektListe = new LinkedList<>();
       lastschriftList.removeAll();
       DBIterator<Lastschrift> lastschriften = getLastschriften();
       while (lastschriften.hasNext())
       {
-        Lastschrift la = lastschriften.next();
-        objektListe.add(Long.valueOf(la.getID()));
-        lastschriftList.addItem(la);
+        lastschriftList.addItem(lastschriften.next());
       }
       lastschriftList.sort();
-      VorZurueckControl.setObjektListe(LastschriftImpl.class, objektListe);
     }
     catch (RemoteException e1)
     {

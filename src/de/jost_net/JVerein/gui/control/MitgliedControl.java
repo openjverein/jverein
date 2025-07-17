@@ -25,7 +25,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -72,13 +71,18 @@ import de.jost_net.JVerein.gui.menu.MitgliedNextBGruppeMenue;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.Familienverband;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
 import de.jost_net.JVerein.gui.parts.MitgliedSekundaereBeitragsgruppePart;
 import de.jost_net.JVerein.gui.view.AbstractMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.AuswertungVorlagenCsvView;
 import de.jost_net.JVerein.gui.view.IAuswertung;
+import de.jost_net.JVerein.gui.view.LehrgangDetailView;
+import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedNextBGruppeView;
 import de.jost_net.JVerein.gui.view.MitgliedSuchProfilListeView;
+import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
+import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.MitgliedAdressbuchExport;
 import de.jost_net.JVerein.io.MitgliedAdresslistePDF;
@@ -160,7 +164,7 @@ public class MitgliedControl extends FilterControl
     implements Savable
 {
 
-  private TablePart part;
+  private JVereinTablePart part;
 
   private SelectNoScrollInput mitgliedstyp;
 
@@ -296,10 +300,10 @@ public class MitgliedControl extends FilterControl
   private FamilienbeitragMessageConsumer fbc = null;
 
   // Liste aller Zusatzbeträge
-  private TablePart zusatzbetraegeList;
+  private JVereinTablePart zusatzbetraegeList;
 
   // Liste der Wiedervorlagen
-  private TablePart wiedervorlageList;
+  private JVereinTablePart wiedervorlageList;
 
   // Liste der Mails
   private TablePart mailList;
@@ -308,7 +312,7 @@ public class MitgliedControl extends FilterControl
   private TablePart arbeitseinsatzList;
 
   // Liste der Lehrgänge
-  private TablePart lehrgaengeList;
+  private JVereinTablePart lehrgaengeList;
 
   private TablePart familienangehoerige;
 
@@ -1722,8 +1726,7 @@ public class MitgliedControl extends FilterControl
     DBIterator<Zusatzbetrag> zusatzbetraege = service
         .createList(Zusatzbetrag.class);
     zusatzbetraege.addFilter("mitglied = " + getMitglied().getID());
-    zusatzbetraegeList = new TablePart(zusatzbetraege,
-        new ZusatzbetraegeAction(getMitglied()));
+    zusatzbetraegeList = new JVereinTablePart(zusatzbetraege, null);
     zusatzbetraegeList.setRememberColWidths(true);
     zusatzbetraegeList.setRememberOrder(true);
 
@@ -1755,7 +1758,8 @@ public class MitgliedControl extends FilterControl
     zusatzbetraegeList.addColumn("Buchungsart", "buchungsart",
         new BuchungsartFormatter());
     zusatzbetraegeList
-        .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
+        .setContextMenu(new ZusatzbetraegeMenu(null));
+    zusatzbetraegeList.setAction(new EditAction(ZusatzbetragDetailView.class));
     return zusatzbetraegeList;
   }
 
@@ -1770,17 +1774,16 @@ public class MitgliedControl extends FilterControl
         .createList(Wiedervorlage.class);
     wiedervorlagen.addFilter("mitglied = " + getMitglied().getID());
     wiedervorlagen.setOrder("ORDER BY datum DESC");
-    wiedervorlageList = new TablePart(wiedervorlagen,
-        new WiedervorlageAction(getMitglied()));
-    wiedervorlageList.setRememberColWidths(true);
-    wiedervorlageList.setRememberOrder(true);
-
+    wiedervorlageList = new JVereinTablePart(wiedervorlagen, null);
     wiedervorlageList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     wiedervorlageList.addColumn("Vermerk", "vermerk");
     wiedervorlageList.addColumn("Erledigung", "erledigung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    wiedervorlageList.setContextMenu(new WiedervorlageMenu(wiedervorlageList));
+    wiedervorlageList.setContextMenu(new WiedervorlageMenu(null));
+    wiedervorlageList.setRememberColWidths(true);
+    wiedervorlageList.setRememberOrder(true);
+    wiedervorlageList.setAction(new EditAction(WiedervorlageDetailView.class));
     return wiedervorlageList;
   }
 
@@ -1844,8 +1847,7 @@ public class MitgliedControl extends FilterControl
     DBService service = Einstellungen.getDBService();
     DBIterator<Lehrgang> lehrgaenge = service.createList(Lehrgang.class);
     lehrgaenge.addFilter("mitglied = " + getMitglied().getID());
-    lehrgaengeList = new TablePart(lehrgaenge,
-        new LehrgangAction(getMitglied()));
+    lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
     lehrgaengeList.setRememberColWidths(true);
     lehrgaengeList.setRememberOrder(true);
 
@@ -1856,7 +1858,8 @@ public class MitgliedControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgaengeList.addColumn("Veranstalter", "veranstalter");
     lehrgaengeList.addColumn("Ergebnis", "ergebnis");
-    lehrgaengeList.setContextMenu(new LehrgangMenu());
+    lehrgaengeList.setContextMenu(new LehrgangMenu(null));
+    lehrgaengeList.setAction(new EditAction(LehrgangDetailView.class));
     return lehrgaengeList;
   }
 
@@ -2185,20 +2188,16 @@ public class MitgliedControl extends FilterControl
   public TablePart getMitgliedTable(int atyp, Action detailaction)
       throws RemoteException
   {
-    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this).get(atyp, null);
-    part = new TablePart(mitglieder, detailaction);
+    part = new JVereinTablePart(new MitgliedQuery(this).get(atyp, null), null);
     new MitgliedSpaltenauswahl().setColumns(part, atyp);
-    part.setContextMenu(new MitgliedMenu(detailaction));
+    part.setContextMenu(new MitgliedMenu(detailaction, part));
     part.setMulti(true);
     part.setRememberColWidths(true);
     part.setRememberOrder(true);
     part.setRememberState(true);
-    LinkedList<Long> objektListe = new LinkedList<>();
-    for (Mitglied m : mitglieder)
-    {
-      objektListe.add(Long.valueOf(m.getID()));
-    }
-    VorZurueckControl.setObjektListe(MitgliedImpl.class, objektListe);
+    part.setAction(
+        new EditAction(MitgliedDetailView.class, MitgliedImpl.class, part));
+    VorZurueckControl.setObjektListe(null, null);
     return part;
   }
 
@@ -2213,14 +2212,11 @@ public class MitgliedControl extends FilterControl
     lastrefresh = System.currentTimeMillis();
     part.removeAll();
     ArrayList<Mitglied> mitglieder = new MitgliedQuery(this).get(atyp, null);
-    LinkedList<Long> objektListe = new LinkedList<>();
     for (Mitglied m : mitglieder)
     {
       part.addItem(m);
-      objektListe.add(Long.valueOf(m.getID()));
     }
     part.sort();
-    VorZurueckControl.setObjektListe(MitgliedImpl.class, objektListe);
     return part;
   }
   

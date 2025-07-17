@@ -18,18 +18,20 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.WiedervorlageAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageDeleteAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageErledigungAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageErledigungDeleteAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
+import de.jost_net.JVerein.server.WiedervorlageImpl;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 
 /**
@@ -41,9 +43,11 @@ public class WiedervorlageMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Wiedervorlagen.
    */
-  public WiedervorlageMenu(TablePart table)
+  public WiedervorlageMenu(JVereinTablePart table)
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new WiedervorlageAction(null),
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(WiedervorlageDetailView.class, WiedervorlageImpl.class,
+            table),
         "text-x-generic.png"));
     addItem(new WiedervorlageNichtErledigtItem("Erledigung setzen",
         new WiedervorlageErledigungAction(table), "check.png"));

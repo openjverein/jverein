@@ -170,7 +170,7 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
       SollbuchungsList.setRememberColWidths(true);
       SollbuchungsList.setRememberOrder(true);
       SollbuchungsList.addFeature(new FeatureSummary());
-      SollbuchungsList.setContextMenu(new SollbuchungMenu());
+      SollbuchungsList.setContextMenu(new SollbuchungMenu(null));
     }
     else
     {

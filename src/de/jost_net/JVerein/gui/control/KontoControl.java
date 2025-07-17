@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -38,6 +37,7 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.KontoDetailView;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.AfaMode;
@@ -75,7 +75,6 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.hbci.Settings;
 import de.willuhn.jameica.plugin.Version;
@@ -88,7 +87,7 @@ public class KontoControl extends FilterControl
     implements Savable
 {
 
-  private TablePart kontenList;
+  private JVereinTablePart kontenList;
 
   private TextInput nummer;
 
@@ -348,9 +347,7 @@ public class KontoControl extends FilterControl
 
   public Part getKontenList() throws RemoteException
   {
-    DBIterator<Konto> konten = getKonten();
-    kontenList = new TablePart(konten,
-        new EditAction(KontoDetailView.class));
+    kontenList = new JVereinTablePart(getKonten(), null);
     kontenList.addColumn("Nummer", "nummer");
     kontenList.addColumn("Bezeichnung", "bezeichnung");
     kontenList.addColumn("Kontoart", "kontoart", new Formatter()
@@ -397,16 +394,12 @@ public class KontoControl extends FilterControl
     kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart", 
         new BuchungsartFormatter());
     kontenList.setRememberColWidths(true);
-    kontenList.setContextMenu(new KontoMenu());
+    kontenList.setContextMenu(new KontoMenu(kontenList));
     kontenList.setRememberOrder(true);
     kontenList.addFeature(new FeatureSummary());
-    LinkedList<Long> objektListe = new LinkedList<>();
-    while (konten.hasNext())
-    {
-      Konto ko = konten.next();
-      objektListe.add(Long.valueOf(ko.getID()));
-    }
-    VorZurueckControl.setObjektListe(KontoImpl.class, objektListe);
+    kontenList.setAction(
+        new EditAction(KontoDetailView.class, KontoImpl.class, kontenList));
+    VorZurueckControl.setObjektListe(null, null);
     return kontenList;
   }
 
@@ -424,17 +417,13 @@ public class KontoControl extends FilterControl
     kontenList.removeAll();
     try
     {
-      LinkedList<Long> objektListe = new LinkedList<>();
       kontenList.removeAll();
       DBIterator<Konto> konten = getKonten();
       while (konten.hasNext())
       {
-        Konto ko = konten.next();
-        kontenList.addItem(ko);
-        objektListe.add(Long.valueOf(ko.getID()));
+        kontenList.addItem(konten.next());
       }
       kontenList.sort();
-      VorZurueckControl.setObjektListe(KontoImpl.class, objektListe);
     }
     catch (RemoteException e1)
     {

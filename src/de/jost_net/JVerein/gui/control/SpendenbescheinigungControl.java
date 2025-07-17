@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -39,7 +38,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
@@ -47,6 +46,8 @@ import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartAnzeigenMenu;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportCSV;
@@ -86,7 +87,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -99,7 +99,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
 {
 
   // Spendenbescheinigung View
-  private TablePart spbList;
+  private JVereinTablePart spbList;
 
   private SelectInput spendenart;
 
@@ -547,9 +547,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       return spbList;
     }
-    ArrayList<Spendenbescheinigung> list = getSpendenbescheinigungen();
-    spbList = new TablePart(list,
-        new SpendenbescheinigungAction(Spendenart.SACHSPENDE));
+    spbList = new JVereinTablePart(getSpendenbescheinigungen(), null);
     spbList.addColumn("Nr", "id-int");
     spbList.addColumn("Spender", "mitglied");
     spbList.addColumn("Spendenart", "spendenart", new Formatter()
@@ -575,17 +573,14 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spbList.addColumn("Zeile 7", "zeile7");
 
     spbList.setRememberColWidths(true);
-    spbList.setContextMenu(new SpendenbescheinigungMenu());
+    spbList.setContextMenu(new SpendenbescheinigungMenu(spbList));
     spbList.setRememberOrder(true);
     spbList.addFeature(new FeatureSummary());
     spbList.setMulti(true);
-    LinkedList<Long> objektListe = new LinkedList<>();
-    for (Spendenbescheinigung spb : list)
-    {
-      objektListe.add(Long.valueOf(spb.getID()));
-    }
-    VorZurueckControl.setObjektListe(SpendenbescheinigungImpl.class,
-        objektListe);
+    spbList.setAction(
+        new EditAction(SpendenbescheinigungDetailView.class,
+            SpendenbescheinigungImpl.class, spbList));
+    VorZurueckControl.setObjektListe(null, null);
     return spbList;
   }
 
@@ -595,16 +590,12 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       try
       {
-        LinkedList<Long> objektListe = new LinkedList<>();
         spbList.removeAll();
         for (Spendenbescheinigung spb : getSpendenbescheinigungen())
         {
           spbList.addItem(spb);
-          objektListe.add(Long.valueOf(spb.getID()));
         }
         spbList.sort();
-        VorZurueckControl.setObjektListe(SpendenbescheinigungImpl.class,
-            objektListe);
       }
       catch (RemoteException e1)
       {

@@ -20,11 +20,12 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.KursteilnehmerAbuResetAction;
 import de.jost_net.JVerein.gui.action.KursteilnehmerDeleteAction;
 import de.jost_net.JVerein.gui.action.KursteilnehmerWirdMitgliedAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
+import de.jost_net.JVerein.server.KursteilnehmerImpl;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.jameica.gui.parts.TablePart;
 
 /**
  * Kontext-Menu zu den Kursteilnehmer.
@@ -35,10 +36,11 @@ public class KursteilnehmerMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Kursteilnehmer.
    */
-  public KursteilnehmerMenu(TablePart table)
+  public KursteilnehmerMenu(JVereinTablePart table)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(KursteilnehmerDetailView.class),
+        new EditAction(KursteilnehmerDetailView.class, KursteilnehmerImpl.class,
+            table),
         "text-x-generic.png"));
     addItem(new CheckedSingleContextMenuItem("Abbuchungsdatum löschen",
         new KursteilnehmerAbuResetAction(table), "user-trash-full.png"));

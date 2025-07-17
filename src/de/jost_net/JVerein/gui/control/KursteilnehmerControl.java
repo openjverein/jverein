@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.LinkedList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -40,6 +39,7 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.menu.KursteilnehmerMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
@@ -61,7 +61,6 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.system.Application;
@@ -113,7 +112,7 @@ public class KursteilnehmerControl extends FilterControl
 
   private Kursteilnehmer ktn;
 
-  private TablePart part;
+  private JVereinTablePart part;
 
   public KursteilnehmerControl(AbstractView view)
   {
@@ -394,8 +393,7 @@ public class KursteilnehmerControl extends FilterControl
       return part;
     }
     DBIterator<Kursteilnehmer> kursteilnehmer = getIterator();
-    part = new TablePart(kursteilnehmer,
-        new EditAction(KursteilnehmerDetailView.class));
+    part = new JVereinTablePart(kursteilnehmer, null);
 
     part.addColumn("Name", "name");
     part.addColumn("Vorname", "vorname");
@@ -414,13 +412,9 @@ public class KursteilnehmerControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     part.setContextMenu(new KursteilnehmerMenu(part));
     part.setMulti(true);
-    LinkedList<Long> objektListe = new LinkedList<>();
-    while (kursteilnehmer.hasNext())
-    {
-      Kursteilnehmer kt = kursteilnehmer.next();
-      objektListe.add(Long.valueOf(kt.getID()));
-    }
-    VorZurueckControl.setObjektListe(KursteilnehmerImpl.class, objektListe);
+    part.setAction(new EditAction(KursteilnehmerDetailView.class,
+        KursteilnehmerImpl.class, part));
+    VorZurueckControl.setObjektListe(null, null);
     return part;
   }
 
@@ -433,17 +427,14 @@ public class KursteilnehmerControl extends FilterControl
       {
         return;
       }
-      LinkedList<Long> objektListe = new LinkedList<>();
       part.removeAll();
       DBIterator<Kursteilnehmer> kursteilnehmer = getIterator();
       while (kursteilnehmer.hasNext())
       {
         Kursteilnehmer kt = kursteilnehmer.next();
         part.addItem(kt);
-        objektListe.add(Long.valueOf(kt.getID()));
       }
       part.sort();
-      VorZurueckControl.setObjektListe(KursteilnehmerImpl.class, objektListe);
     }
     catch (RemoteException e1)
     {

@@ -35,7 +35,7 @@ public class BuchungAction implements Action
 {
   private boolean splitbuchung;
 
-  private TablePart buchungsList = null;
+  private TablePart part = null;
 
   public BuchungAction(boolean splitbuchung)
   {
@@ -45,7 +45,7 @@ public class BuchungAction implements Action
   public BuchungAction(boolean splitbuchung, TablePart buchungsList)
   {
     this.splitbuchung = splitbuchung;
-    this.buchungsList = buchungsList;
+    this.part = buchungsList;
   }
 
   @SuppressWarnings("unchecked")
@@ -64,12 +64,12 @@ public class BuchungAction implements Action
     }
     try
     {
-      if (buchungsList != null && b.getSplitId() == null)
+      if (part != null && b.getSplitId() == null)
       {
         try
         {
           LinkedList<Long> objektListe = new LinkedList<>();
-          for (Buchung bu : (List<Buchung>) buchungsList.getItems(false))
+          for (Buchung bu : (List<Buchung>) part.getItems(false))
           {
             if (bu.getSplitId() == null)
             {
