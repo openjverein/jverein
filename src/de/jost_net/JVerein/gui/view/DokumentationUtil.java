@@ -24,7 +24,7 @@ public class DokumentationUtil
   
   //private static final String ALLGEMEIN = "allgemein/";
   
-  private static final String FUNKTIONEN = "v3.1.x/";
+  private static final String FUNKTIONEN = "versionen/v3.1.x/";
   
   private static final String ADMIN = "administration/";
   
