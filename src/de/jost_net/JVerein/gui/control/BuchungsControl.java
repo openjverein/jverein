@@ -1276,10 +1276,10 @@ public class BuchungsControl extends VorZurueckControl
     }
   }
 
+  @SuppressWarnings("unchecked")
   public BuchungListTablePart getBuchungsList() throws RemoteException
   {
     params = new TreeMap<>();
-    LinkedList<Long> objektListe = new LinkedList<>();
 
     // Werte speichern und Parameter füllen
     Date dv = null;
@@ -1447,8 +1447,25 @@ public class BuchungsControl extends VorZurueckControl
 
     if (buchungsList == null)
     {
-      buchungsList = new BuchungListTablePart(buchungen,
-          new BuchungAction(false));
+      buchungsList = new BuchungListTablePart(buchungen, context -> {
+        try
+        {
+          LinkedList<Long> objektListe = new LinkedList<>();
+          for (Buchung bu : (List<Buchung>) buchungsList.getItems(false))
+          {
+            if (bu.getSplitId() == null)
+            {
+              objektListe.add(Long.valueOf(bu.getID()));
+            }
+          }
+          VorZurueckControl.setObjektListe(BuchungImpl.class, objektListe);
+        }
+        catch (NumberFormatException | RemoteException e)
+        {
+          //
+        }
+        new BuchungAction(false).handleAction(context);
+      });
       buchungsList.addColumn("Nr", "id-int");
       buchungsList.addColumn("Geprüft", "geprueft", new Formatter()
       {
@@ -1550,10 +1567,7 @@ public class BuchungsControl extends VorZurueckControl
       buchungsList.setRememberState(true);
       buchungsList.addFeature(new FeatureSummary());
       buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
-      for (Buchung bu : buchungen)
-      {
-        objektListe.add(Long.valueOf(bu.getID()));
-      }
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {
@@ -1563,11 +1577,10 @@ public class BuchungsControl extends VorZurueckControl
       for (Buchung bu : buchungen)
       {
         buchungsList.addItem(bu);
-        objektListe.add(Long.valueOf(bu.getID()));
       }
       buchungsList.sort();
     }
-    VorZurueckControl.setObjektListe(BuchungImpl.class, objektListe);
+
     informKontoChangeListener();
 
     return buchungsList;
