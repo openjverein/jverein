@@ -16,16 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.util.Date;
-
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
 import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -101,14 +99,15 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
-    buttons.addButton(control.getZurueckButton());
-    buttons.addButton(control.getVorButton());
-    Geschaeftsjahr gj = new Geschaeftsjahr(new Date());
-    // Parameter: Objekt Klasse, Tabellen Name, Order By, Filter,
-    // Filter Parameter
-    control.setObjektListe(Spendenbescheinigung.class, "spendenbescheinigung",
-        "spendedatum, zeile2", "spendedatum >= ?",
-        gj.getBeginnLetztesGeschaeftsjahr());
+    Button zurueckButton = control.getZurueckButton();
+    Button vorButton = control.getVorButton();
+    buttons.addButton(zurueckButton);
+    buttons.addButton(vorButton);
+    if (control.getSpendenbescheinigung().isNewObject())
+    {
+      zurueckButton.setEnabled(false);
+      vorButton.setEnabled(false);
+    }
     buttons.addButton(control.getDruckUndMailButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());

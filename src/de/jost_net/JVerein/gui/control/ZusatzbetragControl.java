@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -53,12 +54,12 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
+import de.jost_net.JVerein.server.ZusatzbetragImpl;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -77,7 +78,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class ZusatzbetragControl extends AbstractControl
+public class ZusatzbetragControl extends VorZurueckControl
     implements Savable
 {
 
@@ -267,6 +268,7 @@ public class ZusatzbetragControl extends AbstractControl
 
   public Part getZusatzbetraegeList() throws RemoteException
   {
+    LinkedList<Long> objektListe = new LinkedList<>();
     DBIterator<Zusatzbetrag> zusatzbetraege = getIterator();
 
     if (zusatzbetraegeList == null)
@@ -325,16 +327,24 @@ public class ZusatzbetragControl extends AbstractControl
       zusatzbetraegeList.setRememberOrder(true);
       zusatzbetraegeList.addFeature(new FeatureSummary());
       zusatzbetraegeList.setMulti(true);
+      while (zusatzbetraege.hasNext())
+      {
+        Zusatzbetrag zb = zusatzbetraege.next();
+        objektListe.add(Long.valueOf(zb.getID()));
+      }
     }
     else
     {
       zusatzbetraegeList.removeAll();
       while (zusatzbetraege.hasNext())
       {
-        zusatzbetraegeList.addItem(zusatzbetraege.next());
+        Zusatzbetrag zb = zusatzbetraege.next();
+        zusatzbetraegeList.addItem(zb);
+        objektListe.add(Long.valueOf(zb.getID()));
       }
       zusatzbetraegeList.sort();
     }
+    VorZurueckControl.setObjektListe(ZusatzbetragImpl.class, objektListe);
     if (this.ausfuehrungSuch.getText().equals("Aktive"))
     {
       nichtAktiveEliminieren(zusatzbetraegeList);

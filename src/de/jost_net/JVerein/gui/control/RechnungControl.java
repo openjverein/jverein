@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -47,6 +48,7 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.server.RechnungImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
@@ -170,6 +172,13 @@ public class RechnungControl extends DruckMailControl implements Savable
     rechnungList.setRememberOrder(true);
     rechnungList.addFeature(new FeatureSummary());
     rechnungList.setMulti(true);
+    LinkedList<Long> objektListe = new LinkedList<>();
+    while (rechnungen.hasNext())
+    {
+      Rechnung re = rechnungen.next();
+      objektListe.add(Long.valueOf(re.getID()));
+    }
+    VorZurueckControl.setObjektListe(RechnungImpl.class, objektListe);
     return rechnungList;
   }
 
@@ -228,13 +237,17 @@ public class RechnungControl extends DruckMailControl implements Savable
     {
       if (rechnungList != null)
       {
+        LinkedList<Long> objektListe = new LinkedList<>();
         rechnungList.removeAll();
         GenericIterator<Rechnung> rechnungen = getRechnungIterator();
         while (rechnungen.hasNext())
         {
-          rechnungList.addItem(rechnungen.next());
+          Rechnung re = rechnungen.next();
+          rechnungList.addItem(re);
+          objektListe.add(Long.valueOf(re.getID()));
         }
         rechnungList.sort();
+        VorZurueckControl.setObjektListe(RechnungImpl.class, objektListe);
       }
     }
     catch (RemoteException e1)
@@ -389,7 +402,7 @@ public class RechnungControl extends DruckMailControl implements Savable
     return text;
   }
 
-  private Rechnung getRechnung()
+  public Rechnung getRechnung()
   {
     if (rechnung != null)
     {

@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -62,6 +63,7 @@ import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.server.SpendenbescheinigungImpl;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.SpbAdressaufbereitung;
@@ -545,7 +547,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       return spbList;
     }
-    spbList = new TablePart(getSpendenbescheinigungen(),
+    ArrayList<Spendenbescheinigung> list = getSpendenbescheinigungen();
+    spbList = new TablePart(list,
         new SpendenbescheinigungAction(Spendenart.SACHSPENDE));
     spbList.addColumn("Nr", "id-int");
     spbList.addColumn("Spender", "mitglied");
@@ -576,6 +579,13 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spbList.setRememberOrder(true);
     spbList.addFeature(new FeatureSummary());
     spbList.setMulti(true);
+    LinkedList<Long> objektListe = new LinkedList<>();
+    for (Spendenbescheinigung spb : list)
+    {
+      objektListe.add(Long.valueOf(spb.getID()));
+    }
+    VorZurueckControl.setObjektListe(SpendenbescheinigungImpl.class,
+        objektListe);
     return spbList;
   }
 
@@ -585,12 +595,16 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       try
       {
+        LinkedList<Long> objektListe = new LinkedList<>();
         spbList.removeAll();
         for (Spendenbescheinigung spb : getSpendenbescheinigungen())
         {
           spbList.addItem(spb);
+          objektListe.add(Long.valueOf(spb.getID()));
         }
         spbList.sort();
+        VorZurueckControl.setObjektListe(SpendenbescheinigungImpl.class,
+            objektListe);
       }
       catch (RemoteException e1)
       {

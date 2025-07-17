@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.LinkedList;
 
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -31,6 +32,7 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.server.LehrgangImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -227,17 +229,7 @@ public class LehrgangControl extends FilterControl
   {
     try
     {
-      if (lehrgaengeList == null)
-      {
-        return;
-      }
-      lehrgaengeList.removeAll();
-      DBIterator<Lehrgang> lehrgaenge = getIterator();
-      while (lehrgaenge.hasNext())
-      {
-        lehrgaengeList.addItem(lehrgaenge.next());
-      }
-      lehrgaengeList.sort();
+      getLehrgaengeList();
     }
     catch (RemoteException e1)
     {
@@ -284,6 +276,7 @@ public class LehrgangControl extends FilterControl
 
   public Part getLehrgaengeList() throws RemoteException
   {
+    LinkedList<Long> objektListe = new LinkedList<>();
     DBIterator<Lehrgang> lehrgaenge = getIterator();
     if (lehrgaengeList == null)
     {
@@ -300,16 +293,24 @@ public class LehrgangControl extends FilterControl
       lehrgaengeList.setRememberColWidths(true);
       lehrgaengeList.setRememberOrder(true);
       lehrgaengeList.addFeature(new FeatureSummary());
+      while (lehrgaenge.hasNext())
+      {
+        Lehrgang lg = lehrgaenge.next();
+        objektListe.add(Long.valueOf(lg.getID()));
+      }
     }
     else
     {
       lehrgaengeList.removeAll();
       while (lehrgaenge.hasNext())
       {
-        lehrgaengeList.addItem(lehrgaenge.next());
+        Lehrgang lg = lehrgaenge.next();
+        lehrgaengeList.addItem(lg);
+        objektListe.add(Long.valueOf(lg.getID()));
       }
       lehrgaengeList.sort();
     }
+    VorZurueckControl.setObjektListe(LehrgangImpl.class, objektListe);
     return lehrgaengeList;
   }
   

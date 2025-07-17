@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.LinkedList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -45,6 +46,7 @@ import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
+import de.jost_net.JVerein.server.KursteilnehmerImpl;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -412,7 +414,13 @@ public class KursteilnehmerControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     part.setContextMenu(new KursteilnehmerMenu(part));
     part.setMulti(true);
-
+    LinkedList<Long> objektListe = new LinkedList<>();
+    while (kursteilnehmer.hasNext())
+    {
+      Kursteilnehmer kt = kursteilnehmer.next();
+      objektListe.add(Long.valueOf(kt.getID()));
+    }
+    VorZurueckControl.setObjektListe(KursteilnehmerImpl.class, objektListe);
     return part;
   }
 
@@ -425,14 +433,17 @@ public class KursteilnehmerControl extends FilterControl
       {
         return;
       }
+      LinkedList<Long> objektListe = new LinkedList<>();
       part.removeAll();
       DBIterator<Kursteilnehmer> kursteilnehmer = getIterator();
       while (kursteilnehmer.hasNext())
       {
         Kursteilnehmer kt = kursteilnehmer.next();
         part.addItem(kt);
+        objektListe.add(Long.valueOf(kt.getID()));
       }
       part.sort();
+      VorZurueckControl.setObjektListe(KursteilnehmerImpl.class, objektListe);
     }
     catch (RemoteException e1)
     {

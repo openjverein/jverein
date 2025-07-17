@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -51,6 +52,7 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import de.jost_net.JVerein.server.SollbuchungImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -447,9 +449,9 @@ public class SollbuchungControl extends DruckMailControl
   {
     this.action = action;
     this.umwandeln = umwandeln;
-    @SuppressWarnings("rawtypes")
-    GenericIterator sollbuchungen = new SollbuchungQuery(this, umwandeln,
-        null).get();
+    LinkedList<Long> objektListe = new LinkedList<>();
+    GenericIterator<Sollbuchung> sollbuchungen = new SollbuchungQuery(this,
+        umwandeln, null).get();
     if (sollbuchungenList == null)
     {
       sollbuchungenList = new SollbuchungListTablePart(sollbuchungen,
@@ -484,6 +486,12 @@ public class SollbuchungControl extends DruckMailControl
       sollbuchungenList.setRememberOrder(true);
       sollbuchungenList.setMulti(true);
       sollbuchungenList.addFeature(new FeatureSummary());
+      while (sollbuchungen.hasNext())
+      {
+        Sollbuchung sb = sollbuchungen.next();
+        objektListe.add(Long.valueOf(sb.getID()));
+      }
+      VorZurueckControl.setObjektListe(SollbuchungImpl.class, objektListe);
     }
     else
     {
@@ -492,8 +500,11 @@ public class SollbuchungControl extends DruckMailControl
       {
         while (sollbuchungen.hasNext())
         {
-          sollbuchungenList.addItem(sollbuchungen.next());
+          Sollbuchung sb = sollbuchungen.next();
+          sollbuchungenList.addItem(sb);
+          objektListe.add(Long.valueOf(sb.getID()));
         }
+        VorZurueckControl.setObjektListe(SollbuchungImpl.class, objektListe);
       }
       sollbuchungenList.sort();
     }
@@ -626,6 +637,7 @@ public class SollbuchungControl extends DruckMailControl
     return mitglieder;
   }
 
+  // Aus SollbuchungAuswahlDialog
   public void refreshSollbuchungenList()
   {
     try
@@ -677,7 +689,7 @@ public class SollbuchungControl extends DruckMailControl
     return button;
   }
 
-  // Für Sollbuchungen View
+  // Für Sollbuchungen Liste View
   public void TabRefresh()
   {
     if (sollbuchungenList != null)

@@ -21,9 +21,9 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
-import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.gui.control.KontoControl;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -85,11 +85,15 @@ public class KontoDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KONTEN, false, "question-circle.png");
-    buttons.addButton(control.getZurueckButton());
-    buttons.addButton(control.getVorButton());
-    // Parameter: Objekt Klasse, Tabellen Name, Order By, Filter,
-    // Filter Parameter
-    control.setObjektListe(Konto.class, "konto", "bezeichnung", null, null);
+    Button zurueckButton = control.getZurueckButton();
+    Button vorButton = control.getVorButton();
+    buttons.addButton(zurueckButton);
+    buttons.addButton(vorButton);
+    if (control.getKonto().isNewObject())
+    {
+      zurueckButton.setEnabled(false);
+      vorButton.setEnabled(false);
+    }
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
   }

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -50,6 +51,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.server.KontoImpl;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -142,7 +144,7 @@ public class KontoControl extends FilterControl
     settings.setStoreWhenRead(true);
   }
 
-  private Konto getKonto()
+  public Konto getKonto()
   {
     if (konto != null)
     {
@@ -346,7 +348,8 @@ public class KontoControl extends FilterControl
 
   public Part getKontenList() throws RemoteException
   {
-    kontenList = new TablePart(getKonten(),
+    DBIterator<Konto> konten = getKonten();
+    kontenList = new TablePart(konten,
         new EditAction(KontoDetailView.class));
     kontenList.addColumn("Nummer", "nummer");
     kontenList.addColumn("Bezeichnung", "bezeichnung");
@@ -397,6 +400,13 @@ public class KontoControl extends FilterControl
     kontenList.setContextMenu(new KontoMenu());
     kontenList.setRememberOrder(true);
     kontenList.addFeature(new FeatureSummary());
+    LinkedList<Long> objektListe = new LinkedList<>();
+    while (konten.hasNext())
+    {
+      Konto ko = konten.next();
+      objektListe.add(Long.valueOf(ko.getID()));
+    }
+    VorZurueckControl.setObjektListe(KontoImpl.class, objektListe);
     return kontenList;
   }
 
@@ -414,13 +424,17 @@ public class KontoControl extends FilterControl
     kontenList.removeAll();
     try
     {
+      LinkedList<Long> objektListe = new LinkedList<>();
       kontenList.removeAll();
       DBIterator<Konto> konten = getKonten();
       while (konten.hasNext())
       {
-        kontenList.addItem(konten.next());
+        Konto ko = konten.next();
+        kontenList.addItem(ko);
+        objektListe.add(Long.valueOf(ko.getID()));
       }
       kontenList.sort();
+      VorZurueckControl.setObjektListe(KontoImpl.class, objektListe);
     }
     catch (RemoteException e1)
     {

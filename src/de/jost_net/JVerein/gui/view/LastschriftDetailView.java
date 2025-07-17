@@ -18,9 +18,9 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.LastschriftControl;
-import de.jost_net.JVerein.rmi.Lastschrift;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -69,15 +69,15 @@ public class LastschriftDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LASTSCHRIFT, false, "question-circle.png");
-    buttons.addButton(control.getZurueckButton());
-    buttons.addButton(control.getVorButton());
-    // Parameter: Objekt Klasse, Tabellen Name, Order By, Filter,
-    // Filter Parameter
-    // Wir unterstützen bis zu 3 Abrechnungsläufe zurück!
-    control.setObjektListe(Lastschrift.class, "lastschrift",
-        "abrechnungslauf, name, vorname", "abrechnungslauf >= ?",
-        Long.valueOf(control.getLastschrift().getAbrechnungslauf().getID())
-            - 3);
+    Button zurueckButton = control.getZurueckButton();
+    Button vorButton = control.getVorButton();
+    buttons.addButton(zurueckButton);
+    buttons.addButton(vorButton);
+    if (control.getLastschrift().isNewObject())
+    {
+      zurueckButton.setEnabled(false);
+      vorButton.setEnabled(false);
+    }
     buttons.paint(this.getParent());
   }
 }

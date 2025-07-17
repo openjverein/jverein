@@ -16,15 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.util.Date;
-
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
-import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -79,15 +75,15 @@ public class KursteilnehmerDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
-    buttons.addButton(control.getZurueckButton());
-    buttons.addButton(control.getVorButton());
-    Geschaeftsjahr gj = new Geschaeftsjahr(new Date());
-    // Parameter: Objekt Klasse, Tabellen Name, Order By, Filter,
-    // Filter Parameter
-    control.setObjektListe(Kursteilnehmer.class, "kursteilnehmer",
-        "eingabedatum, name, vorname", "eingabedatum >= ?",
-        gj.getBeginnLetztesGeschaeftsjahr());
-    buttons.addButton(new SaveButton(control));
+    Button zurueckButton = control.getZurueckButton();
+    Button vorButton = control.getVorButton();
+    buttons.addButton(zurueckButton);
+    buttons.addButton(vorButton);
+    if (control.getKursteilnehmer().isNewObject())
+    {
+      zurueckButton.setEnabled(false);
+      vorButton.setEnabled(false);
+    }
 
     buttons.addButton(new Button("Speichern und neu", context -> {
       try

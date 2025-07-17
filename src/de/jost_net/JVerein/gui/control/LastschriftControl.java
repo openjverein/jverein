@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.LinkedList;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -31,6 +32,7 @@ import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
+import de.jost_net.JVerein.server.LastschriftImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -104,7 +106,8 @@ public class LastschriftControl extends FilterControl
     {
       return lastschriftList;
     }
-    lastschriftList = new TablePart(getLastschriften(),
+    DBIterator<Lastschrift> lastschriften = getLastschriften();
+    lastschriftList = new TablePart(lastschriften,
         new EditAction(LastschriftDetailView.class));
     lastschriftList.addColumn("Nr", "id-int");
     lastschriftList.addColumn("Abrechnungslauf", "abrechnungslauf");
@@ -125,6 +128,13 @@ public class LastschriftControl extends FilterControl
     lastschriftList.setRememberOrder(true);
     lastschriftList.addFeature(new FeatureSummary());
     lastschriftList.setMulti(true);
+    LinkedList<Long> objektListe = new LinkedList<>();
+    while (lastschriften.hasNext())
+    {
+      Lastschrift la = lastschriften.next();
+      objektListe.add(Long.valueOf(la.getID()));
+    }
+    VorZurueckControl.setObjektListe(LastschriftImpl.class, objektListe);
     return lastschriftList;
   }
 
@@ -136,13 +146,17 @@ public class LastschriftControl extends FilterControl
     }
     try
     {
+      LinkedList<Long> objektListe = new LinkedList<>();
       lastschriftList.removeAll();
       DBIterator<Lastschrift> lastschriften = getLastschriften();
       while (lastschriften.hasNext())
       {
-        lastschriftList.addItem(lastschriften.next());
+        Lastschrift la = lastschriften.next();
+        objektListe.add(Long.valueOf(la.getID()));
+        lastschriftList.addItem(la);
       }
       lastschriftList.sort();
+      VorZurueckControl.setObjektListe(LastschriftImpl.class, objektListe);
     }
     catch (RemoteException e1)
     {

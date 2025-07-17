@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -109,6 +110,7 @@ import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.server.EigenschaftenNode;
+import de.jost_net.JVerein.server.MitgliedImpl;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTIMESTAMP;
@@ -2183,14 +2185,20 @@ public class MitgliedControl extends FilterControl
   public TablePart getMitgliedTable(int atyp, Action detailaction)
       throws RemoteException
   {
-    part = new TablePart(new MitgliedQuery(this).get(atyp, null),
-        detailaction);
+    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this).get(atyp, null);
+    part = new TablePart(mitglieder, detailaction);
     new MitgliedSpaltenauswahl().setColumns(part, atyp);
     part.setContextMenu(new MitgliedMenu(detailaction));
     part.setMulti(true);
     part.setRememberColWidths(true);
     part.setRememberOrder(true);
     part.setRememberState(true);
+    LinkedList<Long> objektListe = new LinkedList<>();
+    for (Mitglied m : mitglieder)
+    {
+      objektListe.add(Long.valueOf(m.getID()));
+    }
+    VorZurueckControl.setObjektListe(MitgliedImpl.class, objektListe);
     return part;
   }
 
@@ -2205,11 +2213,14 @@ public class MitgliedControl extends FilterControl
     lastrefresh = System.currentTimeMillis();
     part.removeAll();
     ArrayList<Mitglied> mitglieder = new MitgliedQuery(this).get(atyp, null);
+    LinkedList<Long> objektListe = new LinkedList<>();
     for (Mitglied m : mitglieder)
     {
       part.addItem(m);
+      objektListe.add(Long.valueOf(m.getID()));
     }
     part.sort();
+    VorZurueckControl.setObjektListe(MitgliedImpl.class, objektListe);
     return part;
   }
   

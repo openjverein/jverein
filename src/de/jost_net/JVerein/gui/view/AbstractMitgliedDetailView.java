@@ -190,20 +190,15 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIED, false, "question-circle.png");
-    buttons.addButton(control.getZurueckButton());
-    buttons.addButton(control.getVorButton());
-    String filter;
-    if (isMitgliedDetail())
+    Button zurueckButton = control.getZurueckButton();
+    Button vorButton = control.getVorButton();
+    buttons.addButton(zurueckButton);
+    buttons.addButton(vorButton);
+    if (control.getMitglied().isNewObject())
     {
-      filter = Mitglied.MITGLIEDSTYP + " = 1";
+      zurueckButton.setEnabled(false);
+      vorButton.setEnabled(false);
     }
-    else
-    {
-      filter = Mitglied.MITGLIEDSTYP + " != 1";
-    }
-    // Parameter: Objekt Klasse, Tabellen Name, Order By, Filter
-    control.setObjektListe(Mitglied.class, "mitglied", "name, vorname",
-        filter, null);
     if (!control.getMitglied().isNewObject())
     {
       buttons.addButton(new Button("Kontoauszug", new KontoauszugAction(),

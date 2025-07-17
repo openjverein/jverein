@@ -70,7 +70,6 @@ import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
-import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -84,6 +83,7 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Steuer;
+import de.jost_net.JVerein.server.BuchungImpl;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
@@ -91,7 +91,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -1280,6 +1279,7 @@ public class BuchungsControl extends VorZurueckControl
   public BuchungListTablePart getBuchungsList() throws RemoteException
   {
     params = new TreeMap<>();
+    LinkedList<Long> objektListe = new LinkedList<>();
 
     // Werte speichern und Parameter füllen
     Date dv = null;
@@ -1443,9 +1443,11 @@ public class BuchungsControl extends VorZurueckControl
         suchbetrag, mvalue, mitglied, geldkonto, split,
         ungeprueft, steuer);
 
+    List<Buchung> buchungen = query.get();
+
     if (buchungsList == null)
     {
-      buchungsList = new BuchungListTablePart(query.get(),
+      buchungsList = new BuchungListTablePart(buchungen,
           new BuchungAction(false));
       buchungsList.addColumn("Nr", "id-int");
       buchungsList.addColumn("Geprüft", "geprueft", new Formatter()
@@ -1548,19 +1550,24 @@ public class BuchungsControl extends VorZurueckControl
       buchungsList.setRememberState(true);
       buchungsList.addFeature(new FeatureSummary());
       buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
+      for (Buchung bu : buchungen)
+      {
+        objektListe.add(Long.valueOf(bu.getID()));
+      }
     }
     else
     {
       buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
       buchungsList.removeAll();
 
-      for (Buchung bu : query.get())
+      for (Buchung bu : buchungen)
       {
         buchungsList.addItem(bu);
+        objektListe.add(Long.valueOf(bu.getID()));
       }
       buchungsList.sort();
     }
-
+    VorZurueckControl.setObjektListe(BuchungImpl.class, objektListe);
     informKontoChangeListener();
 
     return buchungsList;
@@ -2442,27 +2449,4 @@ public class BuchungsControl extends VorZurueckControl
     }
   }
 
-  @SuppressWarnings("unchecked")
-  public LinkedList<Long> getKontoIds(Kontenfilter art)
-  {
-    try
-    {
-      String sql;
-      final DBService service = Einstellungen.getDBService();
-      switch (art)
-      {
-        case ANLAGEKONTO:
-          sql = "SELECT id FROM konto WHERE kontoart = ?";
-          break;
-        default:
-          sql = "SELECT id FROM konto WHERE kontoart != ?";
-      }
-      return (LinkedList<Long>) service.execute(sql,
-          new Object[] { Kontoart.ANLAGE.getKey() }, rs);
-    }
-    catch (RemoteException e)
-    {
-      return null;
-    }
-  }
 }
