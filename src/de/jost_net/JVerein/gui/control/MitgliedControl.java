@@ -2680,6 +2680,7 @@ public class MitgliedControl extends FilterControl
         }
       }
     });
+    VorZurueckControl.setObjektListe(null, null);
     return familienbeitragtree;
   }
 
