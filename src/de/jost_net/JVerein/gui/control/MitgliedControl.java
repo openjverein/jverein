@@ -76,6 +76,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
 import de.jost_net.JVerein.gui.parts.MitgliedSekundaereBeitragsgruppePart;
 import de.jost_net.JVerein.gui.view.AbstractMitgliedDetailView;
+import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
 import de.jost_net.JVerein.gui.view.AuswertungVorlagenCsvView;
 import de.jost_net.JVerein.gui.view.IAuswertung;
 import de.jost_net.JVerein.gui.view.LehrgangDetailView;
@@ -116,7 +117,6 @@ import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.server.EigenschaftenNode;
-import de.jost_net.JVerein.server.MitgliedImpl;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTIMESTAMP;
@@ -311,7 +311,7 @@ public class MitgliedControl extends FilterControl
   private TablePart mailList;
 
   // Liste der Arbeitseinsätze
-  private TablePart arbeitseinsatzList;
+  private JVereinTablePart arbeitseinsatzList;
 
   // Liste der Lehrgänge
   private JVereinTablePart lehrgaengeList;
@@ -1824,11 +1824,10 @@ public class MitgliedControl extends FilterControl
         .createList(Arbeitseinsatz.class);
     arbeitseinsaetze.addFilter("mitglied = " + getMitglied().getID());
     arbeitseinsaetze.setOrder("ORDER by datum desc");
-    arbeitseinsatzList = new TablePart(arbeitseinsaetze,
-        new ArbeitseinsatzAction(mitglied));
+    arbeitseinsatzList = new JVereinTablePart(arbeitseinsaetze, null);
     arbeitseinsatzList.setRememberColWidths(true);
     arbeitseinsatzList.setRememberOrder(true);
-    arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu());
+    arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu(null));
 
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -1837,6 +1836,7 @@ public class MitgliedControl extends FilterControl
     arbeitseinsatzList.addColumn("Bemerkung", "bemerkung");
     // wiedervorlageList.setContextMenu(new
     // WiedervorlageMenu(wiedervorlageList));
+    lehrgaengeList.setAction(new EditAction(ArbeitseinsatzDetailView.class));
     return arbeitseinsatzList;
   }
 
@@ -2200,12 +2200,11 @@ public class MitgliedControl extends FilterControl
     if (detailaction instanceof MitgliedDetailAction)
     {
       part.setAction(
-          new EditAction(MitgliedDetailView.class, MitgliedImpl.class, part));
+          new EditAction(MitgliedDetailView.class, part));
     }
     else if (detailaction instanceof NichtMitgliedDetailAction)
     {
-      part.setAction(new EditAction(NichtMitgliedDetailView.class,
-          MitgliedImpl.class, part));
+      part.setAction(new EditAction(NichtMitgliedDetailView.class, part));
     }
     VorZurueckControl.setObjektListe(null, null);
     return part;

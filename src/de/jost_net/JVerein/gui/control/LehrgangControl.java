@@ -33,7 +33,6 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.server.LehrgangImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -302,8 +301,8 @@ public class LehrgangControl extends FilterControl
       lehrgaengeList.setRememberColWidths(true);
       lehrgaengeList.setRememberOrder(true);
       lehrgaengeList.addFeature(new FeatureSummary());
-      lehrgaengeList.setAction(new EditAction(LehrgangDetailView.class,
-          LehrgangImpl.class, lehrgaengeList));
+      lehrgaengeList
+          .setAction(new EditAction(LehrgangDetailView.class, lehrgaengeList));
       VorZurueckControl.setObjektListe(null, null);
     }
     else

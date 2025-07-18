@@ -23,7 +23,6 @@ import de.jost_net.JVerein.gui.action.RechnungDeleteAction;
 import de.jost_net.JVerein.gui.action.RechnungSendAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.RechnungDetailView;
-import de.jost_net.JVerein.server.RechnungImpl;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -41,7 +40,7 @@ public class RechnungMenu extends ContextMenu
   public RechnungMenu(JVereinTablePart table)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(RechnungDetailView.class, RechnungImpl.class, table),
+        new EditAction(RechnungDetailView.class, table),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new RechnungDeleteAction(), "user-trash-full.png"));

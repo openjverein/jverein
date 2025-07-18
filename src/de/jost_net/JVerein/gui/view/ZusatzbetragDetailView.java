@@ -46,11 +46,9 @@ public class ZusatzbetragDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
-    if (!control.getZusatzbetrag().isNewObject())
-    {
-      buttons.addButton(control.getZurueckButton());
-      buttons.addButton(control.getVorButton());
-    }
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
         null, false, "view-refresh.png");
     buttons.addButton(new SaveButton(control));

@@ -53,7 +53,6 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
-import de.jost_net.JVerein.server.SollbuchungImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -486,8 +485,8 @@ public class SollbuchungControl extends DruckMailControl
       {
         sollbuchungenList
             .setContextMenu(new SollbuchungMenu(sollbuchungenList));
-        sollbuchungenList.setAction(new EditAction(SollbuchungDetailView.class,
-            SollbuchungImpl.class, sollbuchungenList));
+        sollbuchungenList.setAction(
+            new EditAction(SollbuchungDetailView.class, sollbuchungenList));
         VorZurueckControl.setObjektListe(null, null);
       }
       else

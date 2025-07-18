@@ -28,7 +28,6 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
-import de.jost_net.JVerein.server.ZusatzbetragImpl;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -48,8 +47,7 @@ public class ZusatzbetraegeMenu extends ContextMenu
   public ZusatzbetraegeMenu(JVereinTablePart table)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(ZusatzbetragDetailView.class, ZusatzbetragImpl.class,
-            table),
+        new EditAction(ZusatzbetragDetailView.class, table),
         "text-x-generic.png"));
     addItem(new ZusatzbetragWiederholtItem("Vorheriges Fälligkeitsdatum",
         new ZusatzbetraegeVorherigeFaelligkeitAction(table),

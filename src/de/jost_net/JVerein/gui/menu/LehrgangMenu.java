@@ -21,7 +21,6 @@ import de.jost_net.JVerein.gui.action.LehrgangDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LehrgangDetailView;
-import de.jost_net.JVerein.server.LehrgangImpl;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -39,7 +38,7 @@ public class LehrgangMenu extends ContextMenu
   public LehrgangMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(LehrgangDetailView.class, LehrgangImpl.class, part),
+        new EditAction(LehrgangDetailView.class, part),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen", new LehrgangDeleteAction(),
         "user-trash-full.png"));

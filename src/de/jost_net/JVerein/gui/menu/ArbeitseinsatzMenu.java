@@ -16,9 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.ArbeitseinsatzAction;
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzDeleteAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -33,9 +35,10 @@ public class ArbeitseinsatzMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Arbeitseinsätze.
    */
-  public ArbeitseinsatzMenu()
+  public ArbeitseinsatzMenu(JVereinTablePart part)
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new ArbeitseinsatzAction(null),
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(ArbeitseinsatzDetailView.class, part),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new ArbeitseinsatzDeleteAction(), "user-trash-full.png"));

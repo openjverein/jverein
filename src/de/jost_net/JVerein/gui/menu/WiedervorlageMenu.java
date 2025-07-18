@@ -26,7 +26,6 @@ import de.jost_net.JVerein.gui.action.WiedervorlageErledigungDeleteAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
-import de.jost_net.JVerein.server.WiedervorlageImpl;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -46,8 +45,7 @@ public class WiedervorlageMenu extends ContextMenu
   public WiedervorlageMenu(JVereinTablePart table)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(WiedervorlageDetailView.class, WiedervorlageImpl.class,
-            table),
+        new EditAction(WiedervorlageDetailView.class, table),
         "text-x-generic.png"));
     addItem(new WiedervorlageNichtErledigtItem("Erledigung setzen",
         new WiedervorlageErledigungAction(table), "check.png"));

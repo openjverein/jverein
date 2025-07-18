@@ -32,7 +32,6 @@ import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
-import de.jost_net.JVerein.server.LastschriftImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -125,8 +124,8 @@ public class LastschriftControl extends FilterControl
     lastschriftList.setRememberOrder(true);
     lastschriftList.addFeature(new FeatureSummary());
     lastschriftList.setMulti(true);
-    lastschriftList.setAction(new EditAction(LastschriftDetailView.class,
-        LastschriftImpl.class, lastschriftList));
+    lastschriftList.setAction(
+        new EditAction(LastschriftDetailView.class, lastschriftList));
     VorZurueckControl.setObjektListe(null, null);
     return lastschriftList;
   }

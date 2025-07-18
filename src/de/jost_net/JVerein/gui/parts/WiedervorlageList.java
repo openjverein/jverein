@@ -28,7 +28,6 @@ import de.jost_net.JVerein.gui.control.VorZurueckControl;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
 import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
-import de.jost_net.JVerein.server.WiedervorlageImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -69,8 +68,8 @@ public class WiedervorlageList extends TablePart implements Part
       wiedervorlageList.setRememberOrder(true);
       wiedervorlageList.addFeature(new FeatureSummary());
       wiedervorlageList
-          .setAction(new EditAction(WiedervorlageDetailView.class,
-              WiedervorlageImpl.class, wiedervorlageList));
+          .setAction(
+              new EditAction(WiedervorlageDetailView.class, wiedervorlageList));
       VorZurueckControl.setObjektListe(null, null);
     }
     else

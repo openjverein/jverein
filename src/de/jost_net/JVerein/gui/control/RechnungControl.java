@@ -48,7 +48,6 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
-import de.jost_net.JVerein.server.RechnungImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
@@ -171,8 +170,8 @@ public class RechnungControl extends DruckMailControl implements Savable
     rechnungList.setRememberOrder(true);
     rechnungList.addFeature(new FeatureSummary());
     rechnungList.setMulti(true);
-    rechnungList.setAction(new EditAction(RechnungDetailView.class,
-        RechnungImpl.class, rechnungList));
+    rechnungList
+        .setAction(new EditAction(RechnungDetailView.class, rechnungList));
     VorZurueckControl.setObjektListe(null, null);
     return rechnungList;
   }

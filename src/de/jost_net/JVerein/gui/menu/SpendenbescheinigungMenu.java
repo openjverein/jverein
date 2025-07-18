@@ -24,7 +24,6 @@ import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.keys.Adressblatt;
-import de.jost_net.JVerein.server.SpendenbescheinigungImpl;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -43,8 +42,7 @@ public class SpendenbescheinigungMenu extends ContextMenu
   public SpendenbescheinigungMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(SpendenbescheinigungDetailView.class,
-            SpendenbescheinigungImpl.class, part),
+        new EditAction(SpendenbescheinigungDetailView.class, part),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new SpendenbescheinigungDeleteAction(), "user-trash-full.png"));

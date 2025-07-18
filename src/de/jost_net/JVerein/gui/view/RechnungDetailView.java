@@ -77,11 +77,9 @@ public class RechnungDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.RECHNUNG, false, "question-circle.png");
-    if (!control.getRechnung().isNewObject())
-    {
-      buttons.addButton(control.getZurueckButton());
-      buttons.addButton(control.getVorButton());
-    }
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.addButton(control.getRechnungDruckUndMailButton());
     buttons.addButton(control.getMahnungDruckUndMailButton());
     buttons.addButton(new SaveButton(control));

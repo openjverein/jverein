@@ -19,6 +19,8 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.util.LinkedList;
 
+import org.eclipse.swt.widgets.Composite;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -37,6 +39,8 @@ public class VorZurueckControl extends AbstractControl
   private Button zurueck;
 
   private Button vor;
+
+  private Button info;
 
   private int zurueckIndex = -2;
 
@@ -61,6 +65,37 @@ public class VorZurueckControl extends AbstractControl
   /**
    * Buttons
    */
+  public Button getInfoButton()
+  {
+    info = new Button("", null, null, false, null)
+    {
+      @Override
+      public void paint(Composite parent) throws RemoteException
+      {
+        // Button bei neuen Objecten und falschem Object nicht zeichnen
+        DBObject object = (DBObject) getCurrentObject();
+        if (objektListe != null && viewClass != null
+            && object.getClass() == objectClass
+            && !((DBObject) getCurrentObject()).isNewObject())
+        {
+          super.paint(parent);
+          try
+          {
+            int index = objektListe.indexOf(Long.valueOf(object.getID())) + 1;
+            info.setText("Eintrag " + index + " von " + objektListe.size());
+          }
+          catch (RemoteException e)
+          {
+            //
+          }
+        }
+      }
+    };
+
+    info.setEnabled(false);
+    return info;
+  }
+
   public Button getZurueckButton()
   {
     zurueck = new Button("", context -> {
@@ -76,30 +111,36 @@ public class VorZurueckControl extends AbstractControl
       {
         //
       }
-    }, null, false, "go-previous.png");
+    }, null, false, "go-previous.png")
 
-    DBObject object = (DBObject) getCurrentObject();
-    if (objektListe == null || viewClass == null
-        || object.getClass() != objectClass)
     {
-      zurueck.setEnabled(false);
-    }
-    else
-    {
-      try
+      @Override
+      public void paint(Composite parent) throws RemoteException
       {
-        int index = objektListe.indexOf(Long.valueOf(object.getID()));
-        if (!(index > 0 && index < objektListe.size()))
+        // Button bei neuen Objecten und falschem Object nicht zeichnen
+        DBObject object = (DBObject) getCurrentObject();
+        if (objektListe != null && viewClass != null
+            && object.getClass() == objectClass
+            && !((DBObject) getCurrentObject()).isNewObject())
         {
-          zurueck.setEnabled(false);
+          super.paint(parent);
+          try
+          {
+            int index = objektListe.indexOf(Long.valueOf(object.getID()));
+            if (!(index > 0 && index < objektListe.size()))
+            {
+              zurueck.setEnabled(false);
+            }
+            zurueckIndex = index - 1;
+          }
+          catch (RemoteException e)
+          {
+            //
+          }
         }
-        zurueckIndex = index - 1;
       }
-      catch (RemoteException e)
-      {
-        //
-      }
-    }
+    };
+
     return zurueck;
   }
 
@@ -118,30 +159,36 @@ public class VorZurueckControl extends AbstractControl
       {
         //
       }
-    }, null, false, "go-next.png");
+    }, null, false, "go-next.png")
 
-    DBObject object = (DBObject) getCurrentObject();
-    if (objektListe == null || viewClass == null
-        || object.getClass() != objectClass)
     {
-      vor.setEnabled(false);
-    }
-    else
-    {
-      try
+      @Override
+      public void paint(Composite parent) throws RemoteException
       {
-        int index = objektListe.indexOf(Long.valueOf(object.getID()));
-        if (!(index >= 0 && index < objektListe.size() - 1))
+        // Button bei neuen Objecten und falschem Object nicht zeichnen
+        DBObject object = (DBObject) getCurrentObject();
+        if (objektListe != null && viewClass != null
+            && object.getClass() == objectClass
+            && !((DBObject) getCurrentObject()).isNewObject())
         {
-          vor.setEnabled(false);
+          super.paint(parent);
+          try
+          {
+            int index = objektListe.indexOf(Long.valueOf(object.getID()));
+            if (!(index >= 0 && index < objektListe.size() - 1))
+            {
+              vor.setEnabled(false);
+            }
+            vorIndex = index + 1;
+          }
+          catch (RemoteException e)
+          {
+            //
+          }
         }
-        vorIndex = index + 1;
       }
-      catch (RemoteException e)
-      {
-        //
-      }
-    }
+    };
+
     return vor;
   }
 

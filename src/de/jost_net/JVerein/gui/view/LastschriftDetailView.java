@@ -68,11 +68,9 @@ public class LastschriftDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LASTSCHRIFT, false, "question-circle.png");
-    if (!control.getLastschrift().isNewObject())
-    {
-      buttons.addButton(control.getZurueckButton());
-      buttons.addButton(control.getVorButton());
-    }
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.paint(this.getParent());
   }
 }

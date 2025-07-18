@@ -84,11 +84,9 @@ public class KontoDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KONTEN, false, "question-circle.png");
-    if (!control.getKonto().isNewObject())
-    {
-      buttons.addButton(control.getZurueckButton());
-      buttons.addButton(control.getVorButton());
-    }
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
   }

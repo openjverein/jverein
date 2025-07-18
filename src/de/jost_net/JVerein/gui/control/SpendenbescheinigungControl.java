@@ -64,7 +64,6 @@ import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.jost_net.JVerein.server.SpendenbescheinigungImpl;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.SpbAdressaufbereitung;
@@ -578,8 +577,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spbList.addFeature(new FeatureSummary());
     spbList.setMulti(true);
     spbList.setAction(
-        new EditAction(SpendenbescheinigungDetailView.class,
-            SpendenbescheinigungImpl.class, spbList));
+        new EditAction(SpendenbescheinigungDetailView.class, spbList));
     VorZurueckControl.setObjektListe(null, null);
     return spbList;
   }

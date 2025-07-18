@@ -51,7 +51,6 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.server.KontoImpl;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -397,8 +396,7 @@ public class KontoControl extends FilterControl
     kontenList.setContextMenu(new KontoMenu(kontenList));
     kontenList.setRememberOrder(true);
     kontenList.addFeature(new FeatureSummary());
-    kontenList.setAction(
-        new EditAction(KontoDetailView.class, KontoImpl.class, kontenList));
+    kontenList.setAction(new EditAction(KontoDetailView.class, kontenList));
     VorZurueckControl.setObjektListe(null, null);
     return kontenList;
   }

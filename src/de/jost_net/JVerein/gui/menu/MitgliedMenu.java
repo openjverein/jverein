@@ -49,7 +49,6 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
-import de.jost_net.JVerein.server.MitgliedImpl;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.Action;
@@ -80,14 +79,13 @@ public class MitgliedMenu extends ContextMenu
     if (detailaction instanceof MitgliedDetailAction)
     {
       addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-          new EditAction(MitgliedDetailView.class, MitgliedImpl.class, part),
+          new EditAction(MitgliedDetailView.class, part),
           "text-x-generic.png"));
     }
     else if (detailaction instanceof NichtMitgliedDetailAction)
     {
       addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-          new EditAction(NichtMitgliedDetailView.class, MitgliedImpl.class,
-              part),
+          new EditAction(NichtMitgliedDetailView.class, part),
           "text-x-generic.png"));
     }
     addItem(new CheckedSingleContextMenuItem("Duplizieren",

@@ -98,11 +98,9 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
-    if (!control.getSpendenbescheinigung().isNewObject())
-    {
-      buttons.addButton(control.getZurueckButton());
-      buttons.addButton(control.getVorButton());
-    }
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.addButton(control.getDruckUndMailButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());

@@ -25,7 +25,6 @@ import de.jost_net.JVerein.gui.action.PreNotificationAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.rmi.Lastschrift;
-import de.jost_net.JVerein.server.LastschriftImpl;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -45,8 +44,7 @@ public class LastschriftMenu extends ContextMenu
   public LastschriftMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
-        new EditAction(LastschriftDetailView.class, LastschriftImpl.class,
-            part),
+        new EditAction(LastschriftDetailView.class, part),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));

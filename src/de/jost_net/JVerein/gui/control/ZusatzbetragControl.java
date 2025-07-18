@@ -55,7 +55,6 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
-import de.jost_net.JVerein.server.ZusatzbetragImpl;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -327,8 +326,8 @@ public class ZusatzbetragControl extends VorZurueckControl
       zusatzbetraegeList.addFeature(new FeatureSummary());
       zusatzbetraegeList.setMulti(true);
       zusatzbetraegeList
-          .setAction(new EditAction(ZusatzbetragDetailView.class,
-              ZusatzbetragImpl.class, zusatzbetraegeList));
+          .setAction(
+              new EditAction(ZusatzbetragDetailView.class, zusatzbetraegeList));
       VorZurueckControl.setObjektListe(null, null);
     }
     else

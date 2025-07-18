@@ -32,8 +32,6 @@ public class EditAction implements Action
 {
   private Class<? extends AbstractView> viewClass;
 
-  private Class<? extends DBObject> objectClass = null;
-
   private JVereinTablePart part = null;
 
   public EditAction(Class<? extends AbstractView> viewClass)
@@ -42,10 +40,9 @@ public class EditAction implements Action
   }
 
   public EditAction(Class<? extends AbstractView> viewClass,
-      Class<? extends DBObject> objectClass, JVereinTablePart part)
+      JVereinTablePart part)
   {
     this.viewClass = viewClass;
-    this.objectClass = objectClass;
     this.part = part;
   }
 
@@ -70,7 +67,8 @@ public class EditAction implements Action
         {
           objektListe.add(Long.valueOf(obj.getID()));
         }
-        VorZurueckControl.setObjektListe(objectClass, objektListe);
+        VorZurueckControl.setObjektListe(
+            (Class<? extends DBObject>) context.getClass(), objektListe);
       }
       catch (NumberFormatException | RemoteException e)
       {

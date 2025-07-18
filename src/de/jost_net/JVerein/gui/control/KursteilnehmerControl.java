@@ -46,7 +46,6 @@ import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
-import de.jost_net.JVerein.server.KursteilnehmerImpl;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -412,8 +411,7 @@ public class KursteilnehmerControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     part.setContextMenu(new KursteilnehmerMenu(part));
     part.setMulti(true);
-    part.setAction(new EditAction(KursteilnehmerDetailView.class,
-        KursteilnehmerImpl.class, part));
+    part.setAction(new EditAction(KursteilnehmerDetailView.class, part));
     VorZurueckControl.setObjektListe(null, null);
     return part;
   }
