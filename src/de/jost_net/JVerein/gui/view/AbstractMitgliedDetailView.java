@@ -194,9 +194,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     {
       buttons.addButton(control.getZurueckButton());
       buttons.addButton(control.getVorButton());
-    }
-    if (!control.getMitglied().isNewObject())
-    {
       buttons.addButton(new Button("Kontoauszug", new KontoauszugAction(),
           control.getMitglied(), false, "file-invoice.png"));
     }

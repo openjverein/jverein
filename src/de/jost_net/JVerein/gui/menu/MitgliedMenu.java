@@ -27,6 +27,7 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedEigenschaftZuordnungAction;
@@ -76,9 +77,19 @@ public class MitgliedMenu extends ContextMenu
   public MitgliedMenu(Action detailaction, JVereinTablePart part)
       throws RemoteException
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(MitgliedDetailView.class, MitgliedImpl.class, part),
-        "text-x-generic.png"));
+    if (detailaction instanceof MitgliedDetailAction)
+    {
+      addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+          new EditAction(MitgliedDetailView.class, MitgliedImpl.class, part),
+          "text-x-generic.png"));
+    }
+    else if (detailaction instanceof NichtMitgliedDetailAction)
+    {
+      addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+          new EditAction(NichtMitgliedDetailView.class, MitgliedImpl.class,
+              part),
+          "text-x-generic.png"));
+    }
     addItem(new CheckedSingleContextMenuItem("Duplizieren",
         new MitgliedDuplizierenAction(), "edit-copy.png"));
     addItem(new CheckedContextMenuItem("In Zwischenablage kopieren",

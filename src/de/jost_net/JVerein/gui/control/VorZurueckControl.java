@@ -38,6 +38,10 @@ public class VorZurueckControl extends AbstractControl
 
   private Button vor;
 
+  private int zurueckIndex = -2;
+
+  private int vorIndex = -2;
+
   public VorZurueckControl(AbstractView view)
   {
     super(view);
@@ -60,78 +64,84 @@ public class VorZurueckControl extends AbstractControl
   public Button getZurueckButton()
   {
     zurueck = new Button("", context -> {
-      DBObject object = (DBObject) getCurrentObject();
-      if (objektListe == null || viewClass == null
-          || object.getClass() != objectClass)
-      {
-        zurueck.setEnabled(false);
-        return;
-      }
       try
       {
-        int index = objektListe.indexOf(Long.valueOf(object.getID()));
-        if (index > 0 && index < objektListe.size())
-        {
-          DBObject instanz = Einstellungen.getDBService()
-              .createObject(objectClass, objektListe.get(index - 1).toString());
-          // Neuen View nicht in die History aufnehmen
-          GUI.getCurrentView().setCurrentObject(instanz);
-          GUI.startView(viewClass, instanz);
-        }
-        else
-        {
-          zurueck.setEnabled(false);
-        }
-        if (index >= 0 && index < objektListe.size() - 1)
-        {
-          vor.setEnabled(true);
-        }
+        DBObject instanz = Einstellungen.getDBService().createObject(
+            objectClass, objektListe.get(zurueckIndex).toString());
+        // Neuen View nicht in die History aufnehmen
+        GUI.getCurrentView().setCurrentObject(instanz);
+        GUI.startView(viewClass, instanz);
       }
       catch (RemoteException e)
       {
         //
       }
-
     }, null, false, "go-previous.png");
+
+    DBObject object = (DBObject) getCurrentObject();
+    if (objektListe == null || viewClass == null
+        || object.getClass() != objectClass)
+    {
+      zurueck.setEnabled(false);
+    }
+    else
+    {
+      try
+      {
+        int index = objektListe.indexOf(Long.valueOf(object.getID()));
+        if (!(index > 0 && index < objektListe.size()))
+        {
+          zurueck.setEnabled(false);
+        }
+        zurueckIndex = index - 1;
+      }
+      catch (RemoteException e)
+      {
+        //
+      }
+    }
     return zurueck;
   }
 
   public Button getVorButton()
   {
     vor = new Button("", context -> {
-      DBObject object = (DBObject) getCurrentObject();
-      if (objektListe == null || viewClass == null
-          || object.getClass() != objectClass)
-      {
-        vor.setEnabled(false);
-        return;
-      }
       try
       {
-        int index = objektListe.indexOf(Long.valueOf(object.getID()));
-        if (index >= 0 && index < objektListe.size() - 1)
-        {
-          DBObject instanz = Einstellungen.getDBService()
-              .createObject(objectClass, objektListe.get(index + 1).toString());
-          // Neuen View nicht in die History aufnehmen
-          GUI.getCurrentView().setCurrentObject(instanz);
-          GUI.startView(viewClass, instanz);
-        }
-        else
-        {
-          vor.setEnabled(false);
-        }
-        if (index > 0 && index < objektListe.size())
-        {
-          zurueck.setEnabled(true);
-        }
+        DBObject instanz = Einstellungen.getDBService()
+            .createObject(objectClass, objektListe.get(vorIndex).toString());
+        // Neuen View nicht in die History aufnehmen
+        GUI.getCurrentView().setCurrentObject(instanz);
+        GUI.startView(viewClass, instanz);
       }
       catch (RemoteException e)
       {
         //
       }
-
     }, null, false, "go-next.png");
+
+    DBObject object = (DBObject) getCurrentObject();
+    if (objektListe == null || viewClass == null
+        || object.getClass() != objectClass)
+    {
+      vor.setEnabled(false);
+    }
+    else
+    {
+      try
+      {
+        int index = objektListe.indexOf(Long.valueOf(object.getID()));
+        if (!(index >= 0 && index < objektListe.size() - 1))
+        {
+          vor.setEnabled(false);
+        }
+        vorIndex = index + 1;
+      }
+      catch (RemoteException e)
+      {
+        //
+      }
+    }
     return vor;
   }
 

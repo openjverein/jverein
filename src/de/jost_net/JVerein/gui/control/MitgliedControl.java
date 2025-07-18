@@ -46,6 +46,7 @@ import de.jost_net.JVerein.gui.action.LehrgangAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.MailDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
@@ -81,6 +82,7 @@ import de.jost_net.JVerein.gui.view.LehrgangDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedNextBGruppeView;
 import de.jost_net.JVerein.gui.view.MitgliedSuchProfilListeView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.io.FileViewer;
@@ -2195,8 +2197,16 @@ public class MitgliedControl extends FilterControl
     part.setRememberColWidths(true);
     part.setRememberOrder(true);
     part.setRememberState(true);
-    part.setAction(
-        new EditAction(MitgliedDetailView.class, MitgliedImpl.class, part));
+    if (detailaction instanceof MitgliedDetailAction)
+    {
+      part.setAction(
+          new EditAction(MitgliedDetailView.class, MitgliedImpl.class, part));
+    }
+    else if (detailaction instanceof NichtMitgliedDetailAction)
+    {
+      part.setAction(new EditAction(NichtMitgliedDetailView.class,
+          MitgliedImpl.class, part));
+    }
     VorZurueckControl.setObjektListe(null, null);
     return part;
   }
