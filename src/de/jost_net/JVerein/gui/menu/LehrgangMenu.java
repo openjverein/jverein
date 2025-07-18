@@ -42,8 +42,11 @@ public class LehrgangMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen", new LehrgangDeleteAction(),
         "user-trash-full.png"));
-    addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-        new MitgliedDetailAction(), "user-friends.png"));
+    if (part != null)
+    {
+      addItem(ContextMenuItem.SEPARATOR);
+      addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+          new MitgliedDetailAction(), "user-friends.png"));
+    }
   }
 }

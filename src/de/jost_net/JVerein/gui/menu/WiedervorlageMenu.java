@@ -48,14 +48,17 @@ public class WiedervorlageMenu extends ContextMenu
         new EditAction(WiedervorlageDetailView.class, table),
         "text-x-generic.png"));
     addItem(new WiedervorlageNichtErledigtItem("Erledigung setzen",
-        new WiedervorlageErledigungAction(table), "check.png"));
+        new WiedervorlageErledigungAction(), "check.png"));
     addItem(new WiedervorlageErledigtItem("Erledigung löschen",
-        new WiedervorlageErledigungDeleteAction(table), "user-trash-full.png"));
+        new WiedervorlageErledigungDeleteAction(), "user-trash-full.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new WiedervorlageDeleteAction(), "user-trash-full.png"));
-    addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-        new MitgliedDetailAction(), "user-friends.png"));
+    if (table != null)
+    {
+      addItem(ContextMenuItem.SEPARATOR);
+      addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+          new MitgliedDetailAction(), "user-friends.png"));
+    }
   }
   
   private static class WiedervorlageErledigtItem extends CheckedSingleContextMenuItem

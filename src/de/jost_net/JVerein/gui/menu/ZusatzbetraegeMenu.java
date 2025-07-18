@@ -50,18 +50,21 @@ public class ZusatzbetraegeMenu extends ContextMenu
         new EditAction(ZusatzbetragDetailView.class, table),
         "text-x-generic.png"));
     addItem(new ZusatzbetragWiederholtItem("Vorheriges Fälligkeitsdatum",
-        new ZusatzbetraegeVorherigeFaelligkeitAction(table),
+        new ZusatzbetraegeVorherigeFaelligkeitAction(),
         "office-calendar.png"));
     addItem(new ZusatzbetragWiederholtItem("Nächstes Fälligkeitsdatum",
-        new ZusatzbetraegeNaechsteFaelligkeitAction(table),
+        new ZusatzbetraegeNaechsteFaelligkeitAction(),
         "office-calendar.png"));
     addItem(new ZusatzbetragEinmaligItem("Erneut ausführen",
-        new ZusatzbetraegeResetAction(table), "view-refresh.png"));
+        new ZusatzbetraegeResetAction(), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new ZusatzbetraegeDeleteAction(), "user-trash-full.png"));
-    addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-        new MitgliedDetailAction(), "user-friends.png"));
+    if (table != null)
+    {
+      addItem(ContextMenuItem.SEPARATOR);
+      addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+          new MitgliedDetailAction(), "user-friends.png"));
+    }
   }
   
   private static class ZusatzbetragEinmaligItem extends CheckedSingleContextMenuItem

@@ -40,7 +40,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 public class WiedervorlageList extends TablePart implements Part
 {
 
-  private JVereinTablePart wiedervorlageList;
+  private AutoUpdateTablePart wiedervorlageList;
   
   private FilterControl control;
 
@@ -55,7 +55,7 @@ public class WiedervorlageList extends TablePart implements Part
     DBIterator<Wiedervorlage> wiedervorlagen = getIterator();
     if (wiedervorlageList == null)
     {
-      wiedervorlageList = new JVereinTablePart(wiedervorlagen, null);
+      wiedervorlageList = new AutoUpdateTablePart(wiedervorlagen, null);
       wiedervorlageList.addColumn("Name", "mitglied");
       wiedervorlageList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));

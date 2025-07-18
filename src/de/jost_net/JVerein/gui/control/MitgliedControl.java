@@ -71,6 +71,7 @@ import de.jost_net.JVerein.gui.menu.MitgliedMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedNextBGruppeMenue;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.Familienverband;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
@@ -302,10 +303,10 @@ public class MitgliedControl extends FilterControl
   private FamilienbeitragMessageConsumer fbc = null;
 
   // Liste aller Zusatzbeträge
-  private TablePart zusatzbetraegeList;
+  private AutoUpdateTablePart zusatzbetraegeList;
 
   // Liste der Wiedervorlagen
-  private TablePart wiedervorlageList;
+  private AutoUpdateTablePart wiedervorlageList;
 
   // Liste der Mails
   private TablePart mailList;
@@ -1728,7 +1729,7 @@ public class MitgliedControl extends FilterControl
     DBIterator<Zusatzbetrag> zusatzbetraege = service
         .createList(Zusatzbetrag.class);
     zusatzbetraege.addFilter("mitglied = " + getMitglied().getID());
-    zusatzbetraegeList = new TablePart(zusatzbetraege,
+    zusatzbetraegeList = new AutoUpdateTablePart(zusatzbetraege,
         new EditAction(ZusatzbetragDetailView.class));
     zusatzbetraegeList.setRememberColWidths(true);
     zusatzbetraegeList.setRememberOrder(true);
@@ -1776,7 +1777,7 @@ public class MitgliedControl extends FilterControl
         .createList(Wiedervorlage.class);
     wiedervorlagen.addFilter("mitglied = " + getMitglied().getID());
     wiedervorlagen.setOrder("ORDER BY datum DESC");
-    wiedervorlageList = new TablePart(wiedervorlagen,
+    wiedervorlageList = new AutoUpdateTablePart(wiedervorlagen,
         new EditAction(WiedervorlageDetailView.class));
     wiedervorlageList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
