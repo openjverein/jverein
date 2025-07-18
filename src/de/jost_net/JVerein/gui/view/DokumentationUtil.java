@@ -111,7 +111,7 @@ public class DokumentationUtil
   
   public static final String KONTEN = BUCHF + "konten";
 
-  public static final String JAHRESSALDO = BUCHF + "jahressaldo";
+  public static final String JAHRESSALDO = BUCHF + "kontensaldo";
 
   public static final String PROJEKTSALDO = BUCHF + "projekte";
   
@@ -227,7 +227,7 @@ public class DokumentationUtil
   
   
   // Einstellungen Buchführung
-  public static final String BUCHUNGSART = ADMBUCHF + "buchungsart.html";
+  public static final String BUCHUNGSART = ADMBUCHF + "buchungsart";
 
   public static final String BUCHUNGSKLASSEN = ADMBUCHF + "buchungsklasse";
 
