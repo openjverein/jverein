@@ -25,7 +25,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -83,7 +82,6 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.jost_net.JVerein.server.BuchungImpl;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
@@ -1276,7 +1274,6 @@ public class BuchungsControl extends VorZurueckControl
     }
   }
 
-  @SuppressWarnings("unchecked")
   public BuchungListTablePart getBuchungsList() throws RemoteException
   {
     params = new TreeMap<>();
@@ -1447,25 +1444,8 @@ public class BuchungsControl extends VorZurueckControl
 
     if (buchungsList == null)
     {
-      buchungsList = new BuchungListTablePart(buchungen, context -> {
-        try
-        {
-          LinkedList<Long> objektListe = new LinkedList<>();
-          for (Buchung bu : (List<Buchung>) buchungsList.getItems(false))
-          {
-            if (bu.getSplitId() == null)
-            {
-              objektListe.add(Long.valueOf(bu.getID()));
-            }
-          }
-          VorZurueckControl.setObjektListe(BuchungImpl.class, objektListe);
-        }
-        catch (NumberFormatException | RemoteException e)
-        {
-          //
-        }
-        new BuchungAction(false).handleAction(context);
-      });
+      buchungsList = new BuchungListTablePart(buchungen,
+          new BuchungAction(false, null));
       buchungsList.addColumn("Nr", "id-int");
       buchungsList.addColumn("Geprüft", "geprueft", new Formatter()
       {
@@ -1567,6 +1547,7 @@ public class BuchungsControl extends VorZurueckControl
       buchungsList.setRememberState(true);
       buchungsList.addFeature(new FeatureSummary());
       buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
+      buchungsList.setAction(new BuchungAction(false, buchungsList));
       VorZurueckControl.setObjektListe(null, null);
     }
     else

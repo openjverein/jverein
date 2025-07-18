@@ -392,7 +392,7 @@ public class RechnungControl extends DruckMailControl implements Savable
     return text;
   }
 
-  public Rechnung getRechnung()
+  private Rechnung getRechnung()
   {
     if (rechnung != null)
     {

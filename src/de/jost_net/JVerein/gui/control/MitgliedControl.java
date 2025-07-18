@@ -302,19 +302,19 @@ public class MitgliedControl extends FilterControl
   private FamilienbeitragMessageConsumer fbc = null;
 
   // Liste aller Zusatzbeträge
-  private JVereinTablePart zusatzbetraegeList;
+  private TablePart zusatzbetraegeList;
 
   // Liste der Wiedervorlagen
-  private JVereinTablePart wiedervorlageList;
+  private TablePart wiedervorlageList;
 
   // Liste der Mails
   private TablePart mailList;
 
   // Liste der Arbeitseinsätze
-  private JVereinTablePart arbeitseinsatzList;
+  private TablePart arbeitseinsatzList;
 
   // Liste der Lehrgänge
-  private JVereinTablePart lehrgaengeList;
+  private TablePart lehrgaengeList;
 
   private TablePart familienangehoerige;
 
@@ -1728,7 +1728,8 @@ public class MitgliedControl extends FilterControl
     DBIterator<Zusatzbetrag> zusatzbetraege = service
         .createList(Zusatzbetrag.class);
     zusatzbetraege.addFilter("mitglied = " + getMitglied().getID());
-    zusatzbetraegeList = new JVereinTablePart(zusatzbetraege, null);
+    zusatzbetraegeList = new TablePart(zusatzbetraege,
+        new EditAction(ZusatzbetragDetailView.class));
     zusatzbetraegeList.setRememberColWidths(true);
     zusatzbetraegeList.setRememberOrder(true);
 
@@ -1761,7 +1762,6 @@ public class MitgliedControl extends FilterControl
         new BuchungsartFormatter());
     zusatzbetraegeList
         .setContextMenu(new ZusatzbetraegeMenu(null));
-    zusatzbetraegeList.setAction(new EditAction(ZusatzbetragDetailView.class));
     return zusatzbetraegeList;
   }
 
@@ -1776,7 +1776,8 @@ public class MitgliedControl extends FilterControl
         .createList(Wiedervorlage.class);
     wiedervorlagen.addFilter("mitglied = " + getMitglied().getID());
     wiedervorlagen.setOrder("ORDER BY datum DESC");
-    wiedervorlageList = new JVereinTablePart(wiedervorlagen, null);
+    wiedervorlageList = new TablePart(wiedervorlagen,
+        new EditAction(WiedervorlageDetailView.class));
     wiedervorlageList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     wiedervorlageList.addColumn("Vermerk", "vermerk");
@@ -1785,7 +1786,6 @@ public class MitgliedControl extends FilterControl
     wiedervorlageList.setContextMenu(new WiedervorlageMenu(null));
     wiedervorlageList.setRememberColWidths(true);
     wiedervorlageList.setRememberOrder(true);
-    wiedervorlageList.setAction(new EditAction(WiedervorlageDetailView.class));
     return wiedervorlageList;
   }
 
@@ -1824,7 +1824,8 @@ public class MitgliedControl extends FilterControl
         .createList(Arbeitseinsatz.class);
     arbeitseinsaetze.addFilter("mitglied = " + getMitglied().getID());
     arbeitseinsaetze.setOrder("ORDER by datum desc");
-    arbeitseinsatzList = new JVereinTablePart(arbeitseinsaetze, null);
+    arbeitseinsatzList = new TablePart(arbeitseinsaetze,
+        new EditAction(ArbeitseinsatzDetailView.class));
     arbeitseinsatzList.setRememberColWidths(true);
     arbeitseinsatzList.setRememberOrder(true);
     arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu(null));
@@ -1836,7 +1837,6 @@ public class MitgliedControl extends FilterControl
     arbeitseinsatzList.addColumn("Bemerkung", "bemerkung");
     // wiedervorlageList.setContextMenu(new
     // WiedervorlageMenu(wiedervorlageList));
-    lehrgaengeList.setAction(new EditAction(ArbeitseinsatzDetailView.class));
     return arbeitseinsatzList;
   }
 
@@ -1849,7 +1849,8 @@ public class MitgliedControl extends FilterControl
     DBService service = Einstellungen.getDBService();
     DBIterator<Lehrgang> lehrgaenge = service.createList(Lehrgang.class);
     lehrgaenge.addFilter("mitglied = " + getMitglied().getID());
-    lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
+    lehrgaengeList = new TablePart(lehrgaenge,
+        new EditAction(LehrgangDetailView.class));
     lehrgaengeList.setRememberColWidths(true);
     lehrgaengeList.setRememberOrder(true);
 
@@ -1861,7 +1862,6 @@ public class MitgliedControl extends FilterControl
     lehrgaengeList.addColumn("Veranstalter", "veranstalter");
     lehrgaengeList.addColumn("Ergebnis", "ergebnis");
     lehrgaengeList.setContextMenu(new LehrgangMenu(null));
-    lehrgaengeList.setAction(new EditAction(LehrgangDetailView.class));
     return lehrgaengeList;
   }
 

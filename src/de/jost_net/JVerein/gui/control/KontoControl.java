@@ -142,7 +142,7 @@ public class KontoControl extends FilterControl
     settings.setStoreWhenRead(true);
   }
 
-  public Konto getKonto()
+  private Konto getKonto()
   {
     if (konto != null)
     {
