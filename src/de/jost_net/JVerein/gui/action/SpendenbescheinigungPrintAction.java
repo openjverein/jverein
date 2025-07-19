@@ -224,14 +224,14 @@ public class SpendenbescheinigungPrintAction implements Action
           if (mitglied != null)
           {
           fileName = path
-              + VorlageControl.getVorlage(
+              + VorlageControl.getName(
                     VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED, spb, mitglied)
               + ".pdf";
           }
           else
           {
             fileName = path
-                + VorlageControl.getVorlage(VorlageTyp.SPENDENBESCHEINIGUNG,
+                + VorlageControl.getName(VorlageTyp.SPENDENBESCHEINIGUNG,
                     spb)
                 + ".pdf";
           }

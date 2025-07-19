@@ -58,7 +58,7 @@ public class VorlageControl extends AbstractControl implements Savable
 
   private TablePart namenList;
 
-  private Vorlage vorlageObjekt;
+  private Vorlage vorlage;
 
   private Input name;
 
@@ -71,19 +71,19 @@ public class VorlageControl extends AbstractControl implements Savable
     settings.setStoreWhenRead(true);
   }
 
-  public Vorlage getVorlageObjekt() throws RemoteException
+  public Vorlage getVorlage() throws RemoteException
   {
-    if (vorlageObjekt != null)
+    if (vorlage != null)
     {
-      return vorlageObjekt;
+      return vorlage;
     }
-    vorlageObjekt = (Vorlage) getCurrentObject();
-    if (vorlageObjekt == null)
+    vorlage = (Vorlage) getCurrentObject();
+    if (vorlage == null)
     {
-      vorlageObjekt = (Vorlage) Einstellungen.getDBService()
+      vorlage = (Vorlage) Einstellungen.getDBService()
           .createObject(Vorlage.class, null);
     }
-    return vorlageObjekt;
+    return vorlage;
   }
 
   public Input getName() throws RemoteException
@@ -92,7 +92,7 @@ public class VorlageControl extends AbstractControl implements Savable
     {
       return name;
     }
-    name = new TextInput(getVorlageObjekt().getText(), 250);
+    name = new TextInput(getVorlage().getText(), 250);
     return name;
   }
 
@@ -102,7 +102,7 @@ public class VorlageControl extends AbstractControl implements Savable
     {
       return vorschau;
     }
-    vorschau = new TextInput(generiereVorschau(getVorlageObjekt().getText()),
+    vorschau = new TextInput(generiereVorschau(getVorlage().getText()),
         250);
     vorschau.disable();
     return vorschau;
@@ -125,7 +125,7 @@ public class VorlageControl extends AbstractControl implements Savable
     {
       map = new AllgemeineMap().getMap(null);
       VorlageTyp typ = VorlageTyp
-          .getByKey(Integer.valueOf(getVorlageObjekt().getID()));
+          .getByKey(Integer.valueOf(getVorlage().getID()));
       switch (typ)
       {
         case SPENDENBESCHEINIGUNG:
@@ -181,7 +181,7 @@ public class VorlageControl extends AbstractControl implements Savable
   @Override
   public JVereinDBObject prepareStore() throws RemoteException
   {
-    Vorlage bv = getVorlageObjekt();
+    Vorlage bv = getVorlage();
     bv.setText((String) getName().getValue());
     return bv;
   }
@@ -237,17 +237,17 @@ public class VorlageControl extends AbstractControl implements Savable
     return namenList;
   }
 
-  public static String getVorlage(VorlageTyp typ)
+  public static String getName(VorlageTyp typ)
   {
-    return getVorlage(typ, null, null);
+    return getName(typ, null, null);
   }
 
-  public static String getVorlage(VorlageTyp typ, Object obj)
+  public static String getName(VorlageTyp typ, Object obj)
   {
-    return getVorlage(typ, obj, null);
+    return getName(typ, obj, null);
   }
 
-  public static String getVorlage(VorlageTyp typ, Object obj,
+  public static String getName(VorlageTyp typ, Object obj,
       Mitglied mitglied)
   {
     Map<String, Object> map = null;

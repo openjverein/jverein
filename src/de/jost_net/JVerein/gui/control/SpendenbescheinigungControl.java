@@ -903,7 +903,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       settings.setAttribute("lastdir", path);
       path = path.endsWith(File.separator) ? path : path + File.separator;
       String fileName = VorlageControl
-          .getVorlage(VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED, spb, m)
+          .getName(VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED, spb, m)
           + ".pdf";
 
       // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf

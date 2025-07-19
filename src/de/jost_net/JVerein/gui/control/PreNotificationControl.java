@@ -356,7 +356,7 @@ public class PreNotificationControl extends DruckMailControl
       fd.setFilterPath(path);
     }
     fd.setFileName(
-        VorlageControl.getVorlage(VorlageTyp.PRENOTIFICATION) + ".pdf");
+        VorlageControl.getName(VorlageTyp.PRENOTIFICATION) + ".pdf");
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -494,7 +494,7 @@ public class PreNotificationControl extends DruckMailControl
         fd.setFilterPath(path);
       }
       fd.setFileName(
-          VorlageControl.getVorlage(VorlageTyp.CT1_AUSGABE) + ".xml");
+          VorlageControl.getName(VorlageTyp.CT1_AUSGABE) + ".xml");
       fd.setFilterExtensions(new String[] { "*.xml" });
 
       String s = fd.open();

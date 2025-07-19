@@ -143,7 +143,7 @@ public class FreiesFormularAusgabe
       fd.setFilterPath(path);
     }
     fd.setFileName(
-        VorlageControl.getVorlage(VorlageTyp.FREIES_FORMULAR, name) + "."
+        VorlageControl.getName(VorlageTyp.FREIES_FORMULAR, name) + "."
             + extension);
     fd.setFilterExtensions(new String[] { "*." + extension });
 

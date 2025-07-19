@@ -220,26 +220,26 @@ public class ZipMailer
               switch (art.toLowerCase().trim())
               {
                 case "rechnung":
-                  finaldateiname = VorlageControl.getVorlage(
+                  finaldateiname = VorlageControl.getName(
                       VorlageTyp.RECHNUNG_MITGLIED, re, m) + ".pdf";
                   break;
                 case "mahnung":
-                  finaldateiname = VorlageControl.getVorlage(
+                  finaldateiname = VorlageControl.getName(
                       VorlageTyp.MAHNUNG_MITGLIED, re, m) + ".pdf";
                   break;
                 case "spendenbescheinigung":
-                  finaldateiname = VorlageControl.getVorlage(
+                  finaldateiname = VorlageControl.getName(
                       VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED, spb, m)
                       + ".pdf";
                   break;
                 case "freiesformular":
-                  finaldateiname = VorlageControl.getVorlage(
+                  finaldateiname = VorlageControl.getName(
                       VorlageTyp.FREIES_FORMULAR_MITGLIED,
                       dateiname.substring(0, dateiname.lastIndexOf('.')), m)
                       + ".pdf";
                   break;
                 case "kontoauszug":
-                  finaldateiname = VorlageControl.getVorlage(
+                  finaldateiname = VorlageControl.getName(
                       VorlageTyp.KONTOAUSZUG_MITGLIED, null, m) + ".pdf";
                   break;
                 default:

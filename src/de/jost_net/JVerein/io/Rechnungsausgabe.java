@@ -189,12 +189,12 @@ public class Rechnungsausgabe
     if (typ == TYP.RECHNUNG)
     {
       fd.setFileName(
-          VorlageControl.getVorlage(VorlageTyp.RECHNUNG) + "." + extension);
+          VorlageControl.getName(VorlageTyp.RECHNUNG) + "." + extension);
     }
     else
     {
       fd.setFileName(
-          VorlageControl.getVorlage(VorlageTyp.MAHNUNG) + "." + extension);
+          VorlageControl.getName(VorlageTyp.MAHNUNG) + "." + extension);
     }
     fd.setFilterExtensions(new String[] { "*." + extension });
 
