@@ -65,15 +65,15 @@ public class VorlageImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public String getText() throws RemoteException
+  public String getMuster() throws RemoteException
   {
-    return (String) getAttribute(TEXT);
+    return (String) getAttribute(MUSTER);
   }
 
   @Override
-  public void setText(String text) throws RemoteException
+  public void setMuster(String muster) throws RemoteException
   {
-    setAttribute(TEXT, text);
+    setAttribute(MUSTER, muster);
   }
 
   @Override

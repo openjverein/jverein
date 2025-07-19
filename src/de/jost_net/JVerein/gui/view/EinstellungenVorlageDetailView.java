@@ -42,7 +42,7 @@ public class EinstellungenVorlageDetailView extends AbstractDetailView
 
     LabelGroup grName = new LabelGroup(getParent(), VorlageTyp
         .getByKey(Integer.valueOf(control.getVorlage().getID())).toString());
-    grName.addLabelPair("Vorlage", control.getName());
+    grName.addLabelPair("Vorlagenmuster", control.getMuster());
     grName.addLabelPair("Vorschau", control.getVorschau());
 
     ButtonArea buttons = new ButtonArea();

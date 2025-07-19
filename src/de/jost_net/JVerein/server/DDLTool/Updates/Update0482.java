@@ -35,9 +35,9 @@ public class Update0482 extends AbstractDDLUpdate
     Column pk = new Column("id", COLTYPE.BIGINT, 10, null, true, true);
     t.add(pk);
 
-    Column text = new Column("text", COLTYPE.VARCHAR, 250, null, false,
+    Column muster = new Column("muster", COLTYPE.VARCHAR, 250, null, false,
         false);
-    t.add(text);
+    t.add(muster);
 
     t.setPrimaryKey(pk);
     execute(this.createTable(t));

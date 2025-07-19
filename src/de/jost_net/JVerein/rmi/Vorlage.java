@@ -27,11 +27,11 @@ public interface Vorlage extends JVereinDBObject
 
   public static final String PRIMARY_ATTRIBUTE = "id";
 
-  public static final String TEXT = "text";
+  public static final String MUSTER = "muster";
 
-  public static final String T_TEXT = TABLE_NAME + "." + TEXT;
+  public static final String T_MUSTER = TABLE_NAME + "." + MUSTER;
 
-  public String getText() throws RemoteException;
+  public String getMuster() throws RemoteException;
 
-  public void setText(String text) throws RemoteException;
+  public void setMuster(String text) throws RemoteException;
 }

@@ -60,7 +60,7 @@ public class VorlageControl extends AbstractControl implements Savable
 
   private Vorlage vorlage;
 
-  private Input name;
+  private Input muster;
 
   private Input vorschau;
 
@@ -86,14 +86,14 @@ public class VorlageControl extends AbstractControl implements Savable
     return vorlage;
   }
 
-  public Input getName() throws RemoteException
+  public Input getMuster() throws RemoteException
   {
-    if (name != null)
+    if (muster != null)
     {
-      return name;
+      return muster;
     }
-    name = new TextInput(getVorlage().getText(), 250);
-    return name;
+    muster = new TextInput(getVorlage().getMuster(), 250);
+    return muster;
   }
 
   public Input getVorschau() throws RemoteException
@@ -102,7 +102,7 @@ public class VorlageControl extends AbstractControl implements Savable
     {
       return vorschau;
     }
-    vorschau = new TextInput(generiereVorschau(getVorlage().getText()),
+    vorschau = new TextInput(generiereVorschau(getVorlage().getMuster()),
         250);
     vorschau.disable();
     return vorschau;
@@ -115,7 +115,7 @@ public class VorlageControl extends AbstractControl implements Savable
 
   public void updateVorschau() throws RemoteException
   {
-    getVorschau().setValue(generiereVorschau(getName().getValue().toString()));
+    getVorschau().setValue(generiereVorschau(getMuster().getValue().toString()));
   }
 
   public Map<String, Object> getDummyMap()
@@ -182,7 +182,7 @@ public class VorlageControl extends AbstractControl implements Savable
   public JVereinDBObject prepareStore() throws RemoteException
   {
     Vorlage bv = getVorlage();
-    bv.setText((String) getName().getValue());
+    bv.setMuster((String) getMuster().getValue());
     return bv;
   }
 
@@ -211,14 +211,14 @@ public class VorlageControl extends AbstractControl implements Savable
     DBService service = Einstellungen.getDBService();
     DBIterator<Vorlage> namen = service
         .createList(Vorlage.class);
-    namen.setOrder("ORDER BY " + Vorlage.TEXT);
+    namen.setOrder("ORDER BY " + Vorlage.MUSTER);
 
     if (namenList == null)
     {
       namenList = new TablePart(namen,
           new EditAction(EinstellungenVorlageDetailView.class));
       namenList.addColumn("Vorlage Art", "id-int");
-      namenList.addColumn("Vorlage", Vorlage.TEXT);
+      namenList.addColumn("Vorlagenmuster", Vorlage.MUSTER);
       namenList.setContextMenu(new VorlageMenu());
       namenList.setRememberColWidths(true);
       namenList.setRememberOrder(true);
@@ -257,7 +257,7 @@ public class VorlageControl extends AbstractControl implements Savable
       map = new AllgemeineMap().getMap(null);
       dateiname = ((Vorlage) Einstellungen.getDBService()
           .createObject(Vorlage.class, String.valueOf(typ.getKey())))
-              .getText();
+              .getMuster();
       switch (typ)
       {
         case SPENDENBESCHEINIGUNG:
