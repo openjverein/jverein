@@ -22,7 +22,6 @@ import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -31,13 +30,6 @@ import de.willuhn.util.ApplicationException;
  */
 public class ZusatzbetraegeNaechsteFaelligkeitAction implements Action
 {
-
-  private TablePart table;
-
-  public ZusatzbetraegeNaechsteFaelligkeitAction(TablePart table)
-  {
-    this.table = table;
-  }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
@@ -70,10 +62,8 @@ public class ZusatzbetraegeNaechsteFaelligkeitAction implements Action
         return;
       }
       z.naechsteFaelligkeit();
-
-      int ind = table.removeItem(z);
       z.store();
-      table.addItem(z, ind);
+
       GUI.getStatusBar().setSuccessText("Fälligkeitsdatum gesetzt.");
     }
     catch (RemoteException e)

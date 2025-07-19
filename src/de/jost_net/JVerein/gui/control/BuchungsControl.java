@@ -90,7 +90,6 @@ import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -125,7 +124,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class BuchungsControl extends AbstractControl
+public class BuchungsControl extends VorZurueckControl
     implements Savable
 {
 
@@ -1441,10 +1440,12 @@ public class BuchungsControl extends AbstractControl
         suchbetrag, mvalue, mitglied, geldkonto, split,
         ungeprueft, steuer);
 
+    List<Buchung> buchungen = query.get();
+
     if (buchungsList == null)
     {
-      buchungsList = new BuchungListTablePart(query.get(),
-          new BuchungAction(false));
+      buchungsList = new BuchungListTablePart(buchungen,
+          new BuchungAction(false, null));
       buchungsList.addColumn("Nr", "id-int");
       buchungsList.addColumn("Geprüft", "geprueft", new Formatter()
       {
@@ -1546,13 +1547,15 @@ public class BuchungsControl extends AbstractControl
       buchungsList.setRememberState(true);
       buchungsList.addFeature(new FeatureSummary());
       buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
+      buchungsList.setAction(new BuchungAction(false, buchungsList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {
       buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
       buchungsList.removeAll();
 
-      for (Buchung bu : query.get())
+      for (Buchung bu : buchungen)
       {
         buchungsList.addItem(bu);
       }
@@ -2319,7 +2322,7 @@ public class BuchungsControl extends AbstractControl
     return settingsprefix;
   }
 
-  public ToolTipButton getZurueckButton()
+  public ToolTipButton getTTZurueckButton()
   {
     return new ToolTipButton("", new Action()
     {
@@ -2364,7 +2367,7 @@ public class BuchungsControl extends AbstractControl
     }, null, false, "go-previous.png");
   }
 
-  public ToolTipButton getVorButton()
+  public ToolTipButton getTTVorButton()
   {
     return new ToolTipButton("", new Action()
     {

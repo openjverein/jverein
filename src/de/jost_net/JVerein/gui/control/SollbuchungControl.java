@@ -37,8 +37,10 @@ import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartBearbeitenMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
+import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
@@ -132,7 +134,7 @@ public class SollbuchungControl extends DruckMailControl
   private TreePart mitgliedskontoTree;
 
   // SollbuchungListeView, SollbuchungAuswahldialog
-  private TablePart sollbuchungenList;
+  private JVereinTablePart sollbuchungenList;
 
   private TablePart mitgliederList;
 
@@ -143,8 +145,6 @@ public class SollbuchungControl extends DruckMailControl
   // private CheckboxInput offenePosten = null;
 
   private MitgliedskontoMessageConsumer mc = null;
-
-  private Action action;
 
   private boolean umwandeln;
 
@@ -442,18 +442,16 @@ public class SollbuchungControl extends DruckMailControl
     return mitgliedskontoTree;
   }
 
-  public TablePart getSollbuchungenList(Action action, ContextMenu menu,
-      boolean umwandeln) throws RemoteException, ApplicationException
+  public TablePart getSollbuchungenList(Action action, boolean umwandeln)
+      throws RemoteException, ApplicationException
   {
-    this.action = action;
     this.umwandeln = umwandeln;
     @SuppressWarnings("rawtypes")
     GenericIterator sollbuchungen = new SollbuchungQuery(this, umwandeln,
         null).get();
     if (sollbuchungenList == null)
     {
-      sollbuchungenList = new SollbuchungListTablePart(sollbuchungen,
-          action);
+      sollbuchungenList = new SollbuchungListTablePart(sollbuchungen, null);
       sollbuchungenList.addColumn("Nr", "id-int");
       sollbuchungenList.addColumn("Datum", Sollbuchung.DATUM,
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -479,11 +477,23 @@ public class SollbuchungControl extends DruckMailControl
       {
         sollbuchungenList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
       }
-      sollbuchungenList.setContextMenu(menu);
       sollbuchungenList.setRememberColWidths(true);
       sollbuchungenList.setRememberOrder(true);
       sollbuchungenList.setMulti(true);
       sollbuchungenList.addFeature(new FeatureSummary());
+      if (action == null)
+      {
+        sollbuchungenList
+            .setContextMenu(new SollbuchungMenu(sollbuchungenList));
+        sollbuchungenList.setAction(
+            new EditAction(SollbuchungDetailView.class, sollbuchungenList));
+        VorZurueckControl.setObjektListe(null, null);
+      }
+      else
+      {
+        sollbuchungenList.setAction(action);
+      }
+
     }
     else
     {
@@ -503,7 +513,6 @@ public class SollbuchungControl extends DruckMailControl
   public TablePart getMitgliederList(Action action, ContextMenu menu)
       throws RemoteException
   {
-    this.action = action;
     GenericIterator<Mitglied> mitglieder = getMitgliedIterator();
     if (mitgliederList == null)
     {
@@ -684,7 +693,7 @@ public class SollbuchungControl extends DruckMailControl
     {
       try
       {
-        getSollbuchungenList(action, null, umwandeln);
+        getSollbuchungenList(null, umwandeln);
       }
       catch (RemoteException e)
       {

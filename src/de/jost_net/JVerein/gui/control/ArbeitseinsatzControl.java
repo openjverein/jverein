@@ -38,11 +38,13 @@ import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.ArbeitseinsatzAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzPart;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzUeberpruefungList;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
 import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
@@ -66,7 +68,6 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -87,7 +88,7 @@ public class ArbeitseinsatzControl extends FilterControl
 
   private ArbeitseinsatzUeberpruefungInput auswertungschluessel = null;
   
-  private TablePart arbeitseinsatzList;
+  private JVereinTablePart arbeitseinsatzList;
 
   public ArbeitseinsatzControl(AbstractView view)
   {
@@ -602,17 +603,20 @@ public class ArbeitseinsatzControl extends FilterControl
     }
     
     DBIterator<Arbeitseinsatz> arbeitseinsaetze = getArbeitseinsaetzeIt();
-    arbeitseinsatzList = new TablePart(arbeitseinsaetze,
-        new ArbeitseinsatzAction(null));
+    arbeitseinsatzList = new JVereinTablePart(arbeitseinsaetze, null);
     arbeitseinsatzList.setRememberColWidths(true);
     arbeitseinsatzList.setRememberOrder(true);
-    arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu());
+    arbeitseinsatzList
+        .setContextMenu(new ArbeitseinsatzMenu(arbeitseinsatzList));
     arbeitseinsatzList.addColumn("Name", "mitglied");
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     arbeitseinsatzList.addColumn("Stunden", "stunden",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     arbeitseinsatzList.addColumn("Bemerkung", "bemerkung");
+    arbeitseinsatzList.setAction(
+        new EditAction(ArbeitseinsatzDetailView.class, arbeitseinsatzList));
+    VorZurueckControl.setObjektListe(null, null);
     return arbeitseinsatzList;
   }
   

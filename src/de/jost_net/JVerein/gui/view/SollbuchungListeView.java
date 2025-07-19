@@ -17,12 +17,10 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.SollbuchungExportAction;
 import de.jost_net.JVerein.gui.action.SollbuchungExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
-import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -73,8 +71,7 @@ public class SollbuchungListeView extends AbstractView
     zurueck.setToolTipText("Datumsbereich zurück");
     vor.setToolTipText("Datumsbereich vowärts");
 
-    control.getSollbuchungenList(new SollbuchungEditAction(),
-        new SollbuchungMenu(), false).paint(this.getParent());
+    control.getSollbuchungenList(null, false).paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

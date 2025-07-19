@@ -39,6 +39,7 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.menu.KursteilnehmerMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
@@ -59,7 +60,6 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.system.Application;
@@ -111,7 +111,7 @@ public class KursteilnehmerControl extends FilterControl
 
   private Kursteilnehmer ktn;
 
-  private TablePart part;
+  private JVereinTablePart part;
 
   public KursteilnehmerControl(AbstractView view)
   {
@@ -392,8 +392,7 @@ public class KursteilnehmerControl extends FilterControl
       return part;
     }
     DBIterator<Kursteilnehmer> kursteilnehmer = getIterator();
-    part = new TablePart(kursteilnehmer,
-        new EditAction(KursteilnehmerDetailView.class));
+    part = new JVereinTablePart(kursteilnehmer, null);
 
     part.addColumn("Name", "name");
     part.addColumn("Vorname", "vorname");
@@ -412,7 +411,8 @@ public class KursteilnehmerControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     part.setContextMenu(new KursteilnehmerMenu(part));
     part.setMulti(true);
-
+    part.setAction(new EditAction(KursteilnehmerDetailView.class, part));
+    VorZurueckControl.setObjektListe(null, null);
     return part;
   }
 

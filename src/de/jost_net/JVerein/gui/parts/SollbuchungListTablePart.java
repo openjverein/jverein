@@ -24,12 +24,11 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 
-public class SollbuchungListTablePart extends TablePart
+public class SollbuchungListTablePart extends JVereinTablePart
 {
 
   public SollbuchungListTablePart(Action action)

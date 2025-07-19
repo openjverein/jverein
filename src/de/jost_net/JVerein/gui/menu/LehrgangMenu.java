@@ -16,9 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.LehrgangAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.LehrgangDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.LehrgangDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -33,14 +35,18 @@ public class LehrgangMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Lehrgänge.
    */
-  public LehrgangMenu()
+  public LehrgangMenu(JVereinTablePart part)
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new LehrgangAction(null),
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(LehrgangDetailView.class, part),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen", new LehrgangDeleteAction(),
         "user-trash-full.png"));
-    addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-        new MitgliedDetailAction(), "user-friends.png"));
+    if (part != null)
+    {
+      addItem(ContextMenuItem.SEPARATOR);
+      addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+          new MitgliedDetailAction(), "user-friends.png"));
+    }
   }
 }

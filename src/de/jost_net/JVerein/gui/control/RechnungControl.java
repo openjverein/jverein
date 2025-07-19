@@ -34,6 +34,7 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
@@ -75,7 +76,7 @@ import de.willuhn.util.ApplicationException;
 public class RechnungControl extends DruckMailControl implements Savable
 {
 
-  private TablePart rechnungList;
+  private JVereinTablePart rechnungList;
 
   private Rechnung rechnung;
 
@@ -147,8 +148,7 @@ public class RechnungControl extends DruckMailControl implements Savable
       return rechnungList;
     }
     GenericIterator<Rechnung> rechnungen = getRechnungIterator();
-    rechnungList = new TablePart(rechnungen,
-        new EditAction(RechnungDetailView.class));
+    rechnungList = new JVereinTablePart(rechnungen, null);
     rechnungList.addColumn("Nr", "id-int");
     rechnungList.addColumn("Rechnungsdatum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -166,10 +166,13 @@ public class RechnungControl extends DruckMailControl implements Savable
         Column.ALIGN_LEFT);
 
     rechnungList.setRememberColWidths(true);
-    rechnungList.setContextMenu(new RechnungMenu());
+    rechnungList.setContextMenu(new RechnungMenu(rechnungList));
     rechnungList.setRememberOrder(true);
     rechnungList.addFeature(new FeatureSummary());
     rechnungList.setMulti(true);
+    rechnungList
+        .setAction(new EditAction(RechnungDetailView.class, rechnungList));
+    VorZurueckControl.setObjektListe(null, null);
     return rechnungList;
   }
 

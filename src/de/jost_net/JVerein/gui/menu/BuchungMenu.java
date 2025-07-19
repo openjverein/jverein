@@ -57,13 +57,16 @@ public class BuchungMenu extends ContextMenu
 {
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Buchungen.
+   * 
+   * @throws RemoteException
    */
 
-  public BuchungMenu(BuchungsControl control)
+  public BuchungMenu(BuchungsControl control) throws RemoteException
   {
     boolean geldkonto = control.getGeldkonto();
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new BuchungAction(false), "text-x-generic.png"));
+        new BuchungAction(false, control.getBuchungsList()),
+        "text-x-generic.png"));
     addItem(new GeprueftBuchungItem("Als \"geprüft\" markieren",
         new BuchungGeprueftAction(true), "emblem-default.png", false));
     addItem(new GeprueftBuchungItem("Als \"ungeprüft\" markieren",

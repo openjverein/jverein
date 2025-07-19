@@ -139,7 +139,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         close();
       }
     };
-    sollbuchunglist = control.getSollbuchungenList(action, null, true);
+    sollbuchunglist = control.getSollbuchungenList(action, true);
     sollbuchunglist.paint(tabNurIst.getComposite());
 
     TabGroup tabSollIst = new TabGroup(folder, "Sollbuchung erzeugen und Istbuchung zuordnen", true, 1);

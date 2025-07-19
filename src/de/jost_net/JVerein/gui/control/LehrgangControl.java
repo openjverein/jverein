@@ -24,9 +24,11 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.LehrgangAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.LehrgangDetailView;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
@@ -42,7 +44,6 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -52,7 +53,7 @@ public class LehrgangControl extends FilterControl
     implements Savable
 {
 
-  private TablePart lehrgaengeList;
+  private JVereinTablePart lehrgaengeList;
 
   private SelectInput lehrgangsart;
 
@@ -287,7 +288,7 @@ public class LehrgangControl extends FilterControl
     DBIterator<Lehrgang> lehrgaenge = getIterator();
     if (lehrgaengeList == null)
     {
-      lehrgaengeList = new TablePart(lehrgaenge, new LehrgangAction(null));
+      lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
       lehrgaengeList.addColumn("Name", "mitglied");
       lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
       lehrgaengeList.addColumn("Von/am", "von",
@@ -296,10 +297,13 @@ public class LehrgangControl extends FilterControl
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       lehrgaengeList.addColumn("Veranstalter", "veranstalter");
       lehrgaengeList.addColumn("Ergebnis", "ergebnis");
-      lehrgaengeList.setContextMenu(new LehrgangMenu());
+      lehrgaengeList.setContextMenu(new LehrgangMenu(lehrgaengeList));
       lehrgaengeList.setRememberColWidths(true);
       lehrgaengeList.setRememberOrder(true);
       lehrgaengeList.addFeature(new FeatureSummary());
+      lehrgaengeList
+          .setAction(new EditAction(LehrgangDetailView.class, lehrgaengeList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {

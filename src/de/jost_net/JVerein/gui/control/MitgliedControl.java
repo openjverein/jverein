@@ -46,6 +46,7 @@ import de.jost_net.JVerein.gui.action.LehrgangAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.MailDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
@@ -70,14 +71,22 @@ import de.jost_net.JVerein.gui.menu.MitgliedMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedNextBGruppeMenue;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.Familienverband;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
 import de.jost_net.JVerein.gui.parts.MitgliedSekundaereBeitragsgruppePart;
 import de.jost_net.JVerein.gui.view.AbstractMitgliedDetailView;
+import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
 import de.jost_net.JVerein.gui.view.AuswertungVorlagenCsvView;
 import de.jost_net.JVerein.gui.view.IAuswertung;
+import de.jost_net.JVerein.gui.view.LehrgangDetailView;
+import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedNextBGruppeView;
 import de.jost_net.JVerein.gui.view.MitgliedSuchProfilListeView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
+import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
+import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.MitgliedAdressbuchExport;
 import de.jost_net.JVerein.io.MitgliedAdresslistePDF;
@@ -160,7 +169,7 @@ public class MitgliedControl extends FilterControl
     implements Savable
 {
 
-  private TablePart part;
+  private JVereinTablePart part;
 
   private SelectNoScrollInput mitgliedstyp;
 
@@ -296,10 +305,10 @@ public class MitgliedControl extends FilterControl
   private FamilienbeitragMessageConsumer fbc = null;
 
   // Liste aller Zusatzbeträge
-  private TablePart zusatzbetraegeList;
+  private AutoUpdateTablePart zusatzbetraegeList;
 
   // Liste der Wiedervorlagen
-  private TablePart wiedervorlageList;
+  private AutoUpdateTablePart wiedervorlageList;
 
   // Liste der Mails
   private TablePart mailList;
@@ -1722,8 +1731,8 @@ public class MitgliedControl extends FilterControl
     DBIterator<Zusatzbetrag> zusatzbetraege = service
         .createList(Zusatzbetrag.class);
     zusatzbetraege.addFilter("mitglied = " + getMitglied().getID());
-    zusatzbetraegeList = new TablePart(zusatzbetraege,
-        new ZusatzbetraegeAction(getMitglied()));
+    zusatzbetraegeList = new AutoUpdateTablePart(zusatzbetraege,
+        new EditAction(ZusatzbetragDetailView.class));
     zusatzbetraegeList.setRememberColWidths(true);
     zusatzbetraegeList.setRememberOrder(true);
 
@@ -1773,7 +1782,7 @@ public class MitgliedControl extends FilterControl
       }, false, Column.ALIGN_RIGHT);
     }
     zusatzbetraegeList
-        .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
+        .setContextMenu(new ZusatzbetraegeMenu(null));
     return zusatzbetraegeList;
   }
 
@@ -1788,17 +1797,16 @@ public class MitgliedControl extends FilterControl
         .createList(Wiedervorlage.class);
     wiedervorlagen.addFilter("mitglied = " + getMitglied().getID());
     wiedervorlagen.setOrder("ORDER BY datum DESC");
-    wiedervorlageList = new TablePart(wiedervorlagen,
-        new WiedervorlageAction(getMitglied()));
-    wiedervorlageList.setRememberColWidths(true);
-    wiedervorlageList.setRememberOrder(true);
-
+    wiedervorlageList = new AutoUpdateTablePart(wiedervorlagen,
+        new EditAction(WiedervorlageDetailView.class));
     wiedervorlageList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     wiedervorlageList.addColumn("Vermerk", "vermerk");
     wiedervorlageList.addColumn("Erledigung", "erledigung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    wiedervorlageList.setContextMenu(new WiedervorlageMenu(wiedervorlageList));
+    wiedervorlageList.setContextMenu(new WiedervorlageMenu(null));
+    wiedervorlageList.setRememberColWidths(true);
+    wiedervorlageList.setRememberOrder(true);
     return wiedervorlageList;
   }
 
@@ -1838,10 +1846,10 @@ public class MitgliedControl extends FilterControl
     arbeitseinsaetze.addFilter("mitglied = " + getMitglied().getID());
     arbeitseinsaetze.setOrder("ORDER by datum desc");
     arbeitseinsatzList = new TablePart(arbeitseinsaetze,
-        new ArbeitseinsatzAction(mitglied));
+        new EditAction(ArbeitseinsatzDetailView.class));
     arbeitseinsatzList.setRememberColWidths(true);
     arbeitseinsatzList.setRememberOrder(true);
-    arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu());
+    arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu(null));
 
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -1863,7 +1871,7 @@ public class MitgliedControl extends FilterControl
     DBIterator<Lehrgang> lehrgaenge = service.createList(Lehrgang.class);
     lehrgaenge.addFilter("mitglied = " + getMitglied().getID());
     lehrgaengeList = new TablePart(lehrgaenge,
-        new LehrgangAction(getMitglied()));
+        new EditAction(LehrgangDetailView.class));
     lehrgaengeList.setRememberColWidths(true);
     lehrgaengeList.setRememberOrder(true);
 
@@ -1874,7 +1882,7 @@ public class MitgliedControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgaengeList.addColumn("Veranstalter", "veranstalter");
     lehrgaengeList.addColumn("Ergebnis", "ergebnis");
-    lehrgaengeList.setContextMenu(new LehrgangMenu());
+    lehrgaengeList.setContextMenu(new LehrgangMenu(null));
     return lehrgaengeList;
   }
 
@@ -2203,14 +2211,23 @@ public class MitgliedControl extends FilterControl
   public TablePart getMitgliedTable(int atyp, Action detailaction)
       throws RemoteException
   {
-    part = new TablePart(new MitgliedQuery(this).get(atyp, null),
-        detailaction);
+    part = new JVereinTablePart(new MitgliedQuery(this).get(atyp, null), null);
     new MitgliedSpaltenauswahl().setColumns(part, atyp);
-    part.setContextMenu(new MitgliedMenu(detailaction));
+    part.setContextMenu(new MitgliedMenu(detailaction, part));
     part.setMulti(true);
     part.setRememberColWidths(true);
     part.setRememberOrder(true);
     part.setRememberState(true);
+    if (detailaction instanceof MitgliedDetailAction)
+    {
+      part.setAction(
+          new EditAction(MitgliedDetailView.class, part));
+    }
+    else if (detailaction instanceof NichtMitgliedDetailAction)
+    {
+      part.setAction(new EditAction(NichtMitgliedDetailView.class, part));
+    }
+    VorZurueckControl.setObjektListe(null, null);
     return part;
   }
 
@@ -2683,6 +2700,7 @@ public class MitgliedControl extends FilterControl
         }
       }
     });
+    VorZurueckControl.setObjektListe(null, null);
     return familienbeitragtree;
   }
 

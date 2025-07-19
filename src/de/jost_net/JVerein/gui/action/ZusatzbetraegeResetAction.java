@@ -22,7 +22,6 @@ import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -31,13 +30,6 @@ import de.willuhn.util.ApplicationException;
  */
 public class ZusatzbetraegeResetAction implements Action
 {
-
-  private TablePart table;
-
-  public ZusatzbetraegeResetAction(TablePart table)
-  {
-    this.table = table;
-  }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
@@ -67,10 +59,8 @@ public class ZusatzbetraegeResetAction implements Action
         Logger.error("Fehler beim Reset des Zusatzbetrages", e);
         return;
       }
-      int ind = table.removeItem(z);
       z.setAusfuehrung(null);
       z.store();
-      table.addItem(z, ind);
       GUI.getStatusBar().setSuccessText("Ausführungsdatum zurückgesetzt.");
     }
     catch (RemoteException e)

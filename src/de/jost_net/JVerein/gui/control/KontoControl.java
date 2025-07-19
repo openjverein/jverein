@@ -37,6 +37,7 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.KontoDetailView;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.AfaMode;
@@ -73,7 +74,6 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.hbci.Settings;
 import de.willuhn.jameica.plugin.Version;
@@ -86,7 +86,7 @@ public class KontoControl extends FilterControl
     implements Savable
 {
 
-  private TablePart kontenList;
+  private JVereinTablePart kontenList;
 
   private TextInput nummer;
 
@@ -346,8 +346,7 @@ public class KontoControl extends FilterControl
 
   public Part getKontenList() throws RemoteException
   {
-    kontenList = new TablePart(getKonten(),
-        new EditAction(KontoDetailView.class));
+    kontenList = new JVereinTablePart(getKonten(), null);
     kontenList.addColumn("Nummer", "nummer");
     kontenList.addColumn("Bezeichnung", "bezeichnung");
     kontenList.addColumn("Kontoart", "kontoart", new Formatter()
@@ -394,9 +393,11 @@ public class KontoControl extends FilterControl
     kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart", 
         new BuchungsartFormatter());
     kontenList.setRememberColWidths(true);
-    kontenList.setContextMenu(new KontoMenu());
+    kontenList.setContextMenu(new KontoMenu(kontenList));
     kontenList.setRememberOrder(true);
     kontenList.addFeature(new FeatureSummary());
+    kontenList.setAction(new EditAction(KontoDetailView.class, kontenList));
+    VorZurueckControl.setObjektListe(null, null);
     return kontenList;
   }
 

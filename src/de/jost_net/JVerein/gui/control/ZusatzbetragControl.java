@@ -37,11 +37,13 @@ import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
+import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -58,7 +60,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -77,7 +78,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class ZusatzbetragControl extends AbstractControl
+public class ZusatzbetragControl extends VorZurueckControl
     implements Savable
 {
 
@@ -91,7 +92,7 @@ public class ZusatzbetragControl extends AbstractControl
 
   private SelectInput ausfuehrungSuch = null;
 
-  private TablePart zusatzbetraegeList;
+  private AutoUpdateTablePart zusatzbetraegeList;
 
   public static final String NEIN = "nein";
 
@@ -271,8 +272,7 @@ public class ZusatzbetragControl extends AbstractControl
 
     if (zusatzbetraegeList == null)
     {
-      zusatzbetraegeList = new TablePart(zusatzbetraege,
-          new ZusatzbetraegeAction(null));
+      zusatzbetraegeList = new AutoUpdateTablePart(zusatzbetraege, null);
       zusatzbetraegeList.addColumn("Name", "mitglied");
       zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -325,6 +325,10 @@ public class ZusatzbetragControl extends AbstractControl
       zusatzbetraegeList.setRememberOrder(true);
       zusatzbetraegeList.addFeature(new FeatureSummary());
       zusatzbetraegeList.setMulti(true);
+      zusatzbetraegeList
+          .setAction(
+              new EditAction(ZusatzbetragDetailView.class, zusatzbetraegeList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {

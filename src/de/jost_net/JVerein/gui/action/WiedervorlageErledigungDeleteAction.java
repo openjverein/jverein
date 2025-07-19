@@ -23,7 +23,6 @@ import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -32,13 +31,6 @@ import de.willuhn.util.ApplicationException;
  */
 public class WiedervorlageErledigungDeleteAction implements Action
 {
-
-  private TablePart table;
-
-  public WiedervorlageErledigungDeleteAction(TablePart table)
-  {
-    this.table = table;
-  }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
@@ -69,9 +61,7 @@ public class WiedervorlageErledigungDeleteAction implements Action
         return;
       }
       w.setErledigung(null);
-      int ind = table.removeItem(w);
       w.store();
-      table.addItem(w, ind);
       GUI.getStatusBar().setSuccessText("Erledigungsdatum entfernt.");
     }
     catch (RemoteException e)

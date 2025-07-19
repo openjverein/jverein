@@ -23,9 +23,11 @@ import org.eclipse.swt.SWT;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedEigenschaftZuordnungAction;
@@ -37,6 +39,7 @@ import de.jost_net.JVerein.gui.action.MitgliedVCardQRCodeAction;
 import de.jost_net.JVerein.gui.action.MitgliedZusatzbetraegeZuordnungAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -70,10 +73,21 @@ public class MitgliedMenu extends ContextMenu
    * 
    * @throws RemoteException
    */
-  public MitgliedMenu(Action detailaction) throws RemoteException
+  public MitgliedMenu(Action detailaction, JVereinTablePart part)
+      throws RemoteException
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten", detailaction,
-        "text-x-generic.png"));
+    if (detailaction instanceof MitgliedDetailAction)
+    {
+      addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+          new EditAction(MitgliedDetailView.class, part),
+          "text-x-generic.png"));
+    }
+    else if (detailaction instanceof NichtMitgliedDetailAction)
+    {
+      addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+          new EditAction(NichtMitgliedDetailView.class, part),
+          "text-x-generic.png"));
+    }
     addItem(new CheckedSingleContextMenuItem("Duplizieren",
         new MitgliedDuplizierenAction(), "edit-copy.png"));
     addItem(new CheckedContextMenuItem("In Zwischenablage kopieren",
