@@ -30,6 +30,6 @@ public class Update0482 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute(
-        "UPDATE abrechnungslauf set bemerkung is '' where bemerkung is null");
+        "UPDATE abrechnungslauf set bemerkung = '' where bemerkung is null");
   }
 }
