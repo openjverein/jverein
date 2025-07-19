@@ -1044,6 +1044,7 @@ public class AbrechnungSEPA
     abrl.setZahlungsgrund(getVerwendungszweck(param));
     abrl.setZusatzbetraege(param.zusatzbetraege);
     abrl.setAbgeschlossen(false);
+    abrl.setBemerkung("");
     abrl.store();
     return abrl;
   }
