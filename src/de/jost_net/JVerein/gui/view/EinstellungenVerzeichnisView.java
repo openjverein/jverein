@@ -16,8 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -26,30 +24,27 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 
-public class EinstellungenDateinamenView extends AbstractView
+public class EinstellungenVerzeichnisView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen Dateinamen");
+    GUI.getView().setTitle("Einstellungen Verzeichnisse");
 
     final EinstellungControl control = new EinstellungControl(this);
 
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
     cont.addLabelPair("Auswertung", control.getDateinamenmuster());
-    if ((Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
-    {
-      cont.addLabelPair("Spendenbescheinigungen",
-          control.getDateinamenmusterSpende());
-    }
+
     cont.addLabelPair("CSV Vorlagenverzeichnis",
         control.getVorlagenCsvVerzeichnis());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_DATEINAMEN, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_VERZEICHNISSE, false,
+        "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

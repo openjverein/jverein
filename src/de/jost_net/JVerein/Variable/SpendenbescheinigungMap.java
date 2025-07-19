@@ -369,6 +369,7 @@ public class SpendenbescheinigungMap extends AbstractMap
     {
       map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), spendedatum);
     }
+    map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES.getName(), spendedatum);
 
     map.put(SpendenbescheinigungVar.FINANZAMT.getName(),
         (String) Einstellungen.getEinstellung(Property.FINANZAMT));
@@ -440,7 +441,8 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.BETRAGINWORTEN.getName(), "dreihundert");
     map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(), "10.01.2025");
     map.put(SpendenbescheinigungVar.SPENDEART.getName(), "Geldspende");
-    map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), "01.01.2025");
+    map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), "s. Anlage");
+    map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES.getName(), "01.01.2025");
     map.put(SpendenbescheinigungVar.SPENDENZEITRAUM.getName(),
         "01.01.2025 bis 01.03.2025");
     map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(), "X");

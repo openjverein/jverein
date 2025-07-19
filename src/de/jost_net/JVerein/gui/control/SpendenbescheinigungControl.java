@@ -53,6 +53,7 @@ import de.jost_net.JVerein.io.SpendenbescheinigungExportPDF;
 import de.jost_net.JVerein.io.ZipMailer;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
@@ -901,11 +902,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
       }
       settings.setAttribute("lastdir", path);
       path = path.endsWith(File.separator) ? path : path + File.separator;
-
-      String fileName = new Dateiname(spb.getMitglied(),
-          spb.getSpendedatum(), "Spendenbescheinigung",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTERSPENDE),
-          "pdf").get();
+      String fileName = VorlageControl
+          .getName(VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED, spb, m)
+          + ".pdf";
 
       // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
       zos.putNextEntry(new ZipEntry(
