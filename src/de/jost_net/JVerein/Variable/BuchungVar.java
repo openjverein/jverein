@@ -38,7 +38,8 @@ public enum BuchungVar
   PROJEKTBEZEICHNUNG("buchung_projektbezeichnung"), //
   SPENDENBESCHEINIGUNG("buchung_spendenbescheinigung"), //
   ZWECK1("buchung_zweck1"), //
-  IBAN("buchung_iban");
+  IBAN("buchung_iban"),
+  STEUER("buchung_steuer_satz");
 
   private String name;
 

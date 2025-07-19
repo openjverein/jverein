@@ -255,7 +255,7 @@ public class BuchungAuswertungPDF
   {
     reporter.addHeaderColumn("Nummer", Element.ALIGN_CENTER, 22,
         BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Datum", Element.ALIGN_CENTER, 28,
+    reporter.addHeaderColumn("Datum", Element.ALIGN_CENTER, 32,
         BaseColor.LIGHT_GRAY);
     if (kontonummer_in_buchungsliste)
       reporter.addHeaderColumn("Konto", Element.ALIGN_CENTER, 34,
@@ -269,6 +269,11 @@ public class BuchungAuswertungPDF
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 40,
         BaseColor.LIGHT_GRAY);
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      reporter.addHeaderColumn("Steuersatz", Element.ALIGN_CENTER, 25,
+          BaseColor.LIGHT_GRAY);
+    }
     reporter.createHeader();
   }
 
@@ -340,6 +345,11 @@ public class BuchungAuswertungPDF
         reporter.addColumn(b.getName(), Element.ALIGN_LEFT);
         reporter.addColumn(b.getZweck(), Element.ALIGN_LEFT);
         reporter.addColumn(b.getBetrag());
+        if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+        {
+          reporter.addColumn(
+              b.getSteuer() == null ? null : b.getSteuer().getSatz());
+        }
       }
       buchungsartSumme += b.getBetrag();
       if (bua.getArt() == ArtBuchungsart.EINNAHME)

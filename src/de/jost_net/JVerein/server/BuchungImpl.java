@@ -731,6 +731,11 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
         StringTool.toNotNullString(this.getArt()));
     map.put(BuchungVar.AUSZUGSNUMMER.getName(), this.getAuszugsnummer());
     map.put(BuchungVar.BETRAG.getName(), this.getBetrag());
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      map.put(BuchungVar.STEUER.getName(),
+          this.getSteuer() == null ? null : this.getSteuer().getSatz());
+    }
     map.put(BuchungVar.BLATTNUMMER.getName(), this.getBlattnummer());
     map.put(BuchungVar.ID.getName(), this.getID());
     if (this.getBuchungsart() != null)
