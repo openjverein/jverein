@@ -14,42 +14,26 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.action;
+package de.jost_net.JVerein.gui.menu;
 
-import java.rmi.RemoteException;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.view.EinstellungenVorlageDetailView;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
+import de.willuhn.jameica.gui.parts.ContextMenu;
 
-import de.jost_net.JVerein.gui.control.DateinameControl;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.util.ApplicationException;
-
-public class DateinameVorschauAction implements Action
+/**
+ * Kontext-Menu zur Eigenschaft.
+ */
+public class VorlageMenu extends ContextMenu
 {
 
-  public DateinameVorschauAction()
+  /**
+   * Erzeugt ein Kontext-Menu fuer die Liste der Dateinamen
+   */
+  public VorlageMenu()
   {
-    //
-  }
-
-  @Override
-  public void handleAction(Object context) throws ApplicationException
-  {
-    DateinameControl control = null;
-
-    if (context instanceof DateinameControl)
-    {
-      control = (DateinameControl) context;
-    }
-    else
-    {
-      throw new ApplicationException("Falscher Kontext");
-    }
-    try
-    {
-      control.updateVorschau();
-    }
-    catch (RemoteException e)
-    {
-      throw new ApplicationException(e);
-    }
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(EinstellungenVorlageDetailView.class),
+        "text-x-generic.png"));
   }
 }

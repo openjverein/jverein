@@ -18,18 +18,18 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.keys.DateinameTyp;
-import de.jost_net.JVerein.rmi.DateinamenVorlage;
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.Vorlage;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class DateinamenVorlageImpl extends AbstractJVereinDBObject
-    implements DateinamenVorlage
+public class VorlageImpl extends AbstractJVereinDBObject
+    implements Vorlage
 {
 
   private static final long serialVersionUID = 1L;
 
-  public DateinamenVorlageImpl() throws RemoteException
+  public VorlageImpl() throws RemoteException
   {
     super();
   }
@@ -37,13 +37,13 @@ public class DateinamenVorlageImpl extends AbstractJVereinDBObject
   @Override
   protected String getTableName()
   {
-    return "dateinamenvorlage";
+    return TABLE_NAME;
   }
 
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return PRIMARY_ATTRIBUTE;
   }
 
   @Override
@@ -65,15 +65,15 @@ public class DateinamenVorlageImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public String getDateiname() throws RemoteException
+  public String getText() throws RemoteException
   {
-    return (String) getAttribute("dateiname");
+    return (String) getAttribute(TEXT);
   }
 
   @Override
-  public void setDateiname(String dateiname) throws RemoteException
+  public void setText(String text) throws RemoteException
   {
-    setAttribute("dateiname", dateiname);
+    setAttribute(TEXT, text);
   }
 
   @Override
@@ -83,7 +83,7 @@ public class DateinamenVorlageImpl extends AbstractJVereinDBObject
     {
       try
       {
-        return DateinameTyp.getByKey(Integer.valueOf(getID())).toString();
+        return VorlageTyp.getByKey(Integer.valueOf(getID())).toString();
       }
       catch (Exception e)
       {

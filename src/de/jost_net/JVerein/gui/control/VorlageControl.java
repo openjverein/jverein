@@ -16,21 +16,29 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.util.Map;
+
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
+import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.menu.DateinameMenu;
-import de.jost_net.JVerein.gui.view.DateinameDetailView;
-import de.jost_net.JVerein.keys.DateinameTyp;
-import de.jost_net.JVerein.rmi.DateinamenVorlage;
+import de.jost_net.JVerein.gui.menu.VorlageMenu;
+import de.jost_net.JVerein.gui.view.EinstellungenVorlageDetailView;
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.Vorlage;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.util.Dateiname;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -43,39 +51,39 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class DateinameControl extends AbstractControl implements Savable
+public class VorlageControl extends AbstractControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
 
   private TablePart namenList;
 
-  private DateinamenVorlage dateiname;
+  private Vorlage vorlageObjekt;
 
   private Input name;
 
   private Input vorschau;
 
-  public DateinameControl(AbstractView view)
+  public VorlageControl(AbstractView view)
   {
     super(view);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 
-  public DateinamenVorlage getDateiname() throws RemoteException
+  public Vorlage getVorlageObjekt() throws RemoteException
   {
-    if (dateiname != null)
+    if (vorlageObjekt != null)
     {
-      return dateiname;
+      return vorlageObjekt;
     }
-    dateiname = (DateinamenVorlage) getCurrentObject();
-    if (dateiname == null)
+    vorlageObjekt = (Vorlage) getCurrentObject();
+    if (vorlageObjekt == null)
     {
-      dateiname = (DateinamenVorlage) Einstellungen.getDBService()
-          .createObject(DateinamenVorlage.class, null);
+      vorlageObjekt = (Vorlage) Einstellungen.getDBService()
+          .createObject(Vorlage.class, null);
     }
-    return dateiname;
+    return vorlageObjekt;
   }
 
   public Input getName() throws RemoteException
@@ -84,7 +92,7 @@ public class DateinameControl extends AbstractControl implements Savable
     {
       return name;
     }
-    name = new TextInput(getDateiname().getDateiname(), 250);
+    name = new TextInput(getVorlageObjekt().getText(), 250);
     return name;
   }
 
@@ -94,7 +102,7 @@ public class DateinameControl extends AbstractControl implements Savable
     {
       return vorschau;
     }
-    vorschau = new TextInput(generiereVorschau(getDateiname().getDateiname()),
+    vorschau = new TextInput(generiereVorschau(getVorlageObjekt().getText()),
         250);
     vorschau.disable();
     return vorschau;
@@ -102,7 +110,7 @@ public class DateinameControl extends AbstractControl implements Savable
 
   public String generiereVorschau(String dateiname)
   {
-    return Dateiname.translate(getDummyMap(), dateiname);
+    return translate(getDummyMap(), dateiname);
   }
 
   public void updateVorschau() throws RemoteException
@@ -116,8 +124,8 @@ public class DateinameControl extends AbstractControl implements Savable
     try
     {
       map = new AllgemeineMap().getMap(null);
-      DateinameTyp typ = DateinameTyp
-          .getByKey(Integer.valueOf(getDateiname().getID()));
+      VorlageTyp typ = VorlageTyp
+          .getByKey(Integer.valueOf(getVorlageObjekt().getID()));
       switch (typ)
       {
         case SPENDENBESCHEINIGUNG:
@@ -160,7 +168,6 @@ public class DateinameControl extends AbstractControl implements Savable
     {
       //
     }
-
     return map;
   }
 
@@ -174,8 +181,8 @@ public class DateinameControl extends AbstractControl implements Savable
   @Override
   public JVereinDBObject prepareStore() throws RemoteException
   {
-    DateinamenVorlage bv = getDateiname();
-    bv.setDateiname((String) getName().getValue());
+    Vorlage bv = getVorlageObjekt();
+    bv.setText((String) getName().getValue());
     return bv;
   }
 
@@ -202,17 +209,17 @@ public class DateinameControl extends AbstractControl implements Savable
   public Part getDateinamenList() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
-    DBIterator<DateinamenVorlage> namen = service
-        .createList(DateinamenVorlage.class);
-    namen.setOrder("ORDER BY dateiname");
+    DBIterator<Vorlage> namen = service
+        .createList(Vorlage.class);
+    namen.setOrder("ORDER BY " + Vorlage.TEXT);
 
     if (namenList == null)
     {
       namenList = new TablePart(namen,
-          new EditAction(DateinameDetailView.class));
-      namenList.addColumn("Dateityp", "id-int");
-      namenList.addColumn("Dateiname", "dateiname");
-      namenList.setContextMenu(new DateinameMenu());
+          new EditAction(EinstellungenVorlageDetailView.class));
+      namenList.addColumn("Vorlage Art", "id-int");
+      namenList.addColumn("Vorlage", Vorlage.TEXT);
+      namenList.setContextMenu(new VorlageMenu());
       namenList.setRememberColWidths(true);
       namenList.setRememberOrder(true);
       namenList.setRememberState(true);
@@ -228,5 +235,90 @@ public class DateinameControl extends AbstractControl implements Savable
       namenList.sort();
     }
     return namenList;
+  }
+
+  public static String getVorlage(VorlageTyp typ)
+  {
+    return getVorlage(typ, null, null);
+  }
+
+  public static String getVorlage(VorlageTyp typ, Object obj)
+  {
+    return getVorlage(typ, obj, null);
+  }
+
+  public static String getVorlage(VorlageTyp typ, Object obj,
+      Mitglied mitglied)
+  {
+    Map<String, Object> map = null;
+    String dateiname = "";
+    try
+    {
+      map = new AllgemeineMap().getMap(null);
+      dateiname = ((Vorlage) Einstellungen.getDBService()
+          .createObject(Vorlage.class, String.valueOf(typ.getKey())))
+              .getText();
+      switch (typ)
+      {
+        case SPENDENBESCHEINIGUNG:
+          map = new SpendenbescheinigungMap().getMap((Spendenbescheinigung) obj,
+              map);
+          break;
+        case SPENDENBESCHEINIGUNG_MITGLIED:
+          map = new SpendenbescheinigungMap().getMap((Spendenbescheinigung) obj,
+              map);
+          map = new MitgliedMap().getMap(mitglied, map);
+          break;
+        case RECHNUNG_MITGLIED:
+        case MAHNUNG_MITGLIED:
+          // Ein Dokument pro Mitglied
+          map = new RechnungMap().getMap((Rechnung) obj, map);
+          map = new MitgliedMap().getMap(mitglied, map);
+          break;
+        case KONTOAUSZUG_MITGLIED:
+        case PRENOTIFICATION_MITGLIED:
+          map = new MitgliedMap().getMap(mitglied, map);
+          break;
+        case FREIES_FORMULAR:
+          map.put("formular_name", (String) obj);
+          break;
+        case FREIES_FORMULAR_MITGLIED:
+          map = new MitgliedMap().getMap(mitglied, map);
+          map.put("formular_name", (String) obj);
+          break;
+        case RECHNUNG:
+        case MAHNUNG:
+        case KONTOAUSZUG:
+        case CT1_AUSGABE:
+        case PRENOTIFICATION:
+          // Bei zip oder einzelnes Dokument für mehrere Einträge
+          // Nur die allgemeine Map
+          break;
+        default:
+          Logger.error("Dateiname Typ nicht implementiert: " + typ.toString());
+          return "";
+      }
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler bei Dateinamen Ersetzung: " + e.getMessage());
+      return "";
+    }
+    return translate(map, dateiname);
+  }
+
+  public static String translate(Map<String, Object> map, String inString)
+  {
+    Velocity.init();
+    VelocityContext context = new VelocityContext();
+    context.put("dateformat", new JVDateFormatTTMMJJJJ());
+    context.put("decimalformat", Einstellungen.DECIMALFORMAT);
+    VarTools.add(context, map);
+    StringWriter wdateiname = new StringWriter();
+    String in = inString.replaceAll("-\\$", " \\$");
+    Velocity.evaluate(context, wdateiname, "LOG", in);
+    String str = wdateiname.toString();
+    str = str.replaceAll(" ", "-");
+    return str;
   }
 }

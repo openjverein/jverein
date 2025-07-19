@@ -43,7 +43,8 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.VarTools;
-import de.jost_net.JVerein.keys.DateinameTyp;
+import de.jost_net.JVerein.gui.control.VorlageControl;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
@@ -51,7 +52,6 @@ import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.Application;
@@ -220,27 +220,27 @@ public class ZipMailer
               switch (art.toLowerCase().trim())
               {
                 case "rechnung":
-                  finaldateiname = Dateiname.getDateiname(
-                      DateinameTyp.RECHNUNG_MITGLIED, re, m) + ".pdf";
+                  finaldateiname = VorlageControl.getVorlage(
+                      VorlageTyp.RECHNUNG_MITGLIED, re, m) + ".pdf";
                   break;
                 case "mahnung":
-                  finaldateiname = Dateiname.getDateiname(
-                      DateinameTyp.MAHNUNG_MITGLIED, re, m) + ".pdf";
+                  finaldateiname = VorlageControl.getVorlage(
+                      VorlageTyp.MAHNUNG_MITGLIED, re, m) + ".pdf";
                   break;
                 case "spendenbescheinigung":
-                  finaldateiname = Dateiname.getDateiname(
-                      DateinameTyp.SPENDENBESCHEINIGUNG_MITGLIED, spb, m)
+                  finaldateiname = VorlageControl.getVorlage(
+                      VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED, spb, m)
                       + ".pdf";
                   break;
                 case "freiesformular":
-                  finaldateiname = Dateiname.getDateiname(
-                      DateinameTyp.FREIES_FORMULAR_MITGLIED,
+                  finaldateiname = VorlageControl.getVorlage(
+                      VorlageTyp.FREIES_FORMULAR_MITGLIED,
                       dateiname.substring(0, dateiname.lastIndexOf('.')), m)
                       + ".pdf";
                   break;
                 case "kontoauszug":
-                  finaldateiname = Dateiname.getDateiname(
-                      DateinameTyp.KONTOAUSZUG_MITGLIED, null, m) + ".pdf";
+                  finaldateiname = VorlageControl.getVorlage(
+                      VorlageTyp.KONTOAUSZUG_MITGLIED, null, m) + ".pdf";
                   break;
                 default:
                   StringWriter wdateiname = new StringWriter();

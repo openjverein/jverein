@@ -16,43 +16,43 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DateinameVorschauAction;
+import de.jost_net.JVerein.gui.action.VorlageVorschauAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
-import de.jost_net.JVerein.gui.control.DateinameControl;
+import de.jost_net.JVerein.gui.control.VorlageControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
-import de.jost_net.JVerein.keys.DateinameTyp;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class DateinameDetailView extends AbstractDetailView
+public class EinstellungenVorlageDetailView extends AbstractDetailView
 {
 
-  private DateinameControl control;
+  private VorlageControl control;
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Dateiname");
+    GUI.getView().setTitle("Einstellungen Vorlage");
 
-    control = new DateinameControl(this);
+    control = new VorlageControl(this);
 
-    LabelGroup grName = new LabelGroup(getParent(), DateinameTyp
-        .getByKey(Integer.valueOf(control.getDateiname().getID())).toString());
-    grName.addLabelPair("Dateiname", control.getName());
+    LabelGroup grName = new LabelGroup(getParent(), VorlageTyp
+        .getByKey(Integer.valueOf(control.getVorlageObjekt().getID())).toString());
+    grName.addLabelPair("Vorlage", control.getName());
     grName.addLabelPair("Vorschau", control.getVorschau());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.DATEI_NAME, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_VORLAGEN, false, "question-circle.png");
     buttons.addButton("Variablen anzeigen",
         new InsertVariableDialogAction(control.getDummyMap()), control, false,
         "bookmark.png");
     buttons.addButton(new Button("Update Vorschau",
-        new DateinameVorschauAction(), control, false, "view-refresh.png"));
+        new VorlageVorschauAction(), control, false, "view-refresh.png"));
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
   }

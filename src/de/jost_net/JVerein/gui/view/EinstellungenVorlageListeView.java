@@ -17,26 +17,26 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.DateinameControl;
+import de.jost_net.JVerein.gui.control.VorlageControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 
-public class DateinameListeView extends AbstractView
+public class EinstellungenVorlageListeView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Dateinamen");
+    GUI.getView().setTitle("Einstellungen Vorlagen");
 
-    DateinameControl control = new DateinameControl(this);
+    VorlageControl control = new VorlageControl(this);
 
     control.getDateinamenList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.DATEI_NAME, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_VORLAGEN, false, "question-circle.png");
     buttons.paint(this.getParent());
   }
 }

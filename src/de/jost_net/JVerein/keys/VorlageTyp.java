@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
-public enum DateinameTyp
+public enum VorlageTyp
 {
   SPENDENBESCHEINIGUNG(1, "Spendenbescheinigung"),
   SPENDENBESCHEINIGUNG_MITGLIED(2, "Spendenbescheinigung-Mitglied"),
@@ -36,7 +36,7 @@ public enum DateinameTyp
 
   private final int key;
 
-  DateinameTyp(int key, String text)
+  VorlageTyp(int key, String text)
   {
     this.key = key;
     this.text = text;
@@ -52,9 +52,9 @@ public enum DateinameTyp
     return text;
   }
 
-  public static DateinameTyp getByKey(int key)
+  public static VorlageTyp getByKey(int key)
   {
-    for (DateinameTyp art : DateinameTyp.values())
+    for (VorlageTyp art : VorlageTyp.values())
     {
       if (art.getKey() == key)
       {

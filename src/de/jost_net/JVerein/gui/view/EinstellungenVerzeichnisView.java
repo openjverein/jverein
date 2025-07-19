@@ -24,13 +24,13 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 
-public class EinstellungenDateinamenView extends AbstractView
+public class EinstellungenVerzeichnisView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen Dateinamen");
+    GUI.getView().setTitle("Einstellungen Verzeichnisse");
 
     final EinstellungControl control = new EinstellungControl(this);
 
@@ -43,7 +43,8 @@ public class EinstellungenDateinamenView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_DATEINAMEN, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_VERZEICHNISSE, false,
+        "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

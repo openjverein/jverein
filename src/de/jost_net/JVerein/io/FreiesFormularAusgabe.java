@@ -18,13 +18,13 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.gui.control.FreieFormulareControl;
+import de.jost_net.JVerein.gui.control.VorlageControl;
 import de.jost_net.JVerein.keys.Ausgabeart;
-import de.jost_net.JVerein.keys.DateinameTyp;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -143,7 +143,7 @@ public class FreiesFormularAusgabe
       fd.setFilterPath(path);
     }
     fd.setFileName(
-        Dateiname.getDateiname(DateinameTyp.FREIES_FORMULAR, name) + "."
+        VorlageControl.getVorlage(VorlageTyp.FREIES_FORMULAR, name) + "."
             + extension);
     fd.setFilterExtensions(new String[] { "*." + extension });
 

@@ -14,26 +14,24 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.menu;
+package de.jost_net.JVerein.rmi;
 
-import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.view.DateinameDetailView;
-import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
-import de.willuhn.jameica.gui.parts.ContextMenu;
+import java.rmi.RemoteException;
 
-/**
- * Kontext-Menu zur Eigenschaft.
- */
-public class DateinameMenu extends ContextMenu
+
+public interface Vorlage extends JVereinDBObject
 {
+  public static final String TABLE_NAME = "vorlage";
 
-  /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Dateinamen
-   */
-  public DateinameMenu()
-  {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(DateinameDetailView.class),
-        "text-x-generic.png"));
-  }
+  public static final String TABLE_NAME_ID = "vorlage.id";
+
+  public static final String PRIMARY_ATTRIBUTE = "id";
+
+  public static final String TEXT = "text";
+
+  public static final String T_TEXT = TABLE_NAME + "." + TEXT;
+
+  public String getText() throws RemoteException;
+
+  public void setText(String text) throws RemoteException;
 }

@@ -188,9 +188,12 @@ public class DokumentationUtil
   public static final String EINSTELLUNGEN_BUCHFUEHRUNG = ADMEINSTELLUNG
       + "buchfuehrung";
   
-  public static final String EINSTELLUNGEN_DATEINAMEN = ADMEINSTELLUNG
-      + "dateinamen";
+  public static final String EINSTELLUNGEN_VERZEICHNISSE = ADMEINSTELLUNG
+      + "verzeichnisse";
   
+  public static final String EINSTELLUNGEN_VORLAGEN = ADMEINSTELLUNG
+      + "vorlagen";
+
   public static final String EINSTELLUNGEN_MAIL = ADMEINSTELLUNG + "mail";
   
   public static final String EINSTELLUNGEN_RECHNUNGEN = ADMEINSTELLUNG
@@ -247,8 +250,6 @@ public class DokumentationUtil
   
   public static final String QIFIMPORT = ADMERWEITERT + "qif-import";
 
-  public static final String DATEI_NAME = PRE + FUNKTIONEN + ADMIN
-      + ADMERWEITERT + "dateinamen";
 
   // Changelog bei Update
   public static final String CHANGELOG = FUNKTIONEN + "notes";

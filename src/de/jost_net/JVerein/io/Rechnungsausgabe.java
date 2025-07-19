@@ -34,13 +34,13 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
+import de.jost_net.JVerein.gui.control.VorlageControl;
 import de.jost_net.JVerein.keys.Ausgabeart;
-import de.jost_net.JVerein.keys.DateinameTyp;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -189,12 +189,12 @@ public class Rechnungsausgabe
     if (typ == TYP.RECHNUNG)
     {
       fd.setFileName(
-          Dateiname.getDateiname(DateinameTyp.RECHNUNG) + "." + extension);
+          VorlageControl.getVorlage(VorlageTyp.RECHNUNG) + "." + extension);
     }
     else
     {
       fd.setFileName(
-          Dateiname.getDateiname(DateinameTyp.MAHNUNG) + "." + extension);
+          VorlageControl.getVorlage(VorlageTyp.MAHNUNG) + "." + extension);
     }
     fd.setFilterExtensions(new String[] { "*." + extension });
 

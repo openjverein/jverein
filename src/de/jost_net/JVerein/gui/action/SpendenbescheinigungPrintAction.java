@@ -44,18 +44,18 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.Variable.VarTools;
+import de.jost_net.JVerein.gui.control.VorlageControl;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.FormularAufbereitung;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.Adressblatt;
-import de.jost_net.JVerein.keys.DateinameTyp;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatJJJJ;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
@@ -224,14 +224,15 @@ public class SpendenbescheinigungPrintAction implements Action
           if (mitglied != null)
           {
           fileName = path
-                + Dateiname.getDateiname(
-                    DateinameTyp.SPENDENBESCHEINIGUNG_MITGLIED, spb, mitglied)
+              + VorlageControl.getVorlage(
+                    VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED, spb, mitglied)
               + ".pdf";
           }
           else
           {
             fileName = path
-                + Dateiname.getDateiname(DateinameTyp.SPENDENBESCHEINIGUNG, spb)
+                + VorlageControl.getVorlage(VorlageTyp.SPENDENBESCHEINIGUNG,
+                    spb)
                 + ".pdf";
           }
         }

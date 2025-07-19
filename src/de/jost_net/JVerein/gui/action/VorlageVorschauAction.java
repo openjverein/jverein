@@ -14,14 +14,42 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
+package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.gui.control.VorlageControl;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.util.ApplicationException;
 
-public interface DateinamenVorlage extends JVereinDBObject
+public class VorlageVorschauAction implements Action
 {
-  public String getDateiname() throws RemoteException;
 
-  public void setDateiname(String name) throws RemoteException;
+  public VorlageVorschauAction()
+  {
+    //
+  }
+
+  @Override
+  public void handleAction(Object context) throws ApplicationException
+  {
+    VorlageControl control = null;
+
+    if (context instanceof VorlageControl)
+    {
+      control = (VorlageControl) context;
+    }
+    else
+    {
+      throw new ApplicationException("Falscher Kontext");
+    }
+    try
+    {
+      control.updateVorschau();
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(e);
+    }
+  }
 }
