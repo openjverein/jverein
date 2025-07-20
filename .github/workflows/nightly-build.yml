@@ -6,7 +6,7 @@ name: OpenJVerein nightly release
 on:
   push:
     branches:
-      - feature-3.1.0
+      - feature-3.2.0
     tags-ignore:
       - '**'
 
@@ -17,7 +17,7 @@ jobs:
     - name: Checkout openjverein
       uses: actions/checkout@v4
       with:
-        ref: 'feature-3.1.0'
+        ref: 'feature-3.2.0'
         path: jverein
 
     - name: Setup

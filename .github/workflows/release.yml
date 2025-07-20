@@ -9,15 +9,16 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout openjverein
+    - name: Checkout OpenJVerein
       uses: actions/checkout@v4
       with:
+        ref: ${{ github.ref_name }}
         path: jverein
 
     - name: Setup
       uses: ./jverein/.github/actions/build-dependencies
 
-    - name: Build openjverein plugin
+    - name: Build OpenJVerein plugin
       id: openjverein
       run: |
         ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml)
