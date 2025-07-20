@@ -34,6 +34,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Vorlage;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 
 public class VorlageUtil
@@ -53,13 +54,11 @@ public class VorlageUtil
   public static String getName(VorlageTyp typ, Object obj, Mitglied mitglied)
   {
     Map<String, Object> map = null;
-    String dateiname = "";
+    String muster = "";
     try
     {
       map = new AllgemeineMap().getMap(null);
-      dateiname = ((Vorlage) Einstellungen.getDBService()
-          .createObject(Vorlage.class, String.valueOf(typ.getKey())))
-              .getMuster();
+      muster = getVorlageMuster(typ);
       switch (typ)
       {
         case SPENDENBESCHEINIGUNG:
@@ -106,18 +105,16 @@ public class VorlageUtil
       Logger.error("Fehler bei Dateinamen Ersetzung: " + e.getMessage());
       return "";
     }
-    return translate(map, dateiname);
+    return translate(map, muster);
   }
 
   // Dummy Namen Generierung aus Vorlagen Muster
   public static String getDummyName(VorlageTyp typ)
   {
-    String muster;
+    String muster = "";
     try
     {
-      muster = ((Vorlage) Einstellungen.getDBService()
-          .createObject(Vorlage.class, String.valueOf(typ.getKey())))
-              .getMuster();
+      muster = getVorlageMuster(typ);
     }
     catch (RemoteException e)
     {
@@ -197,5 +194,17 @@ public class VorlageUtil
     String str = wdateiname.toString();
     str = str.replaceAll(" ", "-");
     return str;
+  }
+
+  public static String getVorlageMuster(VorlageTyp typ) throws RemoteException
+  {
+    DBIterator<Vorlage> vorlagen = Einstellungen.getDBService()
+        .createList(Vorlage.class);
+    vorlagen.addFilter("key = ?", typ.getKey());
+    if (vorlagen.hasNext())
+    {
+      return vorlagen.next().getMuster();
+    }
+    return "";
   }
 }

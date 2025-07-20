@@ -47,31 +47,31 @@ public class Update0483 extends AbstractDDLUpdate
     execute(this.createTable(t));
 
     execute(
-        "INSERT into vorlage VALUES (1, 1, 'Spendenbescheinigung-$spendenbescheinigung_spendedatum_erstes-$spendenbescheinigung_zeile2');\n");
+        "INSERT into vorlage (key, muster) VALUES (1, 'Spendenbescheinigung-$spendenbescheinigung_spendedatum_erstes-$spendenbescheinigung_zeile2');\n");
     execute(
-        "INSERT into vorlage VALUES (2, 2, 'Spendenbescheinigung-$spendenbescheinigung_spendedatum_erstes-$mitglied_name-$mitglied_vorname');\n");
+        "INSERT into vorlage (key, muster) VALUES (2, 'Spendenbescheinigung-$spendenbescheinigung_spendedatum_erstes-$mitglied_name-$mitglied_vorname');\n");
     execute(
-        "INSERT into vorlage VALUES (3, 3, 'Rechnung-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (key, muster) VALUES (3, 'Rechnung-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage VALUES (4, 4, 'Rechnung-$rechnung_nummer-$mitglied_name-$mitglied_vorname');\n");
+        "INSERT into vorlage (key, muster) VALUES (4, 'Rechnung-$rechnung_nummer-$mitglied_name-$mitglied_vorname');\n");
     execute(
-        "INSERT into vorlage VALUES (5, 5, 'Mahnung-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (key, muster) VALUES (5, 'Mahnung-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage VALUES (6, 6, 'Mahnung-$rechnung_nummer-$mitglied_name-$mitglied_vorname');\n");
+        "INSERT into vorlage (key, muster) VALUES (6, 'Mahnung-$rechnung_nummer-$mitglied_name-$mitglied_vorname');\n");
     execute(
-        "INSERT into vorlage VALUES (7, 7, 'Kontoauszug-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (key, muster) VALUES (7, 'Kontoauszug-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage VALUES (8, 8, 'Kontoauszug-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (key, muster) VALUES (8, 'Kontoauszug-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage VALUES (9, 9, '$formular_name-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (key, muster) VALUES (9, '$formular_name-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage VALUES (10, 10, '$formular_name-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (key, muster) VALUES (10, '$formular_name-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage VALUES (11, 11, '1ctueberweisung-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (key, muster) VALUES (11, '1ctueberweisung-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage VALUES (12, 12, 'Prenotification-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (key, muster) VALUES (12, 'Prenotification-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage VALUES (13, 13, 'Prenotification-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (key, muster) VALUES (13, 'Prenotification-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
 
   }
 }
