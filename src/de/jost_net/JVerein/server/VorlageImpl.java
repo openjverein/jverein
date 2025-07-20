@@ -65,6 +65,12 @@ public class VorlageImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public Integer getKey() throws RemoteException
+  {
+    return (Integer) getAttribute(KEY);
+  }
+
+  @Override
   public String getMuster() throws RemoteException
   {
     return (String) getAttribute(MUSTER);
@@ -79,15 +85,15 @@ public class VorlageImpl extends AbstractJVereinDBObject
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("id-int".equals(fieldName))
+    if ("art".equals(fieldName))
     {
       try
       {
-        return VorlageTyp.getByKey(Integer.valueOf(getID())).toString();
+        return VorlageTyp.getByKey(getKey()).toString();
       }
       catch (Exception e)
       {
-        Logger.error("Unable to parse id: " + getID());
+        Logger.error("Unable to parse id: " + getKey());
         return getID();
       }
     }

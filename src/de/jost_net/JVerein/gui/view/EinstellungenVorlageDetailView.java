@@ -23,6 +23,7 @@ import de.jost_net.JVerein.gui.control.VorlageControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -39,9 +40,9 @@ public class EinstellungenVorlageDetailView extends AbstractDetailView
     GUI.getView().setTitle("Einstellungen Vorlage");
 
     control = new VorlageControl(this);
+    VorlageTyp typ = VorlageTyp.getByKey(control.getVorlage().getKey());
 
-    LabelGroup grName = new LabelGroup(getParent(), VorlageTyp
-        .getByKey(Integer.valueOf(control.getVorlage().getID())).toString());
+    LabelGroup grName = new LabelGroup(getParent(), typ.toString());
     grName.addLabelPair("Vorlagenmuster", control.getMuster());
     grName.addLabelPair("Vorschau", control.getVorschau());
 
@@ -49,8 +50,8 @@ public class EinstellungenVorlageDetailView extends AbstractDetailView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_VORLAGEN, false, "question-circle.png");
     buttons.addButton("Variablen anzeigen",
-        new InsertVariableDialogAction(control.getDummyMap()), control, false,
-        "bookmark.png");
+        new InsertVariableDialogAction(VorlageUtil.getDummyMap(typ)), control,
+        false, "bookmark.png");
     buttons.addButton(new Button("Update Vorschau",
         new VorlageVorschauAction(), control, false, "view-refresh.png"));
     buttons.addButton(new SaveButton(control));

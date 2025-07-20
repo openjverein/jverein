@@ -40,7 +40,6 @@ import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
-import de.jost_net.JVerein.gui.control.VorlageControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Ausgabeart;
@@ -50,6 +49,7 @@ import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.GUI;
 
@@ -182,7 +182,7 @@ public class Kontoauszug
       fd.setFilterPath(path);
     }
     fd.setFileName(
-        VorlageControl.getName(VorlageTyp.KONTOAUSZUG) + "." + extension);
+        VorlageUtil.getName(VorlageTyp.KONTOAUSZUG) + "." + extension);
     fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();

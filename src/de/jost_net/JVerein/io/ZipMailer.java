@@ -43,7 +43,6 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.VarTools;
-import de.jost_net.JVerein.gui.control.VorlageControl;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
@@ -53,6 +52,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -220,26 +220,26 @@ public class ZipMailer
               switch (art.toLowerCase().trim())
               {
                 case "rechnung":
-                  finaldateiname = VorlageControl.getName(
+                  finaldateiname = VorlageUtil.getName(
                       VorlageTyp.RECHNUNG_MITGLIED, re, m) + ".pdf";
                   break;
                 case "mahnung":
-                  finaldateiname = VorlageControl.getName(
+                  finaldateiname = VorlageUtil.getName(
                       VorlageTyp.MAHNUNG_MITGLIED, re, m) + ".pdf";
                   break;
                 case "spendenbescheinigung":
-                  finaldateiname = VorlageControl.getName(
+                  finaldateiname = VorlageUtil.getName(
                       VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED, spb, m)
                       + ".pdf";
                   break;
                 case "freiesformular":
-                  finaldateiname = VorlageControl.getName(
+                  finaldateiname = VorlageUtil.getName(
                       VorlageTyp.FREIES_FORMULAR_MITGLIED,
                       dateiname.substring(0, dateiname.lastIndexOf('.')), m)
                       + ".pdf";
                   break;
                 case "kontoauszug":
-                  finaldateiname = VorlageControl.getName(
+                  finaldateiname = VorlageUtil.getName(
                       VorlageTyp.KONTOAUSZUG_MITGLIED, null, m) + ".pdf";
                   break;
                 default:

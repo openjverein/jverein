@@ -27,9 +27,15 @@ public interface Vorlage extends JVereinDBObject
 
   public static final String PRIMARY_ATTRIBUTE = "id";
 
+  public static final String KEY = "key";
+
+  public static final String T_KEY = TABLE_NAME + "." + KEY;
+
   public static final String MUSTER = "muster";
 
   public static final String T_MUSTER = TABLE_NAME + "." + MUSTER;
+
+  public Integer getKey() throws RemoteException;
 
   public String getMuster() throws RemoteException;
 

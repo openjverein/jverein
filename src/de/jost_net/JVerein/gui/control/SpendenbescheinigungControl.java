@@ -66,6 +66,7 @@ import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.SpbAdressaufbereitung;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -902,7 +903,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       }
       settings.setAttribute("lastdir", path);
       path = path.endsWith(File.separator) ? path : path + File.separator;
-      String fileName = VorlageControl
+      String fileName = VorlageUtil
           .getName(VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED, spb, m)
           + ".pdf";
 

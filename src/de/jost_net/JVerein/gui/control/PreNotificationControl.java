@@ -54,6 +54,7 @@ import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -356,7 +357,7 @@ public class PreNotificationControl extends DruckMailControl
       fd.setFilterPath(path);
     }
     fd.setFileName(
-        VorlageControl.getName(VorlageTyp.PRENOTIFICATION) + ".pdf");
+        VorlageUtil.getName(VorlageTyp.PRENOTIFICATION) + ".pdf");
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -494,7 +495,7 @@ public class PreNotificationControl extends DruckMailControl
         fd.setFilterPath(path);
       }
       fd.setFileName(
-          VorlageControl.getName(VorlageTyp.CT1_AUSGABE) + ".xml");
+          VorlageUtil.getName(VorlageTyp.CT1_AUSGABE) + ".xml");
       fd.setFilterExtensions(new String[] { "*.xml" });
 
       String s = fd.open();
