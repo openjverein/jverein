@@ -182,7 +182,7 @@ public class Kontoauszug
       fd.setFilterPath(path);
     }
     fd.setFileName(
-        VorlageUtil.getName(VorlageTyp.KONTOAUSZUG) + "." + extension);
+        VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_DATEINAME) + "." + extension);
     fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();

@@ -221,7 +221,7 @@ public class ZipMailer
               {
                 case "rechnung":
                   finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.RECHNUNG_MITGLIED, re, m) + ".pdf";
+                      VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, m) + ".pdf";
                   break;
                 case "mahnung":
                   finaldateiname = VorlageUtil.getName(
@@ -229,18 +229,18 @@ public class ZipMailer
                   break;
                 case "spendenbescheinigung":
                   finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED, spb, m)
+                      VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb, m)
                       + ".pdf";
                   break;
                 case "freiesformular":
                   finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.FREIES_FORMULAR_MITGLIED,
+                      VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
                       dateiname.substring(0, dateiname.lastIndexOf('.')), m)
                       + ".pdf";
                   break;
                 case "kontoauszug":
                   finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.KONTOAUSZUG_MITGLIED, null, m) + ".pdf";
+                      VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null, m) + ".pdf";
                   break;
                 default:
                   StringWriter wdateiname = new StringWriter();

@@ -18,24 +18,24 @@ package de.jost_net.JVerein.keys;
 
 public enum VorlageTyp
 {
-  SPENDENBESCHEINIGUNG("spendenbescheinigung-dateiname",
+  SPENDENBESCHEINIGUNG_DATEINAME("spendenbescheinigung-dateiname",
       "Spendenbescheinigung Dateiname"),
-  SPENDENBESCHEINIGUNG_MITGLIED("spendenbescheinigung-mitglied-dateiname",
+  SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME("spendenbescheinigung-mitglied-dateiname",
       "Spendenbescheinigung-Mitglied Dateiname"),
-  RECHNUNG("rechnung-dateiname", "Rechnung Dateiname"),
-  RECHNUNG_MITGLIED("rechnung-mitglied-dateiname",
+  RECHNUNG_DATEINAME("rechnung-dateiname", "Rechnung Dateiname"),
+  RECHNUNG_MITGLIED_DATEINAME("rechnung-mitglied-dateiname",
       "Rechnung-Mitglied Dateiname"),
-  MAHNUNG("mahnung-dateiname", "Mahnung Dateiname"),
+  MAHNUNG_DATEINAME("mahnung-dateiname", "Mahnung Dateiname"),
   MAHNUNG_MITGLIED("mahnung-mitglied-dateiname", "Mahnung-Mitglied Dateiname"),
-  KONTOAUSZUG("kontoauszug-dateiname", "Kontoauszug Dateiname"),
-  KONTOAUSZUG_MITGLIED("kontoauszug-mitglied-dateiname",
+  KONTOAUSZUG_DATEINAME("kontoauszug-dateiname", "Kontoauszug Dateiname"),
+  KONTOAUSZUG_MITGLIED_DATEINAME("kontoauszug-mitglied-dateiname",
       "Kontoauszug-Mitglied Dateiname"),
-  FREIES_FORMULAR("freies-formular-dateiname", "Freies Formular Dateiname"),
-  FREIES_FORMULAR_MITGLIED("freies-formular-mitglied-dateiname",
+  FREIES_FORMULAR_DATEINAME("freies-formular-dateiname", "Freies Formular Dateiname"),
+  FREIES_FORMULAR_MITGLIED_DATEINAME("freies-formular-mitglied-dateiname",
       "Freies Formular-Mitglied Dateiname"),
-  CT1_AUSGABE("1ct-ausgabe-dateiname", "1ct Ausgabe Dateiname"),
-  PRENOTIFICATION("pre-notification-dateiname", "Pre-Notification Dateiname"),
-  PRENOTIFICATION_MITGLIED("pre-notification-mitglied-dateiname",
+  CT1_AUSGABE_DATEINAME("1ct-ausgabe-dateiname", "1ct Ausgabe Dateiname"),
+  PRENOTIFICATION_DATEINAME("pre-notification-dateiname", "Pre-Notification Dateiname"),
+  PRENOTIFICATION_MITGLIED_DATEINAME("pre-notification-mitglied-dateiname",
       "Pre-Notification-Mitglied Dateiname");
 
   private final String text;

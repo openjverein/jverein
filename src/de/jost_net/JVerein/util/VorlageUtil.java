@@ -61,37 +61,37 @@ public class VorlageUtil
       muster = getVorlageMuster(typ);
       switch (typ)
       {
-        case SPENDENBESCHEINIGUNG:
+        case SPENDENBESCHEINIGUNG_DATEINAME:
           map = new SpendenbescheinigungMap().getMap((Spendenbescheinigung) obj,
               map);
           break;
-        case SPENDENBESCHEINIGUNG_MITGLIED:
+        case SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME:
           map = new SpendenbescheinigungMap().getMap((Spendenbescheinigung) obj,
               map);
           map = new MitgliedMap().getMap(mitglied, map);
           break;
-        case RECHNUNG_MITGLIED:
+        case RECHNUNG_MITGLIED_DATEINAME:
         case MAHNUNG_MITGLIED:
           // Ein Dokument pro Mitglied
           map = new RechnungMap().getMap((Rechnung) obj, map);
           map = new MitgliedMap().getMap(mitglied, map);
           break;
-        case KONTOAUSZUG_MITGLIED:
-        case PRENOTIFICATION_MITGLIED:
+        case KONTOAUSZUG_MITGLIED_DATEINAME:
+        case PRENOTIFICATION_MITGLIED_DATEINAME:
           map = new MitgliedMap().getMap(mitglied, map);
           break;
-        case FREIES_FORMULAR:
+        case FREIES_FORMULAR_DATEINAME:
           map.put("formular_name", (String) obj);
           break;
-        case FREIES_FORMULAR_MITGLIED:
+        case FREIES_FORMULAR_MITGLIED_DATEINAME:
           map = new MitgliedMap().getMap(mitglied, map);
           map.put("formular_name", (String) obj);
           break;
-        case RECHNUNG:
-        case MAHNUNG:
-        case KONTOAUSZUG:
-        case CT1_AUSGABE:
-        case PRENOTIFICATION:
+        case RECHNUNG_DATEINAME:
+        case MAHNUNG_DATEINAME:
+        case KONTOAUSZUG_DATEINAME:
+        case CT1_AUSGABE_DATEINAME:
+        case PRENOTIFICATION_DATEINAME:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
@@ -138,34 +138,34 @@ public class VorlageUtil
       map = new AllgemeineMap().getMap(null);
       switch (typ)
       {
-        case SPENDENBESCHEINIGUNG:
+        case SPENDENBESCHEINIGUNG_DATEINAME:
           map = SpendenbescheinigungMap.getDummyMap(map);
           break;
-        case SPENDENBESCHEINIGUNG_MITGLIED:
+        case SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME:
           map = SpendenbescheinigungMap.getDummyMap(map);
           map = MitgliedMap.getDummyMap(map);
           break;
-        case RECHNUNG_MITGLIED:
+        case RECHNUNG_MITGLIED_DATEINAME:
         case MAHNUNG_MITGLIED:
           map = RechnungMap.getDummyMap(map);
           map = MitgliedMap.getDummyMap(map);
           break;
-        case KONTOAUSZUG_MITGLIED:
-        case PRENOTIFICATION_MITGLIED:
+        case KONTOAUSZUG_MITGLIED_DATEINAME:
+        case PRENOTIFICATION_MITGLIED_DATEINAME:
           map = MitgliedMap.getDummyMap(map);
           break;
-        case FREIES_FORMULAR:
+        case FREIES_FORMULAR_DATEINAME:
           map.put("formular_name", "Freies Formular");
           break;
-        case FREIES_FORMULAR_MITGLIED:
+        case FREIES_FORMULAR_MITGLIED_DATEINAME:
           map = MitgliedMap.getDummyMap(map);
           map.put("formular_name", "Freies Formular");
           break;
-        case RECHNUNG:
-        case MAHNUNG:
-        case KONTOAUSZUG:
-        case CT1_AUSGABE:
-        case PRENOTIFICATION:
+        case RECHNUNG_DATEINAME:
+        case MAHNUNG_DATEINAME:
+        case KONTOAUSZUG_DATEINAME:
+        case CT1_AUSGABE_DATEINAME:
+        case PRENOTIFICATION_DATEINAME:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
