@@ -18,7 +18,6 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-
 public interface Vorlage extends JVereinDBObject
 {
   public static final String TABLE_NAME = "vorlage";
@@ -35,7 +34,7 @@ public interface Vorlage extends JVereinDBObject
 
   public static final String T_MUSTER = TABLE_NAME + "." + MUSTER;
 
-  public Integer getKey() throws RemoteException;
+  public String getKey() throws RemoteException;
 
   public String getMuster() throws RemoteException;
 

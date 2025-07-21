@@ -58,7 +58,7 @@ public class VorlageControl extends AbstractControl implements Savable
     settings.setStoreWhenRead(true);
   }
 
-  public Vorlage getVorlage() throws RemoteException
+  public Vorlage getVorlage() throws RemoteException, ApplicationException
   {
     if (vorlage != null)
     {
@@ -67,13 +67,12 @@ public class VorlageControl extends AbstractControl implements Savable
     vorlage = (Vorlage) getCurrentObject();
     if (vorlage == null)
     {
-      vorlage = (Vorlage) Einstellungen.getDBService()
-          .createObject(Vorlage.class, null);
+      throw new ApplicationException("Keine Vorlage ausgewählt");
     }
     return vorlage;
   }
 
-  public Input getMuster() throws RemoteException
+  public Input getMuster() throws RemoteException, ApplicationException
   {
     if (muster != null)
     {
@@ -83,7 +82,7 @@ public class VorlageControl extends AbstractControl implements Savable
     return muster;
   }
 
-  public Input getVorschau() throws RemoteException
+  public Input getVorschau() throws RemoteException, ApplicationException
   {
     if (vorschau != null)
     {
@@ -92,28 +91,29 @@ public class VorlageControl extends AbstractControl implements Savable
     vorschau = new TextInput(
         VorlageUtil.getDummyName(VorlageTyp.getByKey(getVorlage().getKey()),
             getVorlage().getMuster()),
-        250);
+        1000);
     vorschau.disable();
     return vorschau;
   }
 
-  public void updateVorschau() throws RemoteException
+  public void updateVorschau() throws RemoteException, ApplicationException
   {
-    getVorschau()
-        .setValue(VorlageUtil.getDummyName(
-            VorlageTyp.getByKey(getVorlage().getKey()),
+    getVorschau().setValue(
+        VorlageUtil.getDummyName(VorlageTyp.getByKey(getVorlage().getKey()),
             getMuster().getValue().toString()));
   }
 
   /**
-   * This method sets the attributes of the DateinamenVorlage.
+   * This method sets the attributes of the Vorlage.
    * 
    * @return
+   * @throws ApplicationException
    * 
-   * @throws nRemoteException
+   * @throws RemoteException
    */
   @Override
-  public JVereinDBObject prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Vorlage bv = getVorlage();
     bv.setMuster((String) getMuster().getValue());
@@ -121,7 +121,7 @@ public class VorlageControl extends AbstractControl implements Savable
   }
 
   /**
-   * This method stores the DateinamenVorlage using the current values.
+   * This method stores the Vorlage using the current values.
    * 
    * @throws ApplicationException
    */
@@ -143,8 +143,7 @@ public class VorlageControl extends AbstractControl implements Savable
   public Part getDateinamenList() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
-    DBIterator<Vorlage> namen = service
-        .createList(Vorlage.class);
+    DBIterator<Vorlage> namen = service.createList(Vorlage.class);
     namen.setOrder("ORDER BY " + Vorlage.MUSTER);
 
     if (namenList == null)
@@ -170,6 +169,5 @@ public class VorlageControl extends AbstractControl implements Savable
     }
     return namenList;
   }
-
 
 }

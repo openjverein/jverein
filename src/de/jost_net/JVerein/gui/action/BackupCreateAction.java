@@ -348,7 +348,7 @@ public class BackupCreateAction implements Action
           backup(ZusatzbetragVorlageImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Dateinamen Vorlagen");
+          monitor.setStatusText("Speichere Vorlagen");
           backup(VorlageImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 

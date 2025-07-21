@@ -23,8 +23,7 @@ import de.jost_net.JVerein.rmi.Vorlage;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class VorlageImpl extends AbstractJVereinDBObject
-    implements Vorlage
+public class VorlageImpl extends AbstractJVereinDBObject implements Vorlage
 {
 
   private static final long serialVersionUID = 1L;
@@ -65,9 +64,9 @@ public class VorlageImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Integer getKey() throws RemoteException
+  public String getKey() throws RemoteException
   {
-    return (Integer) getAttribute(KEY);
+    return (String) getAttribute(KEY);
   }
 
   @Override

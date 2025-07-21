@@ -52,8 +52,8 @@ public class EinstellungenVorlageDetailView extends AbstractDetailView
     buttons.addButton("Variablen anzeigen",
         new InsertVariableDialogAction(VorlageUtil.getDummyMap(typ)), control,
         false, "bookmark.png");
-    buttons.addButton(new Button("Update Vorschau",
-        new VorlageVorschauAction(), control, false, "view-refresh.png"));
+    buttons.addButton(new Button("Update Vorschau", new VorlageVorschauAction(),
+        control, false, "view-refresh.png"));
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
   }
