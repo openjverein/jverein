@@ -20,7 +20,6 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.MitgliedstypAction;
 import de.jost_net.JVerein.gui.menu.MitgliedstypMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MitgliedstypDetailView;
@@ -121,7 +120,7 @@ public class MitgliedstypControl extends VorZurueckControl
     DBIterator<Mitgliedstyp> mtIt = service.createList(Mitgliedstyp.class);
     mtIt.setOrder("ORDER BY " + Mitgliedstyp.BEZEICHNUNG);
 
-    mitgliedstypList = new JVereinTablePart(mtIt, new MitgliedstypAction());
+    mitgliedstypList = new JVereinTablePart(mtIt, null);
     mitgliedstypList.addColumn("Bezeichnung", Mitgliedstyp.BEZEICHNUNG);
     mitgliedstypList.addColumn("Bezeichnung Plural",
         Mitgliedstyp.BEZEICHNUNG_PLURAL);
