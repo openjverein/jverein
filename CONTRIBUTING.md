@@ -65,7 +65,7 @@ Standard Buttons: Speichern, Speichern und neu, Hilfe, Neu ==========> Input und
 ### gui.view
 extends AbstractView oder AbstractDetailView (überwacht Verlassen ohne Speichern)
 
-Enthält die Anordnung von Inputelementen, Parts, Buttons. Wirklich nur die Anordnung ohne Actions etc.
+Enthält die Anordnung von Inputelementen, Parts, Buttons. Innerhalb der View soll sich ausschließlich auf die Anordnung der GUI Elementen fokussiert werden können, daher sind hier keine Actions etc. enthalten
 Fehler werden nur als Exception geworfen und ggf. geloggt (Logger.debug()/info()/error()), nicht direkt in der GUI angezeigt
 
 ### gui.control
@@ -76,15 +76,15 @@ Für jedes Input, Part, Button eine get Funktion.
 getOBJECT() zum holen des DBObjects (ruft getCurrentObject() auf und castet nach OBJECT)
 fill() zum füllen der Daten aus den Inputs in das Object
 handleStore() speichert die gefüllten Daten -> Impl->store()
-Möglichst keine weiteren public funktionen
+Es sollen keine weiteren public Funktionen implementiert werden
 Fehler werden nur per Exception behandelt, keine direkte Ausgabe, das ist Aufgabe der Actions
-Möglichst keine direkten SQL abfragen, diese sollten nach server.
+SQL-Abfragen werden in server definiert
 Enthält Listener (Mehrfachverwendete in gui.control.listener)
 
 ### server
 extends AbstractDBObject oder AbstractJVereinDBObject (zur bereitstellung einer public isChanged() funktion)
 
-Fachobjecte.
+Dieses Package enthält alle Fachobjekte.
 Hier wird alles was direkt mit der DB zu tun hat implementiert.
 In den anderen KLssen sollte möglichst nur über diese DBObjecte auf die DB zugegriffen werden, keine direkten SQL Queries.
 Alle getter und Setter der DB Attribute
