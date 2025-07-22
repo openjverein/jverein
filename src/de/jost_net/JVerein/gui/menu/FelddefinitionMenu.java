@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.FelddefinitionDeleteAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.ZusatzfeldDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -32,10 +33,10 @@ public class FelddefinitionMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Beitragsgruppen.
    */
-  public FelddefinitionMenu()
+  public FelddefinitionMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(ZusatzfeldDetailView.class),
+        new EditAction(ZusatzfeldDetailView.class, part),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new FelddefinitionDeleteAction(), "user-trash-full.png"));

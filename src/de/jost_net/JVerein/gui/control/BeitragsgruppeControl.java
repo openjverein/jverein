@@ -38,6 +38,7 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BeitragsgruppeMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeDetailView;
 import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
@@ -51,7 +52,6 @@ import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.VonBis;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
@@ -68,14 +68,14 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BeitragsgruppeControl extends AbstractControl
+public class BeitragsgruppeControl extends VorZurueckControl
     implements Savable
 {
   private Input[] alterstaffel;
   
   private CheckboxInput isAltersstaffel;
 
-  private TablePart beitragsgruppeList;
+  private JVereinTablePart beitragsgruppeList;
 
   private Input bezeichnung;
 
@@ -532,8 +532,7 @@ public class BeitragsgruppeControl extends AbstractControl
     DBService service = Einstellungen.getDBService();
     DBIterator<Beitragsgruppe> beitragsgruppen = service
         .createList(Beitragsgruppe.class);
-    beitragsgruppeList = new TablePart(beitragsgruppen,
-        new EditAction(BeitragsgruppeDetailView.class));
+    beitragsgruppeList = new JVereinTablePart(beitragsgruppen, null);
     beitragsgruppeList.addColumn("Bezeichnung", "bezeichnung");
     switch (Beitragsmodel
         .getByKey((Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
@@ -603,7 +602,8 @@ public class BeitragsgruppeControl extends AbstractControl
           }
     });
     beitragsgruppeList.addColumn("Notiz", "notiz", new NotizFormatter(40));
-    beitragsgruppeList.setContextMenu(new BeitragsgruppeMenu());
+    beitragsgruppeList
+        .setContextMenu(new BeitragsgruppeMenu(beitragsgruppeList));
     beitragsgruppeList.setFormatter(new TableFormatter() {
       @Override
       public void format(TableItem item)
@@ -634,6 +634,9 @@ public class BeitragsgruppeControl extends AbstractControl
         }
       }
     });
+    beitragsgruppeList.setAction(
+        new EditAction(BeitragsgruppeDetailView.class, beitragsgruppeList));
+    VorZurueckControl.setObjektListe(null, null);
     return beitragsgruppeList;
   }
 }

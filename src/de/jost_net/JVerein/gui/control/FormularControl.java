@@ -30,6 +30,7 @@ import de.jost_net.JVerein.gui.formatter.FormularLinkFormatter;
 import de.jost_net.JVerein.gui.formatter.FormularartFormatter;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.menu.FormularMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.FormularDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
@@ -44,7 +45,6 @@ import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -55,7 +55,7 @@ public class FormularControl extends FormularPartControl
 
   private de.willuhn.jameica.system.Settings settings;
 
-  private TablePart formularList;
+  private JVereinTablePart formularList;
 
   private TextInput bezeichnung;
 
@@ -273,8 +273,7 @@ public class FormularControl extends FormularPartControl
     DBIterator<Formular> formulare = service.createList(Formular.class);
     formulare.setOrder("ORDER BY art, bezeichnung");
 
-    formularList = new TablePart(formulare,
-        new EditAction(FormularDetailView.class));
+    formularList = new JVereinTablePart(formulare, null);
     formularList.addColumn("Bezeichnung", "bezeichnung");
     formularList.addColumn("Art", "art", new FormularartFormatter(), false,
         Column.ALIGN_LEFT);
@@ -282,10 +281,13 @@ public class FormularControl extends FormularPartControl
     formularList.addColumn("Verknüpft mit", "formlink",
         new FormularLinkFormatter());
     formularList.setRememberColWidths(true);
-    formularList.setContextMenu(new FormularMenu(this));
+    formularList.setContextMenu(new FormularMenu(this, formularList));
     formularList.setRememberOrder(true);
     formularList.removeFeature(FeatureSummary.class);
     formularList.setMulti(true);
+    formularList
+        .setAction(new EditAction(FormularDetailView.class, formularList));
+    VorZurueckControl.setObjektListe(null, null);
     return formularList;
   }
 

@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.DatentypFormatter;
 import de.jost_net.JVerein.gui.menu.FelddefinitionMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.ZusatzfeldDetailView;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Felddefinition;
@@ -34,7 +35,6 @@ import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
@@ -45,11 +45,11 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FelddefinitionControl extends AbstractControl
+public class FelddefinitionControl extends VorZurueckControl
     implements Savable
 {
 
-  private TablePart felddefinitionList;
+  private JVereinTablePart felddefinitionList;
 
   private Input name;
 
@@ -162,14 +162,17 @@ public class FelddefinitionControl extends AbstractControl
     }
     DBService service = Einstellungen.getDBService();
     DBIterator<Felddefinition> fdef = service.createList(Felddefinition.class);
-    felddefinitionList = new TablePart(fdef,
-        new EditAction(ZusatzfeldDetailView.class));
+    felddefinitionList = new JVereinTablePart(fdef, null);
     felddefinitionList.addColumn("Name", "name");
     felddefinitionList.addColumn("Label", "label");
     felddefinitionList.addColumn("Datentyp", "datentyp",
         new DatentypFormatter(), false, Column.ALIGN_LEFT);
     felddefinitionList.addColumn("Länge", "laenge");
-    felddefinitionList.setContextMenu(new FelddefinitionMenu());
+    felddefinitionList
+        .setContextMenu(new FelddefinitionMenu(felddefinitionList));
+    felddefinitionList.setAction(
+        new EditAction(ZusatzfeldDetailView.class, felddefinitionList));
+    VorZurueckControl.setObjektListe(null, null);
     return felddefinitionList;
   }
 
