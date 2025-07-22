@@ -1991,7 +1991,7 @@ public class BuchungsControl extends VorZurueckControl
     this.changeKontoListener.add(listener);
   }
 
-  public boolean isBuchungAbgeschlossen() throws ApplicationException
+  public boolean isBuchungEditable() throws ApplicationException
   {
     try
     {
@@ -2003,14 +2003,21 @@ public class BuchungsControl extends VorZurueckControl
           GUI.getStatusBar().setErrorText(String.format(
               "Buchung wurde bereits am %s von %s abgeschlossen.",
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
-          return true;
+          return false;
         }
         Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
         if(spb != null)
         {
           GUI.getStatusBar().setErrorText(
               "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
-          return true;
+          return false;
+        }
+        // Aufruf einer Splitbuchung aus Vor Zurueck
+        if (getBuchung().getSpeicherung() && getBuchung().getSplitId() != null)
+        {
+          GUI.getStatusBar().setErrorText(
+              "Buchung kann nicht bearbeitet werden. Sie ist einer Splitbuchung zugeordnet.");
+          return false;
         }
       }
     }
@@ -2019,7 +2026,7 @@ public class BuchungsControl extends VorZurueckControl
       throw new ApplicationException(
           "Status der aktuellen Buchung kann nicht geprüft werden.", e);
     }
-    return false;
+    return true;
   }
   
   public boolean isSplitBuchungAbgeschlossen() throws ApplicationException

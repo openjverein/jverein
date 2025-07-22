@@ -71,10 +71,7 @@ public class BuchungAction implements Action
           LinkedList<Long> objektListe = new LinkedList<>();
           for (Buchung bu : (List<Buchung>) part.getItems(false))
           {
-            if (bu.getSplitId() == null)
-            {
-              objektListe.add(Long.valueOf(bu.getID()));
-            }
+            objektListe.add(Long.valueOf(bu.getID()));
           }
           VorZurueckControl.setObjektListe(BuchungImpl.class, objektListe);
         }
