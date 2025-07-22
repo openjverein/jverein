@@ -257,7 +257,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
     it.addGroupBy("steuerbuchungsart.art");
     it.addGroupBy("steuer.name");
 
-    it.setOrder("ORDER BY buchungsart.art, steuerbuchungsart.art, steuer.id");
+    it.setOrder("ORDER BY steuerbuchungsart.art, steuer.id");
 
     return it;
   }
