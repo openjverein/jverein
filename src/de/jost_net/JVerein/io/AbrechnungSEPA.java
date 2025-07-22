@@ -1283,7 +1283,7 @@ public class AbrechnungSEPA
 
   private Konto getKonto() throws RemoteException, ApplicationException
   {
-    if ((Boolean) Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID) == null)
+    if (Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID) == null)
     {
       throw new ApplicationException(
           "Verrechnungskonto nicht gesetzt. Unter Administration->Einstellungen->Abrechnung erfassen.");
