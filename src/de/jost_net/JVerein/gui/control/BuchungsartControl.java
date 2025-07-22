@@ -34,6 +34,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BuchungsartMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.BuchungsartDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
@@ -61,7 +62,6 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -72,7 +72,7 @@ import de.willuhn.util.ProgressMonitor;
 public class BuchungsartControl extends FilterControl
     implements Savable
 {
-  private TablePart buchungsartList;
+  private JVereinTablePart buchungsartList;
 
   private IntegerInput nummer;
 
@@ -371,8 +371,7 @@ public class BuchungsartControl extends FilterControl
   {
     if (buchungsartList == null)
     {
-      buchungsartList = new TablePart(getBuchungsarten(),
-          new EditAction(BuchungsartDetailView.class));
+      buchungsartList = new JVereinTablePart(getBuchungsarten(), null);
       buchungsartList.addColumn("Nummer", "nummer");
       buchungsartList.addColumn("Bezeichnung", "bezeichnung");
       buchungsartList.addColumn("Art", "art", new Formatter()
@@ -431,12 +430,15 @@ public class BuchungsartControl extends FilterControl
         }
       }, false, Column.ALIGN_LEFT);
       buchungsartList.addColumn("Suchtext", "suchbegriff");
-      buchungsartList.setContextMenu(new BuchungsartMenu());
+      buchungsartList.setContextMenu(new BuchungsartMenu(buchungsartList));
       buchungsartList.setMulti(true);
       buchungsartList.setRememberColWidths(true);
       buchungsartList.setRememberOrder(true);
       buchungsartList.setRememberState(true);
       buchungsartList.addFeature(new FeatureSummary());
+      buchungsartList.setAction(
+          new EditAction(BuchungsartDetailView.class, buchungsartList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {

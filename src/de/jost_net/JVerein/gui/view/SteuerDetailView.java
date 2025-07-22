@@ -43,6 +43,9 @@ public class SteuerDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.STEUER, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.addButton("Speichern", e -> {
       control.handleStore();
       GUI.getStatusBar().setSuccessText("Steuer gespeichert");

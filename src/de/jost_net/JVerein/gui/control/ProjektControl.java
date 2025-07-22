@@ -22,6 +22,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.ProjektMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.ProjektDetailView;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Projekt;
@@ -33,7 +34,6 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -42,7 +42,7 @@ public class ProjektControl extends FilterControl
     implements Savable
 {
 
-  private TablePart projektList;
+  private JVereinTablePart projektList;
 
   private Input bezeichnung;
 
@@ -149,17 +149,18 @@ public class ProjektControl extends FilterControl
     {
       return projektList;
     }
-    projektList = new TablePart(getProjekte(),
-        new EditAction(ProjektDetailView.class));
+    projektList = new JVereinTablePart(getProjekte(), null);
     projektList.addColumn("Bezeichnung", "bezeichnung");
     projektList.addColumn("Startdatum", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     projektList.addColumn("Endedatum", "endedatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    projektList.setContextMenu(new ProjektMenu());
+    projektList.setContextMenu(new ProjektMenu(projektList));
     projektList.setRememberColWidths(true);
     projektList.setRememberOrder(true);
     projektList.addFeature(new FeatureSummary());
+    projektList.setAction(new EditAction(ProjektDetailView.class, projektList));
+    VorZurueckControl.setObjektListe(null, null);
     return projektList;
   }
 

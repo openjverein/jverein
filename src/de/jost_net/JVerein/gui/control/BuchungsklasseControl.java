@@ -21,28 +21,27 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.BuchungsklasseMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.BuchungsklasseDetailView;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsklasseControl extends AbstractControl
+public class BuchungsklasseControl extends VorZurueckControl
     implements Savable
 {
   private de.willuhn.jameica.system.Settings settings;
 
-  private TablePart buchungsklassenList;
+  private JVereinTablePart buchungsklassenList;
 
   private IntegerInput nummer;
 
@@ -127,14 +126,17 @@ public class BuchungsklasseControl extends AbstractControl
     buchungsklassen.addFilter("nummer >= 0");
     buchungsklassen.setOrder("ORDER BY nummer");
 
-    buchungsklassenList = new TablePart(buchungsklassen,
-        new EditAction(BuchungsklasseDetailView.class));
+    buchungsklassenList = new JVereinTablePart(buchungsklassen, null);
     buchungsklassenList.addColumn("Nummer", "nummer");
     buchungsklassenList.addColumn("Bezeichnung", "bezeichnung");
-    buchungsklassenList.setContextMenu(new BuchungsklasseMenu());
+    buchungsklassenList
+        .setContextMenu(new BuchungsklasseMenu(buchungsklassenList));
     buchungsklassenList.setRememberColWidths(true);
     buchungsklassenList.setRememberOrder(true);
     buchungsklassenList.addFeature(new FeatureSummary());
+    buchungsklassenList.setAction(
+        new EditAction(BuchungsklasseDetailView.class, buchungsklassenList));
+    VorZurueckControl.setObjektListe(null, null);
     return buchungsklassenList;
   }
 }
