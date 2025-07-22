@@ -34,7 +34,7 @@ public class MailVorlageListeView extends AbstractView
 
     MailVorlageControl control = new MailVorlageControl(this);
 
-    control.getMailVorlageTable().paint(this.getParent());
+    control.getMailVorlageTable(null).paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
