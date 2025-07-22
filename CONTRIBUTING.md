@@ -56,7 +56,7 @@ Für die Verwendung von IntelliJ folge diesen Schritten:
 
 
 # Code Struktur
-Der Code von JVerein ist in folgende Packages gegliedert.
+Der Code von JVerein ist in folgende Pakete gegliedert.
 
 Fehlerausgabe in Action, io, control
 Standard Buttons: Speichern, Speichern und neu, Hilfe, Neu ==========> Input und Action erstellen
@@ -71,24 +71,24 @@ Fehler werden nur als Exception geworfen und ggf. geloggt (Logger.debug()/info()
 ### gui.control
 extends AbstracControl, AbstractJVereinControl (für Überwachung vonn Verllassen ohne Speichern), FilterControl (Liste mit Filtermöglichkeiten), DruckMailControl (Mailversand), SaldoControl, ForumlarPartControl
 
-Enthält alle Inputelemente mit initialisierng
+Enthält alle Inputelemente mit Initialisierung
 Für jedes Input, Part, Button eine get Funktion.
 getOBJECT() zum holen des DBObjects (ruft getCurrentObject() auf und castet nach OBJECT)
-fill() zum füllen der Daten aus den Inputs in das Object
+prepareStore() zum Füllen der Daten aus den Inputs in das Objekt
 handleStore() speichert die gefüllten Daten -> Impl->store()
 Es sollen keine weiteren public Funktionen implementiert werden
 Fehler werden nur per Exception behandelt, keine direkte Ausgabe, das ist Aufgabe der Actions
 SQL-Abfragen werden in server definiert
-Enthält Listener (Mehrfachverwendete in gui.control.listener)
+Enthält listener (Mehrfachverwendete in gui.control.listener)
 
 ### server
-extends AbstractDBObject oder AbstractJVereinDBObject (zur bereitstellung einer public isChanged() funktion)
+extends AbstractDBObject, AbstractJVereinDBObject (zur Bereitstellung einer public isChanged() Funktion)
 
 Dieses Package enthält alle Fachobjekte.
 Hier wird alles was direkt mit der DB zu tun hat implementiert.
-In den anderen KLssen sollte möglichst nur über diese DBObjecte auf die DB zugegriffen werden, keine direkten SQL Queries.
-Alle getter und Setter der DB Attribute
-deleteCheck(), insertCheck(), updateCheck() zum testen der eingegebenen Daten. Das sollte nur hier erfolgen und nicht im Control oder Action. throws ApplicationException
+In den anderen Klassen sollte nur über das "DBObject" auf die DB zugegriffen werden.
+Alle Getter und Setter der DB Attribute
+deleteCheck(), insertCheck(), updateCheck() zum Testen der eingegebenen Daten. Das sollte nur hier erfolgen und nicht im Control oder Action. throws ApplicationException
 getForeignObject() für Fremdschlüssel
 ggf. weiter DBIterator etc.
 ggf. refresh()
@@ -105,7 +105,7 @@ Keine Behandlung von Actions etc. das wir alles von den Actions erledigt
 implements Action
 Aktionen die beim Kick auf Menüeinträge und Buttons ausgeführt werden.
 Aufruf von Views, handleStore(), doExport() etc.
-Nicht die Behandlung der Aktion sofern sie auswirkungen außerhalb der GUI hat (Also nicht direkte SQL Queries ausführen sondern die entsprechenden Funktionen der Impl aufrufen)
+Nicht die Behandlung der Aktion sofern sie Auswirkungen außerhalb der GUI hat. Also nicht direkte SQL Abfragen ausführen, sondern die entsprechenden Funktionen der Impl aufrufen.
 Fehlermeldungen werden durch diese Klassen aufgefangen und ausgegeben.
 
 ### io
@@ -118,7 +118,7 @@ Hier keine GUI ausgabe, so dass auch ein Betrieb ohne GUI möglich wäre. Fehler
 Einträge, die im Jameica Kalender erscheinen sollen
 
 ### DBTools
-zzT. nur Transaction
+Zur Zeit nur Transaction
 
 ### keys
 Konstanten für Arten von Eigenschaften, zB. Formulararten, Kontoarten.
@@ -127,7 +127,7 @@ Konstanten für Arten von Eigenschaften, zB. Formulararten, Kontoarten.
 Messages und globale MessageConsumer.
 
 ### Queries
-Ausgelagerte, umfangreiche SQL-Queries (die an mehreren stellen benötigt werden).
+Ausgelagerte, umfangreiche SQL-Queries (die an mehreren Stellen benötigt werden).
 
 ### rmi
 Interfaces der Fachobjekte.
@@ -136,22 +136,22 @@ Interfaces der Fachobjekte.
 Objecte die bei der Jameica Suche gefunden werden sollen.
 
 ### server.DDLTOOL
-Tools zum erstellen un Bearbeiten der DBSpalten und Tabellen.
+Tools zum Erstellen un Bearbeiten der Datenbank-Spalten und Tabellen.
 
 ### server.DDLTool.Updates
-DB Updatescripte in der Form UpdateXXXX.
+Datenbank Updatescripte in der Form UpdateXXXX.
 
 ### server.Tools
 ===>verschieben
 
 ### util
-Hilfsfunktionen die nichts mit der gui zu tun haben
+Hilfsfunktionen die nichts mit der GUI zu tun haben.
 
 ### Variable
-Maps die für Variablen in Mails, Pdfs, Abrechnung etc. verwendet werden
+Maps die für Variablen in Mails, PDF, Abrechnung etc. verwendet werden.
 
 ## gui
-Alles was hier ist, ist ausschlieslich für die GUI, ein Serverbetrieb muss auch ohne diese Klassen auskommen!
+Alles was hier ist, ist ausschlieslich für die GUI. Ein Serverbetrieb muss auch ohne diese Klassen auskommen.
 
 
 ### gui.boxes
@@ -172,10 +172,9 @@ Mehrfach verwendete Inputs.
 MyExtension: Die Navigation links mit allen Einträgen.
 
 ### gui.parts
-extends Part, TablePart, TreePart
+extends Part, TablePart, TreePart, JVereinTablePart für die Unterstützung der Vor und Zurück Buttons.
 
 Vorgefertigte Tabellen, Trees etc.
 
 ### gui.util
-Werkzeuge für die GUI
-
+Werkzeuge für die GUI.
