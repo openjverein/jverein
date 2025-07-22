@@ -24,6 +24,7 @@ import de.jost_net.JVerein.gui.action.AbrechnungslaufAbschliessenAction;
 import de.jost_net.JVerein.gui.action.AbrechnungslaufDeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.PreNotificationAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufSollbuchungListeView;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufDetailView;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
@@ -42,10 +43,10 @@ public class AbrechnungslaufMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Abrechnungläufe
    */
-  public AbrechnungslaufMenu()
+  public AbrechnungslaufMenu(JVereinTablePart part)
   {
     addItem(new ContextMenuItem("Bearbeiten",
-        new EditAction(AbrechnungslaufDetailView.class),
+        new EditAction(AbrechnungslaufDetailView.class, part),
         "text-x-generic.png"));
     addItem(new ContextMenuItem("Sollbuchungen",
         new EditAction(AbrechnungslaufSollbuchungListeView.class),

@@ -27,6 +27,7 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.AbrechnungsmodusFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.AbrechnungslaufMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufDetailView;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
@@ -44,7 +45,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -55,7 +55,7 @@ public class AbrechnungslaufControl extends FilterControl
 
   private Abrechnungslauf abrl;
 
-  private TablePart abrechnungslaufList;
+  private JVereinTablePart abrechnungslaufList;
 
   private LabelInput datum;
 
@@ -360,7 +360,7 @@ public class AbrechnungslaufControl extends FilterControl
 
     if (abrechnungslaufList == null)
     {
-      abrechnungslaufList = new TablePart(abrechnungslaeufe,
+      abrechnungslaufList = new JVereinTablePart(abrechnungslaeufe,
           new EditAction(AbrechnungslaufDetailView.class));
       abrechnungslaufList.addColumn("Nr", "nr");
       abrechnungslaufList.addColumn("Datum", "datum",
@@ -386,10 +386,14 @@ public class AbrechnungslaufControl extends FilterControl
         abrechnungslaufList.addColumn("Kursteilnehmer", "kursteilnehmer",
             new JaNeinFormatter());
       }
-      abrechnungslaufList.setContextMenu(new AbrechnungslaufMenu());
+      abrechnungslaufList
+          .setContextMenu(new AbrechnungslaufMenu(abrechnungslaufList));
       abrechnungslaufList.setRememberColWidths(true);
       abrechnungslaufList.setRememberOrder(true);
       abrechnungslaufList.addFeature(new FeatureSummary());
+      abrechnungslaufList.setAction(
+          new EditAction(AbrechnungslaufDetailView.class, abrechnungslaufList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {

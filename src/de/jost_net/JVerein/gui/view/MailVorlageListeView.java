@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
 import de.jost_net.JVerein.rmi.MailVorlage;
@@ -35,8 +34,7 @@ public class MailVorlageListeView extends AbstractView
 
     MailVorlageControl control = new MailVorlageControl(this);
 
-    control.getMailVorlageTable(new EditAction(MailVorlageDetailView.class))
-        .paint(this.getParent());
+    control.getMailVorlageTable().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

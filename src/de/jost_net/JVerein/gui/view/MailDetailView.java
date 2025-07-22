@@ -174,6 +174,9 @@ public class MailDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAIL, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.addButton(
         new Button("Mail-Vorlage", new MailVorlageZuweisenAction(), control,
             false, "view-refresh.png"));

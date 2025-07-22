@@ -19,25 +19,26 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.MailVorlageMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.MailVorlageDetailView;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailVorlageControl extends AbstractControl
+public class MailVorlageControl extends VorZurueckControl
     implements Savable, IMailControl
 {
 
-  private TablePart mailvorlageList;
+  private JVereinTablePart mailvorlageList;
 
   private TextInput betreff;
 
@@ -138,7 +139,7 @@ public class MailVorlageControl extends AbstractControl
     }
   }
 
-  public TablePart getMailVorlageTable(Action action) throws RemoteException
+  public TablePart getMailVorlageTable() throws RemoteException
   {
     if (mailvorlageList != null)
     {
@@ -146,9 +147,13 @@ public class MailVorlageControl extends AbstractControl
     }
     DBService service = Einstellungen.getDBService();
     DBIterator<MailVorlage> fdef = service.createList(MailVorlage.class);
-    mailvorlageList = new TablePart(fdef, action);
+    mailvorlageList = new JVereinTablePart(fdef, null);
     mailvorlageList.addColumn("Betreff", "betreff");
-    mailvorlageList.setContextMenu(new MailVorlageMenu());
+    mailvorlageList.setContextMenu(new MailVorlageMenu(mailvorlageList));
+    mailvorlageList
+        .setAction(
+            new EditAction(MailVorlageDetailView.class, mailvorlageList));
+    VorZurueckControl.setObjektListe(null, null);
     return mailvorlageList;
   }
 }

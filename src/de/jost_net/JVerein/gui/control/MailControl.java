@@ -28,12 +28,14 @@ import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.MailDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailEmpfaengerMenu;
 import de.jost_net.JVerein.gui.menu.MailMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.util.EvalMail;
+import de.jost_net.JVerein.gui.view.MailDetailView;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mail;
@@ -77,7 +79,7 @@ public class MailControl extends FilterControl
 
   private Mail mail;
 
-  private TablePart mailsList;
+  private JVereinTablePart mailsList;
 
   public MailControl(AbstractView view)
   {
@@ -629,7 +631,7 @@ public class MailControl extends FilterControl
     {
       return mailsList;
     }
-    mailsList = new TablePart(getMails(), new MailDetailAction());
+    mailsList = new JVereinTablePart(getMails(), null);
     mailsList.addColumn("Nr", "id-int");
     mailsList.addColumn("Betreff", "betreff");
     mailsList.addColumn("Bearbeitung", "bearbeitung",
@@ -637,9 +639,11 @@ public class MailControl extends FilterControl
     mailsList.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatDATETIME()));
     mailsList.setRememberColWidths(true);
-    mailsList.setContextMenu(new MailMenu());
+    mailsList.setContextMenu(new MailMenu(mailsList));
     mailsList.setMulti(true);
     mailsList.setRememberOrder(true);
+    mailsList.setAction(new EditAction(MailDetailView.class, mailsList));
+    VorZurueckControl.setObjektListe(null, null);
     return mailsList;
   }
 
