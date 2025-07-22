@@ -239,7 +239,8 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
     it.addFilter("konto.kontoart != ?", Kontoart.ANLAGE.getKey());
 
     // Steuerfrei Buchungen nur Einnahmen und Umbuchungen auf Bankkonten
-    it.addFilter("steuerbuchungsart.art IS NOT NULL OR buchungsart.art != ?",
+    it.addFilter(
+        "steuerbuchungsart.art IS NOT NULL OR (buchungsart.art != ? AND buchung.betrag > 0)",
         ArtBuchungsart.AUSGABE);
 
     if (steuerInBuchung)
