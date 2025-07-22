@@ -446,6 +446,12 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       it.addGroupBy("buchungsart.buchungsklasse");
     }
     it.addGroupBy("buchungsart.id");
+    it.addGroupBy("buchungsklasse.bezeichnung");
+    it.addGroupBy("buchungsklasse.nummer");
+    it.addGroupBy("buchungsart.bezeichnung");
+    it.addGroupBy("buchungsart.art");
+    it.addGroupBy("buchungsart.status");
+    it.addGroupBy("buchungsart.nummer");
     // Ggf. Buchungsarten ausblenden
     if (unterdrueckung)
     {

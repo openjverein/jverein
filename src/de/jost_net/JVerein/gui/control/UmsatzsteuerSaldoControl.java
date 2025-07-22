@@ -39,11 +39,6 @@ import de.willuhn.util.ApplicationException;
 public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
 {
   /**
-   * Die Art der Buchung: Einnahme (0), Ausgabe (1), Umbuchung (2)
-   */
-  protected static final String ARTBUCHUNGSART = "art";
-
-  /**
    * Die Summe
    */
   public static final String SUMME = "summe";
@@ -206,7 +201,6 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
         "buchungsart");
     it.addColumn("steuer.name as " + STEUER);
-    it.addColumn("buchungsart.art as " + ARTBUCHUNGSART);
     it.addColumn("steuerbuchungsart.art as " + ARTSTEUERBUCHUNGSART);
     it.addColumn("COUNT(buchung.id) as " + ANZAHL);
 
@@ -260,6 +254,8 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
         "steuer.buchungsart = steuerbuchungsart.id");
 
     it.addGroupBy("steuer.id");
+    it.addGroupBy("steuerbuchungsart.art");
+    it.addGroupBy("steuer.name");
 
     it.setOrder("ORDER BY buchungsart.art, steuerbuchungsart.art, steuer.id");
 

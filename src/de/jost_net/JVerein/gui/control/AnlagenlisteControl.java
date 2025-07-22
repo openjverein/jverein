@@ -206,6 +206,16 @@ public class AnlagenlisteControl extends AbstractSaldoControl
     it.addGroupBy("konto.id");
     it.addGroupBy("konto.anlagenart");
     it.addGroupBy("konto.anlagenklasse");
+    it.addGroupBy("konto.bezeichnung");
+    it.addGroupBy("konto.nutzungsdauer");
+    it.addGroupBy("konto.anschaffung");
+    it.addGroupBy("konto.betrag");
+    it.addGroupBy("buchungsart.bezeichnung");
+    it.addGroupBy("buchungsart.nummer");
+    it.addGroupBy("buchungsklasse.bezeichnung");
+    it.addGroupBy("buchungsklasse.nummer");
+    it.addGroupBy("afaart.bezeichnung");
+    it.addGroupBy("afaart.nummer");
 
     return it;
   }

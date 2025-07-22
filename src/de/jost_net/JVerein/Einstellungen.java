@@ -286,7 +286,7 @@ public class Einstellungen
     UNTERSCHRIFT("unterschrift", String.class, ""),
 
     // Buchführung
-    BEGINNGESCHAEFTSJAHR("beginngeschaeftsjahr", String.class, "01.01"),
+    BEGINNGESCHAEFTSJAHR("beginngeschaeftsjahr", String.class, "01.01."),
     UNTERDRUECKUNGKONTEN("unterdrueckungkonten", Integer.class, "2"),
     UNTERDRUECKUNGLAENGE("unterdrueckunglaenge", Integer.class, "0"),
     AFARESTWERT("afarestwert", Double.class, "1"),
