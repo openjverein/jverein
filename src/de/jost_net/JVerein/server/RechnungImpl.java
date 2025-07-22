@@ -407,6 +407,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
     setIBAN(mitglied.getIban());
     setZahlungsweg(sollb.getZahlungsweg());
     setBetrag(sollb.getBetrag());
+    setKommentar("");
   }
 
   @Override
