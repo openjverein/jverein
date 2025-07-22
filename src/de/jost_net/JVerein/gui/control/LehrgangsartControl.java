@@ -22,30 +22,29 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.LehrgangsartMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LehrgangsartDetailView;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangsartControl extends AbstractControl
+public class LehrgangsartControl extends VorZurueckControl
     implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
 
-  private TablePart lehrgangsartList;
+  private JVereinTablePart lehrgangsartList;
 
   private TextInput bezeichnung;
 
@@ -171,8 +170,7 @@ public class LehrgangsartControl extends AbstractControl
         .createList(Lehrgangsart.class);
     lehrgangsarten.setOrder("ORDER BY bezeichnung");
 
-    lehrgangsartList = new TablePart(lehrgangsarten,
-        new EditAction(LehrgangsartDetailView.class));
+    lehrgangsartList = new JVereinTablePart(lehrgangsarten, null);
     lehrgangsartList.addColumn("Bezeichnung", "bezeichnung");
     lehrgangsartList.addColumn("Von/am", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -180,9 +178,12 @@ public class LehrgangsartControl extends AbstractControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgangsartList.addColumn("Veranstalter", "veranstalter");
     lehrgangsartList.setRememberColWidths(true);
-    lehrgangsartList.setContextMenu(new LehrgangsartMenu());
+    lehrgangsartList.setContextMenu(new LehrgangsartMenu(lehrgangsartList));
     lehrgangsartList.setRememberOrder(true);
     lehrgangsartList.removeFeature(FeatureSummary.class);
+    lehrgangsartList.setAction(
+        new EditAction(LehrgangsartDetailView.class, lehrgangsartList));
+    VorZurueckControl.setObjektListe(null, null);
     return lehrgangsartList;
   }
 

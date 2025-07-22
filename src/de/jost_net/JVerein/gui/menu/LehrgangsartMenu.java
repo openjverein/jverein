@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.LehrgangsartDeleteAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LehrgangsartDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -32,10 +33,10 @@ public class LehrgangsartMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Lehrgangsarten.
    */
-  public LehrgangsartMenu()
+  public LehrgangsartMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(LehrgangsartDetailView.class),
+        new EditAction(LehrgangsartDetailView.class, part),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new LehrgangsartDeleteAction(), "user-trash-full.png"));
