@@ -95,7 +95,7 @@ public class Reporter
 
   public static Font getFreeSansBold(float size, BaseColor color)
   {
-    return FontFactory.getFont("/fonts/FreeSansBold.ttf", BaseFont.IDENTITY_H,
+    return FontFactory.getFont("/fonts/FreeSans-Bold.ttf", BaseFont.IDENTITY_H,
         size, Font.UNDEFINED, color);
   }
 

@@ -2,6 +2,7 @@
         xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="https://www.willuhn.de/schema/jameica-plugin https://www.willuhn.de/schema/jameica-plugin-1.5.xsd"
         name="jverein" version="3.1.2" class="de.jost_net.JVerein.JVereinPlugin">
+>>>>>>> refs/remotes/origin/master
 
   <description>OpenSource-Vereinsverwaltung</description>
   <url>https://openjverein.github.io/jameica-repository/[PLUGIN_ZIP]</url>
