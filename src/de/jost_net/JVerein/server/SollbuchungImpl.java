@@ -285,7 +285,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   @Override
   public void setBetrag(Double d) throws RemoteException
   {
-    setAttribute(BETRAG, d);
+    setAttribute(BETRAG, Math.round(d * 100) / 100d);
   }
 
   @Override
