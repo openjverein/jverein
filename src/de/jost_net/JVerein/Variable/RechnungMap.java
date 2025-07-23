@@ -231,7 +231,7 @@ public class RechnungMap extends AbstractMap
           new String[] { "(19%)", "(0%)" });
       map.put(RechnungVar.STEUERBETRAG.getName(), new Double[] { 1.6d, 0d });
       map.put(RechnungVar.BETRAG.getName(),
-          new Double[] { 10d, 13.8d, 1.6d, null, 23.8d });
+          new Double[] { 10d, 13.8d, null, 1.6d, 23.8d });
     }
     else
     {
