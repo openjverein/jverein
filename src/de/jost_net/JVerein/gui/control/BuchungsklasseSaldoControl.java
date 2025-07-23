@@ -155,7 +155,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       PseudoDBObject o = it.next();
 
       String klasse = (String) o.getAttribute(BUCHUNGSKLASSE);
-      if (klasse == null)
+      if (klasse == null || klasse.equals(" - ") || klasse.equals(" ()"))
       {
         klasse = "Nicht zugeordnet";
       }
