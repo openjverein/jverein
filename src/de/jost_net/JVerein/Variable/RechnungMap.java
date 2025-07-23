@@ -33,7 +33,6 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.StringTool;
-import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 
 public class RechnungMap extends AbstractMap
 {
@@ -67,7 +66,6 @@ public class RechnungMap extends AbstractMap
     HashMap<Double, Double> steuerBetragMap = new HashMap<>();
 
     DecimalFormat format = new DecimalFormat("0.##");
-    CurrencyFormatter formatter = new CurrencyFormatter("%", format);
     double summe = 0;
     for (SollbuchungPosition sp : re.getSollbuchungPositionList())
     {
@@ -75,7 +73,7 @@ public class RechnungMap extends AbstractMap
       zweck.add(sp.getZweck());
       nettobetrag.add(sp.getNettobetrag());
       steuersatz.add(
-          "(" + formatter.format(sp.getSteuersatz()) + ")");
+          "(" + format.format(sp.getSteuersatz()) + "%)");
       steuerbetrag.add(sp.getSteuerbetrag());
       betrag.add(sp.getBetrag());
       summe += sp.getBetrag();
@@ -89,6 +87,11 @@ public class RechnungMap extends AbstractMap
     }
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
     {
+      if (buchungDatum.size() > 1 || steuerMap.size() > 0)
+      {
+        zweck.add("");
+        betrag.add(null);
+      }
       for (Double satz : steuerMap.keySet())
       {
         zweck.add("inkl. " + satz + "% USt.  von "
@@ -221,25 +224,25 @@ public class RechnungMap extends AbstractMap
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
     {
       map.put(RechnungVar.ZAHLUNGSGRUND.getName(),
-          new String[] { "Mitgliedsbeitrag", "Zusatzbetrag",
+          new String[] { "Mitgliedsbeitrag", "Zusatzbetrag", "",
               "inkl. 19% USt. von 10.00", "Summe" });
       map.put(RechnungVar.NETTOBETRAG.getName(), new Double[] { 8.4d, 13.8d });
       map.put(RechnungVar.STEUERSATZ.getName(),
           new String[] { "(19%)", "(0%)" });
       map.put(RechnungVar.STEUERBETRAG.getName(), new Double[] { 1.6d, 0d });
       map.put(RechnungVar.BETRAG.getName(),
-          new Double[] { 10d, 13.8d, 1.6d, 23.8d });
+          new Double[] { 10d, 13.8d, 1.6d, null, 23.8d });
     }
     else
     {
       map.put(RechnungVar.ZAHLUNGSGRUND.getName(),
-          new String[] { "Mitgliedsbeitrag", "Zusatzbetrag", "Summe" });
+          new String[] { "Mitgliedsbeitrag", "Zusatzbetrag", "", "Summe" });
       map.put(RechnungVar.NETTOBETRAG.getName(), new Double[] { 10d, 13.8d });
       map.put(RechnungVar.STEUERSATZ.getName(),
           new String[] { "(0%)", "(0%)" });
       map.put(RechnungVar.STEUERBETRAG.getName(), new Double[] { 0d, 0d });
       map.put(RechnungVar.BETRAG.getName(),
-          new Double[] { 10d, 13.8d, 23.8d });
+          new Double[] { 10d, 13.8d, null, 23.8d });
     }
     
     map.put(RechnungVar.SUMME.getName(), Double.valueOf("23.80"));
