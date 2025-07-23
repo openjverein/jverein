@@ -26,7 +26,7 @@ public interface Vorlage extends JVereinDBObject
 
   public static final String PRIMARY_ATTRIBUTE = "id";
 
-  public static final String KEY = "key";
+  public static final String KEY = "name";
 
   public static final String T_KEY = TABLE_NAME + "." + KEY;
 

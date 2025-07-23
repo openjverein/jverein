@@ -35,8 +35,8 @@ public class Update0483 extends AbstractDDLUpdate
     Column pk = new Column("id", COLTYPE.BIGINT, 10, null, true, true);
     t.add(pk);
 
-    Column key = new Column("key", COLTYPE.VARCHAR, 100, null, false, false);
-    t.add(key);
+    Column name = new Column("name", COLTYPE.VARCHAR, 100, null, false, false);
+    t.add(name);
 
     Column muster = new Column("muster", COLTYPE.VARCHAR, 1000, null, false,
         false);
@@ -46,31 +46,31 @@ public class Update0483 extends AbstractDDLUpdate
     execute(this.createTable(t));
 
     execute(
-        "INSERT into vorlage (key, muster) VALUES ('spendenbescheinigung-dateiname', 'Spendenbescheinigung-$spendenbescheinigung_spendedatum_erstes-$spendenbescheinigung_zeile2');\n");
+        "INSERT into vorlage (name, muster) VALUES ('spendenbescheinigung-dateiname', 'Spendenbescheinigung-$spendenbescheinigung_spendedatum_erstes-$spendenbescheinigung_zeile2');\n");
     execute(
-        "INSERT into vorlage (key, muster) VALUES ('spendenbescheinigung-mitglied-dateiname', 'Spendenbescheinigung-$spendenbescheinigung_spendedatum_erstes-$mitglied_name-$mitglied_vorname');\n");
+        "INSERT into vorlage (name, muster) VALUES ('spendenbescheinigung-mitglied-dateiname', 'Spendenbescheinigung-$spendenbescheinigung_spendedatum_erstes-$mitglied_name-$mitglied_vorname');\n");
     execute(
-        "INSERT into vorlage (key, muster) VALUES ('rechnung-dateiname', 'Rechnung-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (name, muster) VALUES ('rechnung-dateiname', 'Rechnung-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage (key, muster) VALUES ('rechnung-mitglied-dateiname', 'Rechnung-$rechnung_nummer-$mitglied_name-$mitglied_vorname');\n");
+        "INSERT into vorlage (name, muster) VALUES ('rechnung-mitglied-dateiname', 'Rechnung-$rechnung_nummer-$mitglied_name-$mitglied_vorname');\n");
     execute(
-        "INSERT into vorlage (key, muster) VALUES ('mahnung-dateiname', 'Mahnung-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (name, muster) VALUES ('mahnung-dateiname', 'Mahnung-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage (key, muster) VALUES ('mahnung-mitglied-dateiname', 'Mahnung-$rechnung_nummer-$mitglied_name-$mitglied_vorname');\n");
+        "INSERT into vorlage (name, muster) VALUES ('mahnung-mitglied-dateiname', 'Mahnung-$rechnung_nummer-$mitglied_name-$mitglied_vorname');\n");
     execute(
-        "INSERT into vorlage (key, muster) VALUES ('kontoauszug-dateiname', 'Kontoauszug-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (name, muster) VALUES ('kontoauszug-dateiname', 'Kontoauszug-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage (key, muster) VALUES ('kontoauszug-mitglied-dateiname', 'Kontoauszug-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (name, muster) VALUES ('kontoauszug-mitglied-dateiname', 'Kontoauszug-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage (key, muster) VALUES ('freies-formular-dateiname', '$formular_name-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (name, muster) VALUES ('freies-formular-dateiname', '$formular_name-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage (key, muster) VALUES ('freies-formular-mitglied-dateiname', '$formular_name-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (name, muster) VALUES ('freies-formular-mitglied-dateiname', '$formular_name-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage (key, muster) VALUES ('1ct-ausgabe-dateiname', '1ctueberweisung-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (name, muster) VALUES ('1ct-ausgabe-dateiname', '1ctueberweisung-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage (key, muster) VALUES ('pre-notification-dateiname', 'Prenotification-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (name, muster) VALUES ('pre-notification-dateiname', 'Prenotification-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage (key, muster) VALUES ('pre-notification-mitglied-dateiname', 'Prenotification-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (name, muster) VALUES ('pre-notification-mitglied-dateiname', 'Prenotification-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit');\n");
 
   }
 }
