@@ -85,24 +85,24 @@ public class RechnungMap extends AbstractMap
         steuerBetragMap.put(sp.getSteuersatz(), brutto + sp.getBetrag());
       }
     }
+    if (buchungDatum.size() > 1 || steuerMap.size() > 0)
+    {
+      zweck.add("");
+      betrag.add(null);
+    }
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
     {
-      if (buchungDatum.size() > 1 || steuerMap.size() > 0)
-      {
-        zweck.add("");
-        betrag.add(null);
-      }
       for (Double satz : steuerMap.keySet())
       {
         zweck.add("inkl. " + satz + "% USt.  von "
             + Einstellungen.DECIMALFORMAT.format(steuerBetragMap.get(satz)));
         betrag.add(+steuerMap.get(satz));
       }
-      if (buchungDatum.size() > 1)
-      {
-        zweck.add("Summe");
-        betrag.add(summe);
-      }
+    }
+    if (buchungDatum.size() > 1)
+    {
+      zweck.add("Summe");
+      betrag.add(summe);
     }
     map.put(RechnungVar.BUCHUNGSDATUM.getName(), buchungDatum.toArray());
     map.put(RechnungVar.MK_BUCHUNGSDATUM.getName(), buchungDatum.toArray());
