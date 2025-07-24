@@ -69,7 +69,7 @@ public class IBANListener implements Listener
     {
       return;
     }
-    String ib2 = ib.trim().toUpperCase().replace(" ","");
+    String ib2 = ib.trim().toUpperCase().replace(" ", "");
     iban.setValue(HBCIProperties.formatIban(ib2));
     if (ib2.length() == 0)
     {
@@ -123,7 +123,8 @@ public class IBANListener implements Listener
     String konto = ib.substring(9, ib.length());
     try
     {
-      IBAN ibankonv = new IBAN(konto, blz, (String) Einstellungen.getEinstellung(Property.DEFAULTLAND));
+      IBAN ibankonv = new IBAN(konto, blz,
+          (String) Einstellungen.getEinstellung(Property.DEFAULTLAND));
       iban.setValue(ibankonv.getIBAN());
       bic.setValue(ibankonv.getBIC());
     }

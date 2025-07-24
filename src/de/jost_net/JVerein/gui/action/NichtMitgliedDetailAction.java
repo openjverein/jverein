@@ -46,9 +46,10 @@ public class NichtMitgliedDetailAction implements Action
       }
       else
       {
-        m = (Mitglied) Einstellungen.getDBService().createObject(
-            Mitglied.class, null);
-        if ((Boolean) Einstellungen.getEinstellung(Property.JURISTISCHEPERSONEN))
+        m = (Mitglied) Einstellungen.getDBService().createObject(Mitglied.class,
+            null);
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.JURISTISCHEPERSONEN))
         {
           PersonenartDialog pad = new PersonenartDialog(
               PersonenartDialog.POSITION_CENTER);

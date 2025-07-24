@@ -42,11 +42,11 @@ public class Update0416 extends AbstractDDLUpdate
   {
     // Startdatum des Projektes
     execute(addColumn("projekt",
-      new Column("startdatum", COLTYPE.DATE, 0, "NULL", false, false)));
+        new Column("startdatum", COLTYPE.DATE, 0, "NULL", false, false)));
 
     // Endedatum des Projektes
     execute(addColumn("projekt",
-      new Column("endedatum", COLTYPE.DATE, 0, "NULL", false, false)));
+        new Column("endedatum", COLTYPE.DATE, 0, "NULL", false, false)));
 
   }
 }

@@ -54,7 +54,8 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Mitgliedsnummer", "idint", false, true);
     try
     {
-      if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         add("Externe Mitgliedsnummer", "externemitgliedsnummer", false, false);
       }
@@ -150,7 +151,8 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Zahler ID", "zahlerid", false, false);
     try
     {
-      if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
         add("Individueller Beitrag", "individuellerbeitrag", false, false);
       }

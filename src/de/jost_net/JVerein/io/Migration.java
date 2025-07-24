@@ -686,8 +686,7 @@ public class Migration
        */
       zahlweg = Zahlungsweg.BASISLASTSCHRIFT;
 
-      boolean neuebankverbindung = iban != null
-          && iban.length() > 0;
+      boolean neuebankverbindung = iban != null && iban.length() > 0;
 
       if (!neuebankverbindung)
       {
@@ -728,8 +727,8 @@ public class Migration
         }
         catch (SEPAException e)
         {
-          throw new ApplicationException(String.format(
-              "%s: IBAN ungültig!", Adressaufbereitung.getNameVorname(m)));
+          throw new ApplicationException(String.format("%s: IBAN ungültig!",
+              Adressaufbereitung.getNameVorname(m)));
         }
         m.setBic(i.getBIC());
       }
@@ -770,7 +769,8 @@ public class Migration
     {
       eintritt = null;
 
-      if ((Boolean) Einstellungen.getEinstellung(Property.EINTRITTSDATUMPFLICHT))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.EINTRITTSDATUMPFLICHT))
       {
         throw new ApplicationException(String.format(
             "%s: Eintrittsdatum fehlt!", Adressaufbereitung.getNameVorname(m)));
@@ -1093,8 +1093,8 @@ public class Migration
         m.delete();
       }
       // Sollbuchung
-      DBIterator<Sollbuchung> sollbIt = Einstellungen
-          .getDBService().createList(Sollbuchung.class);
+      DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
+          .createList(Sollbuchung.class);
       while (sollbIt.hasNext())
       {
         Sollbuchung sollb = sollbIt.next();

@@ -25,7 +25,7 @@ public enum Ausgabeart
   private final String text;
 
   private final int key;
-  
+
   Ausgabeart(int key, String text)
   {
     this.key = key;

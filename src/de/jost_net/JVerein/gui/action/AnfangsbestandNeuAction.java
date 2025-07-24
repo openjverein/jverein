@@ -38,8 +38,8 @@ public class AnfangsbestandNeuAction implements Action
     Anfangsbestand anf;
     try
     {
-      anf = (Anfangsbestand) Einstellungen.getDBService().createObject(
-          Anfangsbestand.class, null);
+      anf = (Anfangsbestand) Einstellungen.getDBService()
+          .createObject(Anfangsbestand.class, null);
       Konto k;
       if (context instanceof Konto)
       {
@@ -49,7 +49,8 @@ public class AnfangsbestandNeuAction implements Action
       else
       {
         KontoAuswahlDialog d = new KontoAuswahlDialog(
-            KontoAuswahlDialog.POSITION_CENTER, false, false, true, Kontenfilter.ALLE);
+            KontoAuswahlDialog.POSITION_CENTER, false, false, true,
+            Kontenfilter.ALLE);
         try
         {
           context = d.open();
@@ -74,7 +75,8 @@ public class AnfangsbestandNeuAction implements Action
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException("Kann kein Anfangsbestand-Objekt erzeugen");
+      throw new ApplicationException(
+          "Kann kein Anfangsbestand-Objekt erzeugen");
     }
   }
 }

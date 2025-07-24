@@ -51,15 +51,12 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getKommunikationsdaten());
     left.addLabelPair("Sekundäre Beitragsgruppen anzeigen *",
         control.getSekundaereBeitragsgruppen());
-    left.addLabelPair("Zusatzbeträge anzeigen *",
-        control.getZusatzbetrag());
+    left.addLabelPair("Zusatzbeträge anzeigen *", control.getZusatzbetrag());
     left.addLabelPair("Zusatzbeträge auch für Ausgetretene *",
         control.getZusatzbetragAusgetretene());
     left.addLabelPair("Vermerke anzeigen", control.getVermerke());
-    left.addLabelPair("Wiedervorlage anzeigen *",
-        control.getWiedervorlage());
-    left.addLabelPair("Kursteilnehmer anzeigen *",
-        control.getKursteilnehmer());
+    left.addLabelPair("Wiedervorlage anzeigen *", control.getWiedervorlage());
+    left.addLabelPair("Kursteilnehmer anzeigen *", control.getKursteilnehmer());
     left.addLabelPair("Kursteilnehmer Geburtsdatum und Geschlecht Pflichtfeld",
         control.getKursteilnehmerGebGesPflicht());
     left.addLabelPair("Lehrgänge anzeigen *", control.getLehrgaenge());
@@ -76,7 +73,8 @@ public class EinstellungenAnzeigeView extends AbstractView
 
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
     right.addLabelPair("Lesefelder anzeigen *", control.getUseLesefelder());
-    right.addLabelPair("Nicht-Mitglieder anzeigen *", control.getZusatzadressen());
+    right.addLabelPair("Nicht-Mitglieder anzeigen *",
+        control.getZusatzadressen());
     right.addLabelPair("Auslandsadressen *", control.getAuslandsadressen());
     right.addLabelPair("Arbeitseinsatz *", control.getArbeitseinsatz());
     right.addLabelPair("Dokumentenspeicherung *",
@@ -92,7 +90,8 @@ public class EinstellungenAnzeigeView extends AbstractView
     right.addLabelPair("Basis für Berechnung des Alters",
         control.getAltersModel());
     // Einstellung zum Buchungsdialog
-    right.addLabelPair("Buchungsart Auswahl", control.getBuchungBuchungsartAuswahl());
+    right.addLabelPair("Buchungsart Auswahl",
+        control.getBuchungBuchungsartAuswahl());
     right.addLabelPair("Buchungsart Sortierung", control.getBuchungsartSort());
     right.addLabelPair("Mitglied Auswahl", control.getMitgliedAuswahl());
     right.addLabelPair("Ort der Abschreibung", control.getAfaOrt());

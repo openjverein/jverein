@@ -39,8 +39,8 @@ public class SollbuchungRechnungAction implements Action
       {
         try
         {
-          context = Einstellungen.getDBService()
-              .createObject(Sollbuchung.class, mkn.getID());
+          context = Einstellungen.getDBService().createObject(Sollbuchung.class,
+              mkn.getID());
         }
         catch (RemoteException e)
         {

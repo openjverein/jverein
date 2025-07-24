@@ -69,8 +69,8 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
 
   private final de.willuhn.jameica.system.Settings settings;
 
-  public MailTextVorschauDialog(IMailControl control,
-      Map<String, Object> map, int position, boolean mitMitglied)
+  public MailTextVorschauDialog(IMailControl control, Map<String, Object> map,
+      int position, boolean mitMitglied)
   {
     super(position);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());

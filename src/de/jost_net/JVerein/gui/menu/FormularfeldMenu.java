@@ -35,8 +35,7 @@ public class FormularfeldMenu extends ContextMenu
   public FormularfeldMenu()
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(FormularfeldDetailView.class),
-        "text-x-generic.png"));
+        new EditAction(FormularfeldDetailView.class), "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new FormularfeldDeleteAction(), "user-trash-full.png"));
   }

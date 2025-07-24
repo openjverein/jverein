@@ -60,8 +60,7 @@ public class BuchungAuswertungPDF
 
   public BuchungAuswertungPDF(ArrayList<Buchungsart> buchungsarten,
       final File file, BuchungQuery query, boolean einzel,
-      final TreeMap<String, String> params)
-      throws ApplicationException
+      final TreeMap<String, String> params) throws ApplicationException
   {
     try
     {
@@ -76,7 +75,8 @@ public class BuchungAuswertungPDF
         title = "Summenliste";
       }
 
-      if (Boolean.valueOf((Boolean) Einstellungen.getEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE)))
+      if (Boolean.valueOf((Boolean) Einstellungen
+          .getEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE)))
         kontonummer_in_buchungsliste = true;
 
       Reporter reporter = new Reporter(fos, title, query.getSubtitle(),
@@ -86,7 +86,7 @@ public class BuchungAuswertungPDF
         reporter = new Reporter(fos, title, query.getSubtitle(),
             buchungsarten.size(), 50, 30, 20, 20);
       }
-        
+
       if (!einzel)
       {
         createTableHeaderSumme(reporter);
@@ -263,8 +263,7 @@ public class BuchungAuswertungPDF
     reporter.addHeaderColumn("Auszug", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Name", Element.ALIGN_CENTER,
-        (kontonummer_in_buchungsliste) ? 86 : 100,
-        BaseColor.LIGHT_GRAY);
+        (kontonummer_in_buchungsliste) ? 86 : 100, BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Zahlungsgrund", Element.ALIGN_CENTER, 100,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 40,
@@ -290,11 +289,11 @@ public class BuchungAuswertungPDF
   }
 
   private boolean createTableContent(Reporter reporter, Buchungsart bua,
-      Buchungsklasse bukla,
-      List<Buchung> buchungen, boolean einzel)
+      Buchungsklasse bukla, List<Buchung> buchungen, boolean einzel)
       throws RemoteException, DocumentException
   {
-    if ((Boolean) Einstellungen.getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG)
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG)
         && buchungen.size() == 0)
     {
       return false;
@@ -417,8 +416,9 @@ public class BuchungAuswertungPDF
       {
         continue;
       }
-      
-      if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         if (b.getBuchungsklasseId() == null
             || b.getBuchungsklasse().getNummer() != bukla.getNummer())
@@ -444,7 +444,8 @@ public class BuchungAuswertungPDF
         continue;
       }
 
-      if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         if (b.getBuchungsklasseId() != null)
         {

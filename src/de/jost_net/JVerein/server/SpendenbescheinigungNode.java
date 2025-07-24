@@ -95,11 +95,11 @@ public class SpendenbescheinigungNode implements GenericObjectNode
     String sql = "SELECT mitglied.id, sum(buchung.betrag) " + "FROM buchung "
         + "  JOIN buchungsart ON buchung.buchungsart = buchungsart.id "
         + "  JOIN " + Sollbuchung.TABLE_NAME + " ON " + Buchung.T_SOLLBUCHUNG
-        + " = " + Sollbuchung.TABLE_NAME_ID
-        + "  JOIN mitglied ON " + Sollbuchung.T_ZAHLER + " = mitglied.id "
+        + " = " + Sollbuchung.TABLE_NAME_ID + "  JOIN mitglied ON "
+        + Sollbuchung.T_ZAHLER + " = mitglied.id "
         + "WHERE year(buchung.datum) = ? " + "  AND buchungsart.spende = true "
-        + "  AND buchung.spendenbescheinigung IS NULL "
-        + "  AND " + Buchung.T_SOLLBUCHUNG + " IS NOT NULL "
+        + "  AND buchung.spendenbescheinigung IS NULL " + "  AND "
+        + Buchung.T_SOLLBUCHUNG + " IS NOT NULL "
         // rdc: Nur Mitglieder mit bekannter Adresse
         + "  AND (mitglied.strasse IS NOT NULL AND LENGTH(mitglied.strasse) > 0) "
         + "  AND (mitglied.plz IS NOT NULL AND LENGTH(mitglied.plz) > 0) "
@@ -158,9 +158,8 @@ public class SpendenbescheinigungNode implements GenericObjectNode
         + "  JOIN " + Sollbuchung.TABLE_NAME + " ON " + Buchung.T_SOLLBUCHUNG
         + " = " + Sollbuchung.TABLE_NAME_ID + " WHERE year(buchung.datum) = ? "
         + "  AND buchungsart.spende = true " + "  AND " + Sollbuchung.T_ZAHLER
-        + " = ? " + "  AND buchung.spendenbescheinigung IS NULL "
-        + "  AND " + Buchung.T_SOLLBUCHUNG + " IS NOT NULL "
-        + "ORDER BY buchung.datum";
+        + " = ? " + "  AND buchung.spendenbescheinigung IS NULL " + "  AND "
+        + Buchung.T_SOLLBUCHUNG + " IS NOT NULL " + "ORDER BY buchung.datum";
     @SuppressWarnings("unchecked")
     ArrayList<String> idliste = (ArrayList<String>) Einstellungen.getDBService()
         .execute(sql, new Object[] { jahr, mitglied.getID() }, rs);

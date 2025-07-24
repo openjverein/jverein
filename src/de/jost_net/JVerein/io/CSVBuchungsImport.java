@@ -195,8 +195,8 @@ public class CSVBuchungsImport implements Importer
             bit.addFilter("nummer = ?", bukl);
             if (bit.size() != 1)
             {
-              throw new ApplicationException(String
-                  .format("Buchungsklasse %d existiert nicht in JVerein!", bukl));
+              throw new ApplicationException(String.format(
+                  "Buchungsklasse %d existiert nicht in JVerein!", bukl));
             }
             Buchungsklasse b1 = (Buchungsklasse) bit.next();
             bu.setBuchungsklasseId(Long.valueOf(b1.getID()));

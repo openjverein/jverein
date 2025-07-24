@@ -34,10 +34,10 @@ public class BuchungsklasseSaldoView extends AbstractView
 
     final BuchungsklasseSaldoControl control = new BuchungsklasseSaldoControl(
         this);
-  
+
     VonBisPart vpart = new VonBisPart(control, true);
     vpart.paint(this.getParent());
-    
+
     QuickAccessPart qpart = new QuickAccessPart(control, true);
     qpart.paint(this.getParent());
 

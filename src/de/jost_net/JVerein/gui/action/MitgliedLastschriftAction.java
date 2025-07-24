@@ -52,11 +52,12 @@ public class MitgliedLastschriftAction implements Action
       m = (Mitglied) context;
 
       // pruefe wer der Zahler ist
-      if (m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER && m.getVollZahlerID() != null)
+      if (m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER
+          && m.getVollZahlerID() != null)
       {
         // Mitglied ist Familienangehoeriger, hat also anderen Zahler
-        mZ = (Mitglied) Einstellungen.getDBService().createObject(
-            Mitglied.class, m.getVollZahlerID() + "");
+        mZ = (Mitglied) Einstellungen.getDBService()
+            .createObject(Mitglied.class, m.getVollZahlerID() + "");
 
         if (!AbrechnungSEPAControl.confirmDialog("Familienangehöriger",
             "Dieses Mitglied ist ein Familienangehöriger.\n\n"
@@ -78,11 +79,12 @@ public class MitgliedLastschriftAction implements Action
       // pruefe Kontoinformationen
       if (checkSEPA(mZ))
       {
-        sl = (SepaLastschrift) Settings.getDBService().createObject(
-            SepaLastschrift.class, null);
+        sl = (SepaLastschrift) Settings.getDBService()
+            .createObject(SepaLastschrift.class, null);
 
         // Gläubiger-ID
-        sl.setCreditorId((String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
+        sl.setCreditorId(
+            (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
 
         // Kontodaten: Name, BIC, IBAN
         sl.setGegenkontoName(
@@ -99,10 +101,11 @@ public class MitgliedLastschriftAction implements Action
         // Voranstellen eines Strings der zwingend ge?ndert werden muss,
         // damit der Anwender nicht vergisst den Verwendungszweck
         // korrekt einzugeben
-        String verwendungszweck = "#ANPASSEN# "
-            + ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER) ? m
-                .getExterneMitgliedsnummer() : m.getID()) + "/"
-            + Adressaufbereitung.getNameVorname(m);
+        String verwendungszweck = "#ANPASSEN# " + ((Boolean) Einstellungen
+            .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
+                ? m.getExterneMitgliedsnummer()
+                : m.getID())
+            + "/" + Adressaufbereitung.getNameVorname(m);
         sl.setZweck(verwendungszweck);
 
         GUI.startView(

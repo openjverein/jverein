@@ -106,7 +106,8 @@ public class AuswertungVorlagenCsvView extends AbstractView
   {
     try
     {
-      dirName = (String) Einstellungen.getEinstellung(Property.VORLAGENCSVVERZEICHNIS);
+      dirName = (String) Einstellungen
+          .getEinstellung(Property.VORLAGENCSVVERZEICHNIS);
     }
     catch (RemoteException e)
     {

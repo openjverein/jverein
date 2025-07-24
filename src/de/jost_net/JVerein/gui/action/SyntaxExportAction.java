@@ -64,9 +64,8 @@ public class SyntaxExportAction implements Action
         // Wenn keine Buchungsart vorhanden ist können wir auch nicht
         // exportieren
         // Split-Gegenbuchungen kennt Syntax nicht
-        if (u.getBuchungsart() == null
-            || (u.getSplitTyp() != null
-                && u.getSplitTyp() == SplitbuchungTyp.GEGEN))
+        if (u.getBuchungsart() == null || (u.getSplitTyp() != null
+            && u.getSplitTyp() == SplitbuchungTyp.GEGEN))
         {
           continue;
         }

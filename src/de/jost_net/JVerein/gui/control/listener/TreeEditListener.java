@@ -26,9 +26,12 @@ public interface TreeEditListener
 
   /**
    * Wird aufgerufen, wenn der Wert eines Feldes geaendert wurde.
-   * @param object das zugehoerige Fachobjekt.
-   * @param attribute der Name des geaenderten Attributes.
+   * 
+   * @param object
+   *          das zugehoerige Fachobjekt.
+   * @param attribute
+   *          der Name des geaenderten Attributes.
    */
   public boolean editItem(Object object, String attribute);
-  
+
 }

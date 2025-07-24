@@ -137,8 +137,7 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
 
   public void setKtoiGeschlecht(String ktoigeschlecht) throws RemoteException;
 
-  public String getKontoinhaber(namenformat art)
-      throws RemoteException;
+  public String getKontoinhaber(namenformat art) throws RemoteException;
 
   public Date getGeburtsdatum() throws RemoteException;
 

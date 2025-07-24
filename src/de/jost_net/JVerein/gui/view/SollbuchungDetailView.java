@@ -64,7 +64,7 @@ public class SollbuchungDetailView extends AbstractDetailView
 
     LabelGroup cont = new LabelGroup(scrolled.getComposite(),
         "Sollbuchungspositionen");
-    
+
     ButtonArea buttons1 = new ButtonArea();
     Button neu = new Button("Neu", new SollbuchungPositionNeuAction(),
         getCurrentObject(), false, "document-new.png");

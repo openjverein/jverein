@@ -31,9 +31,9 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class AuswertungMitgliedView extends AbstractView
-{  
+{
   final MitgliedControl control = new MitgliedControl(this);
-  
+
   public AuswertungMitgliedView() throws RemoteException
   {
     control.init("mitglied.", "zusatzfeld.", "zusatzfelder.");
@@ -87,7 +87,7 @@ public class AuswertungMitgliedView extends AbstractView
       right.addInput(control.getSterbedatumvon());
       right.addInput(control.getSterbedatumbis());
     }
-    
+
     ButtonArea filterbuttons = new ButtonArea();
     filterbuttons.addButton(control.getResetButton());
     filterbuttons.addButton(control.getSpeichernButton());

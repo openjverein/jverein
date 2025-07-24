@@ -149,7 +149,7 @@ public class Einstellungen
   {
     settings.setAttribute(key, value);
   }
-  
+
   /**
    * Settings in die lokale Settings Datei schreiben (nicht in der DB)
    * 
@@ -406,8 +406,7 @@ public class Einstellungen
    *         in der Einstellung-Property definiert)
    * @throws RemoteException
    */
-  public static Object getEinstellung(Property prop)
-      throws RemoteException
+  public static Object getEinstellung(Property prop) throws RemoteException
   {
     // Nach dem Timeout einstellungen neu laden. So werden auch Änderungen von
     // Außerhalb gelesen.
@@ -540,7 +539,8 @@ public class Einstellungen
    */
   public static void loadEinstellungen() throws RemoteException
   {
-    DBIterator<DBObject> einstellungen = getDBService().createList(Einstellung.class);
+    DBIterator<DBObject> einstellungen = getDBService()
+        .createList(Einstellung.class);
     while (einstellungen.hasNext())
     {
       Einstellung e = (Einstellung) einstellungen.next();
@@ -786,8 +786,7 @@ public class Einstellungen
   {
     IMAPCopyData imapCopyData = new IMAPCopyData(
         (Boolean) getEinstellung(Property.COPYTOIMAPFOLDER),
-        (String) getEinstellung(Property.IMAPAUTHUSER),
-        getSmtpAuthPwd(),
+        (String) getEinstellung(Property.IMAPAUTHUSER), getSmtpAuthPwd(),
         (String) getEinstellung(Property.IMAPHOST),
         (String) getEinstellung(Property.IMAPPORT),
         (Boolean) getEinstellung(Property.IMAPSSL),

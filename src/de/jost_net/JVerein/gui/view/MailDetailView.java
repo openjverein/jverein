@@ -177,9 +177,8 @@ public class MailDetailView extends AbstractDetailView
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
-    buttons.addButton(
-        new Button("Mail-Vorlage", new MailVorlageZuweisenAction(), control,
-            false, "view-refresh.png"));
+    buttons.addButton(new Button("Mail-Vorlage",
+        new MailVorlageZuweisenAction(), control, false, "view-refresh.png"));
 
     Map<String, Object> map = MitgliedMap.getDummyMap(null);
     map = new AllgemeineMap().getMap(map);

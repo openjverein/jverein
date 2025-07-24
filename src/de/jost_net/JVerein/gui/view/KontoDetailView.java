@@ -41,23 +41,23 @@ public class KontoDetailView extends AbstractDetailView
 
     LabelGroup group = new LabelGroup(getParent(), "Konto");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
-    
+
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addLabelPair("Kontoart", control.getKontoArt());
     left.addLabelPair("Nummer", control.getNummer());
     left.addLabelPair("Bezeichnung", control.getBezeichnung());
     left.addLabelPair("Eröffnungsdatum", control.getEroeffnung());
     left.addLabelPair("Auflösungsdatum", control.getAufloesung());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Hibiscus-Konto", control.getHibiscusId());
     right.addLabelPair("GB-Buchungsart", control.getBuchungsart());
     right.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     right.addLabelPair("Kommentar", control.getKommentar());
-    
+
     LabelGroup group1 = new LabelGroup(getParent(), "Anlagenkonto Daten");
     ColumnLayout cl1 = new ColumnLayout(group1.getComposite(), 2);
-    
+
     SimpleContainer left1 = new SimpleContainer(cl1.getComposite());
     left1.addLabelPair("Anlagen Buchungsart", control.getAnlagenart());
     left1.addLabelPair("AfA Buchungsart", control.getAfaart());
@@ -70,7 +70,7 @@ public class KontoDetailView extends AbstractDetailView
     ButtonArea anlagenbuttons = new ButtonArea();
     anlagenbuttons.addButton(control.getAutobutton());
     left1.addButtonArea(anlagenbuttons);
-    
+
     SimpleContainer right1 = new SimpleContainer(cl1.getComposite());
     right1.addLabelPair("Nutzungsdauer", control.getNutzungsdauer());
     right1.addLabelPair("Anlagen Restwert", control.getAfaRestwert());

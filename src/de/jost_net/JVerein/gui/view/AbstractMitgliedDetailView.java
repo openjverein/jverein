@@ -106,52 +106,59 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     MitgliedUtils.setMitglied(zhl);
     zhl.setOrder("ORDER BY name, vorname");
 
-    int anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenStammdaten",2);
+    int anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenStammdaten",
+        2);
     boolean showInTab = Einstellungen.getSettingBoolean("ZeigeStammdatenInTab",
         false);
     zeicheStammdaten(showInTab ? folder : oben.getComposite(), anzahlSpalten);
 
     anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenMitgliedschaft",
         1);
-    showInTab = Einstellungen.getSettingBoolean("ZeigeMitgliedschaftInTab",true);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeMitgliedschaftInTab",
+        true);
     zeichneMitgliedschaft(showInTab ? folder : oben.getComposite(),
         anzahlSpalten);
 
-    anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenZahlung",1);
-    showInTab = Einstellungen.getSettingBoolean("ZeigeZahlungInTab",true);
+    anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenZahlung", 1);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeZahlungInTab", true);
     zeichneZahlung(showInTab ? folder : oben.getComposite(), anzahlSpalten);
 
-    showInTab = Einstellungen.getSettingBoolean("ZeigeZusatzbetraegeInTab",true);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeZusatzbetraegeInTab",
+        true);
     zeichneZusatzbeitraege(showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getSettingBoolean("ZeigeMitgliedskontoInTab",true);
-    zeichneMitgliedkonto(controlSollb, showInTab ? folder : oben.getComposite());
+    showInTab = Einstellungen.getSettingBoolean("ZeigeMitgliedskontoInTab",
+        true);
+    zeichneMitgliedkonto(controlSollb,
+        showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getSettingBoolean("ZeigeVermerkeInTab",true);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeVermerkeInTab", true);
     zeichneVermerke(showInTab ? folder : oben.getComposite(), 1);
 
-    showInTab = Einstellungen.getSettingBoolean("ZeigeWiedervorlageInTab",true);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeWiedervorlageInTab",
+        true);
     zeichneWiedervorlage(showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getSettingBoolean("ZeigeMailsInTab",true);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeMailsInTab", true);
     zeichneMails(showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getSettingBoolean("ZeigeEigenschaftenInTab",true);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeEigenschaftenInTab",
+        true);
     zeichneEigenschaften(showInTab ? folder : oben.getComposite());
 
     anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenZusatzfelder", 1);
-    showInTab = Einstellungen.getSettingBoolean("ZeigeZusatzfelderInTab",true);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeZusatzfelderInTab", true);
     zeichneZusatzfelder(showInTab ? folder : oben.getComposite(),
         anzahlSpalten);
 
-    showInTab = Einstellungen.getSettingBoolean("ZeigeLehrgaengeInTab",true);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeLehrgaengeInTab", true);
     zeichneLehrgaenge(showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getSettingBoolean("ZeigeFotoInTab",true);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeFotoInTab", true);
     zeichneMitgliedfoto(showInTab ? folder : oben.getComposite());
 
     anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenLesefelder", 1);
-    showInTab = Einstellungen.getSettingBoolean("ZeigeLesefelderInTab",true);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeLesefelderInTab", true);
     zeichneLesefelder(showInTab ? folder : oben.getComposite(), anzahlSpalten);
 
     zeichneMitgliedDetail(showInTab ? folder : oben.getComposite());
@@ -329,7 +336,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneMitgliedfoto(Composite parentComposite)
       throws RemoteException
   {
-    if (isMitgliedDetail() && (Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO))
+    if (isMitgliedDetail()
+        && (Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO))
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Foto");
       cont.addLabelPair("Foto", control.getFoto());
@@ -339,7 +347,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneLehrgaenge(Composite parentComposite)
       throws RemoteException
   {
-    if (isMitgliedDetail() && (Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
+    if (isMitgliedDetail()
+        && (Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Lehrgänge");
 
@@ -484,7 +493,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     ButtonArea buttons1 = new ButtonArea();
     buttons1.addButton(control.getKontoDatenLoeschenButton());
     buttons1.paint(container.getComposite());
-    
+
     LabelGroup zahlungsweg = new LabelGroup(container.getComposite(),
         "Zahlungsweg");
 
@@ -523,7 +532,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         .getAbweichenderKontoinhaberLabelGroup(container.getComposite());
     SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
         abweichenderKontoInhaber.getComposite(), false, spaltenanzahl);
-    
+
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton(control.getMitglied2KontoinhaberEintragenButton());
     addButtonArea(buttons2, cols2.getComposite());
@@ -585,7 +594,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       SimpleVerticalContainer cols = new SimpleVerticalContainer(
           container.getComposite(), false, spaltenanzahl);
 
-      if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         cols.addInput(control.getExterneMitgliedsnummer());
       }
@@ -596,7 +606,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       cols.addInput(control.getBeitragsgruppe(true));
       cols.addInput(control.getEintritt());
       cols.addInput(control.getAustritt());
-      if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
         cols.addInput(control.getIndividuellerBeitrag());
       }
@@ -607,7 +618,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         cols.addInput(control.getSterbetag());
       }
       cols.arrangeVertically();
-      if ((Boolean) Einstellungen.getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
       {
         container.addPart(control.getMitgliedSekundaereBeitragsgruppeView());
       }
@@ -703,7 +715,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     if (funktion == 'B' && isMitgliedDetail())
     {
-      if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         mgname = (String) control.getExterneMitgliedsnummer().getValue();
         if (mgname == null || mgname.isEmpty())
@@ -733,17 +746,21 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
   /**
    * Fuegt eine neue ButtonArea ohne Seperator hinzu.
-   * @param buttonArea die hinzuzufuegende Button-Area.
-   * @param composite in den gezeichnet werden soll
-   * Code ist aus de.willuhn.jameica.gui.util.Container kopiert
+   * 
+   * @param buttonArea
+   *          die hinzuzufuegende Button-Area.
+   * @param composite
+   *          in den gezeichnet werden soll Code ist aus
+   *          de.willuhn.jameica.gui.util.Container kopiert
    */
   public void addButtonArea(ButtonArea buttonArea, Composite composite)
   {
     try
     {
-      final GridData g = new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END);
+      final GridData g = new GridData(
+          GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END);
       g.horizontalSpan = 2;
-      final Composite comp = new Composite(composite,SWT.NONE);
+      final Composite comp = new Composite(composite, SWT.NONE);
       comp.setLayoutData(g);
 
       final GridLayout gl = new GridLayout();
@@ -754,8 +771,11 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     }
     catch (RemoteException e)
     {
-      Logger.error("error while adding button area",e);
-      Application.getMessagingFactory().sendMessage(new StatusBarMessage(Application.getI18n().tr("Fehler beim Anzeigen des Buttons."),StatusBarMessage.TYPE_ERROR));
+      Logger.error("error while adding button area", e);
+      Application.getMessagingFactory()
+          .sendMessage(new StatusBarMessage(
+              Application.getI18n().tr("Fehler beim Anzeigen des Buttons."),
+              StatusBarMessage.TYPE_ERROR));
     }
   }
 

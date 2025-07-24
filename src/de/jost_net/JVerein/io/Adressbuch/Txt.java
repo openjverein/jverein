@@ -31,17 +31,16 @@ public class Txt
 
   private String separator;
 
-  public Txt(File file, String separator) throws IOException 
+  public Txt(File file, String separator) throws IOException
   {
     // Vermerk für mich: Encodings siehe
     // http://www.cafeconleche.org/books/xmljava/chapters/ch03s03.html
-    out = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(
-        file)));
-    out.write("\"Name\"" + separator + "\"Vorname\"" + separator
-        + "\"Strasse\"" + separator + "\"PLZ\"" + separator + "\"Ort\""
-        + separator + "\"Staat\"" + separator + "\"Anzeigename\"" + separator
-        + "\"Email\"" + separator + "\"TelefonPrivat\"" + separator
-        + "\"TelefonMobil\"\n");
+    out = new OutputStreamWriter(
+        new BufferedOutputStream(new FileOutputStream(file)));
+    out.write("\"Name\"" + separator + "\"Vorname\"" + separator + "\"Strasse\""
+        + separator + "\"PLZ\"" + separator + "\"Ort\"" + separator
+        + "\"Staat\"" + separator + "\"Anzeigename\"" + separator + "\"Email\""
+        + separator + "\"TelefonPrivat\"" + separator + "\"TelefonMobil\"\n");
     this.separator = separator;
   }
 

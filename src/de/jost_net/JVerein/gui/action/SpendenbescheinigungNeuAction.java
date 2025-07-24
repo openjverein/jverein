@@ -43,9 +43,9 @@ import de.willuhn.util.ApplicationException;
 public class SpendenbescheinigungNeuAction implements Action
 {
   private int spendenart = Spendenart.SACHSPENDE;
-  
+
   private Spendenbescheinigung spb = null;
-  
+
   public SpendenbescheinigungNeuAction(int spendenart)
   {
     this.spendenart = spendenart;
@@ -173,7 +173,8 @@ public class SpendenbescheinigungNeuAction implements Action
     }
   }
 
-  private void handleMitglied(Mitglied mg) throws RemoteException, ApplicationException
+  private void handleMitglied(Mitglied mg)
+      throws RemoteException, ApplicationException
   {
     /* Ermitteln der Buchungen zu der neuen Spendenbescheinigung */
     Date minDatum = Calendar.getInstance().getTime();
@@ -188,7 +189,7 @@ public class SpendenbescheinigungNeuAction implements Action
         while (rs.next())
         {
           list.add(
-            (Buchung) service.createObject(Buchung.class, rs.getString(1)));
+              (Buchung) service.createObject(Buchung.class, rs.getString(1)));
         }
         return list;
       }
@@ -197,22 +198,20 @@ public class SpendenbescheinigungNeuAction implements Action
         + "  JOIN buchungsart ON buchung.buchungsart = buchungsart.id "
         + "  JOIN " + Sollbuchung.TABLE_NAME + " ON " + Buchung.T_SOLLBUCHUNG
         + " = " + Sollbuchung.TABLE_NAME_ID
-        + " WHERE buchungsart.spende = true "
-        + "  AND " + Sollbuchung.T_ZAHLER + " = ? "
-        + "  AND buchung.spendenbescheinigung IS NULL "
-        + "  AND " + Buchung.T_SOLLBUCHUNG + " IS NOT NULL "
-        + "ORDER BY buchung.datum";
+        + " WHERE buchungsart.spende = true " + "  AND " + Sollbuchung.T_ZAHLER
+        + " = ? " + "  AND buchung.spendenbescheinigung IS NULL " + "  AND "
+        + Buchung.T_SOLLBUCHUNG + " IS NOT NULL " + "ORDER BY buchung.datum";
     @SuppressWarnings("unchecked")
-    ArrayList<Buchung> buchungen = (ArrayList<Buchung>) Einstellungen.getDBService()
-        .execute(sql, new Object[] { mg.getID() }, rs);
-    
+    ArrayList<Buchung> buchungen = (ArrayList<Buchung>) Einstellungen
+        .getDBService().execute(sql, new Object[] { mg.getID() }, rs);
+
     if (buchungen.isEmpty())
     {
       throw new ApplicationException(
           "Es wurden keine relevanten Buchungen gefunden");
     }
-    
-    for (Buchung bu: buchungen)
+
+    for (Buchung bu : buchungen)
     {
       if (minDatum.after(bu.getDatum()))
       {
@@ -226,13 +225,13 @@ public class SpendenbescheinigungNeuAction implements Action
     }
     spb.setSpendedatum(minDatum);
     spb.setAutocreate(Boolean.TRUE);
-    
+
     double minbetrag = (Double) Einstellungen
         .getEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG);
     if (spb.getBetrag() < minbetrag)
     {
-      throw new ApplicationException(
-          String.format("Der Betrag der Spendenbescheinigung ist unter %s Euro. "
+      throw new ApplicationException(String
+          .format("Der Betrag der Spendenbescheinigung ist unter %s Euro. "
               + "Siehe Einstellungen->Spendenbescheinigungen.", minbetrag));
     }
   }

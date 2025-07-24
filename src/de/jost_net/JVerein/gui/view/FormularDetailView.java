@@ -49,18 +49,18 @@ public class FormularDetailView extends AbstractDetailView
 
     LabelGroup group = new LabelGroup(getParent(), "Formular");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
-    
+
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addLabelPair("Bezeichnung", control.getBezeichnung(true));
     left.addLabelPair("Art", control.getArt());
     left.addLabelPair("Datei", control.getDatei());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Fortlaufende Nr.", control.getZaehler());
     right.addLabelPair("Formularverknüpfung", control.getFormlink());
-    
+
     LabelGroup cont = new LabelGroup(getParent(), "Formularfelder", true);
-    
+
     ButtonArea buttons1 = new ButtonArea();
     buttons1.addButton("Export", new FormularfelderExportAction(),
         getCurrentObject(), false, "document-save.png");
@@ -74,9 +74,9 @@ public class FormularDetailView extends AbstractDetailView
     Composite comp = new Composite(cont.getComposite(), SWT.NONE);
     comp.setLayout(layout);
     comp.setLayoutData(new GridData(GridData.END));
-    
+
     buttons1.paint(cont.getComposite());
-    
+
     cont.addPart(control.getFormularfeldList());
 
     ButtonArea buttons = new ButtonArea();

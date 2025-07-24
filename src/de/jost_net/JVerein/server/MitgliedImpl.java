@@ -89,7 +89,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   {
     try
     {
-      if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
       {
         return "idnamevorname";
       }
@@ -144,8 +145,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   {
     checkExterneMitgliedsnummer();
 
-    if (getPersonenart() == null || (!getPersonenart().equalsIgnoreCase(
-        "n") && !getPersonenart().equalsIgnoreCase("j")))
+    if (getPersonenart() == null || (!getPersonenart().equalsIgnoreCase("n")
+        && !getPersonenart().equalsIgnoreCase("j")))
     {
       throw new ApplicationException("Personenstatus ist nicht 'N' oder 'J'");
     }
@@ -153,20 +154,21 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     {
       throw new ApplicationException("Bitte Namen eingeben");
     }
-    if (getPersonenart().equalsIgnoreCase(
-        "n") && (getVorname() == null || getVorname().length() == 0))
+    if (getPersonenart().equalsIgnoreCase("n")
+        && (getVorname() == null || getVorname().length() == 0))
     {
       throw new ApplicationException("Bitte Vornamen eingeben");
     }
     if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
-        && getPersonenart().equalsIgnoreCase(
-        "n") && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime() && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
+        && getPersonenart().equalsIgnoreCase("n")
+        && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime()
+        && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
     {
       throw new ApplicationException("Bitte Geburtsdatum eingeben");
     }
     if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
-        && getPersonenart().equalsIgnoreCase(
-        "n") && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
+        && getPersonenart().equalsIgnoreCase("n")
+        && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
     {
       Calendar cal1 = Calendar.getInstance();
       cal1.setTime(getGeburtsdatum());
@@ -200,7 +202,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
 
     if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
         && getEintritt().getTime() == Einstellungen.NODATE.getTime()
-        && (Boolean) Einstellungen.getEinstellung(Property.EINTRITTSDATUMPFLICHT))
+        && (Boolean) Einstellungen
+            .getEinstellung(Property.EINTRITTSDATUMPFLICHT))
     {
       throw new ApplicationException("Bitte Eintrittsdatum eingeben");
     }
@@ -224,7 +227,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       }
       else if (getMandatDatum().after(new Date()))
       {
-        throw new ApplicationException("Datum des Mandat liegt in der Zukunft!");
+        throw new ApplicationException(
+            "Datum des Mandat liegt in der Zukunft!");
       }
     }
     if (getIban() != null && getIban().length() != 0)
@@ -263,7 +267,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     {
       // Person ist ausgetreten
       // Ist das Mitglied Vollzahler in einem Familienverband?
-      if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+      if (getBeitragsgruppe() != null && getBeitragsgruppe()
+          .getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
       {
         DBIterator<Mitglied> famang = Einstellungen.getDBService()
             .createList(Mitglied.class);
@@ -299,9 +304,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
             "Der ausgewählte Vollzahler ist ausgetreten zu " + z.getAustritt()
                 + ". Bitte anderen Vollzahler wählen!");
       }
-      if (z != null && ((Mitglied) z).getEintritt()
-          .after(new Date()) && ((Mitglied) z).getEintritt()
-          .after(getEintritt()))
+      if (z != null && ((Mitglied) z).getEintritt().after(new Date())
+          && ((Mitglied) z).getEintritt().after(getEintritt()))
       {
         throw new ApplicationException(
             "Der ausgewählte Vollzahler tritt erst ein zu " + z.getEintritt()
@@ -309,7 +313,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       }
     }
     // Check ob das Mitglied vorher ein Vollzahler eines Familienverbandes war
-    if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+    if (getBeitragsgruppe() != null && getBeitragsgruppe()
+        .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
     {
       // Es darf keine Familienangehörigen geben
       DBIterator<Mitglied> famang = Einstellungen.getDBService()
@@ -321,7 +326,10 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
             "Dieses Mitglied ist Vollzahler in einem Familienverband.. Zunächst Beitragsart der Angehörigen ändern!");
       }
     }
-    if (getBeitragsgruppe() != null && getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER && getVollZahlerID() == null)
+    if (getBeitragsgruppe() != null
+        && getBeitragsgruppe()
+            .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
+        && getVollZahlerID() == null)
     {
       throw new ApplicationException("Bitte Vollzahler auswählen!");
     }
@@ -347,10 +355,12 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   {
     if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED)
       return;
-    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER) == false)
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER) == false)
       return;
 
-    if (getExterneMitgliedsnummer() == null || getExterneMitgliedsnummer().isEmpty())
+    if (getExterneMitgliedsnummer() == null
+        || getExterneMitgliedsnummer().isEmpty())
     {
       throw new ApplicationException("Externe Mitgliedsnummer fehlt");
     }
@@ -365,8 +375,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       Mitglied mitglied = (Mitglied) mitglieder.next();
       throw new ApplicationException(
           "Die externe Mitgliedsnummer wird bereits verwendet für Mitglied : "
-              + mitglied.getAttribute(
-              "namevorname"));
+              + mitglied.getAttribute("namevorname"));
     }
 
   }
@@ -684,7 +693,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getMandatID() throws RemoteException
   {
-    int sepaMandatIdSource = (Integer) Einstellungen.getEinstellung(Property.SEPAMANDATIDSOURCE);
+    int sepaMandatIdSource = (Integer) Einstellungen
+        .getEinstellung(Property.SEPAMANDATIDSOURCE);
     if (sepaMandatIdSource == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER)
     {
       return getExterneMitgliedsnummer() + "-" + getMandatVersion();
@@ -723,9 +733,10 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       }
     };
 
-    String sql = "select max(abrechnungslauf.FAELLIGKEIT) from lastschrift, abrechnungslauf " + "where lastschrift.ABRECHNUNGSLAUF = abrechnungslauf.id and lastschrift.MITGLIED = ? and lastschrift.mandatid = ?";
-    Date d = (Date) Einstellungen.getDBService()
-        .execute(sql, new Object[] { getID(), getMandatID() }, rs);
+    String sql = "select max(abrechnungslauf.FAELLIGKEIT) from lastschrift, abrechnungslauf "
+        + "where lastschrift.ABRECHNUNGSLAUF = abrechnungslauf.id and lastschrift.MITGLIED = ? and lastschrift.mandatid = ?";
+    Date d = (Date) Einstellungen.getDBService().execute(sql,
+        new Object[] { getID(), getMandatID() }, rs);
 
     return d;
   }
@@ -922,8 +933,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
-  public String getKontoinhaber(namenformat art)
-      throws RemoteException
+  public String getKontoinhaber(namenformat art) throws RemoteException
   {
     boolean aktoi = false;
     Mitglied m2 = (Mitglied) Einstellungen.getDBService()
@@ -979,7 +989,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   public Integer getAlter() throws RemoteException
   {
     Date geburtstag = getGeburtsdatum();
-    int altersmodel = (Integer) Einstellungen.getEinstellung(Property.ALTERSMODEL);
+    int altersmodel = (Integer) Einstellungen
+        .getEinstellung(Property.ALTERSMODEL);
     return Datum.getAlter(geburtstag, altersmodel);
   }
 
@@ -1305,9 +1316,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public boolean isAngemeldet(Date stichtag) throws RemoteException
   {
-    return getEintritt() != null && !stichtag.before(
-        getEintritt()) && (getAustritt() == null || getAustritt().after(
-        stichtag));
+    return getEintritt() != null && !stichtag.before(getEintritt())
+        && (getAustritt() == null || getAustritt().after(stichtag));
   }
 
   @Override
@@ -1490,8 +1500,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   public void delete() throws RemoteException, ApplicationException
   {
     DBService service = Einstellungen.getDBService();
-    DBIterator<MitgliedDokument> docs = service.createList(
-        MitgliedDokument.class);
+    DBIterator<MitgliedDokument> docs = service
+        .createList(MitgliedDokument.class);
     docs.addFilter("referenz = ?", new Object[] { this.getID() });
     while (docs.hasNext())
     {
@@ -1507,14 +1517,14 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     if (getZahlungsweg() == null
         || getZahlungsweg() != Zahlungsweg.BASISLASTSCHRIFT)
     {
-      throw new ApplicationException(Adressaufbereitung.getNameVorname(this)
-          + FEHLER_ZAHLUNGSWEG);
+      throw new ApplicationException(
+          Adressaufbereitung.getNameVorname(this) + FEHLER_ZAHLUNGSWEG);
     }
     // Ohne Mandat keine Lastschrift
     if (getMandatDatum() == Einstellungen.NODATE)
     {
-      throw new ApplicationException(Adressaufbereitung.getNameVorname(this)
-          + FEHLER_MANDAT);
+      throw new ApplicationException(
+          Adressaufbereitung.getNameVorname(this) + FEHLER_MANDAT);
     }
     // Bei Mandaten älter als 3 Jahre muss es eine Lastschrift
     // innerhalb der letzten 3 Jahre geben
@@ -1526,8 +1536,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       if (letzte_lastschrift == null
           || letzte_lastschrift.before(sepagueltigkeit.getTime()))
       {
-        throw new ApplicationException(Adressaufbereitung.getNameVorname(this)
-            + FEHLER_ALTER);
+        throw new ApplicationException(
+            Adressaufbereitung.getNameVorname(this) + FEHLER_ALTER);
       }
     }
     return true;

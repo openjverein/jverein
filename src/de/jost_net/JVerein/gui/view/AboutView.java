@@ -59,7 +59,7 @@ public class AboutView extends AbstractDialog<Object>
         + "<p>Lizenz: GPLv3 https://www.gnu.org/licenses/gpl-3.0.html</p>"
         + "<p>Web: https://openjverein.github.io</p>"
         + "<p>Forum: https://jverein-forum.de</p>"
-    	+ "<p>GitHub: https://github.com/openjverein/jverein</p>"
+        + "<p>GitHub: https://github.com/openjverein/jverein</p>"
         + "<p>Dokumentation: https://openjverein.gitbook.io/doku</p></form>");
 
     text.paint(container.getComposite());
@@ -95,7 +95,7 @@ public class AboutView extends AbstractDialog<Object>
       }
     }, null, true, "window-close.png");
 
-    getShell().setSize(getShell().computeSize(SWT.DEFAULT,SWT.DEFAULT));
+    getShell().setSize(getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT));
   }
 
   @Override

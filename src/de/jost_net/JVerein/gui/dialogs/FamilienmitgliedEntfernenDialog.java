@@ -107,10 +107,11 @@ public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
           m.setLetzteAenderung();
           m.setIban(control.getIban().getValue().toString());
           m.setBic(control.getBic().getValue().toString());
-          m.setZahlungsweg(((Zahlungsweg)control.getZahlungsweg().getValue()).getKey());
+          m.setZahlungsweg(
+              ((Zahlungsweg) control.getZahlungsweg().getValue()).getKey());
           m.store();
-          Application.getMessagingFactory().sendMessage(
-              new FamilienbeitragMessage(m));
+          Application.getMessagingFactory()
+              .sendMessage(new FamilienbeitragMessage(m));
 
           close();
         }

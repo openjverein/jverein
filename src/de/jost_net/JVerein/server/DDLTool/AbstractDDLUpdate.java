@@ -26,12 +26,22 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
 
   public enum DRIVER
   {
-    H2, MYSQL
+    H2,
+    MYSQL
   }
 
   public enum COLTYPE
   {
-    BIGINT, INTEGER, VARCHAR, CHAR, DATE, TIMESTAMP, BOOLEAN, DOUBLE, LONGBLOB, MEDIUMTEXT
+    BIGINT,
+    INTEGER,
+    VARCHAR,
+    CHAR,
+    DATE,
+    TIMESTAMP,
+    BOOLEAN,
+    DOUBLE,
+    LONGBLOB,
+    MEDIUMTEXT
   }
 
   private DRIVER drv;
@@ -297,7 +307,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     {
       ret += "NOT NULL ";
     }
-    else if(drv == DRIVER.MYSQL && !col.isAutoincrement())
+    else if (drv == DRIVER.MYSQL && !col.isAutoincrement())
     {
       ret += "NULL ";
     }
@@ -332,27 +342,27 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     return "";
 
   }
-  
-  public void createForeignKeyIfNotExistsNocheck(String constraintname, String table,
-      String column, String reftable, String refcolumn, String ondelete,
-      String onupdate) throws ApplicationException
+
+  public void createForeignKeyIfNotExistsNocheck(String constraintname,
+      String table, String column, String reftable, String refcolumn,
+      String ondelete, String onupdate) throws ApplicationException
   {
     switch (drv)
     {
       case H2:
       {
-        execute( "ALTER TABLE " + table + " ADD CONSTRAINT IF NOT EXISTS " + constraintname
-            + " FOREIGN KEY (" + column + ") REFERENCES " + reftable + "("
-            + refcolumn + ") ON DELETE " + ondelete + " ON UPDATE " + onupdate
-            + " NOCHECK;\n", true);
+        execute("ALTER TABLE " + table + " ADD CONSTRAINT IF NOT EXISTS "
+            + constraintname + " FOREIGN KEY (" + column + ") REFERENCES "
+            + reftable + "(" + refcolumn + ") ON DELETE " + ondelete
+            + " ON UPDATE " + onupdate + " NOCHECK;\n", true);
       }
-      break;
+        break;
       case MYSQL:
       {
-        String statement =  "ALTER TABLE " + table + " ADD CONSTRAINT " + constraintname
-            + " FOREIGN KEY (" + column + ") REFERENCES " + reftable + " ("
-            + refcolumn + ") ON DELETE " + ondelete + " ON UPDATE " + onupdate
-            + ";\n";
+        String statement = "ALTER TABLE " + table + " ADD CONSTRAINT "
+            + constraintname + " FOREIGN KEY (" + column + ") REFERENCES "
+            + reftable + " (" + refcolumn + ") ON DELETE " + ondelete
+            + " ON UPDATE " + onupdate + ";\n";
         try
         {
           Logger.debug(statement);
@@ -371,18 +381,20 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
   {
     return "drop table " + table + ";\n";
   }
-  
+
   public String dropForeignKey(String constraintname, String table)
   {
     switch (drv)
     {
       case H2:
       {
-        return "ALTER TABLE " + table + " DROP CONSTRAINT " + constraintname + ";\n";
+        return "ALTER TABLE " + table + " DROP CONSTRAINT " + constraintname
+            + ";\n";
       }
       case MYSQL:
       {
-        return "ALTER TABLE " + table + " DROP FOREIGN KEY " + constraintname + ";\n";
+        return "ALTER TABLE " + table + " DROP FOREIGN KEY " + constraintname
+            + ";\n";
       }
     }
     return "";

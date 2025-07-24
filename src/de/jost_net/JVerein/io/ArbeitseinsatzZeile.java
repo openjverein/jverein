@@ -50,14 +50,14 @@ public class ArbeitseinsatzZeile implements GenericObject
   {
     if (arg0.equals("mitglied"))
     {
-      Mitglied mitglied = (Mitglied) Einstellungen.getDBService().createObject(
-          Mitglied.class, mitgliedid);
+      Mitglied mitglied = (Mitglied) Einstellungen.getDBService()
+          .createObject(Mitglied.class, mitgliedid);
       return mitglied;
     }
     else if (arg0.equals("namevorname"))
     {
-      Mitglied mitglied = (Mitglied) Einstellungen.getDBService().createObject(
-          Mitglied.class, mitgliedid);
+      Mitglied mitglied = (Mitglied) Einstellungen.getDBService()
+          .createObject(Mitglied.class, mitgliedid);
       return Adressaufbereitung.getNameVorname(mitglied);
     }
     else if (arg0.equals("idnamevorname"))
@@ -90,8 +90,8 @@ public class ArbeitseinsatzZeile implements GenericObject
     {
       return (ist - soll) * stundensatz;
     }
-    throw new RemoteException(String.format("Ungültige Spaltenbezeichung: %s",
-        arg0));
+    throw new RemoteException(
+        String.format("Ungültige Spaltenbezeichung: %s", arg0));
   }
 
   @Override

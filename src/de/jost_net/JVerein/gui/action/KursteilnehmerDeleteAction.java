@@ -39,13 +39,13 @@ public class KursteilnehmerDeleteAction implements Action
     {
       throw new ApplicationException("Keinen Kursteilnehmer ausgewählt");
     }
-    else if(context instanceof Kursteilnehmer)
+    else if (context instanceof Kursteilnehmer)
     {
-      kursteilnehmer = new Kursteilnehmer[] {(Kursteilnehmer)context};
+      kursteilnehmer = new Kursteilnehmer[] { (Kursteilnehmer) context };
     }
-    else if(context instanceof Kursteilnehmer[])
+    else if (context instanceof Kursteilnehmer[])
     {
-      kursteilnehmer = (Kursteilnehmer[])context;
+      kursteilnehmer = (Kursteilnehmer[]) context;
     }
     else
     {
@@ -55,7 +55,8 @@ public class KursteilnehmerDeleteAction implements Action
     {
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Kursteilnehmer löschen");
-      d.setText("Wollen Sie diese" + (kursteilnehmer.length > 1?"":"n")+ " Kursteilnehmer wirklich löschen?");
+      d.setText("Wollen Sie diese" + (kursteilnehmer.length > 1 ? "" : "n")
+          + " Kursteilnehmer wirklich löschen?");
 
       try
       {
@@ -68,9 +69,9 @@ public class KursteilnehmerDeleteAction implements Action
         Logger.error("Fehler beim Löschen des Kursteilnehmers", e);
         return;
       }
-      for(Kursteilnehmer kt:kursteilnehmer)
+      for (Kursteilnehmer kt : kursteilnehmer)
       {
-        if(kt.isNewObject())
+        if (kt.isNewObject())
           continue;
         kt.delete();
       }

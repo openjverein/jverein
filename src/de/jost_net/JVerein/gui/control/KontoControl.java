@@ -82,8 +82,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 //import de.jost_net.JVerein.keys.ArtBuchungsart;
 
-public class KontoControl extends FilterControl
-    implements Savable
+public class KontoControl extends FilterControl implements Savable
 {
 
   private JVereinTablePart kontenList;
@@ -133,7 +132,6 @@ public class KontoControl extends FilterControl
   Button autobutton;
 
   Button afabutton;
-  
 
   public KontoControl(AbstractView view)
   {
@@ -184,7 +182,7 @@ public class KontoControl extends FilterControl
         new JVDateFormatTTMMJJJJ());
     return eroeffnung;
   }
-  
+
   public DateInput getAnschaffung() throws RemoteException
   {
     if (anschaffung != null)
@@ -390,7 +388,7 @@ public class KontoControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     kontenList.addColumn("Auflösungsdatum", "aufloesung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart", 
+    kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart",
         new BuchungsartFormatter());
     kontenList.setRememberColWidths(true);
     kontenList.setContextMenu(new KontoMenu(kontenList));
@@ -472,9 +470,10 @@ public class KontoControl extends FilterControl
       return buchungsart;
     }
     ArrayList<Buchungsart> liste = new ArrayList<>();
-    unterdrueckunglaenge = (Integer) Einstellungen.getEinstellung(Property.UNTERDRUECKUNGLAENGE);
+    unterdrueckunglaenge = (Integer) Einstellungen
+        .getEinstellung(Property.UNTERDRUECKUNGLAENGE);
     final DBService service = Einstellungen.getDBService();
-    
+
     ResultSetExtractor rs = new ResultSetExtractor()
     {
       @Override
@@ -483,8 +482,8 @@ public class KontoControl extends FilterControl
         ArrayList<Buchungsart> list = new ArrayList<Buchungsart>();
         while (rs.next())
         {
-          list.add(
-            (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
+          list.add((Buchungsart) service.createObject(Buchungsart.class,
+              rs.getString(1)));
         }
         return list;
       }
@@ -493,7 +492,7 @@ public class KontoControl extends FilterControl
     {
       Calendar cal = Calendar.getInstance();
       Date db = cal.getTime();
-      cal.add(Calendar.MONTH, - unterdrueckunglaenge);
+      cal.add(Calendar.MONTH, -unterdrueckunglaenge);
       Date dv = cal.getTime();
       String sql = "SELECT DISTINCT ba.* FROM buchungsart ba ";
       sql += "LEFT JOIN konto k ON k.buchungsart = ba.id, buchung bu ";
@@ -509,7 +508,8 @@ public class KontoControl extends FilterControl
       sql += "AND ((ba.id = bu.buchungsart ";
       sql += "AND bu.datum >= ? AND bu.datum <= ? ";
       sql += "AND ba.status = ?) OR ba.status = ?) ";
-      if ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
+      if ((Integer) Einstellungen.getEinstellung(
+          Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
       {
         sql += "ORDER BY nummer";
       }
@@ -521,17 +521,20 @@ public class KontoControl extends FilterControl
       if (konto.getBuchungsart() == null)
       {
         @SuppressWarnings("unchecked")
-        ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-            new Object[] { ArtBuchungsart.UMBUCHUNG, dv, db,  
-                StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE }, rs);    
+        ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service
+            .execute(sql, new Object[] { ArtBuchungsart.UMBUCHUNG, dv, db,
+                StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE }, rs);
         addToList(liste, ergebnis);
       }
       else
       {
         @SuppressWarnings("unchecked")
-        ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-            new Object[] { konto.getBuchungsartId(), ArtBuchungsart.UMBUCHUNG, dv, db,  
-                StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE}, rs);
+        ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service
+            .execute(sql,
+                new Object[] { konto.getBuchungsartId(),
+                    ArtBuchungsart.UMBUCHUNG, dv, db, StatusBuchungsart.AUTO,
+                    StatusBuchungsart.ACTIVE },
+                rs);
         addToList(liste, ergebnis);
       }
     }
@@ -548,7 +551,8 @@ public class KontoControl extends FilterControl
         sql += "WHERE (k.buchungsart IS NULL OR k.buchungsart = ?) ";
       }
       sql += "AND ba.art = ? AND ba.status != ? ";
-      if ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
+      if ((Integer) Einstellungen.getEinstellung(
+          Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
       {
         sql += "ORDER BY nummer";
       }
@@ -560,20 +564,21 @@ public class KontoControl extends FilterControl
       if (konto.getBuchungsart() == null)
       {
         @SuppressWarnings("unchecked")
-        ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-            new Object[] { ArtBuchungsart.UMBUCHUNG, StatusBuchungsart.INACTIVE }, rs);    
+        ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service
+            .execute(sql, new Object[] { ArtBuchungsart.UMBUCHUNG,
+                StatusBuchungsart.INACTIVE }, rs);
         addToList(liste, ergebnis);
       }
       else
       {
         @SuppressWarnings("unchecked")
-        ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-            new Object[] { konto.getBuchungsartId(), ArtBuchungsart.UMBUCHUNG, 
-                StatusBuchungsart.INACTIVE }, rs);
+        ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service
+            .execute(sql, new Object[] { konto.getBuchungsartId(),
+                ArtBuchungsart.UMBUCHUNG, StatusBuchungsart.INACTIVE }, rs);
         addToList(liste, ergebnis);
       }
     }
-    
+
     Buchungsart b = konto.getBuchungsart();
     if (liste != null && b != null && !liste.contains(b))
       liste.add(b);
@@ -592,10 +597,10 @@ public class KontoControl extends FilterControl
         buchungsart.setAttribute("bezeichnung");
         break;
     }
-    
+
     return buchungsart;
   }
-  
+
   private Long getSelectedBuchungsArtId() throws ApplicationException
   {
     try
@@ -613,8 +618,9 @@ public class KontoControl extends FilterControl
       throw new ApplicationException(meldung, ex);
     }
   }
-  
-  private void addToList(ArrayList<Buchungsart> liste, ArrayList<Buchungsart> ergebnis)
+
+  private void addToList(ArrayList<Buchungsart> liste,
+      ArrayList<Buchungsart> ergebnis)
   {
     int size = ergebnis.size();
     for (int i = 0; i < size; i++)
@@ -622,7 +628,7 @@ public class KontoControl extends FilterControl
       liste.add(ergebnis.get(i));
     }
   }
-  
+
   public SelectInput getKontoArt() throws RemoteException
   {
     if (kontoart != null)
@@ -634,10 +640,11 @@ public class KontoControl extends FilterControl
     {
       art = getKonto().getKontoArt();
     }
-    ArrayList<Kontoart> values = new ArrayList<Kontoart>(Arrays.asList(Kontoart.values()));
+    ArrayList<Kontoart> values = new ArrayList<Kontoart>(
+        Arrays.asList(Kontoart.values()));
     values.remove(Kontoart.LIMIT);
     values.remove(Kontoart.LIMIT_RUECKLAGE);
-    kontoart = new SelectInput(values, art);   
+    kontoart = new SelectInput(values, art);
     kontoart.addListener(new Listener()
     {
 
@@ -649,8 +656,7 @@ public class KontoControl extends FilterControl
     });
     return kontoart;
   }
-  
-  
+
   public Input getAnlagenart() throws RemoteException
   {
     if (anlagenart != null)
@@ -668,7 +674,8 @@ public class KontoControl extends FilterControl
     {
       anlagenart = new BuchungsartInput().getBuchungsartInput(anlagenart,
           getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART,
-          (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
+          (Integer) Einstellungen
+              .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     }
     anlagenart.addListener(new AnlagenartListener());
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
@@ -683,7 +690,7 @@ public class KontoControl extends FilterControl
     }
     return anlagenart;
   }
-  
+
   private Long getSelectedAnlagenartId() throws ApplicationException
   {
     try
@@ -701,7 +708,7 @@ public class KontoControl extends FilterControl
       throw new ApplicationException(meldung, ex);
     }
   }
-  
+
   public Input getBuchungsklasse() throws RemoteException
   {
     if (buchungsklasse != null)
@@ -711,7 +718,8 @@ public class KontoControl extends FilterControl
     DBIterator<Buchungsklasse> list = Einstellungen.getDBService()
         .createList(Buchungsklasse.class);
     list.setOrder(getBuchungartSortOrder());
-    buchungsklasse = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
+    buchungsklasse = new SelectInput(
+        list != null ? PseudoIterator.asList(list) : null,
         getKonto().getBuchungsklasse());
     buchungsklasse.setAttribute(getBuchungartAttribute());
     buchungsklasse.setPleaseChoose("Bitte auswählen");
@@ -725,12 +733,13 @@ public class KontoControl extends FilterControl
     }
     return buchungsklasse;
   }
-  
+
   private Long getSelectedBuchungsklasseId() throws ApplicationException
   {
     try
     {
-      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse()
+          .getValue();
       if (null == buchungsKlasse)
         return null;
       Long id = Long.valueOf(buchungsKlasse.getID());
@@ -743,7 +752,7 @@ public class KontoControl extends FilterControl
       throw new ApplicationException(meldung, ex);
     }
   }
-  
+
   public Input getAfaart() throws RemoteException
   {
     if (afaart != null)
@@ -760,8 +769,8 @@ public class KontoControl extends FilterControl
     else
     {
       afaart = new BuchungsartInput().getBuchungsartInput(afaart,
-          getKonto().getAfaart(), buchungsarttyp.AFAART,
-          (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
+          getKonto().getAfaart(), buchungsarttyp.AFAART, (Integer) Einstellungen
+              .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     }
     afaart.addListener(new AnlagenartListener());
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
@@ -776,7 +785,7 @@ public class KontoControl extends FilterControl
     }
     return afaart;
   }
-  
+
   private Long getSelectedAfaartId() throws ApplicationException
   {
     try
@@ -803,8 +812,10 @@ public class KontoControl extends FilterControl
     }
     betrag = new DecimalInput(getKonto().getBetrag(),
         Einstellungen.DECIMALFORMAT);
-    betrag.addListener(new Listener(){
-      public void handleEvent (Event e) {
+    betrag.addListener(new Listener()
+    {
+      public void handleEvent(Event e)
+      {
         try
         {
           if (getBetrag().getValue() != null)
@@ -817,7 +828,7 @@ public class KontoControl extends FilterControl
           Logger.error("Fehler beim Konto auto button Listener", re);
         }
       }
-     });
+    });
     if (getKontoArt().getValue() != Kontoart.ANLAGE)
     {
       betrag.setValue(null);
@@ -847,7 +858,7 @@ public class KontoControl extends FilterControl
     }
     return nutzungsdauer;
   }
-  
+
   public Input getKommentar() throws RemoteException
   {
     if (kommentar != null && !kommentar.getControl().isDisposed())
@@ -858,7 +869,7 @@ public class KontoControl extends FilterControl
     kommentar.setHeight(90);
     return kommentar;
   }
-  
+
   public DecimalInput getAfaStart() throws RemoteException
   {
     if (afastart != null)
@@ -867,9 +878,9 @@ public class KontoControl extends FilterControl
     }
     afastart = new DecimalInput(getKonto().getAfaStart(),
         Einstellungen.DECIMALFORMAT);
-    if (getKontoArt().getValue() != Kontoart.ANLAGE ||
-        getAfaMode().getValue() == null ||
-        ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
+    if (getKontoArt().getValue() != Kontoart.ANLAGE
+        || getAfaMode().getValue() == null
+        || ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
     {
       afastart.setMandatory(false);
       afastart.setValue(null);
@@ -881,7 +892,7 @@ public class KontoControl extends FilterControl
     }
     return afastart;
   }
-  
+
   public DecimalInput getAfaDauer() throws RemoteException
   {
     if (afadauer != null)
@@ -890,9 +901,9 @@ public class KontoControl extends FilterControl
     }
     afadauer = new DecimalInput(getKonto().getAfaDauer(),
         Einstellungen.DECIMALFORMAT);
-    if (getKontoArt().getValue() != Kontoart.ANLAGE ||
-        getAfaMode().getValue() == null ||
-        ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
+    if (getKontoArt().getValue() != Kontoart.ANLAGE
+        || getAfaMode().getValue() == null
+        || ((AfaMode) getAfaMode().getValue()).getKey() != AfaMode.ANGEPASST)
     {
       afadauer.setMandatory(false);
       afadauer.setValue(null);
@@ -904,7 +915,7 @@ public class KontoControl extends FilterControl
     }
     return afadauer;
   }
-  
+
   public DecimalInput getAfaRestwert() throws RemoteException
   {
     if (afarestwert != null)
@@ -920,7 +931,7 @@ public class KontoControl extends FilterControl
     }
     return afarestwert;
   }
-  
+
   public SelectInput getAfaMode() throws RemoteException
   {
     if (afamode != null)
@@ -930,16 +941,18 @@ public class KontoControl extends FilterControl
     if (getKonto().getAfaMode() == null)
       afamode = new SelectInput(AfaMode.getArray(), null);
     else
-      afamode = new SelectInput(AfaMode.getArray(), 
-        new AfaMode(getKonto().getAfaMode()));
+      afamode = new SelectInput(AfaMode.getArray(),
+          new AfaMode(getKonto().getAfaMode()));
     afamode.setPleaseChoose("Bitte auswählen");
-    afamode.addListener(new Listener(){
-      public void handleEvent (Event e) {
+    afamode.addListener(new Listener()
+    {
+      public void handleEvent(Event e)
+      {
         try
         {
-          if (getAfaMode().getValue() != null &&
-              ((AfaMode) getAfaMode().getValue()).getKey() ==
-              AfaMode.ANGEPASST)
+          if (getAfaMode().getValue() != null
+              && ((AfaMode) getAfaMode().getValue())
+                  .getKey() == AfaMode.ANGEPASST)
           {
             getAfaStart().enable();
             getAfaStart().setMandatory(true);
@@ -976,7 +989,7 @@ public class KontoControl extends FilterControl
     }
     return afamode;
   }
-  
+
   public SelectInput getAnlagenzweck() throws RemoteException
   {
     if (anlagenzweck != null)
@@ -1014,10 +1027,10 @@ public class KontoControl extends FilterControl
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
-    
+
     return "ORDER BY bezeichnung";
   }
-  
+
   public String getBuchungartAttribute()
   {
     try
@@ -1038,10 +1051,10 @@ public class KontoControl extends FilterControl
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
-    
+
     return "bezeichnung";
   }
-  
+
   public class AnlagenartListener implements Listener
   {
 
@@ -1071,7 +1084,7 @@ public class KontoControl extends FilterControl
       }
     }
   }
-  
+
   public void refreshGui()
   {
     try
@@ -1087,7 +1100,8 @@ public class KontoControl extends FilterControl
         getNutzungsdauer().enable();
         getAnschaffung().enable();
         getAfaRestwert().enable();
-        getAfaRestwert().setValue((Boolean) Einstellungen.getEinstellung(Property.AFARESTWERT));
+        getAfaRestwert().setValue(
+            (Boolean) Einstellungen.getEinstellung(Property.AFARESTWERT));
         if (getBetrag().getValue() == null)
           getAutobutton().setEnabled(true);
         getAfabutton().setEnabled(false);
@@ -1141,12 +1155,12 @@ public class KontoControl extends FilterControl
       Logger.error("Fehler", e);
     }
   }
-  
+
   public Button getAutobutton() throws RemoteException
   {
     if (autobutton != null)
       return autobutton;
-    
+
     autobutton = new Button("Auto Anlagenwert", new Action()
     {
 
@@ -1166,12 +1180,12 @@ public class KontoControl extends FilterControl
 
     return autobutton;
   }
-  
+
   public Button getAfabutton() throws RemoteException
   {
     if (afabutton != null)
       return afabutton;
-    
+
     afabutton = new Button("Auto AfA", new Action()
     {
 
@@ -1191,7 +1205,7 @@ public class KontoControl extends FilterControl
 
     return afabutton;
   }
-  
+
   private void handleAuto()
   {
     Double betrag = 0d;
@@ -1202,8 +1216,7 @@ public class KontoControl extends FilterControl
       DBIterator<Buchung> buchungenIt = service.createList(Buchung.class);
       buchungenIt.join("buchungsart");
       buchungenIt.addFilter("buchungsart.id = buchung.buchungsart");
-      buchungenIt.addFilter("konto = ?",
-          new Object[] { konto.getID() });
+      buchungenIt.addFilter("konto = ?", new Object[] { konto.getID() });
       buchungenIt.addFilter("buchungsart.abschreibung = FALSE");
       buchungenIt.addFilter("datum <= ?",
           new Object[] { new java.sql.Date(new Date().getTime()) });
@@ -1226,7 +1239,7 @@ public class KontoControl extends FilterControl
       Logger.error("Fehler beim automatischen Bestimmen des Anlagenwerts");
     }
   }
-  
+
   private void handleAfa()
   {
     try
@@ -1240,7 +1253,8 @@ public class KontoControl extends FilterControl
       Date anschaffung = (Date) getAnschaffung().getValue();
       if (anschaffung == null)
       {
-        GUI.getStatusBar().setErrorText("Anschaffungsdatum fehlt, bitte eingeben!");
+        GUI.getStatusBar()
+            .setErrorText("Anschaffungsdatum fehlt, bitte eingeben!");
         return;
       }
       Integer nutzungsdauer = (Integer) getNutzungsdauer().getValue();
@@ -1259,7 +1273,9 @@ public class KontoControl extends FilterControl
       calendar.setTime(anschaffung);
       Integer monatAnschaffung = calendar.get(Calendar.MONTH);
       Integer year = calendar.get(Calendar.YEAR);
-      Date startGJ = Datum.toDate((String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + year);
+      Date startGJ = Datum.toDate(
+          (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+              + year);
       calendar.setTime(startGJ);
       Integer monatStartGJ = calendar.get(Calendar.MONTH);
       Integer monate = 12;
@@ -1274,17 +1290,18 @@ public class KontoControl extends FilterControl
       }
       else if (nutzungsdauer == 1)
       {
-        Double start = ((betrag - restwert)*monate)/12;
+        Double start = ((betrag - restwert) * monate) / 12;
         getAfaStart().setValue(start);
         getAfaDauer().setValue(betrag - start - restwert);
       }
       else
       {
-        if(monate == 12)
-          getAfaStart().setValue(((betrag - restwert))/(nutzungsdauer));
+        if (monate == 12)
+          getAfaStart().setValue(((betrag - restwert)) / (nutzungsdauer));
         else
-          getAfaStart().setValue(((betrag - restwert)*monate)/(nutzungsdauer*12));
-        getAfaDauer().setValue((betrag - restwert)/nutzungsdauer);
+          getAfaStart()
+              .setValue(((betrag - restwert) * monate) / (nutzungsdauer * 12));
+        getAfaDauer().setValue((betrag - restwert) / nutzungsdauer);
       }
     }
     catch (Exception e)
@@ -1292,5 +1309,5 @@ public class KontoControl extends FilterControl
       GUI.getStatusBar().setErrorText("Fehler bei der AfA Berechnung");
     }
   }
-  
+
 }

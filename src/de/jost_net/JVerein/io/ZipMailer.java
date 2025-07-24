@@ -114,7 +114,8 @@ public class ZipMailer
               (String) Einstellungen.getEinstellung(Property.SMTPAUTHUSER),
               Einstellungen.getSmtpAuthPwd(),
               (String) Einstellungen.getEinstellung(Property.SMTPFROMADDRESS),
-              (String) Einstellungen.getEinstellung(Property.SMTPFROMANZEIGENAME),
+              (String) Einstellungen
+                  .getEinstellung(Property.SMTPFROMANZEIGENAME),
               (String) Einstellungen.getEinstellung(Property.MAILALWAYSBCC),
               (String) Einstellungen.getEinstellung(Property.MAILALWAYSCC),
               (Boolean) Einstellungen.getEinstellung(Property.SMTPSSL),
@@ -133,7 +134,7 @@ public class ZipMailer
           for (@SuppressWarnings("rawtypes")
           Enumeration e = zip.entries(); e.hasMoreElements();)
           {
-            if(isInterrupted())
+            if (isInterrupted())
             {
               monitor.setStatus(ProgressMonitor.STATUS_ERROR);
               monitor.setStatusText("Mailversand abgebrochen");
@@ -164,10 +165,10 @@ public class ZipMailer
               String artId = teile[2];
               String mail = teile[3];
               String dateiname = teile[4];
-              
+
               Rechnung re = null;
               Spendenbescheinigung spb = null;
-              
+
               // Mitglied Map hinzufügen
               Mitglied m = (Mitglied) Einstellungen.getDBService()
                   .createObject(Mitglied.class, id);
@@ -224,13 +225,13 @@ public class ZipMailer
                       VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, m) + ".pdf";
                   break;
                 case "mahnung":
-                  finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.MAHNUNG_MITGLIED, re, m) + ".pdf";
+                  finaldateiname = VorlageUtil
+                      .getName(VorlageTyp.MAHNUNG_MITGLIED, re, m) + ".pdf";
                   break;
                 case "spendenbescheinigung":
                   finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb, m)
-                      + ".pdf";
+                      VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb,
+                      m) + ".pdf";
                   break;
                 case "freiesformular":
                   finaldateiname = VorlageUtil.getName(
@@ -240,7 +241,8 @@ public class ZipMailer
                   break;
                 case "kontoauszug":
                   finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null, m) + ".pdf";
+                      VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null, m)
+                      + ".pdf";
                   break;
                 default:
                   StringWriter wdateiname = new StringWriter();
@@ -274,22 +276,23 @@ public class ZipMailer
                   monitor.log(mail + " - " + ae.getMessage());
                 }
                 sentCount++;
-                      
+
                 Mail ml = (Mail) Einstellungen.getDBService()
-                        .createObject(Mail.class, null);
+                    .createObject(Mail.class, null);
                 ml.setBetreff(wtext1.toString());
                 ml.setTxt(wtext2.toString());
                 ml.setBearbeitung(new Timestamp(new Date().getTime()));
                 ml.setVersand(new Timestamp(new Date().getTime()));
                 ml.store();
-                
-                MailEmpfaenger me = (MailEmpfaenger) Einstellungen.getDBService()
-                        .createObject(MailEmpfaenger.class, null);
+
+                MailEmpfaenger me = (MailEmpfaenger) Einstellungen
+                    .getDBService().createObject(MailEmpfaenger.class, null);
                 me.setMitglied(m);
                 me.setMail(ml);
                 me.setVersand(new Timestamp(new Date().getTime()));
                 me.store();
-                if ((Boolean) Einstellungen.getEinstellung(Property.ANHANGSPEICHERN))
+                if ((Boolean) Einstellungen
+                    .getEinstellung(Property.ANHANGSPEICHERN))
                 {
                   ma.setMail(ml);
                   ma.store();

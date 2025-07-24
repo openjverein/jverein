@@ -66,7 +66,6 @@ public interface Sollbuchung extends JVereinDBObject
 
   public static final String T_RECHNUNG = TABLE_NAME + "." + RECHNUNG;
 
-
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException;
 
   public void setAbrechnungslauf(Abrechnungslauf abrechnungslauf)

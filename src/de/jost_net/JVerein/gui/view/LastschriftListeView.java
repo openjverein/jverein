@@ -35,7 +35,7 @@ public class LastschriftListeView extends AbstractView
     GUI.getView().setTitle("Lastschriften");
 
     LastschriftControl control = new LastschriftControl(this);
-    
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
@@ -61,7 +61,7 @@ public class LastschriftListeView extends AbstractView
     group.addButtonArea(fbuttons);
     zurueck.setToolTipText("Datumsbereich zurück");
     vor.setToolTipText("Datumsbereich vowärts");
-    
+
     control.getLastschriftList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();

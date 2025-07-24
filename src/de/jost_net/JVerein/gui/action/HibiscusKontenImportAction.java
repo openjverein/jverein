@@ -72,8 +72,8 @@ public class HibiscusKontenImportAction implements Action
     try
     {
       de.jost_net.JVerein.rmi.Konto jvereinkonto = (de.jost_net.JVerein.rmi.Konto) Einstellungen
-          .getDBService().createObject(de.jost_net.JVerein.rmi.Konto.class,
-              null);
+          .getDBService()
+          .createObject(de.jost_net.JVerein.rmi.Konto.class, null);
       jvereinkonto.setNummer(k.getKontonummer());
       jvereinkonto.setBezeichnung(k.getBezeichnung());
       jvereinkonto.setHibiscusId(Integer.valueOf(k.getID()));

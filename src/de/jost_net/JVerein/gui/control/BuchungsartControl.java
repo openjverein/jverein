@@ -69,8 +69,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class BuchungsartControl extends FilterControl
-    implements Savable
+public class BuchungsartControl extends FilterControl implements Savable
 {
   private JVereinTablePart buchungsartList;
 
@@ -95,7 +94,6 @@ public class BuchungsartControl extends FilterControl
   private TextInput suchbegriff;
 
   private CheckboxInput regexp;
-
 
   public BuchungsartControl(AbstractView view)
   {
@@ -148,7 +146,7 @@ public class BuchungsartControl extends FilterControl
         new ArtBuchungsart(getBuchungsart().getArt()));
     return art;
   }
-  
+
   public SelectInput getStatus() throws RemoteException
   {
     if (status != null)
@@ -190,14 +188,14 @@ public class BuchungsartControl extends FilterControl
     spende.addListener(event -> {
       steuer.setEnabled(!(boolean) spende.getValue());
 
-        if ((Boolean) spende.getValue()) 
-        {
-          steuer.setValue(null);
-        }
+      if ((Boolean) spende.getValue())
+      {
+        steuer.setValue(null);
+      }
     });
     return spende;
   }
-  
+
   public CheckboxInput getAbschreibung() throws RemoteException
   {
     if (abschreibung != null)
@@ -220,14 +218,14 @@ public class BuchungsartControl extends FilterControl
     steuer.setPleaseChoose("Keine Steuer");
 
     // Disable steuer for type spende
-    if (getBuchungsart().getSpende()) 
+    if (getBuchungsart().getSpende())
     {
       steuer.setValue(null);
       steuer.disable();
     }
     return steuer;
   }
-  
+
   public String getBuchungartAttribute()
   {
     try
@@ -248,7 +246,7 @@ public class BuchungsartControl extends FilterControl
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
-    
+
     return "bezeichnung";
   }
 
@@ -270,10 +268,10 @@ public class BuchungsartControl extends FilterControl
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
-    
+
     return "ORDER BY bezeichnung";
   }
-  
+
   public Input getBuchungsklasse() throws RemoteException
   {
     if (buchungsklasse != null)
@@ -283,7 +281,8 @@ public class BuchungsartControl extends FilterControl
     DBIterator<Buchungsklasse> list = Einstellungen.getDBService()
         .createList(Buchungsklasse.class);
     list.setOrder(getBuchungartSortOrder());
-    buchungsklasse = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
+    buchungsklasse = new SelectInput(
+        list != null ? PseudoIterator.asList(list) : null,
         getBuchungsart().getBuchungsklasse());
     buchungsklasse.setValue(getBuchungsart().getBuchungsklasse());
     buchungsklasse.setAttribute(getBuchungartAttribute());
@@ -459,10 +458,10 @@ public class BuchungsartControl extends FilterControl
     DBIterator<Buchungsart> buchungsarten = service
         .createList(Buchungsart.class);
 
-    if (isSuchStatusAktiv() && 
-        getSuchStatus(null).getValue().toString()
-            .equalsIgnoreCase("Ohne Deaktiviert"))
-      buchungsarten.addFilter("status != ?", new Object[] { StatusBuchungsart.INACTIVE });
+    if (isSuchStatusAktiv() && getSuchStatus(null).getValue().toString()
+        .equalsIgnoreCase("Ohne Deaktiviert"))
+      buchungsarten.addFilter("status != ?",
+          new Object[] { StatusBuchungsart.INACTIVE });
     if (isSuchnameAktiv() && !getSuchname().getValue().equals(""))
     {
       String text = "%" + ((String) getSuchname().getValue()).toUpperCase()
@@ -476,15 +475,18 @@ public class BuchungsartControl extends FilterControl
       buchungsarten.addFilter("UPPER(bezeichnung) like ?",
           new Object[] { text });
     }
-    if (isSuchBuchungsartArtAktiv() && getSuchBuchungsartArt().getValue() != null)
+    if (isSuchBuchungsartArtAktiv()
+        && getSuchBuchungsartArt().getValue() != null)
     {
       ArtBuchungsart art = (ArtBuchungsart) getSuchBuchungsartArt().getValue();
       buchungsarten.addFilter("art = ?", new Object[] { art.getKey() });
     }
-    if (isSuchBuchungsklasseAktiv() && getSuchBuchungsklasse().getValue() != null)
+    if (isSuchBuchungsklasseAktiv()
+        && getSuchBuchungsklasse().getValue() != null)
     {
       Buchungsklasse tmp = (Buchungsklasse) getSuchBuchungsklasse().getValue();
-      buchungsarten.addFilter("buchungsklasse = ?", new Object[] { tmp.getID() });
+      buchungsarten.addFilter("buchungsklasse = ?",
+          new Object[] { tmp.getID() });
     }
     buchungsarten.setOrder("ORDER BY nummer");
     return buchungsarten;
@@ -569,16 +571,17 @@ public class BuchungsartControl extends FilterControl
           reporter.addHeaderColumn("Buchungsklasse", Element.ALIGN_LEFT, 80,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Spende", Element.ALIGN_CENTER, 20,
-              BaseColor.LIGHT_GRAY);          
+              BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Steuer", Element.ALIGN_CENTER, 25,
-              BaseColor.LIGHT_GRAY);                        
+              BaseColor.LIGHT_GRAY);
           reporter.createHeader();
           while (it.hasNext())
           {
             Buchungsart b = it.next();
             reporter.addColumn(b.getNummer() + "", Element.ALIGN_RIGHT);
             reporter.addColumn(b.getBezeichnung(), Element.ALIGN_LEFT);
-            reporter.addColumn(ArtBuchungsart.get(b.getArt()), Element.ALIGN_LEFT);
+            reporter.addColumn(ArtBuchungsart.get(b.getArt()),
+                Element.ALIGN_LEFT);
             if (b.getBuchungsklasse() != null)
             {
               reporter.addColumn(b.getBuchungsklasse().getBezeichnung(),

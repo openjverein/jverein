@@ -52,8 +52,7 @@ public class FormularExportAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar()
-          .setErrorText("Fehler beim exportieren des Formulars");
+      GUI.getStatusBar().setErrorText("Fehler beim exportieren des Formulars");
     }
   }
 }

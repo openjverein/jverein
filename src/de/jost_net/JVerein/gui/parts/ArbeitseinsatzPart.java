@@ -46,11 +46,10 @@ public class ArbeitseinsatzPart implements Part
   private DecimalInput stunden = null;
 
   private TextInput bemerkung = null;
-  
+
   private AbstractInput mitglied;
-  
+
   private boolean mitMitglied;
-  
 
   public ArbeitseinsatzPart(Arbeitseinsatz arbeitseinsatz, boolean mitMitglied)
   {
@@ -97,8 +96,8 @@ public class ArbeitseinsatzPart implements Part
     {
       return stunden;
     }
-    stunden = new DecimalInput(arbeitseinsatz.getStunden(), new DecimalFormat(
-        "###,###.##"));
+    stunden = new DecimalInput(arbeitseinsatz.getStunden(),
+        new DecimalFormat("###,###.##"));
     stunden.setName("Stunden");
     stunden.setMandatory(true);
     return stunden;
@@ -114,7 +113,7 @@ public class ArbeitseinsatzPart implements Part
     bemerkung.setName("Bemerkung");
     return bemerkung;
   }
-  
+
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
@@ -124,7 +123,7 @@ public class ArbeitseinsatzPart implements Part
 
     if (arbeitseinsatz.getMitglied() != null)
     {
-      Mitglied[] mitgliedArray = {arbeitseinsatz.getMitglied()};
+      Mitglied[] mitgliedArray = { arbeitseinsatz.getMitglied() };
       mitglied = new SelectInput(mitgliedArray, arbeitseinsatz.getMitglied());
       mitglied.setEnabled(false);
     }

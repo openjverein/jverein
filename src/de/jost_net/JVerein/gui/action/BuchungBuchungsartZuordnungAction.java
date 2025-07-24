@@ -117,7 +117,7 @@ public class BuchungBuchungsartZuordnungAction implements Action
                 .format(", %d Buchungen wurden nicht überschrieben. ", counter);
           }
           GUI.getStatusBar()
-          .setSuccessText("Buchungsarten zugeordnet" + protecttext);
+              .setSuccessText("Buchungsarten zugeordnet" + protecttext);
         }
       }
     }
@@ -132,8 +132,9 @@ public class BuchungBuchungsartZuordnungAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText("Fehler bei der Zuordnung der Buchungsart: " 
-          + e.getLocalizedMessage());
+      GUI.getStatusBar()
+          .setErrorText("Fehler bei der Zuordnung der Buchungsart: "
+              + e.getLocalizedMessage());
     }
   }
 }

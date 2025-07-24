@@ -90,12 +90,12 @@ public class StringTool
       string = fillChar + string;
     return string;
   }
-  
+
   public static String getStringWithMaxLength(String in, int max)
   {
-    if (in.length()>max)
+    if (in.length() > max)
     {
-      return in.substring(0,max);
+      return in.substring(0, max);
     }
     return in;
   }

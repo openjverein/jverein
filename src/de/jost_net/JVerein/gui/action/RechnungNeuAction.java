@@ -51,8 +51,8 @@ public class RechnungNeuAction implements Action
       {
         try
         {
-          context = Einstellungen.getDBService()
-              .createObject(Sollbuchung.class, mkn.getID());
+          context = Einstellungen.getDBService().createObject(Sollbuchung.class,
+              mkn.getID());
         }
         catch (RemoteException e)
         {
@@ -121,7 +121,8 @@ public class RechnungNeuAction implements Action
         GUI.getStatusBar().setErrorText("Keine Rechnung erstellt, alle " + skip
             + " Sollbuchungen enthalten bereits Rechnungen.");
       }
-      else {
+      else
+      {
         GUI.getCurrentView().reload();
         GUI.getStatusBar().setSuccessText(erstellt + " Rechnung(en) erstellt"
             + (skip > 0 ? ", " + skip + " vorhandene übersprungen." : "."));

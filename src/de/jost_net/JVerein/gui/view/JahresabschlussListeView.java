@@ -41,9 +41,7 @@ public class JahresabschlussListeView extends AbstractView
         DokumentationUtil.JAHRESABSCHLUSS, false, "question-circle.png");
     buttons.addButton("Neu",
         new NewAction(JahresabschlussDetailView.class, Jahresabschluss.class),
-        null,
-        false,
-        "document-new.png");
+        null, false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

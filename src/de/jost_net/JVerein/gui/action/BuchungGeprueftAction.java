@@ -59,7 +59,8 @@ public class BuchungGeprueftAction implements Action
 
     try
     {
-      boolean sync = (Boolean) Einstellungen.getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN);
+      boolean sync = (Boolean) Einstellungen
+          .getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN);
       for (Buchung b : buchungen)
       {
         b.setGeprueft(geprueft);

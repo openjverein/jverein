@@ -38,8 +38,8 @@ public class SpendenbescheinigungListeView extends AbstractView
     GUI.getView().setTitle("Spendenbescheinigungen");
 
     SpendenbescheinigungControl control = new SpendenbescheinigungControl(this);
-    control.init("spendenliste." , null, null);
-    
+    control.init("spendenliste.", null, null);
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
@@ -51,7 +51,7 @@ public class SpendenbescheinigungListeView extends AbstractView
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addLabelPair("Bescheinigungsdatum von", control.getDatumvon());
     middle.addLabelPair("Bescheinigungsdatum bis", control.getDatumbis());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Spendedatum von", control.getEingabedatumvon());
     right.addLabelPair("Spendedatum bis", control.getEingabedatumbis());
@@ -84,8 +84,9 @@ public class SpendenbescheinigungListeView extends AbstractView
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
     buttons.addButton(control.getCSVExportButton());
     buttons.addButton(control.getPDFExportButton());
-    buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungNeuAction(Spendenart.SACHSPENDE), null,
-        false, "document-new.png");
+    buttons.addButton("Neu (Sachspende)",
+        new SpendenbescheinigungNeuAction(Spendenart.SACHSPENDE), null, false,
+        "document-new.png");
     buttons.addButton("Neu (automatisch)",
         new StartViewAction(SpendenbescheinigungAutoNeuView.class), null, false,
         "document-new.png");

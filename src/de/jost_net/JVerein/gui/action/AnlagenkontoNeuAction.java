@@ -30,11 +30,11 @@ import de.willuhn.util.ApplicationException;
 
 public class AnlagenkontoNeuAction implements Action
 {
-  
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
- 
+
     if (context == null || !(context instanceof Buchung))
     {
       throw new ApplicationException("Keine Buchung ausgewählt");
@@ -51,17 +51,17 @@ public class AnlagenkontoNeuAction implements Action
       if (konto != null && !konto.isNewObject())
       {
         // Anfangsbestand von 0 für das Anlagegut erstellen.
-        Anfangsbestand anf = (Anfangsbestand) Einstellungen.getDBService().createObject(
-            Anfangsbestand.class, null);
+        Anfangsbestand anf = (Anfangsbestand) Einstellungen.getDBService()
+            .createObject(Anfangsbestand.class, null);
         anf.setKonto(konto);
         anf.setDatum(buchung.getDatum());
         anf.setBetrag(0d);
         anf.store();
-        
+
         // Buchung auf das Anlagenkonto erstellen, betrag = -betrag der
         // Ausgangsbuchung.
-        Buchung bu = (Buchung) Einstellungen.getDBService().
-            createObject(Buchung.class, null);
+        Buchung bu = (Buchung) Einstellungen.getDBService()
+            .createObject(Buchung.class, null);
         bu.setKonto(konto);
         bu.setName(buchung.getName());
         // Als Betrag müssen wir den Nettobetrag nehmen.

@@ -34,8 +34,8 @@ public class LastschriftDeleteAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null
-        || (!(context instanceof Lastschrift) && !(context instanceof Lastschrift[])))
+    if (context == null || (!(context instanceof Lastschrift)
+        && !(context instanceof Lastschrift[])))
     {
       throw new ApplicationException("Keine Lastschrift ausgewählt");
     }

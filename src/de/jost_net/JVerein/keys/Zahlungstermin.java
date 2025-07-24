@@ -23,7 +23,8 @@ package de.jost_net.JVerein.keys;
 public enum Zahlungstermin
 {
 
-  MONATLICH(1, "Monatlich", new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }), //
+  MONATLICH(1, "Monatlich",
+      new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }), //
   VIERTELJAEHRLICH1(31, "Vierteljährlich (Jan./Apr./Juli/Okt)", //
       new int[] { 1, 4, 7, 10 }), //
   VIERTELJAEHRLICH2(32, "Vierteljährlich (Feb./Mai /Aug./Nov.)", //

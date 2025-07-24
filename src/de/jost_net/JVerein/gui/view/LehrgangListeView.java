@@ -44,11 +44,11 @@ public class LehrgangListeView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addInput(control.getSuchLehrgangsart());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
-    
+
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),
         control.getDatumbis());
@@ -67,8 +67,8 @@ public class LehrgangListeView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LEHRGANG, false, "question-circle.png");
     buttons.addButton("Neu",
-        new NewAction(LehrgangDetailView.class, Lehrgang.class),
-        control, false, "document-new.png");
+        new NewAction(LehrgangDetailView.class, Lehrgang.class), control, false,
+        "document-new.png");
     buttons.paint(this.getParent());
   }
 }

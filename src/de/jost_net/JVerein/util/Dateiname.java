@@ -43,7 +43,8 @@ import de.jost_net.JVerein.rmi.Mitglied;
  * <dt>$v</dt>
  * <dd>Vorname des Mitglieds. Wird nicht immer gefüllt. Ggfls. Leerstring.</dd>
  * <dt>$o</dt>
- * <dd>Bezeichnung des Dokuments. Wird nicht immer gefüllt. Ggfls. Leerstring.</dd>
+ * <dd>Bezeichnung des Dokuments. Wird nicht immer gefüllt. Ggfls.
+ * Leerstring.</dd>
  * </dl>
  */
 
@@ -87,18 +88,18 @@ public class Dateiname
    * Konstruktor für die Erzeugung eines Dateinames für ein Mitgliedsdokument
    * 
    * @param mitglied
-   *        Das Mitglied
+   *          Das Mitglied
    * @param datum
-   *        Datum des Dokuments
+   *          Datum des Dokuments
    * @param aufgabe
-   *        Aufgabe (z.B. Spendenbescheinigung)
+   *          Aufgabe (z.B. Spendenbescheinigung)
    * @param muster
-   *        Dateinamenmuster
+   *          Dateinamenmuster
    * @param extension
-   *        Extension der Datei
+   *          Extension der Datei
    */
-  public Dateiname(Mitglied mitglied, Date datum, String aufgabe,
-      String muster, String extension)
+  public Dateiname(Mitglied mitglied, Date datum, String aufgabe, String muster,
+      String extension)
   {
     this.mitgliedName = "";
     this.mitgliedVorname = "";
@@ -128,17 +129,17 @@ public class Dateiname
    * Konstruktor für die Erzeugung eines Dateinames für ein Mitglied
    * 
    * @param name
-   *        Name des Mitglieds
+   *          Name des Mitglieds
    * @param vorname
-   *        Vorname des Mitglieds
+   *          Vorname des Mitglieds
    * @param datum
-   *        Datum des Dokuments
+   *          Datum des Dokuments
    * @param aufgabe
-   *        Aufgabe (z.B. Spendenbescheinigung)
+   *          Aufgabe (z.B. Spendenbescheinigung)
    * @param muster
-   *        Dateinamenmuster
+   *          Dateinamenmuster
    * @param extension
-   *        Extension der Datei
+   *          Extension der Datei
    */
   public Dateiname(String name, String vorname, Date datum, String aufgabe,
       String muster, String extension)

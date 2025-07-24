@@ -40,10 +40,9 @@ public class RechnungMenu extends ContextMenu
   public RechnungMenu(JVereinTablePart table)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(RechnungDetailView.class, table),
-        "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new RechnungDeleteAction(), "user-trash-full.png"));
+        new EditAction(RechnungDetailView.class, table), "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("Löschen", new RechnungDeleteAction(),
+        "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));

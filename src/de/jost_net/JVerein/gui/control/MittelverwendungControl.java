@@ -524,8 +524,8 @@ public class MittelverwendungControl extends AbstractSaldoControl
       flussIt.addColumn("SUM(COALESCE("
           + "CASE WHEN buchungsart.art = ? AND konto.kontoart = ? AND buchung.betrag > 0 "
           + "THEN CAST(-buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2)) ELSE 0 END "
-          + ",0)) AS steuereinnahme",
-          ArtBuchungsart.UMBUCHUNG, Kontoart.GELD.getKey());
+          + ",0)) AS steuereinnahme", ArtBuchungsart.UMBUCHUNG,
+          Kontoart.GELD.getKey());
 
       // Die Steuer bei Kauf von Anlagevermögen mit Steuer
       // Steuer Ausgabe bei Umbuchungen < 0 auf dem Geldkonto
@@ -611,8 +611,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
 
     ruecklageIt.addFilter("buchung.datum >= ?", datumvon);
     ruecklageIt.addFilter("buchung.datum <= ?", datumbis);
-    ruecklageIt.addFilter("konto.kontoart > ?",
-        Kontoart.LIMIT.getKey());
+    ruecklageIt.addFilter("konto.kontoart > ?", Kontoart.LIMIT.getKey());
     ruecklageIt.addFilter("konto.kontoart < ?",
         Kontoart.LIMIT_RUECKLAGE.getKey());
 

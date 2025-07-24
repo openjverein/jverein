@@ -20,7 +20,8 @@ public enum VorlageTyp
 {
   SPENDENBESCHEINIGUNG_DATEINAME("spendenbescheinigung-dateiname",
       "Spendenbescheinigung Dateiname"),
-  SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME("spendenbescheinigung-mitglied-dateiname",
+  SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME(
+      "spendenbescheinigung-mitglied-dateiname",
       "Spendenbescheinigung-Mitglied Dateiname"),
   RECHNUNG_DATEINAME("rechnung-dateiname", "Rechnung Dateiname"),
   RECHNUNG_MITGLIED_DATEINAME("rechnung-mitglied-dateiname",
@@ -30,11 +31,13 @@ public enum VorlageTyp
   KONTOAUSZUG_DATEINAME("kontoauszug-dateiname", "Kontoauszug Dateiname"),
   KONTOAUSZUG_MITGLIED_DATEINAME("kontoauszug-mitglied-dateiname",
       "Kontoauszug-Mitglied Dateiname"),
-  FREIES_FORMULAR_DATEINAME("freies-formular-dateiname", "Freies Formular Dateiname"),
+  FREIES_FORMULAR_DATEINAME("freies-formular-dateiname",
+      "Freies Formular Dateiname"),
   FREIES_FORMULAR_MITGLIED_DATEINAME("freies-formular-mitglied-dateiname",
       "Freies Formular-Mitglied Dateiname"),
   CT1_AUSGABE_DATEINAME("1ct-ausgabe-dateiname", "1ct Ausgabe Dateiname"),
-  PRENOTIFICATION_DATEINAME("pre-notification-dateiname", "Pre-Notification Dateiname"),
+  PRENOTIFICATION_DATEINAME("pre-notification-dateiname",
+      "Pre-Notification Dateiname"),
   PRENOTIFICATION_MITGLIED_DATEINAME("pre-notification-mitglied-dateiname",
       "Pre-Notification-Mitglied Dateiname");
 

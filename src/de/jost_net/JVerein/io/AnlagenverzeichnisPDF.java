@@ -48,14 +48,14 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
       {
         if (alz.getAttribute(AnlagenlisteControl.ZUGANG) != null
             && Math.abs(alz.getDouble(AnlagenlisteControl.ZUGANG)) >= 0.01d)
-          {
-            hasZugang = true;
-          }
-          if (alz.getAttribute(AnlagenlisteControl.ABGANG) != null
-              && Math.abs(alz.getDouble(AnlagenlisteControl.ABGANG)) >= 0.01d)
-          {
-            hasAbgang = true;
-          }
+        {
+          hasZugang = true;
+        }
+        if (alz.getAttribute(AnlagenlisteControl.ABGANG) != null
+            && Math.abs(alz.getDouble(AnlagenlisteControl.ABGANG)) >= 0.01d)
+        {
+          hasAbgang = true;
+        }
       }
       if (!hasAbgang)
       {
@@ -65,10 +65,11 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
       {
         anzahlSpalten--;
       }
-      
+
       FileOutputStream fos = new FileOutputStream(file);
-      String subtitle = "Geschäftsjahr: " + new JVDateFormatTTMMJJJJ().format(datumvon)
-          + " - " + new JVDateFormatTTMMJJJJ().format(datumbis);
+      String subtitle = "Geschäftsjahr: "
+          + new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
+          + new JVDateFormatTTMMJJJJ().format(datumbis);
       Reporter reporter = new Reporter(fos, "Anlagenverzeichnis", subtitle,
           zeilen.size());
       makeHeader(reporter, anzahlSpalten, hasZugang, hasAbgang);
@@ -182,7 +183,7 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
     }
   }
 
-  private void makeHeader(Reporter reporter,int anzahlSpalten, 
+  private void makeHeader(Reporter reporter, int anzahlSpalten,
       boolean hasZugang, boolean hasAbgang) throws DocumentException
   {
     int width = 25;
@@ -209,14 +210,14 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
     if (hasZugang)
     {
       reporter.addHeaderColumn("Zugang", Element.ALIGN_CENTER, 20,
-        BaseColor.LIGHT_GRAY);
+          BaseColor.LIGHT_GRAY);
     }
     reporter.addHeaderColumn("Abschreibung", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
     if (hasAbgang)
     {
       reporter.addHeaderColumn("Abgang", Element.ALIGN_CENTER, 20,
-        BaseColor.LIGHT_GRAY);
+          BaseColor.LIGHT_GRAY);
     }
     reporter.addHeaderColumn("Buchwert Ende GJ", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);

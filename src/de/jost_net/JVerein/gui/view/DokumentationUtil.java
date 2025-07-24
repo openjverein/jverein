@@ -25,30 +25,27 @@ public class DokumentationUtil
   // private static final String ALLGEMEIN = "allgemein/";
 
   private static final String FUNKTIONEN = PRE + "v/3.1/";
-  
 
   private static final String AUSWERTUNGEN = FUNKTIONEN + "auswertungen/";
-  
+
   private static final String ABRECH = FUNKTIONEN + "abrech/";
-  
+
   private static final String BUCHF = FUNKTIONEN + "buchf/";
-  
+
   private static final String MITGLIEDER = FUNKTIONEN + "mitglieder/";
-  
+
   private static final String DRUCKMAIL = FUNKTIONEN + "druckmail/";
-  
 
   private static final String ADMIN = FUNKTIONEN + "administration/";
 
   private static final String ADMBUCHF = ADMIN + "admbuchf/";
 
   private static final String ADMMITGLIEDER = ADMIN + "mitglieder/";
-  
+
   private static final String ADMERWEITERT = ADMIN + "erweitert/";
-  
+
   private static final String ADMEINSTELLUNG = ADMIN + "einstellungen/";
-  
-  
+
   // Mitglieder
   public static final String ARBEITSEINSATZ = MITGLIEDER + "arbeitseinsatz";
 
@@ -57,27 +54,26 @@ public class DokumentationUtil
   public static final String KURSTEILNEHMER = MITGLIEDER + "kursteilnehmer";
 
   public static final String LEHRGANG = MITGLIEDER + "lehrgange";
-  
+
   public static final String MITGLIEDSUCHE = MITGLIEDER + "content/mitglieder";
-  
+
   public static final String MITGLIED = MITGLIEDER + "content/grunddaten";
-  
+
   public static final String MITGLIEDIMPORT = MITGLIEDER + "import";
 
-  
   public static final String MITGLIEDSKONTO_AUSWAHL = MITGLIEDER
       + "mitgliedskonto#mitgliedskontozuordnen";
 
   public static final String MITGLIEDSKONTO_UEBERSICHT = MITGLIEDER
       + "mitgliedskonto#mitgliedskontouebersicht";
-  
+
   public static final String ADRESSEN = MITGLIEDER + "nichtmitglieder";
 
   public static final String SPENDENBESCHEINIGUNG = MITGLIEDER
       + "spendenbescheinigung";
-  
+
   public static final String RECHNUNG = MITGLIEDER + "rechnung";
-  
+
   public static final String SUCHPROFIL = MITGLIEDER + "content/suchprofil";
 
   public static final String WIEDERVORLAGE = MITGLIEDER + "wiedervorlage";
@@ -89,36 +85,34 @@ public class DokumentationUtil
 
   public static final String ZUSATZBETRAEGEIMPORT = MITGLIEDER
       + "zusatzbetrage-importieren";
-  
-  
+
   // Buchführung
   public static final String ANFANGSBESTAENDE = BUCHF + "anfangsbestand";
 
   public static final String BUCHUNGEN = BUCHF + "buchungen";
-  
+
   public static final String ANLAGENBUCHUNGEN = BUCHF + "anlagenbuchungen";
 
   public static final String BUCHUNGSIMPORT = BUCHF + "buchungsimport";
 
   public static final String BUCHUNGSKLASSENSALDO = BUCHF + "buchungsklasse";
 
-  public static final String BUCHUNGSUEBERNAHME = BUCHF
-      + "buchungsubernahme";
+  public static final String BUCHUNGSUEBERNAHME = BUCHF + "buchungsubernahme";
 
   public static final String BUCHUNGSKORREKTUR = BUCHF + "buchungskorrektur";
-  
+
   public static final String JAHRESABSCHLUSS = BUCHF + "jahresabschluss";
-  
+
   public static final String KONTEN = BUCHF + "konten";
 
   public static final String JAHRESSALDO = BUCHF + "kontensaldo";
 
   public static final String PROJEKTSALDO = BUCHF + "projekte";
-  
+
   public static final String SPLITBUCHUNG = BUCHF + "splittbuchungen";
-  
+
   public static final String ANLAGENLISTE = BUCHF + "anlagenverzeichnis";
-  
+
   public static final String MITTELVERWENDUNG = BUCHF + "mittelverwendung";
 
   public static final String MITTELVERWENDUNGSALDO = BUCHF
@@ -126,17 +120,15 @@ public class DokumentationUtil
 
   public static final String UMSATZSTEUERSALDO = BUCHF + "umsatzsteuersaldo";
 
-
   // Abrechnung
   public static final String ABRECHNUNG = ABRECH + "abrechnung";
 
   public static final String ABRECHNUNGSLAUF = ABRECH + "abrechnungslauf";
-  
+
   public static final String LASTSCHRIFT = ABRECH + "lastschrift";
-  
+
   public static final String SEPABUGS = ABRECH + "sepa-bugs";
-  
-  
+
   // Auswertung
   public static final String AUSWERTUNGKURSTEILNEHMER = AUSWERTUNGEN
       + "auswertung-kursteilnehmer";
@@ -145,15 +137,14 @@ public class DokumentationUtil
       + "auswertung-mitglieder";
 
   public static final String JUBILAEEN = AUSWERTUNGEN + "jubilaen";
-  
+
   public static final String STATISTIKMITGLIEDER = AUSWERTUNGEN + "statistik";
 
   public static final String STATISTIKJAHRGAENGE = AUSWERTUNGEN
       + "statistik-jahrgange";
-  
+
   public static final String ARBEITSEINSATZPRUEFEN = AUSWERTUNGEN
       + "arbeitseinsatz";
-  
 
   // Druck und Mail
   public static final String RECHNUNG_MAIL = DRUCKMAIL + "rechnungen";
@@ -163,51 +154,49 @@ public class DokumentationUtil
   public static final String KONTOAUSZUG = DRUCKMAIL + "kontoauszug";
 
   public static final String FREIESFORMULAR = DRUCKMAIL + "freiesformular";
-  
+
   public static final String SPENDENBESCHEINIGUNGMAIL = DRUCKMAIL
       + "spendenbescheinigungen";
-  
+
   public static final String PRENOTIFICATION = DRUCKMAIL + "pre-notification";
-  
+
   public static final String MAIL = DRUCKMAIL + "mail";
 
   public static final String MAILVORLAGE = DRUCKMAIL + "mailvorlagen";
-  
-  
+
   // Einstellungen
   public static final String EINSTELLUNGEN_ABRECHNUNG = ADMEINSTELLUNG
       + "abrechnung";
-  
+
   public static final String EINSTELLUNGEN_ALLGEMEIN = ADMEINSTELLUNG
       + "allgemein";
-  
+
   public static final String EINSTELLUNGEN_ANSICHT = ADMEINSTELLUNG + "ansicht";
-  
+
   public static final String EINSTELLUNGEN_ANZEIGE = ADMEINSTELLUNG + "anzeige";
-  
+
   public static final String EINSTELLUNGEN_BUCHFUEHRUNG = ADMEINSTELLUNG
       + "buchfuehrung";
-  
+
   public static final String EINSTELLUNGEN_VERZEICHNISSE = ADMEINSTELLUNG
       + "verzeichnisse";
-  
+
   public static final String EINSTELLUNGEN_VORLAGEN = ADMEINSTELLUNG
       + "vorlagen";
 
   public static final String EINSTELLUNGEN_MAIL = ADMEINSTELLUNG + "mail";
-  
+
   public static final String EINSTELLUNGEN_RECHNUNGEN = ADMEINSTELLUNG
       + "rechnungen";
-  
+
   public static final String EINSTELLUNGEN_SPALTEN = ADMEINSTELLUNG + "spalten";
-  
+
   public static final String EINSTELLUNGEN_SPENDENBESCHEINIGUNGEN = ADMEINSTELLUNG
       + "spendenbescheinigungen";
-  
+
   public static final String EINSTELLUNGEN_STATISTIK = ADMEINSTELLUNG
       + "statistik";
-  
-  
+
   // Einstellungen Mitglieder
   public static final String BEITRAGSGRUPPEN = ADMMITGLIEDER
       + "beitragsgruppen";
@@ -227,8 +216,7 @@ public class DokumentationUtil
   public static final String LESEFELDER = ADMMITGLIEDER + "lesefelder";
 
   public static final String ADRESSTYPEN = ADMMITGLIEDER + "mitgliedstypen";
-  
-  
+
   // Einstellungen Buchführung
   public static final String BUCHUNGSART = ADMBUCHF + "buchungsart";
 
@@ -239,17 +227,14 @@ public class DokumentationUtil
 
   public static final String PROJEKTE = ADMBUCHF + "projekte";
 
-  public static final String STEUER = ADMBUCHF
-      + "steuer";
-
+  public static final String STEUER = ADMBUCHF + "steuer";
 
   // Einstellungen Erweitert
   public static final String BEREINIGEN = ADMERWEITERT + "bereinigen";
-  
-  public static final String MITGRATION = ADMERWEITERT + "migration";
-  
-  public static final String QIFIMPORT = ADMERWEITERT + "qif-import";
 
+  public static final String MITGRATION = ADMERWEITERT + "migration";
+
+  public static final String QIFIMPORT = ADMERWEITERT + "qif-import";
 
   // Changelog bei Update
   public static final String CHANGELOG = FUNKTIONEN + "notes";

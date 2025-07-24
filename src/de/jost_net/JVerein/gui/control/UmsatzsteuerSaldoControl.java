@@ -220,8 +220,8 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
         + "CASE WHEN buchung.dependencyid > -1 OR konto.kontoart = ? THEN 0 ELSE "
         + "CAST(steuer.satz/100 * buchung.betrag*100/(100+COALESCE(steuer.satz,0)) AS DECIMAL(10,2)) END "
         // Alte Steuer hinzurechnen
-        + "+ COALESCE(buchung_steuer_alt.betrag,0)" + "),0) AS "
-        + STEUERBETRAG, Kontoart.ANLAGE.getKey());
+        + "+ COALESCE(buchung_steuer_alt.betrag,0)" + "),0) AS " + STEUERBETRAG,
+        Kontoart.ANLAGE.getKey());
 
     it.join("buchung",
         "buchung.buchungsart = buchungsart.id AND buchung.datum >= ? AND buchung.datum <= ?",

@@ -38,8 +38,7 @@ public class LehrgangMenu extends ContextMenu
   public LehrgangMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(LehrgangDetailView.class, part),
-        "text-x-generic.png"));
+        new EditAction(LehrgangDetailView.class, part), "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen", new LehrgangDeleteAction(),
         "user-trash-full.png"));
     if (part != null)

@@ -43,8 +43,9 @@ public class SpendenbescheinigungMailView extends AbstractView
   {
     GUI.getView().setTitle("Spendenbescheinigungen");
 
-    final SpendenbescheinigungControl control = new SpendenbescheinigungControl(this);
-    control.init("spenden." , null, null);
+    final SpendenbescheinigungControl control = new SpendenbescheinigungControl(
+        this);
+    control.init("spenden.", null, null);
 
     if (this.getCurrentObject() == null)
     {
@@ -63,7 +64,7 @@ public class SpendenbescheinigungMailView extends AbstractView
       SimpleContainer right = new SimpleContainer(cl.getComposite());
       right.addLabelPair("Spendedatum von", control.getEingabedatumvon());
       right.addLabelPair("Spendedatum bis", control.getEingabedatumbis());
-      
+
       ButtonArea fbuttons = new ButtonArea();
       fbuttons.addButton(control.getResetButton());
       fbuttons.addButton(control.getSpeichernButton());
@@ -75,12 +76,12 @@ public class SpendenbescheinigungMailView extends AbstractView
       cont1.addHeadline("Info");
       cont1.addInput(control.getInfo());
     }
-    
+
     SimpleContainer cont2 = new SimpleContainer(getParent(), false);
     cont2.addHeadline("Parameter");
     cont2.addInput(control.getAusgabeart());
     cont2.addInput(control.getAdressblatt());
-    
+
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Mail / Anschreiben");
     cont.addInput(control.getBetreff());
@@ -92,14 +93,15 @@ public class SpendenbescheinigungMailView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.SPENDENBESCHEINIGUNGMAIL, false, "question-circle.png");
-    buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
-        control, false, "view-refresh.png"));
+        DokumentationUtil.SPENDENBESCHEINIGUNGMAIL, false,
+        "question-circle.png");
+    buttons.addButton(new Button("Mail-Vorlage",
+        new MailVorlageZuweisenAction(), control, false, "view-refresh.png"));
     buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
         control, false, "bookmark.png");
     buttons
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
-        control, false, "edit-copy.png"));
+            control, false, "edit-copy.png"));
     buttons.addButton(
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));

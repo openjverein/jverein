@@ -27,23 +27,23 @@ import de.willuhn.jameica.gui.formatter.Formatter;
 
 /**
  * Formatieren von einer mehrzeiligen Notiz zur Anzeige in einer Listenspalte.
- * Es wird nur die erste Zeile angezeigt, zusätzlich kann die maximale
- * Länge (in Zeichen) angegeben werden. Sind mehr Zeichen vorhanden, wird ein 
- * Ellipsis-Zeichen zur Markierung der Auslassung angezeigt. 
+ * Es wird nur die erste Zeile angezeigt, zusätzlich kann die maximale Länge (in
+ * Zeichen) angegeben werden. Sind mehr Zeichen vorhanden, wird ein
+ * Ellipsis-Zeichen zur Markierung der Auslassung angezeigt.
  * 
  * @author thooge
  *
  */
 public class NotizFormatter implements Formatter
 {
-  
+
   private Integer maxlength = null;
 
   public NotizFormatter(Integer maxlength)
   {
     this.maxlength = maxlength;
   }
-  
+
   @Override
   public String format(Object o)
   {

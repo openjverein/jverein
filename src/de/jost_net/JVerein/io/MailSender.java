@@ -207,10 +207,10 @@ public class MailSender
         props.put("mail.imap.tls", "true");
       }
       props.put("mail.store.protocol", protocol);
-      props.put("mail."+protocol+".host", imapCopyData.getImap_host());
+      props.put("mail." + protocol + ".host", imapCopyData.getImap_host());
       if (imapCopyData.getImap_port() != null)
       {
-        props.put("mail."+protocol+".port", imapCopyData.getImap_port());
+        props.put("mail." + protocol + ".port", imapCopyData.getImap_port());
       }
       this.imapCopyData = imapCopyData;
     }
@@ -413,8 +413,8 @@ public class MailSender
     {
       try
       {
-        return MimetypesFileTypeMap.getDefaultFileTypeMap().getContentType(
-            ma.getDateiname());
+        return MimetypesFileTypeMap.getDefaultFileTypeMap()
+            .getContentType(ma.getDateiname());
       }
       catch (RemoteException e)
       {

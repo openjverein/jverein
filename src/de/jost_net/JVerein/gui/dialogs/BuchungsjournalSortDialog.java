@@ -37,25 +37,37 @@ public class BuchungsjournalSortDialog extends AbstractDialog<String>
 {
 
   // 20220823: sbuer: Statische Variablen fuer neue Sortiermöglichkeiten
-  //                  Der Key dient als eindeutiger Bezeichner fuer das Dialogfeld und die Hashmap
-  //                  Der Value dient als Anzeigename im Dialogfeld
+  // Der Key dient als eindeutiger Bezeichner fuer das Dialogfeld und die
+  // Hashmap
+  // Der Value dient als Anzeigename im Dialogfeld
   public final static String ID = "Id";
+
   public final static String DATUM = "Datum";
+
   public final static String DATUM_NAME = "Datum, Name";
+
   public final static String DATUM_ID = "Datum, Id";
+
   public final static String DATUM_ID_NAME = "Datum, Id, Name";
+
   public final static String DATUM_AUSZUGSNUMMER = "Datum, Auszugsnummer";
+
   public final static String DATUM_AUSZUGSNUMMER_NAME = "Datum, Auszugsnummer, Name";
+
   public final static String DATUM_BLATTNUMMER = "Datum, Blattnummer";
+
   public final static String DATUM_BLATTNUMMER_NAME = "Datum, Blattnummer, Name";
+
   public final static String DATUM_AUSGZUGSNUMMER_ID = "Datum, Auszugsnummer, Id";
+
   public final static String DATUM_BLATTNUMMER_ID = "Datum, Blattnummer, Id";
+
   public final static String DATUM_AUSGZUGSNUMMER_BLATTNUMMER_ID = "Datum, Auszugsnummer, Blattnummer, Id";
 
   private String selected = DATUM_AUSGZUGSNUMMER_BLATTNUMMER_ID;
 
   private SelectInput sortierung = null;
-  
+
   private boolean closed = true;
 
   public BuchungsjournalSortDialog(int position)
@@ -105,13 +117,12 @@ public class BuchungsjournalSortDialog extends AbstractDialog<String>
       return this.sortierung;
     }
     // 20220823: sbuer: Statische Variablen fuer neue Sortiermöglichkeiten
-    this.sortierung = new SelectInput(new Object[] 
-    		{ ID,DATUM,
-    		  DATUM_NAME,DATUM_ID,DATUM_ID_NAME,
-    		  DATUM_AUSZUGSNUMMER,DATUM_AUSZUGSNUMMER_NAME,
-    		  DATUM_BLATTNUMMER,DATUM_BLATTNUMMER_NAME,
-    		  DATUM_AUSGZUGSNUMMER_ID,DATUM_BLATTNUMMER_ID,
-    		  DATUM_AUSGZUGSNUMMER_BLATTNUMMER_ID }, DATUM_AUSGZUGSNUMMER_BLATTNUMMER_ID);
+    this.sortierung = new SelectInput(
+        new Object[] { ID, DATUM, DATUM_NAME, DATUM_ID, DATUM_ID_NAME,
+            DATUM_AUSZUGSNUMMER, DATUM_AUSZUGSNUMMER_NAME, DATUM_BLATTNUMMER,
+            DATUM_BLATTNUMMER_NAME, DATUM_AUSGZUGSNUMMER_ID,
+            DATUM_BLATTNUMMER_ID, DATUM_AUSGZUGSNUMMER_BLATTNUMMER_ID },
+        DATUM_AUSGZUGSNUMMER_BLATTNUMMER_ID);
     this.sortierung.setName("Sortierung");
     this.sortierung.addListener(new Listener()
     {
@@ -123,7 +134,7 @@ public class BuchungsjournalSortDialog extends AbstractDialog<String>
     });
     return this.sortierung;
   }
-  
+
   public boolean getClosed()
   {
     return closed;

@@ -433,8 +433,7 @@ public class SplitbuchungsContainer
         // Key in der Form BuchungsartId-BuchungsklasseId#SteuerId (Steuer nur
         // wenn steuerInBuchung gesetzt ist)
         String key = sp.getBuchungsartId() + "-"
-            + (sp.getBuchungsklasseId() != null ? sp.getBuchungsklasseId()
-                : "")
+            + (sp.getBuchungsklasseId() != null ? sp.getBuchungsklasseId() : "")
             + "#";
         if (steuerInBuchung)
         {
@@ -480,7 +479,7 @@ public class SplitbuchungsContainer
         splitten = true;
       }
       if (splitten)
-      { 
+      {
         boolean ersetzen = false;
         if (buchung.getBuchungsartId() == null
             && spArray.get(0).getBuchungsartId() != null)
@@ -531,8 +530,9 @@ public class SplitbuchungsContainer
             }
           }
         }
-      
-        boolean splitPositionZweck = (Boolean) Einstellungen.getEinstellung(Property.SPLITPOSITIONZWECK);
+
+        boolean splitPositionZweck = (Boolean) Einstellungen
+            .getEinstellung(Property.SPLITPOSITIONZWECK);
         Iterator<Entry<String, Double>> iterator = splitMap.entrySet()
             .iterator();
         while (iterator.hasNext())

@@ -48,7 +48,8 @@ public class WiedervorlageErledigungDeleteAction implements Action
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Wiedervorlage");
-      d.setText("Wollen Sie das Erledigungsdatum der Wiedervorlage wirklich entfernen?");
+      d.setText(
+          "Wollen Sie das Erledigungsdatum der Wiedervorlage wirklich entfernen?");
       try
       {
         Boolean choice = (Boolean) d.open();

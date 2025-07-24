@@ -75,7 +75,7 @@ public class SplitBuchungAction implements Action
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
         }
         Spendenbescheinigung spb = bu.getSpendenbescheinigung();
-        if(spb != null)
+        if (spb != null)
         {
           throw new ApplicationException(
               "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");

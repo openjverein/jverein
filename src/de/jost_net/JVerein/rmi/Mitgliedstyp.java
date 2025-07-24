@@ -34,7 +34,6 @@ public interface Mitgliedstyp extends JVereinDBObject
 
   public static final int SPENDER = 2;
 
-
   public String getBezeichnung() throws RemoteException;
 
   public void setBezeichnung(String bezeichnung) throws RemoteException;

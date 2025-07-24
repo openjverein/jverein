@@ -79,9 +79,9 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
-    buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part)
-        , null, false, "view-refresh.png");
-    
+    buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
+        null, false, "view-refresh.png");
+
     buttons.addButton("Speichern", new Action()
     {
       @Override
@@ -110,8 +110,10 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
             zb.store();
             count++;
           }
-          if (control.getVorlage().getValue().equals(ZusatzbetragControl.MITDATUM)
-              || control.getVorlage().getValue().equals(ZusatzbetragControl.OHNEDATUM))
+          if (control.getVorlage().getValue()
+              .equals(ZusatzbetragControl.MITDATUM)
+              || control.getVorlage().getValue()
+                  .equals(ZusatzbetragControl.OHNEDATUM))
           {
             ZusatzbetragVorlage zv = (ZusatzbetragVorlage) Einstellungen
                 .getDBService().createObject(ZusatzbetragVorlage.class, null);
@@ -120,7 +122,8 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
             zv.setIntervall(iz.getKey());
             zv.setBuchungstext((String) part.getBuchungstext().getValue());
             zv.setBetrag((Double) part.getBetrag().getValue());
-            if (control.getVorlage().getValue().equals(ZusatzbetragControl.MITDATUM))
+            if (control.getVorlage().getValue()
+                .equals(ZusatzbetragControl.MITDATUM))
             {
               zv.setEndedatum((Date) part.getEndedatum().getValue());
               zv.setFaelligkeit((Date) part.getFaelligkeit().getValue());

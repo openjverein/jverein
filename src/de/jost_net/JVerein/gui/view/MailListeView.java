@@ -35,22 +35,22 @@ public class MailListeView extends AbstractView
     GUI.getView().setTitle("Mails");
 
     MailControl control = new MailControl(this);
-    
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addLabelPair("Mail Empfänger", control.getSuchname());
     left.addLabelPair("Betreff", control.getSuchtext());
-    
+
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addLabelPair("Bearbeitung von", control.getEingabedatumvon());
     middle.addLabelPair("Bearbeitung bis", control.getEingabedatumbis());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Versand von", control.getDatumvon());
     right.addLabelPair("Versand bis", control.getDatumbis());
-    
+
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());

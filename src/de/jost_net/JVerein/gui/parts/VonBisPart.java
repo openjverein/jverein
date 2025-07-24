@@ -36,16 +36,17 @@ import de.willuhn.util.ApplicationException;
 public class VonBisPart implements Part
 {
   private AbstractSaldoControl control;
-  
+
   private boolean suchen = false;
-  
+
   private Calendar calendar = Calendar.getInstance();;
-  
+
   private enum RANGE
   {
-    MONAT, TAG
+    MONAT,
+    TAG
   }
-  
+
   public VonBisPart(AbstractSaldoControl control, boolean suchen)
   {
     this.control = control;
@@ -84,7 +85,8 @@ public class VonBisPart implements Part
           Date bis = (Date) control.getSuchDatumbis().getValue();
           if (getRangeTyp(von, bis) == RANGE.TAG)
           {
-            int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+            int delta = (int) ChronoUnit.DAYS.between(von.toInstant(),
+                bis.toInstant());
             delta++;
             calendar.setTime(von);
             calendar.add(Calendar.DAY_OF_MONTH, -delta);
@@ -95,8 +97,10 @@ public class VonBisPart implements Part
           }
           else
           {
-            LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault())
+                .toLocalDate();
+            LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault())
+                .toLocalDate();
             int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
             delta++;
             calendar.setTime(von);
@@ -120,7 +124,8 @@ public class VonBisPart implements Part
           Date bis = (Date) control.getSuchDatumbis().getValue();
           if (getRangeTyp(von, bis) == RANGE.TAG)
           {
-            int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+            int delta = (int) ChronoUnit.DAYS.between(von.toInstant(),
+                bis.toInstant());
             delta++;
             calendar.setTime(von);
             calendar.add(Calendar.DAY_OF_MONTH, delta);
@@ -131,8 +136,10 @@ public class VonBisPart implements Part
           }
           else
           {
-            LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault())
+                .toLocalDate();
+            LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault())
+                .toLocalDate();
             int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
             delta++;
             calendar.setTime(von);
@@ -170,7 +177,7 @@ public class VonBisPart implements Part
       right.addButtonArea(buttons);
     }
   }
-  
+
   private void refresh() throws ApplicationException
   {
     checkDate();
@@ -205,7 +212,7 @@ public class VonBisPart implements Part
       throw new ApplicationException("Von Datum ist nach Bis Datum!");
     }
   }
-  
+
   private RANGE getRangeTyp(Date von, Date bis) throws ApplicationException
   {
     checkDate();
@@ -218,5 +225,5 @@ public class VonBisPart implements Part
       return RANGE.TAG;
     return RANGE.MONAT;
   }
-  
+
 }

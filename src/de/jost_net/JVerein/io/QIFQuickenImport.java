@@ -64,9 +64,12 @@ public class QIFQuickenImport implements Importer
 {
   enum QIF_TYPES
   {
-    CASH("!Type:Cash"), BANK("!Type:Bank"), CCARD("!Type:CCard"),
+    CASH("!Type:Cash"),
+    BANK("!Type:Bank"),
+    CCARD("!Type:CCard"),
     // INVST("!Type:Invst"),
-    OTH_A("!Type:Oth A"), OTH_L("!Type:Oth L")
+    OTH_A("!Type:Oth A"),
+    OTH_L("!Type:Oth L")
     // , INVOICE("!Type:Invoice")
     ;
 

@@ -72,8 +72,7 @@ public class RechnungMap extends AbstractMap
       buchungDatum.add(sp.getDatum());
       zweck.add(sp.getZweck());
       nettobetrag.add(sp.getNettobetrag());
-      steuersatz.add(
-          "(" + format.format(sp.getSteuersatz()) + "%)");
+      steuersatz.add("(" + format.format(sp.getSteuersatz()) + "%)");
       steuerbetrag.add(sp.getSteuerbetrag());
       betrag.add(sp.getBetrag());
       summe += sp.getBetrag();
@@ -168,13 +167,14 @@ public class RechnungMap extends AbstractMap
         VarTools.maskieren(re.getIBAN()));
     map.put(RechnungVar.EMPFAENGER.getName(),
         Adressaufbereitung.getAdressfeld(re));
-    
+
     String zahlungsweg = "";
     switch (re.getZahlungsweg().getKey())
     {
       case Zahlungsweg.BASISLASTSCHRIFT:
       {
-        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTABBUCHUNG);
+        zahlungsweg = (String) Einstellungen
+            .getEinstellung(Property.RECHNUNGTEXTABBUCHUNG);
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}", re.getBIC());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}", re.getIBAN());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{MANDATID\\}",
@@ -183,12 +183,14 @@ public class RechnungMap extends AbstractMap
       }
       case Zahlungsweg.BARZAHLUNG:
       {
-        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR);
+        zahlungsweg = (String) Einstellungen
+            .getEinstellung(Property.RECHNUNGTEXTBAR);
         break;
       }
       case Zahlungsweg.ÜBERWEISUNG:
       {
-        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
+        zahlungsweg = (String) Einstellungen
+            .getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
         break;
       }
     }
@@ -244,7 +246,7 @@ public class RechnungMap extends AbstractMap
       map.put(RechnungVar.BETRAG.getName(),
           new Double[] { 10d, 13.8d, null, 23.8d });
     }
-    
+
     map.put(RechnungVar.SUMME.getName(), Double.valueOf("23.80"));
     map.put(RechnungVar.IST.getName(), Double.valueOf("10.00"));
     map.put(RechnungVar.STAND.getName(), Double.valueOf("-13.80"));

@@ -91,8 +91,9 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
   protected void startJahrgang(int jahrgang) throws DocumentException
   {
     Logger.debug(String.format("Altersjubiläum, Jahrgang=%d", jahrgang));
-    Paragraph pHeader = new Paragraph("\n"
-        + String.format("%d. Geburtstag", jahrgang), Reporter.getFreeSans(11));
+    Paragraph pHeader = new Paragraph(
+        "\n" + String.format("%d. Geburtstag", jahrgang),
+        Reporter.getFreeSans(11));
     reporter.add(pHeader);
     reporter.addHeaderColumn("Geburtsdatum", Element.ALIGN_CENTER, 50,
         BaseColor.LIGHT_GRAY);
@@ -124,8 +125,8 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
   protected void add(Mitglied m) throws RemoteException
   {
     reporter.addColumn(m.getGeburtsdatum(), Element.ALIGN_LEFT);
-    reporter
-        .addColumn(Adressaufbereitung.getNameVorname(m), Element.ALIGN_LEFT);
+    reporter.addColumn(Adressaufbereitung.getNameVorname(m),
+        Element.ALIGN_LEFT);
     reporter.addColumn(Adressaufbereitung.getAnschrift(m), Element.ALIGN_LEFT);
     String kommunikation = m.getTelefonprivat();
     if (kommunikation.length() > 0 && m.getTelefondienstlich().length() > 0)

@@ -51,13 +51,13 @@ public class MitgliedDeleteAction implements Action
     {
       throw new ApplicationException("Kein Mitglied ausgewählt");
     }
-    else if(context instanceof Mitglied)
+    else if (context instanceof Mitglied)
     {
-      mitglieder = new Mitglied[] {(Mitglied)context};
+      mitglieder = new Mitglied[] { (Mitglied) context };
     }
-    else if(context instanceof Mitglied[])
+    else if (context instanceof Mitglied[])
     {
-      mitglieder = (Mitglied[])context;
+      mitglieder = (Mitglied[]) context;
     }
     else
     {
@@ -70,7 +70,8 @@ public class MitgliedDeleteAction implements Action
       d.setTitle("Mitglied" + mehrzahl + " löschen");
       d.setPanelText("Mitglied" + mehrzahl + " löschen?");
       d.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
-      String text = "Wollen Sie diese" + (mitglieder.length > 1 ? "":"s") + " Mitglied" + mehrzahl + " wirklich löschen?"
+      String text = "Wollen Sie diese" + (mitglieder.length > 1 ? "" : "s")
+          + " Mitglied" + mehrzahl + " wirklich löschen?"
           + "\nDies löscht auch alle Mitglied bezogenen Daten wie"
           + "\nz.B. Sollbuchungen, Mails etc."
           + "\nDiese Daten können nicht wieder hergestellt werden!";
@@ -87,16 +88,16 @@ public class MitgliedDeleteAction implements Action
         Logger.error("Fehler beim Löschen des Mitgliedes", e);
         return;
       }
-      
+
       final DBService service = Einstellungen.getDBService();
       DBTransaction.starten();
-      for(Mitglied m:mitglieder)
+      for (Mitglied m : mitglieder)
       {
         if (m.isNewObject())
         {
           continue;
         }
-        
+
         // Suche Mails mit mehr als einem Empfänger
         String sql = "SELECT mail , count(id) anzahl from mailempfaenger ";
         sql += "group by mailempfaenger.mail ";
@@ -104,7 +105,8 @@ public class MitgliedDeleteAction implements Action
         ResultSetExtractor rs = new ResultSetExtractor()
         {
           @Override
-          public Object extract(ResultSet rs) throws RemoteException, SQLException
+          public Object extract(ResultSet rs)
+              throws RemoteException, SQLException
           {
             ArrayList<BigDecimal> list = new ArrayList<BigDecimal>();
             while (rs.next())
@@ -115,9 +117,9 @@ public class MitgliedDeleteAction implements Action
           }
         };
         @SuppressWarnings("unchecked")
-        ArrayList<BigDecimal> ergebnis = (ArrayList<BigDecimal>) service.execute(sql,
-            new Object[] { }, rs);
-        
+        ArrayList<BigDecimal> ergebnis = (ArrayList<BigDecimal>) service
+            .execute(sql, new Object[] {}, rs);
+
         // Alle Mails an das Mitglied löschen wenn nur ein Empfänger vorhanden
         DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
             .createList(MailEmpfaenger.class);
@@ -131,7 +133,7 @@ public class MitgliedDeleteAction implements Action
             ma.delete();
           }
         }
-        
+
         m.delete();
       }
       DBTransaction.commit();

@@ -45,8 +45,8 @@ public class TableColumnReplacerTest
 
     tcr.addColumn(testColumn, true);
     tcr.setColumnReplacement(testColumn, testReplaceColumn);
-    Assert
-        .assertEquals(true, tcr.getNecessaryColumns().containsKey(testColumn));
+    Assert.assertEquals(true,
+        tcr.getNecessaryColumns().containsKey(testColumn));
   }
 
   @Test
@@ -64,11 +64,11 @@ public class TableColumnReplacerTest
 
     tcr.addColumn(testColumn, true);
     tcr.setColumnReplacement(testColumn, testReplaceColumn);
-    Assert
-        .assertEquals(true, tcr.getNecessaryColumns().containsKey(testColumn));
+    Assert.assertEquals(true,
+        tcr.getNecessaryColumns().containsKey(testColumn));
     tcr.removeColumn(testColumn);
-    Assert.assertEquals(false, tcr.getNecessaryColumns()
-        .containsKey(testColumn));
+    Assert.assertEquals(false,
+        tcr.getNecessaryColumns().containsKey(testColumn));
   }
 
   @Test
@@ -79,8 +79,8 @@ public class TableColumnReplacerTest
     tcr.setColumnReplacement(testColumn, testReplaceColumn);
     Assert.assertEquals(true, tcr.getOptionalColumns().containsKey(testColumn));
     tcr.removeColumn(testColumn);
-    Assert
-        .assertEquals(false, tcr.getOptionalColumns().containsKey(testColumn));
+    Assert.assertEquals(false,
+        tcr.getOptionalColumns().containsKey(testColumn));
   }
 
   @Test

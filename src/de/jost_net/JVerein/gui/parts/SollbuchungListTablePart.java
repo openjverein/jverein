@@ -37,21 +37,22 @@ public class SollbuchungListTablePart extends JVereinTablePart
   }
 
   @SuppressWarnings("rawtypes")
-  public SollbuchungListTablePart(GenericIterator mitgliedskonten, Action action)
+  public SollbuchungListTablePart(GenericIterator mitgliedskonten,
+      Action action)
   {
     super(mitgliedskonten, action);
   }
 
   /**
-   * Belegt den Context mit dem anzuzeigenden Text.
-   * Ersetzt getSummary() welches deprecated ist.
+   * Belegt den Context mit dem anzuzeigenden Text. Ersetzt getSummary() welches
+   * deprecated ist.
    */
   @SuppressWarnings("unchecked")
   @Override
   protected Context createFeatureEventContext(Feature.Event e, Object data)
   {
     Context ctx = super.createFeatureEventContext(e, data);
-    if (this.hasEvent(FeatureSummary.class,e))
+    if (this.hasEvent(FeatureSummary.class, e))
     {
       double sumBetrag = 0.0;
       String summary = "";
@@ -76,7 +77,7 @@ public class SollbuchungListTablePart extends JVereinTablePart
       {
         // nichts tun
       }
-      ctx.addon.put(FeatureSummary.CTX_KEY_TEXT,summary);
+      ctx.addon.put(FeatureSummary.CTX_KEY_TEXT, summary);
     }
     return ctx;
   }

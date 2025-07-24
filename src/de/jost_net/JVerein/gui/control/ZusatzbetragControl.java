@@ -78,8 +78,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class ZusatzbetragControl extends VorZurueckControl
-    implements Savable
+public class ZusatzbetragControl extends VorZurueckControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -225,7 +224,8 @@ public class ZusatzbetragControl extends VorZurueckControl
       {
         if (getZusatzbetragPart().getMitglied().getValue() != null)
         {
-          Mitglied m = (Mitglied) getZusatzbetragPart().getMitglied().getValue();
+          Mitglied m = (Mitglied) getZusatzbetragPart().getMitglied()
+              .getValue();
           z.setMitglied(Integer.parseInt(m.getID()));
         }
         else
@@ -279,22 +279,23 @@ public class ZusatzbetragControl extends VorZurueckControl
       zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetraegeList.addColumn("Letzte abgerechnete Fälligkeit",
-          "ausfuehrung",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
+          "ausfuehrung", new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetraegeList.addColumn("Intervall", "intervalltext");
       zusatzbetraegeList.addColumn("Nicht mehr ausführen ab", "endedatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
       zusatzbetraegeList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter() {
+      zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
+      {
         @Override
         public String format(Object o)
         {
-          return new Zahlungsweg((Integer)o).getText();
+          return new Zahlungsweg((Integer) o).getText();
         }
       });
-      if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
             new BuchungsklasseFormatter());
@@ -325,9 +326,8 @@ public class ZusatzbetragControl extends VorZurueckControl
       zusatzbetraegeList.setRememberOrder(true);
       zusatzbetraegeList.addFeature(new FeatureSummary());
       zusatzbetraegeList.setMulti(true);
-      zusatzbetraegeList
-          .setAction(
-              new EditAction(ZusatzbetragDetailView.class, zusatzbetraegeList));
+      zusatzbetraegeList.setAction(
+          new EditAction(ZusatzbetragDetailView.class, zusatzbetraegeList));
       VorZurueckControl.setObjektListe(null, null);
     }
     else
@@ -464,13 +464,11 @@ public class ZusatzbetragControl extends VorZurueckControl
           reporter.addHeaderColumn("Nächste Fälligkeit", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Letzte abgerechnete Fälligkeit",
-              Element.ALIGN_LEFT, 30,
-              BaseColor.LIGHT_GRAY);
+              Element.ALIGN_LEFT, 30, BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Intervall", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Nicht mehr ausführen ab",
-              Element.ALIGN_LEFT, 30,
-              BaseColor.LIGHT_GRAY);
+              Element.ALIGN_LEFT, 30, BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Buchungstext", Element.ALIGN_LEFT, 50,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Betrag", Element.ALIGN_RIGHT, 30,
@@ -479,7 +477,8 @@ public class ZusatzbetragControl extends VorZurueckControl
           while (it.hasNext())
           {
             Zusatzbetrag z = (Zusatzbetrag) it.next();
-            if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
             {
               reporter.addColumn(
                   Adressaufbereitung.getIdNameVorname(z.getMitglied()),

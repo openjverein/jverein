@@ -35,8 +35,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class KursteilnehmerImpl extends AbstractJVereinDBObject
-    implements
-    Kursteilnehmer
+    implements Kursteilnehmer
 {
 
   private static final long serialVersionUID = 1L;
@@ -93,7 +92,8 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
     {
       throw new ApplicationException("Bitte Datum des Mandats eingeben");
     }
-    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
     {
       if (getGeburtsdatum() == null)
       {

@@ -40,18 +40,14 @@ public class FormularMenu extends ContextMenu
   public FormularMenu(FormularControl control, JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(FormularDetailView.class, part),
-        "text-x-generic.png"));
+        new EditAction(FormularDetailView.class, part), "text-x-generic.png"));
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
-        new FormularAnzeigeAction(),
-        "edit-copy.png"));
+        new FormularAnzeigeAction(), "edit-copy.png"));
     addItem(new CheckedSingleContextMenuItem("Duplizieren",
         new FormularDuplizierenAction(control), "edit-copy.png"));
     addItem(new CheckedSingleContextMenuItem("Löschen",
-        new FormularDeleteAction(),
-        "user-trash-full.png"));
-    addItem(
-        new CheckedContextMenuItem("Exportieren",
-            new FormularExportAction(), "document-save.png"));
+        new FormularDeleteAction(), "user-trash-full.png"));
+    addItem(new CheckedContextMenuItem("Exportieren",
+        new FormularExportAction(), "document-save.png"));
   }
 }

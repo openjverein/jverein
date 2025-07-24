@@ -36,7 +36,7 @@ public class AbrechnungslaufListeView extends AbstractView
     GUI.getView().setTitle("Abrechnungsläufe");
 
     AbrechnungslaufControl control = new AbrechnungslaufControl(this);
-    
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
@@ -45,7 +45,7 @@ public class AbrechnungslaufListeView extends AbstractView
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumbis());
-    
+
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),
         control.getDatumbis());

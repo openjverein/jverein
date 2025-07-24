@@ -46,13 +46,13 @@ public class MailAuswahlDeleteAction implements Action
     {
       throw new ApplicationException("Keinen Empfänger ausgewählt");
     }
-    else if(context instanceof MailEmpfaenger)
+    else if (context instanceof MailEmpfaenger)
     {
-      empfaenger = new MailEmpfaenger[] {(MailEmpfaenger)context};
+      empfaenger = new MailEmpfaenger[] { (MailEmpfaenger) context };
     }
-    else if(context instanceof MailEmpfaenger[])
+    else if (context instanceof MailEmpfaenger[])
     {
-      empfaenger = (MailEmpfaenger[])context;
+      empfaenger = (MailEmpfaenger[]) context;
     }
     else
     {
@@ -60,7 +60,7 @@ public class MailAuswahlDeleteAction implements Action
     }
     try
     {
-      for(MailEmpfaenger me:empfaenger)
+      for (MailEmpfaenger me : empfaenger)
       {
         control.removeEmpfaenger(me);
       }

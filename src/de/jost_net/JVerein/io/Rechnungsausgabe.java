@@ -217,17 +217,17 @@ public class Rechnungsausgabe
   {
     if (formular == null)
       formular = re.getFormular();
-    
+
     if (re.getSollbuchungPositionList().size() == 0)
       return;
-    
+
     Map<String, Object> map = new RechnungMap().getMap(re, null);
     map = new MitgliedMap().getMap(re.getMitglied(), map);
     map = new AllgemeineMap().getMap(map);
     fa.writeForm(formular, map);
 
     formular.store();
-    
+
     formular.setZaehlerToFormlink(formular.getZaehler());
   }
 

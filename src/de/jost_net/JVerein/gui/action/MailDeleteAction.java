@@ -43,13 +43,13 @@ public class MailDeleteAction implements Action
       throw new ApplicationException("Keine Mail ausgewählt");
     }
     Mail[] mails = null;
-    if(context instanceof Mail)
+    if (context instanceof Mail)
     {
-      mails = new Mail[] { (Mail) context};
+      mails = new Mail[] { (Mail) context };
     }
-    else if(context instanceof Mail[])
+    else if (context instanceof Mail[])
     {
-      mails = (Mail[])context;
+      mails = (Mail[]) context;
     }
     else
     {

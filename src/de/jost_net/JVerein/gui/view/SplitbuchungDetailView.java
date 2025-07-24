@@ -39,16 +39,16 @@ public class SplitbuchungDetailView extends AbstractView
     GUI.getView().setTitle("Splitbuchungen");
 
     control = new BuchungsControl(this, Kontenfilter.GELDKONTO);
-    
+
     final boolean buchungabgeschlossen = control.isSplitBuchungAbgeschlossen();
-    
-    InfoPanel   info = new InfoPanel();
+
+    InfoPanel info = new InfoPanel();
     info.setText(SplitbuchungsContainer.getText());
     info.setTitle("Info");
     info.setIcon("gtk-info.png");
     info.paint(getParent());
     control.getSplitBuchungsList().paint(getParent());
-    
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPLITBUCHUNG, false, "question-circle.png");
@@ -56,8 +56,9 @@ public class SplitbuchungDetailView extends AbstractView
         control.getCurrentObject(), false, "document-new.png");
     neu.setEnabled(!buchungabgeschlossen);
     buttons.addButton(neu);
-    Button aufloesen = new Button("Auflösen", new SplitbuchungAufloesenAction(control),
-        control.getCurrentObject(), false, "unlocked.png");
+    Button aufloesen = new Button("Auflösen",
+        new SplitbuchungAufloesenAction(control), control.getCurrentObject(),
+        false, "unlocked.png");
     aufloesen.setEnabled(!buchungabgeschlossen);
     buttons.addButton(aufloesen);
     Button sammel = control.getSammelueberweisungButton();
@@ -73,8 +74,9 @@ public class SplitbuchungDetailView extends AbstractView
           if (SplitbuchungsContainer.get().size() != 0)
           {
             SplitbuchungsContainer.store();
-            GUI.getStatusBar().setSuccessText(String.format
-              ("%s Splitbuchungen gespeichert", SplitbuchungsContainer.getAnzahl()));
+            GUI.getStatusBar()
+                .setSuccessText(String.format("%s Splitbuchungen gespeichert",
+                    SplitbuchungsContainer.getAnzahl()));
           }
           else
           {

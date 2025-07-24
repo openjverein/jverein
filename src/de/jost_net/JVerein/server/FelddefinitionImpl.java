@@ -26,8 +26,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FelddefinitionImpl extends AbstractJVereinDBObject
-    implements
-    Felddefinition
+    implements Felddefinition
 {
 
   private static final long serialVersionUID = 1L;
@@ -74,8 +73,8 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
           throw new ApplicationException(String.format(
               "Ungültiges Zeichen (%s) im Feldnamen an Position %d", c, i));
       }
-      Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
-          Mitglied.class, null);
+      Mitglied m = (Mitglied) Einstellungen.getDBService()
+          .createObject(Mitglied.class, null);
       String[] namen = m.getAttributeNames();
       for (String s : namen)
       {

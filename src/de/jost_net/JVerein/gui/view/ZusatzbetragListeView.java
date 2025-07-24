@@ -48,8 +48,8 @@ public class ZusatzbetragListeView extends AbstractView
     buttons.addButton("Vorlagen",
         new StartViewAction(ZusatzbetragVorlageListeView.class), null, false,
         "euro-sign.png");
-    buttons.addButton("Import",
-        new ZusatzbetraegeImportAction(),null,false, "file-import.png");
+    buttons.addButton("Import", new ZusatzbetraegeImportAction(), null, false,
+        "file-import.png");
     buttons.addButton(control.getPDFAusgabeButton());
     buttons.addButton("Neu",
         new NewAction(ZusatzbetragDetailView.class, Zusatzbetrag.class),

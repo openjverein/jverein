@@ -90,11 +90,9 @@ public class SteuerControl extends VorZurueckControl implements Savable
 
       steuerList = new JVereinTablePart(steuern, null);
       steuerList.addColumn("Name", "name");
-      steuerList.addColumn("Steuersatz", "satz",
-          o -> {
-            return (Double) o + "%";
-          }, false,
-          Column.ALIGN_RIGHT);
+      steuerList.addColumn("Steuersatz", "satz", o -> {
+        return (Double) o + "%";
+      }, false, Column.ALIGN_RIGHT);
       steuerList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
       steuerList.addColumn("Aktiv", "aktiv", new JaNeinFormatter());
@@ -142,10 +140,9 @@ public class SteuerControl extends VorZurueckControl implements Savable
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput()
-        .getBuchungsartInput(buchungsart, getSteuer().getBuchungsart(), null,
-            (Integer) Einstellungen
-                .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
+    buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
+        getSteuer().getBuchungsart(), null, (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.setMandatory(true);
     buchungsart.setComment("");
     Listener listener = new Listener()

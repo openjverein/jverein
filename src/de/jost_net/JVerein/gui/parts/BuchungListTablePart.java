@@ -56,17 +56,17 @@ public class BuchungListTablePart extends AutoUpdateTablePart
       }
     });
   }
-  
+
   /**
-   * Belegt den Context mit dem anzuzeigenden Text.
-   * Ersetzt getSummary() welches deprecated ist.
+   * Belegt den Context mit dem anzuzeigenden Text. Ersetzt getSummary() welches
+   * deprecated ist.
    */
   @SuppressWarnings("unchecked")
   @Override
   protected Context createFeatureEventContext(Feature.Event e, Object data)
   {
     ctx = super.createFeatureEventContext(e, data);
-    if (this.hasEvent(FeatureSummary.class,e))
+    if (this.hasEvent(FeatureSummary.class, e))
     {
       double sumBetrag = 0.0;
       double sumNetto = 0d;
@@ -93,9 +93,9 @@ public class BuchungListTablePart extends AutoUpdateTablePart
         }
         if (saldo != null)
         {
-        summary += " / " + "Kontosaldo:" + " "
-            + Einstellungen.DECIMALFORMAT.format(saldo) + " "
-            + Einstellungen.CURRENCY;
+          summary += " / " + "Kontosaldo:" + " "
+              + Einstellungen.DECIMALFORMAT.format(saldo) + " "
+              + Einstellungen.CURRENCY;
         }
         Object o = getSelection();
         if (o != null && o instanceof Buchung[])
@@ -122,7 +122,7 @@ public class BuchungListTablePart extends AutoUpdateTablePart
       {
         // nichts tun
       }
-      ctx.addon.put(FeatureSummary.CTX_KEY_TEXT,summary);
+      ctx.addon.put(FeatureSummary.CTX_KEY_TEXT, summary);
     }
     return ctx;
   }

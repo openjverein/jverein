@@ -24,7 +24,17 @@ public class SimpleVerticalContainer extends Container
 
     private enum GUIElementTypes
     {
-      BUTTONAREA, CHECKBOX, HEADLINE, INPUT, LABELPAIRINPUT, LABELPAIRSTRING, PART, RADIOINPUT, SEPARATOR, TEXT, TEXTCOLOR
+      BUTTONAREA,
+      CHECKBOX,
+      HEADLINE,
+      INPUT,
+      LABELPAIRINPUT,
+      LABELPAIRSTRING,
+      PART,
+      RADIOINPUT,
+      SEPARATOR,
+      TEXT,
+      TEXTCOLOR
     }
 
     public GUIElementTypes guiElementType;

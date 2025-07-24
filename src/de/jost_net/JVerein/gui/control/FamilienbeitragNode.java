@@ -53,7 +53,7 @@ public class FamilienbeitragNode implements GenericObjectNode
   private FamilienbeitragNode parent = null;
 
   private ArrayList<FamilienbeitragNode> children;
-  
+
   private Input status;
 
   public FamilienbeitragNode(Input status) throws RemoteException
@@ -66,7 +66,7 @@ public class FamilienbeitragNode implements GenericObjectNode
         .createList(Beitragsgruppe.class);
     it.addFilter("beitragsart != ?",
         new Object[] { ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey() });
-    
+
     Set<String> set = new HashSet<String>();
     DBIterator<Mitglied> angIt = Einstellungen.getDBService()
         .createList(Mitglied.class);
@@ -75,10 +75,10 @@ public class FamilienbeitragNode implements GenericObjectNode
       angIt.addFilter("austritt is null");
     if (status.getValue().equals("Abgemeldet"))
       angIt.addFilter("austritt is not null");
-    while(angIt.hasNext())
+    while (angIt.hasNext())
     {
       Mitglied a = angIt.next();
-      if(!set.contains(a.getVollZahlerID().toString()))
+      if (!set.contains(a.getVollZahlerID().toString()))
       {
         set.add(a.getVollZahlerID().toString());
       }
@@ -97,8 +97,8 @@ public class FamilienbeitragNode implements GenericObjectNode
       while (it2.hasNext())
       {
         Mitglied m = it2.next();
-        //nur anzeigen wenn es angehörige gibt
-        if(!set.contains(m.getID()))
+        // nur anzeigen wenn es angehörige gibt
+        if (!set.contains(m.getID()))
           continue;
         FamilienbeitragNode fbn = new FamilienbeitragNode(this, m);
         children.add(fbn);
@@ -189,9 +189,7 @@ public class FamilienbeitragNode implements GenericObjectNode
       }
       JVDateFormatTTMMJJJJ jvttmmjjjj = new JVDateFormatTTMMJJJJ();
       return Adressaufbereitung.getNameVorname(mitglied)
-          + (d != null
-              ? ", Austritt: " + jvttmmjjjj.format(d)
-              : "")
+          + (d != null ? ", Austritt: " + jvttmmjjjj.format(d) : "")
           + (mitglied.getIban().length() > 0
               ? ", " + mitglied.getBic() + ", " + mitglied.getIban()
               : "");

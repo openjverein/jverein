@@ -38,13 +38,13 @@ public class BuchungsartDeleteAction implements Action
     {
       throw new ApplicationException("Keine Buchungsart ausgewählt");
     }
-    else if(context instanceof Buchungsart)
+    else if (context instanceof Buchungsart)
     {
-      buchungsarten = new Buchungsart[] {(Buchungsart)context};
+      buchungsarten = new Buchungsart[] { (Buchungsart) context };
     }
-    else if(context instanceof Buchungsart[])
+    else if (context instanceof Buchungsart[])
     {
-      buchungsarten = (Buchungsart[])context;
+      buchungsarten = (Buchungsart[]) context;
     }
     else
     {
@@ -52,10 +52,11 @@ public class BuchungsartDeleteAction implements Action
     }
     try
     {
-      String mehrzahl = buchungsarten.length > 1? "en":"";
+      String mehrzahl = buchungsarten.length > 1 ? "en" : "";
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Buchungsart" + mehrzahl +" löschen");
-      d.setText("Wollen Sie diese Buchungsart" + mehrzahl + " wirklich löschen?");
+      d.setTitle("Buchungsart" + mehrzahl + " löschen");
+      d.setText(
+          "Wollen Sie diese Buchungsart" + mehrzahl + " wirklich löschen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -68,13 +69,14 @@ public class BuchungsartDeleteAction implements Action
         return;
       }
 
-      for(Buchungsart b:buchungsarten)
+      for (Buchungsart b : buchungsarten)
       {
-        if(b.isNewObject())
+        if (b.isNewObject())
           continue;
         b.delete();
       }
-      GUI.getStatusBar().setSuccessText("Buchungsart" + mehrzahl + " gelöscht.");
+      GUI.getStatusBar()
+          .setSuccessText("Buchungsart" + mehrzahl + " gelöscht.");
     }
     catch (RemoteException e)
     {

@@ -100,7 +100,7 @@ public class MitgliedListeView extends AbstractMitgliedListeView
     SimpleContainer right2 = new SimpleContainer(tab2.getComposite());
     right2.addInput(control.getAustrittvon());
     right2.addInput(control.getAustrittbis());
-    
+
     // Buttons
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(control.getProfileButton());

@@ -49,7 +49,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
 {
 
   private AbstractInput buchungsarten = null;
-  
+
   private SelectInput buchungsklassen = null;
 
   private CheckboxInput ueberschreiben = null;
@@ -57,11 +57,11 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   private LabelInput status = null;
 
   private Buchungsart buchungsart = null;
-  
+
   private Buchungsklasse buchungsklasse = null;
 
   private boolean ueberschr;
-  
+
   private boolean abort = true;
 
   /**
@@ -79,7 +79,8 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   {
     LabelGroup group = new LabelGroup(parent, "");
     group.addLabelPair("Buchungsart", getBuchungsartAuswahl());
-    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       group.addLabelPair("Buchungsklasse", getBuchungsklasseAuswahl());
     }
@@ -90,7 +91,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     buttons.addButton("Übernehmen", new Action()
     {
       @Override
-      public void handleAction(Object context) 
+      public void handleAction(Object context)
       {
         if (buchungsarten.getValue() == null)
         {
@@ -104,7 +105,8 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         }
         try
         {
-          if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+          if ((Boolean) Einstellungen
+              .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
           {
             if (buchungsklassen.getValue() == null)
             {
@@ -165,7 +167,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   {
     return buchungsart;
   }
-  
+
   public Buchungsklasse getBuchungsklasse()
   {
     return buchungsklasse;
@@ -175,7 +177,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   {
     return ueberschr;
   }
-  
+
   public boolean getAbort()
   {
     return abort;
@@ -187,9 +189,9 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     {
       return buchungsarten;
     }
-    buchungsarten = new BuchungsartInput().getBuchungsartInput(buchungsarten, null,
-        buchungsarttyp.BUCHUNGSART,
-        (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
+    buchungsarten = new BuchungsartInput().getBuchungsartInput(buchungsarten,
+        null, buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsarten.addListener(new Listener()
     {
       @Override
@@ -199,7 +201,8 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         {
           status.setValue("");
           if (buchungsklassen != null && buchungsklassen.getValue() == null)
-            buchungsklassen.setValue(((Buchungsart) buchungsarten.getValue()).getBuchungsklasse());
+            buchungsklassen.setValue(
+                ((Buchungsart) buchungsarten.getValue()).getBuchungsklasse());
         }
         catch (RemoteException e)
         {
@@ -209,15 +212,15 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     });
     return buchungsarten;
   }
-  
+
   private SelectInput getBuchungsklasseAuswahl() throws RemoteException
   {
     if (buchungsklassen != null)
     {
       return buchungsklassen;
     }
-    buchungsklassen = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklassen,
-        null);
+    buchungsklassen = new BuchungsklasseInput()
+        .getBuchungsklasseInput(buchungsklassen, null);
     buchungsklassen.addListener(new Listener()
     {
       @Override

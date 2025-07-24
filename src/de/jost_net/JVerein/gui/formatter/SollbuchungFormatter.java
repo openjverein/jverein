@@ -34,7 +34,8 @@ public class SollbuchungFormatter implements Formatter
       Sollbuchung sollb = (Sollbuchung) o;
       try
       {
-        if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
         {
           return Adressaufbereitung.getIdNameVorname(sollb.getMitglied());
         }

@@ -95,7 +95,8 @@ public class DefaultZusatzbetraegeImport implements Importer
         {
           if (Character.getNumericValue(meta.getColumnName(1).charAt(0)) == -1)
           {
-            throw new ApplicationException("Eingelesene Datei beginnt mit UTF-8 BOM. Bitte entfernen. Abbruch!");
+            throw new ApplicationException(
+                "Eingelesene Datei beginnt mit UTF-8 BOM. Bitte entfernen. Abbruch!");
           }
 
         }
@@ -118,20 +119,23 @@ public class DefaultZusatzbetraegeImport implements Importer
       }
       if (b_mitgliedsnummer && b_extmitgliedsnummer)
       {
-        throw new ApplicationException("Spaltenüberschrift muss entweder nur Mitglieds_Nr"
-            + " oder Ext_Mitglieds_Nr zur Zuordnung des Mitglieds enthalten. Es ist beides vorhanden. Abbruch!");
+        throw new ApplicationException(
+            "Spaltenüberschrift muss entweder nur Mitglieds_Nr"
+                + " oder Ext_Mitglieds_Nr zur Zuordnung des Mitglieds enthalten. Es ist beides vorhanden. Abbruch!");
       }
       if ((b_mitgliedsnummer || b_extmitgliedsnummer)
           && (b_nachname || b_vorname))
       {
-        throw new ApplicationException("Spaltenüberschrift muss entweder Angaben zur Mitgliedsnummer"
-            + " oder Nachname und Vorname zur Zuordnung des Mitglieds enthalten. Es ist beides vorhanden. Abbruch!");
+        throw new ApplicationException(
+            "Spaltenüberschrift muss entweder Angaben zur Mitgliedsnummer"
+                + " oder Nachname und Vorname zur Zuordnung des Mitglieds enthalten. Es ist beides vorhanden. Abbruch!");
       }
       if (b_mitgliedsnummer == false && b_extmitgliedsnummer == false
           && (b_nachname == false || b_vorname == false))
       {
-        throw new ApplicationException("Spaltenüberschrift muss entweder Mitglieds_Nr, Ext_Mitglieds_Nr"
-            + " oder Nachname/Vorname zur Zuordnung des Mitglieds enhalten. Es ist keine Information vorhanden. Abbruch!");
+        throw new ApplicationException(
+            "Spaltenüberschrift muss entweder Mitglieds_Nr, Ext_Mitglieds_Nr"
+                + " oder Nachname/Vorname zur Zuordnung des Mitglieds enhalten. Es ist keine Information vorhanden. Abbruch!");
       }
 
       List<Zusatzbetrag> zusatzbetraegeList = new ArrayList<>();

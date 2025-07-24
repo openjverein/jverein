@@ -37,11 +37,12 @@ public class LesefelddefinitionenAction implements Action
   @Override
   public void handleAction(Object context)
   {
-    if (selectedMitglied == null )
+    if (selectedMitglied == null)
     {
       try
       {
-        DBIterator<Mitglied> it = Einstellungen.getDBService().createList(Mitglied.class);
+        DBIterator<Mitglied> it = Einstellungen.getDBService()
+            .createList(Mitglied.class);
         it.setOrder("order by name, vorname");
         if (it.hasNext())
         {

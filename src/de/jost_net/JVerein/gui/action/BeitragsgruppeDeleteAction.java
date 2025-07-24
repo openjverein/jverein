@@ -55,7 +55,7 @@ public class BeitragsgruppeDeleteAction implements Action
       {
         return;
       }
-      if(bg.getSekundaer())
+      if (bg.getSekundaer())
       {
         DBIterator<SekundaereBeitragsgruppe> sek = Einstellungen.getDBService()
             .createList(SekundaereBeitragsgruppe.class);

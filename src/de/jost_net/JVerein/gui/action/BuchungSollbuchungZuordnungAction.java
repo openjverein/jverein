@@ -41,8 +41,8 @@ public class BuchungSollbuchungZuordnungAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof Buchung)
-        && !(context instanceof Buchung[]))
+    if (context == null
+        || !(context instanceof Buchung) && !(context instanceof Buchung[]))
     {
       throw new ApplicationException("Keine Buchung(en) ausgewählt");
     }
@@ -79,8 +79,8 @@ public class BuchungSollbuchungZuordnungAction implements Action
         else if (open instanceof Mitglied)
         {
           Mitglied m = (Mitglied) open;
-          sollb = (Sollbuchung) Einstellungen.getDBService().createObject(
-              Sollbuchung.class, null);
+          sollb = (Sollbuchung) Einstellungen.getDBService()
+              .createObject(Sollbuchung.class, null);
 
           Double betrag = 0d;
           for (Buchung buchung : b)
@@ -112,7 +112,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
             if (buchung.getSteuer() != null)
             {
               sbp.setSteuer(buchung.getSteuer());
-              }
+            }
             sbp.setDatum(buchung.getDatum());
             sbp.setZweck(buchung.getZweck());
             sbp.setSollbuchung(sollb.getID());
@@ -215,7 +215,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
         if (sollb == null)
         {
           GUI.getStatusBar().setSuccessText("Sollbuchung gelöscht");
-        } 
+        }
         else
         {
           GUI.getStatusBar().setSuccessText("Sollbuchung zugeordnet");
@@ -233,8 +233,8 @@ public class BuchungSollbuchungZuordnungAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(
-          "Fehler bei der Zuordnung der Sollbuchung");
+      GUI.getStatusBar()
+          .setErrorText("Fehler bei der Zuordnung der Sollbuchung");
     }
   }
 }

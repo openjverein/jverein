@@ -87,8 +87,8 @@ public class Familienverband implements Part
       control.getFamilienangehoerigenTable().paint(tg1.getComposite());
       TabGroup tg2 = new TabGroup(tab, "Vollzahlendes Familienmitglied");
       // erstelle neuen zahler: (force == true)
-      control.getZahler(true).setComment(
-          "Nur für Beitragsgruppenart: \"Familienangehörige\"");
+      control.getZahler(true)
+          .setComment("Nur für Beitragsgruppenart: \"Familienangehörige\"");
       tg2.addLabelPair("Vollzahler", control.getZahler());
 
       if (gruppe != null)

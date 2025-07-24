@@ -24,8 +24,7 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Container;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
-public class ViewVerlassenDialog
-    extends AbstractDialog<Integer>
+public class ViewVerlassenDialog extends AbstractDialog<Integer>
 {
   public ViewVerlassenDialog(int position)
   {

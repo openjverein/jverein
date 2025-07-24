@@ -59,8 +59,8 @@ public class DokumentShowAction implements Action
       Application.getMessagingFactory()
           .getMessagingQueue("jameica.messaging.get").sendSyncMessage(qm);
       byte[] data = (byte[]) qm.getData();
-      final File file = new File(System.getProperty("java.io.tmpdir") + "/"
-          + map.get("filename"));
+      final File file = new File(
+          System.getProperty("java.io.tmpdir") + "/" + map.get("filename"));
       FileOutputStream fos = new FileOutputStream(file);
       fos.write(data);
       fos.close();

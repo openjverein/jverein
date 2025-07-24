@@ -29,15 +29,14 @@ import de.willuhn.util.ApplicationException;
 
 public class MailVorlageZuweisenAction implements Action
 {
-  
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
     try
     {
-      if (context != null &&
-          (context instanceof DruckMailControl ||
-           context instanceof MailControl))
+      if (context != null && (context instanceof DruckMailControl
+          || context instanceof MailControl))
       {
         MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
             new MailVorlageControl(null),
@@ -72,7 +71,8 @@ public class MailVorlageZuweisenAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText("Fehler bei der Zuweisung eine Mail Vorlage");
+      GUI.getStatusBar()
+          .setErrorText("Fehler bei der Zuweisung eine Mail Vorlage");
     }
   }
 }

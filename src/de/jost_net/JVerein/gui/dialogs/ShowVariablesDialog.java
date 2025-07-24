@@ -53,8 +53,8 @@ public class ShowVariablesDialog extends AbstractDialog<Object>
     this(vars, "", "");
   }
 
-  public ShowVariablesDialog(Map<String, Object> vars,
-      String prependCopyText, String appendCopyText)
+  public ShowVariablesDialog(Map<String, Object> vars, String prependCopyText,
+      String appendCopyText)
   {
     super(AbstractDialog.POSITION_CENTER);
     setTitle("Liste der Variablen");

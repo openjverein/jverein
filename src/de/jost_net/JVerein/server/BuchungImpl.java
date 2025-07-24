@@ -92,7 +92,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     catch (ObjectNotFoundException e)
     {
       // Alles ok, es gibt keine Spendenbescheinigung
-      // Das passiert wenn sie kurz vorher gelöscht wurde aber 
+      // Das passiert wenn sie kurz vorher gelöscht wurde aber
       // die ID noch im Cache gespeichert ist
     }
     catch (RemoteException e)
@@ -139,7 +139,8 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     cal2.add(Calendar.YEAR, 10);
     if (cal1.after(cal2))
     {
-      throw new ApplicationException("Buchungsdatum liegt mehr als 10 Jahre in der Zukunft");
+      throw new ApplicationException(
+          "Buchungsdatum liegt mehr als 10 Jahre in der Zukunft");
     }
     cal2.add(Calendar.YEAR, -60);
     if (cal1.before(cal2))
@@ -181,13 +182,13 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
       {
         throw new ApplicationException(
             "Buchungsart kann nicht gelöscht werden da "
-            + "eine Spendenbescheinigung zugeordnet ist!");
+                + "eine Spendenbescheinigung zugeordnet ist!");
       }
       if (getBuchungsart() != null && !getBuchungsart().getSpende())
       {
         throw new ApplicationException(
             "Buchungsart kann nicht in eine Buchungsart ohne der Eigenschaft Spende "
-            + "geändert werden da eine Spendenbescheinigung zugeordnet ist!");
+                + "geändert werden da eine Spendenbescheinigung zugeordnet ist!");
       }
     }
     if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
@@ -507,7 +508,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
 
   @Override
   public Jahresabschluss getAbschluss() throws RemoteException
-  { 
+  {
     Object o = super.getAttribute("abschluss");
     if (o == null)
     {
@@ -531,8 +532,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   }
 
   @Override
-  public void setAbschluss(Jahresabschluss abschluss)
-      throws RemoteException
+  public void setAbschluss(Jahresabschluss abschluss) throws RemoteException
   {
     if (abschluss != null)
     {
@@ -569,8 +569,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   }
 
   @Override
-  public void setSollbuchung(Sollbuchung sollbuchung)
-      throws RemoteException
+  public void setSollbuchung(Sollbuchung sollbuchung) throws RemoteException
   {
     if (sollbuchung != null)
     {
@@ -702,7 +701,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     {
       return brutto;
     }
-    
+
     BigDecimal netto = new BigDecimal(brutto).multiply(new BigDecimal(100))
         .divide(new BigDecimal(100d + steuer.getSatz()), 2,
             RoundingMode.HALF_UP);
@@ -725,7 +724,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     }
     map.put(BuchungVar.ABRECHNUNGSLAUF.getName(),
         (this.getAbrechnungslauf() != null
-        ? this.getAbrechnungslauf().getDatum()
+            ? this.getAbrechnungslauf().getDatum()
             : ""));
     map.put(BuchungVar.ART.getName(),
         StringTool.toNotNullString(this.getArt()));
@@ -787,8 +786,8 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
         this.getKonto() != null ? this.getKonto().getNummer() : "");
     map.put(BuchungVar.MITGLIEDSKONTO.getName(),
         this.getSollbuchung() != null
-        ? Adressaufbereitung
-            .getNameVorname(this.getSollbuchung().getMitglied())
+            ? Adressaufbereitung
+                .getNameVorname(this.getSollbuchung().getMitglied())
             : "");
     map.put(BuchungVar.NAME.getName(), this.getName());
     map.put(BuchungVar.ZWECK1.getName(),
@@ -955,14 +954,15 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   public void delete() throws RemoteException, ApplicationException
   {
     DBService service = Einstellungen.getDBService();
-    DBIterator<BuchungDokument> docs = service.createList(BuchungDokument.class);
+    DBIterator<BuchungDokument> docs = service
+        .createList(BuchungDokument.class);
     docs.addFilter("referenz = ?", new Object[] { this.getID() });
     while (docs.hasNext())
     {
       QueryMessage qm = new QueryMessage(
           ((BuchungDokument) docs.next()).getUUID(), null);
-      Application.getMessagingFactory().getMessagingQueue(
-          "jameica.messaging.del").sendSyncMessage(qm);
+      Application.getMessagingFactory()
+          .getMessagingQueue("jameica.messaging.del").sendSyncMessage(qm);
     }
     super.delete();
   }
@@ -985,9 +985,12 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
             "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
       }
     }
-    // Wird eine Abschreibung während des Jahresabschlusses generiert muss zuerst der 
-    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung gespeichert 
-    // werden kann. Dann muss man die Buchung auch bei bestehendem Jahresabschluss speichern 
+    // Wird eine Abschreibung während des Jahresabschlusses generiert muss
+    // zuerst der
+    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung
+    // gespeichert
+    // werden kann. Dann muss man die Buchung auch bei bestehendem
+    // Jahresabschluss speichern
     // können. In diesem Fall wird mit check false gespeichert.
     super.store();
   }

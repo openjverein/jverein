@@ -63,8 +63,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class MailControl extends FilterControl
-    implements IMailControl, Savable
+public class MailControl extends FilterControl implements IMailControl, Savable
 {
 
   private AutoUpdateTablePart empfaenger;
@@ -288,9 +287,10 @@ public class MailControl extends FilterControl
           {
             YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
             d.setTitle("Mail senden?");
-            d.setText(
-                "Diese Mail wurde bereits an " + (getMail().getEmpfaenger()
-                    .size() - toBeSentCount) + " der gewählten Empfänger versendet. Wollen Sie diese Mail an alle weiteren " + toBeSentCount + " Empfänger senden?");
+            d.setText("Diese Mail wurde bereits an "
+                + (getMail().getEmpfaenger().size() - toBeSentCount)
+                + " der gewählten Empfänger versendet. Wollen Sie diese Mail an alle weiteren "
+                + toBeSentCount + " Empfänger senden?");
             try
             {
               Boolean choice = (Boolean) d.open();
@@ -416,8 +416,8 @@ public class MailControl extends FilterControl
   private void sendeMail(final boolean erneutSenden) throws RemoteException
   {
     String text = getTxtString();
-    if (text.toLowerCase().contains("<html") && text.toLowerCase()
-        .contains("</body"))
+    if (text.toLowerCase().contains("<html")
+        && text.toLowerCase().contains("</body"))
     {
       // MailSignatur ohne Separator mit vorangestellten hr in den body einbauen
       text = text.substring(0, text.toLowerCase().indexOf("</body") - 1);
@@ -448,7 +448,8 @@ public class MailControl extends FilterControl
               (String) Einstellungen.getEinstellung(Property.SMTPAUTHUSER),
               Einstellungen.getSmtpAuthPwd(),
               (String) Einstellungen.getEinstellung(Property.SMTPFROMADDRESS),
-              (String) Einstellungen.getEinstellung(Property.SMTPFROMANZEIGENAME),
+              (String) Einstellungen
+                  .getEinstellung(Property.SMTPFROMANZEIGENAME),
               (String) Einstellungen.getEinstellung(Property.MAILALWAYSBCC),
               (String) Einstellungen.getEinstellung(Property.MAILALWAYSCC),
               (Boolean) Einstellungen.getEinstellung(Property.SMTPSSL),
@@ -508,8 +509,8 @@ public class MailControl extends FilterControl
               monitor.log(empf.getMailAdresse() + " - " + e.getMessage());
             }
             zae++;
-            double proz = (double) zae / (double) getMail().getEmpfaenger()
-                .size() * 100d;
+            double proz = (double) zae
+                / (double) getMail().getEmpfaenger().size() * 100d;
             monitor.setPercentComplete((int) proz);
           }
           monitor.setPercentComplete(100);

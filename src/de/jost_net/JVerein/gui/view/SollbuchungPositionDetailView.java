@@ -47,7 +47,8 @@ public class SollbuchungPositionDetailView extends AbstractDetailView
     group.addLabelPair("Zweck", control.getZweck());
     group.addLabelPair("Betrag", control.getBetrag());
     group.addLabelPair("Buchungsart", control.getBuchungsart());
-    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     }

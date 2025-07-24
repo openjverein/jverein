@@ -49,7 +49,8 @@ public class HibscusUmsatzMessageConsumer implements MessageConsumer
   @Override
   public void handleMessage(Message message) throws Exception
   {
-    if (!(Boolean) Einstellungen.getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN))
+    if (!(Boolean) Einstellungen
+        .getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN))
       return;
 
     final QueryMessage m = (QueryMessage) message;
@@ -93,4 +94,3 @@ public class HibscusUmsatzMessageConsumer implements MessageConsumer
   }
 
 }
-

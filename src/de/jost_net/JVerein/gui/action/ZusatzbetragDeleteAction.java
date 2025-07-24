@@ -35,8 +35,8 @@ public class ZusatzbetragDeleteAction implements Action
   public void handleAction(Object context) throws ApplicationException
   {
     Zusatzbetrag[] z = null;
-    if (context != null
-        && (context instanceof Zusatzbetrag || context instanceof Zusatzbetrag[]))
+    if (context != null && (context instanceof Zusatzbetrag
+        || context instanceof Zusatzbetrag[]))
     {
       if (context instanceof Zusatzbetrag)
       {

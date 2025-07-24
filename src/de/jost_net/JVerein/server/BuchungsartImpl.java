@@ -231,7 +231,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   {
     setAttribute("art", art);
   }
-  
+
   @Override
   public int getStatus() throws RemoteException
   {
@@ -319,7 +319,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   {
     setAttribute("suchbegriff", suchbegriff);
   }
-  
+
   @Override
   public Boolean getAbschreibung() throws RemoteException
   {
@@ -329,7 +329,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   @Override
   public void setAbschreibung(Boolean abschreibung) throws RemoteException
   {
-    setAttribute("abschreibung",abschreibung);
+    setAttribute("abschreibung", abschreibung);
   }
 
   @Override
@@ -344,7 +344,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       }
       else
       {
-    	  return getBezeichnung();
+        return getBezeichnung();
       }
     }
     else if (fieldName.equals("bezeichnungnr"))
@@ -356,7 +356,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       }
       else
       {
-    	return getBezeichnung();
+        return getBezeichnung();
       }
     }
     else if (fieldName.equals("klasse-art-bez"))
@@ -413,7 +413,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
     super.store();
     Cache.get(Buchungsart.class, false).put(this); // Cache aktualisieren
   }
-  
+
   public boolean equals(Object bart)
   {
     try

@@ -55,8 +55,8 @@ public class StatistikJahrgaengeExportAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(
-          "Fehler beim exportieren der Mitglieder-Jubiläen");
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim exportieren der Mitglieder-Jubiläen");
     }
   }
 

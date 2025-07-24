@@ -55,19 +55,20 @@ public class PreNotificationMailView extends AbstractView
     GUI.getView().setTitle("Pre-Notification");
 
     final PreNotificationControl control = new PreNotificationControl(this);
-    control.init("prenotification." , null, null);
+    control.init("prenotification.", null, null);
 
     if (this.getCurrentObject() == null)
     {
       LabelGroup group = new LabelGroup(getParent(), "Filter");
       group.addInput(control.getAbrechnungslaufAusw(10));
     }
-    
+
     TabFolder folder = control.getFolder(getParent());
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
     TabGroup tabMailPDF = new TabGroup(folder, "Mail + PDF");
-    SimpleContainer grtabMailPDF = new SimpleContainer(tabMailPDF.getComposite(), true);
+    SimpleContainer grtabMailPDF = new SimpleContainer(
+        tabMailPDF.getComposite(), true);
 
     grtabMailPDF.addHeadline("Parameter");
     grtabMailPDF.addInput(control.getOutput());
@@ -87,13 +88,13 @@ public class PreNotificationMailView extends AbstractView
     ButtonArea buttons1 = new ButtonArea();
     buttons1.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.PRENOTIFICATION, false, "question-circle.png");
-    buttons1.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
-        control, false, "view-refresh.png"));
+    buttons1.addButton(new Button("Mail-Vorlage",
+        new MailVorlageZuweisenAction(), control, false, "view-refresh.png"));
     buttons1.addButton("Variablen anzeigen",
         new InsertVariableDialogAction(map), control, false, "bookmark.png");
     buttons1
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
-        control, false, "edit-copy.png"));
+            control, false, "edit-copy.png"));
     buttons1.addButton(
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
@@ -113,20 +114,24 @@ public class PreNotificationMailView extends AbstractView
         control.getStart1ctUeberweisungButton(this.getCurrentObject()));
     addButtonArea(buttons2, grtab2.getComposite());
   }
-  
+
   /**
    * Fuegt eine neue ButtonArea ohne Seperator hinzu.
-   * @param buttonArea die hinzuzufuegende Button-Area.
-   * @param composite in den gezeichnet werden soll
-   * Code ist aus de.willuhn.jameica.gui.util.Container kopiert
+   * 
+   * @param buttonArea
+   *          die hinzuzufuegende Button-Area.
+   * @param composite
+   *          in den gezeichnet werden soll Code ist aus
+   *          de.willuhn.jameica.gui.util.Container kopiert
    */
   public void addButtonArea(ButtonArea buttonArea, Composite composite)
   {
     try
     {
-      final GridData g = new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END);
+      final GridData g = new GridData(
+          GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END);
       g.horizontalSpan = 2;
-      final Composite comp = new Composite(composite,SWT.NONE);
+      final Composite comp = new Composite(composite, SWT.NONE);
       comp.setLayoutData(g);
 
       final GridLayout gl = new GridLayout();
@@ -137,8 +142,11 @@ public class PreNotificationMailView extends AbstractView
     }
     catch (RemoteException e)
     {
-      Logger.error("error while adding button area",e);
-      Application.getMessagingFactory().sendMessage(new StatusBarMessage(Application.getI18n().tr("Fehler beim Anzeigen des Buttons."),StatusBarMessage.TYPE_ERROR));
+      Logger.error("error while adding button area", e);
+      Application.getMessagingFactory()
+          .sendMessage(new StatusBarMessage(
+              Application.getI18n().tr("Fehler beim Anzeigen des Buttons."),
+              StatusBarMessage.TYPE_ERROR));
     }
   }
 }

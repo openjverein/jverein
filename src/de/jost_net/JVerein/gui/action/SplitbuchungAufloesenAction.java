@@ -26,12 +26,12 @@ import de.willuhn.logging.Logger;
 public class SplitbuchungAufloesenAction implements Action
 {
   private BuchungsControl control;
-  
+
   public SplitbuchungAufloesenAction(BuchungsControl control)
   {
     this.control = control;
   }
-  
+
   @Override
   public void handleAction(Object context)
   {

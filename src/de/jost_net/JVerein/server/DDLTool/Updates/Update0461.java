@@ -31,23 +31,21 @@ public class Update0461 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    //Spalte zahler in mitgliedskonto
-    Column col = new Column("zahler", COLTYPE.BIGINT, 0, null, false,
-        false);
+    // Spalte zahler in mitgliedskonto
+    Column col = new Column("zahler", COLTYPE.BIGINT, 0, null, false, false);
     execute(addColumn("mitgliedskonto", col));
-    
-    //Index und ForeignKey in mitgliedskonto
+
+    // Index und ForeignKey in mitgliedskonto
     Index idx = new Index("ixMitgliedskonto6", false);
     idx.add(col);
     execute(idx.getCreateIndex("mitgliedskonto"));
-    
-    execute(createForeignKey("fkMitgliedskonto6",
-            "mitgliedskonto", "zahler", "mitglied", "id",
-            "SET NULL", "NO ACTION"));
-    
+
+    execute(createForeignKey("fkMitgliedskonto6", "mitgliedskonto", "zahler",
+        "mitglied", "id", "SET NULL", "NO ACTION"));
+
     // Den Zahler auf Mitglied setzen bei bestehenden Sollbuchungen
     execute("update mitgliedskonto set zahler = mitglied ");
-    
+
     // Spendenbescheinigung nicht löschen wenn Zahler gelöscht wird
     execute(dropForeignKey("fkSpendenbescheinigung2", "spendenbescheinigung"));
     execute(createForeignKey("fkSpendenbescheinigung2", "spendenbescheinigung",

@@ -50,8 +50,8 @@ public class BuchungAuswertungCSV
 
       String[] header = createHeader();
 
-      Buchung bu = (Buchung) Einstellungen.getDBService().createObject(
-          Buchung.class, null);
+      Buchung bu = (Buchung) Einstellungen.getDBService()
+          .createObject(Buchung.class, null);
       Map<String, Object> map = bu.getMap(null);
       CellProcessor[] processors = CellProcessors.createCellProcessors(map);
 
@@ -83,8 +83,8 @@ public class BuchungAuswertungCSV
   {
     try
     {
-      Buchung b = (Buchung) Einstellungen.getDBService().createObject(
-          Buchung.class, null);
+      Buchung b = (Buchung) Einstellungen.getDBService()
+          .createObject(Buchung.class, null);
       return b.getMap(null).keySet().toArray(new String[0]);
     }
     catch (RemoteException e)

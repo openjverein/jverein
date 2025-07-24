@@ -53,7 +53,8 @@ public abstract class Spaltenauswahl
   }
 
   public void add(String spaltenbezeichnung, String spaltenname,
-      boolean defaultvalue, Formatter formatter, int align, boolean auchNichtMitglied)
+      boolean defaultvalue, Formatter formatter, int align,
+      boolean auchNichtMitglied)
   {
     spalten.add(new Spalte(spaltenbezeichnung, spaltenname,
         settings.getBoolean(tabelle + "." + spaltenname, defaultvalue),

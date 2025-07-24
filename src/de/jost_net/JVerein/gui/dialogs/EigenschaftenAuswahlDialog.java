@@ -50,9 +50,9 @@ public class EigenschaftenAuswahlDialog
   private String defaults = null;
 
   private boolean verknuepfung;
-  
+
   private boolean onlyChecked;
-  
+
   private Mitglied[] mitglieder;
 
   private EigenschaftenAuswahlParameter param;
@@ -63,27 +63,27 @@ public class EigenschaftenAuswahlDialog
    * @param defaults
    *          Liste der Eigenschaften-IDs durch Komma separiert.
    * @param ohnePflicht
-   *          Spezifiziert ob Eigenschaftengruppen mit Pflicht und Max1 
-   *           ignoriert werden.  true: ignorieren
+   *          Spezifiziert ob Eigenschaftengruppen mit Pflicht und Max1
+   *          ignoriert werden. true: ignorieren
    * @param verknuepfung
    *          Spezifiziert ob der Input Verknüpfung (UND,ODER) im Dialog
    *          angezeigt werden soll.
    * @param control
    *          Control welches den EigenschaftenAuswahlTree liefert.
    * @param onlyChecked
-   *          Gibt an ob nur die Checkbox Werte UNCHECKED und CHECKED 
-   *          angezeigt werden.
+   *          Gibt an ob nur die Checkbox Werte UNCHECKED und CHECKED angezeigt
+   *          werden.
    * @param mitglieder
    *          Liste der Mitglieder welche selektiert wurden.
    */
-  public EigenschaftenAuswahlDialog(String defaults,
-      boolean verknuepfung, FilterControl control, boolean onlyChecked)
+  public EigenschaftenAuswahlDialog(String defaults, boolean verknuepfung,
+      FilterControl control, boolean onlyChecked)
   {
     this(defaults, verknuepfung, control, onlyChecked, null);
   }
-  
+
   public EigenschaftenAuswahlDialog(String defaults, boolean verknuepfung,
-       FilterControl control, boolean onlyChecked, Mitglied[] mitglieder)
+      FilterControl control, boolean onlyChecked, Mitglied[] mitglieder)
   {
     super(EigenschaftenAuswahlDialog.POSITION_CENTER);
     this.setSize(400, 400);
@@ -127,7 +127,9 @@ public class EigenschaftenAuswahlDialog
         try
         {
           param = new EigenschaftenAuswahlParameter();
-          ArrayList<?> rootNodes = (ArrayList<?>) tree.getItems();  // liefert nur den Root
+          ArrayList<?> rootNodes = (ArrayList<?>) tree.getItems(); // liefert
+                                                                   // nur den
+                                                                   // Root
           EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
           if (mitglieder != null)
           {
@@ -140,7 +142,7 @@ public class EigenschaftenAuswahlDialog
           if (verknuepfung)
           {
             param
-            .setVerknuepfung((String) eigenschaftenverknuepfung.getValue());
+                .setVerknuepfung((String) eigenschaftenverknuepfung.getValue());
           }
         }
         catch (RemoteException e)
@@ -183,9 +185,9 @@ public class EigenschaftenAuswahlDialog
     eigenschaftenverknuepfung.setName("Gruppen-Verknüpfung");
     return eigenschaftenverknuepfung;
   }
-  
-  private boolean checkRestrictions(EigenschaftenNode root, Mitglied[] mitglieder) 
-      throws RemoteException, ApplicationException
+
+  private boolean checkRestrictions(EigenschaftenNode root,
+      Mitglied[] mitglieder) throws RemoteException, ApplicationException
   {
     HashMap<String, Boolean> pflichtgruppenMap = new HashMap<>();
     HashMap<String, Boolean> max1gruppenMap = new HashMap<>();
@@ -207,10 +209,11 @@ public class EigenschaftenAuswahlDialog
         // und darf nicht im Dialog auf "-" stehen
         for (Long[] eigenschaften : root.getEigenschaften())
         {
-          EigenschaftenNode node = root.getEigenschaftenNode(eigenschaften[1].toString());
+          EigenschaftenNode node = root
+              .getEigenschaftenNode(eigenschaften[1].toString());
           String gruppenId = node.getEigenschaftGruppe().getID();
-          if (eigenschaften[0].toString().equals(mitglied.getID()) &&
-              !node.getPreset().equals(EigenschaftenNode.MINUS))
+          if (eigenschaften[0].toString().equals(mitglied.getID())
+              && !node.getPreset().equals(EigenschaftenNode.MINUS))
           {
             pflichtgruppenMap.put(gruppenId, Boolean.valueOf(true));
           }
@@ -253,10 +256,11 @@ public class EigenschaftenAuswahlDialog
         // Hier nur gesetzte Werte ohne "+" und "-", "+" kommt nachher
         for (Long[] eigenschaften : root.getEigenschaften())
         {
-          EigenschaftenNode node = root.getEigenschaftenNode(eigenschaften[1].toString());
-          if (eigenschaften[0].toString().equals(mitglied.getID()) &&
-              !node.getPreset().equals(EigenschaftenNode.MINUS) && 
-              !node.getPreset().equals(EigenschaftenNode.PLUS))
+          EigenschaftenNode node = root
+              .getEigenschaftenNode(eigenschaften[1].toString());
+          if (eigenschaften[0].toString().equals(mitglied.getID())
+              && !node.getPreset().equals(EigenschaftenNode.MINUS)
+              && !node.getPreset().equals(EigenschaftenNode.PLUS))
           {
             EigenschaftGruppe gruppe = node.getEigenschaftGruppe();
             Boolean m1 = max1gruppenMap.get(gruppe.getID());
@@ -266,7 +270,8 @@ public class EigenschaftenAuswahlDialog
               {
                 throw new ApplicationException(String.format(
                     "In der Eigenschaftengruppe \"%s\" ist bei Mitglied %s mehr als ein Eintrag markiert!",
-                    gruppe.getBezeichnung(), mitglied.getAttribute("namevorname")));
+                    gruppe.getBezeichnung(),
+                    mitglied.getAttribute("namevorname")));
               }
               else
               {
@@ -288,7 +293,8 @@ public class EigenschaftenAuswahlDialog
               {
                 throw new ApplicationException(String.format(
                     "In der Eigenschaftengruppe '%s' ist bei Mitglied %s mehr als ein Eintrag markiert!",
-                    gruppe.getBezeichnung(), mitglied.getAttribute("namevorname")));
+                    gruppe.getBezeichnung(),
+                    mitglied.getAttribute("namevorname")));
               }
               else
               {

@@ -36,7 +36,6 @@ public abstract class FormularPartControl extends VorZurueckControl
   protected TablePart formularfelderList;
 
   protected Formular formular;
- 
 
   public FormularPartControl(AbstractView view, Formular formular)
   {

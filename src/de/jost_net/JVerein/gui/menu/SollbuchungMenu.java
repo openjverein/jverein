@@ -53,8 +53,8 @@ public class SollbuchungMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(SollbuchungDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new SollOhneIstItem("Löschen",
-        new SollbuchungLoeschenAction(), "user-trash-full.png"));
+    addItem(new SollOhneIstItem("Löschen", new SollbuchungLoeschenAction(),
+        "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
@@ -143,7 +143,7 @@ public class SollbuchungMenu extends ContextMenu
       return true;
     }
   }
-  
+
   private static class MultiItem extends CheckedContextMenuItem
   {
 

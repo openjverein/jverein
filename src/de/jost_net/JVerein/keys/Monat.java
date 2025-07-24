@@ -18,10 +18,19 @@ package de.jost_net.JVerein.keys;
 
 public enum Monat
 {
-  JANUAR(1, "Januar"), FEBRUAR(2, "Februar"), MAERZ(3, "März"), APRIL(4,
-      "April"), MAI(5, "Mai"), JUNI(6, "Juni"), JULI(7, "Juli"), AUGUST(8,
-      "August"), SEPTEMBER(9, "September"), OKTOBER(10, "Oktober"), NOVEMBER(
-      11, "November"), DEZEMBER(12, "Dezember");
+  JANUAR(1, "Januar"),
+  FEBRUAR(2, "Februar"),
+  MAERZ(3, "März"),
+  APRIL(4, "April"),
+  MAI(5, "Mai"),
+  JUNI(6, "Juni"),
+  JULI(7, "Juli"),
+  AUGUST(8, "August"),
+  SEPTEMBER(9, "September"),
+  OKTOBER(10, "Oktober"),
+  NOVEMBER(11, "November"),
+  DEZEMBER(12, "Dezember");
+
   private final String text;
 
   private final int key;

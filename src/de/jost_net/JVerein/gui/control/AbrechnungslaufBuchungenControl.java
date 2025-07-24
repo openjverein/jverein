@@ -139,8 +139,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
     //
   }
 
-  private DBIterator<Sollbuchung> getIterator(int lauf)
-      throws RemoteException
+  private DBIterator<Sollbuchung> getIterator(int lauf) throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Sollbuchung> sollbIt = service.createList(Sollbuchung.class);
@@ -218,8 +217,8 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("abrechnungslauf", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "PDF")
-              .get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+          "PDF").get());
 
       final String s = fd.open();
 
@@ -239,8 +238,8 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
     }
   }
 
-  private void auswertungPDF(final DBIterator<Sollbuchung> it,
-      final File file, final Abrechnungslauf lauf)
+  private void auswertungPDF(final DBIterator<Sollbuchung> it, final File file,
+      final Abrechnungslauf lauf)
   {
     BackgroundTask t = new BackgroundTask()
     {

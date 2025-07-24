@@ -23,8 +23,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
-    implements
-    EigenschaftGruppe
+    implements EigenschaftGruppe
 {
 
   private static final long serialVersionUID = -5906609226109964967L;

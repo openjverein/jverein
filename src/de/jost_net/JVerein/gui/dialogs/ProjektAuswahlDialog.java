@@ -47,13 +47,13 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
   private Projekt selected = null;
 
   private SelectInput projekte = null;
-  
+
   private CheckboxInput ueberschreiben = null;
 
   private LabelInput status = null;
-  
+
   private boolean abort = false;
-  
+
   private boolean ueberschr;
 
   Buchung[] buchungen = null;
@@ -74,7 +74,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     group.addLabelPair("Projekt", this.getProjekte());
     group.addLabelPair("Projekte überschreiben", getUeberschreiben());
     group.addLabelPair("", getStatus());
-    
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Übernehmen", new Action()
     {
@@ -111,7 +111,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
         close();
       }
     }, null, false, "process-stop.png");
-    getShell().addListener(SWT.Close,new Listener()
+    getShell().addListener(SWT.Close, new Listener()
     {
       public void handleEvent(Event event)
       {
@@ -126,12 +126,12 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
   {
     return this.selected;
   }
-  
+
   public boolean getAbort()
   {
     return abort;
   }
-  
+
   public boolean getOverride()
   {
     return ueberschr;
@@ -161,7 +161,8 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     }
 
     pj.setOrder("ORDER BY bezeichnung");
-    this.projekte = new SelectInput(pj != null ? PseudoIterator.asList(pj) : null, null);
+    this.projekte = new SelectInput(
+        pj != null ? PseudoIterator.asList(pj) : null, null);
     this.projekte.setValue(null);
     this.projekte.setPleaseChoose("Bitte Projekt auswählen");
     this.projekte.addListener(new Listener()
@@ -175,7 +176,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     });
     return this.projekte;
   }
-  
+
   private LabelInput getStatus()
   {
     if (status != null)

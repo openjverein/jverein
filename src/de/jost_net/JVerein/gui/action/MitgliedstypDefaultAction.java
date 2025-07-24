@@ -36,8 +36,8 @@ public class MitgliedstypDefaultAction implements Action
     try
     {
       Mitgliedstyp mt = (Mitgliedstyp) Einstellungen.getDBService()
-          .createObject(
-          Mitgliedstyp.class, String.valueOf(Mitgliedstyp.MITGLIED));
+          .createObject(Mitgliedstyp.class,
+              String.valueOf(Mitgliedstyp.MITGLIED));
       mt.setBezeichnung("Mitglied");
       mt.setJVereinid(Mitgliedstyp.MITGLIED);
       mt.store();

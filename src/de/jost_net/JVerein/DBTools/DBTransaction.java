@@ -38,8 +38,8 @@ public class DBTransaction
 
     try
     {
-      transactionObjekt = Einstellungen.getDBService().createObject(
-          Version.class, null);
+      transactionObjekt = Einstellungen.getDBService()
+          .createObject(Version.class, null);
       transactionObjekt.transactionBegin();
     }
     catch (RemoteException ex)

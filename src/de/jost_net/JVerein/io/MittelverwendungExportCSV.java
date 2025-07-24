@@ -50,7 +50,7 @@ public class MittelverwendungExportCSV implements ISaldoExport
   private static CellProcessor[] getProcessors()
   {
 
-    final CellProcessor[] processors = new CellProcessor[] { 
+    final CellProcessor[] processors = new CellProcessor[] {
         new ConvertNullTo(""), // Nr oder Art
         new ConvertNullTo(""), // Bezeichnung
         new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Betrag
@@ -95,7 +95,8 @@ public class MittelverwendungExportCSV implements ISaldoExport
       }
       writer.write(csvzeile, header, processors);
       csvzeile = new HashMap<>();
-      String subtitle = "Geschäftsjahr " + new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
+      String subtitle = "Geschäftsjahr "
+          + new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
           + new JVDateFormatTTMMJJJJ().format(datumbis);
       switch (tab)
       {
@@ -107,7 +108,7 @@ public class MittelverwendungExportCSV implements ISaldoExport
           break;
       }
       writer.write(csvzeile, header, processors);
-      
+
       csvzeile = new HashMap<>();
       csvzeile.put(header[1], " ");
       writer.write(csvzeile, header, processors);
@@ -138,7 +139,7 @@ public class MittelverwendungExportCSV implements ISaldoExport
           csvzeile.put(header[4],
               (String) mvz.getAttribute(MittelverwendungControl.KOMMENTAR));
         }
-        
+
         writer.write(csvzeile, header, processors);
       }
       GUI.getStatusBar().setSuccessText("Export fertig.");

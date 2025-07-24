@@ -23,31 +23,31 @@ public interface SollbuchungPosition extends JVereinDBObject
 {
 
   public Double getBetrag() throws RemoteException;
-  
+
   public void setBetrag(Double betrag) throws RemoteException;
-  
+
   public Double getSteuersatz() throws RemoteException;
 
   public void setSteuer(Steuer steuer) throws RemoteException;
-  
+
   public Long getBuchungsartId() throws RemoteException;
 
   public void setBuchungsartId(Long buchungsart) throws RemoteException;
-  
+
   public Buchungsart getBuchungsart() throws RemoteException;
-  
+
   public Buchungsklasse getBuchungsklasse() throws RemoteException;
-  
+
   public Long getBuchungsklasseId() throws RemoteException;
 
   public void setBuchungsklasseId(Long buchungsklasse) throws RemoteException;
-  
+
   public Date getDatum() throws RemoteException;
 
   public void setDatum(Date datum) throws RemoteException;
 
   public void setSollbuchung(String id) throws RemoteException;
-  
+
   public Sollbuchung getSollbuchung() throws RemoteException;
 
   public void setZweck(String zweck) throws RemoteException;

@@ -296,17 +296,16 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
     return (String) getAttribute("zweck");
   }
 
-
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
     if ("buchungsart".equals(fieldName))
     {
-        return getBuchungsart();
+      return getBuchungsart();
     }
     else if ("buchungsklasse".equals(fieldName))
     {
-        return getBuchungsklasse();
+      return getBuchungsklasse();
     }
     else if ("steuersatz".equals(fieldName))
     {

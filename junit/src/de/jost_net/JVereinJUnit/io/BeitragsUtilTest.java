@@ -48,18 +48,18 @@ public class BeitragsUtilTest
       Beitragsgruppe bg = getBeitragsgruppe();
       Assert.assertEquals(10d, BeitragsUtil.getBeitrag(
           Beitragsmodel.GLEICHERTERMINFUERALLE, null, 0, bg, new Date(), null));
-      Assert.assertEquals(10d, BeitragsUtil.getBeitrag(
-          Beitragsmodel.MONATLICH12631, null, Zahlungsrhythmus.MONATLICH, bg,
-          new Date(), null));
-      Assert.assertEquals(30d, BeitragsUtil.getBeitrag(
-          Beitragsmodel.MONATLICH12631, null,
-          Zahlungsrhythmus.VIERTELJAEHRLICH, bg, new Date(), null));
-      Assert.assertEquals(60d, BeitragsUtil.getBeitrag(
-          Beitragsmodel.MONATLICH12631, null, Zahlungsrhythmus.HALBJAEHRLICH,
-          bg, new Date(), null));
-      Assert.assertEquals(120d, BeitragsUtil.getBeitrag(
-          Beitragsmodel.MONATLICH12631, null, Zahlungsrhythmus.JAEHRLICH, bg,
-          new Date(), null));
+      Assert.assertEquals(10d,
+          BeitragsUtil.getBeitrag(Beitragsmodel.MONATLICH12631, null,
+              Zahlungsrhythmus.MONATLICH, bg, new Date(), null));
+      Assert.assertEquals(30d,
+          BeitragsUtil.getBeitrag(Beitragsmodel.MONATLICH12631, null,
+              Zahlungsrhythmus.VIERTELJAEHRLICH, bg, new Date(), null));
+      Assert.assertEquals(60d,
+          BeitragsUtil.getBeitrag(Beitragsmodel.MONATLICH12631, null,
+              Zahlungsrhythmus.HALBJAEHRLICH, bg, new Date(), null));
+      Assert.assertEquals(120d,
+          BeitragsUtil.getBeitrag(Beitragsmodel.MONATLICH12631, null,
+              Zahlungsrhythmus.JAEHRLICH, bg, new Date(), null));
       Assert.assertEquals(20d, BeitragsUtil.getBeitrag(Beitragsmodel.FLEXIBEL,
           Zahlungstermin.MONATLICH, 0, bg, new Date(), null));
 

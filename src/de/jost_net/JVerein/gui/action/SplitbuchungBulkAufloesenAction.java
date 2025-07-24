@@ -73,7 +73,7 @@ public class SplitbuchungBulkAufloesenAction implements Action
       {
         return;
       }
-      
+
       boolean spendenbescheinigung = false;
       for (Buchung splitbu : b)
       {
@@ -88,24 +88,24 @@ public class SplitbuchungBulkAufloesenAction implements Action
               + "WHERE (splitid = ? and spendenbescheinigung IS NOT NULL) ";
           spendenbescheinigung = (boolean) service.execute(sql,
               new Object[] { splitbu.getSplitId() }, new ResultSetExtractor()
-          {
-            @Override
-            public Object extract(ResultSet rs)
-                throws RemoteException, SQLException
-            {
-              if (rs.next())
               {
-                return true;
-              }
-              return false;
-            }
-          });
+                @Override
+                public Object extract(ResultSet rs)
+                    throws RemoteException, SQLException
+                {
+                  if (rs.next())
+                  {
+                    return true;
+                  }
+                  return false;
+                }
+              });
           if (spendenbescheinigung)
             break;
           schongeprueft.add(splitbu.getSplitId());
         }
       }
-      
+
       String text = "";
       if (!spendenbescheinigung)
       {
@@ -129,7 +129,7 @@ public class SplitbuchungBulkAufloesenAction implements Action
               + "Splitbuchungen auflösen und Spendenbescheinigungen löschen?";
         }
       }
-      
+
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Splitbuchung" + (b.length > 1 ? "en" : "") + " auflösen");
       d.setText(text);
@@ -146,7 +146,7 @@ public class SplitbuchungBulkAufloesenAction implements Action
         Logger.error("Fehler beim Auflösen der Splituchung", e);
         return;
       }
-      
+
       for (Buchung bu : b)
       {
         Jahresabschluss ja = bu.getJahresabschluss();
@@ -157,7 +157,7 @@ public class SplitbuchungBulkAufloesenAction implements Action
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
         }
         Spendenbescheinigung spb = bu.getSpendenbescheinigung();
-        if(spb != null)
+        if (spb != null)
         {
           throw new ApplicationException(
               "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
@@ -175,8 +175,10 @@ public class SplitbuchungBulkAufloesenAction implements Action
       int count = geloescht.size();
       if (count > 0)
       {
-        GUI.getStatusBar().setSuccessText(String.format(
-            "%d Splituchung" + (count != 1 ? "en" : "") + " aufgelöst.", count));
+        GUI.getStatusBar()
+            .setSuccessText(String.format(
+                "%d Splituchung" + (count != 1 ? "en" : "") + " aufgelöst.",
+                count));
       }
       else
       {

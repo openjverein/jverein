@@ -40,8 +40,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftControl extends VorZurueckControl
-    implements Savable
+public class EigenschaftControl extends VorZurueckControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -95,7 +94,8 @@ public class EigenschaftControl extends VorZurueckControl
     DBIterator<EigenschaftGruppe> list = Einstellungen.getDBService()
         .createList(EigenschaftGruppe.class);
     list.setOrder("ORDER BY bezeichnung");
-    eigenschaftgruppe = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
+    eigenschaftgruppe = new SelectInput(
+        list != null ? PseudoIterator.asList(list) : null,
         getEigenschaft().getEigenschaftGruppe());
     eigenschaftgruppe.setValue(getEigenschaft().getEigenschaftGruppe());
     eigenschaftgruppe.setAttribute("bezeichnung");
@@ -153,7 +153,8 @@ public class EigenschaftControl extends VorZurueckControl
       eigenschaftList.setRememberOrder(true);
       eigenschaftList.setRememberState(true);
       eigenschaftList.addFeature(new FeatureSummary());
-      eigenschaftList.setAction(new EditAction(EigenschaftDetailView.class, eigenschaftList));
+      eigenschaftList.setAction(
+          new EditAction(EigenschaftDetailView.class, eigenschaftList));
       VorZurueckControl.setObjektListe(null, null);
     }
     else

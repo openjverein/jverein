@@ -157,11 +157,11 @@ public class BackupCreateAction implements Action
           monitor.setStatusText("Speichere Version");
           backup(VersionImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
-          
+
           monitor.setStatusText("Speichere Einstellungen");
           backup(EinstellungImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
-          
+
           monitor.setStatusText("Speichere Abrechnungslauf-Informationen");
           backup(AbrechnungslaufImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
@@ -173,9 +173,10 @@ public class BackupCreateAction implements Action
           monitor.setStatusText("Speichere Buchungsklassen");
           backup(BuchungsklasseImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
-          
+
           monitor.setStatusText("Speichere Buchungsarten");
-          backup(BuchungsartImpl.class, writer, monitor, "steuer_buchungsart, id");
+          backup(BuchungsartImpl.class, writer, monitor,
+              "steuer_buchungsart, id");
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Steuer");
@@ -249,7 +250,7 @@ public class BackupCreateAction implements Action
           monitor.setStatusText("Speichere Beitragsgruppen");
           backup(BeitragsgruppeImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
-          
+
           monitor.setStatusText("Speichere Altersstaffel");
           backup(AltersstaffelImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
@@ -265,7 +266,7 @@ public class BackupCreateAction implements Action
           monitor.setStatusText("Speichere Fotos der Mitglieder");
           backup(MitgliedfotoImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
-          
+
           monitor.setStatusText(
               "Speichere Informationen über zukünftige Beitragsgruppen");
           backup(MitgliedNextBGruppeImpl.class, writer, monitor);
@@ -311,7 +312,7 @@ public class BackupCreateAction implements Action
           monitor.setStatusText("Speichere Jahresabschlüsse");
           backup(JahresabschlussImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
-          
+
           monitor.setStatusText("Speichere Buchungen");
           backup(BuchungImpl.class, writer, monitor, "splitid, id");
           monitor.addPercentComplete(1);
@@ -336,14 +337,15 @@ public class BackupCreateAction implements Action
           backup(MailEmpfaengerImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Sekundäre Beitragsgruppen der Mitglieder");
+          monitor.setStatusText(
+              "Speichere Sekundäre Beitragsgruppen der Mitglieder");
           backup(SekundaereBeitragsgruppeImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
-          
+
           monitor.setStatusText("Speichere Suchprofile");
           backup(SuchprofilImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
-          
+
           monitor.setStatusText("Speichere Zusatzbetrag Vorlagen");
           backup(ZusatzbetragVorlageImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
@@ -402,7 +404,7 @@ public class BackupCreateAction implements Action
   {
     backup(type, writer, monitor, "id");
   }
-  
+
   private static void backup(Class<? extends DBObject> type, Writer writer,
       ProgressMonitor monitor, String order) throws Exception
   {

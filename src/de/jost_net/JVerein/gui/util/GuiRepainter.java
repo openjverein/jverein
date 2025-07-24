@@ -39,7 +39,8 @@ public class GuiRepainter
     {
       if (composite.getLayout() != null)
         composite.layout();
-      if (composite instanceof TabFolder || composite instanceof ScrolledComposite)
+      if (composite instanceof TabFolder
+          || composite instanceof ScrolledComposite)
         return;
       composite = composite.getParent();
     }

@@ -40,9 +40,8 @@ public class FileViewer
         }
         catch (ApplicationException ae)
         {
-          Application.getMessagingFactory().sendMessage(
-              new StatusBarMessage(ae.getLocalizedMessage(),
-                  StatusBarMessage.TYPE_ERROR));
+          Application.getMessagingFactory().sendMessage(new StatusBarMessage(
+              ae.getLocalizedMessage(), StatusBarMessage.TYPE_ERROR));
         }
       }
     });

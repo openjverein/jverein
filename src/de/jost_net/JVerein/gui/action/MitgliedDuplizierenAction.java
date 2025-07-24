@@ -51,8 +51,8 @@ public class MitgliedDuplizierenAction implements Action
     }
     catch (Exception e)
     {
-      throw new ApplicationException(
-          "Fehler beim duplizieren eines Mitgliedes", e);
+      throw new ApplicationException("Fehler beim duplizieren eines Mitgliedes",
+          e);
     }
   }
 }

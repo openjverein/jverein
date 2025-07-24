@@ -125,7 +125,7 @@ public class SuchprofilImpl extends AbstractDBObject implements Suchprofil
   @Override
   public void setClazz(String clazz) throws RemoteException
   {
-    setAttribute("clazz",clazz);
+    setAttribute("clazz", clazz);
   }
 
   @Override

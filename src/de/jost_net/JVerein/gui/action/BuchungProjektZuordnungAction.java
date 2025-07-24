@@ -36,8 +36,8 @@ public class BuchungProjektZuordnungAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof Buchung)
-        && !(context instanceof Buchung[]))
+    if (context == null
+        || !(context instanceof Buchung) && !(context instanceof Buchung[]))
     {
       throw new ApplicationException("Keine Buchung(en) ausgewählt");
     }
@@ -118,8 +118,7 @@ public class BuchungProjektZuordnungAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(
-          "Fehler bei der Zuordnung des Projektes");
+      GUI.getStatusBar().setErrorText("Fehler bei der Zuordnung des Projektes");
     }
   }
 }

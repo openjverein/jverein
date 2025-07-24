@@ -35,7 +35,8 @@ public class ZusatzbetragVorlageMenu extends ContextMenu
   public ZusatzbetragVorlageMenu()
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(ZusatzbetragVorlageDetailView.class), "text-x-generic.png"));
+        new EditAction(ZusatzbetragVorlageDetailView.class),
+        "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new ZusatzbetragVorlageDeleteAction(), "user-trash-full.png"));
   }

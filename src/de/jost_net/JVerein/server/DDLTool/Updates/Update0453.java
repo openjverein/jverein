@@ -30,14 +30,15 @@ public class Update0453 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("konto", new Column("kontoart",
-        COLTYPE.INTEGER, 0, null, false, false)));
+    execute(addColumn("konto",
+        new Column("kontoart", COLTYPE.INTEGER, 0, null, false, false)));
 
     execute("update konto set kontoart = 1 where anlagenkonto IS NULL");
     execute("update konto set kontoart = 1 where anlagenkonto IS FALSE");
     execute("update konto set kontoart = 2 where anlagenkonto IS TRUE");
-    
-    // Das kann man später machen, so kann man auch wieder in der SW zurück gehen
+
+    // Das kann man später machen, so kann man auch wieder in der SW zurück
+    // gehen
     // execute(dropColumn("konto", "anlagenkonto"));
   }
 }

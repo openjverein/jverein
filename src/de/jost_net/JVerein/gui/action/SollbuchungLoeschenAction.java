@@ -41,7 +41,7 @@ public class SollbuchungLoeschenAction implements Action
     {
       throw new ApplicationException("Keine Sollbuchung ausgewählt");
     }
-  	
+
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
     d.setTitle("Sollbuchung löschen");
     d.setText("Wollen Sie die Sollbuchung wirklich löschen?");
@@ -66,8 +66,8 @@ public class SollbuchungLoeschenAction implements Action
       if (context instanceof MitgliedskontoNode)
       {
         mkn = (MitgliedskontoNode) context;
-        sollb = (Sollbuchung) Einstellungen.getDBService().createObject(
-            Sollbuchung.class, mkn.getID());
+        sollb = (Sollbuchung) Einstellungen.getDBService()
+            .createObject(Sollbuchung.class, mkn.getID());
       }
       else
       {
@@ -76,13 +76,12 @@ public class SollbuchungLoeschenAction implements Action
       Mitglied mitglied = sollb.getMitglied();
       sollb.delete();
       GUI.getStatusBar().setSuccessText("Sollbuchung gelöscht.");
-      Application.getMessagingFactory().sendMessage(
-          new MitgliedskontoMessage(mitglied));
+      Application.getMessagingFactory()
+          .sendMessage(new MitgliedskontoMessage(mitglied));
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException(
-          "Fehler beim Löschen einer Sollbuchung");
+      throw new ApplicationException("Fehler beim Löschen einer Sollbuchung");
     }
   }
 }

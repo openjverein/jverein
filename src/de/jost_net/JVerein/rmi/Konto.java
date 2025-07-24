@@ -45,13 +45,13 @@ public interface Konto extends JVereinDBObject
   public Integer getHibiscusId() throws RemoteException;
 
   public void setHibiscusId(Integer HibiscusId) throws RemoteException;
-  
+
   public Buchungsart getBuchungsart() throws RemoteException;
 
   public Long getBuchungsartId() throws RemoteException;
 
   public void setBuchungsartId(Long buchungsartId) throws RemoteException;
-  
+
   public Kontoart getKontoArt() throws RemoteException;
 
   public void setKontoArt(Kontoart kontoart) throws RemoteException;
@@ -61,47 +61,47 @@ public interface Konto extends JVereinDBObject
   public Long getAnlagenartId() throws RemoteException;
 
   public void setAnlagenartId(Long anlagensartId) throws RemoteException;
-  
+
   public Buchungsklasse getBuchungsklasse() throws RemoteException;
 
   public Long getBuchungsklasseId() throws RemoteException;
 
   public void setBuchungsklasseId(Long anlagenklasseId) throws RemoteException;
-  
+
   public Buchungsart getAfaart() throws RemoteException;
 
   public Long getAfaartId() throws RemoteException;
 
   public void setAfaartId(Long afaartId) throws RemoteException;
-  
+
   public Integer getNutzungsdauer() throws RemoteException;
 
   public void setNutzungsdauer(Integer auszugsnummer) throws RemoteException;
-  
+
   public Double getBetrag() throws RemoteException;
 
   public void setBetrag(Double betrag) throws RemoteException;
-  
+
   public String getKommentar() throws RemoteException;
 
   public void setKommentar(String kommentar) throws RemoteException;
-  
+
   public Date getAnschaffung() throws RemoteException;
 
   public void setAnschaffung(Date anschaffung) throws RemoteException;
-  
+
   public Double getAfaStart() throws RemoteException;
 
   public void setAfaStart(Double afastart) throws RemoteException;
-  
+
   public Double getAfaDauer() throws RemoteException;
 
   public void setAfaDauer(Double afadauer) throws RemoteException;
-  
+
   public Double getAfaRestwert() throws RemoteException;
 
   public void setAfaRestwert(Double afarestwert) throws RemoteException;
-  
+
   public Integer getAfaMode() throws RemoteException;
 
   public void setAfaMode(Integer afamode) throws RemoteException;

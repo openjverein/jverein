@@ -164,7 +164,7 @@ public class MitgliederImport implements Importer
         try
         {
           m = (Mitglied) Einstellungen.getDBService()
-            .createObject(Mitglied.class, id);
+              .createObject(Mitglied.class, id);
         }
         catch (ObjectNotFoundException e)
         {
@@ -339,7 +339,8 @@ public class MitgliederImport implements Importer
 
         try
         {
-          if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
+          if ((Boolean) Einstellungen
+              .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
           {
             String individuellerBeitrag = results
                 .getString("individuellerbeitrag");
@@ -375,7 +376,8 @@ public class MitgliederImport implements Importer
           }
           else
           {
-            m.setZahlungsweg((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
+            m.setZahlungsweg(
+                (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
           }
         }
         catch (SQLException e)
@@ -383,7 +385,8 @@ public class MitgliederImport implements Importer
           if (id == null)
           {
             // Wenn nicht vorhanden Standartwert aus Einstellungen nehmen
-            m.setZahlungsweg((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
+            m.setZahlungsweg(
+                (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
           }
         }
 
@@ -597,7 +600,8 @@ public class MitgliederImport implements Importer
           }
         }
 
-        if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
         {
           try
           {
@@ -635,14 +639,17 @@ public class MitgliederImport implements Importer
                   "Zeile " + anz + ": Geburtsdatum liegt in der Zukunft");
             m.setGeburtsdatum(Datum.toDate(geburtsdatum));
           }
-          else if ((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT)
+          else if ((Boolean) Einstellungen
+              .getEinstellung(Property.GEBURTSDATUMPFLICHT)
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
             throw new ApplicationException(
                 "Zeile " + anz + ": Geburtsdatum fehlt");
         }
         catch (SQLException e)
         {
-          if (id == null && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT)
+          if (id == null
+              && (Boolean) Einstellungen
+                  .getEinstellung(Property.GEBURTSDATUMPFLICHT)
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
             throw new ApplicationException("Geburtsdatum fehlt");
         }
@@ -1160,12 +1167,12 @@ public class MitgliederImport implements Importer
           {
             if (zusatzfeld == null)
             {
-              zusatzfeld = (Zusatzfelder) Einstellungen
-                  .getDBService().createObject(Zusatzfelder.class, null);
+              zusatzfeld = (Zusatzfelder) Einstellungen.getDBService()
+                  .createObject(Zusatzfelder.class, null);
               zusatzfeld.setMitglied(Integer.parseInt(m.getID()));
               zusatzfeld.setFelddefinition(Integer.parseInt(f.getID()));
             }
-            
+
             switch (f.getDatentyp())
             {
               case Datentyp.DATUM:

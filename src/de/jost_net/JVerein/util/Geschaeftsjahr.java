@@ -34,7 +34,9 @@ public class Geschaeftsjahr
 
   public Geschaeftsjahr(int jahr) throws ParseException, RemoteException
   {
-    beginnGeschaeftsjahr = Datum.toDate((String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + jahr);
+    beginnGeschaeftsjahr = Datum.toDate(
+        (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+            + jahr);
     Calendar cal = Calendar.getInstance();
     cal.setTime(beginnGeschaeftsjahr);
     beginnGeschaeftsjahrjahr = cal.get(Calendar.YEAR);
@@ -52,11 +54,15 @@ public class Geschaeftsjahr
   {
     Calendar cal = Calendar.getInstance();
     cal.setTime(datum);
-    beginnGeschaeftsjahr = Datum.toDate((String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + cal.get(Calendar.YEAR));
+    beginnGeschaeftsjahr = Datum.toDate(
+        (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+            + cal.get(Calendar.YEAR));
     if (datum.before(beginnGeschaeftsjahr))
     {
       cal.add(Calendar.YEAR, -1);
-      beginnGeschaeftsjahr = Datum.toDate((String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + cal.get(Calendar.YEAR));
+      beginnGeschaeftsjahr = Datum.toDate(
+          (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+              + cal.get(Calendar.YEAR));
     }
     cal.setTime(beginnGeschaeftsjahr);
     beginnGeschaeftsjahrjahr = cal.get(Calendar.YEAR);

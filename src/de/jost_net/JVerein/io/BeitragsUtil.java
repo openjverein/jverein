@@ -48,38 +48,43 @@ public class BeitragsUtil
     switch (bm)
     {
       case GLEICHERTERMINFUERALLE:
-        if((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT) && bg.getHasAltersstaffel())
+        if ((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT)
+            && bg.getHasAltersstaffel())
         {
           String stufen = (String) Einstellungen
               .getEinstellung(Property.BEITRAGALTERSSTUFEN);
-          if(stufen != null && stufen != "")
+          if (stufen != null && stufen != "")
           {
-        	if(m.getAlter() == null)
-        		throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Geburtsdatum nicht vorhanden");
+            if (m.getAlter() == null)
+              throw new ApplicationException(m.getName() + ", " + m.getVorname()
+                  + ": Geburtsdatum nicht vorhanden");
             AltersgruppenParser ap = new AltersgruppenParser(stufen);
             int i = 0;
             int nummer = -1;
             VonBis vb = null;
-            while(ap.hasNext())
+            while (ap.hasNext())
             {
               vb = ap.getNext();
-              if(m.getAlter() >= vb.getVon() && m.getAlter() <= vb.getBis())
+              if (m.getAlter() >= vb.getVon() && m.getAlter() <= vb.getBis())
               {
                 nummer = i;
                 break;
               }
               i++;
             }
-            if(nummer == -1)
-            	throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Keine passende Altersstufe gefunden: " + m.getAlter() + " Jahre");
+            if (nummer == -1)
+              throw new ApplicationException(m.getName() + ", " + m.getVorname()
+                  + ": Keine passende Altersstufe gefunden: " + m.getAlter()
+                  + " Jahre");
             try
             {
-            	betr = bg.getAltersstaffel(nummer).getBetrag();
+              betr = bg.getAltersstaffel(nummer).getBetrag();
             }
             catch (NullPointerException e)
             {
-            	throw new ApplicationException(
-            	          "Altersstufe " + vb.getVon() + "-" + vb.getBis() + " in Beitragsgruppe " + bg.getBezeichnung() + " nicht vorhanden");
+              throw new ApplicationException("Altersstufe " + vb.getVon() + "-"
+                  + vb.getBis() + " in Beitragsgruppe " + bg.getBezeichnung()
+                  + " nicht vorhanden");
             }
           }
           else
@@ -91,37 +96,43 @@ public class BeitragsUtil
         }
         break;
       case MONATLICH12631:
-        if((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT) && bg.getHasAltersstaffel())
+        if ((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT)
+            && bg.getHasAltersstaffel())
         {
-          String stufen = (String) Einstellungen.getEinstellung(Property.BEITRAGALTERSSTUFEN);
-          if(stufen != null && stufen != "")
+          String stufen = (String) Einstellungen
+              .getEinstellung(Property.BEITRAGALTERSSTUFEN);
+          if (stufen != null && stufen != "")
           {
-        	if(m.getAlter() == null)
-          	  throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Geburtsdatum nicht vorhanden");
+            if (m.getAlter() == null)
+              throw new ApplicationException(m.getName() + ", " + m.getVorname()
+                  + ": Geburtsdatum nicht vorhanden");
             AltersgruppenParser ap = new AltersgruppenParser(stufen);
             int i = 0;
             int nummer = -1;
             VonBis vb = null;
-            while(ap.hasNext())
+            while (ap.hasNext())
             {
               vb = ap.getNext();
-              if(m.getAlter() >= vb.getVon() && m.getAlter() <= vb.getBis())
+              if (m.getAlter() >= vb.getVon() && m.getAlter() <= vb.getBis())
               {
                 nummer = i;
                 break;
               }
               i++;
             }
-            if(nummer == -1)
-            	throw new ApplicationException(m.getName() + ", " + m.getVorname() + ": Keine passende Altersstufe gefunden: " + m.getAlter() + " Jahre");
+            if (nummer == -1)
+              throw new ApplicationException(m.getName() + ", " + m.getVorname()
+                  + ": Keine passende Altersstufe gefunden: " + m.getAlter()
+                  + " Jahre");
             try
             {
-            	betr = bg.getAltersstaffel(nummer).getBetrag();
+              betr = bg.getAltersstaffel(nummer).getBetrag();
             }
             catch (NullPointerException e)
             {
-            	throw new ApplicationException(
-            	          "Altersstufe " + vb.getVon() + "-" + vb.getBis() + " in Beitragsgruppe " + bg.getBezeichnung() + " nicht vorhanden");
+              throw new ApplicationException("Altersstufe " + vb.getVon() + "-"
+                  + vb.getBis() + " in Beitragsgruppe " + bg.getBezeichnung()
+                  + " nicht vorhanden");
             }
           }
           else

@@ -76,8 +76,8 @@ public class BackupRestoreAction implements Action
       }
 
       DBTransaction.starten();
-      
-      // Vom System eingefügte Sätze löschen. Ansonsten gibt es duplicate keys      
+
+      // Vom System eingefügte Sätze löschen. Ansonsten gibt es duplicate keys
       DBIterator<EigenschaftGruppe> iteigr = Einstellungen.getDBService()
           .createList(EigenschaftGruppe.class);
       while (iteigr.hasNext())
@@ -186,7 +186,7 @@ public class BackupRestoreAction implements Action
           String classOld = null;
           while ((o = reader.read()) != null)
           {
-            if(isInterrupted())
+            if (isInterrupted())
             {
               monitor.setStatus(ProgressMonitor.STATUS_ERROR);
               monitor.setStatusText("Backup abgebrochen");
@@ -194,25 +194,29 @@ public class BackupRestoreAction implements Action
               DBTransaction.rollback();
               return;
             }
-            if(classOld != null && !o.getClass().getSimpleName().equals(classOld))
+            if (classOld != null
+                && !o.getClass().getSimpleName().equals(classOld))
             {
               monitor.setStatusText(String.format("%s importiert", classOld));
               classOld = o.getClass().getSimpleName();
             }
-            if(classOld == null)
+            if (classOld == null)
             {
               classOld = o.getClass().getSimpleName();
             }
-            
+
             try
             {
-              if(o instanceof Version)
+              if (o instanceof Version)
               {
-                int vBackup = ((Version)o).getVersion();
-                int vDB = ((Version)Einstellungen.getDBService().createObject(Version.class, "1")).getVersion();
-                if(vBackup != vDB)
+                int vBackup = ((Version) o).getVersion();
+                int vDB = ((Version) Einstellungen.getDBService()
+                    .createObject(Version.class, "1")).getVersion();
+                if (vBackup != vDB)
                 {
-                  String text = "Die Datenbank Version (" + vDB + ") entspricht nicht der des Backups (" + vBackup +").\n"
+                  String text = "Die Datenbank Version (" + vDB
+                      + ") entspricht nicht der des Backups (" + vBackup
+                      + ").\n"
                       + "Das Backup kann nur in eine identische Datenbank Version importiert werden.";
                   Application.getCallback().notifyUser(text);
                   monitor.setStatus(ProgressMonitor.STATUS_ERROR);
@@ -224,15 +228,16 @@ public class BackupRestoreAction implements Action
                 continue;
               }
               ((AbstractDBObject) o).insert();
-              if(o instanceof Einstellung)
+              if (o instanceof Einstellung)
               {
                 Einstellungen.loadEinstellungen();
               }
             }
             catch (Exception e)
             {
-              //Fehler Bei Adresstyp ignorieren, da hier bereits "Spender" und "Mitglied" existiert und es einen DUPLICATE KEY gibt
-              if(!(o instanceof Mitgliedstyp))
+              // Fehler Bei Adresstyp ignorieren, da hier bereits "Spender" und
+              // "Mitglied" existiert und es einen DUPLICATE KEY gibt
+              if (!(o instanceof Mitgliedstyp))
               {
                 Logger.error("unable to import " + o.getClass().getName() + ":"
                     + o.getID() + ", skipping", e);
@@ -244,10 +249,12 @@ public class BackupRestoreAction implements Action
             if (count++ % 1000 == 0)
               monitor.addPercentComplete(1);
           }
-          if(o != null)
-            monitor.setStatusText(String.format("%s importiert", o.getClass().getSimpleName()));
+          if (o != null)
+            monitor.setStatusText(
+                String.format("%s importiert", o.getClass().getSimpleName()));
 
-          DBTransaction.commit();;
+          DBTransaction.commit();
+          ;
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
           monitor.setStatusText("Backup importiert");
           monitor.setPercentComplete(100);

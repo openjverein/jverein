@@ -34,8 +34,8 @@ import de.willuhn.logging.Logger;
 /**
  * Dialog zur Zuordnung von Arbeitseinsätzen
  */
-public class MitgliedArbeitseinsatzZuordnungDialog extends
-    AbstractDialog<Arbeitseinsatz>
+public class MitgliedArbeitseinsatzZuordnungDialog
+    extends AbstractDialog<Arbeitseinsatz>
 {
   private ArbeitseinsatzPart part;
 

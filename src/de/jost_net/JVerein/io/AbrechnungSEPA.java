@@ -172,9 +172,10 @@ public class AbrechnungSEPA
           ArrayList<SollbuchungPosition> spArray = new ArrayList<>();
           spArray.add(getSollbuchungPosition(zahler));
 
-          verwendungszwecke.add(writeSollbuchung(Long.parseLong(zahler.getPersonId()),
-              zahler.getZahlungsweg().getKey(), zahler.getMitglied(), spArray,
-              param.faelligkeit, abrl, konto, param, null));
+          verwendungszwecke
+              .add(writeSollbuchung(Long.parseLong(zahler.getPersonId()),
+                  zahler.getZahlungsweg().getKey(), zahler.getMitglied(),
+                  spArray, param.faelligkeit, abrl, konto, param, null));
 
           // Ohne kompakte Abbuchung zahlerarray direkt füllen
           if (!param.kompakteabbuchung && zahler.getZahlungsweg()
@@ -194,7 +195,7 @@ public class AbrechnungSEPA
         {
           mitgliedMap.put(zahler.getMitglied().getID(), zahler.getMitglied());
           zahlerIdMap.put(zahler.getMitglied().getID(), zahler.getPersonId());
-          
+
           String key = zahler.getZahlungsweg().getKey()
               + zahler.getMitglied().getID();
           ArrayList<SollbuchungPosition> spArray = spMap.getOrDefault(key,
@@ -300,14 +301,12 @@ public class AbrechnungSEPA
       Basislastschrift lastschrift = new Basislastschrift();
       // Vorbereitung: Allgemeine Informationen einstellen
       lastschrift.setBIC((String) Einstellungen.getEinstellung(Property.BIC));
-      lastschrift
-          .setGlaeubigerID(
-              (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
+      lastschrift.setGlaeubigerID(
+          (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
       lastschrift.setIBAN((String) Einstellungen.getEinstellung(Property.IBAN));
       lastschrift.setKomprimiert(param.kompakteabbuchung);
-      lastschrift
-          .setName(Zeichen
-              .convert((String) Einstellungen.getEinstellung(Property.NAME)));
+      lastschrift.setName(Zeichen
+          .convert((String) Einstellungen.getEinstellung(Property.NAME)));
       lastschrift.setMessageID(abrl.getID() + "-RCUR");
 
       count = 0;
@@ -555,7 +554,8 @@ public class AbrechnungSEPA
       throw new ApplicationException(
           "Zahlungsinformationen bei " + Adressaufbereitung.getNameVorname(m));
     }
-    if (primaer && ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE)
+    if (primaer && ((Boolean) Einstellungen
+        .getEinstellung(Property.INDIVIDUELLEBEITRAEGE)
         && m.getIndividuellerBeitrag() != null))
     {
       betr = m.getIndividuellerBeitrag();
@@ -630,8 +630,8 @@ public class AbrechnungSEPA
       {
         zahler.setVerwendungszweck(bg.getBezeichnung());
       }
-      zahler.setName(
-          mZahler.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
+      zahler
+          .setName(mZahler.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         zahler.setSteuer(bg.getSteuer());
@@ -953,7 +953,8 @@ public class AbrechnungSEPA
         SepaLastschrift sl = (SepaLastschrift) param.service
             .createObject(SepaLastschrift.class, null);
         sl.setBetrag(za.getBetrag().doubleValue());
-        sl.setCreditorId((String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
+        sl.setCreditorId(
+            (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
         sl.setGegenkontoName(za.getName());
         sl.setGegenkontoBLZ(za.getBic());
         sl.setGegenkontoNummer(za.getIban());
@@ -1012,8 +1013,8 @@ public class AbrechnungSEPA
       String verwendungszweck) throws RemoteException
   {
     String id = adr.getID();
-    if (adr instanceof Mitglied
-        && (Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+    if (adr instanceof Mitglied && (Boolean) Einstellungen
+        .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
     {
       id = ((Mitglied) adr).getExterneMitgliedsnummer();
     }
@@ -1068,8 +1069,7 @@ public class AbrechnungSEPA
   }
 
   private Lastschrift getLastschrift(JVereinZahler zahler, Abrechnungslauf abrl,
-      boolean kompakt)
-      throws RemoteException, SEPAException
+      boolean kompakt) throws RemoteException, SEPAException
   {
     Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
         .createObject(Lastschrift.class, null);
@@ -1160,10 +1160,10 @@ public class AbrechnungSEPA
    * Schreibt die Sollbuchung inkl. Sollbuchungspositionen. Bei Lastschrift
    * werden Istbuchungen erstellt. Ggfs. wird auch die Rechnung erstellt.
    */
-  private String writeSollbuchung(Long zahlerId, int zahlungsweg, IAdresse adress,
-      ArrayList<SollbuchungPosition> spArray, Date datum, Abrechnungslauf abrl,
-      Konto konto, AbrechnungSEPAParam param, Double summe)
-      throws ApplicationException, RemoteException, SEPAException
+  private String writeSollbuchung(Long zahlerId, int zahlungsweg,
+      IAdresse adress, ArrayList<SollbuchungPosition> spArray, Date datum,
+      Abrechnungslauf abrl, Konto konto, AbrechnungSEPAParam param,
+      Double summe) throws ApplicationException, RemoteException, SEPAException
   {
     Sollbuchung sollb = null;
     String zweck = null;

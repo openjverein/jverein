@@ -58,7 +58,8 @@ public class SollbuchungQuery
   }
 
   @SuppressWarnings("unchecked")
-  public GenericIterator<Sollbuchung> get() throws RemoteException, ApplicationException
+  public GenericIterator<Sollbuchung> get()
+      throws RemoteException, ApplicationException
   {
     Date d1 = null;
     java.sql.Date vd = null;
@@ -106,7 +107,6 @@ public class SollbuchungQuery
     boolean filter_email = control.isMailauswahlAktiv() && !((Integer) control
         .getMailauswahl().getValue() == MailAuswertungInput.ALLE);
 
-
     // Falls kein Name, kein Mailfilter und keine Differenz dann alles lesen
     if (kein_name && keine_email && diff == DIFFERENZ.EGAL)
     {
@@ -119,13 +119,11 @@ public class SollbuchungQuery
       }
       if (vd != null)
       {
-        sollbIt.addFilter(Sollbuchung.T_DATUM + " >= ? ",
-            new Object[] { vd });
+        sollbIt.addFilter(Sollbuchung.T_DATUM + " >= ? ", new Object[] { vd });
       }
       if (bd != null)
       {
-        sollbIt.addFilter(Sollbuchung.T_DATUM + " <= ? ",
-            new Object[] { bd });
+        sollbIt.addFilter(Sollbuchung.T_DATUM + " <= ? ", new Object[] { bd });
       }
       if (control.isOhneAbbucherAktiv()
           && (Boolean) control.getOhneAbbucher().getValue())
@@ -133,8 +131,7 @@ public class SollbuchungQuery
         sollbIt.addFilter(Sollbuchung.T_ZAHLUNGSWEG + " <> ?",
             Zahlungsweg.BASISLASTSCHRIFT);
       }
-      sollbIt
-          .setOrder("ORDER BY " + Sollbuchung.T_DATUM + " desc");
+      sollbIt.setOrder("ORDER BY " + Sollbuchung.T_DATUM + " desc");
       return sollbIt;
     }
 
@@ -232,8 +229,7 @@ public class SollbuchungQuery
         sollbuchungen.addFilter(Sollbuchung.T_ZAHLUNGSWEG + " <> ?",
             Zahlungsweg.BASISLASTSCHRIFT);
       }
-      sollbuchungen
-          .setOrder("ORDER BY " + Sollbuchung.T_DATUM + " desc");
+      sollbuchungen.setOrder("ORDER BY " + Sollbuchung.T_DATUM + " desc");
       return sollbuchungen;
     }
 
@@ -249,20 +245,17 @@ public class SollbuchungQuery
             + ", SUM(buchung.betrag) FROM " + Sollbuchung.TABLE_NAME);
     if (ein_mitglied_name)
     {
-      sql.append(
-          " JOIN mitglied dasMitglied ON (" + Sollbuchung.T_MITGLIED
-              + " = dasMitglied.id)");
+      sql.append(" JOIN mitglied dasMitglied ON (" + Sollbuchung.T_MITGLIED
+          + " = dasMitglied.id)");
     }
     if ((ein_zahler_name && ein_mitglied_name)
         || (ein_zahler_name && !umwandeln) || filter_email)
     {
-      sql.append(
-          " LEFT JOIN mitglied derZahler ON (" + Sollbuchung.T_ZAHLER
-              + " = derZahler.id)");
+      sql.append(" LEFT JOIN mitglied derZahler ON (" + Sollbuchung.T_ZAHLER
+          + " = derZahler.id)");
     }
-    sql.append(
-        " LEFT JOIN buchung ON " + Sollbuchung.TABLE_NAME_ID + " = "
-            + Buchung.T_SOLLBUCHUNG);
+    sql.append(" LEFT JOIN buchung ON " + Sollbuchung.TABLE_NAME_ID + " = "
+        + Buchung.T_SOLLBUCHUNG);
 
     StringBuilder where = new StringBuilder();
     ArrayList<Object> param = new ArrayList<>();
@@ -279,10 +272,10 @@ public class SollbuchungQuery
           .toLowerCase() + "%";
       String zahlerName = ((String) control.getSuchname().getValue())
           .toLowerCase() + "%";
-      where.append(where.length() == 0 ? "" : " AND ")
-      .append("((LOWER(dasMitglied.name) LIKE ?) OR (LOWER(dasMitglied.vorname) LIKE ?))");
-      where.append(where.length() == 0 ? "" : " AND ")
-      .append("((LOWER(derZahler.name) LIKE ?) OR (LOWER(derZahler.vorname) LIKE ?))");
+      where.append(where.length() == 0 ? "" : " AND ").append(
+          "((LOWER(dasMitglied.name) LIKE ?) OR (LOWER(dasMitglied.vorname) LIKE ?))");
+      where.append(where.length() == 0 ? "" : " AND ").append(
+          "((LOWER(derZahler.name) LIKE ?) OR (LOWER(derZahler.vorname) LIKE ?))");
       param.add(mitgliedName);
       param.add(mitgliedName);
       param.add(zahlerName);
@@ -351,8 +344,8 @@ public class SollbuchungQuery
       }
       if (mailauswahl == MailAuswertungInput.MIT)
       {
-        where.append(where.length() == 0 ? "" : " AND ")
-            .append("(derZahler.email IS NOT NULL AND LENGTH(derZahler.email) > 0)");
+        where.append(where.length() == 0 ? "" : " AND ").append(
+            "(derZahler.email IS NOT NULL AND LENGTH(derZahler.email) > 0)");
       }
     }
 
@@ -374,7 +367,7 @@ public class SollbuchungQuery
     {
       sql.append(
           " HAVING CAST(COALESCE(SUM(buchung.betrag),0) AS DECIMAL(10,2)) < "
-          + Sollbuchung.T_BETRAG + " - " + limit.toString());
+              + Sollbuchung.T_BETRAG + " - " + limit.toString());
     }
     if (DIFFERENZ.UEBERZAHLUNG == diff)
     {
@@ -383,8 +376,8 @@ public class SollbuchungQuery
               + Sollbuchung.T_BETRAG + " + " + limit.toString());
     }
 
-    List<Long> ids = (List<Long>) service.execute(sql.toString(), param.toArray(),
-        new ResultSetExtractor()
+    List<Long> ids = (List<Long>) service.execute(sql.toString(),
+        param.toArray(), new ResultSetExtractor()
         {
           @Override
           public Object extract(ResultSet rs)
@@ -417,8 +410,8 @@ public class SollbuchungQuery
     String sql = "SELECT  mitglied.id, mitglied.name, mitglied.vorname from mitglied";
 
     @SuppressWarnings("unchecked")
-    ArrayList<Long> mitgliedids = (ArrayList<Long>) service
-        .execute(sql, new Object[] {}, new ResultSetExtractor()
+    ArrayList<Long> mitgliedids = (ArrayList<Long>) service.execute(sql,
+        new Object[] {}, new ResultSetExtractor()
         {
           @Override
           public Object extract(ResultSet rs)

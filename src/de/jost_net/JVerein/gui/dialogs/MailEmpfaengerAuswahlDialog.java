@@ -100,7 +100,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
         }
       }
     });
-    
+
     b.addButton("Alle", new Action()
     {
       @Override
@@ -138,7 +138,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
         }
       }
     });
-    
+
     b.addButton("Aktive Mitglieder", new Action()
     {
       @Override

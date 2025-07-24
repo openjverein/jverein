@@ -74,7 +74,8 @@ public class SollbuchungPositionListPart extends TablePart
       }
     }
     addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
-    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       addColumn("Buchungsklasse", "buchungsklasse",
           new BuchungsklasseFormatter());

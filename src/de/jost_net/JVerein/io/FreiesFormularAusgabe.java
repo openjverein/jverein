@@ -45,7 +45,7 @@ public class FreiesFormularAusgabe
     this.control = control;
     Formular formular = (Formular) control
         .getFormular(FormularArt.FREIESFORMULAR).getValue();
-    if(formular == null)
+    if (formular == null)
     {
       GUI.getStatusBar().setErrorText("Kein Formular ausgewählt.");
       return;
@@ -70,8 +70,8 @@ public class FreiesFormularAusgabe
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }
-    Mitgliedstyp mitgliedstyp = (Mitgliedstyp) control.getSuchMitgliedstyp(Mitgliedstypen.ALLE)
-        .getValue();
+    Mitgliedstyp mitgliedstyp = (Mitgliedstyp) control
+        .getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue();
     int type = -1;
     if (mitgliedstyp != null)
       type = Integer.parseInt(mitgliedstyp.getID());

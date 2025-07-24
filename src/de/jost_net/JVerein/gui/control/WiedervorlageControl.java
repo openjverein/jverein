@@ -43,8 +43,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class WiedervorlageControl extends FilterControl
-    implements Savable
+public class WiedervorlageControl extends FilterControl implements Savable
 {
 
   private DateInput datum = null;
@@ -52,11 +51,11 @@ public class WiedervorlageControl extends FilterControl
   private Input vermerk = null;
 
   private DateInput erledigung = null;
-  
+
   private AbstractInput mitglied;
 
   private Wiedervorlage wvl = null;
-  
+
   private WiedervorlageList wiedervorlageList = null;
 
   public WiedervorlageControl(AbstractView view)
@@ -147,7 +146,7 @@ public class WiedervorlageControl extends FilterControl
     });
     return erledigung;
   }
-  
+
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
@@ -157,8 +156,9 @@ public class WiedervorlageControl extends FilterControl
 
     if (getWiedervorlage().getMitglied() != null)
     {
-      Mitglied[] mitgliedArray = {getWiedervorlage().getMitglied()};
-      mitglied = new SelectInput(mitgliedArray, getWiedervorlage().getMitglied());
+      Mitglied[] mitgliedArray = { getWiedervorlage().getMitglied() };
+      mitglied = new SelectInput(mitgliedArray,
+          getWiedervorlage().getMitglied());
       mitglied.setEnabled(false);
     }
     else
@@ -206,14 +206,14 @@ public class WiedervorlageControl extends FilterControl
       throw new ApplicationException(fehler, e);
     }
   }
-  
+
   public Part getWiedervorlageList() throws RemoteException
   {
     wiedervorlageList = new WiedervorlageList(
         new StartViewAction(WiedervorlageListeView.class), this);
     return wiedervorlageList.getWiedervorlageList();
   }
-  
+
   public void TabRefresh()
   {
     if (wiedervorlageList == null)
@@ -222,5 +222,5 @@ public class WiedervorlageControl extends FilterControl
     }
     wiedervorlageList.refresh();
   }
-  
+
 }

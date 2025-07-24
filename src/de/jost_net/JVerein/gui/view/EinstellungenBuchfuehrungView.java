@@ -40,7 +40,8 @@ public class EinstellungenBuchfuehrungView extends AbstractView
         control.getBeginnGeschaeftsjahr());
     cont.addLabelPair("Intervall für aktive Konten (Jahre)",
         control.getUnterdrueckungKonten());
-    cont.addLabelPair("Buchungsarten die seit x Monaten nicht benutzt werden unterdrücken",
+    cont.addLabelPair(
+        "Buchungsarten die seit x Monaten nicht benutzt werden unterdrücken",
         control.getUnterdrueckungLaenge());
     cont.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
     cont.addInput(control.getAutoBuchunguebernahme());
@@ -56,7 +57,8 @@ public class EinstellungenBuchfuehrungView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_BUCHFUEHRUNG, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_BUCHFUEHRUNG, false,
+        "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

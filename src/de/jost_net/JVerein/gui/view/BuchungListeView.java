@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
@@ -50,8 +49,9 @@ public class BuchungListeView extends AbstractView
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Buchungen");
-    
-    final BuchungsControl control = new BuchungsControl(this, Kontenfilter.GELDKONTO);
+
+    final BuchungsControl control = new BuchungsControl(this,
+        Kontenfilter.GELDKONTO);
 
     TabFolder folder = new TabFolder(getParent(), SWT.V_SCROLL | SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -85,7 +85,7 @@ public class BuchungListeView extends AbstractView
     {
       right.addLabelPair("Steuer", control.getSuchSteuer());
     }
-    
+
     ButtonArea buttons1 = new ButtonArea();
     ToolTipButton zurueck = control.getTTZurueckButton();
     buttons1.addButton(zurueck);
@@ -100,7 +100,7 @@ public class BuchungListeView extends AbstractView
       }
     }, null, false, "eraser.png");
     buttons1.addButton(reset);
-    
+
     Button suchen = new Button("Suchen", new Action()
     {
       @Override
@@ -115,8 +115,8 @@ public class BuchungListeView extends AbstractView
     vor.setToolTipText("Datumsbereich vowärts");
 
     // Zweiter Tab
-    final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(
-        this, control);
+    final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(this,
+        control);
     TabGroup tabKonto = new TabGroup(folder, "Konto Kenndaten", true, 4);
     ColumnLayout c2 = new ColumnLayout(tabKonto.getComposite(), 2);
     SimpleContainer left2 = new SimpleContainer(c2.getComposite());
@@ -127,14 +127,10 @@ public class BuchungListeView extends AbstractView
         headerControl.getAktJahrAnfangsSaldoInput());
     right2.addLabelPair("Anfangssaldo:",
         headerControl.getVorJahrAnfangsSaldoInput());
-    left2.addLabelPair("Einnahmen:",
-        headerControl.getAktJahrEinnahmenInput());
-    right2.addLabelPair("Einnahmen:",
-        headerControl.getVorJahrEinnahmenInput());
-    left2.addLabelPair("Ausgaben:",
-        headerControl.getAktJahrAusgabenInput());
-    right2.addLabelPair("Ausgaben:",
-        headerControl.getVorJahrAusgabenInput());
+    left2.addLabelPair("Einnahmen:", headerControl.getAktJahrEinnahmenInput());
+    right2.addLabelPair("Einnahmen:", headerControl.getVorJahrEinnahmenInput());
+    left2.addLabelPair("Ausgaben:", headerControl.getAktJahrAusgabenInput());
+    right2.addLabelPair("Ausgaben:", headerControl.getVorJahrAusgabenInput());
     left2.addLabelPair("Saldo:", headerControl.getAktJahrSaldoInput());
     right2.addLabelPair("Saldo:", headerControl.getVorJahrSaldoInput());
 
@@ -143,15 +139,16 @@ public class BuchungListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
-    buttons.addButton("Hibiscus-Import", new BuchungsuebernahmeAction(), null, false,
-        "file-import.png");
+    buttons.addButton("Hibiscus-Import", new BuchungsuebernahmeAction(), null,
+        false, "file-import.png");
     buttons.addButton("Import", new BuchungImportAction(), null, false,
         "file-import.png");
     buttons.addButton(control.getStartCSVAuswertungButton());
     buttons.addButton(control.getStartAuswertungBuchungsjournalButton());
     buttons.addButton(control.getStartAuswertungEinzelbuchungenButton());
     buttons.addButton(control.getStartAuswertungSummenButton());
-    buttons.addButton(control.getStarteBuchungSollbuchungZuordnungAutomatischButton());
+    buttons.addButton(
+        control.getStarteBuchungSollbuchungZuordnungAutomatischButton());
     buttons.addButton("Neu", new BuchungNeuAction(control), control, false,
         "document-new.png");
     buttons.paint(this.getParent());

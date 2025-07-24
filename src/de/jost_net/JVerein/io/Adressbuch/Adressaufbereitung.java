@@ -28,17 +28,20 @@ public class Adressaufbereitung
 {
   public static String getAdressfeld(IAdresse adr) throws RemoteException
   {
-    String empfaenger = (adr.getAnrede() != null
-        && adr.getAnrede().length() > 0 ? adr.getAnrede() + "\n" : "")
-        + getVornameName(adr)
-        + "\n"
+    String empfaenger = (adr.getAnrede() != null && adr.getAnrede().length() > 0
+        ? adr.getAnrede() + "\n"
+        : "")
+        + getVornameName(adr) + "\n"
         + (adr.getAdressierungszusatz() != null
-            && adr.getAdressierungszusatz().length() > 0 ? adr
-            .getAdressierungszusatz() + "\n" : "")
-        + (adr.getStrasse() != null && adr.getStrasse().length() > 0 ? adr
-            .getStrasse() + "\n" : "")
-        + (adr.getPlz() != null && adr.getPlz().length() > 0 ? adr.getPlz()
-            + " " : "")
+            && adr.getAdressierungszusatz().length() > 0
+                ? adr.getAdressierungszusatz() + "\n"
+                : "")
+        + (adr.getStrasse() != null && adr.getStrasse().length() > 0
+            ? adr.getStrasse() + "\n"
+            : "")
+        + (adr.getPlz() != null && adr.getPlz().length() > 0
+            ? adr.getPlz() + " "
+            : "")
         + (adr.getOrt() != null && adr.getOrt().length() > 0 ? adr.getOrt()
             : "");
     if (adr.getStaat() != null && adr.getStaat().length() > 0)

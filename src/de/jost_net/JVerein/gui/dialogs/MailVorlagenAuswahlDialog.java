@@ -37,9 +37,9 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
   private MailVorlageControl control;
 
   private MailVorlage retval;
-  
+
   private boolean abort = true;
-  
+
   private boolean mailsenden = true;
 
   public MailVorlagenAuswahlDialog(MailVorlageControl control, int position,
@@ -64,7 +64,8 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
       {
         try
         {
-          retval = (MailVorlage) control.getMailVorlageTable(null).getSelection();
+          retval = (MailVorlage) control.getMailVorlageTable(null)
+              .getSelection();
         }
         catch (RemoteException e)
         {
@@ -77,9 +78,9 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
     control.getMailVorlageTable(action).paint(parent);
 
     ButtonArea b = new ButtonArea();
-    
-    b.addButton("Verwenden", action , null, true, "ok.png");
-    
+
+    b.addButton("Verwenden", action, null, true, "ok.png");
+
     if (mailsenden)
     {
       b.addButton("Ohne Mail-Vorlage", new Action()
@@ -93,7 +94,7 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
         }
       }, null, true, "go-next.png");
     }
-    
+
     b.addButton("Abbrechen", new Action()
     {
 
@@ -111,7 +112,7 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
   {
     return retval;
   }
-  
+
   public boolean getAbort()
   {
     return abort;

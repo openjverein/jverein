@@ -64,7 +64,7 @@ public class JahresabschlussDeleteAction implements Action
         throw new ApplicationException(
             "Jahresabschluss kann nicht gelöscht werden. Es existieren neuere Abschlüsse!");
       }
-      
+
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Jahresabschluss löschen");
       d.setText("Wollen Sie diesen Jahresabschluss wirklich löschen?");

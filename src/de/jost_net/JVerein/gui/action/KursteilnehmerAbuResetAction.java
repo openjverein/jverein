@@ -55,7 +55,8 @@ public class KursteilnehmerAbuResetAction implements Action
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Abbuchungsdatum zurücksetzen");
-      d.setText("Wollen Sie das Ausführungsdatum der Abbuchung wirklich zurücksetzen?");
+      d.setText(
+          "Wollen Sie das Ausführungsdatum der Abbuchung wirklich zurücksetzen?");
       try
       {
         Boolean choice = (Boolean) d.open();

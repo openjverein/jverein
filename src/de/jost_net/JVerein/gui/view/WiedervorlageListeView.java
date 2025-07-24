@@ -35,16 +35,16 @@ public class WiedervorlageListeView extends AbstractView
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Wiedervorlagen");
-    
+
     final WiedervorlageControl control = new WiedervorlageControl(this);
-    
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addLabelPair("Vermerk", control.getSuchtext());
-    
+
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addInput(control.getDatumvon());
     middle.addInput(control.getDatumbis());
@@ -53,7 +53,7 @@ public class WiedervorlageListeView extends AbstractView
     right.addLabelPair("Erledigung von", control.getEingabedatumvon());
     right.addLabelPair("Erledigung bis", control.getEingabedatumbis());
     right.addLabelPair("Ohne Erledigung", control.getCheckboxAuswahl());
-    
+
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck1 = control.getZurueckButton(control.getDatumvon(),
         control.getDatumbis());
@@ -74,14 +74,14 @@ public class WiedervorlageListeView extends AbstractView
     vor1.setToolTipText("Datumsbereich vowärts");
     zurueck2.setToolTipText("Erledigung Datumsbereich zurück");
     vor2.setToolTipText("Erledigung Datumsbereich vowärts");
-    
+
     control.getWiedervorlageList().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.WIEDERVORLAGE, false, "question-circle.png");
     buttons.addButton("Neu",
-        new NewAction(WiedervorlageDetailView.class, Wiedervorlage.class),
-        null, false, "document-new.png");
+        new NewAction(WiedervorlageDetailView.class, Wiedervorlage.class), null,
+        false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

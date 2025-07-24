@@ -57,8 +57,8 @@ public class MailVorlageDetailView extends AbstractDetailView
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
-    buttons.addButton("Variablen anzeigen",
-        new InsertVariableDialogAction(map), control, false, "bookmark.png");
+    buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
+        control, false, "bookmark.png");
     buttons
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
             control, false, "edit-copy.png"));

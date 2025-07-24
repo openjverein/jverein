@@ -298,13 +298,18 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
   {
     Mitglied mitglied = mitgliedBeitraege.getMitglied();
     Beitragsgruppe beitragsGruppe = mitgliedBeitraege.getBeitragsgruppe();
-    //Wenn es bisher ein angehöriger war und jetzt nicht mehr zahlerid entfernen
-    if(mitglied.getBeitragsgruppe().getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER && beitragsGruppe.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+    // Wenn es bisher ein angehöriger war und jetzt nicht mehr zahlerid
+    // entfernen
+    if (mitglied.getBeitragsgruppe()
+        .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
+        && beitragsGruppe
+            .getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
     {
       mitglied.setVollZahlerID(null);
-      //Bei Zahlung über Vollzahler Zahlungsweg umstellen
-      if(mitglied.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
-        mitglied.setZahlungsweg((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
+      // Bei Zahlung über Vollzahler Zahlungsweg umstellen
+      if (mitglied.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        mitglied.setZahlungsweg(
+            (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
     }
     mitglied.setBeitragsgruppe(beitragsGruppe);
     mitglied.store();

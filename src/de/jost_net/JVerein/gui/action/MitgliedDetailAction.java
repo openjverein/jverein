@@ -103,7 +103,9 @@ public class MitgliedDetailAction implements Action
         Spendenbescheinigung s = (Spendenbescheinigung) context;
         mitglied = s.getMitglied();
       }
-      else if ((context instanceof Buchung ) && ((Buchung) context).getSollbuchung() != null ) {
+      else if ((context instanceof Buchung)
+          && ((Buchung) context).getSollbuchung() != null)
+      {
         mitglied = ((Buchung) context).getSollbuchung().getMitglied();
       }
       else if (context instanceof MailEmpfaenger)
@@ -113,9 +115,10 @@ public class MitgliedDetailAction implements Action
       }
       else
       {
-        mitglied = (Mitglied) Einstellungen.getDBService().createObject(
-            Mitglied.class, null);
-        if ((Boolean) Einstellungen.getEinstellung(Property.JURISTISCHEPERSONEN))
+        mitglied = (Mitglied) Einstellungen.getDBService()
+            .createObject(Mitglied.class, null);
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.JURISTISCHEPERSONEN))
         {
           PersonenartDialog pad = new PersonenartDialog(
               PersonenartDialog.POSITION_CENTER);

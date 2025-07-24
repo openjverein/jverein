@@ -39,10 +39,10 @@ public class RechnungDetailView extends AbstractDetailView
     control = new RechnungControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Rechnung");
-    
+
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    
+
     left.addInput(control.getNummer());
     left.addInput(control.getRechnungsdatum());
     left.addInput(control.getMitglied());
@@ -50,7 +50,7 @@ public class RechnungDetailView extends AbstractDetailView
     left.addInput(control.getRechnungFormular());
     left.addInput(control.getKommentar());
     left.addInput(control.getPersonenart());
-    
+
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     left.addInput(control.getGeschlecht());
     middle.addInput(control.getAnrede());
@@ -59,8 +59,8 @@ public class RechnungDetailView extends AbstractDetailView
     middle.addInput(control.getVorname());
     middle.addInput(control.getStrasse());
     middle.addInput(control.getAdressierungszusatz());
-    middle.addInput(control.getLeitwegID()); 
-    
+    middle.addInput(control.getLeitwegID());
+
     SimpleContainer rigth = new SimpleContainer(cl.getComposite());
     rigth.addInput(control.getPlz());
     rigth.addInput(control.getOrt());
@@ -70,7 +70,7 @@ public class RechnungDetailView extends AbstractDetailView
     rigth.addInput(control.getMandatdatum());
     rigth.addInput(control.getMandatid());
     rigth.addInput(control.getZahlungsweg());
-    
+
     LabelGroup cont = new LabelGroup(getParent(), "Rechnungspositionen", true);
     cont.addPart(control.getSollbuchungPositionListPart());
 

@@ -67,11 +67,11 @@ public class ZusatzbetragPart implements Part
   private DateInput ausfuehrung = null;
 
   private AbstractInput buchungsart;
-  
+
   private SelectInput buchungsklasse;
-  
+
   private AbstractInput mitglied;
-  
+
   private boolean mitMitglied;
 
   private SelectInput zahlungsweg;
@@ -99,7 +99,8 @@ public class ZusatzbetragPart implements Part
     group.addLabelPair("Buchungstext", getBuchungstext());
     group.addLabelPair("Betrag", getBetrag());
     group.addLabelPair("Buchungsart", getBuchungsart());
-    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       group.addLabelPair("Buchungsklasse", getBuchungsklasse());
     if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
@@ -130,7 +131,7 @@ public class ZusatzbetragPart implements Part
         if (date == null)
         {
           return;
-        }       
+        }
       }
     });
     faelligkeit.setMandatory(true);
@@ -277,7 +278,8 @@ public class ZusatzbetragPart implements Part
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         zusatzbetrag.getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
+        (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.addListener(new Listener()
     {
       @Override
@@ -286,8 +288,8 @@ public class ZusatzbetragPart implements Part
         try
         {
           Buchungsart bua = (Buchungsart) buchungsart.getValue();
-          if (buchungsklasse != null && buchungsklasse.getValue() == null &&
-              bua != null)
+          if (buchungsklasse != null && buchungsklasse.getValue() == null
+              && bua != null)
             buchungsklasse.setValue(bua.getBuchungsklasse());
         }
         catch (RemoteException e)
@@ -311,30 +313,31 @@ public class ZusatzbetragPart implements Part
     });
     return buchungsart;
   }
-  
+
   public SelectInput getBuchungsklasse() throws RemoteException
   {
     if (buchungsklasse != null)
     {
       return buchungsklasse;
     }
-    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklasse,
-        zusatzbetrag.getBuchungsklasse());
+    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(
+        buchungsklasse, zusatzbetrag.getBuchungsklasse());
     return buchungsklasse;
   }
-  
+
   public boolean isBuchungsklasseActive()
   {
     return buchungsklasse != null;
   }
-    
+
   public Long getSelectedBuchungsKlasseId() throws ApplicationException
   {
     try
     {
       if (null == buchungsklasse)
         return null;
-      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse()
+          .getValue();
       if (null == buchungsKlasse)
         return null;
       Long id = Long.valueOf(buchungsKlasse.getID());
@@ -347,7 +350,6 @@ public class ZusatzbetragPart implements Part
       throw new ApplicationException(meldung, ex);
     }
   }
-  
 
   public SelectInput getZahlungsweg() throws RemoteException
   {
@@ -355,11 +357,12 @@ public class ZusatzbetragPart implements Part
     {
       return zahlungsweg;
     }
-    zahlungsweg = new SelectInput(Zahlungsweg.getArray(false),zusatzbetrag.getZahlungsweg());
+    zahlungsweg = new SelectInput(Zahlungsweg.getArray(false),
+        zusatzbetrag.getZahlungsweg());
     zahlungsweg.setPleaseChoose("Standard");
     return zahlungsweg;
   }
-  
+
   public SelectInput getSteuer() throws RemoteException
   {
     if (steuer != null)
@@ -388,7 +391,7 @@ public class ZusatzbetragPart implements Part
 
     if (zusatzbetrag.getMitglied() != null)
     {
-      Mitglied[] mitgliedArray = {zusatzbetrag.getMitglied()};
+      Mitglied[] mitgliedArray = { zusatzbetrag.getMitglied() };
       mitglied = new SelectInput(mitgliedArray, zusatzbetrag.getMitglied());
       mitglied.setEnabled(false);
     }
@@ -400,5 +403,5 @@ public class ZusatzbetragPart implements Part
     mitglied.setMandatory(true);
     return mitglied;
   }
-  
+
 }

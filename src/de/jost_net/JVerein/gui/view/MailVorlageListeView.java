@@ -41,8 +41,7 @@ public class MailVorlageListeView extends AbstractView
         DokumentationUtil.MAILVORLAGE, false, "question-circle.png");
     buttons.addButton("Neu",
         new NewAction(MailVorlageDetailView.class, MailVorlage.class), null,
-        false,
-        "document-new.png");
+        false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

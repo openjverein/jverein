@@ -51,7 +51,7 @@ public class SpendenbescheinigungDeleteAction implements Action
     }
     else if (context instanceof Spendenbescheinigung)
     {
-      spbArr = new Spendenbescheinigung[] { (Spendenbescheinigung) context};
+      spbArr = new Spendenbescheinigung[] { (Spendenbescheinigung) context };
     }
     else if (context instanceof Spendenbescheinigung[])
     {
@@ -91,8 +91,8 @@ public class SpendenbescheinigungDeleteAction implements Action
         }
         spb.delete();
       }
-      GUI.getStatusBar().setSuccessText(
-          "Spendenbescheinigung" + mehrzahl + "  gelöscht.");
+      GUI.getStatusBar()
+          .setSuccessText("Spendenbescheinigung" + mehrzahl + "  gelöscht.");
     }
     catch (RemoteException e)
     {

@@ -107,7 +107,8 @@ public class AllgemeineMap
             + (String) Einstellungen.getEinstellung(Property.PLZ) + " "
             + (String) Einstellungen.getEinstellung(Property.ORT));
     map.put(AllgemeineVar.STAAT.getName(),
-        Staat.getByKey((String) Einstellungen.getEinstellung(Property.STAAT)).getText());
+        Staat.getByKey((String) Einstellungen.getEinstellung(Property.STAAT))
+            .getText());
     map.put(AllgemeineVar.IBAN.getName(),
         (String) Einstellungen.getEinstellung(Property.IBAN));
     map.put(AllgemeineVar.BIC.getName(),

@@ -62,11 +62,11 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
   private TablePart mitgliedlist = null;
 
   private Buchung buchung;
-  
+
   private boolean abort = true;
-  
+
   private MyButton suchen1;
-  
+
   private MyButton suchen2;
 
   public SollbuchungAuswahlDialog(Buchung buchung)
@@ -104,14 +104,15 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
       }
     });
 
-    TabGroup tabNurIst = new TabGroup(folder, "Istbuchung einer Sollbuchung zuordnen", false, 1);
+    TabGroup tabNurIst = new TabGroup(folder,
+        "Istbuchung einer Sollbuchung zuordnen", false, 1);
     LabelGroup grNurIst = new LabelGroup(tabNurIst.getComposite(), "Filter");
 
     control.getSuchName1(true).setValue(buchung.getName());
     grNurIst.addLabelPair("Name", control.getSuchName1(false));
     grNurIst.addLabelPair("Differenz",
         control.getDifferenz(DIFFERENZ.FEHLBETRAG));
-    
+
     ButtonArea button1 = new ButtonArea();
     suchen1 = new MyButton("Suchen", new Action()
     {
@@ -142,13 +143,14 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     sollbuchunglist = control.getSollbuchungenList(action, true);
     sollbuchunglist.paint(tabNurIst.getComposite());
 
-    TabGroup tabSollIst = new TabGroup(folder, "Sollbuchung erzeugen und Istbuchung zuordnen", true, 1);
+    TabGroup tabSollIst = new TabGroup(folder,
+        "Sollbuchung erzeugen und Istbuchung zuordnen", true, 1);
     LabelGroup grSollIst = new LabelGroup(tabSollIst.getComposite(), "Filter");
-    
+
     control.getSuchName2(true).setValue(buchung.getName());
     grSollIst.addLabelPair("Name", control.getSuchName2(false));
     grSollIst.addInput(control.getSpezialSuche());
-    
+
     ButtonArea button2 = new ButtonArea();
     suchen2 = new MyButton("Suchen", new Action()
     {
@@ -158,7 +160,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         control.refreshMitgliederList();
       }
     }, null, false, "search.png");
-    
+
     button2.addButton(suchen2);
     grSollIst.addButtonArea(button2);
 
@@ -179,9 +181,9 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     };
     mitgliedlist = control.getMitgliederList(action2, null);
     mitgliedlist.paint(tabSollIst.getComposite());
-    
+
     ButtonArea b = new ButtonArea();
-    
+
     b.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_AUSWAHL, false, "question-circle.png");
 
@@ -235,7 +237,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         throw new OperationCanceledException();
       }
     }, null, false, "process-stop.png");
-    
+
     b.paint(parent);
   }
 
@@ -255,14 +257,15 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
   {
     return abort;
   }
-  
+
   public class MyButton extends Button
   {
-    public MyButton(String title, Action action, Object context, boolean defaultButton, String icon)
+    public MyButton(String title, Action action, Object context,
+        boolean defaultButton, String icon)
     {
-      super(title,action,context,defaultButton,icon);
+      super(title, action, context, defaultButton, icon);
     }
-    
+
     public void setDefaultButton()
     {
       try
@@ -282,10 +285,11 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         catch (IllegalArgumentException ae2)
         {
           // Geht auch nicht? Na gut, dann lassen wir es halt bleiben
-          Logger.warn("unable to set default button: " + ae2.getLocalizedMessage());
+          Logger.warn(
+              "unable to set default button: " + ae2.getLocalizedMessage());
         }
       }
     }
   }
-  
+
 }

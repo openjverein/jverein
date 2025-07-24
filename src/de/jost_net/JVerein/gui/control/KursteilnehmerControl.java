@@ -69,8 +69,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class KursteilnehmerControl extends FilterControl
-    implements Savable
+public class KursteilnehmerControl extends FilterControl implements Savable
 {
 
   private PersonenartInput personenart;
@@ -333,7 +332,8 @@ public class KursteilnehmerControl extends FilterControl
     {
       return iban;
     }
-    iban = new IBANInput(HBCIProperties.formatIban(getKursteilnehmer().getIban()), getBIC());
+    iban = new IBANInput(
+        HBCIProperties.formatIban(getKursteilnehmer().getIban()), getBIC());
     iban.setName("IBAN");
     iban.setMandatory(true);
     return iban;
@@ -362,7 +362,8 @@ public class KursteilnehmerControl extends FilterControl
     this.geburtsdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.geburtsdatum.setTitle("Geburtsdatum");
     this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
-    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
     {
       this.geburtsdatum.setMandatory(true);
     }
@@ -378,7 +379,8 @@ public class KursteilnehmerControl extends FilterControl
     geschlecht = new GeschlechtInput(getKursteilnehmer().getGeschlecht());
     geschlecht.setName("Geschlecht");
     geschlecht.setPleaseChoose("Bitte auswählen");
-    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
     {
       geschlecht.setMandatory(true);
     }
@@ -515,13 +517,13 @@ public class KursteilnehmerControl extends FilterControl
   private void starteAuswertung()
   {
     // Alle Kursteilnehmer lesen
-    
+
     try
     {
       saveFilterSettings();
       String subtitle = "";
       final DBIterator<Kursteilnehmer> list = getIterator();
-      
+
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
 
@@ -532,8 +534,8 @@ public class KursteilnehmerControl extends FilterControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("kursteilnehmer", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "PDF")
-              .get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+          "PDF").get());
 
       final String s = fd.open();
 
@@ -634,7 +636,7 @@ public class KursteilnehmerControl extends FilterControl
       if (tmpSuchtext.length() > 0)
       {
         kursteilnehmer.addFilter("(lower(vzweck1) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
       }
     }
     if (isEingabedatumvonAktiv() && getEingabedatumvon().getValue() != null)
@@ -647,12 +649,14 @@ public class KursteilnehmerControl extends FilterControl
       kursteilnehmer.addFilter("eingabedatum <= ?",
           new Object[] { (Date) getEingabedatumbis().getValue() });
     }
-    if (isAbbuchungsdatumvonAktiv() && getAbbuchungsdatumvon().getValue() != null)
+    if (isAbbuchungsdatumvonAktiv()
+        && getAbbuchungsdatumvon().getValue() != null)
     {
       kursteilnehmer.addFilter("abbudatum >= ?",
           new Object[] { (Date) getAbbuchungsdatumvon().getValue() });
     }
-    if (isAbbuchungsdatumbisAktiv() && getAbbuchungsdatumbis().getValue() != null)
+    if (isAbbuchungsdatumbisAktiv()
+        && getAbbuchungsdatumbis().getValue() != null)
     {
       kursteilnehmer.addFilter("abbudatum <= ?",
           new Object[] { (Date) getAbbuchungsdatumbis().getValue() });

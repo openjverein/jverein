@@ -243,7 +243,9 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
     list.addFilter("buchungsklasse.id = buchungsart.buchungsklasse");
     list.setOrder(
         "ORDER BY buchungsklasse.bezeichnung, buchungsart.art, buchungsart.bezeichnung");
-    buchungsartInput = new SelectInput(list != null ? PseudoIterator.asList(list) : null, getAktuelleBuchart());
+    buchungsartInput = new SelectInput(
+        list != null ? PseudoIterator.asList(list) : null,
+        getAktuelleBuchart());
     buchungsartInput.setAttribute("klasse-art-bez");
     buchungsartInput.setPleaseChoose("Bitte auswählen");
     buchungsartInput.setComment(" ");

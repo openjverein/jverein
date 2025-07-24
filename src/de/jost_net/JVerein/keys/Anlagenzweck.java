@@ -21,7 +21,7 @@ public enum Anlagenzweck
   // Verwendungszweck der Anlage
 
   NUTZUNGSGEBUNDEN(1, "Nutzungsgebundene Anlage"), // Anlage im ideellen
-                                                  // Bereich oder Zweckbetrieb
+                                                   // Bereich oder Zweckbetrieb
   ZWECKFREMD_EINGESETZT(2, "Zweckfremde Anlage"); // Anlage in der
                                                   // Vermögensverwaltung oder im
                                                   // wirtschaftlichen
@@ -30,7 +30,7 @@ public enum Anlagenzweck
   private final String text;
 
   private final int key;
-  
+
   Anlagenzweck(int key, String text)
   {
     this.key = key;

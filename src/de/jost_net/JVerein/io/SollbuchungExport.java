@@ -54,7 +54,8 @@ public abstract class SollbuchungExport implements Exporter
 
   @Override
   public void doExport(final Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor) throws DocumentException, IOException, ApplicationException
+      ProgressMonitor monitor)
+      throws DocumentException, IOException, ApplicationException
   {
     this.file = file;
     this.control.getSuchname().setValue(objects[0]);

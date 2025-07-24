@@ -72,7 +72,7 @@ public class BuchungDeleteAction implements Action
       {
         return;
       }
-      
+
       // Check ob einer der Buchungen
       // eine Spendenbescheinigung zugeordnet ist
       boolean spendenbescheinigung = false;
@@ -84,7 +84,7 @@ public class BuchungDeleteAction implements Action
           break;
         }
       }
-      
+
       String text = "";
       if (!spendenbescheinigung)
       {
@@ -95,9 +95,8 @@ public class BuchungDeleteAction implements Action
       {
         if (b.length == 1)
         {
-         text = "Die Buchung gehört zu einer Spendenbescheinigung.\n"
-              + "Sie können nur zusammen gelöscht werden.\n"
-              + "Beide löschen?";
+          text = "Die Buchung gehört zu einer Spendenbescheinigung.\n"
+              + "Sie können nur zusammen gelöscht werden.\n" + "Beide löschen?";
         }
         else
         {
@@ -106,7 +105,7 @@ public class BuchungDeleteAction implements Action
               + "Jeweils auch die Spendenbescheinigungen löschen?";
         }
       }
-      
+
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Buchung" + (b.length > 1 ? "en" : "") + " löschen");
       d.setText(text);
@@ -123,7 +122,7 @@ public class BuchungDeleteAction implements Action
         Logger.error("Fehler beim Löschen der Buchung", e);
         return;
       }
-      
+
       int count = 0;
       for (Buchung bu : b)
       {
@@ -135,7 +134,7 @@ public class BuchungDeleteAction implements Action
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
         }
         Spendenbescheinigung spb = bu.getSpendenbescheinigung();
-        if(spb != null)
+        if (spb != null)
         {
           throw new ApplicationException(
               "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");

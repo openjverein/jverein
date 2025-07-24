@@ -101,8 +101,9 @@ public class SollbuchungExportAction implements Action
 
   public enum EXPORT_TYP
   {
-    MITGLIEDSKONTO("Sollbuchungen"), MAHNUNGEN("Mahnungen"), RECHNUNGEN(
-        "Rechnungen");
+    MITGLIEDSKONTO("Sollbuchungen"),
+    MAHNUNGEN("Mahnungen"),
+    RECHNUNGEN("Rechnungen");
 
     private final String titel;
 

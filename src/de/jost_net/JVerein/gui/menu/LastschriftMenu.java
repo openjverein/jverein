@@ -54,8 +54,9 @@ public class LastschriftMenu extends ContextMenu
     addItem(new MitgliedAnzeigenMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
   }
-  
-  private static class MitgliedAnzeigenMenuItem extends CheckedSingleContextMenuItem
+
+  private static class MitgliedAnzeigenMenuItem
+      extends CheckedSingleContextMenuItem
   {
     private MitgliedAnzeigenMenuItem(String text, Action action, String icon)
     {

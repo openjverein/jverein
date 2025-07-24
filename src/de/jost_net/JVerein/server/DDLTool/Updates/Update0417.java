@@ -34,6 +34,6 @@ public class Update0417 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute(addColumn("abrechnungslauf",
-      new Column("austrittsdatum", COLTYPE.DATE, 0, "NULL", false, false)));
+        new Column("austrittsdatum", COLTYPE.DATE, 0, "NULL", false, false)));
   }
 }

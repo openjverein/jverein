@@ -56,8 +56,8 @@ public class ZusatzbetraegeImportAction implements Action
     catch (Exception e)
     {
       Logger.error("error while importing transfers", e);
-      GUI.getStatusBar().setErrorText(
-          "Fehler beim Importieren der Zusatzbeträge");
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim Importieren der Zusatzbeträge");
     }
   }
 

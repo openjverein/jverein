@@ -50,13 +50,13 @@ public class NichtMitgliedDeleteAction implements Action
     {
       throw new ApplicationException("Kein Nicht-Mitglied ausgewählt");
     }
-    else if(context instanceof Mitglied)
+    else if (context instanceof Mitglied)
     {
-      mitglieder = new Mitglied[] {(Mitglied)context};
+      mitglieder = new Mitglied[] { (Mitglied) context };
     }
-    else if(context instanceof Mitglied[])
+    else if (context instanceof Mitglied[])
     {
-      mitglieder = (Mitglied[])context;
+      mitglieder = (Mitglied[]) context;
     }
     else
     {
@@ -69,7 +69,8 @@ public class NichtMitgliedDeleteAction implements Action
       d.setTitle("Nicht-Mitglied" + mehrzahl + " löschen");
       d.setPanelText("Nicht-Mitglied" + mehrzahl + " löschen?");
       d.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
-      String text = "Wollen Sie diese" + (mitglieder.length > 1 ? "":"s") + " Nicht-Mitglied" + mehrzahl + " wirklich löschen?"
+      String text = "Wollen Sie diese" + (mitglieder.length > 1 ? "" : "s")
+          + " Nicht-Mitglied" + mehrzahl + " wirklich löschen?"
           + "\nDies löscht auch alle Nicht-Mitglied bezogenen Daten wie"
           + "\nz.B. Sollbuchungen, Spendenbescheinigungen, Mails etc."
           + "\nDiese Daten können nicht wieder hergestellt werden!";
@@ -86,10 +87,10 @@ public class NichtMitgliedDeleteAction implements Action
         Logger.error("Fehler beim Löschen des Nicht-Mitglied", e);
         return;
       }
-      
+
       final DBService service = Einstellungen.getDBService();
       DBTransaction.starten();
-      for(Mitglied m:mitglieder)
+      for (Mitglied m : mitglieder)
       {
         if (m.isNewObject())
         {
@@ -102,7 +103,8 @@ public class NichtMitgliedDeleteAction implements Action
         ResultSetExtractor rs = new ResultSetExtractor()
         {
           @Override
-          public Object extract(ResultSet rs) throws RemoteException, SQLException
+          public Object extract(ResultSet rs)
+              throws RemoteException, SQLException
           {
             ArrayList<BigDecimal> list = new ArrayList<BigDecimal>();
             while (rs.next())
@@ -113,10 +115,11 @@ public class NichtMitgliedDeleteAction implements Action
           }
         };
         @SuppressWarnings("unchecked")
-        ArrayList<BigDecimal> ergebnis = (ArrayList<BigDecimal>) service.execute(sql,
-            new Object[] { }, rs);
-        
-        // Alle Mails an das Nicht-Mitglied löschen wenn nur ein Empfänger vorhanden
+        ArrayList<BigDecimal> ergebnis = (ArrayList<BigDecimal>) service
+            .execute(sql, new Object[] {}, rs);
+
+        // Alle Mails an das Nicht-Mitglied löschen wenn nur ein Empfänger
+        // vorhanden
         DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
             .createList(MailEmpfaenger.class);
         it.addFilter("mitglied = ?", m.getID());
@@ -129,11 +132,12 @@ public class NichtMitgliedDeleteAction implements Action
             ma.delete();
           }
         }
-        
+
         m.delete();
       }
       DBTransaction.commit();
-      GUI.getStatusBar().setSuccessText("Nicht-Mitglied" + mehrzahl + " gelöscht.");
+      GUI.getStatusBar()
+          .setSuccessText("Nicht-Mitglied" + mehrzahl + " gelöscht.");
     }
     catch (RemoteException e)
     {

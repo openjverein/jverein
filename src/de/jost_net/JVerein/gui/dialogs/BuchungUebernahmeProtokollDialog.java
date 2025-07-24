@@ -90,8 +90,8 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
         return s;
       }
     });
-    bu.addColumn("Betrag", "betrag", new CurrencyFormatter("",
-        Einstellungen.DECIMALFORMAT));
+    bu.addColumn("Betrag", "betrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     bu.addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
     bu.setRememberColWidths(true);
     bu.setRememberOrder(true);
@@ -102,12 +102,12 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
       LabelGroup lbFehler = new LabelGroup(parent, "Fehler");
       if (fehlerbuchung != null)
       {
-        lbFehler.addInput(new LabelInput(new JVDateFormatDATETIME()
-            .format(fehlerbuchung.getDatum())));
+        lbFehler.addInput(new LabelInput(
+            new JVDateFormatDATETIME().format(fehlerbuchung.getDatum())));
         lbFehler.addInput(new LabelInput(fehlerbuchung.getName()));
         lbFehler.addInput(new LabelInput(fehlerbuchung.getZweck()));
-        lbFehler.addInput(new LabelInput(Einstellungen.DECIMALFORMAT
-            .format(fehlerbuchung.getBetrag())));
+        lbFehler.addInput(new LabelInput(
+            Einstellungen.DECIMALFORMAT.format(fehlerbuchung.getBetrag())));
         lbFehler.addText(exception.getMessage(), true);
       }
     }

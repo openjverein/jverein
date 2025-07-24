@@ -53,7 +53,7 @@ public class LesefeldUebersichtPart implements Part
   private Mitglied selectedMitglied;
 
   private LesefeldAuswerter lesefeldAuswerter;
-  
+
   private AbstractInput mitglied;
 
   /**
@@ -92,8 +92,8 @@ public class LesefeldUebersichtPart implements Part
     lesefeldAuswerter = new LesefeldAuswerter();
     lesefeldAuswerter.setLesefelderDefinitionsFromDatabase();
     if (selectedMitglied != null)
-    lesefeldAuswerter
-        .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
+      lesefeldAuswerter
+          .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
     lesefeldAuswerter.evalAlleLesefelder();
     List<Lesefeld> lesefelder = lesefeldAuswerter.getLesefelder();
     for (Lesefeld lesefeld : lesefelder)
@@ -105,7 +105,8 @@ public class LesefeldUebersichtPart implements Part
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LESEFELDER, false, "question-circle.png");
-    buttons.addButton("Neu", new NewLesefeldAction(), null, false, "document-new.png");
+    buttons.addButton("Neu", new NewLesefeldAction(), null, false,
+        "document-new.png");
     buttons.paint(parent);
     // END BUTTON AREA
   }
@@ -294,8 +295,9 @@ public class LesefeldUebersichtPart implements Part
   private void openEditLesefeldDialog(Lesefeld lesefeld)
   {
 
-    GUI.startView(new LesefeldDetailView(lesefeldAuswerter, 
-        lesefeld, selectedMitglied), null);
+    GUI.startView(
+        new LesefeldDetailView(lesefeldAuswerter, lesefeld, selectedMitglied),
+        null);
   }
 
   class DeleteLesefeldAction implements Action
@@ -341,7 +343,7 @@ public class LesefeldUebersichtPart implements Part
       }
     }
   }
-  
+
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
@@ -355,7 +357,7 @@ public class LesefeldUebersichtPart implements Part
     mitglied.setMandatory(true);
     return mitglied;
   }
-  
+
   public class MitgliedListener implements Listener
   {
 

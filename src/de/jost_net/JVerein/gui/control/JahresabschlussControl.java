@@ -436,10 +436,9 @@ public class JahresabschlussControl extends KontensaldoControl
           }
           if (Math.abs(betrag - konto.getBetrag()) > Double.MIN_NORMAL)
           {
-            text += "Für das Anlagenkonto mit der Nummer "
-                + konto.getNummer() + " stimmt die Summe der Buchungen ("
-                + betrag + ") nicht mit den Anschaffungskosten ("
-                + konto.getBetrag()
+            text += "Für das Anlagenkonto mit der Nummer " + konto.getNummer()
+                + " stimmt die Summe der Buchungen (" + betrag
+                + ") nicht mit den Anschaffungskosten (" + konto.getBetrag()
                 + ") überein. Bitte auf Plausibilität prüfen!\n";
           }
         }

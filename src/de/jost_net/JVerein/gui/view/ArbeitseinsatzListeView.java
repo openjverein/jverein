@@ -45,11 +45,11 @@ public class ArbeitseinsatzListeView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addLabelPair("Bemerkung", control.getSuchtext());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
-    
+
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),
         control.getDatumbis());
@@ -69,8 +69,8 @@ public class ArbeitseinsatzListeView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
     buttons.addButton("Auswertung",
-        new StartViewAction(ArbeitseinsatzUeberpruefungView.class),
-        control, false, "screwdriver.png");
+        new StartViewAction(ArbeitseinsatzUeberpruefungView.class), control,
+        false, "screwdriver.png");
     buttons.addButton("Neu",
         new NewAction(ArbeitseinsatzDetailView.class, Arbeitseinsatz.class),
         control, false, "document-new.png");

@@ -29,7 +29,9 @@ public class Update0449 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute("update einstellung set sepaversion = 'pain.008.001.02.xsd' where sepaversion IS NULL");
-    execute("update einstellung set ct1sepaversion = 'pain.001.001.03.xsd' where ct1sepaversion IS NULL");
+    execute(
+        "update einstellung set sepaversion = 'pain.008.001.02.xsd' where sepaversion IS NULL");
+    execute(
+        "update einstellung set ct1sepaversion = 'pain.001.001.03.xsd' where ct1sepaversion IS NULL");
   }
 }

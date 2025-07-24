@@ -103,11 +103,11 @@ public interface Spendenbescheinigung extends JVereinDBObject
    * @throws RemoteException
    */
   public boolean isEchteGeldspende() throws RemoteException;
-  
+
   /**
    * Fügt der Liste der Buchungen eine Buchung hinzu. Der Gesamtbetrag der
-   * Spendenbescheinigung wird anhand der Einzelbeträge der Buchungen berechnet.
-   * Die Spendenart wird auf "GELDSPENDE" gesetzt.
+   * Spendenbescheinigung wird anhand der Einzelbeträge der Buchungen
+   * berechnet. Die Spendenart wird auf "GELDSPENDE" gesetzt.
    * 
    * @param buchung
    *          Die Buchung zum Hinzufügen

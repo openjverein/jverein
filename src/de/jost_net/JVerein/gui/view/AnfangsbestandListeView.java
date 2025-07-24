@@ -36,7 +36,7 @@ public class AnfangsbestandListeView extends AbstractView
     GUI.getView().setTitle("Anfangsbestände");
 
     AnfangsbestandControl control = new AnfangsbestandControl(this);
-    
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 

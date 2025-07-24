@@ -45,13 +45,14 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
     LabelGroup group = new LabelGroup(getParent(), "Beitrag");
     group.addLabelPair("Bezeichnung", control.getBezeichnung(true));
 
-    if ((Boolean) Einstellungen.getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
     {
       group.addLabelPair("Sekundäre Beitragsgruppe", control.getSekundaer());
     }
 
-    switch (Beitragsmodel
-        .getByKey((Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
+    switch (Beitragsmodel.getByKey(
+        (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
     {
       case GLEICHERTERMINFUERALLE:
       case MONATLICH12631:
@@ -70,10 +71,11 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
         break;
       }
     }
-    
+
     group.addLabelPair("Beitragsart", control.getBeitragsArt());
     group.addLabelPair("Buchungsart", control.getBuchungsart());
-    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     }
@@ -92,7 +94,8 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
         Container cont = new LabelGroup(getParent(), "Altersstaffel");
         SimpleVerticalContainer svc = new SimpleVerticalContainer(
             cont.getComposite(), true, 3);
-        svc.addCheckbox(control.getIsAltersstaffel(), "Nach Alter gestaffelte Beiträge verwenden");
+        svc.addCheckbox(control.getIsAltersstaffel(),
+            "Nach Alter gestaffelte Beiträge verwenden");
         for (Input inp : altersstaffel)
         {
           svc.addInput(inp);
@@ -100,7 +103,7 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
         svc.arrangeVertically();
       }
     }
-    
+
     if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
     {
       LabelGroup groupAe = new LabelGroup(getParent(), "Arbeitseinsatz");

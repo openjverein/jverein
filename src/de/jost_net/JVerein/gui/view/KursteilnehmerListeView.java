@@ -44,11 +44,11 @@ public class KursteilnehmerListeView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addLabelPair("Verwendungszweck", control.getSuchtext());
-    
+
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addInput(control.getEingabedatumvon());
     middle.addInput(control.getEingabedatumbis());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getAbbuchungsdatumvon());
     right.addInput(control.getAbbuchungsdatumbis());
@@ -80,8 +80,7 @@ public class KursteilnehmerListeView extends AbstractView
         DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
     buttons.addButton("Neu",
         new NewAction(KursteilnehmerDetailView.class, Kursteilnehmer.class),
-        null, false,
-        "document-new.png");
+        null, false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

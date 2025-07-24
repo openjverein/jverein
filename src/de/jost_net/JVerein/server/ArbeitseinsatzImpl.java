@@ -72,10 +72,12 @@ public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
       }
       if (getStunden() <= 0d)
       {
-          if ( (Integer) Einstellungen.getEinstellung(Property.ARBEITSSTUNDENMODEL) == ArbeitsstundenModel.STANDARD )
-          {
-              throw new ApplicationException("Bitte mehr als 0 Stunden eingeben oder Arbeitsstundenmodel in Einstellung ändern");
-          }
+        if ((Integer) Einstellungen.getEinstellung(
+            Property.ARBEITSSTUNDENMODEL) == ArbeitsstundenModel.STANDARD)
+        {
+          throw new ApplicationException(
+              "Bitte mehr als 0 Stunden eingeben oder Arbeitsstundenmodel in Einstellung ändern");
+        }
       }
       if (getDatum() == null)
       {

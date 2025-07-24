@@ -42,10 +42,10 @@ public class MittelverwendungReportView extends AbstractView
     GUI.getView().setTitle("Mittelverwendung");
 
     final MittelverwendungControl control = new MittelverwendungControl(this);
-  
+
     VonBisPart vpart = new VonBisPart(control, false);
     vpart.paint(this.getParent());
-    
+
     QuickAccessPart qpart = new QuickAccessPart(control, false);
     qpart.paint(this.getParent());
 
@@ -55,10 +55,12 @@ public class MittelverwendungReportView extends AbstractView
     // Die verschiedenen Tabs
     TabGroup mittelverwendungFlow = new TabGroup(folder,
         "Mittelverwendungsreport (Zufluss-basiert)", true, 1);
-    control.getMittelverwendungFlowTable().paint(mittelverwendungFlow.getComposite());
+    control.getMittelverwendungFlowTable()
+        .paint(mittelverwendungFlow.getComposite());
     TabGroup mittelverwendungSaldo = new TabGroup(folder,
         "Mittelverwendungsreport (Saldo-basiert)", true, 1);
-    control.getMittelverwendungSaldoTable().paint(mittelverwendungSaldo.getComposite());
+    control.getMittelverwendungSaldoTable()
+        .paint(mittelverwendungSaldo.getComposite());
 
     // Aktiver zuletzt ausgewählter Tab.
     if (tabindex != -1)

@@ -118,7 +118,8 @@ public class ZusatzbetragVorlageDialog
     tab.addColumn("Buchungstext", "buchungstext");
     tab.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       tab.addColumn("Buchungsklasse", "buchungsklasse",
           new BuchungsklasseFormatter());

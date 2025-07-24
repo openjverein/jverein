@@ -49,7 +49,8 @@ public class EinstellungenAbrechnungView extends AbstractView
         control.getVerrechnungskonto());
     cont.addLabelPair("Arbeitsstunden Modell",
         control.getArbeitsstundenmodel());
-    cont.addLabelPair("Altersstufen für gestaffelte Beiträge",control.getBeitragAltersgruppen());
+    cont.addLabelPair("Altersstufen für gestaffelte Beiträge",
+        control.getBeitragAltersgruppen());
     cont.addLabelPair("Abrechnungslauf abschließen",
         control.getAbrlAbschliessen());
     cont.addSeparator();
@@ -60,7 +61,8 @@ public class EinstellungenAbrechnungView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_ABRECHNUNG, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_ABRECHNUNG, false,
+        "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

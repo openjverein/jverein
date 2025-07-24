@@ -18,10 +18,13 @@ package de.jost_net.JVerein.keys;
 
 public enum FormularArt
 {
-  SPENDENBESCHEINIGUNG(1, "Spendenbescheinigung"), RECHNUNG(2, "Rechnung"), MAHNUNG(
-      3, "Mahnung"), FREIESFORMULAR(4, "Freies Formular"), SAMMELSPENDENBESCHEINIGUNG(
-      5, "Sammelspendenbescheinigung"), SEPA_PRENOTIFICATION(6,
-      "SEPA-Prenotification");
+  SPENDENBESCHEINIGUNG(1, "Spendenbescheinigung"),
+  RECHNUNG(2, "Rechnung"),
+  MAHNUNG(3, "Mahnung"),
+  FREIESFORMULAR(4, "Freies Formular"),
+  SAMMELSPENDENBESCHEINIGUNG(5, "Sammelspendenbescheinigung"),
+  SEPA_PRENOTIFICATION(6, "SEPA-Prenotification");
+
   private final String text;
 
   private final int key;

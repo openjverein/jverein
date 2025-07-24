@@ -40,7 +40,8 @@ public class AltersstaffelImpl extends AbstractDBObject implements Altersstaffel
   }
 
   @Override
-  public void setBeitragsgruppe(Beitragsgruppe beitragsgruppe) throws RemoteException
+  public void setBeitragsgruppe(Beitragsgruppe beitragsgruppe)
+      throws RemoteException
   {
     setAttribute("beitragsgruppe", beitragsgruppe);
   }
@@ -71,7 +72,7 @@ public class AltersstaffelImpl extends AbstractDBObject implements Altersstaffel
   @Override
   public String getPrimaryAttribute() throws RemoteException
   {
-   return "id";
+    return "id";
   }
 
   @Override

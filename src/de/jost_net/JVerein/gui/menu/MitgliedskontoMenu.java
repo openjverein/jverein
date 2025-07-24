@@ -78,7 +78,8 @@ public class MitgliedskontoMenu extends ContextMenu
         new IstbuchungLoesenAction(), "unlocked.png"));
     try
     {
-      if ((Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
         addItem(ContextMenuItem.SEPARATOR);
         addItem(new SpendenbescheinigungItem("Geldspendenbescheinigung",

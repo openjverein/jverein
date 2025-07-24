@@ -73,15 +73,16 @@ public class Kontoauszug
     this();
     ArrayList<Mitglied> mitglieder = new ArrayList<>();
 
-    if (object == null && control.isSuchMitgliedstypActive() && 
-        control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() != null)
+    if (object == null && control.isSuchMitgliedstypActive()
+        && control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() != null)
     {
-      Mitgliedstyp mt = (Mitgliedstyp) control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue();
-      mitglieder = new MitgliedQuery(control).
-          get(Integer.parseInt(mt.getID()), null);
+      Mitgliedstyp mt = (Mitgliedstyp) control
+          .getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue();
+      mitglieder = new MitgliedQuery(control).get(Integer.parseInt(mt.getID()),
+          null);
     }
-    else if (object == null && control.isSuchMitgliedstypActive() && 
-        control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() == null)
+    else if (object == null && control.isSuchMitgliedstypActive()
+        && control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() == null)
     {
       mitglieder = new MitgliedQuery(control).get(-1, null);
     }
@@ -95,11 +96,11 @@ public class Kontoauszug
     }
     else
     {
-      GUI.getStatusBar().setErrorText(
-          "Kein Mitglied ausgewählt. Vorgang abgebrochen.");
+      GUI.getStatusBar()
+          .setErrorText("Kein Mitglied ausgewählt. Vorgang abgebrochen.");
       return;
     }
-    
+
     int anzahl = 0;
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
@@ -113,12 +114,12 @@ public class Kontoauszug
         for (Mitglied mg : mitglieder)
         {
           if (generiereMitglied(mg, control))
-              anzahl++;
+            anzahl++;
         }
         if (anzahl == 0)
         {
-          GUI.getStatusBar().setErrorText(
-              "Kein Mitglied erfüllt das Differenz Kriterium.");
+          GUI.getStatusBar()
+              .setErrorText("Kein Mitglied erfüllt das Differenz Kriterium.");
           file.delete();
           return;
         }
@@ -160,29 +161,29 @@ public class Kontoauszug
         zos.close();
         if (anzahl == 0)
         {
-          GUI.getStatusBar().setErrorText(
-              "Kein Mitglied erfüllt das Differenz Kriterium.");
+          GUI.getStatusBar()
+              .setErrorText("Kein Mitglied erfüllt das Differenz Kriterium.");
           file.delete();
           return;
         }
         new ZipMailer(file, (String) control.getBetreff().getValue(),
             (String) control.getTxt().getValue());
         break;
-    } 
+    }
   }
 
   private void init(String extension) throws IOException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
-    String path = settings
-        .getString("lastdir", System.getProperty("user.home"));
+    String path = settings.getString("lastdir",
+        System.getProperty("user.home"));
     if (path != null && path.length() > 0)
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(
-        VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_DATEINAME) + "." + extension);
+    fd.setFileName(VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_DATEINAME) + "."
+        + extension);
     fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();
@@ -206,10 +207,11 @@ public class Kontoauszug
     {
       diff = (DIFFERENZ) control.getDifferenz().getValue();
     }
-    
-    MitgliedskontoNode node = new MitgliedskontoNode(m, (Date) control.getDatumvon().getValue(), 
+
+    MitgliedskontoNode node = new MitgliedskontoNode(m,
+        (Date) control.getDatumvon().getValue(),
         (Date) control.getDatumbis().getValue());
-    
+
     Double limit = Double.valueOf(0d);
     if (control.isDoubleAuswAktiv()
         && control.getDoubleAusw().getValue() != null)
@@ -227,7 +229,7 @@ public class Kontoauszug
     {
       return false;
     }
-    
+
     rpt.newPage();
     rpt.add((String) Einstellungen.getEinstellung(Property.NAME), 20);
     rpt.add(
@@ -237,7 +239,8 @@ public class Kontoauszug
     rpt.add(String.format("Stand: %s", jv.format(new Date())), 16);
 
     rpt.addHeaderColumn(" ", Element.ALIGN_CENTER, 20, BaseColor.LIGHT_GRAY);
-    rpt.addHeaderColumn("Datum", Element.ALIGN_CENTER, 20, BaseColor.LIGHT_GRAY);
+    rpt.addHeaderColumn("Datum", Element.ALIGN_CENTER, 20,
+        BaseColor.LIGHT_GRAY);
     rpt.addHeaderColumn("Zweck", Element.ALIGN_LEFT, 50, BaseColor.LIGHT_GRAY);
     rpt.addHeaderColumn("Zahlungsweg", Element.ALIGN_LEFT, 20,
         BaseColor.LIGHT_GRAY);
@@ -301,7 +304,7 @@ public class Kontoauszug
     GUI.getStatusBar().setSuccessText("Kontoauszug erstellt");
     FileViewer.show(file);
   }
-  
+
   String getDateiname(Mitglied m) throws RemoteException
   {
     // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf

@@ -37,13 +37,14 @@ public class AnfangsbestandMenu extends ContextMenu
    */
   public AnfangsbestandMenu()
   {
-    addItem(new SingleAnfangsbestandItem("Bearbeiten", new AnfangsbestandDetailAction(),
-        "text-x-generic.png"));
+    addItem(new SingleAnfangsbestandItem("Bearbeiten",
+        new AnfangsbestandDetailAction(), "text-x-generic.png"));
     addItem(new SingleAnfangsbestandItem("Löschen",
         new AnfangsbestandDeleteAction(), "user-trash-full.png"));
   }
-  
-  private static class SingleAnfangsbestandItem extends CheckedSingleContextMenuItem
+
+  private static class SingleAnfangsbestandItem
+      extends CheckedSingleContextMenuItem
   {
     private SingleAnfangsbestandItem(String text, Action action, String icon)
     {

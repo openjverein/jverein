@@ -40,7 +40,7 @@ public class IstbuchungLoesenAction implements Action
     {
       throw new ApplicationException("Keine Istbuchung ausgewählt");
     }
-  	
+
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
     d.setTitle("Istbuchung von Sollbuchung lösen");
     d.setText("Wollen Sie die Istbuchung wirklich von der Sollbuchung lösen?");

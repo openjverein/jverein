@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 public enum Staat
 {
 
-  AB ("ABCHASIEN"),
+  AB("ABCHASIEN"),
   AF("AFGANISTAN"),
   EG("ÄGYPTEN"),
   AL("ALBANIEN"),
@@ -246,7 +246,7 @@ public enum Staat
 
   public static Staat getByKey(String key)
   {
-    if(key == null)
+    if (key == null)
     {
       return null;
     }
@@ -259,10 +259,10 @@ public enum Staat
     }
     return null;
   }
-  
+
   public static Staat getByText(String text)
   {
-    if(text == null)
+    if (text == null)
     {
       return null;
     }

@@ -83,7 +83,8 @@ public class LastschriftMap extends AbstractMap
 
     map.put(LastschriftVar.ABRECHNUNGSLAUF_NR.getName(), abrl.getID());
     map.put(LastschriftVar.ABRECHNUNGSLAUF_DATUM.getName(), abrl.getDatum());
-    // Damit Pre-Notifications für mit Versionen bis 2.8.18 erstellte Abrechnungsläufe
+    // Damit Pre-Notifications für mit Versionen bis 2.8.18 erstellte
+    // Abrechnungsläufe
     // korrekt erstellt werden, werden beide Felder verwendet.
     if (ls.getMandatSequence().equals("FRST"))
     {

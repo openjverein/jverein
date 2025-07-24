@@ -67,7 +67,7 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
       throw new ApplicationException(fehler);
     }
   }
-  
+
   @Override
   protected void updateCheck() throws ApplicationException
   {

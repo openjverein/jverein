@@ -44,7 +44,8 @@ public class EinstellungenStatistikView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_STATISTIK, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_STATISTIK, false,
+        "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

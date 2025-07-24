@@ -68,11 +68,10 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BeitragsgruppeControl extends VorZurueckControl
-    implements Savable
+public class BeitragsgruppeControl extends VorZurueckControl implements Savable
 {
   private Input[] alterstaffel;
-  
+
   private CheckboxInput isAltersstaffel;
 
   private JVereinTablePart beitragsgruppeList;
@@ -92,7 +91,7 @@ public class BeitragsgruppeControl extends VorZurueckControl
   private DecimalInput betragjaehrlich;
 
   private SelectInput beitragsart;
-  
+
   private SelectInput buchungsklasse;
 
   private Beitragsgruppe beitrag;
@@ -102,7 +101,7 @@ public class BeitragsgruppeControl extends VorZurueckControl
   private DecimalInput arbeitseinsatzbetrag;
 
   private AbstractInput buchungsart;
-  
+
   private TextAreaInput notiz;
 
   private SteuerInput steuer = null;
@@ -153,7 +152,8 @@ public class BeitragsgruppeControl extends VorZurueckControl
     }
     betrag = new DecimalInput(getBeitragsgruppe().getBetrag(),
         Einstellungen.DECIMALFORMAT);
-    if(getBeitragsgruppe().getID() != null && getBeitragsgruppe().getHasAltersstaffel())
+    if (getBeitragsgruppe().getID() != null
+        && getBeitragsgruppe().getHasAltersstaffel())
       betrag.disable();
     return betrag;
   }
@@ -166,7 +166,7 @@ public class BeitragsgruppeControl extends VorZurueckControl
     }
     betragmonatlich = new DecimalInput(getBeitragsgruppe().getBetragMonatlich(),
         Einstellungen.DECIMALFORMAT);
-    if(getBeitragsgruppe().getHasAltersstaffel())
+    if (getBeitragsgruppe().getHasAltersstaffel())
       betragmonatlich.disable();
     return betragmonatlich;
   }
@@ -180,7 +180,7 @@ public class BeitragsgruppeControl extends VorZurueckControl
     betragvierteljaehrlich = new DecimalInput(
         getBeitragsgruppe().getBetragVierteljaehrlich(),
         Einstellungen.DECIMALFORMAT);
-    if(getBeitragsgruppe().getHasAltersstaffel())
+    if (getBeitragsgruppe().getHasAltersstaffel())
       betragvierteljaehrlich.disable();
     return betragvierteljaehrlich;
   }
@@ -194,7 +194,7 @@ public class BeitragsgruppeControl extends VorZurueckControl
     betraghalbjaehrlich = new DecimalInput(
         getBeitragsgruppe().getBetragHalbjaehrlich(),
         Einstellungen.DECIMALFORMAT);
-    if(getBeitragsgruppe().getHasAltersstaffel())
+    if (getBeitragsgruppe().getHasAltersstaffel())
       betraghalbjaehrlich.disable();
     return betraghalbjaehrlich;
   }
@@ -207,11 +207,10 @@ public class BeitragsgruppeControl extends VorZurueckControl
     }
     betragjaehrlich = new DecimalInput(getBeitragsgruppe().getBetragJaehrlich(),
         Einstellungen.DECIMALFORMAT);
-    if(getBeitragsgruppe().getHasAltersstaffel())
-        betragjaehrlich.disable();
+    if (getBeitragsgruppe().getHasAltersstaffel())
+      betragjaehrlich.disable();
     return betragjaehrlich;
   }
-
 
   public CheckboxInput getIsAltersstaffel() throws RemoteException
   {
@@ -219,7 +218,8 @@ public class BeitragsgruppeControl extends VorZurueckControl
     {
       return isAltersstaffel;
     }
-    isAltersstaffel = new CheckboxInput(getBeitragsgruppe().getHasAltersstaffel());
+    isAltersstaffel = new CheckboxInput(
+        getBeitragsgruppe().getHasAltersstaffel());
     isAltersstaffel.addListener(new Listener()
     {
 
@@ -229,18 +229,18 @@ public class BeitragsgruppeControl extends VorZurueckControl
         if (event != null && event.type == SWT.Selection)
         {
           Boolean b = (Boolean) isAltersstaffel.getValue();
-          
-          if(betrag != null)
+
+          if (betrag != null)
             betrag.setEnabled(!b);
-          if(betragjaehrlich != null)
+          if (betragjaehrlich != null)
             betragjaehrlich.setEnabled(!b);
-          if(betraghalbjaehrlich != null)
+          if (betraghalbjaehrlich != null)
             betraghalbjaehrlich.setEnabled(!b);
-          if(betragvierteljaehrlich != null)
+          if (betragvierteljaehrlich != null)
             betragvierteljaehrlich.setEnabled(!b);
-          if(betragmonatlich != null)
+          if (betragmonatlich != null)
             betragmonatlich.setEnabled(!b);
-          
+
           if (alterstaffel != null)
           {
             for (Input i : alterstaffel)
@@ -253,7 +253,7 @@ public class BeitragsgruppeControl extends VorZurueckControl
     });
     return isAltersstaffel;
   }
-  
+
   public Input[] getAltersstaffel() throws RemoteException
   {
     if (alterstaffel != null)
@@ -262,10 +262,10 @@ public class BeitragsgruppeControl extends VorZurueckControl
     }
     String stufen = (String) Einstellungen
         .getEinstellung(Property.BEITRAGALTERSSTUFEN);
-    if(stufen == null || stufen == "")
+    if (stufen == null || stufen == "")
       return null;
     AltersgruppenParser ap = new AltersgruppenParser(stufen);
- 
+
     int i = 0;
     List<Input> list = new ArrayList<Input>();
     while (ap.hasNext())
@@ -273,11 +273,10 @@ public class BeitragsgruppeControl extends VorZurueckControl
       VonBis vb = ap.getNext();
       double betrag = 0;
       Altersstaffel a = beitrag.getAltersstaffel(i);
-      if(a != null)
+      if (a != null)
         betrag = a.getBetrag();
-      DecimalInput d = new DecimalInput(betrag,
-          Einstellungen.DECIMALFORMAT);
-      if(!getBeitragsgruppe().getHasAltersstaffel())
+      DecimalInput d = new DecimalInput(betrag, Einstellungen.DECIMALFORMAT);
+      if (!getBeitragsgruppe().getHasAltersstaffel())
         d.disable();
       d.setData("nummer", Integer.valueOf(i));
       d.setName(vb.getVon() + "-" + vb.getBis() + " Jahre");
@@ -287,7 +286,7 @@ public class BeitragsgruppeControl extends VorZurueckControl
     alterstaffel = list.toArray(new Input[0]);
     return alterstaffel;
   }
-  
+
   public SelectInput getBeitragsArt() throws RemoteException
   {
     if (beitragsart != null)
@@ -331,7 +330,8 @@ public class BeitragsgruppeControl extends VorZurueckControl
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         getBeitragsgruppe().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
+        (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.addListener(new Listener()
     {
       @Override
@@ -340,8 +340,8 @@ public class BeitragsgruppeControl extends VorZurueckControl
         try
         {
           Buchungsart bua = (Buchungsart) buchungsart.getValue();
-          if (buchungsklasse != null && buchungsklasse.getValue() == null &&
-              bua != null)
+          if (buchungsklasse != null && buchungsklasse.getValue() == null
+              && bua != null)
             buchungsklasse.setValue(bua.getBuchungsklasse());
         }
         catch (RemoteException e)
@@ -365,25 +365,26 @@ public class BeitragsgruppeControl extends VorZurueckControl
     });
     return buchungsart;
   }
-  
+
   public SelectInput getBuchungsklasse() throws RemoteException
   {
     if (buchungsklasse != null)
     {
       return buchungsklasse;
     }
-    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklasse,
-        getBeitragsgruppe().getBuchungsklasse());
+    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(
+        buchungsklasse, getBeitragsgruppe().getBuchungsklasse());
     return buchungsklasse;
   }
-  
+
   private Long getSelectedBuchungsKlasseId() throws ApplicationException
   {
     try
     {
       if (null == buchungsklasse)
         return null;
-      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse()
+          .getValue();
       if (null == buchungsKlasse)
         return null;
       Long id = Long.valueOf(buchungsKlasse.getID());
@@ -534,8 +535,8 @@ public class BeitragsgruppeControl extends VorZurueckControl
         .createList(Beitragsgruppe.class);
     beitragsgruppeList = new JVereinTablePart(beitragsgruppen, null);
     beitragsgruppeList.addColumn("Bezeichnung", "bezeichnung");
-    switch (Beitragsmodel
-        .getByKey((Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
+    switch (Beitragsmodel.getByKey(
+        (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
     {
       case GLEICHERTERMINFUERALLE:
       case MONATLICH12631:
@@ -563,7 +564,8 @@ public class BeitragsgruppeControl extends VorZurueckControl
           "arbeitseinsatzbetrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     }
-    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       beitragsgruppeList.addColumn("Buchungsklasse", "buchungsklasse",
           new BuchungsklasseFormatter());
@@ -592,19 +594,20 @@ public class BeitragsgruppeControl extends VorZurueckControl
         new JaNeinFormatter());
     beitragsgruppeList.addColumn("Sekundär", "sekundaer",
         new JaNeinFormatter());
-    beitragsgruppeList.addColumn("Beitragsart", "beitragsart",
-        new Formatter() {
+    beitragsgruppeList.addColumn("Beitragsart", "beitragsart", new Formatter()
+    {
 
-          @Override
-          public String format(Object o)
-          {
-            return ArtBeitragsart.getByKey((Integer)o).getText();
-          }
+      @Override
+      public String format(Object o)
+      {
+        return ArtBeitragsart.getByKey((Integer) o).getText();
+      }
     });
     beitragsgruppeList.addColumn("Notiz", "notiz", new NotizFormatter(40));
     beitragsgruppeList
         .setContextMenu(new BeitragsgruppeMenu(beitragsgruppeList));
-    beitragsgruppeList.setFormatter(new TableFormatter() {
+    beitragsgruppeList.setFormatter(new TableFormatter()
+    {
       @Override
       public void format(TableItem item)
       {

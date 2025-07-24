@@ -32,8 +32,8 @@ public class FamilienbeitragMenu extends ContextMenu
 
   public FamilienbeitragMenu()
   {
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen", new MitgliedDetailAction(),
-        "user-friends.png"));
+    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+        new MitgliedDetailAction(), "user-friends.png"));
     addItem(new AngehoerigerItem("Aus Familienverband entfernen",
         new FamilienmitgliedEntfernenAction(), "user-trash-full.png"));
   }

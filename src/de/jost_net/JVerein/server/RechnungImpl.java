@@ -46,6 +46,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
    * 
    */
   private static final long serialVersionUID = -286067581211521888L;
+
   private Double ist;
 
   public RechnungImpl() throws RemoteException
@@ -112,13 +113,13 @@ public class RechnungImpl extends AbstractJVereinDBObject
   {
     return (Date) getAttribute("datum");
   }
-  
+
   @Override
   public void setAnrede(String anrede) throws RemoteException
   {
     setAttribute("anrede", anrede);
   }
-  
+
   @Override
   public String getAnrede() throws RemoteException
   {
@@ -130,7 +131,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   {
     return (String) getAttribute("titel");
   }
-  
+
   @Override
   public void setTitel(String titel) throws RemoteException
   {
@@ -142,7 +143,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   {
     return (String) getAttribute("name");
   }
-  
+
   @Override
   public void setName(String name) throws RemoteException
   {
@@ -154,7 +155,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   {
     return (String) getAttribute("vorname");
   }
-  
+
   @Override
   public void setVorname(String vorname) throws RemoteException
   {
@@ -166,7 +167,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   {
     return (String) getAttribute("strasse");
   }
-  
+
   @Override
   public void setStrasse(String strasse) throws RemoteException
   {
@@ -178,9 +179,10 @@ public class RechnungImpl extends AbstractJVereinDBObject
   {
     return (String) getAttribute("adressierungszusatz");
   }
-  
+
   @Override
-  public void setAdressierungszusatz(String adressierungszusatz) throws RemoteException
+  public void setAdressierungszusatz(String adressierungszusatz)
+      throws RemoteException
   {
     setAttribute("adressierungszusatz", adressierungszusatz);
   }
@@ -190,7 +192,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   {
     return (String) getAttribute("plz");
   }
-  
+
   @Override
   public void setPlz(String plz) throws RemoteException
   {
@@ -202,7 +204,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   {
     return (String) getAttribute("ort");
   }
-  
+
   @Override
   public void setOrt(String ort) throws RemoteException
   {
@@ -221,7 +223,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
     String code = (String) getAttribute("staat");
     return Staat.getStaatCode(code);
   }
-  
+
   @Override
   public void setStaat(String staat) throws RemoteException
   {
@@ -233,7 +235,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   {
     return (String) getAttribute("geschlecht");
   }
-  
+
   @Override
   public void setGeschlecht(String geschlecht) throws RemoteException
   {
@@ -248,10 +250,9 @@ public class RechnungImpl extends AbstractJVereinDBObject
       return ist;
     }
     DBService service = Einstellungen.getDBService();
-    String sql = "select sum(buchung.betrag) from buchung "
-        + "join " + Sollbuchung.TABLE_NAME + " on " + Sollbuchung.TABLE_NAME_ID
-        + " = " + Buchung.SOLLBUCHUNG + " where " + Sollbuchung.T_RECHNUNG
-        + " = "
+    String sql = "select sum(buchung.betrag) from buchung " + "join "
+        + Sollbuchung.TABLE_NAME + " on " + Sollbuchung.TABLE_NAME_ID + " = "
+        + Buchung.SOLLBUCHUNG + " where " + Sollbuchung.T_RECHNUNG + " = "
         + this.getID();
 
     ResultSetExtractor rs = new ResultSetExtractor()
@@ -270,7 +271,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
     ist = Double.valueOf((Double) service.execute(sql, new Object[] {}, rs));
     return ist;
   }
-  
+
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
@@ -296,14 +297,12 @@ public class RechnungImpl extends AbstractJVereinDBObject
     }
     return super.getAttribute(fieldName);
   }
-  
 
   @Override
   public String getPersonenart() throws RemoteException
   {
     return (String) getAttribute("personenart");
   }
-  
 
   @Override
   public void setPersonenart(String personenart) throws RemoteException
@@ -324,7 +323,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
     }
     return null;
   }
-  
+
   @Override
   public Sollbuchung getSollbuchung() throws RemoteException
   {
@@ -419,7 +418,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   @Override
   public void setMandatID(String id) throws RemoteException
   {
-    setAttribute("mandatid", id); 
+    setAttribute("mandatid", id);
   }
 
   @Override
@@ -443,7 +442,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   @Override
   public void setBIC(String bic) throws RemoteException
   {
-    setAttribute("bic", bic); 
+    setAttribute("bic", bic);
   }
 
   @Override
@@ -459,16 +458,18 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Zahlungsweg getZahlungsweg() throws RemoteException {
-    if(getAttribute("zahlungsweg") == null)
+  public Zahlungsweg getZahlungsweg() throws RemoteException
+  {
+    if (getAttribute("zahlungsweg") == null)
     {
       return null;
     }
-    return new Zahlungsweg((Integer)getAttribute("zahlungsweg"));
+    return new Zahlungsweg((Integer) getAttribute("zahlungsweg"));
   }
 
   @Override
-  public void setZahlungsweg(Integer zahlungsweg) throws RemoteException {
+  public void setZahlungsweg(Integer zahlungsweg) throws RemoteException
+  {
     setAttribute("zahlungsweg", zahlungsweg);
   }
 

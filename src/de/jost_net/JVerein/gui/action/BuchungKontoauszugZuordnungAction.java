@@ -74,9 +74,10 @@ public class BuchungKontoauszugZuordnungAction implements Action
       {
         for (Buchung buchung : b)
         {
-          boolean protect = ((buchung.getAuszugsnummer() != null && buchung
-              .getAuszugsnummer().intValue() > 0) || (buchung.getBlattnummer() != null && buchung
-              .getBlattnummer().intValue() > 0))
+          boolean protect = ((buchung.getAuszugsnummer() != null
+              && buchung.getAuszugsnummer().intValue() > 0)
+              || (buchung.getBlattnummer() != null
+                  && buchung.getBlattnummer().intValue() > 0))
               && !kaz.getOverride();
           if (protect)
           {
@@ -92,8 +93,8 @@ public class BuchungKontoauszugZuordnungAction implements Action
         String protecttext = "";
         if (counter > 0)
         {
-          protecttext = String.format(
-              ", %d Buchungen wurden nicht überschrieben. ", counter);
+          protecttext = String
+              .format(", %d Buchungen wurden nicht überschrieben. ", counter);
         }
         GUI.getStatusBar().setSuccessText(
             "Kontoauszugsinformationen zugeordnet" + protecttext);

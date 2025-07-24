@@ -55,11 +55,10 @@ public class BuchungsHeaderControl extends AbstractControl
   public BuchungsHeaderControl(AbstractView view, BuchungsControl control)
   {
     super(view);
-    control.addKontoChangeListener(event ->
-      {
-        Object data = event.data;
-        if (data instanceof Konto)
-          felderAktuallisieren((Konto) data);
+    control.addKontoChangeListener(event -> {
+      Object data = event.data;
+      if (data instanceof Konto)
+        felderAktuallisieren((Konto) data);
     });
   }
 
@@ -67,8 +66,7 @@ public class BuchungsHeaderControl extends AbstractControl
   {
     try
     {
-      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
-          "konto");
+      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("konto");
 
       it.addColumn("konto.bezeichnung as konto");
       it.addColumn("anfangsbestand.betrag AS anfangssaldo");
@@ -82,7 +80,7 @@ public class BuchungsHeaderControl extends AbstractControl
       it.addColumn("MAX(buchung.datum) AS letzte_buchung");
 
       it.join("anfangsbestand", "anfangsbestand.konto = konto.id");
-      
+
       // Hier müssen wir zwischen H2 und MySQL unterscheiden, da es nicht die
       // gleichen Funktionen gibt
       String filter = "konto.id = buchung.konto AND buchung.datum >= anfangsbestand.datum";
@@ -93,8 +91,7 @@ public class BuchungsHeaderControl extends AbstractControl
       }
       else
       {
-        filter +=
-            " AND buchung.datum < DATE_ADD(anfangsbestand.datum, INTERVAL 1 YEAR)";
+        filter += " AND buchung.datum < DATE_ADD(anfangsbestand.datum, INTERVAL 1 YEAR)";
       }
       it.leftJoin("buchung", filter);
 
@@ -125,9 +122,8 @@ public class BuchungsHeaderControl extends AbstractControl
         getAktJahrSaldoInput()
             .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
                 .format(o.getAttribute("saldo")));
-        getAktJahrSaldoInput()
-            .setComment("letzte Buchung: "
-                + new DateFormatter(new JVDateFormatTTMMJJJJ())
+        getAktJahrSaldoInput().setComment(
+            "letzte Buchung: " + new DateFormatter(new JVDateFormatTTMMJJJJ())
                 .format(o.getAttribute("letzte_buchung")));
       }
       else
@@ -162,9 +158,8 @@ public class BuchungsHeaderControl extends AbstractControl
         getVorJahrSaldoInput()
             .setValue(new CurrencyFormatter("", Einstellungen.DECIMALFORMAT)
                 .format(o.getAttribute("saldo")));
-        getVorJahrSaldoInput()
-            .setComment("letzte Buchung: "
-                + new DateFormatter(new JVDateFormatTTMMJJJJ())
+        getVorJahrSaldoInput().setComment(
+            "letzte Buchung: " + new DateFormatter(new JVDateFormatTTMMJJJJ())
                 .format(o.getAttribute("letzte_buchung")));
       }
       else
@@ -183,7 +178,6 @@ public class BuchungsHeaderControl extends AbstractControl
       Logger.error("Fehler beim laden der Kontodaten", e);
     }
   }
-
 
   public Input getKontoNameInput()
   {

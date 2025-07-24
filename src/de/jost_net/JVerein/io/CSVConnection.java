@@ -208,7 +208,7 @@ public class CSVConnection
   {
     Properties props = new java.util.Properties();
     props.put("separator", (Character.valueOf(seperator)).toString()); // separator
-                                                                   // is a bar
+    // is a bar
     props.put("suppressHeaders", "false"); // first line contains data
     props.put("charset", "ISO-8859-1");
     int pos = csvFile.getName().lastIndexOf('.');

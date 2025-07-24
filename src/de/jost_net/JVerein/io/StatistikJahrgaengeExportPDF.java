@@ -101,8 +101,7 @@ public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
     {
       reporter.addColumn(key, Element.ALIGN_CENTER);
       StatistikJahrgang dsbj = statistik.get(key);
-      reporter.addColumn(
-          Einstellungen.INTFORMAT.format(dsbj.getAnzahlgesamt()),
+      reporter.addColumn(Einstellungen.INTFORMAT.format(dsbj.getAnzahlgesamt()),
           Element.ALIGN_RIGHT);
       reporter.addColumn(
           Einstellungen.INTFORMAT.format(dsbj.getAnzahlmaennlich()),

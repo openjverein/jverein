@@ -72,8 +72,8 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
     {
       return null;
     }
-    return (QIFImportHead) Einstellungen.getDBService().createObject(
-        QIFImportHead.class, headId.toString());
+    return (QIFImportHead) Einstellungen.getDBService()
+        .createObject(QIFImportHead.class, headId.toString());
   }
 
   @Override
@@ -290,8 +290,8 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
     }
     catch (RemoteException ex)
     {
-      throw new ApplicationException(
-          "Defaultwerte können nicht gesetzt werden", ex);
+      throw new ApplicationException("Defaultwerte können nicht gesetzt werden",
+          ex);
     }
   }
 

@@ -34,10 +34,10 @@ public class MittelverwendungSaldoView extends AbstractView
 
     final MittelverwendungSaldoControl control = new MittelverwendungSaldoControl(
         this);
-  
+
     VonBisPart vpart = new VonBisPart(control, true);
     vpart.paint(this.getParent());
-    
+
     QuickAccessPart qpart = new QuickAccessPart(control, true);
     qpart.paint(this.getParent());
 

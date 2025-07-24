@@ -47,7 +47,8 @@ public class ZusatzbetraegeResetAction implements Action
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Ausführungsdatum zurücksetzen");
-      d.setText("Wollen Sie das Ausführungsdatum dieses Zusatzbetrages wirklich zurücksetzen?");
+      d.setText(
+          "Wollen Sie das Ausführungsdatum dieses Zusatzbetrages wirklich zurücksetzen?");
       try
       {
         Boolean choice = (Boolean) d.open();

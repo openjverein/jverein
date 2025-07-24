@@ -32,7 +32,7 @@ import de.willuhn.jameica.system.Application;
 
 public class VollzahlerInput
 {
-  
+
   public AbstractInput getMitgliedInput(AbstractInput mitgliedInput,
       Mitglied mitglied, int auswahl) throws RemoteException
   {
@@ -55,7 +55,8 @@ public class VollzahlerInput
         // Beitragsgruppen ermitteln, die Zahler für andere Mitglieder sind
         DBIterator<Beitragsgruppe> bg = Einstellungen.getDBService()
             .createList(Beitragsgruppe.class);
-        bg.addFilter("beitragsart != ?", ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
+        bg.addFilter("beitragsart != ?",
+            ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
         while (bg.hasNext())
         {
           if (cond.length() > 0)
@@ -69,14 +70,15 @@ public class VollzahlerInput
         DBIterator<Mitglied> zhl = Einstellungen.getDBService()
             .createList(Mitglied.class);
         zhl.addFilter("(" + cond.toString() + ")");
-        if(mitglied.getID() != null)
-          zhl.addFilter("id != ?",mitglied.getID());
+        if (mitglied.getID() != null)
+          zhl.addFilter("id != ?", mitglied.getID());
         MitgliedUtils.setMitglied(zhl);
         zhl.setOrder("ORDER BY name, vorname");
-        mitgliedInput = new SelectNoScrollInput(zhl != null ? 
-            PseudoIterator.asList(zhl) : null, zahlmitglied);
+        mitgliedInput = new SelectNoScrollInput(
+            zhl != null ? PseudoIterator.asList(zhl) : null, zahlmitglied);
         ((SelectNoScrollInput) mitgliedInput).setAttribute("namevorname");
-        ((SelectNoScrollInput) mitgliedInput).setPleaseChoose("Bitte auswählen");
+        ((SelectNoScrollInput) mitgliedInput)
+            .setPleaseChoose("Bitte auswählen");
         break;
       case AbstractInputAuswahl.SearchInput:
       default:

@@ -34,10 +34,10 @@ public class Update0383 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(alterColumn("mitgliednextbgruppe", new Column("mitglied",
-        COLTYPE.BIGINT, 19, null, false, false)));
-    execute(alterColumn("mitgliednextbgruppe", new Column("beitragsgruppe",
-        COLTYPE.BIGINT, 19, null, false, false)));
+    execute(alterColumn("mitgliednextbgruppe",
+        new Column("mitglied", COLTYPE.BIGINT, 19, null, false, false)));
+    execute(alterColumn("mitgliednextbgruppe",
+        new Column("beitragsgruppe", COLTYPE.BIGINT, 19, null, false, false)));
 
     Index idx = new Index("ixMitgliednextbgruppe2", false);
     Column col = new Column("beitragsgruppe", COLTYPE.INTEGER, 0, null, false,

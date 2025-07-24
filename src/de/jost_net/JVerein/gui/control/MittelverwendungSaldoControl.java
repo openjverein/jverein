@@ -26,8 +26,7 @@ import de.willuhn.jameica.gui.AbstractView;
 
 public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
 {
-  public MittelverwendungSaldoControl(AbstractView view)
-      throws RemoteException
+  public MittelverwendungSaldoControl(AbstractView view) throws RemoteException
   {
     super(view);
     mitUmbuchung = false;

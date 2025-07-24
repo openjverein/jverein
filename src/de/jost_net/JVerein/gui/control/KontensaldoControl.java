@@ -124,8 +124,7 @@ public class KontensaldoControl extends AbstractSaldoControl
               + "- case when (dependencyid is null or dependencyid = -1)"
               + " and konto.kontoart = ? and buchungsart.art = ? then "
               + "CAST(buchung.betrag * COALESCE(steuer.satz,0) / (100 + COALESCE(steuer.satz,0))"
-              + " AS DECIMAL(10,2)) ELSE 0 END) as "
-              + UMBUCHUNGEN,
+              + " AS DECIMAL(10,2)) ELSE 0 END) as " + UMBUCHUNGEN,
           ArtBuchungsart.UMBUCHUNG, Kontoart.GELD.getKey(),
           ArtBuchungsart.UMBUCHUNG);
 
@@ -134,8 +133,7 @@ public class KontensaldoControl extends AbstractSaldoControl
               + "+ case when (dependencyid is null or dependencyid = -1)"
               + " and konto.kontoart = ? and buchungsart.art = ? and buchung.betrag > 0 then "
               + "CAST(buchung.betrag * COALESCE(steuer.satz,0) / (100 + COALESCE(steuer.satz,0))"
-              + " AS DECIMAL(10,2)) ELSE 0 END) as "
-              + EINNAHMEN,
+              + " AS DECIMAL(10,2)) ELSE 0 END) as " + EINNAHMEN,
           ArtBuchungsart.EINNAHME, Kontoart.GELD.getKey(),
           ArtBuchungsart.UMBUCHUNG);
 
@@ -144,8 +142,7 @@ public class KontensaldoControl extends AbstractSaldoControl
               + "+ case when (dependencyid is null or dependencyid = -1)"
               + " and konto.kontoart = ? and buchungsart.art = ? and buchung.betrag < 0 then "
               + "CAST(buchung.betrag * COALESCE(steuer.satz,0) / (100 + COALESCE(steuer.satz,0))"
-              + " AS DECIMAL(10,2)) ELSE 0 END) as "
-              + AUSGABEN,
+              + " AS DECIMAL(10,2)) ELSE 0 END) as " + AUSGABEN,
           ArtBuchungsart.AUSGABE, Kontoart.GELD.getKey(),
           ArtBuchungsart.UMBUCHUNG);
     }

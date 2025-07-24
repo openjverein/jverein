@@ -78,19 +78,19 @@ public class QIFBuchungsImportView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.QIFIMPORT, false, "question-circle.png");
-    buttons.addButton("Import", new QIFDateiEinlesenAction(), null,
-        false, "file-import.png");
+    buttons.addButton("Import", new QIFDateiEinlesenAction(), null, false,
+        "file-import.png");
     buttons.addButton("Import löschen",
         control.getAktuellenImportLoeschenAction(), null, false,
         "user-trash-full.png");
     buttons.addButton("Imports löschen", control.getAlleImportsLoeschenAction(),
         null, false, "list-remove.png");
     buttons.addButton("Buchungsarten zuordnen",
-        new EditAction(QIFBuchungsartZuordnenView.class),
-        null, false, "zuordnung.png");
+        new EditAction(QIFBuchungsartZuordnenView.class), null, false,
+        "zuordnung.png");
     buttons.addButton("Mitglieder zuordnen",
-        new StartViewAction(QIFMitgliederZuordnenView.class), null,
-        false, "contact-new.png");
+        new StartViewAction(QIFMitgliederZuordnenView.class), null, false,
+        "contact-new.png");
     buttons.addButton("Buchungen übernehmen", control.getPIFPosBuchenAction(),
         null, false, "document-new.png");
     buttons.paint(this.getParent());

@@ -138,7 +138,9 @@ public class DBSupportH2Impl extends AbstractDBSupportImpl
     String url = "jdbc:h2:" + Application.getPluginLoader()
         .getPlugin(JVereinPlugin.class).getResources().getWorkPath()
         + "/h2db/jverein";
-    if (JVereinDBService.SETTINGS.getBoolean("database.driver.h2.auto_server", false)) {
+    if (JVereinDBService.SETTINGS.getBoolean("database.driver.h2.auto_server",
+        false))
+    {
       url += ";AUTO_SERVER=TRUE";
     }
 

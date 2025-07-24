@@ -220,7 +220,8 @@ public class PersonalbogenAction implements Action
   }
 
   private void generiereMitglied(Reporter rpt, Mitglied m)
-      throws DocumentException, MalformedURLException, IOException, ApplicationException
+      throws DocumentException, MalformedURLException, IOException,
+      ApplicationException
   {
     rpt.addHeaderColumn("Feld", Element.ALIGN_LEFT, 50, BaseColor.LIGHT_GRAY);
     rpt.addHeaderColumn("Inhalt", Element.ALIGN_LEFT, 140,
@@ -300,7 +301,8 @@ public class PersonalbogenAction implements Action
       rpt.addColumn("Eintritt", Element.ALIGN_LEFT);
       rpt.addColumn(m.getEintritt(), Element.ALIGN_LEFT);
       printBeitragsgruppe(rpt, m, m.getBeitragsgruppe(), false);
-      if ((Boolean) Einstellungen.getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
       {
         DBIterator<SekundaereBeitragsgruppe> sb = Einstellungen.getDBService()
             .createList(SekundaereBeitragsgruppe.class);
@@ -312,7 +314,8 @@ public class PersonalbogenAction implements Action
         }
       }
 
-      if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
         rpt.addColumn("Individueller Beitrag", Element.ALIGN_LEFT);
         if (m.getIndividuellerBeitrag() != null)
@@ -445,7 +448,8 @@ public class PersonalbogenAction implements Action
   {
     DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
         .createList(Sollbuchung.class);
-    sollbIt.addFilter(Sollbuchung.MITGLIED + " = ?", new Object[] { m.getID() });
+    sollbIt.addFilter(Sollbuchung.MITGLIED + " = ?",
+        new Object[] { m.getID() });
     sollbIt.setOrder("order by " + Sollbuchung.DATUM + " desc");
     if (sollbIt.size() > 0)
     {
@@ -466,7 +470,8 @@ public class PersonalbogenAction implements Action
         rpt.addColumn("Soll", Element.ALIGN_LEFT);
         rpt.addColumn(sollb.getDatum(), Element.ALIGN_LEFT);
         rpt.addColumn(sollb.getZweck1(), Element.ALIGN_LEFT);
-        rpt.addColumn(Zahlungsweg.get(sollb.getZahlungsweg()), Element.ALIGN_LEFT);
+        rpt.addColumn(Zahlungsweg.get(sollb.getZahlungsweg()),
+            Element.ALIGN_LEFT);
         rpt.addColumn(sollb.getBetrag());
         DBIterator<Buchung> it2 = Einstellungen.getDBService()
             .createList(Buchung.class);

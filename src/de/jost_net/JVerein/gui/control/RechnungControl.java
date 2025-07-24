@@ -130,7 +130,8 @@ public class RechnungControl extends DruckMailControl implements Savable
 
   public enum TYP
   {
-    RECHNUNG, MAHNUNG
+    RECHNUNG,
+    MAHNUNG
   }
 
   public RechnungControl(AbstractView view)
@@ -159,7 +160,8 @@ public class RechnungControl extends DruckMailControl implements Savable
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     rechnungList.addColumn("Differenz", "differenz",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    rechnungList.addColumn("Zahlungsweg", "zahlungsweg", new ZahlungswegFormatter());
+    rechnungList.addColumn("Zahlungsweg", "zahlungsweg",
+        new ZahlungswegFormatter());
     // Dummy Spalte, damit Zahlungsweg nicht am rechten Rand klebt
     rechnungList.addColumn(" ", " ",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
@@ -278,7 +280,8 @@ public class RechnungControl extends DruckMailControl implements Savable
     {
       rechnungenIt.addFilter(
           "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?))",
-          new Object[] { "%" + ((String) suchname.getValue()).toLowerCase() + "%",
+          new Object[] {
+              "%" + ((String) suchname.getValue()).toLowerCase() + "%",
               "%" + ((String) suchname.getValue()).toLowerCase() + "%" });
     }
 
@@ -309,9 +312,8 @@ public class RechnungControl extends DruckMailControl implements Savable
       }
       String sql = "SELECT DISTINCT " + Sollbuchung.T_RECHNUNG + ", "
           + Sollbuchung.T_BETRAG + ", " + "sum(buchung.betrag) FROM "
-          + Sollbuchung.TABLE_NAME
-          + " LEFT JOIN buchung on " + Sollbuchung.TABLE_NAME_ID + " = "
-          + Buchung.T_SOLLBUCHUNG
+          + Sollbuchung.TABLE_NAME + " LEFT JOIN buchung on "
+          + Sollbuchung.TABLE_NAME_ID + " = " + Buchung.T_SOLLBUCHUNG
           + " WHERE " + Sollbuchung.T_RECHNUNG + " is not null " + " group by "
           + Sollbuchung.TABLE_NAME_ID;
       if (getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
@@ -699,7 +701,7 @@ public class RechnungControl extends DruckMailControl implements Savable
         getRechnung().getSollbuchungPositionList(), null);
     return buchungList;
   }
-  
+
   public TextInput getZahlungsweg() throws RemoteException
   {
     if (zahlungsweg != null)

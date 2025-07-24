@@ -186,9 +186,9 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput unterdrueckungohnebuchung;
 
   private CheckboxInput kontonummer_in_buchungsliste;
-  
+
   private IntegerInput unterdrueckunglaenge;
-  
+
   private IntegerInput unterdrueckungkonten;
 
   private CheckboxInput automatische_buchungskorrektur_hibiscus;
@@ -238,9 +238,9 @@ public class EinstellungControl extends AbstractControl
   private SelectInput zahlungsrhytmus;
 
   private SelectInput sepaland;
-  
+
   private SelectInput sepaversion;
-  
+
   private SelectInput ct1sepaversion;
 
   private Input altersgruppen;
@@ -300,7 +300,7 @@ public class EinstellungControl extends AbstractControl
   private ScaleInput sepadatumoffset;
 
   private SelectInput buchungBuchungsartAuswahl;
-  
+
   private SelectInput mitgliedAuswahl;
 
   private SelectInput buchungsartsort;
@@ -312,11 +312,11 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput optiertpflicht;
 
   private CheckboxInput unterschriftdrucken;
-  
+
   private ImageInput unterschrift;
-  
+
   private CheckboxInput anhangspeichern;
-  
+
   private CheckboxInput freiebuchungsklasse;
 
   private CheckboxInput summenAnlagenkonto;
@@ -340,13 +340,13 @@ public class EinstellungControl extends AbstractControl
   private TextInput qrcodeintro;
 
   private CheckboxInput qrcodekuerzen;
-  
+
   private DecimalInput afarestwert;
-  
+
   private SelectInput afaort;
 
   private TextInput beitragaltersstufen;
-  
+
   private CheckboxInput nummeranzeigen;
 
   private CheckboxInput mittelverwendung;
@@ -382,7 +382,8 @@ public class EinstellungControl extends AbstractControl
     {
       return name;
     }
-    name = new TextInput((String) Einstellungen.getEinstellung(Property.NAME), 70);
+    name = new TextInput((String) Einstellungen.getEinstellung(Property.NAME),
+        70);
     name.setMandatory(true);
     if (withFocus)
     {
@@ -397,7 +398,8 @@ public class EinstellungControl extends AbstractControl
     {
       return strasse;
     }
-    strasse = new TextInput((String) Einstellungen.getEinstellung(Property.STRASSE), 50);
+    strasse = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.STRASSE), 50);
     return strasse;
   }
 
@@ -417,7 +419,8 @@ public class EinstellungControl extends AbstractControl
     {
       return ort;
     }
-    ort = new TextInput((String) Einstellungen.getEinstellung(Property.ORT), 50);
+    ort = new TextInput((String) Einstellungen.getEinstellung(Property.ORT),
+        50);
     return ort;
   }
 
@@ -441,7 +444,8 @@ public class EinstellungControl extends AbstractControl
     {
       return ustid;
     }
-    ustid = new TextInput((String) Einstellungen.getEinstellung(Property.USTID), 50);
+    ustid = new TextInput((String) Einstellungen.getEinstellung(Property.USTID),
+        50);
     return ustid;
   }
 
@@ -451,7 +455,8 @@ public class EinstellungControl extends AbstractControl
     {
       return finanzamt;
     }
-    finanzamt = new TextInput((String) Einstellungen.getEinstellung(Property.FINANZAMT), 30);
+    finanzamt = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.FINANZAMT), 30);
     return finanzamt;
   }
 
@@ -461,7 +466,8 @@ public class EinstellungControl extends AbstractControl
     {
       return steuernummer;
     }
-    steuernummer = new TextInput((String) Einstellungen.getEinstellung(Property.STEUERNUMMER), 30);
+    steuernummer = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.STEUERNUMMER), 30);
     return steuernummer;
   }
 
@@ -482,7 +488,8 @@ public class EinstellungControl extends AbstractControl
     {
       return vorlaeufig;
     }
-    vorlaeufig = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.VORLAEUFIG));
+    vorlaeufig = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.VORLAEUFIG));
     return vorlaeufig;
   }
 
@@ -514,7 +521,9 @@ public class EinstellungControl extends AbstractControl
     {
       return beguenstigterzweck;
     }
-    beguenstigterzweck = new TextInput((String) Einstellungen.getEinstellung(Property.BEGUENSTIGTERZWECK), 100);
+    beguenstigterzweck = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.BEGUENSTIGTERZWECK),
+        100);
     return beguenstigterzweck;
   }
 
@@ -524,7 +533,8 @@ public class EinstellungControl extends AbstractControl
     {
       return mitgliedsbetraege;
     }
-    mitgliedsbetraege = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSBETRAEGE));
+    mitgliedsbetraege = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSBETRAEGE));
     return mitgliedsbetraege;
   }
 
@@ -544,7 +554,8 @@ public class EinstellungControl extends AbstractControl
     {
       return iban;
     }
-    iban = new IBANInput(HBCIProperties.formatIban((String) Einstellungen.getEinstellung(Property.IBAN)), bic);
+    iban = new IBANInput(HBCIProperties
+        .formatIban((String) Einstellungen.getEinstellung(Property.IBAN)), bic);
     return iban;
   }
 
@@ -554,7 +565,8 @@ public class EinstellungControl extends AbstractControl
     {
       return glaeubigerid;
     }
-    glaeubigerid = new TextInput((String) Einstellungen.getEinstellung(Property.GLAEUBIGERID), 35);
+    glaeubigerid = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID), 35);
     return glaeubigerid;
   }
 
@@ -564,7 +576,9 @@ public class EinstellungControl extends AbstractControl
     {
       return sepadatumoffset;
     }
-    sepadatumoffset = new ScaleInput((Integer) Einstellungen.getEinstellung(Property.SEPADATUMOFFSET), SWT.HORIZONTAL);
+    sepadatumoffset = new ScaleInput(
+        (Integer) Einstellungen.getEinstellung(Property.SEPADATUMOFFSET),
+        SWT.HORIZONTAL);
     sepadatumoffset.setScaling(0, 14, 1, 1);
     sepadatumoffset.setName("Zusätzliche SEPA-Vorlaufzeit");
     SEPADatumOffsetListener listener = new SEPADatumOffsetListener();
@@ -579,7 +593,8 @@ public class EinstellungControl extends AbstractControl
     {
       return geburtsdatumpflicht;
     }
-    geburtsdatumpflicht = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT));
+    geburtsdatumpflicht = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT));
     return geburtsdatumpflicht;
   }
 
@@ -589,7 +604,8 @@ public class EinstellungControl extends AbstractControl
     {
       return eintrittsdatumpflicht;
     }
-    eintrittsdatumpflicht = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.EINTRITTSDATUMPFLICHT));
+    eintrittsdatumpflicht = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.EINTRITTSDATUMPFLICHT));
     return eintrittsdatumpflicht;
   }
 
@@ -599,7 +615,8 @@ public class EinstellungControl extends AbstractControl
     {
       return sterbedatum;
     }
-    sterbedatum = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM));
+    sterbedatum = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM));
     return sterbedatum;
   }
 
@@ -609,7 +626,8 @@ public class EinstellungControl extends AbstractControl
     {
       return kommunikationsdaten;
     }
-    kommunikationsdaten = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.KOMMUNIKATIONSDATEN));
+    kommunikationsdaten = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.KOMMUNIKATIONSDATEN));
     return kommunikationsdaten;
   }
 
@@ -630,7 +648,8 @@ public class EinstellungControl extends AbstractControl
     {
       return zusatzbetrag;
     }
-    zusatzbetrag = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG));
+    zusatzbetrag = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG));
     return zusatzbetrag;
   }
 
@@ -640,7 +659,8 @@ public class EinstellungControl extends AbstractControl
     {
       return vermerke;
     }
-    vermerke = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.VERMERKE));
+    vermerke = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.VERMERKE));
     return vermerke;
   }
 
@@ -650,7 +670,8 @@ public class EinstellungControl extends AbstractControl
     {
       return wiedervorlage;
     }
-    wiedervorlage = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE));
+    wiedervorlage = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE));
     return wiedervorlage;
   }
 
@@ -660,7 +681,8 @@ public class EinstellungControl extends AbstractControl
     {
       return kursteilnehmer;
     }
-    kursteilnehmer = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER));
+    kursteilnehmer = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER));
     return kursteilnehmer;
   }
 
@@ -670,7 +692,8 @@ public class EinstellungControl extends AbstractControl
     {
       return lehrgaenge;
     }
-    lehrgaenge = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE));
+    lehrgaenge = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE));
     return lehrgaenge;
   }
 
@@ -680,7 +703,8 @@ public class EinstellungControl extends AbstractControl
     {
       return juristischepersonen;
     }
-    juristischepersonen = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.JURISTISCHEPERSONEN));
+    juristischepersonen = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.JURISTISCHEPERSONEN));
     return juristischepersonen;
   }
 
@@ -690,7 +714,8 @@ public class EinstellungControl extends AbstractControl
     {
       return mitgliedfoto;
     }
-    mitgliedfoto = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO));
+    mitgliedfoto = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO));
     return mitgliedfoto;
   }
 
@@ -709,7 +734,8 @@ public class EinstellungControl extends AbstractControl
   {
     if (uselesefelder == null)
     {
-      uselesefelder = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER));
+      uselesefelder = new CheckboxInput(
+          (Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER));
     }
     return uselesefelder;
   }
@@ -720,7 +746,8 @@ public class EinstellungControl extends AbstractControl
     {
       return zusatzadressen;
     }
-    zusatzadressen = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN));
+    zusatzadressen = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN));
     return zusatzadressen;
   }
 
@@ -730,7 +757,8 @@ public class EinstellungControl extends AbstractControl
     {
       return auslandsadressen;
     }
-    auslandsadressen = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN));
+    auslandsadressen = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN));
     return auslandsadressen;
   }
 
@@ -740,7 +768,8 @@ public class EinstellungControl extends AbstractControl
     {
       return arbeitseinsatz;
     }
-    arbeitseinsatz = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ));
+    arbeitseinsatz = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ));
     return arbeitseinsatz;
   }
 
@@ -750,7 +779,8 @@ public class EinstellungControl extends AbstractControl
     {
       return dokumentenspeicherung;
     }
-    dokumentenspeicherung = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG));
+    dokumentenspeicherung = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG));
     return dokumentenspeicherung;
   }
 
@@ -760,7 +790,8 @@ public class EinstellungControl extends AbstractControl
     {
       return individuellebeitraege;
     }
-    individuellebeitraege = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE));
+    individuellebeitraege = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE));
     return individuellebeitraege;
   }
 
@@ -770,7 +801,9 @@ public class EinstellungControl extends AbstractControl
     {
       return rechnungtextabbuchung;
     }
-    rechnungtextabbuchung = new TextInput((String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTABBUCHUNG), 100);
+    rechnungtextabbuchung = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTABBUCHUNG),
+        100);
     return rechnungtextabbuchung;
   }
 
@@ -780,7 +813,8 @@ public class EinstellungControl extends AbstractControl
     {
       return rechnungtextueberweisung;
     }
-    rechnungtextueberweisung = new TextInput((String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG), 100);
+    rechnungtextueberweisung = new TextInput((String) Einstellungen
+        .getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG), 100);
     return rechnungtextueberweisung;
   }
 
@@ -790,7 +824,8 @@ public class EinstellungControl extends AbstractControl
     {
       return rechnungtextbar;
     }
-    rechnungtextbar = new TextInput((String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR), 100);
+    rechnungtextbar = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR), 100);
     return rechnungtextbar;
   }
 
@@ -803,10 +838,10 @@ public class EinstellungControl extends AbstractControl
     }
     return zaehlerlaenge;
   }
-  
-  public CheckboxInput getOptiert() throws RemoteException 
+
+  public CheckboxInput getOptiert() throws RemoteException
   {
-    if (optiert != null) 
+    if (optiert != null)
     {
       return optiert;
     }
@@ -828,7 +863,7 @@ public class EinstellungControl extends AbstractControl
     });
     return optiert;
   }
-  
+
   public CheckboxInput getOptiertPflicht() throws RemoteException
   {
     if (optiertpflicht != null)
@@ -851,8 +886,7 @@ public class EinstellungControl extends AbstractControl
     }
     steuerInBuchung = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG));
-    steuerInBuchung.setName(
-        "Steuer individuell pro Buchung setzen");
+    steuerInBuchung.setName("Steuer individuell pro Buchung setzen");
 
     steuerInBuchung.setEnabled((boolean) getOptiert().getValue());
     return steuerInBuchung;
@@ -877,21 +911,23 @@ public class EinstellungControl extends AbstractControl
     {
       return geprueftsynchronisieren;
     }
-    geprueftsynchronisieren = new CheckboxInput(
-        (Boolean) Einstellungen.getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN));
+    geprueftsynchronisieren = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN));
     geprueftsynchronisieren
         .setName("Geprüft Markierung mit Hibiscus synchronisieren");
     return geprueftsynchronisieren;
   }
 
-  public CheckboxInput getFreieBuchungsklasse() throws RemoteException 
+  public CheckboxInput getFreieBuchungsklasse() throws RemoteException
   {
-    if (freiebuchungsklasse != null) 
+    if (freiebuchungsklasse != null)
     {
       return freiebuchungsklasse;
     }
-    freiebuchungsklasse = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG));
-    freiebuchungsklasse.setName("Keine feste Zuordnung von Buchungsklasse zu Buchungsart z.B. SKR 42");
+    freiebuchungsklasse = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG));
+    freiebuchungsklasse.setName(
+        "Keine feste Zuordnung von Buchungsklasse zu Buchungsart z.B. SKR 42");
     return freiebuchungsklasse;
   }
 
@@ -901,7 +937,8 @@ public class EinstellungControl extends AbstractControl
     {
       return externemitgliedsnummer;
     }
-    externemitgliedsnummer = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER));
+    externemitgliedsnummer = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER));
     return externemitgliedsnummer;
   }
 
@@ -924,17 +961,20 @@ public class EinstellungControl extends AbstractControl
       return arbeitsstundenmodel;
     }
     arbeitsstundenmodel = new SelectInput(ArbeitsstundenModel.getArray(),
-        new ArbeitsstundenModel((Integer) Einstellungen.getEinstellung(Property.ARBEITSSTUNDENMODEL)));
+        new ArbeitsstundenModel((Integer) Einstellungen
+            .getEinstellung(Property.ARBEITSSTUNDENMODEL)));
     return arbeitsstundenmodel;
   }
-  
+
   public Input getBeitragAltersgruppen() throws RemoteException
   {
     if (beitragaltersstufen != null)
     {
       return beitragaltersstufen;
     }
-    beitragaltersstufen = new TextInput((String) Einstellungen.getEinstellung(Property.BEITRAGALTERSSTUFEN), 200);
+    beitragaltersstufen = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.BEITRAGALTERSSTUFEN),
+        200);
     return beitragaltersstufen;
   }
 
@@ -945,7 +985,8 @@ public class EinstellungControl extends AbstractControl
       return sepamandatidsourcemodel;
     }
     sepamandatidsourcemodel = new SelectInput(SepaMandatIdSource.getArray(),
-        new SepaMandatIdSource((Integer) Einstellungen.getEinstellung(Property.SEPAMANDATIDSOURCE)));
+        new SepaMandatIdSource((Integer) Einstellungen
+            .getEinstellung(Property.SEPAMANDATIDSOURCE)));
     return sepamandatidsourcemodel;
   }
 
@@ -968,7 +1009,8 @@ public class EinstellungControl extends AbstractControl
     {
       return dateinamenmuster;
     }
-    dateinamenmuster = new TextInput((String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), 30);
+    dateinamenmuster = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), 30);
     dateinamenmuster
         .setComment("a$ = Aufgabe, d$ = Datum, s$ = Sortierung, z$ = Zeit");
     return dateinamenmuster;
@@ -980,7 +1022,8 @@ public class EinstellungControl extends AbstractControl
     {
       return vorlagenCsvVerzeichnis;
     }
-    String lastValue = (String) Einstellungen.getEinstellung(Property.VORLAGENCSVVERZEICHNIS);
+    String lastValue = (String) Einstellungen
+        .getEinstellung(Property.VORLAGENCSVVERZEICHNIS);
     vorlagenCsvVerzeichnis = new DirectoryInput(lastValue);
     return vorlagenCsvVerzeichnis;
   }
@@ -1017,8 +1060,9 @@ public class EinstellungControl extends AbstractControl
     {
       return spendenbescheinigungprintbuchungsart;
     }
-    spendenbescheinigungprintbuchungsart = new CheckboxInput((Boolean) Einstellungen
-        .getEinstellung(Property.SPENDENBESCHEINIGUNGPRINTBUCHUNGSART));
+    spendenbescheinigungprintbuchungsart = new CheckboxInput(
+        (Boolean) Einstellungen
+            .getEinstellung(Property.SPENDENBESCHEINIGUNGPRINTBUCHUNGSART));
     return spendenbescheinigungprintbuchungsart;
   }
 
@@ -1028,7 +1072,9 @@ public class EinstellungControl extends AbstractControl
     {
       return beginngeschaeftsjahr;
     }
-    beginngeschaeftsjahr = new TextInput((String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR), 6);
+    beginngeschaeftsjahr = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR),
+        6);
     return beginngeschaeftsjahr;
   }
 
@@ -1038,7 +1084,8 @@ public class EinstellungControl extends AbstractControl
     {
       return autobuchunguebernahme;
     }
-    autobuchunguebernahme = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.AUTOBUCHUNGUEBERNAHME));
+    autobuchunguebernahme = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.AUTOBUCHUNGUEBERNAHME));
     autobuchunguebernahme
         .setName("Automatische Buchungsübernahme aus Hibiscus");
     return autobuchunguebernahme;
@@ -1056,46 +1103,51 @@ public class EinstellungControl extends AbstractControl
         .setName("Listen: Buchungsarten ohne Buchung unterdrücken");
     return unterdrueckungohnebuchung;
   }
-  
+
   public IntegerInput getUnterdrueckungLaenge() throws RemoteException
   {
     if (null == unterdrueckunglaenge)
     {
-      unterdrueckunglaenge = new IntegerInput(
-          (Integer) Einstellungen.getEinstellung(Property.UNTERDRUECKUNGLAENGE));
+      unterdrueckunglaenge = new IntegerInput((Integer) Einstellungen
+          .getEinstellung(Property.UNTERDRUECKUNGLAENGE));
     }
     return unterdrueckunglaenge;
   }
-  
+
   public IntegerInput getUnterdrueckungKonten() throws RemoteException
   {
     if (null == unterdrueckungkonten)
     {
-      unterdrueckungkonten = new IntegerInput(
-          (Integer) Einstellungen.getEinstellung(Property.UNTERDRUECKUNGKONTEN));
+      unterdrueckungkonten = new IntegerInput((Integer) Einstellungen
+          .getEinstellung(Property.UNTERDRUECKUNGKONTEN));
     }
     return unterdrueckungkonten;
-  }  
-  
-  public CheckboxInput getKontonummerInBuchungsliste() throws RemoteException 
+  }
+
+  public CheckboxInput getKontonummerInBuchungsliste() throws RemoteException
   {
-    if (kontonummer_in_buchungsliste != null) 
+    if (kontonummer_in_buchungsliste != null)
     {
       return kontonummer_in_buchungsliste;
     }
-    kontonummer_in_buchungsliste = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE));
+    kontonummer_in_buchungsliste = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE));
     kontonummer_in_buchungsliste.setName("Zeige Kontonummer in Buchungsliste");
     return kontonummer_in_buchungsliste;
   }
 
-  public CheckboxInput getAutomatischeBuchungskorrekturHibiscus() throws RemoteException 
+  public CheckboxInput getAutomatischeBuchungskorrekturHibiscus()
+      throws RemoteException
   {
-    if (automatische_buchungskorrektur_hibiscus != null) 
+    if (automatische_buchungskorrektur_hibiscus != null)
     {
       return automatische_buchungskorrektur_hibiscus;
     }
-    automatische_buchungskorrektur_hibiscus = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS));
-    automatische_buchungskorrektur_hibiscus.setName("Automatische Korrektur der Verwendungszwecke aus Hibiscus Buchungen");
+    automatische_buchungskorrektur_hibiscus = new CheckboxInput(
+        (Boolean) Einstellungen
+            .getEinstellung(Property.AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS));
+    automatische_buchungskorrektur_hibiscus.setName(
+        "Automatische Korrektur der Verwendungszwecke aus Hibiscus Buchungen");
     return automatische_buchungskorrektur_hibiscus;
   }
 
@@ -1105,8 +1157,8 @@ public class EinstellungControl extends AbstractControl
     {
       return smtp_server;
     }
-    smtp_server = new TextInput((String) Einstellungen.getEinstellung(Property.SMTPSERVER),
-        50);
+    smtp_server = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.SMTPSERVER), 50);
     return smtp_server;
   }
 
@@ -1134,7 +1186,8 @@ public class EinstellungControl extends AbstractControl
     {
       return smtp_auth_user;
     }
-    smtp_auth_user = new TextInput((String) Einstellungen.getEinstellung(Property.SMTPAUTHUSER), 140);
+    smtp_auth_user = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.SMTPAUTHUSER), 140);
     return smtp_auth_user;
   }
 
@@ -1144,8 +1197,7 @@ public class EinstellungControl extends AbstractControl
     {
       return smtp_auth_pwd;
     }
-    smtp_auth_pwd = new PasswordInput(
-        Einstellungen.getSmtpAuthPwd());
+    smtp_auth_pwd = new PasswordInput(Einstellungen.getSmtpAuthPwd());
     return smtp_auth_pwd;
   }
 
@@ -1155,7 +1207,8 @@ public class EinstellungControl extends AbstractControl
     {
       return smtp_from_address;
     }
-    smtp_from_address = new EmailInput((String) Einstellungen.getEinstellung(Property.SMTPFROMADDRESS));
+    smtp_from_address = new EmailInput(
+        (String) Einstellungen.getEinstellung(Property.SMTPFROMADDRESS));
     return smtp_from_address;
   }
 
@@ -1165,7 +1218,9 @@ public class EinstellungControl extends AbstractControl
     {
       return smtp_from_anzeigename;
     }
-    smtp_from_anzeigename = new TextInput((String) Einstellungen.getEinstellung(Property.SMTPFROMANZEIGENAME), 50);
+    smtp_from_anzeigename = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.SMTPFROMANZEIGENAME),
+        50);
     return smtp_from_anzeigename;
   }
 
@@ -1175,7 +1230,8 @@ public class EinstellungControl extends AbstractControl
     {
       return smtp_ssl;
     }
-    smtp_ssl = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.SMTPSSL));
+    smtp_ssl = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.SMTPSSL));
     return smtp_ssl;
   }
 
@@ -1185,7 +1241,8 @@ public class EinstellungControl extends AbstractControl
     {
       return smtp_starttls;
     }
-    smtp_starttls = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.SMTPSTARTTLS));
+    smtp_starttls = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.SMTPSTARTTLS));
     return smtp_starttls;
   }
 
@@ -1195,7 +1252,8 @@ public class EinstellungControl extends AbstractControl
     {
       return mailverzoegerung;
     }
-    mailverzoegerung = new ScaleInput((Integer) Einstellungen.getEinstellung(Property.MAILVERZOEGERUNG));
+    mailverzoegerung = new ScaleInput(
+        (Integer) Einstellungen.getEinstellung(Property.MAILVERZOEGERUNG));
     mailverzoegerung.setScaling(0, 10000, 100, 100);
     mailverzoegerung.setComment("");
     MailVerzoegerungListener listener = new MailVerzoegerungListener();
@@ -1237,11 +1295,9 @@ public class EinstellungControl extends AbstractControl
       String email = (String) getSmtpFromAddress().getValue();
 
       sender.sendMail(email, "Test",
-          "Testnachricht"
-              + Einstellungen.getMailSignatur(true),
+          "Testnachricht" + Einstellungen.getMailSignatur(true),
           new TreeSet<MailAnhang>());
-      GUI.getStatusBar().setSuccessText(
-          "Testmail versendet an: " + email);
+      GUI.getStatusBar().setSuccessText("Testmail versendet an: " + email);
     }
     catch (Exception e)
     {
@@ -1257,7 +1313,8 @@ public class EinstellungControl extends AbstractControl
     {
       return alwaysBccTo;
     }
-    alwaysBccTo = new TextInput((String) Einstellungen.getEinstellung(Property.MAILALWAYSBCC));
+    alwaysBccTo = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.MAILALWAYSBCC));
     return alwaysBccTo;
   }
 
@@ -1267,7 +1324,8 @@ public class EinstellungControl extends AbstractControl
     {
       return alwaysCcTo;
     }
-    alwaysCcTo = new TextInput((String) Einstellungen.getEinstellung(Property.MAILALWAYSCC));
+    alwaysCcTo = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.MAILALWAYSCC));
     return alwaysCcTo;
   }
 
@@ -1277,7 +1335,8 @@ public class EinstellungControl extends AbstractControl
     {
       return copyToImapFolder;
     }
-    copyToImapFolder = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.COPYTOIMAPFOLDER));
+    copyToImapFolder = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.COPYTOIMAPFOLDER));
     return copyToImapFolder;
   }
 
@@ -1287,7 +1346,8 @@ public class EinstellungControl extends AbstractControl
     {
       return imapAuthUser;
     }
-    imapAuthUser = new TextInput((String) Einstellungen.getEinstellung(Property.IMAPAUTHUSER));
+    imapAuthUser = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.IMAPAUTHUSER));
     return imapAuthUser;
   }
 
@@ -1297,8 +1357,7 @@ public class EinstellungControl extends AbstractControl
     {
       return imapAuthPwd;
     }
-    imapAuthPwd = new PasswordInput(
-        Einstellungen.getImapAuthPwd());
+    imapAuthPwd = new PasswordInput(Einstellungen.getImapAuthPwd());
     return imapAuthPwd;
   }
 
@@ -1308,7 +1367,8 @@ public class EinstellungControl extends AbstractControl
     {
       return imapHost;
     }
-    imapHost = new TextInput((String) Einstellungen.getEinstellung(Property.IMAPHOST));
+    imapHost = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.IMAPHOST));
     return imapHost;
   }
 
@@ -1336,7 +1396,8 @@ public class EinstellungControl extends AbstractControl
     {
       return imap_ssl;
     }
-    imap_ssl = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.IMAPSSL));
+    imap_ssl = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.IMAPSSL));
     return imap_ssl;
   }
 
@@ -1346,7 +1407,8 @@ public class EinstellungControl extends AbstractControl
     {
       return imap_starttls;
     }
-    imap_starttls = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.IMAPSTARTTLS));
+    imap_starttls = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.IMAPSTARTTLS));
     return imap_starttls;
   }
 
@@ -1356,7 +1418,8 @@ public class EinstellungControl extends AbstractControl
     {
       return imapSentFolder;
     }
-    imapSentFolder = new TextInput((String) Einstellungen.getEinstellung(Property.IMAPSENTFOLDER));
+    imapSentFolder = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.IMAPSENTFOLDER));
     return imapSentFolder;
   }
 
@@ -1391,7 +1454,8 @@ public class EinstellungControl extends AbstractControl
       return zahlungsrhytmus;
     }
     zahlungsrhytmus = new SelectInput(Zahlungsrhythmus.getArray(),
-        new Zahlungsrhythmus((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSRHYTMUS)));
+        new Zahlungsrhythmus(
+            (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSRHYTMUS)));
     zahlungsrhytmus.setName("Standard-Zahlungsrhytmus f. neue Mitglieder");
     return zahlungsrhytmus;
   }
@@ -1402,37 +1466,36 @@ public class EinstellungControl extends AbstractControl
     {
       return sepaland;
     }
-    SEPALand sl = SEPALaender.getLand((String) Einstellungen.getEinstellung(Property.DEFAULTLAND));
+    SEPALand sl = SEPALaender
+        .getLand((String) Einstellungen.getEinstellung(Property.DEFAULTLAND));
     sepaland = new SEPALandInput(sl);
     return sepaland;
   }
-  
+
   public SelectInput getSepaVersion() throws RemoteException
   {
     if (sepaversion != null)
     {
       return sepaversion;
     }
-    List<SepaVersion> list = SepaVersion.getKnownVersions(
-        org.kapott.hbci.sepa.SepaVersion.Type.PAIN_008);
-    sepaversion = new SelectInput(list, 
-        SepaVersion
-            .byURN((String) Einstellungen.getEinstellung(Property.SEPAVERSION)));
+    List<SepaVersion> list = SepaVersion
+        .getKnownVersions(org.kapott.hbci.sepa.SepaVersion.Type.PAIN_008);
+    sepaversion = new SelectInput(list, SepaVersion
+        .byURN((String) Einstellungen.getEinstellung(Property.SEPAVERSION)));
     sepaversion.setAttribute("file");
     return sepaversion;
   }
-  
+
   public SelectInput getCt1SepaVersion() throws RemoteException
   {
     if (ct1sepaversion != null)
     {
       return ct1sepaversion;
     }
-    List<SepaVersion> list = SepaVersion.getKnownVersions(
-        org.kapott.hbci.sepa.SepaVersion.Type.PAIN_001);
-    ct1sepaversion = new SelectInput(list,
-        SepaVersion.byURN(
-            (String) Einstellungen.getEinstellung(Property.CT1SEPAVERSION)));
+    List<SepaVersion> list = SepaVersion
+        .getKnownVersions(org.kapott.hbci.sepa.SepaVersion.Type.PAIN_001);
+    ct1sepaversion = new SelectInput(list, SepaVersion
+        .byURN((String) Einstellungen.getEinstellung(Property.CT1SEPAVERSION)));
     ct1sepaversion.setAttribute("file");
     return ct1sepaversion;
   }
@@ -1444,11 +1507,9 @@ public class EinstellungControl extends AbstractControl
       return verrechnungskonto;
     }
     verrechnungskonto = new KontoauswahlInput(null).getKontoAuswahl(false,
-        Einstellungen
-            .getEinstellung(Property.VERRECHNUNGSKONTOID) == null
+        Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID) == null
             ? null
-                : Einstellungen
-                    .getEinstellung(Property.VERRECHNUNGSKONTOID)
+            : Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID)
                 .toString(),
         false, false, null);
     return verrechnungskonto;
@@ -1460,7 +1521,8 @@ public class EinstellungControl extends AbstractControl
     {
       return altersgruppen;
     }
-    altersgruppen = new TextInput((String) Einstellungen.getEinstellung(Property.ALTERSGRUPPEN), 200);
+    altersgruppen = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.ALTERSGRUPPEN), 200);
     return altersgruppen;
   }
 
@@ -1470,7 +1532,8 @@ public class EinstellungControl extends AbstractControl
     {
       return jubilaeen;
     }
-    jubilaeen = new TextInput((String) Einstellungen.getEinstellung(Property.JUBILAEEN), 50);
+    jubilaeen = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.JUBILAEEN), 50);
     return jubilaeen;
   }
 
@@ -1480,7 +1543,8 @@ public class EinstellungControl extends AbstractControl
     {
       return altersjubilaeen;
     }
-    altersjubilaeen = new TextInput((String) Einstellungen.getEinstellung(Property.ALTERSJUBILAEEN), 200);
+    altersjubilaeen = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.ALTERSJUBILAEEN), 200);
     return altersjubilaeen;
   }
 
@@ -1488,7 +1552,8 @@ public class EinstellungControl extends AbstractControl
   {
     if (null == jubilarStartAlter)
     {
-      jubilarStartAlter = new IntegerInput((Integer) Einstellungen.getEinstellung(Property.JUBILARSTARTALTER));
+      jubilarStartAlter = new IntegerInput(
+          (Integer) Einstellungen.getEinstellung(Property.JUBILARSTARTALTER));
     }
     return jubilarStartAlter;
   }
@@ -1514,8 +1579,8 @@ public class EinstellungControl extends AbstractControl
       {
         return AnzahlSpaltenStammdatenInput;
       }
-      AnzahlSpaltenStammdatenInput = new IntegerInput(Einstellungen
-          .getSettingInt("AnzahlSpaltenStammdaten", 2));
+      AnzahlSpaltenStammdatenInput = new IntegerInput(
+          Einstellungen.getSettingInt("AnzahlSpaltenStammdaten", 2));
       return AnzahlSpaltenStammdatenInput;
     }
   }
@@ -1527,8 +1592,8 @@ public class EinstellungControl extends AbstractControl
       {
         return AnzahlSpaltenLesefelderInput;
       }
-      AnzahlSpaltenLesefelderInput = new IntegerInput(Einstellungen
-          .getSettingInt("AnzahlSpaltenLesefelder", 1));
+      AnzahlSpaltenLesefelderInput = new IntegerInput(
+          Einstellungen.getSettingInt("AnzahlSpaltenLesefelder", 1));
       return AnzahlSpaltenLesefelderInput;
     }
   }
@@ -1541,8 +1606,8 @@ public class EinstellungControl extends AbstractControl
       {
         return AnzahlSpaltenMitgliedschaftInput;
       }
-      AnzahlSpaltenMitgliedschaftInput = new IntegerInput(Einstellungen
-          .getSettingInt("AnzahlSpaltenMitgliedschaft", 1));
+      AnzahlSpaltenMitgliedschaftInput = new IntegerInput(
+          Einstellungen.getSettingInt("AnzahlSpaltenMitgliedschaft", 1));
       return AnzahlSpaltenMitgliedschaftInput;
     }
   }
@@ -1554,22 +1619,21 @@ public class EinstellungControl extends AbstractControl
       {
         return AnzahlSpaltenZahlungInput;
       }
-      AnzahlSpaltenZahlungInput = new IntegerInput(Einstellungen
-          .getSettingInt("AnzahlSpaltenZahlung", 1));
+      AnzahlSpaltenZahlungInput = new IntegerInput(
+          Einstellungen.getSettingInt("AnzahlSpaltenZahlung", 1));
       return AnzahlSpaltenZahlungInput;
     }
   }
 
-  public IntegerInput getAnzahlSpaltenZusatzfelderInput()
-      throws RemoteException
+  public IntegerInput getAnzahlSpaltenZusatzfelderInput() throws RemoteException
   {
     {
       if (AnzahlSpaltenZusatzfelderInput != null)
       {
         return AnzahlSpaltenZusatzfelderInput;
       }
-      AnzahlSpaltenZusatzfelderInput = new IntegerInput(Einstellungen
-          .getSettingInt("AnzahlSpaltenZusatzfelder", 1));
+      AnzahlSpaltenZusatzfelderInput = new IntegerInput(
+          Einstellungen.getSettingInt("AnzahlSpaltenZusatzfelder", 1));
       return AnzahlSpaltenZusatzfelderInput;
     }
   }
@@ -1580,8 +1644,8 @@ public class EinstellungControl extends AbstractControl
     {
       return ZeigeStammdatenInTabInput;
     }
-    ZeigeStammdatenInTabInput = new CheckboxInput(Einstellungen
-        .getSettingBoolean("ZeigeStammdatenInTab",true));
+    ZeigeStammdatenInTabInput = new CheckboxInput(
+        Einstellungen.getSettingBoolean("ZeigeStammdatenInTab", true));
     return ZeigeStammdatenInTabInput;
   }
 
@@ -1592,8 +1656,8 @@ public class EinstellungControl extends AbstractControl
     {
       return ZeigeMitgliedschaftInTabInput;
     }
-    ZeigeMitgliedschaftInTabInput = new CheckboxInput(Einstellungen
-        .getSettingBoolean("ZeigeMitgliedschaftInTab",true));
+    ZeigeMitgliedschaftInTabInput = new CheckboxInput(
+        Einstellungen.getSettingBoolean("ZeigeMitgliedschaftInTab", true));
     return ZeigeMitgliedschaftInTabInput;
   }
 
@@ -1615,8 +1679,8 @@ public class EinstellungControl extends AbstractControl
     {
       return ZeigeZusatzbeitraegeInTabInput;
     }
-    ZeigeZusatzbeitraegeInTabInput = new CheckboxInput(Einstellungen
-        .getSettingBoolean("ZeigeZusatzbetraegeInTab",true));
+    ZeigeZusatzbeitraegeInTabInput = new CheckboxInput(
+        Einstellungen.getSettingBoolean("ZeigeZusatzbetraegeInTab", true));
     return ZeigeZusatzbeitraegeInTabInput;
   }
 
@@ -1627,8 +1691,8 @@ public class EinstellungControl extends AbstractControl
     {
       return ZeigeMitgliedskontoInTabInput;
     }
-    ZeigeMitgliedskontoInTabInput = new CheckboxInput(Einstellungen
-        .getSettingBoolean("ZeigeMitgliedskontoInTab",true));
+    ZeigeMitgliedskontoInTabInput = new CheckboxInput(
+        Einstellungen.getSettingBoolean("ZeigeMitgliedskontoInTab", true));
     return ZeigeMitgliedskontoInTabInput;
   }
 
@@ -1650,8 +1714,8 @@ public class EinstellungControl extends AbstractControl
     {
       return ZeigeWiedervorlageInTabInput;
     }
-    ZeigeWiedervorlageInTabInput = new CheckboxInput(Einstellungen
-        .getSettingBoolean("ZeigeWiedervorlageInTab",true));
+    ZeigeWiedervorlageInTabInput = new CheckboxInput(
+        Einstellungen.getSettingBoolean("ZeigeWiedervorlageInTab", true));
     return ZeigeWiedervorlageInTabInput;
   }
 
@@ -1673,8 +1737,8 @@ public class EinstellungControl extends AbstractControl
     {
       return ZeigeEigenschaftenInTabInput;
     }
-    ZeigeEigenschaftenInTabInput = new CheckboxInput(Einstellungen
-        .getSettingBoolean("ZeigeEigenschaftenInTab",true));
+    ZeigeEigenschaftenInTabInput = new CheckboxInput(
+        Einstellungen.getSettingBoolean("ZeigeEigenschaftenInTab", true));
     return ZeigeEigenschaftenInTabInput;
   }
 
@@ -1685,8 +1749,8 @@ public class EinstellungControl extends AbstractControl
     {
       return ZeigeZusatzfelderInTabInput;
     }
-    ZeigeZusatzfelderInTabInput = new CheckboxInput(Einstellungen
-        .getSettingBoolean("ZeigeZusatzfelderInTab",true));
+    ZeigeZusatzfelderInTabInput = new CheckboxInput(
+        Einstellungen.getSettingBoolean("ZeigeZusatzfelderInTab", true));
     return ZeigeZusatzfelderInTabInput;
   }
 
@@ -1696,8 +1760,8 @@ public class EinstellungControl extends AbstractControl
     {
       return ZeigeLehrgaengeInTabInput;
     }
-    ZeigeLehrgaengeInTabInput = new CheckboxInput(Einstellungen
-        .getSettingBoolean("ZeigeLehrgaengeInTab",true));
+    ZeigeLehrgaengeInTabInput = new CheckboxInput(
+        Einstellungen.getSettingBoolean("ZeigeLehrgaengeInTab", true));
     return ZeigeLehrgaengeInTabInput;
   }
 
@@ -1718,8 +1782,8 @@ public class EinstellungControl extends AbstractControl
     {
       return ZeigeLesefelderInTabInput;
     }
-    ZeigeLesefelderInTabInput = new CheckboxInput(Einstellungen
-        .getSettingBoolean("ZeigeLesefelderInTab",true));
+    ZeigeLesefelderInTabInput = new CheckboxInput(
+        Einstellungen.getSettingBoolean("ZeigeLesefelderInTab", true));
     return ZeigeLesefelderInTabInput;
   }
 
@@ -1730,8 +1794,8 @@ public class EinstellungControl extends AbstractControl
     {
       return ZeigeArbeitseinsatzInTabInput;
     }
-    ZeigeArbeitseinsatzInTabInput = new CheckboxInput(Einstellungen
-        .getSettingBoolean("ZeigeArbeitseinsatzInTab",true));
+    ZeigeArbeitseinsatzInTabInput = new CheckboxInput(
+        Einstellungen.getSettingBoolean("ZeigeArbeitseinsatzInTab", true));
     return ZeigeArbeitseinsatzInTabInput;
   }
 
@@ -1742,13 +1806,13 @@ public class EinstellungControl extends AbstractControl
       return buchungBuchungsartAuswahl;
     }
 
-    buchungBuchungsartAuswahl = new SelectInput(
-        AbstractInputAuswahl.getArray(), new AbstractInputAuswahl(
-            (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL)));
+    buchungBuchungsartAuswahl = new SelectInput(AbstractInputAuswahl.getArray(),
+        new AbstractInputAuswahl((Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL)));
 
     return buchungBuchungsartAuswahl;
   }
-  
+
   public SelectInput getMitgliedAuswahl() throws RemoteException
   {
     if (null != mitgliedAuswahl)
@@ -1756,8 +1820,8 @@ public class EinstellungControl extends AbstractControl
       return mitgliedAuswahl;
     }
 
-    mitgliedAuswahl = new SelectInput(
-        AbstractInputAuswahl.getArray(), new AbstractInputAuswahl(
+    mitgliedAuswahl = new SelectInput(AbstractInputAuswahl.getArray(),
+        new AbstractInputAuswahl(
             (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL)));
 
     return mitgliedAuswahl;
@@ -1769,9 +1833,9 @@ public class EinstellungControl extends AbstractControl
     {
       return buchungsartsort;
     }
-    buchungsartsort = new SelectInput(
-        BuchungsartSort.getArray(),
-        new BuchungsartSort((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT)));
+    buchungsartsort = new SelectInput(BuchungsartSort.getArray(),
+        new BuchungsartSort(
+            (Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT)));
     return buchungsartsort;
   }
 
@@ -2125,7 +2189,8 @@ public class EinstellungControl extends AbstractControl
     {
       return zusatzbetragAusgetretene;
     }
-    zusatzbetragAusgetretene = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE));
+    zusatzbetragAusgetretene = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE));
     return zusatzbetragAusgetretene;
   }
 
@@ -2140,16 +2205,18 @@ public class EinstellungControl extends AbstractControl
     abrlabschliessen.setName("Funktion einschalten");
     return abrlabschliessen;
   }
-  
-  public CheckboxInput getUnterschriftdrucken() throws RemoteException 
+
+  public CheckboxInput getUnterschriftdrucken() throws RemoteException
   {
-    if (unterschriftdrucken != null) 
+    if (unterschriftdrucken != null)
     {
       return unterschriftdrucken;
     }
-    unterschriftdrucken = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.UNTERSCHRIFTDRUCKEN));
-    unterschriftdrucken.setName(" *Die maschinelle Erstellung von Zuwendungsbestätigungen muss "
-        + "vorab dem zuständigen Finanzamt angezeigt worden sein.");
+    unterschriftdrucken = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.UNTERSCHRIFTDRUCKEN));
+    unterschriftdrucken.setName(
+        " *Die maschinelle Erstellung von Zuwendungsbestätigungen muss "
+            + "vorab dem zuständigen Finanzamt angezeigt worden sein.");
     return unterschriftdrucken;
   }
 
@@ -2171,29 +2238,31 @@ public class EinstellungControl extends AbstractControl
     unterschrift = new ImageInput(img, 400, 75);
     return unterschrift;
   }
-  
-  public CheckboxInput getAnhangSpeichern() throws RemoteException 
+
+  public CheckboxInput getAnhangSpeichern() throws RemoteException
   {
-    if (anhangspeichern != null) 
+    if (anhangspeichern != null)
     {
       return anhangspeichern;
     }
-    anhangspeichern = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.ANHANGSPEICHERN));
+    anhangspeichern = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.ANHANGSPEICHERN));
     anhangspeichern
         .setName("Bei Mail Versand von Formularen Anhang in DB speichern");
     return anhangspeichern;
   }
-  
-  public CheckboxInput getSummenAnlagenkonto() throws RemoteException 
+
+  public CheckboxInput getSummenAnlagenkonto() throws RemoteException
   {
-    if (summenAnlagenkonto != null) 
+    if (summenAnlagenkonto != null)
     {
       return summenAnlagenkonto;
     }
-    summenAnlagenkonto = new CheckboxInput((Boolean) Einstellungen.getEinstellung(Property.SUMMENANLAGENKONTO));
+    summenAnlagenkonto = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.SUMMENANLAGENKONTO));
     return summenAnlagenkonto;
   }
-  
+
   public DecimalInput getAfaRestwert() throws RemoteException
   {
     if (afarestwert != null)
@@ -2205,18 +2274,21 @@ public class EinstellungControl extends AbstractControl
         new DecimalFormat("###0.00"));
     return afarestwert;
   }
-  
+
   public SelectInput getAfaOrt() throws RemoteException
   {
     if (afaort != null)
     {
       return afaort;
     }
-    Boolean isinjahresabschluss = (Boolean) Einstellungen.getEinstellung(Property.AFAINJAHRESABSCHLUSS);
+    Boolean isinjahresabschluss = (Boolean) Einstellungen
+        .getEinstellung(Property.AFAINJAHRESABSCHLUSS);
     if (isinjahresabschluss)
-      afaort = new SelectInput(AfaOrt.getArray(), new AfaOrt(AfaOrt.JAHRESABSCHLUSS));
+      afaort = new SelectInput(AfaOrt.getArray(),
+          new AfaOrt(AfaOrt.JAHRESABSCHLUSS));
     else
-      afaort = new SelectInput(AfaOrt.getArray(),  new AfaOrt(AfaOrt.ANLAGENBUCHUNGEN));
+      afaort = new SelectInput(AfaOrt.getArray(),
+          new AfaOrt(AfaOrt.ANLAGENBUCHUNGEN));
     return afaort;
   }
 
@@ -2226,8 +2298,8 @@ public class EinstellungControl extends AbstractControl
     {
       return nummeranzeigen;
     }
-    nummeranzeigen = new CheckboxInput(
-        (Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN));
+    nummeranzeigen = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN));
     return nummeranzeigen;
   }
 
@@ -2259,8 +2331,8 @@ public class EinstellungControl extends AbstractControl
     {
       return spendenbescheinigungen;
     }
-    spendenbescheinigungen = new CheckboxInput(
-        (Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN));
+    spendenbescheinigungen = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN));
     return spendenbescheinigungen;
   }
 
@@ -2542,8 +2614,7 @@ public class EinstellungControl extends AbstractControl
           if ((boolean) dialog.open())
           {
             int anzahl = SteuerUtil.setSteuerToBuchung();
-            successText = "Steuer in " + anzahl
-                + " Einträgen übernommen. ";
+            successText = "Steuer in " + anzahl + " Einträgen übernommen. ";
           }
         }
         catch (Exception ex)
@@ -2553,7 +2624,7 @@ public class EinstellungControl extends AbstractControl
           throw new ApplicationException(fehler);
         }
       }
-      
+
       DBTransaction.starten();
 
       Einstellungen.setEinstellung(Property.BEGINNGESCHAEFTSJAHR,

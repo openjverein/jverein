@@ -66,15 +66,16 @@ public class MitgliedEigenschaftZuordnungAction implements Action
     int anzGeloescht = 0;
     try
     {
-      EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog("", 
-          false, new MitgliedControl(null), false, mitglieder);
+      EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog("", false,
+          new MitgliedControl(null), false, mitglieder);
       EigenschaftenAuswahlParameter param = ead.open();
       if (param == null || param.getEigenschaftenNodes() == null)
       {
         return;
       }
-      Map<Long, Long[]> eigenschaftenMap =  getEigenschaften();
-      ArrayList<EigenschaftenNode> eigenschaftenNodes = param.getEigenschaftenNodes();
+      Map<Long, Long[]> eigenschaftenMap = getEigenschaften();
+      ArrayList<EigenschaftenNode> eigenschaftenNodes = param
+          .getEigenschaftenNodes();
       for (EigenschaftenNode eigenschaftenNode : eigenschaftenNodes)
       {
         if (eigenschaftenNode.getPreset().equals(EigenschaftenNode.PLUS))
@@ -107,11 +108,12 @@ public class MitgliedEigenschaftZuordnungAction implements Action
         {
           for (Mitglied mitglied : mitglieder)
           {
-            for  (Long key : eigenschaftenMap.keySet())
+            for (Long key : eigenschaftenMap.keySet())
             {
               Long[] entry = eigenschaftenMap.get(key);
-              if (entry[0].equals(Long.valueOf(mitglied.getID())) &&
-                  entry[1].equals(Long.valueOf(eigenschaftenNode.getEigenschaft().getID())))
+              if (entry[0].equals(Long.valueOf(mitglied.getID()))
+                  && entry[1].equals(
+                      Long.valueOf(eigenschaftenNode.getEigenschaft().getID())))
               {
                 Eigenschaften eig = (Eigenschaften) Einstellungen.getDBService()
                     .createObject(Eigenschaften.class, key.toString());
@@ -129,37 +131,37 @@ public class MitgliedEigenschaftZuordnungAction implements Action
     }
     catch (Exception e)
     {
-      Logger.error(
-      "Fehler beim Bearbeiten von Eigenschaften", e);
+      Logger.error("Fehler beim Bearbeiten von Eigenschaften", e);
       return;
     }
-    GUI.getStatusBar().setSuccessText(
-        String.format(
-            "%d Eigenschaft(en) angelegt, %d waren bereits vorhanden, %d wurden gelöscht.",
-            anzErfolgreich, anzBereitsVorhanden, anzGeloescht));
+    GUI.getStatusBar().setSuccessText(String.format(
+        "%d Eigenschaft(en) angelegt, %d waren bereits vorhanden, %d wurden gelöscht.",
+        anzErfolgreich, anzBereitsVorhanden, anzGeloescht));
   }
-  
+
   @SuppressWarnings("unchecked")
   private Map<Long, Long[]> getEigenschaften() throws RemoteException
   {
     // Eigenschaften lesen
     final DBService service = Einstellungen.getDBService();
     String sql = "SELECT eigenschaften.* from eigenschaften ";
-    Map<Long, Long[]> mitgliedeigenschaften = (Map<Long, Long[]>) service.execute(sql,
-        new Object[] { }, new ResultSetExtractor()
-    {
-      @Override
-      public Object extract(ResultSet rs) throws RemoteException, SQLException
-      {
-        Map<Long, Long[]> list = new HashMap<>();
-        while (rs.next())
+    Map<Long, Long[]> mitgliedeigenschaften = (Map<Long, Long[]>) service
+        .execute(sql, new Object[] {}, new ResultSetExtractor()
         {
-          // (Eigenschaften.Id, [Mitglied.Id, Eigenschaft.Id])
-          list.put(rs.getLong(1), new Long[] {rs.getLong(2), rs.getLong(3)});
-        }
-        return list;
-      }
-    });
+          @Override
+          public Object extract(ResultSet rs)
+              throws RemoteException, SQLException
+          {
+            Map<Long, Long[]> list = new HashMap<>();
+            while (rs.next())
+            {
+              // (Eigenschaften.Id, [Mitglied.Id, Eigenschaft.Id])
+              list.put(rs.getLong(1),
+                  new Long[] { rs.getLong(2), rs.getLong(3) });
+            }
+            return list;
+          }
+        });
     return mitgliedeigenschaften;
   }
 }

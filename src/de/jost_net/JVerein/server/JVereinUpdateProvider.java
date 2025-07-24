@@ -4362,14 +4362,14 @@ public class JVereinUpdateProvider
         + sql1 + MitgliedVar.KUENDIGUNG.getName() + sql2 + KUENDIGUNG + sql3 //
         + sql1 + MitgliedVar.BEITRAGSGRUPPE_BEZEICHNUNG.getName() + sql2
         + BEITRAGSGRUPPE + sql3 //
-        + sql1 + RechnungVar.ZAHLUNGSGRUND.getName() + sql2
-        + ZAHLUNGSGRUND + sql3//
-        + sql1 + RechnungVar.ZAHLUNGSGRUND1.getName() + sql2
-        + ZAHLUNGSGRUND1 + sql3//
-        + sql1 + RechnungVar.ZAHLUNGSGRUND2.getName() + sql2
-        + ZAHLUNGSGRUND2 + sql3//
-        + sql1 + RechnungVar.BUCHUNGSDATUM.getName() + sql2
-        + BUCHUNGSDATUM + sql3//
+        + sql1 + RechnungVar.ZAHLUNGSGRUND.getName() + sql2 + ZAHLUNGSGRUND
+        + sql3//
+        + sql1 + RechnungVar.ZAHLUNGSGRUND1.getName() + sql2 + ZAHLUNGSGRUND1
+        + sql3//
+        + sql1 + RechnungVar.ZAHLUNGSGRUND2.getName() + sql2 + ZAHLUNGSGRUND2
+        + sql3//
+        + sql1 + RechnungVar.BUCHUNGSDATUM.getName() + sql2 + BUCHUNGSDATUM
+        + sql3//
         + sql1 + "tagesdatum" + sql2 + "Tagesdatum" + sql3//
         + sql1 + RechnungVar.BETRAG.getName() + sql2 + BETRAG + sql3//
     ;

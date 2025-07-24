@@ -40,8 +40,8 @@ public class IstbuchungEditAction implements Action
     try
     {
       MitgliedskontoNode mkn = (MitgliedskontoNode) context;
-      Buchung bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
-          mkn.getID());
+      Buchung bu = (Buchung) Einstellungen.getDBService()
+          .createObject(Buchung.class, mkn.getID());
       GUI.startView(BuchungDetailView.class.getName(), bu);
     }
     catch (RemoteException e)

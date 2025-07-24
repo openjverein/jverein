@@ -420,7 +420,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
       return false;
     return getBuchungen().size() > 1;
   }
-  
+
   /**
    * Liefert als Kennzeichen zurück, ob die Spendenbescheinigung eine echte
    * Geldspende ist. Dies ist der Fall, wenn es sich um eine Gelspende handelt

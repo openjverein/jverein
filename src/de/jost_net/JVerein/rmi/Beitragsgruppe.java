@@ -70,9 +70,9 @@ public interface Beitragsgruppe extends JVereinDBObject
   public Long getBuchungsartId() throws RemoteException;
 
   public void setBuchungsart(Buchungsart buchungsart) throws RemoteException;
-  
+
   public Buchungsklasse getBuchungsklasse() throws RemoteException;
-  
+
   public Long getBuchungsklasseId() throws RemoteException;
 
   public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
@@ -82,10 +82,11 @@ public interface Beitragsgruppe extends JVereinDBObject
   public void setNotiz(String notiz) throws RemoteException;
 
   public boolean getHasAltersstaffel() throws RemoteException;
-  
+
   public void setHasAltersstaffel(boolean b) throws RemoteException;
 
-  public DBIterator<Altersstaffel> getAltersstaffelIterator() throws RemoteException;
+  public DBIterator<Altersstaffel> getAltersstaffelIterator()
+      throws RemoteException;
 
   public Altersstaffel getAltersstaffel(int nummer) throws RemoteException;
 

@@ -44,47 +44,54 @@ public class DbBereinigenView extends AbstractView
     SimpleContainer rleft = new SimpleContainer(rcl.getComposite());
     rleft.addLabelPair("Löschen", control.getRechnungenLoeschen());
     SimpleContainer rright = new SimpleContainer(rcl.getComposite());
-    rright.addLabelPair("Rechnungsdatum älter als", control.getDatumAuswahlRechnungen());
-    
+    rright.addLabelPair("Rechnungsdatum älter als",
+        control.getDatumAuswahlRechnungen());
+
     LabelGroup groupspendenbescheinigungen = new LabelGroup(cl.getComposite(),
         "Spendenbescheinigungen");
-    ColumnLayout scl = new ColumnLayout(groupspendenbescheinigungen.getComposite(), 2);
+    ColumnLayout scl = new ColumnLayout(
+        groupspendenbescheinigungen.getComposite(), 2);
     SimpleContainer sleft = new SimpleContainer(scl.getComposite());
     sleft.addLabelPair("Löschen", control.getSpendenbescheinigungenLoeschen());
     SimpleContainer sright = new SimpleContainer(scl.getComposite());
-    sright.addLabelPair("Spendedatum älter als", control.getDatumAuswahlSpendenbescheinigungen());
-    
+    sright.addLabelPair("Spendedatum älter als",
+        control.getDatumAuswahlSpendenbescheinigungen());
+
     LabelGroup groupbuchungen = new LabelGroup(cl.getComposite(), "Buchungen");
     ColumnLayout bcl = new ColumnLayout(groupbuchungen.getComposite(), 2);
     SimpleContainer bleft = new SimpleContainer(bcl.getComposite());
     bleft.addLabelPair("Löschen", control.getBuchungenLoeschen());
     SimpleContainer bright = new SimpleContainer(bcl.getComposite());
     bright.addLabelPair("Datum älter als", control.getDatumAuswahlBuchungen());
-    bright.addLabelPair("Zugeordnete Sollbuchungen löschen", control.getSollbuchungenLoeschen());
-    
+    bright.addLabelPair("Zugeordnete Sollbuchungen löschen",
+        control.getSollbuchungenLoeschen());
+
     LabelGroup grouplastschriften = new LabelGroup(cl.getComposite(),
         "Lastschriften");
     ColumnLayout lcl = new ColumnLayout(grouplastschriften.getComposite(), 2);
     SimpleContainer lleft = new SimpleContainer(lcl.getComposite());
     lleft.addLabelPair("Löschen", control.getLastschriftenLoeschen());
     SimpleContainer lright = new SimpleContainer(lcl.getComposite());
-    lright.addLabelPair("Fälligkeit älter als", control.getDatumAuswahlLastschriften());
-    
+    lright.addLabelPair("Fälligkeit älter als",
+        control.getDatumAuswahlLastschriften());
+
     LabelGroup groupabrechnungslauf = new LabelGroup(cl.getComposite(),
         "Abrechnungsläufe");
     ColumnLayout acl = new ColumnLayout(groupabrechnungslauf.getComposite(), 2);
     SimpleContainer aleft = new SimpleContainer(acl.getComposite());
     aleft.addLabelPair("Löschen", control.getAbrechnungslaufLoeschen());
     SimpleContainer aright = new SimpleContainer(acl.getComposite());
-    aright.addLabelPair("Fälligkeit älter als", control.getDatumAuswahlAbrechnungslauf());
-    
+    aright.addLabelPair("Fälligkeit älter als",
+        control.getDatumAuswahlAbrechnungslauf());
+
     LabelGroup groupjahresabschluss = new LabelGroup(cl.getComposite(),
         "Jahresabschlüsse");
     ColumnLayout jcl = new ColumnLayout(groupjahresabschluss.getComposite(), 2);
     SimpleContainer jleft = new SimpleContainer(jcl.getComposite());
     jleft.addLabelPair("Löschen", control.getJahresabschlussLoeschen());
     SimpleContainer jright = new SimpleContainer(jcl.getComposite());
-    jright.addLabelPair("Bis Datum älter als", control.getDatumAuswahlJahresabschluss());
+    jright.addLabelPair("Bis Datum älter als",
+        control.getDatumAuswahlJahresabschluss());
 
     LabelGroup groupmails = new LabelGroup(cl.getComposite(), "Mails");
     ColumnLayout mcl = new ColumnLayout(groupmails.getComposite(), 2);

@@ -72,8 +72,8 @@ public class LizenzControl extends AbstractControl
     buffer.append("<p><span color=\"header\" font=\"header\">"
         + i18n.tr("Verwendete Komponenten") + "</span></p>");
 
-    AbstractPlugin plugin = Application.getPluginLoader().getPlugin(
-        JVereinPlugin.class);
+    AbstractPlugin plugin = Application.getPluginLoader()
+        .getPlugin(JVereinPlugin.class);
     String path = plugin.getManifest().getPluginDir();
 
     FileFinder finder = new FileFinder(new File(path + "/lib"));

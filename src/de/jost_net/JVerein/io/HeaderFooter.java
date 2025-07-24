@@ -63,9 +63,7 @@ class HeaderFooter extends PdfPageEventHelper
     pc.lineTo(right, bottom - 25);
     pc.stroke();
 
-    ColumnText.showTextAligned(
-        pc,
-        Element.ALIGN_CENTER,
+    ColumnText.showTextAligned(pc, Element.ALIGN_CENTER,
         new Phrase(footer + " " + writer.getPageNumber(),
             Reporter.getFreeSans(7)),
         (left + right) / 2, bottom - 18, 0);

@@ -49,8 +49,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AbrechnungslaufControl extends FilterControl
-    implements Savable
+public class AbrechnungslaufControl extends FilterControl implements Savable
 {
 
   private Abrechnungslauf abrl;
@@ -81,7 +80,7 @@ public class AbrechnungslaufControl extends FilterControl
 
   private LabelInput statistiklastschriften;
 
-  public AbrechnungslaufControl(AbstractView view) 
+  public AbrechnungslaufControl(AbstractView view)
   {
     super(view);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
@@ -152,8 +151,8 @@ public class AbrechnungslaufControl extends FilterControl
     {
       return astichtag;
     }
-    astichtag = new LabelInput(new JVDateFormatTTMMJJJJ()
-        .format(getAbrechnungslauf().getStichtag()));
+    astichtag = new LabelInput(
+        new JVDateFormatTTMMJJJJ().format(getAbrechnungslauf().getStichtag()));
     astichtag.setName("Stichtag");
     return astichtag;
   }
@@ -165,7 +164,7 @@ public class AbrechnungslaufControl extends FilterControl
       return eintrittsdatum;
     }
     Date ed = getAbrechnungslauf().getEintrittsdatum();
-    if(ed.equals(Einstellungen.NODATE))
+    if (ed.equals(Einstellungen.NODATE))
       eintrittsdatum = new LabelInput(null);
     else
       eintrittsdatum = new LabelInput(new JVDateFormatTTMMJJJJ().format(ed));
@@ -180,7 +179,7 @@ public class AbrechnungslaufControl extends FilterControl
       return austrittsdatum;
     }
     Date ed = getAbrechnungslauf().getAustrittsdatum();
-    if(ed.equals(Einstellungen.NODATE))
+    if (ed.equals(Einstellungen.NODATE))
       austrittsdatum = new LabelInput(null);
     else
       austrittsdatum = new LabelInput(new JVDateFormatTTMMJJJJ().format(ed));
@@ -406,7 +405,7 @@ public class AbrechnungslaufControl extends FilterControl
     }
     return abrechnungslaufList;
   }
-  
+
   public void TabRefresh()
   {
     if (abrechnungslaufList == null)

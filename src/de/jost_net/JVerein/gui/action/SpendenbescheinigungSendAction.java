@@ -28,7 +28,7 @@ import de.willuhn.util.ApplicationException;
 public class SpendenbescheinigungSendAction implements Action
 {
   private de.willuhn.jameica.system.Settings settings;
-  
+
   public SpendenbescheinigungSendAction()
   {
     super();
@@ -37,8 +37,8 @@ public class SpendenbescheinigungSendAction implements Action
   }
 
   /**
-   * Versenden einer E-Mail mit der Spendenbescheinigung im Anhang 
-   * für Mitglieder deren Spendenbescheinigung im View ausgewählt ist.
+   * Versenden einer E-Mail mit der Spendenbescheinigung im Anhang für
+   * Mitglieder deren Spendenbescheinigung im View ausgewählt ist.
    */
   @Override
   public void handleAction(Object context) throws ApplicationException

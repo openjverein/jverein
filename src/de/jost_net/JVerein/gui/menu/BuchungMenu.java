@@ -75,28 +75,26 @@ public class BuchungMenu extends ContextMenu
         "edit-copy.png"));
     if (geldkonto)
     {
-      addItem(
-          new GegenBuchungItem("Gegenbuchung",
-              new BuchungGegenbuchungAction(control),
-          "edit-copy.png"));
+      addItem(new GegenBuchungItem("Gegenbuchung",
+          new BuchungGegenbuchungAction(control), "edit-copy.png"));
     }
     addItem(new SplitBuchungItem("Splitbuchung", new SplitBuchungAction(),
         "edit-copy.png"));
     addItem(new AufloesenItem("Auflösen",
-        new SplitbuchungBulkAufloesenAction(control),
-        "unlocked.png"));
+        new SplitbuchungBulkAufloesenAction(control), "unlocked.png"));
     addItem(new BuchungItem("Löschen", new BuchungDeleteAction(false),
-            "user-trash-full.png"));
+        "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     if (geldkonto)
     {
       addItem(new MitgliedOeffnenItem("Mitglied anzeigen",
-              new MitgliedDetailAction(), "user-friends.png"));
-      addItem(new SingleGegenBuchungItem("Neues Anlagenkonto", new AnlagenkontoNeuAction(),
-          "document-new.png"));
+          new MitgliedDetailAction(), "user-friends.png"));
+      addItem(new SingleGegenBuchungItem("Neues Anlagenkonto",
+          new AnlagenkontoNeuAction(), "document-new.png"));
       try
       {
-        if ((Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
         {
           addItem(new SpendenbescheinigungMenuItem("Geldspendenbescheinigung",
               new SpendenbescheinigungNeuAction(Spendenart.GELDSPENDE),
@@ -122,7 +120,8 @@ public class BuchungMenu extends ContextMenu
     {
       // Dann nicht anzeigen
     }
-    if (geldkonto) {
+    if (geldkonto)
+    {
       addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
           new BuchungSollbuchungZuordnungAction(), "view-refresh.png"));
     }
@@ -213,7 +212,7 @@ public class BuchungMenu extends ContextMenu
       return false;
     }
   }
-    
+
   private static class SingleGegenBuchungItem
       extends CheckedSingleContextMenuItem
   {
@@ -291,7 +290,7 @@ public class BuchungMenu extends ContextMenu
       return false;
     }
   }
-  
+
   private static class AufloesenItem extends CheckedContextMenuItem
   {
     private AufloesenItem(String text, Action action, String icon)
@@ -367,10 +366,14 @@ public class BuchungMenu extends ContextMenu
 
   private static class MitgliedOeffnenItem extends CheckedContextMenuItem
   {
-    private MitgliedOeffnenItem(String text, Action action, String icon) { super(text, action, icon); }
+    private MitgliedOeffnenItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
 
     @Override
-    public boolean isEnabledFor(Object o) {
+    public boolean isEnabledFor(Object o)
+    {
       try
       {
         if (o instanceof Buchung)
@@ -378,7 +381,8 @@ public class BuchungMenu extends ContextMenu
           return ((Buchung) o).getSollbuchung() != null;
         }
       }
-      catch (RemoteException e) {
+      catch (RemoteException e)
+      {
         Logger.error("Fehler", e);
       }
       return false;

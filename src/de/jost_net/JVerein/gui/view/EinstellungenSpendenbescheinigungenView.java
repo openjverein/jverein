@@ -51,13 +51,13 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
         control.getSpendenbescheinigungverzeichnis());
     cont.addLabelPair("Buchungsart drucken",
         control.getSpendenbescheinigungPrintBuchungsart());
-    cont.addLabelPair("Unterschrift drucken",
-        control.getUnterschriftdrucken());
+    cont.addLabelPair("Unterschrift drucken", control.getUnterschriftdrucken());
     cont.addLabelPair("Unterschrift", control.getUnterschrift());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_SPENDENBESCHEINIGUNGEN, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_SPENDENBESCHEINIGUNGEN, false,
+        "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

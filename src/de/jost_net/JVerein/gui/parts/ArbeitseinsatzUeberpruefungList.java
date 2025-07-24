@@ -111,8 +111,8 @@ public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
         + "where  (mitglied.eintritt is null or year(mitglied.eintritt) <= ?) and "
         + "       (mitglied.austritt is null or year(mitglied.austritt) >= ?) ";
 
-    if (schluessel != ArbeitseinsatzUeberpruefungInput.MEHRLEISTUNG &&
-        schluessel != ArbeitseinsatzUeberpruefungInput.ALLE)
+    if (schluessel != ArbeitseinsatzUeberpruefungInput.MEHRLEISTUNG
+        && schluessel != ArbeitseinsatzUeberpruefungInput.ALLE)
     {
       sql += "        and beitragsgruppe.arbeitseinsatzstunden is not null and "
           + "        beitragsgruppe.arbeitseinsatzstunden > 0 ";
@@ -132,7 +132,7 @@ public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
     {
       sql += "    having iststunden > arbeitseinsatzstunden  ";
     }
-    
+
     if (schluessel == ArbeitseinsatzUeberpruefungInput.ALLE)
     {
       sql += "    having iststunden > 0 or arbeitseinsatzstunden > 0 ";

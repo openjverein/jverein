@@ -214,8 +214,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
    *          Der Typ der Auswertung (AuswertungPDF, AuswertungCSV)
    * @throws ApplicationException
    */
-  private void starteAuswertung(String type)
-      throws ApplicationException
+  private void starteAuswertung(String type) throws ApplicationException
   {
     try
     {

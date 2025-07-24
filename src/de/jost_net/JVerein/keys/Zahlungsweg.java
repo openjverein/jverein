@@ -25,13 +25,13 @@ public class Zahlungsweg
 {
 
   public static final int STANDARD = 0;
-  
+
   public static final int BASISLASTSCHRIFT = 1;
 
   public static final int ÜBERWEISUNG = 2;
 
   public static final int BARZAHLUNG = 3;
-  
+
   public static final int VOLLZAHLER = 4;
 
   private int zahlungsweg;
@@ -76,7 +76,7 @@ public class Zahlungsweg
     ret.add(new Zahlungsweg(BASISLASTSCHRIFT));
     ret.add(new Zahlungsweg(ÜBERWEISUNG));
     ret.add(new Zahlungsweg(BARZAHLUNG));
-    if(mitVollzahler)
+    if (mitVollzahler)
       ret.add(new Zahlungsweg(VOLLZAHLER));
     return ret;
   }

@@ -55,47 +55,46 @@ public class BuchungsklasseDeleteAction implements Action
           + "WHERE (buchungsklasse = ?) ";
       boolean benutzt = (boolean) service.execute(sql,
           new Object[] { b.getID() }, new ResultSetExtractor()
-      {
-        @Override
-        public Object extract(ResultSet rs)
-            throws RemoteException, SQLException
-        {
-          if (rs.next())
           {
-            return true;
-          }
-          return false;
-        }
-      });
+            @Override
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
+            {
+              if (rs.next())
+              {
+                return true;
+              }
+              return false;
+            }
+          });
       if (benutzt)
       {
         throw new ApplicationException(
             "Die Buchungsklasse wird von einer Buchungsart benutzt und kann nicht gelöscht werden");
       }
-      
+
       service = Einstellungen.getDBService();
-      sql = "SELECT konto.id from konto "
-          + "WHERE (anlagenklasse = ?) ";
-      benutzt = (boolean) service.execute(sql,
-          new Object[] { b.getID() }, new ResultSetExtractor()
-      {
-        @Override
-        public Object extract(ResultSet rs)
-            throws RemoteException, SQLException
-        {
-          if (rs.next())
+      sql = "SELECT konto.id from konto " + "WHERE (anlagenklasse = ?) ";
+      benutzt = (boolean) service.execute(sql, new Object[] { b.getID() },
+          new ResultSetExtractor()
           {
-            return true;
-          }
-          return false;
-        }
-      });
+            @Override
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
+            {
+              if (rs.next())
+              {
+                return true;
+              }
+              return false;
+            }
+          });
       if (benutzt)
       {
         throw new ApplicationException(
             "Die Buchungsklasse wird von einem Anlagenkonto benutzt und kann nicht gelöscht werden");
       }
-      
+
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Buchungsklasse löschen");
       d.setText("Wollen Sie diese Buchungsklasse wirklich löschen?");

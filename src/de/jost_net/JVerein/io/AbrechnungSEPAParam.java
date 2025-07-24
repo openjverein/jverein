@@ -61,13 +61,13 @@ public class AbrechnungSEPAParam
   public final Boolean kursteilnehmer;
 
   public final Boolean kompakteabbuchung;
-  
+
   public final boolean sollbuchungenzusammenfassen;
-  
+
   public final boolean rechnung;
-  
+
   public final Formular rechnungsformular;
-  
+
   public final String rechnungstext;
 
   public final Date rechnungsdatum;
@@ -85,12 +85,13 @@ public class AbrechnungSEPAParam
   public final DBService service;
 
   public Konto konto;
-  
+
   private String text = "";
 
   public Date voneingabedatum;
 
-  public AbrechnungSEPAParam(AbrechnungSEPAControl ac, File sepafileRCUR, SepaVersion sepaVersion, String pdffileRCUR)
+  public AbrechnungSEPAParam(AbrechnungSEPAControl ac, File sepafileRCUR,
+      SepaVersion sepaVersion, String pdffileRCUR)
       throws ApplicationException, RemoteException
   {
     abbuchungsmodus = (Integer) ac.getAbbuchungsmodus().getValue();
@@ -107,9 +108,10 @@ public class AbrechnungSEPAParam
     zusatzbetraege = (Boolean) ac.getZusatzbetrag().getValue();
     kursteilnehmer = (Boolean) ac.getKursteilnehmer().getValue();
     kompakteabbuchung = (Boolean) ac.getKompakteAbbuchung().getValue();
-    sollbuchungenzusammenfassen = (Boolean) ac.getSollbuchungenZusammenfassen().getValue();
-    rechnung = (Boolean) ac.getRechnung().getValue(); 
-    rechnungsformular = (Formular) ac.getRechnungFormular().getValue(); 
+    sollbuchungenzusammenfassen = (Boolean) ac.getSollbuchungenZusammenfassen()
+        .getValue();
+    rechnung = (Boolean) ac.getRechnung().getValue();
+    rechnungsformular = (Formular) ac.getRechnungFormular().getValue();
     rechnungstext = (String) ac.getRechnungstext().getValue();
     rechnungsdatum = (Date) ac.getRechnungsdatum().getValue();
     sepaprint = (Boolean) ac.getSEPAPrint().getValue();
@@ -126,8 +128,8 @@ public class AbrechnungSEPAParam
         service = (DBService) Application.getServiceFactory().lookup(HBCI.class,
             "database");
         DBIterator<Konto> konten = service.createList(Konto.class);
-        Logger
-            .debug("Vereinskonto: " + (String) Einstellungen.getEinstellung(Property.IBAN));
+        Logger.debug("Vereinskonto: "
+            + (String) Einstellungen.getEinstellung(Property.IBAN));
         while (konten.hasNext())
         {
           konto = (Konto) konten.next();
@@ -171,12 +173,12 @@ public class AbrechnungSEPAParam
       service = null;
     }
   }
-  
+
   public String getText()
   {
     return text;
   }
-  
+
   public void setText(String in)
   {
     text = in;

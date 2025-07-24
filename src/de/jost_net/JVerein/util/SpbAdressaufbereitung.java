@@ -82,10 +82,11 @@ public class SpbAdressaufbereitung
       case 1:
         spb.setZeile1(adresse.get(0));
     }
-    
+
   }
-  
-  private static String getKtoiVornameName(Mitglied mitglied) throws RemoteException
+
+  private static String getKtoiVornameName(Mitglied mitglied)
+      throws RemoteException
   {
     String ret = "";
     if (mitglied.getKtoiPersonenart().equalsIgnoreCase("n"))
@@ -104,7 +105,8 @@ public class SpbAdressaufbereitung
     else
     {
       ret = mitglied.getKtoiName() + (mitglied.getKtoiVorname().length() > 0
-          ? ("\n" + mitglied.getKtoiVorname()) : "");
+          ? ("\n" + mitglied.getKtoiVorname())
+          : "");
     }
     return ret;
   }

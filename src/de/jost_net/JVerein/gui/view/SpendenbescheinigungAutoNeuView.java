@@ -38,8 +38,8 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
 
     SpendenbescheinigungAutoNeuControl control = new SpendenbescheinigungAutoNeuControl(
         this);
-    
-    InfoPanel   info = new InfoPanel();
+
+    InfoPanel info = new InfoPanel();
     info.setTitle("Info");
     info.setIcon("gtk-info.png");
     double betrag = (Double) Einstellungen
@@ -73,8 +73,7 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group2.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Einzelbestätigung",
-        control.getFormular());
+    left.addLabelPair("Einzelbestätigung", control.getFormular());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Sammelbestätigung",

@@ -45,7 +45,7 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     {
       control.setEditable();
     }
-    
+
     ScrolledContainer scrolled = new ScrolledContainer(getParent());
 
     ColumnLayout cols1 = new ColumnLayout(scrolled.getComposite(), 2);
@@ -87,7 +87,8 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     right.addLabelPair("Unterlagen Wertermittlung",
         control.getUnterlagenWertermittlung());
 
-    if (control.getSpendenbescheinigung().getSpendenart() == Spendenart.GELDSPENDE)
+    if (control.getSpendenbescheinigung()
+        .getSpendenart() == Spendenart.GELDSPENDE)
     {
       // Buchnungen nur für Geldspenden
       LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),

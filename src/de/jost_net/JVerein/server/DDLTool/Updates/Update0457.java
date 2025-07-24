@@ -35,62 +35,60 @@ public class Update0457 extends AbstractDDLUpdate
     Table t = new Table("sollbuchungposition");
     Column pk = new Column("id", COLTYPE.BIGINT, 10, null, true, true);
     t.add(pk);
-    
-    Column sollbuchung = new Column("sollbuchung", COLTYPE.BIGINT, 10,
-        null, true, false);
+
+    Column sollbuchung = new Column("sollbuchung", COLTYPE.BIGINT, 10, null,
+        true, false);
     t.add(sollbuchung);
 
-    Column betrag = new Column("betrag", COLTYPE.DOUBLE, 10, null, true,
-        false);
+    Column betrag = new Column("betrag", COLTYPE.DOUBLE, 10, null, true, false);
     t.add(betrag);
-    
-    Column steuersatz = new Column("steuersatz", COLTYPE.DOUBLE, 10, null, false,
-        false);
+
+    Column steuersatz = new Column("steuersatz", COLTYPE.DOUBLE, 10, null,
+        false, false);
     t.add(steuersatz);
-    
-    Column buchungsart = new Column("buchungsart", COLTYPE.BIGINT, 10, null, false,
-        false);
+
+    Column buchungsart = new Column("buchungsart", COLTYPE.BIGINT, 10, null,
+        false, false);
     t.add(buchungsart);
-    
-    Column buchungsklasse = new Column("buchungsklasse", COLTYPE.BIGINT, 10, null, false,
-        false);
+
+    Column buchungsklasse = new Column("buchungsklasse", COLTYPE.BIGINT, 10,
+        null, false, false);
     t.add(buchungsklasse);
-    
-    Column datum = new Column("datum", COLTYPE.DATE, 10, null, true,
-        false);
+
+    Column datum = new Column("datum", COLTYPE.DATE, 10, null, true, false);
     t.add(datum);
-    
+
     Column zweck = new Column("zweck", COLTYPE.VARCHAR, 500, null, false,
         false);
     t.add(zweck);
-    
+
     t.setPrimaryKey(pk);
     execute(this.createTable(t));
-    
+
     Index idx = new Index("ixSollbuchungposition1", false);
     idx.add(sollbuchung);
     execute(idx.getCreateIndex("sollbuchungposition"));
-    
-    execute(this.createForeignKey("fk_sollbuchungposition1",
-            "sollbuchungposition", "sollbuchung", "mitgliedskonto", "id",
-            "CASCADE", "NO ACTION"));
+
+    execute(
+        this.createForeignKey("fk_sollbuchungposition1", "sollbuchungposition",
+            "sollbuchung", "mitgliedskonto", "id", "CASCADE", "NO ACTION"));
 
     idx = new Index("ixSollbuchungposition2", false);
     idx.add(buchungsart);
     execute(idx.getCreateIndex("sollbuchungposition"));
-    
-    execute(this.createForeignKey("fk_sollbuchungposition2",
-            "sollbuchungposition", "buchungsart", "buchungsart", "id",
-            "RESTRICT", "NO ACTION"));
+
+    execute(
+        this.createForeignKey("fk_sollbuchungposition2", "sollbuchungposition",
+            "buchungsart", "buchungsart", "id", "RESTRICT", "NO ACTION"));
 
     idx = new Index("ixSollbuchungposition3", false);
     idx.add(zweck);
     execute(idx.getCreateIndex("sollbuchungposition"));
-    
-    execute(this.createForeignKey("fk_sollbuchungposition3",
-            "sollbuchungposition", "buchungsklasse", "buchungsklasse", "id",
-            "RESTRICT", "NO ACTION"));
-    
+
+    execute(
+        this.createForeignKey("fk_sollbuchungposition3", "sollbuchungposition",
+            "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
+
     // Für bestehende Sollbuchungen Sollbuchungpositionen erstellen
     // Vorerst bleiben in der Tabelle Mitgliedskonto die Spalten
     // buchungsart, buchungsklasse, steuersatz, nettobetrag, steuerbetrag
@@ -99,7 +97,7 @@ public class Update0457 extends AbstractDDLUpdate
         + " (sollbuchung, betrag, steuersatz, buchungsart, buchungsklasse, datum, zweck)"
         + " SELECT id,betrag,steuersatz,buchungsart,buchungsklasse,datum,zweck1 FROM mitgliedskonto;");
 
-    execute(addColumn("rechnung", new Column("zahlungsweg",
-        COLTYPE.INTEGER, 1, "0", true, false)));
+    execute(addColumn("rechnung",
+        new Column("zahlungsweg", COLTYPE.INTEGER, 1, "0", true, false)));
   }
 }

@@ -220,7 +220,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         getZusatzbetragVorlage().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
+        (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.addListener(new Listener()
     {
       @Override
@@ -277,8 +278,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     {
       if (buchungsklasse == null)
         return null;
-      Buchungsklasse bukla = (Buchungsklasse) getBuchungsklasse()
-          .getValue();
+      Buchungsklasse bukla = (Buchungsklasse) getBuchungsklasse().getValue();
       if (null == bukla)
         return null;
       Long id = Long.valueOf(bukla.getID());
@@ -410,7 +410,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
               return new Zahlungsweg((Integer) o).getText();
             }
           });
-      if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         zusatzbetragVorlageList.addColumn("Buchungsklasse", "buchungsklasse",
             new BuchungsklasseFormatter());

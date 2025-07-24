@@ -43,7 +43,7 @@ public class RechnungDeleteAction implements Action
     }
     else if (context instanceof Rechnung)
     {
-      res = new Rechnung[] { (Rechnung) context};
+      res = new Rechnung[] { (Rechnung) context };
     }
     else if (context instanceof Rechnung[])
     {
@@ -58,8 +58,7 @@ public class RechnungDeleteAction implements Action
       String mehrzahl = res.length > 1 ? "en" : "";
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Rechnung" + mehrzahl + " löschen");
-      d.setText("Wollen Sie die Rechnung" + mehrzahl
-          + " wirklich löschen?");
+      d.setText("Wollen Sie die Rechnung" + mehrzahl + " wirklich löschen?");
 
       try
       {
@@ -71,8 +70,7 @@ public class RechnungDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Rechnung" + mehrzahl,
-            e);
+        Logger.error("Fehler beim Löschen der Rechnung" + mehrzahl, e);
         return;
       }
       for (Rechnung re : res)
@@ -83,8 +81,7 @@ public class RechnungDeleteAction implements Action
         }
         re.delete();
       }
-      GUI.getStatusBar().setSuccessText(
-          "Rechnung" + mehrzahl + "  gelöscht.");
+      GUI.getStatusBar().setSuccessText("Rechnung" + mehrzahl + "  gelöscht.");
     }
     catch (RemoteException e)
     {

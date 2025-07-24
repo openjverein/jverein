@@ -63,8 +63,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
    *          die Haupttabelle
    * @throws RemoteException
    */
-  public ExtendedDBIterator(String table)
-      throws RemoteException
+  public ExtendedDBIterator(String table) throws RemoteException
   {
     this.table = table;
   }
@@ -469,4 +468,3 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
     return null;
   }
 }
-

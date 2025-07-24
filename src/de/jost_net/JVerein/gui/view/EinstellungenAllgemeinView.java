@@ -52,7 +52,8 @@ public class EinstellungenAllgemeinView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_ALLGEMEIN, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_ALLGEMEIN, false,
+        "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

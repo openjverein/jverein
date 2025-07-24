@@ -44,7 +44,7 @@ public class AnlagenverzeichnisCSV implements ISaldoExport
   private static CellProcessor[] getProcessors()
   {
 
-    final CellProcessor[] processors = new CellProcessor[] { 
+    final CellProcessor[] processors = new CellProcessor[] {
         new ConvertNullTo(""), // BuchungsArt/Klasse, Summe
         new ConvertNullTo(""), // Bezeichnung
         new ConvertNullTo("", new FmtNumber(Einstellungen.INTFORMAT)), // Nutzungsdauer
@@ -73,9 +73,9 @@ public class AnlagenverzeichnisCSV implements ISaldoExport
       final CellProcessor[] processors = getProcessors();
       Map<String, Object> csvzeile = new HashMap<>();
 
-      String[] header = { "Anlagenart", "Bezeichnung", "Nutzungsdauer", "Afa Art", 
-          "Anschaffung", "Anschaffungskosten", "Buchwert Beginn GJ", "Zugang", 
-          "Abschreibung", "Abgang", "Buchwert Ende GJ"};
+      String[] header = { "Anlagenart", "Bezeichnung", "Nutzungsdauer",
+          "Afa Art", "Anschaffung", "Anschaffungskosten", "Buchwert Beginn GJ",
+          "Zugang", "Abschreibung", "Abgang", "Buchwert Ende GJ" };
       writer.writeHeader(header);
 
       String subtitle = new JVDateFormatTTMMJJJJ().format(datumvon) + " - "

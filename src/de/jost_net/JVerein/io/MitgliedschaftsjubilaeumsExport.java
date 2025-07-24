@@ -113,7 +113,8 @@ public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
   private JubilaeenParser holeJubelJahreAusEinstellungen()
       throws RemoteException
   {
-    String jubilarListe = (String) Einstellungen.getEinstellung(Property.JUBILAEEN);
+    String jubilarListe = (String) Einstellungen
+        .getEinstellung(Property.JUBILAEEN);
     JubilaeenParser jp = new JubilaeenParser(jubilarListe);
     return jp;
   }
@@ -131,7 +132,8 @@ public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
   {
     MitgliedControl control = (MitgliedControl) objects[0];
     jahr = control.getJJahr();
-    jubilarStartAlter = (Integer) Einstellungen.getEinstellung(Property.JUBILARSTARTALTER);
+    jubilarStartAlter = (Integer) Einstellungen
+        .getEinstellung(Property.JUBILARSTARTALTER);
     Logger.debug("Mitgliedschaftsjubiläum, Jahr=" + Integer.toString(jahr)
         + " StartAlter= " + Integer.toString(jubilarStartAlter));
   }

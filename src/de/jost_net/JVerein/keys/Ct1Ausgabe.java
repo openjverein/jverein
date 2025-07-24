@@ -22,7 +22,9 @@ package de.jost_net.JVerein.keys;
 public enum Ct1Ausgabe
 {
 
-  SEPA_DATEI(1, "Datei"), HIBISCUS(2, "Hibiscus");
+  SEPA_DATEI(1, "Datei"),
+  HIBISCUS(2, "Hibiscus");
+
   private final String text;
 
   private final int key;

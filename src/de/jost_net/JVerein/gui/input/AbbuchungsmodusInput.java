@@ -42,13 +42,12 @@ public class AbbuchungsmodusInput extends SelectInput
    * @return initialisiert die Liste der Optionen.
    * @throws RemoteException
    */
-  private static ArrayList<AbbuchungsmodusObject> init()
-      throws RemoteException
+  private static ArrayList<AbbuchungsmodusObject> init() throws RemoteException
   {
     ArrayList<AbbuchungsmodusObject> l = new ArrayList<>();
     l.add(new AbbuchungsmodusObject(Abrechnungsmodi.KEINBEITRAG));
-    switch (Beitragsmodel
-        .getByKey((Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
+    switch (Beitragsmodel.getByKey(
+        (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
     {
       case GLEICHERTERMINFUERALLE:
       case FLEXIBEL:

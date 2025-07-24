@@ -71,7 +71,7 @@ public class MitgliedMailSendenAction implements Action
               mitgliederohnemail.append(", ");
             }
             mitgliederohnemail
-            .append(Adressaufbereitung.getNameVorname(mitglied));
+                .append(Adressaufbereitung.getNameVorname(mitglied));
           }
           else
           {
@@ -122,8 +122,8 @@ public class MitgliedMailSendenAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(
-          "Fehler bei der Erzeugung der neuen Mail");
+      GUI.getStatusBar()
+          .setErrorText("Fehler bei der Erzeugung der neuen Mail");
     }
   }
 }

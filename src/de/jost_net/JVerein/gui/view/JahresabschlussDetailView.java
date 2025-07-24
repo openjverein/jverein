@@ -43,13 +43,13 @@ public class JahresabschlussDetailView extends AbstractView
     String text = control.getInfo();
     if (text != null && !text.isEmpty())
     {
-      InfoPanel   info = new InfoPanel();
+      InfoPanel info = new InfoPanel();
       info.setText(text);
       info.setTitle("Info");
       info.setIcon("gtk-info.png");
       info.paint(getParent());
     }
-    
+
     LabelGroup group = new LabelGroup(getParent(), "Jahresabschluss");
     ColumnLayout cl;
     if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))

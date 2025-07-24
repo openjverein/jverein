@@ -75,8 +75,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class ArbeitseinsatzControl extends FilterControl
-    implements Savable
+public class ArbeitseinsatzControl extends FilterControl implements Savable
 {
   private ArbeitseinsatzPart part = null;
 
@@ -87,7 +86,7 @@ public class ArbeitseinsatzControl extends FilterControl
   private SelectInput suchjahr = null;
 
   private ArbeitseinsatzUeberpruefungInput auswertungschluessel = null;
-  
+
   private JVereinTablePart arbeitseinsatzList;
 
   public ArbeitseinsatzControl(AbstractView view)
@@ -322,7 +321,8 @@ public class ArbeitseinsatzControl extends FilterControl
           while (it.hasNext())
           {
             ArbeitseinsatzZeile z = (ArbeitseinsatzZeile) it.next();
-            if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
             {
               reporter.addColumn((String) z.getAttribute("idnamevorname"),
                   Element.ALIGN_LEFT);
@@ -489,7 +489,8 @@ public class ArbeitseinsatzControl extends FilterControl
             zb.setFaelligkeit(new Date());
             zb.setStartdatum(new Date());
             zb.setIntervall(IntervallZusatzzahlung.KEIN);
-            zb.setMitglied(Integer.valueOf((String) z.getAttribute("mitgliedid")));
+            zb.setMitglied(
+                Integer.valueOf((String) z.getAttribute("mitgliedid")));
             zb.store();
           }
           GUI.getStatusBar().setSuccessText("Liste Arbeitseinsätze gestartet");
@@ -568,7 +569,7 @@ public class ArbeitseinsatzControl extends FilterControl
     }
     return arbeitseinsatzueberpruefungList.getArbeitseinsatzUeberpruefungList();
   }
-  
+
   private void refreshList()
   {
     try
@@ -580,7 +581,7 @@ public class ArbeitseinsatzControl extends FilterControl
       //
     }
   }
-  
+
   private class FilterListener implements Listener
   {
 
@@ -594,14 +595,14 @@ public class ArbeitseinsatzControl extends FilterControl
       refreshList();
     }
   }
-  
+
   public Part getArbeitseinsatzTable() throws RemoteException
   {
     if (arbeitseinsatzList != null)
     {
       return arbeitseinsatzList;
     }
-    
+
     DBIterator<Arbeitseinsatz> arbeitseinsaetze = getArbeitseinsaetzeIt();
     arbeitseinsatzList = new JVereinTablePart(arbeitseinsaetze, null);
     arbeitseinsatzList.setRememberColWidths(true);
@@ -619,8 +620,7 @@ public class ArbeitseinsatzControl extends FilterControl
     VorZurueckControl.setObjektListe(null, null);
     return arbeitseinsatzList;
   }
-  
-  
+
   public void TabRefresh()
   {
     try
@@ -642,23 +642,24 @@ public class ArbeitseinsatzControl extends FilterControl
       Logger.error("Fehler", e1);
     }
   }
-  
-  private DBIterator<Arbeitseinsatz> getArbeitseinsaetzeIt() throws RemoteException
+
+  private DBIterator<Arbeitseinsatz> getArbeitseinsaetzeIt()
+      throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Arbeitseinsatz> arbeitseinsaetze = service
         .createList(Arbeitseinsatz.class);
     arbeitseinsaetze.join("mitglied");
     arbeitseinsaetze.addFilter("mitglied.id = arbeitseinsatz.mitglied");
-    
+
     if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) getSuchname().getValue();
       if (tmpSuchname.length() > 0)
       {
         String suchName = "%" + tmpSuchname.toLowerCase() + "%";
-        arbeitseinsaetze.addFilter("(lower(name) like ? "
-            + "or lower(vorname) like ?)" , 
+        arbeitseinsaetze.addFilter(
+            "(lower(name) like ? " + "or lower(vorname) like ?)",
             new Object[] { suchName, suchName });
       }
     }
@@ -678,11 +679,11 @@ public class ArbeitseinsatzControl extends FilterControl
       if (tmpSuchtext.length() > 0)
       {
         arbeitseinsaetze.addFilter("(lower(bemerkung) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
       }
     }
     arbeitseinsaetze.setOrder("ORDER by datum desc");
     return arbeitseinsaetze;
   }
-  
+
 }

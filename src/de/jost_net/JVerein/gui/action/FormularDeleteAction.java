@@ -66,15 +66,15 @@ public class FormularDeleteAction implements Action
             "Forular '%s' kann nicht gelöscht werden. Es ist bei %d Spendenbescheinigung(en) hinterlegt.",
             f.getBezeichnung(), spb.size()));
       }
-      
+
       // Do not delete a form if it is linked by other forms
       if (f.hasFormlinks())
       {
         SimpleDialog sd = new SimpleDialog(AbstractDialog.POSITION_CENTER);
         sd.setTitle("Formularabhängigkeit");
         sd.setText(String.format(
-          "Das Formular kann nicht gelöscht werden. Es ist noch mit %d Formular(en) verknüpft.",
-          f.getLinked().size()));
+            "Das Formular kann nicht gelöscht werden. Es ist noch mit %d Formular(en) verknüpft.",
+            f.getLinked().size()));
         try
         {
           sd.open();
@@ -89,14 +89,14 @@ public class FormularDeleteAction implements Action
       Long formlink = f.getFormlink();
       if (formlink > 0)
       {
-        Formular fo = (Formular) Einstellungen.getDBService().createObject(
-          Formular.class, String.valueOf(formlink));
+        Formular fo = (Formular) Einstellungen.getDBService()
+            .createObject(Formular.class, String.valueOf(formlink));
 
         SimpleDialog sd = new SimpleDialog(AbstractDialog.POSITION_CENTER);
         sd.setTitle("Formularabhängigkeit");
         sd.setText(String.format(
-          "Das Formular kann nicht gelöscht werden. Es ist mit dem Formular \"%s\" verknüpft.",
-          fo.getBezeichnung()));
+            "Das Formular kann nicht gelöscht werden. Es ist mit dem Formular \"%s\" verknüpft.",
+            fo.getBezeichnung()));
         try
         {
           sd.open();

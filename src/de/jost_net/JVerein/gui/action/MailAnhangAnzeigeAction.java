@@ -32,7 +32,6 @@ import de.willuhn.util.ApplicationException;
 public class MailAnhangAnzeigeAction implements Action
 {
 
-
   @Override
   public void handleAction(Object context) throws ApplicationException
   {

@@ -55,11 +55,11 @@ public class EigenschaftGruppeDeleteAction implements Action
       {
         return;
       }
-      
+
       DBIterator<Eigenschaft> it = Einstellungen.getDBService()
           .createList(Eigenschaft.class);
       it.addFilter("eigenschaftgruppe = ?", new Object[] { eg.getID() });
-      
+
       try
       {
         if (it.size() > 0)

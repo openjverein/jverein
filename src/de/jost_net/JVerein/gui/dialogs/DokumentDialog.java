@@ -32,7 +32,7 @@ import de.willuhn.jameica.system.OperationCanceledException;
 
 /**
  * Ein Dialog, zur Bearbeitung von Dokument-Infos
- * */
+ */
 public class DokumentDialog extends AbstractDialog<AbstractDokument>
 {
 

@@ -192,7 +192,8 @@ public class Buchungsuebernahme
           }
         }
         // Beautify zweck
-        if ((Boolean) Einstellungen.getEinstellung(Property.AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS))
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS))
         {
           zweck = BuchungsZweckKorrektur.getBuchungsZweckKorrektur(zweck, true);
         }
@@ -201,7 +202,7 @@ public class Buchungsuebernahme
           zweck = zweck.substring(0, 500);
         }
         b.setZweck(zweck);
-        
+
         // Buchungsart automatisch zuordnen
         String suchZweck = u.getGegenkontoNummer() + " " + u.getGegenkontoName()
             + " " + zweck;
@@ -218,7 +219,7 @@ public class Buchungsuebernahme
             break;
           }
         }
-        
+
         b.setDatum(u.getDatum());
         b.setArt(u.getArt());
         b.setKommentar(u.getKommentar());

@@ -65,8 +65,8 @@ public class DokumentDeleteAction implements Action
           return;
         }
         QueryMessage qm = new QueryMessage(ad.getUUID(), null);
-        Application.getMessagingFactory().getMessagingQueue(
-            "jameica.messaging.del").sendSyncMessage(qm);
+        Application.getMessagingFactory()
+            .getMessagingQueue("jameica.messaging.del").sendSyncMessage(qm);
         ad.delete();
       }
       catch (Exception e)

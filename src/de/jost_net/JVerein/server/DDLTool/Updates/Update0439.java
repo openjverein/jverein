@@ -40,13 +40,13 @@ public class Update0439 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     // Diese Migration ist für den Fall, dass die korrigierte Migration
-    // Update0430 nicht ausgefürt wird weil schon mit der alten Version 
+    // Update0430 nicht ausgefürt wird weil schon mit der alten Version
     // migriert wurde z.B. mit einem Nightly Build.
-    // Weil wegen gelöschter Buchungsklassen die Integrität verletzt sein 
+    // Weil wegen gelöschter Buchungsklassen die Integrität verletzt sein
     // könnte, muss der Foreign Key mit NOCHECK erzeugt werden
 
-    createForeignKeyIfNotExistsNocheck("fkKonto1", "konto",
-        "buchungsart", "buchungsart", "id", "SET NULL", "NO ACTION");
+    createForeignKeyIfNotExistsNocheck("fkKonto1", "konto", "buchungsart",
+        "buchungsart", "id", "SET NULL", "NO ACTION");
 
   }
 }

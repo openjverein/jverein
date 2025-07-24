@@ -53,12 +53,14 @@ public class AbrechnungslaufAbschliessenAction implements Action
       }
       if (abrl.getAbgeschlossen())
       {
-    	throw new ApplicationException("Abrechnungsauf ist bereits abgeschlossen.");
+        throw new ApplicationException(
+            "Abrechnungsauf ist bereits abgeschlossen.");
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle(String.format("Abrechnungslauf %s abschließen", abrl.getID()));
-      d.setText("Wollen Sie diesen Abrechnungslauf wirklich abschließen?\nEin nachträgliches Löschen ist dann nicht mehr möglich.");
+      d.setText(
+          "Wollen Sie diesen Abrechnungslauf wirklich abschließen?\nEin nachträgliches Löschen ist dann nicht mehr möglich.");
 
       try
       {
@@ -73,7 +75,7 @@ public class AbrechnungslaufAbschliessenAction implements Action
         Logger.error("Fehler beim Abschließen eines Abrechnungslaufes", e);
         return;
       }
-      
+
       abrl.setAbgeschlossen(true);
       abrl.store();
 

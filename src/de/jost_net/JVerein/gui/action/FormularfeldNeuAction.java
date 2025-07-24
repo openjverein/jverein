@@ -62,8 +62,8 @@ public class FormularfeldNeuAction implements Action
     {
       try
       {
-        ff = (Formularfeld) Einstellungen.getDBService().createObject(
-            Formularfeld.class, null);
+        ff = (Formularfeld) Einstellungen.getDBService()
+            .createObject(Formularfeld.class, null);
         ff.setFormular(f);
       }
       catch (RemoteException e)

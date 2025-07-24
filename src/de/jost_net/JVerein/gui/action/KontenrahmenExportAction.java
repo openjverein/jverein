@@ -36,7 +36,7 @@ public class KontenrahmenExportAction implements Action
   {
     try
     {
-      ExportDialog d = new ExportDialog(new Object[] { context},
+      ExportDialog d = new ExportDialog(new Object[] { context },
           Buchungsklasse.class, DokumentationUtil.KONTENRAHMEN);
       d.open();
     }
@@ -52,8 +52,8 @@ public class KontenrahmenExportAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(
-          "Fehler beim exportieren des Kontenrahmens");
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim exportieren des Kontenrahmens");
     }
   }
 }

@@ -33,7 +33,8 @@ public class BuchungsklasseInput
   {
     DBIterator<Buchungsklasse> it = Einstellungen.getDBService()
         .createList(Buchungsklasse.class);
-    if ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
+    if ((Integer) Einstellungen.getEinstellung(
+        Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
     {
       it.setOrder("ORDER BY nummer");
     }
@@ -41,8 +42,8 @@ public class BuchungsklasseInput
     {
       it.setOrder("ORDER BY bezeichnung");
     }
-    buchungsklasse = new SelectInput(it != null ? PseudoIterator.asList(it) : null, 
-        klasse);
+    buchungsklasse = new SelectInput(
+        it != null ? PseudoIterator.asList(it) : null, klasse);
 
     switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {

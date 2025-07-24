@@ -69,7 +69,8 @@ public class KontoauswahlInput
    * @throws RemoteException
    */
   public DialogInput getKontoAuswahl(boolean keinkonto, String kontoid,
-      boolean onlyHibiscus, boolean nurAktuelleKonten, Kontenfilter art) throws RemoteException
+      boolean onlyHibiscus, boolean nurAktuelleKonten, Kontenfilter art)
+      throws RemoteException
   {
     if (kontoAuswahl != null)
     {
@@ -127,14 +128,16 @@ public class KontoauswahlInput
       }
       if (event.data == null)
       {
-        if (keinkonto && (event.detail != SWT.CANCEL ))
+        if (keinkonto && (event.detail != SWT.CANCEL))
         {
           konto = null;
           try
           {
             // TODO warum wird das doppelt aufgerufen?
-            getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE).setText("");
-            getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE).setComment("");
+            getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE)
+                .setText("");
+            getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE)
+                .setComment("");
             settings.setAttribute("kontoid", "");
           }
           catch (RemoteException e)
@@ -148,9 +151,10 @@ public class KontoauswahlInput
       try
       {
         String b = konto.getBezeichnung();
-        getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE).setText(konto.getNummer());
-        getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE).setComment(
-            b == null ? "" : b);
+        getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE)
+            .setText(konto.getNummer());
+        getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE)
+            .setComment(b == null ? "" : b);
         settings.setAttribute("kontoid", konto.getID());
       }
       catch (RemoteException er)

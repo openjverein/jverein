@@ -40,8 +40,7 @@ public class BuchungsjournalPDF
 {
 
   public BuchungsjournalPDF(BuchungQuery query, final File file,
-      final TreeMap<String, String> params)
-      throws ApplicationException
+      final TreeMap<String, String> params) throws ApplicationException
   {
     try
     {
@@ -64,8 +63,9 @@ public class BuchungsjournalPDF
         reporter.addColumn(b.getKonto().getNummer(), Element.ALIGN_RIGHT);
         if (b.getAuszugsnummer() != null)
         {
-          reporter.addColumn(b.getAuszugsnummer() + "/"
-              + (b.getBlattnummer() != null ? b.getBlattnummer() : "-"),
+          reporter.addColumn(
+              b.getAuszugsnummer() + "/"
+                  + (b.getBlattnummer() != null ? b.getBlattnummer() : "-"),
               Element.ALIGN_LEFT);
         }
         else
@@ -76,7 +76,8 @@ public class BuchungsjournalPDF
         reporter.addColumn(b.getZweck(), Element.ALIGN_LEFT);
         String buklaString = "-: ";
         String buaString = "--";
-        if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
         {
           if (b.getBuchungsklasseId() != null)
           {

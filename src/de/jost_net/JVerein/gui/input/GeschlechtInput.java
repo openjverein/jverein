@@ -62,7 +62,7 @@ public class GeschlechtInput extends SelectNoScrollInput
     if (null == o)
     {
       return null;
-    } 
+    }
     else
     {
       return o.geschlecht;

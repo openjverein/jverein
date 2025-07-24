@@ -23,8 +23,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class BuchungsklasseImpl extends AbstractJVereinDBObject
-    implements
-    Buchungsklasse
+    implements Buchungsklasse
 {
   private static final long serialVersionUID = 500102542884220658L;
 

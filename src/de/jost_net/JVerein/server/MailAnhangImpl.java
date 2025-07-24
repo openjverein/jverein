@@ -24,8 +24,8 @@ import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailAnhangImpl extends AbstractDBObject implements MailAnhang,
-    Comparable<MailAnhang>
+public class MailAnhangImpl extends AbstractDBObject
+    implements MailAnhang, Comparable<MailAnhang>
 {
 
   private static final long serialVersionUID = 1L;
@@ -74,10 +74,9 @@ public class MailAnhangImpl extends AbstractDBObject implements MailAnhang,
     // Länge des Dateinamens auf 100 Zeichen begrenzt:
     // JVereinUpdateProvider: update0438(Mailanhang speichern)
     if (dateiname.length() > 100)
-      throw new ApplicationException(
-          String.format(
-              "Maximale Länge (100) des Dateinamens von Mail-Anhang überschritten. (%d, %s...)",
-              dateiname.length(), dateiname.substring(0, 100)));
+      throw new ApplicationException(String.format(
+          "Maximale Länge (100) des Dateinamens von Mail-Anhang überschritten. (%d, %s...)",
+          dateiname.length(), dateiname.substring(0, 100)));
   }
 
   @Override

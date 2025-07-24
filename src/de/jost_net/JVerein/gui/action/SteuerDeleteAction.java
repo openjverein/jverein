@@ -55,8 +55,7 @@ public class SteuerDeleteAction implements Action
       String mehrzahl = steuern.length > 1 ? "n" : "";
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Steuer" + mehrzahl + " löschen");
-      d.setText(
-          "Wollen Sie diese Steuer" + mehrzahl + " wirklich löschen?");
+      d.setText("Wollen Sie diese Steuer" + mehrzahl + " wirklich löschen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -75,8 +74,7 @@ public class SteuerDeleteAction implements Action
           continue;
         s.delete();
       }
-      GUI.getStatusBar()
-          .setSuccessText("Steuer" + mehrzahl + " gelöscht.");
+      GUI.getStatusBar().setSuccessText("Steuer" + mehrzahl + " gelöscht.");
     }
     catch (RemoteException e)
     {

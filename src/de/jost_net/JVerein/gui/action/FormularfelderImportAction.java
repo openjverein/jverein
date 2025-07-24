@@ -65,16 +65,15 @@ public class FormularfelderImportAction implements Action
       catch (RemoteException e)
       {
         Logger.error("Fehler", e);
-        throw new ApplicationException(
-            "Fehler beim Import der Formularfelder", e);
+        throw new ApplicationException("Fehler beim Import der Formularfelder",
+            e);
       }
     }
     else
     {
-      throw new ApplicationException(
-          "Es wurde kein Formular ausgewählt!");
+      throw new ApplicationException("Es wurde kein Formular ausgewählt!");
     }
-    
+
     // Nachfrage, da alle Daten gelöscht werden!
     YesNoDialog ynd = new YesNoDialog(AbstractDialog.POSITION_CENTER);
     ynd.setText("Achtung! Alle momentan vorhandenen Formularfelder für\n"
@@ -112,8 +111,8 @@ public class FormularfelderImportAction implements Action
     catch (Exception e)
     {
       Logger.error("error while importing form  fields", e);
-      GUI.getStatusBar().setErrorText(
-          "Fehler beim Importieren von Formularfeldern");
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim Importieren von Formularfeldern");
     }
 
     try

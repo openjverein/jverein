@@ -94,8 +94,7 @@ public class RechnungDialog extends AbstractDialog<Boolean>
   {
     LabelGroup group = new LabelGroup(parent, "");
     group.addText(
-        "Bitte Rechnungsdatum und zu verwendendes Formular auswählen.",
-        true);
+        "Bitte Rechnungsdatum und zu verwendendes Formular auswählen.", true);
     group.addInput(getStatus());
     formularInput = new FormularInput(FormularArt.RECHNUNG);
     group.addLabelPair("Formular", formularInput);

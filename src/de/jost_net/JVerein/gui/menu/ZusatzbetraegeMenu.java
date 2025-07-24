@@ -50,11 +50,9 @@ public class ZusatzbetraegeMenu extends ContextMenu
         new EditAction(ZusatzbetragDetailView.class, table),
         "text-x-generic.png"));
     addItem(new ZusatzbetragWiederholtItem("Vorheriges Fälligkeitsdatum",
-        new ZusatzbetraegeVorherigeFaelligkeitAction(),
-        "office-calendar.png"));
+        new ZusatzbetraegeVorherigeFaelligkeitAction(), "office-calendar.png"));
     addItem(new ZusatzbetragWiederholtItem("Nächstes Fälligkeitsdatum",
-        new ZusatzbetraegeNaechsteFaelligkeitAction(),
-        "office-calendar.png"));
+        new ZusatzbetraegeNaechsteFaelligkeitAction(), "office-calendar.png"));
     addItem(new ZusatzbetragEinmaligItem("Erneut ausführen",
         new ZusatzbetraegeResetAction(), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Löschen",
@@ -66,8 +64,9 @@ public class ZusatzbetraegeMenu extends ContextMenu
           new MitgliedDetailAction(), "user-friends.png"));
     }
   }
-  
-  private static class ZusatzbetragEinmaligItem extends CheckedSingleContextMenuItem
+
+  private static class ZusatzbetragEinmaligItem
+      extends CheckedSingleContextMenuItem
   {
     private ZusatzbetragEinmaligItem(String text, Action action, String icon)
     {
@@ -93,8 +92,9 @@ public class ZusatzbetraegeMenu extends ContextMenu
       return false;
     }
   }
-  
-  private static class ZusatzbetragWiederholtItem extends CheckedSingleContextMenuItem
+
+  private static class ZusatzbetragWiederholtItem
+      extends CheckedSingleContextMenuItem
   {
     private ZusatzbetragWiederholtItem(String text, Action action, String icon)
     {
@@ -109,7 +109,7 @@ public class ZusatzbetraegeMenu extends ContextMenu
         Zusatzbetrag z = (Zusatzbetrag) o;
         try
         {
-          return z.getIntervall() != IntervallZusatzzahlung.KEIN ;
+          return z.getIntervall() != IntervallZusatzzahlung.KEIN;
         }
         catch (RemoteException e)
         {

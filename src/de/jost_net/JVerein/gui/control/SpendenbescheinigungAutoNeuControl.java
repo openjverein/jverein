@@ -61,7 +61,6 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
 
   private SelectInput formularSammel;
 
-
   public SpendenbescheinigungAutoNeuControl(AbstractView view)
   {
     super(view);
@@ -120,7 +119,8 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
       return formularSammel;
     }
     String tmp = settings.getString("formular.sammel", "");
-    formularSammel = new FormularInput(FormularArt.SAMMELSPENDENBESCHEINIGUNG, tmp);
+    formularSammel = new FormularInput(FormularArt.SAMMELSPENDENBESCHEINIGUNG,
+        tmp);
     formularSammel.setPleaseChoose("Standard");
     return formularSammel;
   }
@@ -153,8 +153,7 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
           }
           if (formularSammel != null)
           {
-            Formular aa = (Formular) getFormularSammelbestaetigung()
-                .getValue();
+            Formular aa = (Formular) getFormularSammelbestaetigung().getValue();
             if (aa != null)
               settings.setAttribute("formular.sammel", aa.getID());
             else
@@ -180,7 +179,8 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
             Spendenbescheinigung spbescheinigung = (Spendenbescheinigung) Einstellungen
                 .getDBService().createObject(Spendenbescheinigung.class, null);
             spbescheinigung.setSpendenart(Spendenart.GELDSPENDE);
-            SpbAdressaufbereitung.adressaufbereitung(sp1.getMitglied(), spbescheinigung);
+            SpbAdressaufbereitung.adressaufbereitung(sp1.getMitglied(),
+                spbescheinigung);
             spbescheinigung.setErsatzAufwendungen(false);
             spbescheinigung.setBescheinigungsdatum(new Date());
             spbescheinigung.setSpendedatum(new Date());

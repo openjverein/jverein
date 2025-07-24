@@ -55,7 +55,7 @@ public class AbrechnungslaufPDF
           BaseColor.LIGHT_GRAY);
       reporter.addHeaderColumn("Zweck", Element.ALIGN_CENTER, 190,
           BaseColor.LIGHT_GRAY);
-      
+
       reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 60,
           BaseColor.LIGHT_GRAY);
       reporter.addHeaderColumn("Eingang", Element.ALIGN_CENTER, 60,
@@ -70,7 +70,8 @@ public class AbrechnungslaufPDF
 
         reporter.addColumn(new JVDateFormatTTMMJJJJ().format(sollb.getDatum()),
             Element.ALIGN_LEFT);
-        reporter.addColumn(Adressaufbereitung.getNameVorname(sollb.getMitglied()),
+        reporter.addColumn(
+            Adressaufbereitung.getNameVorname(sollb.getMitglied()),
             Element.ALIGN_LEFT);
         reporter.addColumn(sollb.getZweck1(), Element.ALIGN_LEFT);
 

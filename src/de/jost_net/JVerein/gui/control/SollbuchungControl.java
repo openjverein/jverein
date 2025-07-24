@@ -85,12 +85,13 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SollbuchungControl extends DruckMailControl
-    implements Savable
+public class SollbuchungControl extends DruckMailControl implements Savable
 {
   public enum DIFFERENZ
   {
-    EGAL("Egal"), FEHLBETRAG("Fehlbetrag"), UEBERZAHLUNG("Überzahlung");
+    EGAL("Egal"),
+    FEHLBETRAG("Fehlbetrag"),
+    UEBERZAHLUNG("Überzahlung");
 
     private final String titel;
 
@@ -126,7 +127,7 @@ public class SollbuchungControl extends DruckMailControl
   private DecimalInput betrag;
 
   private AbstractInput mitglied;
-  
+
   private AbstractInput zahler;
 
   private Sollbuchung sollbuchung;
@@ -254,7 +255,8 @@ public class SollbuchungControl extends DruckMailControl
 
     zahlungsweg = new SelectInput(weg,
         z == null
-            ? new Zahlungsweg((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG))
+            ? new Zahlungsweg(
+                (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG))
             : new Zahlungsweg(getSollbuchung().getZahlungsweg()));
     zahlungsweg.setName("Zahlungsweg");
     return zahlungsweg;
@@ -383,11 +385,9 @@ public class SollbuchungControl extends DruckMailControl
               }
               if (mkn.getType() == MitgliedskontoNode.SOLL)
               {
-                Sollbuchung sollb = (Sollbuchung) Einstellungen
-                    .getDBService()
+                Sollbuchung sollb = (Sollbuchung) Einstellungen.getDBService()
                     .createObject(Sollbuchung.class, mkn.getID());
-                GUI.startView(
-                    new SollbuchungDetailView(), sollb);
+                GUI.startView(new SollbuchungDetailView(), sollb);
               }
             }
             catch (RemoteException e)
@@ -447,8 +447,8 @@ public class SollbuchungControl extends DruckMailControl
   {
     this.umwandeln = umwandeln;
     @SuppressWarnings("rawtypes")
-    GenericIterator sollbuchungen = new SollbuchungQuery(this, umwandeln,
-        null).get();
+    GenericIterator sollbuchungen = new SollbuchungQuery(this, umwandeln, null)
+        .get();
     if (sollbuchungenList == null)
     {
       sollbuchungenList = new SollbuchungListTablePart(sollbuchungen, null);
@@ -465,12 +465,12 @@ public class SollbuchungControl extends DruckMailControl
       sollbuchungenList.addColumn("Zahlungsweg", Sollbuchung.ZAHLUNGSWEG,
           new Formatter()
           {
-        @Override
-        public String format(Object o)
-        {
-          return new Zahlungsweg((Integer)o).getText();
-        }
-      });
+            @Override
+            public String format(Object o)
+            {
+              return new Zahlungsweg((Integer) o).getText();
+            }
+          });
       sollbuchungenList.addColumn("Zahlungseingang", Sollbuchung.ISTSUMME,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
@@ -555,7 +555,8 @@ public class SollbuchungControl extends DruckMailControl
     }
   }
 
-  public Part getSollbuchungPositionListPart(boolean hasRechnung) throws RemoteException
+  public Part getSollbuchungPositionListPart(boolean hasRechnung)
+      throws RemoteException
   {
     if (buchungList != null)
     {
@@ -786,7 +787,6 @@ public class SollbuchungControl extends DruckMailControl
               return;
             }
 
-
           }
           catch (Exception e)
           {
@@ -853,8 +853,7 @@ public class SollbuchungControl extends DruckMailControl
     if (getSollbuchung().getMitglied() != null)
     {
       Mitglied[] mitgliedArray = { getSollbuchung().getMitglied() };
-      mitglied = new SelectInput(mitgliedArray,
-          getSollbuchung().getMitglied());
+      mitglied = new SelectInput(mitgliedArray, getSollbuchung().getMitglied());
       mitglied.setEnabled(false);
     }
     else
@@ -870,7 +869,7 @@ public class SollbuchungControl extends DruckMailControl
     mitglied.setMandatory(true);
     return mitglied;
   }
-  
+
   public Input getZahler() throws RemoteException
   {
     if (zahler != null)

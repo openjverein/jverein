@@ -55,8 +55,7 @@ public class AbrechnungSEPAView extends AbstractView
     left.addLabelPair("Von Eintrittsdatum", control.getVondatum());
     left.addLabelPair("Von Eingabedatum", control.getVonEingabedatum());
     left.addLabelPair("Bis Austrittsdatum", control.getBisdatum());
-    left.addLabelPair("Zahlungsgrund für Beiträge",
-        control.getZahlungsgrund());
+    left.addLabelPair("Zahlungsgrund für Beiträge", control.getZahlungsgrund());
     if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
       left.addLabelPair("Zusatzbeträge", control.getZusatzbetrag());
@@ -71,10 +70,11 @@ public class AbrechnungSEPAView extends AbstractView
     rigth.addHeadline("Lastschriften");
     rigth.addLabelPair("Kompakte Abbuchung(en)",
         control.getKompakteAbbuchung());
-    rigth.addLabelPair("SEPA-Check temporär deaktivieren", control.getSEPACheck());
+    rigth.addLabelPair("SEPA-Check temporär deaktivieren",
+        control.getSEPACheck());
     rigth.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
     rigth.addLabelPair("Abbuchungsausgabe", control.getAbbuchungsausgabe());
-    
+
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       rigth.addHeadline("Rechnungen");

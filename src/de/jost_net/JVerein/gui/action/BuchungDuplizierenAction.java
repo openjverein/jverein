@@ -36,8 +36,8 @@ public class BuchungDuplizierenAction implements Action
     Buchung b = (Buchung) context;
     try
     {
-      Buchung bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
-          null);
+      Buchung bu = (Buchung) Einstellungen.getDBService()
+          .createObject(Buchung.class, null);
       bu.setKonto(b.getKonto());
       bu.setName(b.getName());
       bu.setIban(b.getIban());
@@ -59,7 +59,8 @@ public class BuchungDuplizierenAction implements Action
     }
     catch (Exception e)
     {
-      throw new ApplicationException("Fehler beim duplizieren einer Buchung", e);
+      throw new ApplicationException("Fehler beim duplizieren einer Buchung",
+          e);
     }
   }
 }

@@ -39,8 +39,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AnfangsbestandControl extends FilterControl
-    implements Savable
+public class AnfangsbestandControl extends FilterControl implements Savable
 {
 
   private TablePart anfangsbestandList;
@@ -170,7 +169,7 @@ public class AnfangsbestandControl extends FilterControl
     return anfangsbestandList;
   }
 
-  public void TabRefresh() 
+  public void TabRefresh()
   {
     if (anfangsbestandList == null)
     {
@@ -191,7 +190,7 @@ public class AnfangsbestandControl extends FilterControl
       Logger.error("Fehler", e1);
     }
   }
-  
+
   private DBIterator<Anfangsbestand> getAnfangsstaende() throws RemoteException
   {
     DBIterator<Anfangsbestand> anfangsbestaende = Einstellungen.getDBService()
@@ -204,7 +203,7 @@ public class AnfangsbestandControl extends FilterControl
       if (tmpSuchname.length() > 0)
       {
         anfangsbestaende.addFilter("(lower(bezeichnung) like ?)",
-            new Object[] { "%" + tmpSuchname.toLowerCase() + "%"});
+            new Object[] { "%" + tmpSuchname.toLowerCase() + "%" });
       }
     }
     if (isSuchtextAktiv() && getSuchtext().getValue() != null)
@@ -213,7 +212,7 @@ public class AnfangsbestandControl extends FilterControl
       if (tmpSuchtext.length() > 0)
       {
         anfangsbestaende.addFilter("(lower(nummer) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
       }
     }
     if (isDatumvonAktiv() && getDatumvon().getValue() != null)

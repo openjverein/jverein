@@ -32,8 +32,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class JVereinDBServiceImpl extends DBServiceImpl implements
-    JVereinDBService
+public class JVereinDBServiceImpl extends DBServiceImpl
+    implements JVereinDBService
 {
 
   private static final long serialVersionUID = 7221618925760171630L;
@@ -45,7 +45,8 @@ public class JVereinDBServiceImpl extends DBServiceImpl implements
    */
   public JVereinDBServiceImpl() throws RemoteException
   {
-    this(SETTINGS.getString("database.driver", DBSupportH2Impl.class.getName()));
+    this(
+        SETTINGS.getString("database.driver", DBSupportH2Impl.class.getName()));
   }
 
   /**
@@ -70,8 +71,8 @@ public class JVereinDBServiceImpl extends DBServiceImpl implements
     }
     catch (Throwable t)
     {
-      throw new RemoteException(
-          "unable to load database driver " + driverClass, t);
+      throw new RemoteException("unable to load database driver " + driverClass,
+          t);
     }
   }
 

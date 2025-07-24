@@ -47,22 +47,28 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
   private boolean keinkonto;
 
   private boolean nurHibiscus;
-  
+
   private boolean nurAktuelleKonten;
-  
+
   private Kontenfilter art;
-  
+
   private CheckboxInput box = null;
-  
+
   private KontoList konten = null;
 
   /**
    * Dialog zur Kontenauswahl
-   * @param position An welcher Stelle soll der Dialog angezeigt werden?
-   * @param keinkonto Darf der Dialog auch ohne Kontenauswahl geschlossen werden?
-   * @param nurHibiscus Es sollen nur Hibiscus-Konten angezeigt werden
-   * @param nurAktuelleKonten Es sollen nur aktuelle Konten angezeigt werden
-   * @param abschreibung Es sollen nur Anlagekonten angezeigt werden
+   * 
+   * @param position
+   *          An welcher Stelle soll der Dialog angezeigt werden?
+   * @param keinkonto
+   *          Darf der Dialog auch ohne Kontenauswahl geschlossen werden?
+   * @param nurHibiscus
+   *          Es sollen nur Hibiscus-Konten angezeigt werden
+   * @param nurAktuelleKonten
+   *          Es sollen nur aktuelle Konten angezeigt werden
+   * @param abschreibung
+   *          Es sollen nur Anlagekonten angezeigt werden
    */
   public KontoAuswahlDialog(int position, boolean keinkonto,
       boolean nurHibiscus, boolean nurAktuelleKonten, Kontenfilter art)
@@ -72,7 +78,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
     this.setTitle("Konto-Auswahl");
     this.keinkonto = keinkonto;
     this.nurHibiscus = nurHibiscus;
-    this.nurAktuelleKonten=nurAktuelleKonten;
+    this.nurAktuelleKonten = nurAktuelleKonten;
     this.art = art;
   }
 
@@ -85,11 +91,14 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
     {
       public void handleEvent(Event event)
       {
-    	  nurAktuelleKonten = (Boolean) box.getValue();
-    	  try 
-    	  { 
-    	    konten.update(nurHibiscus, nurAktuelleKonten, art);
-    	  } catch (Exception e) {}
+        nurAktuelleKonten = (Boolean) box.getValue();
+        try
+        {
+          konten.update(nurHibiscus, nurAktuelleKonten, art);
+        }
+        catch (Exception e)
+        {
+        }
       }
     });
     group.addCheckbox(box, i18n.tr("Nur aktive Konten"));
@@ -119,8 +128,8 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
         close();
       }
     };
-    konten = new de.jost_net.JVerein.gui.parts.KontoList(a,
-        nurHibiscus, nurAktuelleKonten, art);
+    konten = new de.jost_net.JVerein.gui.parts.KontoList(a, nurHibiscus,
+        nurAktuelleKonten, art);
     konten.setContextMenu(null);
     konten.setMulti(false);
     konten.removeFeature(FeatureSummary.class);

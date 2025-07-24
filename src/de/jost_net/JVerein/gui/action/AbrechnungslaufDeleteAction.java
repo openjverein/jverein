@@ -69,108 +69,107 @@ public class AbrechnungslaufDeleteAction implements Action
       // Prüfe, ob einer der erzeugten Buchungen bereits abgeschlossen ist
       final DBService service = Einstellungen.getDBService();
       String sql1 = "SELECT jahresabschluss.bis from jahresabschluss "
-          + "order by jahresabschluss.bis desc";      
-      Date bis = (Date) service.execute(sql1,
-          new Object[] { }, new ResultSetExtractor()
-      {
-        @Override
-        public Object extract(ResultSet rs)
-            throws RemoteException, SQLException
-        {
-          if (rs.next())
+          + "order by jahresabschluss.bis desc";
+      Date bis = (Date) service.execute(sql1, new Object[] {},
+          new ResultSetExtractor()
           {
-            return rs.getDate(1);
-          }
-          return null;
-        }
-      });
+            @Override
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
+            {
+              if (rs.next())
+              {
+                return rs.getDate(1);
+              }
+              return null;
+            }
+          });
       if (bis != null)
-        // Es gibt Jahresabschlüsse und bis ist das letzte Datum
+      // Es gibt Jahresabschlüsse und bis ist das letzte Datum
       {
         // Check ob eine Buchung des Abrechnungslaufen vor dem bis Datum liegt
         String sql2 = "SELECT DISTINCT buchung.id from buchung "
             + "WHERE (abrechnungslauf = ? and datum <= ?) ";
         boolean abgeschlossen = (boolean) service.execute(sql2,
             new Object[] { abrl.getID(), bis }, new ResultSetExtractor()
-        {
-          @Override
-          public Object extract(ResultSet rs)
-              throws RemoteException, SQLException
-          {
-            if (rs.next())
             {
-              return true;
-            }
-            return false;
-          }
-        });
+              @Override
+              public Object extract(ResultSet rs)
+                  throws RemoteException, SQLException
+              {
+                if (rs.next())
+                {
+                  return true;
+                }
+                return false;
+              }
+            });
         if (abgeschlossen)
         {
           throw new ApplicationException(
               "Der Abrechnungslauf enthält abgeschlossene Buchungen und kann darum nicht gelöscht werden!");
         }
       }
-      
+
       // Check ob einer der Buchungen des Abrechnungslaufs
       // eine Spendenbescheinigung zugeordnet ist
       String sql3 = "SELECT DISTINCT buchung.id from buchung "
           + "WHERE (abrechnungslauf = ? and spendenbescheinigung IS NOT NULL) ";
       boolean spendenbescheinigung = (boolean) service.execute(sql3,
           new Object[] { abrl.getID() }, new ResultSetExtractor()
-      {
-        @Override
-        public Object extract(ResultSet rs)
-            throws RemoteException, SQLException
-        {
-          if (rs.next())
           {
-            return true;
-          }
-          return false;
-        }
-      });
+            @Override
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
+            {
+              if (rs.next())
+              {
+                return true;
+              }
+              return false;
+            }
+          });
 
       // Check ob einer der Buchungen des Abrechnungslaufs
       // einer Rechnung zugeordnet ist
       String sql4 = "SELECT DISTINCT " + Sollbuchung.TABLE_NAME_ID + " from "
-          + Sollbuchung.TABLE_NAME
-          + " WHERE (" + Sollbuchung.ABRECHNUNGSLAUF + " = ? and "
-          + Sollbuchung.RECHNUNG + " IS NOT NULL) ";
+          + Sollbuchung.TABLE_NAME + " WHERE (" + Sollbuchung.ABRECHNUNGSLAUF
+          + " = ? and " + Sollbuchung.RECHNUNG + " IS NOT NULL) ";
       boolean rechnung = (boolean) service.execute(sql4,
           new Object[] { abrl.getID() }, new ResultSetExtractor()
-      {
-        @Override
-        public Object extract(ResultSet rs)
-            throws RemoteException, SQLException
-        {
-          if (rs.next())
           {
-            return true;
-          }
-          return false;
-        }
-      });
-      
+            @Override
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
+            {
+              if (rs.next())
+              {
+                return true;
+              }
+              return false;
+            }
+          });
+
       String text = "";
       if (!spendenbescheinigung && !rechnung)
       {
         text = "Wollen Sie diesen Abrechnungslauf wirklich löschen?";
       }
-      else if(!spendenbescheinigung && rechnung)
+      else if (!spendenbescheinigung && rechnung)
       {
         text = "Der Abrechnungslauf enthält Sollbuchungen denen eine "
             + "Rechnung zugeordnet ist.\n"
             + "Sie können nur zusammen gelöscht werden.\n"
             + "Abrechnungslauf und Rechnungen löschen?";
       }
-      else if(spendenbescheinigung && !rechnung)
+      else if (spendenbescheinigung && !rechnung)
       {
         text = "Der Abrechnungslauf enthält Buchungen denen eine "
             + "Spendenbescheinigung zugeordnet ist.\n"
             + "Sie können nur zusammen gelöscht werden.\n"
             + "Abrechnungslauf und Spendenbescheinigungen löschen?";
       }
-      else if(spendenbescheinigung && rechnung)
+      else if (spendenbescheinigung && rechnung)
       {
         text = "Der Abrechnungslauf enthält Buchungen denen eine "
             + "Spendenbescheinigung zugeordnet ist\n"
@@ -196,7 +195,7 @@ public class AbrechnungslaufDeleteAction implements Action
         Logger.error("Fehler beim Löschen eines Abrechnungslaufes", e);
         return;
       }
-      
+
       DBIterator<Buchung> it = Einstellungen.getDBService()
           .createList(Buchung.class);
       it.addFilter("abrechnungslauf = ?", new Object[] { abrl.getID() });
@@ -205,7 +204,8 @@ public class AbrechnungslaufDeleteAction implements Action
         Buchung bu = it.next();
         if (bu.getSpendenbescheinigung() != null)
           bu.getSpendenbescheinigung().delete();
-        try {
+        try
+        {
           bu.delete();
         }
         catch (RemoteException ignore)
@@ -240,8 +240,8 @@ public class AbrechnungslaufDeleteAction implements Action
         }
         catch (RemoteException e)
         {
-          //Ignorieren, da die Exeption auftritt wenn das Fälligkeitsdatum
-          //nicht weiter zurückgesetzt werden kann
+          // Ignorieren, da die Exeption auftritt wenn das Fälligkeitsdatum
+          // nicht weiter zurückgesetzt werden kann
         }
         z.setAusfuehrung(za.getLetzteAusfuehrung());
         z.store();
