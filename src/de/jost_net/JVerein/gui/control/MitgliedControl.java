@@ -1435,19 +1435,6 @@ public class MitgliedControl extends FilterControl implements Savable
     this.austritt.setTitle("Austrittsdatum");
     this.austritt.setName("Austrittsdatum");
     this.austritt.setText("Bitte Austrittsdatum wählen");
-    this.austritt.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) austritt.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
     return austritt;
   }
 
@@ -1463,19 +1450,6 @@ public class MitgliedControl extends FilterControl implements Savable
     this.kuendigung.setName("Kündigungsdatum");
     this.kuendigung.setTitle("Kündigungsdatum");
     this.kuendigung.setText("Bitte Kündigungsdatum wählen");
-    this.kuendigung.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) kuendigung.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
     return kuendigung;
   }
 
@@ -1491,19 +1465,6 @@ public class MitgliedControl extends FilterControl implements Savable
     this.sterbetag.setName("Sterbetag");
     this.sterbetag.setTitle("Sterbetag");
     this.sterbetag.setText("Bitte Sterbetag wählen");
-    this.sterbetag.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) sterbetag.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
     return sterbetag;
   }
 
@@ -1681,8 +1642,7 @@ public class MitgliedControl extends FilterControl implements Savable
         // Alle Familienmitglieder, die eine Zahler-ID eingetragen haben, sind
         // nicht selbst das vollzahlende Mitglied.
         // Der Eintrag ohne zahlerid ist also das vollzahlende Mitglied.
-        Long m = (Long) o;
-        if (m == null)
+        if (o == null)
           return "";
         else
           return "Familienmitglied";

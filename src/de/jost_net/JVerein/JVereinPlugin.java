@@ -24,12 +24,10 @@ import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.UmsatzMessageConsumer;
 import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.server.JVereinDBServiceImpl;
-import de.jost_net.JVerein.util.HelpConsumer;
 import de.jost_net.JVerein.util.MemoryAnalyzer;
 import de.willuhn.jameica.gui.extension.ExtensionRegistry;
 import de.willuhn.jameica.messaging.BootMessage;
 import de.willuhn.jameica.messaging.LookupService;
-import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.plugin.AbstractPlugin;
 import de.willuhn.jameica.plugin.Version;
 import de.willuhn.jameica.services.ArchiveService;
@@ -83,27 +81,6 @@ public class JVereinPlugin extends AbstractPlugin
     Logger.info("starting init process for jverein");
 
     update();
-    // String driver = settings.getString("jdbc.driver", null);
-    // String url = settings.getString("jdbc.url", null);
-    // String username = settings.getString("jdbc.user", null);
-    // String password = settings.getString("jdbc.password", null);
-    // String changelog = "liquibase/jverein.xml";
-    // try
-    // {
-    // Class.forName(driver);
-    // Connection connection = DriverManager.getConnection(url, username,
-    // password);
-    // Liquibase liquibase = new Liquibase(changelog,
-    // new ClassLoaderResourceAccessor(), new JdbcConnection(connection));
-    // liquibase.update("");
-    //
-    // }
-    // catch (Exception e)
-    // {
-    // throw new ApplicationException(e);
-    // }
-
-    changeRepository();
 
     call(new ServiceCall()
     {
@@ -120,9 +97,6 @@ public class JVereinPlugin extends AbstractPlugin
     ExtensionRegistry.register(new MyExtension(), "jverein.main");
     this.umc = new UmsatzMessageConsumer();
     Application.getMessagingFactory().registerMessageConsumer(this.umc);
-    MessageConsumer mc = new HelpConsumer();
-    Application.getMessagingFactory().getMessagingQueue("jameica.help.missing")
-        .registerMessageConsumer(mc);
 
     Application.getBootLoader().getBootable(ArchiveService.class);
   }
@@ -269,38 +243,8 @@ public class JVereinPlugin extends AbstractPlugin
 
   private void update() throws ApplicationException
   {
-    // Settings s1 = new Settings(JVereinDBService.class);
-    // Unter "database.driver" ist die JVerein-Klasse mit den Parametern der
-    // Datenbank gespeichert
-    // String d1 = s1.getString("database.driver",
-    // "de.jost_net.JVerein.server.DBSupportH2Impl");
     try
     {
-      // Die Parameterklasse wird geladen
-      // Class<?> c = Class.forName(d1);
-      // DBSupport dsupp = (DBSupport) c.newInstance();
-      // Parameter auslesen
-      // String driver = dsupp.getJdbcDriver();
-      // String url = dsupp.getJdbcUrl();
-      // String username = dsupp.getJdbcUsername();
-      // String password = dsupp.getJdbcPassword();
-      // Datenbanktreiber laden
-      // Class.forName(driver);
-      // Connection herstellen
-      // Connection connection = DriverManager.getConnection(url, username,
-      // password);
-      // Versionsnummer aus der Datenbank auslesen
-      // Integer version = DBUpdaterTool.getVersion(connection);
-      // Wenn die Version null ist, handelt es sich um eine neue leere Datenbank
-      // if (version == null)
-      // {
-      // Weil die Datenbank leer ist, wird sie neu aufgebaut
-      // DBUpdaterTool.updateLiquibase(connection);
-      // }
-      // else if (version < 360)
-      // {
-      // Wenn die Versionsnummer < 360 muss noch einmal die alte Updatemimik
-      // aufgerufen werden.
       call(new ServiceCall()
       {
         @Override
@@ -309,39 +253,10 @@ public class JVereinPlugin extends AbstractPlugin
           service.install();
         }
       });
-      // }
-      // Ist Liquibase installiert? Das wird über das vorhandensein der Tabelle
-      // databaselog geprüft
-      // boolean liquibaseinstalliert = DBUpdaterTool
-      // .isLiquibaseInstalliert(connection);
-      // if (!liquibaseinstalliert)
-      // {
-      // Liquibase ist nicht installiert. Über die Synchronisation werden die
-      // Liquibase-Tabellen mit Inhalt erzeugt.
-      // DBUpdaterTool.changelogsyncLiquibase(connection);
-      // }
-      // Jetzt wird noch geprüft ob ein Update erforderlich ist.
-      // DBUpdaterTool.updateLiquibase(connection);
     }
     catch (Exception e)
     {
       throw new ApplicationException(e);
-    }
-  }
-
-  private void changeRepository()
-  {
-    Settings repset = new Settings(
-        de.willuhn.jameica.services.RepositoryService.class);
-    repset.setStoreWhenRead(true);
-    for (int i = 0; i < 10; i++)
-    {
-      String rep = repset.getString("repository.url." + i, "");
-      if (rep.equals("https://sourceforge.net/projects/jverein/files/updates/"))
-      {
-        repset.setAttribute("repository.url." + i,
-            "http://www.jverein.de/updates");
-      }
     }
   }
 }

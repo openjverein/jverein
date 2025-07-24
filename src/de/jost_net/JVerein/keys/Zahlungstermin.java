@@ -85,21 +85,6 @@ public enum Zahlungstermin
     return null;
   }
 
-  // public static ArrayList<Zahlungstermin> getZahlungstermin(int monat)
-  // {
-  // ArrayList<Zahlungstermin> ret = new ArrayList<Zahlungstermin>();
-  // for (Zahlungstermin t : Zahlungstermin.values())
-  // {
-  // for (int m : t.monate)
-  // {
-  // if (m == monat)
-  // {
-  // ret.add(t);
-  // }
-  // }
-  // }
-  // return ret;
-  // }
   public boolean isAbzurechnen(int monat)
   {
     for (int m : monate)

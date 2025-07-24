@@ -80,7 +80,6 @@ import de.willuhn.jameica.plugin.Version;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-//import de.jost_net.JVerein.keys.ArtBuchungsart;
 
 public class KontoControl extends FilterControl implements Savable
 {
@@ -1225,7 +1224,6 @@ public class KontoControl extends FilterControl implements Savable
       while (buchungenIt.hasNext())
       {
         b = (Buchung) buchungenIt.next();
-        // TODO Bei der Anlage müssen wir immer Netto Beträge verwenden?
         betrag += b.getBetrag();
         d = b.getDatum();
       }

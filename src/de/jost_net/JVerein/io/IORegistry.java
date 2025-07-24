@@ -66,7 +66,7 @@ public class IORegistry
       {
         try
         {
-          IO io = (IO) list[i].newInstance();
+          IO io = (IO) list[i].getConstructor().newInstance();
           Logger.info("  " + io.getName() + " - " + list[i].getName());
           l.add(io);
         }
