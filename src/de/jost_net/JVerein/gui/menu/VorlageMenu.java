@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.EinstellungenVorlageDetailView;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -30,10 +31,10 @@ public class VorlageMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Dateinamen
    */
-  public VorlageMenu()
+  public VorlageMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(EinstellungenVorlageDetailView.class),
+        new EditAction(EinstellungenVorlageDetailView.class, part),
         "text-x-generic.png"));
   }
 }

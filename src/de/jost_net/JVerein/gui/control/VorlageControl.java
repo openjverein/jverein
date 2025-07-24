@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.VorlageMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.EinstellungenVorlageDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Vorlage;
@@ -28,22 +29,20 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class VorlageControl extends AbstractControl implements Savable
+public class VorlageControl extends VorZurueckControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
 
-  private TablePart namenList;
+  private JVereinTablePart namenList;
 
   private Vorlage vorlage;
 
@@ -148,15 +147,17 @@ public class VorlageControl extends AbstractControl implements Savable
 
     if (namenList == null)
     {
-      namenList = new TablePart(namen,
-          new EditAction(EinstellungenVorlageDetailView.class));
+      namenList = new JVereinTablePart(namen, null);
       namenList.addColumn("Vorlage Art", "art");
       namenList.addColumn("Vorlagenmuster", Vorlage.MUSTER);
-      namenList.setContextMenu(new VorlageMenu());
+      namenList.setContextMenu(new VorlageMenu(namenList));
       namenList.setRememberColWidths(true);
       namenList.setRememberOrder(true);
       namenList.setRememberState(true);
       namenList.removeFeature(FeatureSummary.class);
+      namenList.setAction(
+          new EditAction(EinstellungenVorlageDetailView.class, namenList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {
