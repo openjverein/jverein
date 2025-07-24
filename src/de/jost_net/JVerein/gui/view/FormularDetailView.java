@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
-import de.jost_net.JVerein.gui.action.FormularfeldAction;
+import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
 import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
 import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
 import de.jost_net.JVerein.gui.control.Savable;
@@ -66,7 +66,7 @@ public class FormularDetailView extends AbstractDetailView
         getCurrentObject(), false, "document-save.png");
     buttons1.addButton("Import", new FormularfelderImportAction(control),
         getCurrentObject(), false, "file-import.png");
-    buttons1.addButton("Neu", new FormularfeldAction(), getCurrentObject(),
+    buttons1.addButton("Neu", new FormularfeldNeuAction(), getCurrentObject(),
         false, "document-new.png");
 
     // Diese Zeilen werden gebraucht um die Buttons rechts zu plazieren

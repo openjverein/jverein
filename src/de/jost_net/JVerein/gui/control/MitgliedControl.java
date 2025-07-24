@@ -40,16 +40,16 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.FamilienbeitragMessage;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.action.ArbeitseinsatzAction;
+import de.jost_net.JVerein.gui.action.ArbeitseinsatzNeuAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.LehrgangAction;
+import de.jost_net.JVerein.gui.action.LehrgangNeuAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.MailDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
-import de.jost_net.JVerein.gui.action.WiedervorlageAction;
-import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
+import de.jost_net.JVerein.gui.action.WiedervorlageNeuAction;
+import de.jost_net.JVerein.gui.action.ZusatzbetragNeuAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
@@ -2180,7 +2180,7 @@ public class MitgliedControl extends FilterControl
   public Button getZusatzbetragNeu()
   {
     return new Button("Neuer Zusatzbetrag",
-        new ZusatzbetraegeAction(getMitglied()), null, false, "document-new.png");
+        new ZusatzbetragNeuAction(getMitglied()), null, false, "document-new.png");
   }
 
   public Button getSollbuchungNeu()
@@ -2193,18 +2193,18 @@ public class MitgliedControl extends FilterControl
   public Button getWiedervorlageNeu()
   {
     return new Button("Neue Wiedervorlage",
-        new WiedervorlageAction(getMitglied()), null, false, "document-new.png");
+        new WiedervorlageNeuAction(getMitglied()), null, false, "document-new.png");
   }
 
   public Button getArbeitseinsatzNeu()
   {
     return new Button("Neuer Arbeitseinsatz",
-        new ArbeitseinsatzAction(getMitglied()), null, false, "document-new.png");
+        new ArbeitseinsatzNeuAction(getMitglied()), null, false, "document-new.png");
   }
 
   public Button getLehrgangNeu()
   {
-    return new Button("Neuer Lehrgang", new LehrgangAction(getMitglied()), null,
+    return new Button("Neuer Lehrgang", new LehrgangNeuAction(getMitglied()), null,
         false, "document-new.png");
   }
 

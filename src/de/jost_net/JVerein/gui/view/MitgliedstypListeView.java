@@ -17,8 +17,8 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.MitgliedstypAction;
 import de.jost_net.JVerein.gui.action.MitgliedstypDefaultAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedstypControl;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -42,7 +42,9 @@ public class MitgliedstypListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ADRESSTYPEN, false, "question-circle.png");
-    buttons.addButton("Neu", new MitgliedstypAction(), null, false, "document-new.png");
+    buttons.addButton("Neu",
+        new NewAction(MitgliedstypDetailView.class, Mitgliedstyp.class), null,
+        false, "document-new.png");
 
     DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
         .createList(Mitgliedstyp.class);

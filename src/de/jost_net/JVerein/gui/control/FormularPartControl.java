@@ -19,8 +19,9 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.FormularfeldAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.FormularfeldMenu;
+import de.jost_net.JVerein.gui.view.FormularfeldDetailView;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -52,7 +53,7 @@ public abstract class FormularPartControl extends VorZurueckControl
     formularfelder.setOrder("ORDER BY seite, x, y");
 
     formularfelderList = new TablePart(formularfelder,
-        new FormularfeldAction());
+        new EditAction(FormularfeldDetailView.class));
     formularfelderList.addColumn("Name", "name");
     formularfelderList.addColumn("Seite", "seite");
     formularfelderList.addColumn("Von links", "x");

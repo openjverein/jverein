@@ -19,18 +19,19 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
-import de.jost_net.JVerein.rmi.Arbeitseinsatz;
+import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class ArbeitseinsatzAction implements Action
+public class ZusatzbetragNeuAction implements Action
 {
+
   private Mitglied m;
 
-  public ArbeitseinsatzAction(Mitglied m)
+  public ZusatzbetragNeuAction(Mitglied m)
   {
     super();
     this.m = m;
@@ -39,34 +40,32 @@ public class ArbeitseinsatzAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Arbeitseinsatz aeins = null;
+    Zusatzbetrag z = null;
 
-    if (context != null && (context instanceof Arbeitseinsatz))
+    try
     {
-      aeins = (Arbeitseinsatz) context;
-    }
-    else
-    {
-      try
+      z = (Zusatzbetrag) Einstellungen.getDBService()
+          .createObject(Zusatzbetrag.class, null);
+      if (m != null)
       {
-        aeins = (Arbeitseinsatz) Einstellungen.getDBService().createObject(
-            Arbeitseinsatz.class, null);
-        if (m != null)
+        if (m != null && m.getID() == null)
         {
-          if (m.getID() == null)
-          {
-            throw new ApplicationException(
-                "Neues Mitglied bitte erst speichern. Dann können Arbeitseinsätze aufgenommen werden.");
-          }
-          aeins.setMitglied(Integer.valueOf(m.getID()).intValue());
+          throw new ApplicationException(
+              "Neues Mitglied bitte erst speichern. Dann können Zusatzbeträge aufgenommen werden.");
         }
+        z.setMitglied(Integer.valueOf(m.getID()).intValue());
       }
-      catch (RemoteException e)
+      else
       {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung eines neuen Arbeitseinsatzes", e);
+        throw new ApplicationException("Kein Mitglied ausgewählt");
       }
     }
-    GUI.startView(ArbeitseinsatzDetailView.class.getName(), aeins);
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(
+          "Fehler bei der Erzeugung eines neuen Zusatzbetrages", e);
+    }
+
+    GUI.startView(ZusatzbetragDetailView.class.getName(), z);
   }
 }

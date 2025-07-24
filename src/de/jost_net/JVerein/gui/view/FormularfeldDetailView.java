@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.FormularfeldAction;
+import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.rmi.Formularfeld;
@@ -77,7 +77,7 @@ public class FormularfeldDetailView extends AbstractDetailView
       {
         control.handleStore();
 
-        new FormularfeldAction().handleAction(ff.getFormular());
+        new FormularfeldNeuAction().handleAction(ff.getFormular());
         GUI.getStatusBar().setSuccessText("Formularfeld gespeichert");
       }
       catch (ApplicationException | RemoteException e)
