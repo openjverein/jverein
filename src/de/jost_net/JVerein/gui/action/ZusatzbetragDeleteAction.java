@@ -28,7 +28,7 @@ import de.willuhn.util.ApplicationException;
 /**
  * Loeschen eines Zusatzbetrages.
  */
-public class ZusatzbetraegeDeleteAction implements Action
+public class ZusatzbetragDeleteAction implements Action
 {
 
   @Override

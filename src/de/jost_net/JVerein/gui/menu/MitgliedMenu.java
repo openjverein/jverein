@@ -38,7 +38,7 @@ import de.jost_net.JVerein.gui.action.MitgliedVCardDateiAction;
 import de.jost_net.JVerein.gui.action.MitgliedVCardQRCodeAction;
 import de.jost_net.JVerein.gui.action.MitgliedZusatzbetraegeZuordnungAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
@@ -219,10 +219,10 @@ public class MitgliedMenu extends ContextMenu
     if ((Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
       addItem(new CheckedSingleContextMenuItem("Geldspendenbescheinigung",
-          new SpendenbescheinigungAction(Spendenart.GELDSPENDE),
+          new SpendenbescheinigungNeuAction(Spendenart.GELDSPENDE),
           "file-invoice.png"));
       addItem(new CheckedSingleContextMenuItem("Sachspendenbescheinigung",
-          new SpendenbescheinigungAction(Spendenart.SACHSPENDE),
+          new SpendenbescheinigungNeuAction(Spendenart.SACHSPENDE),
           "file-invoice.png"));
     }
     addItem(new CheckedContextMenuItem("Personalbogen",

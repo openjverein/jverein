@@ -27,7 +27,7 @@ import de.jost_net.JVerein.gui.action.RechnungNeuAction;
 import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
 import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -82,10 +82,10 @@ public class MitgliedskontoMenu extends ContextMenu
       {
         addItem(ContextMenuItem.SEPARATOR);
         addItem(new SpendenbescheinigungItem("Geldspendenbescheinigung",
-            new SpendenbescheinigungAction(Spendenart.GELDSPENDE),
+            new SpendenbescheinigungNeuAction(Spendenart.GELDSPENDE),
             "file-invoice.png"));
         addItem(new MitgliedItem("Sachspendenbescheinigung",
-            new SpendenbescheinigungAction(Spendenart.SACHSPENDE),
+            new SpendenbescheinigungNeuAction(Spendenart.SACHSPENDE),
             "file-invoice.png"));
       }
     }

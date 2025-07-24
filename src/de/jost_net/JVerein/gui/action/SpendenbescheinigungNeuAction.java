@@ -40,13 +40,13 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SpendenbescheinigungAction implements Action
+public class SpendenbescheinigungNeuAction implements Action
 {
   private int spendenart = Spendenart.SACHSPENDE;
   
   private Spendenbescheinigung spb = null;
   
-  public SpendenbescheinigungAction(int spendenart)
+  public SpendenbescheinigungNeuAction(int spendenart)
   {
     this.spendenart = spendenart;
   }
@@ -56,119 +56,113 @@ public class SpendenbescheinigungAction implements Action
   {
     try
     {
-      if (context instanceof Spendenbescheinigung)
+      spb = (Spendenbescheinigung) Einstellungen.getDBService()
+          .createObject(Spendenbescheinigung.class, null);
+      spb.setSpendenart(spendenart);
+      spb.setAutocreate(Boolean.FALSE);
+      spb.setErsatzAufwendungen(false);
+      spb.setBescheinigungsdatum(new Date());
+
+      if (context != null && (context instanceof Mitglied))
       {
-        spb = (Spendenbescheinigung) context;
+        Mitglied m = (Mitglied) context;
+        SpbAdressaufbereitung.adressaufbereitung(m, spb);
+        if (spendenart == Spendenart.GELDSPENDE)
+        {
+          handleMitglied(m);
+        }
+      }
+      else if (context instanceof MitgliedskontoNode)
+      {
+        MitgliedskontoNode mkn = (MitgliedskontoNode) context;
+
+        // Istbuchung in Mitgliedskonto ausgewählt
+        if (mkn.getType() == MitgliedskontoNode.IST)
+        {
+          // Buchung eintragen
+          Object o = Einstellungen.getDBService().createObject(Buchung.class,
+              mkn.getID());
+          if (o != null)
+          {
+            Buchung b = (Buchung) o;
+            if (b.getSpendenbescheinigung() != null)
+            {
+              throw new ApplicationException(
+                  "Die Buchung ist bereits auf einer Spendenbescheinigung eingetragen!");
+            }
+            if (b.getSollbuchung() != null)
+            {
+              // Zahler aus Sollbuchung lesen
+              Mitglied zahler = b.getSollbuchung().getZahler();
+              if (zahler != null)
+              {
+                SpbAdressaufbereitung.adressaufbereitung(zahler, spb);
+              }
+            }
+            spb.setBuchung(b);
+            spb.setSpendedatum(b.getDatum());
+            spb.setAutocreate(Boolean.TRUE);
+          }
+        }
+        // Mitglied in Mitgliedskonto ausgewählt
+        else if (mkn.getType() == MitgliedskontoNode.MITGLIED)
+        {
+          if (mkn.getMitglied() != null)
+          {
+            // Mitglied aus Mitgliedskonto lesen
+            Mitglied m = mkn.getMitglied();
+            SpbAdressaufbereitung.adressaufbereitung(m, spb);
+          }
+          if (spendenart == Spendenart.GELDSPENDE)
+          {
+            handleMitglied(spb.getMitglied());
+          }
+        }
+      }
+      else if (context instanceof Buchung)
+      {
+        Buchung b = (Buchung) context;
+        if (b.getBuchungsart() == null || !b.getBuchungsart().getSpende())
+        {
+          throw new ApplicationException(
+              "Die Buchung hat keine Buchungsart die als Spende deklariert ist!");
+        }
+        if (b.getSpendenbescheinigung() != null)
+        {
+          throw new ApplicationException(
+              "Die Buchung ist bereits auf einer Spendenbescheinigung eingetragen!");
+        }
+        if (b.getSollbuchung() != null)
+        {
+          // Zahler aus Sollbuchung lesen
+          Mitglied zahler = b.getSollbuchung().getZahler();
+          if (zahler != null)
+          {
+            SpbAdressaufbereitung.adressaufbereitung(zahler, spb);
+          }
+        }
+        spb.setBuchung(b);
+        spb.setSpendedatum(b.getDatum());
+        spb.setAutocreate(Boolean.TRUE);
       }
       else
       {
-        spb = (Spendenbescheinigung) Einstellungen.getDBService()
-            .createObject(Spendenbescheinigung.class, null);
-        spb.setSpendenart(spendenart);
+        spb.setSpendenart(Spendenart.SACHSPENDE);
         spb.setAutocreate(Boolean.FALSE);
-        spb.setErsatzAufwendungen(false);
-        spb.setBescheinigungsdatum(new Date());
-
-        if (context != null && (context instanceof Mitglied))
+        Object o = GUI.getCurrentView().getCurrentObject();
+        if (o != null && o instanceof Spendenbescheinigung)
         {
-          Mitglied m = (Mitglied) context;
-          SpbAdressaufbereitung.adressaufbereitung(m, spb);
-          if (spendenart == Spendenart.GELDSPENDE)
-          {
-            handleMitglied(m);
-          }
-        }
-        else if (context instanceof MitgliedskontoNode)
-        {
-          MitgliedskontoNode mkn = (MitgliedskontoNode) context;
-
-          // Istbuchung in Mitgliedskonto ausgewählt
-          if (mkn.getType() == MitgliedskontoNode.IST)
-          {
-            // Buchung eintragen
-            Object o = Einstellungen.getDBService().createObject(Buchung.class,
-                mkn.getID());
-            if (o != null)
-            {
-              Buchung b = (Buchung) o;
-              if (b.getSpendenbescheinigung() != null)
-              {
-                throw new ApplicationException(
-                    "Die Buchung ist bereits auf einer Spendenbescheinigung eingetragen!");
-              }
-              if (b.getSollbuchung() != null)
-              {
-                // Zahler aus Sollbuchung lesen
-                Mitglied zahler = b.getSollbuchung().getZahler();
-                if (zahler != null)
-                {
-                  SpbAdressaufbereitung.adressaufbereitung(zahler, spb);
-                }
-              }
-              spb.setBuchung(b);
-              spb.setSpendedatum(b.getDatum());
-              spb.setAutocreate(Boolean.TRUE);
-            }
-          }
-          // Mitglied in Mitgliedskonto ausgewählt
-          else if (mkn.getType() == MitgliedskontoNode.MITGLIED)
-          {
-            if (mkn.getMitglied() != null)
-            {
-              // Mitglied aus Mitgliedskonto lesen
-              Mitglied m = mkn.getMitglied();
-              SpbAdressaufbereitung.adressaufbereitung(m, spb);
-            }
-            if (spendenart == Spendenart.GELDSPENDE)
-            {
-              handleMitglied(spb.getMitglied());
-            }
-          }
-        }
-        else if (context instanceof Buchung)
-        {
-          Buchung b = (Buchung) context;
-          if (b.getBuchungsart() == null || !b.getBuchungsart().getSpende())
-          {
-            throw new ApplicationException(
-                "Die Buchung hat keine Buchungsart die als Spende deklariert ist!");
-          }
-          if (b.getSpendenbescheinigung() != null)
-          {
-            throw new ApplicationException(
-                "Die Buchung ist bereits auf einer Spendenbescheinigung eingetragen!");
-          }
-          if (b.getSollbuchung() != null)
-          {
-            // Zahler aus Sollbuchung lesen
-            Mitglied zahler = b.getSollbuchung().getZahler();
-            if (zahler != null)
-            {
-              SpbAdressaufbereitung.adressaufbereitung(zahler, spb);
-            }
-          }
-          spb.setBuchung(b);
-          spb.setSpendedatum(b.getDatum());
-          spb.setAutocreate(Boolean.TRUE);
-        }
-        else
-        {
-          spb.setSpendenart(Spendenart.SACHSPENDE);
-          spb.setAutocreate(Boolean.FALSE);
-          Object o = GUI.getCurrentView().getCurrentObject();
-          if (o != null && o instanceof Spendenbescheinigung)
-          {
-            Spendenbescheinigung von = (Spendenbescheinigung) o;
-            spb.setZeile1(von.getZeile1());
-            spb.setZeile2(von.getZeile2());
-            spb.setZeile3(von.getZeile3());
-            spb.setZeile4(von.getZeile4());
-            spb.setZeile5(von.getZeile5());
-            spb.setZeile6(von.getZeile6());
-            spb.setZeile7(von.getZeile7());
-          }
+          Spendenbescheinigung von = (Spendenbescheinigung) o;
+          spb.setZeile1(von.getZeile1());
+          spb.setZeile2(von.getZeile2());
+          spb.setZeile3(von.getZeile3());
+          spb.setZeile4(von.getZeile4());
+          spb.setZeile5(von.getZeile5());
+          spb.setZeile6(von.getZeile6());
+          spb.setZeile7(von.getZeile7());
         }
       }
+
       GUI.startView(SpendenbescheinigungDetailView.class.getName(), spb);
     }
     catch (RemoteException e)

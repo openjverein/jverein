@@ -32,7 +32,7 @@ import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungSteuerZuordnenAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
 import de.jost_net.JVerein.gui.action.SyntaxExportAction;
@@ -99,7 +99,7 @@ public class BuchungMenu extends ContextMenu
         if ((Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
         {
           addItem(new SpendenbescheinigungMenuItem("Geldspendenbescheinigung",
-              new SpendenbescheinigungAction(Spendenart.GELDSPENDE),
+              new SpendenbescheinigungNeuAction(Spendenart.GELDSPENDE),
               "file-invoice.png"));
         }
       }
