@@ -134,6 +134,7 @@ public class AnfangsbestandControl extends FilterControl implements Savable
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -169,6 +170,7 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     return anfangsbestandList;
   }
 
+  @Override
   public void TabRefresh()
   {
     if (anfangsbestandList == null)

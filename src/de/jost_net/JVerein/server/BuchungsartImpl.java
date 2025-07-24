@@ -414,6 +414,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
     Cache.get(Buchungsart.class, false).put(this); // Cache aktualisieren
   }
 
+  @Override
   public boolean equals(Object bart)
   {
     try

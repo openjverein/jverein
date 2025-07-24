@@ -48,6 +48,7 @@ public class PseudoDBObject extends AbstractDBObject implements DBObject
   /**
    * @see de.willuhn.datasource.GenericObject#getAttribute(java.lang.String)
    */
+  @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
     if (fieldName == null)
@@ -101,6 +102,7 @@ public class PseudoDBObject extends AbstractDBObject implements DBObject
    * @return vorheriger Wert des Feldes.
    * @throws RemoteException
    */
+  @Override
   public Object setAttribute(String fieldName, Object value)
       throws RemoteException
   {

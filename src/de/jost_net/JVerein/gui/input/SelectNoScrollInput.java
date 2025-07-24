@@ -24,6 +24,7 @@ public class SelectNoScrollInput extends SelectInput
     super(list, preselected);
   }
 
+  @Override
   public Control getControl()
   {
     final Combo combo = (Combo) super.getControl();

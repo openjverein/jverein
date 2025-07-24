@@ -103,6 +103,7 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

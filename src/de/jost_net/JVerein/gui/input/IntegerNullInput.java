@@ -37,6 +37,7 @@ public class IntegerNullInput extends TextInput
     Control c = super.getControl();
     text.addListener(SWT.Verify, new Listener()
     {
+      @Override
       public void handleEvent(Event e)
       {
         char[] chars = e.text.toCharArray();

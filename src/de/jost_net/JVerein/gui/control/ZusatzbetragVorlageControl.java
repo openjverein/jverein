@@ -344,6 +344,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     return endedatum;
   }
 
+  @Override
   public JVereinDBObject prepareStore()
       throws RemoteException, ApplicationException
   {
@@ -367,6 +368,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     return z;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

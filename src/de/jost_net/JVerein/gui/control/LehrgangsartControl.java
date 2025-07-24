@@ -148,6 +148,7 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

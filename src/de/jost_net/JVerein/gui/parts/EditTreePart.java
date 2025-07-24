@@ -101,6 +101,7 @@ public class EditTreePart extends TreePart
 
       tree.addListener(SWT.MouseDown, new Listener()
       {
+        @Override
         public void handleEvent(Event e)
         {
           // Bearbeiten nur dann, wenn man mit der linken Maustaste klickt
@@ -170,6 +171,7 @@ public class EditTreePart extends TreePart
           // Beendet das Editieren
           final Runnable done = new Runnable()
           {
+            @Override
             public void run()
             {
               if (editorControl != null)
@@ -191,6 +193,7 @@ public class EditTreePart extends TreePart
           // Übernimmt die Änderungen
           final Runnable commit = new Runnable()
           {
+            @Override
             public void run()
             {
               try
@@ -262,6 +265,7 @@ public class EditTreePart extends TreePart
           // Listener für Tastatur
           editorControl.addTraverseListener(new TraverseListener()
           {
+            @Override
             public void keyTraversed(TraverseEvent e)
             {
               if (!editorControl.isFocusControl())
@@ -282,6 +286,7 @@ public class EditTreePart extends TreePart
           // Listener für Maus
           editorControl.addFocusListener(new FocusAdapter()
           {
+            @Override
             public void focusLost(FocusEvent e)
             {
               commit.run();

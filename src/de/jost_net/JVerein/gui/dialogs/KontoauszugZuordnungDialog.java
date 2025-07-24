@@ -126,6 +126,7 @@ public class KontoauszugZuordnungDialog extends AbstractDialog<Object>
     }, null, false, "process-stop.png");
     getShell().addListener(SWT.Close, new Listener()
     {
+      @Override
       public void handleEvent(Event event)
       {
         abort = true;

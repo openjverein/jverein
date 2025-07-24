@@ -418,6 +418,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     return part;
   }
 
+  @Override
   public void TabRefresh()
   {
 
@@ -500,6 +501,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     return k;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

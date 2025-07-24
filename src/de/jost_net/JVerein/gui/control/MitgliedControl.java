@@ -2501,6 +2501,7 @@ public class MitgliedControl extends FilterControl implements Savable
     return m;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

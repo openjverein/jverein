@@ -352,6 +352,7 @@ public class BuchungsartControl extends FilterControl implements Savable
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -492,6 +493,7 @@ public class BuchungsartControl extends FilterControl implements Savable
     return buchungsarten;
   }
 
+  @Override
   public void TabRefresh()
   {
     try

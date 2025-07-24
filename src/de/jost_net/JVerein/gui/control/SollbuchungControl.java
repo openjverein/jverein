@@ -185,6 +185,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     sollbuchung = sollb;
   }
 
+  @Override
   public Settings getSettings()
   {
     return settings;
@@ -337,6 +338,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     return sollb;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -688,6 +690,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   }
 
   // Für Sollbuchungen View
+  @Override
   public void TabRefresh()
   {
     if (sollbuchungenList != null)

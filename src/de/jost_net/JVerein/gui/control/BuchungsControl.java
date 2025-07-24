@@ -1148,6 +1148,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return b;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

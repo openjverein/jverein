@@ -237,6 +237,7 @@ public class SollbuchungPositionControl extends AbstractControl
     return pos;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

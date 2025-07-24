@@ -648,6 +648,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     return mailsList;
   }
 
+  @Override
   public void TabRefresh()
   {
     try

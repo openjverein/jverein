@@ -130,6 +130,7 @@ public class LastschriftControl extends FilterControl
     return lastschriftList;
   }
 
+  @Override
   public void TabRefresh()
   {
     if (lastschriftList == null)

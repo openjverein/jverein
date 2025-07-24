@@ -261,6 +261,7 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
 
   public boolean checkSEPA() throws RemoteException, ApplicationException;
 
+  @Override
   public String getMandatID() throws RemoteException;
 
   public void setMandatID(String mandatid) throws RemoteException;

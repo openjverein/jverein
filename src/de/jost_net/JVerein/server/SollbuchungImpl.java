@@ -187,6 +187,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
     return (Mitglied) cache.get(o);
   }
 
+  @Override
   public String getMitgliedId() throws RemoteException
   {
     return String.valueOf(super.getAttribute(MITGLIED));
@@ -229,6 +230,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
     }
   }
 
+  @Override
   public Long getZahlerId() throws RemoteException
   {
     return (Long) super.getAttribute(ZAHLER);

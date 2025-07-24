@@ -196,6 +196,7 @@ public class LehrgangControl extends FilterControl implements Savable
     return l;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -224,6 +225,7 @@ public class LehrgangControl extends FilterControl implements Savable
     }
   }
 
+  @Override
   public void TabRefresh()
   {
     try

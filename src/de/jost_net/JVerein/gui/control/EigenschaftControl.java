@@ -121,6 +121,7 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
     return ei;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

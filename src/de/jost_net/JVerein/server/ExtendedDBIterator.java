@@ -105,6 +105,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   /**
    * @see de.willuhn.datasource.rmi.DBIterator#setOrder(java.lang.String)
    */
+  @Override
   public void setOrder(String order) throws RemoteException
   {
     if (this.initialized)
@@ -171,6 +172,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   /**
    * @see de.willuhn.datasource.rmi.DBIterator#setLimit(int)
    */
+  @Override
   public void setLimit(int i) throws RemoteException
   {
     this.limit = i;
@@ -189,6 +191,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   /**
    * @see de.willuhn.datasource.rmi.DBIterator#addFilter(java.lang.String)
    */
+  @Override
   public void addFilter(String filter) throws RemoteException
   {
     this.addFilter(filter, (Object[]) null);
@@ -198,6 +201,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
    * @see de.willuhn.datasource.rmi.DBIterator#addFilter(java.lang.String,
    *      java.lang.Object[])
    */
+  @Override
   public void addFilter(String filter, Object... p) throws RemoteException
   {
     if (this.initialized)
@@ -227,6 +231,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   /**
    * @see de.willuhn.datasource.rmi.DBIterator#join(java.lang.String)
    */
+  @Override
   public void join(String table) throws RemoteException
   {
     if (this.initialized)
@@ -389,6 +394,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   /**
    * @see de.willuhn.datasource.GenericIterator#hasNext()
    */
+  @Override
   public boolean hasNext() throws RemoteException
   {
     init();
@@ -398,6 +404,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   /**
    * @see de.willuhn.datasource.GenericIterator#next()
    */
+  @Override
   public T next() throws RemoteException
   {
     init();
@@ -414,6 +421,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   /**
    * @see de.willuhn.datasource.GenericIterator#previous()
    */
+  @Override
   public T previous() throws RemoteException
   {
     init();
@@ -430,6 +438,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   /**
    * @see de.willuhn.datasource.GenericIterator#size()
    */
+  @Override
   public int size() throws RemoteException
   {
     init();
@@ -439,6 +448,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   /**
    * @see de.willuhn.datasource.GenericIterator#begin()
    */
+  @Override
   public void begin() throws RemoteException
   {
     this.index = 0;
@@ -447,6 +457,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   /**
    * @see de.willuhn.datasource.GenericIterator#contains(de.willuhn.datasource.GenericObject)
    */
+  @Override
   public T contains(T other) throws RemoteException
   {
     init();

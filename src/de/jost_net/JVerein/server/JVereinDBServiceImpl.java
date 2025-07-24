@@ -91,6 +91,7 @@ public class JVereinDBServiceImpl extends DBServiceImpl
   /**
    * @see de.willuhn.datasource.db.DBServiceImpl#getTransactionIsolationLevel()
    */
+  @Override
   protected int getTransactionIsolationLevel() throws RemoteException
   {
     return this.driver.getTransactionIsolationLevel();

@@ -429,6 +429,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
    * @return Flag, ob echte Geldspende
    * @throws RemoteException
    */
+  @Override
   public boolean isEchteGeldspende() throws RemoteException
   {
     if (getBuchungen() == null)

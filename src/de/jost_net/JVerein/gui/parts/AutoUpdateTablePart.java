@@ -82,6 +82,7 @@ public class AutoUpdateTablePart extends JVereinTablePart
         GUI.getDisplay().syncExec(new Runnable()
         {
 
+          @Override
           public void run()
           {
             try

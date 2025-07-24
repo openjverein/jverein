@@ -180,6 +180,7 @@ public class WiedervorlageControl extends FilterControl implements Savable
     return w;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -214,6 +215,7 @@ public class WiedervorlageControl extends FilterControl implements Savable
     return wiedervorlageList.getWiedervorlageList();
   }
 
+  @Override
   public void TabRefresh()
   {
     if (wiedervorlageList == null)

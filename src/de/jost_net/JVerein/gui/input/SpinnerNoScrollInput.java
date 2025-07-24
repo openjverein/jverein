@@ -16,6 +16,7 @@ public class SpinnerNoScrollInput extends SpinnerInput
     super(min, max, value);
   }
 
+  @Override
   public Control getControl()
   {
     final Spinner spinner = (Spinner) super.getControl();

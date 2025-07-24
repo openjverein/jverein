@@ -89,6 +89,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
     box = new CheckboxInput(nurAktuelleKonten);
     box.addListener(new Listener()
     {
+      @Override
       public void handleEvent(Event event)
       {
         nurAktuelleKonten = (Boolean) box.getValue();

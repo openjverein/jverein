@@ -71,6 +71,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
     super(view);
   }
 
+  @Override
   public TablePart getSaldoList() throws ApplicationException
   {
     try

@@ -214,6 +214,7 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
     setAttribute("formlink", formlink);
   }
 
+  @Override
   public DBIterator<Formular> getLinked() throws RemoteException
   {
     DBIterator<Formular> formList = Einstellungen.getDBService()
@@ -233,6 +234,7 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
     return formList;
   }
 
+  @Override
   public boolean hasFormlinks() throws RemoteException
   {
     // Return FALSE for new forms

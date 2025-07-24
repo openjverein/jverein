@@ -496,6 +496,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -584,6 +585,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return spbList;
   }
 
+  @Override
   public void TabRefresh()
   {
     if (spbList != null)

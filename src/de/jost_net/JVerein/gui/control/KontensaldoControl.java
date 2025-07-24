@@ -61,6 +61,7 @@ public class KontensaldoControl extends AbstractSaldoControl
         .getEinstellung(Property.SUMMENANLAGENKONTO);
   }
 
+  @Override
   public TablePart getSaldoList() throws ApplicationException
   {
     try

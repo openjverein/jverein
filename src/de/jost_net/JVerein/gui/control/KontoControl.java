@@ -293,6 +293,7 @@ public class KontoControl extends FilterControl implements Savable
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -404,6 +405,7 @@ public class KontoControl extends FilterControl implements Savable
     TabRefresh();
   }
 
+  @Override
   protected void TabRefresh()
   {
     if (kontenList == null)
@@ -814,6 +816,7 @@ public class KontoControl extends FilterControl implements Savable
         Einstellungen.DECIMALFORMAT);
     betrag.addListener(new Listener()
     {
+      @Override
       public void handleEvent(Event e)
       {
         try
@@ -946,6 +949,7 @@ public class KontoControl extends FilterControl implements Savable
     afamode.setPleaseChoose("Bitte auswählen");
     afamode.addListener(new Listener()
     {
+      @Override
       public void handleEvent(Event e)
       {
         try

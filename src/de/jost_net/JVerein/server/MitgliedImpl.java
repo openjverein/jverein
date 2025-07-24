@@ -1512,6 +1512,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     super.delete();
   }
 
+  @Override
   public boolean checkSEPA() throws RemoteException, ApplicationException
   {
     if (getZahlungsweg() == null
