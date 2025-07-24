@@ -326,7 +326,7 @@ public class BuchungQuery
       }
       catch (Exception e)
       {
-        ;
+        
       }
       String ttext = text.toUpperCase();
       ttext = "%" + ttext + "%";

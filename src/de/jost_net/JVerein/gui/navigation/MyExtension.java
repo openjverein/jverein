@@ -142,7 +142,7 @@ public class MyExtension implements Extension
       }
       catch (Exception e)
       {
-        ;
+        
       }
       NavigationItem jverein = (NavigationItem) extendable;
 

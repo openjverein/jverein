@@ -67,7 +67,7 @@ public class QIFExternKontenInput extends SelectInput
       sendNotification();
       return;
     }
-    if (getList().contains(selectedObject) == false)
+    if (!getList().contains(selectedObject))
     {
       this.setValue(null);
       sendNotification();

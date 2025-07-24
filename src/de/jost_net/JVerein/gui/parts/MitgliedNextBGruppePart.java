@@ -62,7 +62,7 @@ public class MitgliedNextBGruppePart implements Part
     final GridData grid = new GridData(GridData.FILL_HORIZONTAL);
     grid.grabExcessHorizontalSpace = true;
     cont.getComposite().setLayoutData(grid);
-    if (this.isVisible == false)
+    if (!this.isVisible)
       return;
 
     tab = new TabFolder(cont.getComposite(), SWT.NONE);

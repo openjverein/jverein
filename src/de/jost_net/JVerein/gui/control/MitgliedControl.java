@@ -390,10 +390,10 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private boolean isExterneMitgliedsnummerMandatory() throws RemoteException
   {
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER) == false)
+    if (!((Boolean) Einstellungen
+        .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)))
       return false;
-    if (view instanceof AbstractMitgliedDetailView == false)
+    if (!(view instanceof AbstractMitgliedDetailView))
       return false;
     AbstractMitgliedDetailView detailView = (AbstractMitgliedDetailView) view;
     return detailView.isMitgliedDetail();
@@ -1365,7 +1365,7 @@ public class MitgliedControl extends FilterControl implements Savable
     if (zahler != null)
     {
       // wenn force nicht gesetzt, gib aktuellen zahler zurück.
-      if (force != true)
+      if (!force)
         return zahler;
       // ansonsten: erzeuge neuen...
       // Dies ist nötig, wenn Zahler ausgeblendet wurde und daher der

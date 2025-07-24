@@ -232,7 +232,7 @@ public class QIFQuickenImport implements Importer
         qifTyp = (QIFType) qifBlock.process(new QIFType());
         if (null != qifTyp)
         {
-          if (typeListe.isEmpty() == false)
+          if (!typeListe.isEmpty())
           {
             Logger.error(
                 "Die Datei enthält mehrere Konten. Weil Quicken Fehler bei solchen Exporten hat unterstützen wir dies nicht!");
@@ -466,7 +466,7 @@ public class QIFQuickenImport implements Importer
 
     public QIFItem process(QIFItem item)
     {
-      if (datenBlockPasstZuItem(item) == false)
+      if (!datenBlockPasstZuItem(item))
         return null;
 
       setzeItemDaten(item);
@@ -694,9 +694,9 @@ public class QIFQuickenImport implements Importer
 
     public boolean istGegenbuchungVon(QIFBuchung listItem)
     {
-      if (datum.equals(listItem.datum) == false)
+      if (!datum.equals(listItem.datum))
         return false;
-      if (betrag.equals(listItem.betrag) == false)
+      if (!betrag.equals(listItem.betrag))
         return false;
       return qifKonto.kontoName.equals(buchungsArt);
     }
@@ -715,7 +715,7 @@ public class QIFQuickenImport implements Importer
 
     public String gibGegenKontoName()
     {
-      if (istTransfereBuchung == false)
+      if (!istTransfereBuchung)
         return null;
       return buchungsArt;
     }
@@ -736,7 +736,7 @@ public class QIFQuickenImport implements Importer
     @Override
     public boolean isItem(List<String> datenList)
     {
-      return datenList.get(0).startsWith("!") == false;
+      return !datenList.get(0).startsWith("!");
     }
   }
 

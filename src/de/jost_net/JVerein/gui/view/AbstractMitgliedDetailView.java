@@ -728,13 +728,13 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     }
 
     if (control.getName(false).getValue() != null)
-      if (((String) control.getName(false).getValue()).isEmpty() == false)
+      if (!((String) control.getName(false).getValue()).isEmpty())
       {
         mgname = mgname + (String) control.getName(false).getValue();
-        if (((String) control.getTitel().getValue()).isEmpty() == false)
+        if (!((String) control.getTitel().getValue()).isEmpty())
           mgname = mgname + ", " + (String) control.getTitel().getValue() + " "
               + (String) control.getVorname().getValue();
-        else if (((String) control.getVorname().getValue()).isEmpty() == false)
+        else if (!((String) control.getVorname().getValue()).isEmpty())
           mgname = mgname + ", " + (String) control.getVorname().getValue();
       }
     GUI.getView().setTitle(getTitle() + " (" + mgname.trim() + ")");

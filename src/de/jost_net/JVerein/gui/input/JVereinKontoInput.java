@@ -46,7 +46,7 @@ public class JVereinKontoInput extends SelectInput
   {
     if (null == bean)
       return null;
-    if (bean instanceof Konto == false)
+    if (!(bean instanceof Konto))
       return bean.toString();
 
     try

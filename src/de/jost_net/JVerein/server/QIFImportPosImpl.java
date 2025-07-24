@@ -225,7 +225,7 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
   @Override
   public void setGesperrt(Boolean sperren) throws RemoteException
   {
-    if (null == sperren || sperren.booleanValue() == false)
+    if (null == sperren || !sperren.booleanValue())
       setAttribute(COL_SPERRE, SPERRE_NEIN);
     else
       setAttribute(COL_SPERRE, SPERRE_JA);
@@ -244,7 +244,7 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
   @Override
   public void setMitgliedZuordenbar(Boolean zuordenbar) throws RemoteException
   {
-    if (null == zuordenbar || zuordenbar.booleanValue() == false)
+    if (null == zuordenbar || !zuordenbar.booleanValue())
       setAttribute(COL_MITGLIEDBAR, MITGLIEDBAR_NEIN);
     else
       setAttribute(COL_MITGLIEDBAR, MITGLIEDBAR_JA);

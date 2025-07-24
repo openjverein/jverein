@@ -360,7 +360,7 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
         letzteBuchart = "";
         l.add(pos);
       }
-      else if (letzteBuchart.equals(qifBuchart) == false)
+      else if (!letzteBuchart.equals(qifBuchart))
       {
         letzteBuchart = new String(qifBuchart);
         l.add(pos);

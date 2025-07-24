@@ -141,7 +141,7 @@ public class Kontoauszug
           }
           File f = File.createTempFile(getDateiname(mg), ".pdf");
           rpt = new Reporter(new FileOutputStream(f), 40, 20, 20, 40, false);
-          if (generiereMitglied(mg, control) == false)
+          if (!generiereMitglied(mg, control))
           {
             continue;
           }

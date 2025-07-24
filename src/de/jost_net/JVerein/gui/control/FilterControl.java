@@ -497,7 +497,7 @@ public abstract class FilterControl extends VorZurueckControl
         }
         catch (RemoteException e)
         {
-          ;
+          
         }
       }
       else

@@ -460,7 +460,7 @@ public class RechnungControl extends DruckMailControl implements Savable
         (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
     nummer.setName("Rechnungsnummer");
     nummer.disable();
-    ;
+    
     return nummer;
   }
 

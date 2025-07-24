@@ -489,7 +489,7 @@ public class QIFBuchungsImportControl extends AbstractControl
             item.setFont(4, Font.ITALIC.getSWTFont());
             item.setText(4, "Buchungsart zuordnen!!");
           }
-          if (pos.getMitgliedZuordenbar().booleanValue() == false)
+          if (!pos.getMitgliedZuordenbar().booleanValue())
           {
             item.setFont(10, Font.ITALIC.getSWTFont());
             item.setText(10, "ohne Mitgliedsreferenz");
@@ -772,7 +772,7 @@ public class QIFBuchungsImportControl extends AbstractControl
     private void merkenSaldoJahr(int jahr)
     {
       SaldoJahr saldoJahr = new SaldoJahr(jahr);
-      if (jahresListe.contains(saldoJahr) == false)
+      if (!jahresListe.contains(saldoJahr))
         jahresListe.add(saldoJahr);
     }
 
@@ -1263,7 +1263,7 @@ public class QIFBuchungsImportControl extends AbstractControl
         dialog.setTitle(titel);
         dialog.setText(frage);
         Boolean antwort = (Boolean) dialog.open();
-        if (antwort.booleanValue() == false)
+        if (!antwort.booleanValue())
           throw new ApplicationException(
               "Funktion abgebrochen durch Benutzer!!");
       }

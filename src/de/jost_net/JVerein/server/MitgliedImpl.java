@@ -355,8 +355,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   {
     if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED)
       return;
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER) == false)
+    if (!((Boolean) Einstellungen
+        .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)))
       return;
 
     if (getExterneMitgliedsnummer() == null

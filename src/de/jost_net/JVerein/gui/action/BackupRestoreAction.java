@@ -254,7 +254,7 @@ public class BackupRestoreAction implements Action
                 String.format("%s importiert", o.getClass().getSimpleName()));
 
           DBTransaction.commit();
-          ;
+          
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
           monitor.setStatusText("Backup importiert");
           monitor.setPercentComplete(100);

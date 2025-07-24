@@ -259,7 +259,7 @@ public class MitgliedskontoMenu extends ContextMenu
             if (ob != null)
             {
               Buchung b = (Buchung) ob;
-              if (b.getBuchungsart().getSpende() == true)
+              if (b.getBuchungsart().getSpende())
               {
                 return true;
               }

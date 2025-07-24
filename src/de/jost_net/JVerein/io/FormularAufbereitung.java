@@ -267,7 +267,7 @@ public class FormularAufbereitung
     String verwendungszweck;
     String infoToMitglied;
 
-    if (true == festerText)
+    if (festerText)
     {
       String zahlungsgruende_raw = getString(
           fieldsMap.get(RechnungVar.ZAHLUNGSGRUND.getName()));

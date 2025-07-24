@@ -130,8 +130,8 @@ public class DefaultZusatzbetraegeImport implements Importer
             "Spaltenüberschrift muss entweder Angaben zur Mitgliedsnummer"
                 + " oder Nachname und Vorname zur Zuordnung des Mitglieds enthalten. Es ist beides vorhanden. Abbruch!");
       }
-      if (b_mitgliedsnummer == false && b_extmitgliedsnummer == false
-          && (b_nachname == false || b_vorname == false))
+      if (!b_mitgliedsnummer && !b_extmitgliedsnummer
+          && (!b_nachname || !b_vorname))
       {
         throw new ApplicationException(
             "Spaltenüberschrift muss entweder Mitglieds_Nr, Ext_Mitglieds_Nr"

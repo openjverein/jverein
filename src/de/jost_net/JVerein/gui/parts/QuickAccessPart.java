@@ -46,7 +46,7 @@ public class QuickAccessPart implements Part
 
   private Integer startjahr;
 
-  private Calendar calendar = Calendar.getInstance();;
+  private Calendar calendar = Calendar.getInstance();
 
   private ArrayList<Button> buttons = new ArrayList<Button>();
 

@@ -232,7 +232,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
   {
     DBIterator<Mitglied> iteratorMitglieder = Einstellungen.getDBService()
         .createList(Mitglied.class);
-    if (getCBValueAlleMitgliederZeigen() == false)
+    if (!getCBValueAlleMitgliederZeigen())
     {
       iteratorMitglieder.addFilter(getWhere(externerName));
     }
@@ -376,7 +376,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
     {
       QIFImportPos pos = (QIFImportPos) it.next();
       String name = pos.getName();
-      if (letzterName.equals(name) == false)
+      if (!letzterName.equals(name))
       {
         letzterName = new String(name);
         l.add(pos);
@@ -420,7 +420,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
   {
     try
     {
-      if (getCBValueAlleMitgliederZeigen() == false)
+      if (!getCBValueAlleMitgliederZeigen())
         mitgliederGeladen = false;
 
       qifImportPos = (QIFImportPos) distinctExternNameListTable.getSelection();

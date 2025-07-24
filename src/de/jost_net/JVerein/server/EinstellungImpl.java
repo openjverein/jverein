@@ -90,7 +90,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
             {
               if (i >= vb.getVon() && i <= vb.getBis())
               {
-                if (found == true)
+                if (found)
                   throw new ApplicationException(
                       i + " Jahre ist in mehreren Altersstufen enthalten");
                 found = true;

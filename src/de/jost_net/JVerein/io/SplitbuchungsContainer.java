@@ -361,7 +361,7 @@ public class SplitbuchungsContainer
     buch.setBuchungsartId(origin.getBuchungsartId());
     buch.setBuchungsklasseId(origin.getBuchungsklasseId());
     buch.setDatum(master.getDatum());
-    if (kommentareVonHauptbuchung.get(origin) == true)
+    if (kommentareVonHauptbuchung.get(origin))
     {
       buch.setKommentar(master.getKommentar());
     }
@@ -375,7 +375,7 @@ public class SplitbuchungsContainer
     buch.setProjekt(master.getProjekt());
     buch.setSplitId(Long.valueOf(master.getID()));
     buch.setUmsatzid(master.getUmsatzid());
-    if (zweckeVonHauptbuchung.get(origin) == true)
+    if (zweckeVonHauptbuchung.get(origin))
     {
       buch.setZweck(master.getZweck());
     }

@@ -39,7 +39,7 @@ public class VonBisPart implements Part
 
   private boolean suchen = false;
 
-  private Calendar calendar = Calendar.getInstance();;
+  private Calendar calendar = Calendar.getInstance();
 
   private enum RANGE
   {
