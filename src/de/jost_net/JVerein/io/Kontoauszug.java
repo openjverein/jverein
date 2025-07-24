@@ -43,12 +43,13 @@ import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.GUI;
 
@@ -180,9 +181,8 @@ public class Kontoauszug
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("KONTOAUSZUG", "",
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-        extension).get());
+    fd.setFileName(
+        VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_DATEINAME) + "." + extension);
     fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();
@@ -305,7 +305,7 @@ public class Kontoauszug
   String getDateiname(Mitglied m) throws RemoteException
   {
     // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
-    String filename = m.getID() + "# # #";
+    String filename = m.getID() + "#kontoauszug# #";
     String email = StringTool.toNotNullString(m.getEmail());
     filename += email + "#Kontoauszug";
     return filename;

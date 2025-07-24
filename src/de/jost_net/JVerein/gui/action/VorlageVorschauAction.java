@@ -16,43 +16,40 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.MitgliedDetailView;
-import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.gui.control.VorlageControl;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedDuplizierenAction implements Action
+public class VorlageVorschauAction implements Action
 {
+
+  public VorlageVorschauAction()
+  {
+    //
+  }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof Mitglied))
+    VorlageControl control = null;
+
+    if (context instanceof VorlageControl)
     {
-      throw new ApplicationException("kein Mitglied ausgewählt");
+      control = (VorlageControl) context;
     }
-    Mitglied m;
+    else
+    {
+      throw new ApplicationException("Falscher Kontext");
+    }
     try
     {
-      m = Einstellungen.getDBService().createObject(Mitglied.class, null);
-      m.overwrite((Mitglied) context);
-      if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
-      {
-        GUI.startView(new MitgliedDetailView(), m);
-      }
-      else
-      {
-        GUI.startView(new NichtMitgliedDetailView(), m);
-      }
+      control.updateVorschau();
     }
-    catch (Exception e)
+    catch (RemoteException e)
     {
-      throw new ApplicationException(
-          "Fehler beim duplizieren eines Mitgliedes", e);
+      throw new ApplicationException(e);
     }
   }
 }

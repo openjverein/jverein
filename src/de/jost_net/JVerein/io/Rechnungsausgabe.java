@@ -29,19 +29,19 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.StringTool;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.GUI;
@@ -186,9 +186,16 @@ public class Rechnungsausgabe
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname(typ.name(), "",
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-        extension).get());
+    if (typ == TYP.RECHNUNG)
+    {
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.RECHNUNG_DATEINAME) + "." + extension);
+    }
+    else
+    {
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.MAHNUNG_DATEINAME) + "." + extension);
+    }
     fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();
@@ -228,7 +235,15 @@ public class Rechnungsausgabe
   {
     // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
     Mitglied m = re.getMitglied();
-    String filename = m.getID() + "#rechnung#" + re.getID() + "#";
+    String filename = "";
+    if (typ == TYP.RECHNUNG)
+    {
+      filename = m.getID() + "#rechnung#" + re.getID() + "#";
+    }
+    else
+    {
+      filename = m.getID() + "#mahnung#" + re.getID() + "#";
+    }
     String email = StringTool.toNotNullString(m.getEmail());
     if (email.length() > 0)
     {

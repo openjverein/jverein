@@ -48,15 +48,16 @@ import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.FormularAufbereitung;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.Adressblatt;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatJJJJ;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -219,23 +220,21 @@ public class SpendenbescheinigungPrintAction implements Action
           // zusammensetzen, wenn mehr als eine Spendenbescheinigung
           // aufzubereiten
           // oder keine Vorgabe für einen Dateinamen gemacht wurde.
-          if (spb.getMitglied() != null)
+          Mitglied mitglied = spb.getMitglied();
+          if (mitglied != null)
           {
-            fileName = new Dateiname(spb.getMitglied(),
-                spb.getSpendedatum(), "Spendenbescheinigung",
-                (String) Einstellungen
-                    .getEinstellung(Property.DATEINAMENMUSTERSPENDE),
-                "pdf").get();
+          fileName = path
+              + VorlageUtil.getName(
+                    VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb, mitglied)
+              + ".pdf";
           }
           else
           {
-            fileName = new Dateiname(spb.getZeile1(), spb.getZeile2(),
-                spb.getSpendedatum(), "Spendenbescheinigung",
-                (String) Einstellungen.getEinstellung(
-                    Property.DATEINAMENMUSTERSPENDE),
-                "pdf").get();
+            fileName = path
+                + VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNG_DATEINAME,
+                    spb)
+                + ".pdf";
           }
-          fileName = path + fileName;
         }
         else
         {

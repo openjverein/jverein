@@ -738,6 +738,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     ohneBuchungsartIt.addFilter("buchung.buchungsart is null");
 
     ohneBuchungsartIt.addGroupBy("konto.kontoart > " + Kontoart.LIMIT.getKey());
+    ohneBuchungsartIt.addGroupBy("konto.kontoart");
     ohneBuchungsartIt
         .setOrder("ORDER BY konto.kontoart > " + Kontoart.LIMIT.getKey());
 
@@ -1026,6 +1027,11 @@ public class MittelverwendungControl extends AbstractSaldoControl
     // nach Konto gruppieren
     it.addGroupBy("konto.id");
     it.addGroupBy("konto.kontoart");
+    it.addGroupBy("konto.bezeichnung");
+    it.addGroupBy("konto.kommentar");
+    it.addGroupBy("konto.zweck");
+    it.addGroupBy("buchungsklasse.bezeichnung");
+    it.addGroupBy("anfangsbestand.betrag");
 
     // nach Kontenart und Anlagenklasse sortieren
     it.setOrder("ORDER BY konto.kontoart, konto.anlagenklasse, konto.nummer");

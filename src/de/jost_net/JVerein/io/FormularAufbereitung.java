@@ -361,11 +361,9 @@ public class FormularAufbereitung
     sbEpc.append((String) Einstellungen.getEinstellung(Property.IBAN))
         .append("\n");
     sbEpc.append(EPC_EUR);
-    Object[] oPosten = (Object[]) fieldsMap
-        .get(RechnungVar.BETRAG.getName());
-    // Der letzte Eintrag in dem Array ist die Rechnungssumme
     // Ersetze das Dezimalkomma durch einen Punkt, um der Spezifikation zu entsprechen
-    String betrag = getString(oPosten[oPosten.length - 1]).replace(',', '.');
+    String betrag = getString(fieldsMap.get(RechnungVar.SUMME_OFFEN.getName()))
+        .replace(',', '.');
     sbEpc.append(betrag);
     sbEpc.append("\n");
     sbEpc.append("\n"); // currently purpose code not used here
@@ -521,7 +519,10 @@ public class FormularAufbereitung
       {
         for (Object od : o)
         {
-          stringVal.append(new JVDateFormatTTMMJJJJ().format((Date) od));
+          if (od != null)
+          {
+            stringVal.append(new JVDateFormatTTMMJJJJ().format((Date) od));
+          }
           stringVal.append("\n");
         }
       }
@@ -529,7 +530,10 @@ public class FormularAufbereitung
       {
         for (Object od : o)
         {
-          stringVal.append(Einstellungen.DECIMALFORMAT.format(od));
+          if (od != null)
+          {
+            stringVal.append(Einstellungen.DECIMALFORMAT.format(od));
+          }
           stringVal.append("\n");
         }
         buendig = rechts;

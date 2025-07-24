@@ -171,8 +171,6 @@ public class EinstellungControl extends AbstractControl
 
   private TextInput dateinamenmuster;
 
-  private TextInput dateinamenmusterspende;
-
   private DirectoryInput vorlagenCsvVerzeichnis;
 
   private DecimalInput spendenbescheinigungminbetrag;
@@ -974,18 +972,6 @@ public class EinstellungControl extends AbstractControl
     dateinamenmuster
         .setComment("a$ = Aufgabe, d$ = Datum, s$ = Sortierung, z$ = Zeit");
     return dateinamenmuster;
-  }
-
-  public TextInput getDateinamenmusterSpende() throws RemoteException
-  {
-    if (dateinamenmusterspende != null)
-    {
-      return dateinamenmusterspende;
-    }
-    dateinamenmusterspende = new TextInput((String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTERSPENDE), 30);
-    dateinamenmusterspende
-        .setComment("n$ = Name, v$ = Vorname, d$ = Datum, z$ = Zeit");
-    return dateinamenmusterspende;
   }
 
   public DirectoryInput getVorlagenCsvVerzeichnis() throws RemoteException
@@ -1988,8 +1974,6 @@ public class EinstellungControl extends AbstractControl
   // Einstellungen.setEinstellung(Property.ALTERSMODEL, amValue.getKey());
   // Einstellungen.setEinstellung(Property.DATEINAMENMUSTER, (String)
   // dateinamenmuster.getValue());
-  // Einstellungen.setEinstellung(Property.DATEINAMENMUSTERSPENDE, (String)
-  // dateinamenmusterspende.getValue());
   // Einstellungen.setEinstellung(Property.VORLAGENCSVVERZEICHNIS, (String)
   // vorlagenCsvVerzeichnis.getValue());
   // Einstellungen.setEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG,
@@ -2452,7 +2436,7 @@ public class EinstellungControl extends AbstractControl
       if (verrechnungskonto.getValue() != null)
       {
         Einstellungen.setEinstellung(Property.VERRECHNUNGSKONTOID,
-            (Long.parseLong(
+            (Integer.parseInt(
                 (String) ((Konto) verrechnungskonto.getValue()).getID())));
       }
       DBTransaction.commit();
@@ -2475,11 +2459,6 @@ public class EinstellungControl extends AbstractControl
 
       Einstellungen.setEinstellung(Property.DATEINAMENMUSTER,
           (String) dateinamenmuster.getValue());
-      if (dateinamenmusterspende != null)
-      {
-        Einstellungen.setEinstellung(Property.DATEINAMENMUSTERSPENDE,
-            (String) dateinamenmusterspende.getValue());
-      }
       Einstellungen.setEinstellung(Property.VORLAGENCSVVERZEICHNIS,
           (String) vorlagenCsvVerzeichnis.getValue());
       DBTransaction.commit();

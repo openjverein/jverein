@@ -69,7 +69,7 @@ public class DokumentShowAction implements Action
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Löschen des Dokuments";
+      String fehler = "Fehler beim Anzeigen des Dokuments";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

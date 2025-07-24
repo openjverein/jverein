@@ -155,7 +155,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       PseudoDBObject o = it.next();
 
       String klasse = (String) o.getAttribute(BUCHUNGSKLASSE);
-      if (klasse == null)
+      if (klasse == null || klasse.equals(" - ") || klasse.equals(" ()"))
       {
         klasse = "Nicht zugeordnet";
       }
@@ -446,6 +446,12 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       it.addGroupBy("buchungsart.buchungsklasse");
     }
     it.addGroupBy("buchungsart.id");
+    it.addGroupBy("buchungsklasse.bezeichnung");
+    it.addGroupBy("buchungsklasse.nummer");
+    it.addGroupBy("buchungsart.bezeichnung");
+    it.addGroupBy("buchungsart.art");
+    it.addGroupBy("buchungsart.status");
+    it.addGroupBy("buchungsart.nummer");
     // Ggf. Buchungsarten ausblenden
     if (unterdrueckung)
     {

@@ -13,20 +13,19 @@ import java.util.zip.ZipOutputStream;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.gui.control.FreieFormulareControl;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.StringTool;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
@@ -143,9 +142,9 @@ public class FreiesFormularAusgabe
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname(name, "",
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-        extension).get());
+    fd.setFileName(
+        VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_DATEINAME, name) + "."
+            + extension);
     fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();
@@ -174,7 +173,7 @@ public class FreiesFormularAusgabe
   String getDateiname(Mitglied m, Formular formular) throws RemoteException
   {
     // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
-    String filename = m.getID() + "# # #";
+    String filename = m.getID() + "#freiesformular# #";
     String email = StringTool.toNotNullString(m.getEmail());
     if (email.length() > 0)
     {

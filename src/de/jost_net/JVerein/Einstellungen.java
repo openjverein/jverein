@@ -223,7 +223,7 @@ public class Einstellungen
     MITTELVERWENDUNG("mittelverwendung", Boolean.class, "0"),
     PROJEKTEANZEIGEN("projekteanzeigen", Boolean.class, "0"),
     SPENDENBESCHEINIGUNGENANZEIGEN("spendenbescheinigungenanzeigen",
-        Boolean.class, "1"),
+        Boolean.class, "0"),
     RECHNUNGENANZEIGEN("rechnungenanzeigen", Boolean.class, "0"),
     // Anzeige 2.Spalte
     USELESEFELDER("uselesefelder", Boolean.class, ""),
@@ -263,8 +263,6 @@ public class Einstellungen
 
     // Dateinamen
     DATEINAMENMUSTER("dateinamenmuster", String.class, "a$s$-d$-z$"),
-    DATEINAMENMUSTERSPENDE("dateinamenmusterspende", String.class,
-        "a$-d$-n$-v$"),
     VORLAGENCSVVERZEICHNIS("vorlagencsvverzeichnis", String.class, ""),
 
     // Spendenbescheinigung
@@ -286,7 +284,7 @@ public class Einstellungen
     UNTERSCHRIFT("unterschrift", String.class, ""),
 
     // Buchführung
-    BEGINNGESCHAEFTSJAHR("beginngeschaeftsjahr", String.class, "01.01"),
+    BEGINNGESCHAEFTSJAHR("beginngeschaeftsjahr", String.class, "01.01."),
     UNTERDRUECKUNGKONTEN("unterdrueckungkonten", Integer.class, "2"),
     UNTERDRUECKUNGLAENGE("unterdrueckunglaenge", Integer.class, "0"),
     AFARESTWERT("afarestwert", Double.class, "1"),

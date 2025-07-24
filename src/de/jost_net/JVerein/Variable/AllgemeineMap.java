@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,6 +62,10 @@ public class AllgemeineMap
     {
       map = inma;
     }
+    map.put(AllgemeineVar.AKTUELLESDATUM.getName(),
+        new SimpleDateFormat("yyyyMMdd").format(new Date()));
+    map.put(AllgemeineVar.AKTUELLEZEIT.getName(),
+        new SimpleDateFormat("HHmmss").format(new Date()));
     map.put(AllgemeineVar.TAGESDATUM.getName(), ttmmjjjj.format(new Date()));
     map.put(AllgemeineVar.TAGESDATUMTT.getName(), tt.format(new Date()));
     map.put(AllgemeineVar.TAGESDATUMMM.getName(), mm.format(new Date()));

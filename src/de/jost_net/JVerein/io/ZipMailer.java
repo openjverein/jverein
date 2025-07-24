@@ -43,6 +43,7 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.VarTools;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
@@ -51,6 +52,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -162,37 +164,42 @@ public class ZipMailer
               String artId = teile[2];
               String mail = teile[3];
               String dateiname = teile[4];
-
+              
+              Rechnung re = null;
+              Spendenbescheinigung spb = null;
+              
               // Mitglied Map hinzufügen
               Mitglied m = (Mitglied) Einstellungen.getDBService()
                   .createObject(Mitglied.class, id);
               map = new MitgliedMap().getMap(m, map);
 
               switch (art.toLowerCase().trim())
-                {
-                  case "rechnung":
-                    Rechnung re = (Rechnung) Einstellungen.getDBService()
-                        .createObject(Rechnung.class, artId);
-                    map = new RechnungMap().getMap(re, map);
-                    break;
-                  case "spendenbescheinigung":
-                    Spendenbescheinigung spb = (Spendenbescheinigung) Einstellungen
-                        .getDBService()
-                        .createObject(Spendenbescheinigung.class, artId);
-                    map = new SpendenbescheinigungMap().getMap(spb, map);
-                    break;
-                  case "lastschrift":
-                    Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
-                        .createObject(Lastschrift.class, artId);
-                    map = new LastschriftMap().getMap(ls, map);
-                    break;
-                case "":
-                  // Keine Art verwendet
+              {
+                case "rechnung":
+                case "mahnung":
+                  re = (Rechnung) Einstellungen.getDBService()
+                      .createObject(Rechnung.class, artId);
+                  map = new RechnungMap().getMap(re, map);
                   break;
-                  default:
-                    Logger.error("Zipmailer Map nicht implementiert: " + art);
-                    break;
-                }
+                case "spendenbescheinigung":
+                  spb = (Spendenbescheinigung) Einstellungen.getDBService()
+                      .createObject(Spendenbescheinigung.class, artId);
+                  map = new SpendenbescheinigungMap().getMap(spb, map);
+                  break;
+                case "lastschrift":
+                  Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
+                      .createObject(Lastschrift.class, artId);
+                  map = new LastschriftMap().getMap(ls, map);
+                  break;
+                case "":
+                case "freiesformular":
+                case "kontoauszug":
+                  // Keine eigene Map verwendet
+                  break;
+                default:
+                  Logger.error("Zipmailer Map nicht implementiert: " + art);
+                  break;
+              }
               VarTools.add(context, map);
 
               MailAnhang ma = (MailAnhang) Einstellungen.getDBService()
@@ -209,10 +216,39 @@ public class ZipMailer
               in.close();
               ma.setAnhang(bos.toByteArray());
 
-              StringWriter wdateiname = new StringWriter();
-              Velocity.evaluate(context, wdateiname, "LOG", dateiname);
-
-              ma.setDateiname(wdateiname.toString());
+              String finaldateiname = "";
+              switch (art.toLowerCase().trim())
+              {
+                case "rechnung":
+                  finaldateiname = VorlageUtil.getName(
+                      VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, m) + ".pdf";
+                  break;
+                case "mahnung":
+                  finaldateiname = VorlageUtil.getName(
+                      VorlageTyp.MAHNUNG_MITGLIED, re, m) + ".pdf";
+                  break;
+                case "spendenbescheinigung":
+                  finaldateiname = VorlageUtil.getName(
+                      VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb, m)
+                      + ".pdf";
+                  break;
+                case "freiesformular":
+                  finaldateiname = VorlageUtil.getName(
+                      VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
+                      dateiname.substring(0, dateiname.lastIndexOf('.')), m)
+                      + ".pdf";
+                  break;
+                case "kontoauszug":
+                  finaldateiname = VorlageUtil.getName(
+                      VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null, m) + ".pdf";
+                  break;
+                default:
+                  StringWriter wdateiname = new StringWriter();
+                  Velocity.evaluate(context, wdateiname, "LOG", dateiname);
+                  finaldateiname = wdateiname.toString();
+                  break;
+              }
+              ma.setDateiname(finaldateiname);
               TreeSet<MailAnhang> anhang = new TreeSet<>();
               anhang.add(ma);
 

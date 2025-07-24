@@ -43,6 +43,7 @@ import de.jost_net.JVerein.gui.view.BeitragsgruppeListeView;
 import de.jost_net.JVerein.gui.view.BuchungsartListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseSaldoView;
+import de.jost_net.JVerein.gui.view.EinstellungenVorlageListeView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.gui.view.BuchungsTextKorrekturView;
 import de.jost_net.JVerein.gui.view.DbBereinigenView;
@@ -52,7 +53,7 @@ import de.jost_net.JVerein.gui.view.EinstellungenAbrechnungView;
 import de.jost_net.JVerein.gui.view.EinstellungenAllgemeinView;
 import de.jost_net.JVerein.gui.view.EinstellungenAnzeigeView;
 import de.jost_net.JVerein.gui.view.EinstellungenBuchfuehrungView;
-import de.jost_net.JVerein.gui.view.EinstellungenDateinamenView;
+import de.jost_net.JVerein.gui.view.EinstellungenVerzeichnisView;
 import de.jost_net.JVerein.gui.view.EinstellungenMailView;
 import de.jost_net.JVerein.gui.view.EinstellungenMitgliedAnsichtView;
 import de.jost_net.JVerein.gui.view.EinstellungenMitgliederSpaltenView;
@@ -374,8 +375,12 @@ public class MyExtension implements Extension
               new StartViewAction(EinstellungenAbrechnungView.class),
               "wrench.png"));
       administrationEinstellungen
-          .addChild(new MyItem(administrationEinstellungen, "Dateinamen",
-              new StartViewAction(EinstellungenDateinamenView.class),
+          .addChild(new MyItem(administrationEinstellungen, "Verzeichnisse",
+              new StartViewAction(EinstellungenVerzeichnisView.class),
+              "wrench.png"));
+      administrationEinstellungen
+          .addChild(new MyItem(administrationEinstellungen, "Vorlagen",
+              new StartViewAction(EinstellungenVorlageListeView.class),
               "wrench.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {

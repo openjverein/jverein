@@ -1044,6 +1044,7 @@ public class AbrechnungSEPA
     abrl.setZahlungsgrund(getVerwendungszweck(param));
     abrl.setZusatzbetraege(param.zusatzbetraege);
     abrl.setAbgeschlossen(false);
+    abrl.setBemerkung("");
     abrl.store();
     return abrl;
   }
@@ -1282,7 +1283,7 @@ public class AbrechnungSEPA
 
   private Konto getKonto() throws RemoteException, ApplicationException
   {
-    if ((Boolean) Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID) == null)
+    if (Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID) == null)
     {
       throw new ApplicationException(
           "Verrechnungskonto nicht gesetzt. Unter Administration->Einstellungen->Abrechnung erfassen.");
