@@ -84,18 +84,18 @@ public interface Spendenbescheinigung extends JVereinDBObject
   public void setMitgliedID(Integer mitglied) throws RemoteException;
 
   /**
-   * Liefert als Kennzeichen zurÃ¼ck, ob die Spendenbescheinigung eine
+   * Liefert als Kennzeichen zurück, ob die Spendenbescheinigung eine
    * Sammelbestaetigung ist. Dies ist der Fall, wenn die Liste der Buchungen
-   * mehr als eine Buchung enthÃ¤lt. Ist keine oder nur eine Buchung zugewiesen,
-   * liegt eine EinzelbestÃ¤tigung vor.
+   * mehr als eine Buchung enthält. Ist keine oder nur eine Buchung zugewiesen,
+   * liegt eine Einzelbestätigung vor.
    * 
-   * @return Flag, ob SammelbestÃ¤tigung
+   * @return Flag, ob Sammelbestätigung
    * @throws RemoteException
    */
   public boolean isSammelbestaetigung() throws RemoteException;
 
   /**
-   * Liefert als Kennzeichen zurÃ¼ck, ob die Spendenbescheinigung eine echte
+   * Liefert als Kennzeichen zurück, ob die Spendenbescheinigung eine echte
    * Geldspende ist. Dies ist der Fall, wenn es sich um eine Gelspende handelt
    * bei der bei keiner Buchung das Flag Erstattungsverzicht gesetzt ist.
    * 
@@ -105,19 +105,19 @@ public interface Spendenbescheinigung extends JVereinDBObject
   public boolean isEchteGeldspende() throws RemoteException;
 
   /**
-   * FÃ¼gt der Liste der Buchungen eine Buchung hinzu. Der Gesamtbetrag der
-   * Spendenbescheinigung wird anhand der EinzelbetrÃ¤ge der Buchungen
-   * berechnet. Die Spendenart wird auf "GELDSPENDE" gesetzt.
+   * Fügt der Liste der Buchungen eine Buchung hinzu. Der Gesamtbetrag der
+   * Spendenbescheinigung wird anhand der Einzelbeträge der Buchungen berechnet.
+   * Die Spendenart wird auf "GELDSPENDE" gesetzt.
    * 
    * @param buchung
-   *          Die Buchung zum HinzufÃ¼gen
+   *          Die Buchung zum Hinzufügen
    */
   public void addBuchung(Buchung buchung) throws RemoteException;
 
   /**
-   * HÃ¤ngt eine Buchung an die Spendenbescheinigung, wenn es eine
-   * EinzelbestÃ¤tigung werden soll. Sollten vorher schon Buchungen eingetragen
-   * worden sein, wird die Liste der Buchungen vorher gelÃ¶scht.
+   * Hängt eine Buchung an die Spendenbescheinigung, wenn es eine
+   * Einzelbestätigung werden soll. Sollten vorher schon Buchungen eingetragen
+   * worden sein, wird die Liste der Buchungen vorher gelöscht.
    * 
    * @param buchung
    *          Die Buchung, die der Spendenbescheinigung zugeordnet wird
@@ -125,10 +125,10 @@ public interface Spendenbescheinigung extends JVereinDBObject
   public void setBuchung(Buchung buchung) throws RemoteException;
 
   /**
-   * Liefert die Liste der Buchungen einer Spendenbescheinigung zurÃ¼ck. Falls
+   * Liefert die Liste der Buchungen einer Spendenbescheinigung zurück. Falls
    * die Liste noch nicht angelegt wurde, wird sie aus der Datenbank
    * nachgeladen. Sollten der Spendenbescheinigung noch keine Buchungen
-   * zugeordnet sein, wird eine leere Liste zurÃ¼ckgegeben.<br>
+   * zugeordnet sein, wird eine leere Liste zurückgegeben.<br>
    * Beim Laden der Buchungen wird der Gesamtbetrag berechnet
    * 
    * @return Liste der der Spendenbescheinigung zugeordneten Buchungen

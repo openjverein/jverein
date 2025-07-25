@@ -98,7 +98,7 @@ public class MitgliedLastschriftAction implements Action
         sl.setSequenceType(SepaLastSequenceType.RCUR);
 
         // Verwendungszweck vorbelegen: "Mitgliedsnummer/Mitgliedsname"
-        // Voranstellen eines Strings der zwingend ge?ndert werden muss,
+        // Voranstellen eines Strings der zwingend geändert werden muss,
         // damit der Anwender nicht vergisst den Verwendungszweck
         // korrekt einzugeben
         String verwendungszweck = "#ANPASSEN# " + ((Boolean) Einstellungen
